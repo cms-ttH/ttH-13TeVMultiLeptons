@@ -1,0 +1,36 @@
+universe = vanilla
+executable = runTemplatesCondor_modDilep.csh
+notification = Never
+log = batchBEAN/templates_modDilep_v1.logfile
+getenv = True
+
+####################################
+# MC
+####################################
+
+# set a global option of the sample label
+
+Label = dilepStudy_withSummaryTree
+
+
+
+List = ttH_m120
+NJobs = 83
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+##queue $(NJobs)
+
+List = ttbar
+NJobs = 478
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+queue $(NJobs)
+
+List = wjets
+NJobs = 2707
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+##queue $(NJobs)
