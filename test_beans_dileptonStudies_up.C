@@ -134,7 +134,17 @@ void test_beans_dileptonStudies_up( int maxNentries, string sampleName, int iJob
   TH1D* h_pu_data_down;
   TH1D* h_pu_mc;
   int insample = 0;
+  if ( sampleName == "ttH_m100") insample = 100 ;
+  if ( sampleName == "ttH_m105") insample = 105 ;
+  if ( sampleName == "ttH_m110") insample = 110 ;
+  if ( sampleName == "ttH_m115") insample = 115 ;
   if ( sampleName == "ttH_m120") insample = 120 ;
+  if ( sampleName == "ttH_m125") insample = 125 ;
+  if ( sampleName == "ttH_m130") insample = 130 ;
+  if ( sampleName == "ttH_m135") insample = 135 ;
+  if ( sampleName == "ttH_m140") insample = 140 ;
+  if ( sampleName == "ttW") insample = 2523 ;
+  if ( sampleName == "ttZ") insample = 2524 ;
 
   if( (insample>=100 && insample<=140) || (insample==2523) || (insample==2524) ){
     h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_observed")).c_str());
