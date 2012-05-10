@@ -107,7 +107,8 @@ int main ( int argc, char ** argv )
    AutoLibraryLoader::enable();
 
    int maxNentries = -1;
-   string sampleName = "doubleEle2012_week02_52Xonly";
+   //string sampleName = "doubleEle2012_week02_52Xonly";
+   string sampleName = "ttH_m130";
    int iJob =1;
    string iLabel = "testTree";
 
@@ -234,7 +235,8 @@ int main ( int argc, char ** argv )
   
   // Name of file containing histograms
   std::stringstream outFileName;
-  outFileName <<"batchBEAN/" << sampleName << "_" << iLabel << "/test_beans_v1_" << sampleName << "_" << iLabel << "_job_" << iJob << ".root";
+  //outFileName <<"batchBEAN/" << sampleName << "_" << iLabel << "/test_beans_v1_" << sampleName << "_" << iLabel << "_job_" << iJob << ".root";
+  outFileName << "checkCode_" << sampleName << ".root";
   std::string histofilename = outFileName.str();
   std::cout << "Writing out to file " << histofilename << endl;
 
@@ -723,11 +725,11 @@ int main ( int argc, char ** argv )
       BNeventCollection const &events = *h_event;
 
       fwlite::Handle<BNmuonCollection> h_muons;
-      h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsPFlow");
+      h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsLoosePFlow");
       BNmuonCollection const &muons = *h_muons;
 
       fwlite::Handle<BNmetCollection> h_pfmet;
-      h_pfmet.getByLabel(ev,"BNproducer","patMETsPFlow");
+      h_pfmet.getByLabel(ev,"BNproducer","patMETsTypeIPFlow");
       BNmetCollection const &pfmets = *h_pfmet;
 
       fwlite::Handle<BNtriggerCollection> h_hlt;
@@ -743,7 +745,8 @@ int main ( int argc, char ** argv )
       BNjetCollection const &pfjets = *h_pfjets;
 
       fwlite::Handle<BNelectronCollection> h_electrons;
-      h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
+      //h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
+      h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
       BNelectronCollection const &electrons = *h_electrons;
 
       fwlite::Handle<BNmcparticleCollection> h_mcparticles;
@@ -2237,48 +2240,48 @@ int main ( int argc, char ** argv )
 
 
 
-  std::cout << " *********************************************************** " << std::endl;
-  std::cout << "   Number of Events Processed (wgt)     = " << nevents << " (" << nevents_wgt << ")" << std::endl;
-  std::cout << "   Number of Events Pass cleaning (wgt) = "   << nevents_pass_cleaning << " (" << nevents_pass_cleaning_wgt << ")" << std::endl;
-  std::cout << "   Number of Events Passed HLT (wgt)    = " << nevents_pass_trigger << " (" << nevents_pass_trigger_wgt << ")" << std::endl;
-  std::cout << " *********************************************************** " << std::endl;
-  std::cout << "   Number of MC events " << std::endl;
-  std::cout << std::setw(25) << " "
-	    << std::setw(27) << "Selected"
-	    << std::setw(27) << "N - 1"
-	    << std::setw(27) << "Cumulative" << std::endl;
-  for( int j=0; j<numSelectors; j++ ){
-    std::cout << std::setw(25) << selector_name[j]
-              << std::setw(15) << selected[j][0]
-              << " [" << std::setw(12) << (selected[j][0]/nevents)*100.0 << "%], "
-              << std::setw(15) << selected[j][1]
-              << " [" << std::setw(12) << (selected[j][1]/nevents)*100.0 << "%], "
-              << std::setw(15) << selected[j][2]
-             << " [" << std::setw(12) << (selected[j][2]/nevents)*100.0 << "%] " << std::endl;
-  }
-  std::cout << " *********************************************************** " << std::endl;
-  std::cout << "   Weighted number of MC events " << std::endl;
-  std::cout << std::setw(25) << " "
-	    << std::setw(27) << "Selected"
-	    << std::setw(27) << "N - 1"
-	    << std::setw(27) << "Cumulative" << std::endl;
-  for( int j=0; j<numSelectors; j++ ){
-    std::cout << std::setw(25) << selector_name[j]
-              << std::setw(15) << selected_wgt[j][0]
-              << " [" << std::setw(12) << (selected_wgt[j][0]/nevents_wgt)*100.0 << "%], "
-              << std::setw(15) << selected_wgt[j][1]
-              << " [" << std::setw(12) << (selected_wgt[j][1]/nevents_wgt)*100.0 << "%], "
-              << std::setw(15) << selected_wgt[j][2]
-             << " [" << std::setw(12) << (selected_wgt[j][2]/nevents_wgt)*100.0 << "%] " << std::endl;
-  }
-  std::cout << " *********************************************************** " << std::endl;
+//   std::cout << " *********************************************************** " << std::endl;
+//   std::cout << "   Number of Events Processed (wgt)     = " << nevents << " (" << nevents_wgt << ")" << std::endl;
+//   std::cout << "   Number of Events Pass cleaning (wgt) = "   << nevents_pass_cleaning << " (" << nevents_pass_cleaning_wgt << ")" << std::endl;
+//   std::cout << "   Number of Events Passed HLT (wgt)    = " << nevents_pass_trigger << " (" << nevents_pass_trigger_wgt << ")" << std::endl;
+//   std::cout << " *********************************************************** " << std::endl;
+//   std::cout << "   Number of MC events " << std::endl;
+//   std::cout << std::setw(25) << " "
+// 	    << std::setw(27) << "Selected"
+// 	    << std::setw(27) << "N - 1"
+// 	    << std::setw(27) << "Cumulative" << std::endl;
+//   for( int j=0; j<numSelectors; j++ ){
+//     std::cout << std::setw(25) << selector_name[j]
+//               << std::setw(15) << selected[j][0]
+//               << " [" << std::setw(12) << (selected[j][0]/nevents)*100.0 << "%], "
+//               << std::setw(15) << selected[j][1]
+//               << " [" << std::setw(12) << (selected[j][1]/nevents)*100.0 << "%], "
+//               << std::setw(15) << selected[j][2]
+//              << " [" << std::setw(12) << (selected[j][2]/nevents)*100.0 << "%] " << std::endl;
+//   }
+//   std::cout << " *********************************************************** " << std::endl;
+//   std::cout << "   Weighted number of MC events " << std::endl;
+//   std::cout << std::setw(25) << " "
+// 	    << std::setw(27) << "Selected"
+// 	    << std::setw(27) << "N - 1"
+// 	    << std::setw(27) << "Cumulative" << std::endl;
+//   for( int j=0; j<numSelectors; j++ ){
+//     std::cout << std::setw(25) << selector_name[j]
+//               << std::setw(15) << selected_wgt[j][0]
+//               << " [" << std::setw(12) << (selected_wgt[j][0]/nevents_wgt)*100.0 << "%], "
+//               << std::setw(15) << selected_wgt[j][1]
+//               << " [" << std::setw(12) << (selected_wgt[j][1]/nevents_wgt)*100.0 << "%], "
+//               << std::setw(15) << selected_wgt[j][2]
+//              << " [" << std::setw(12) << (selected_wgt[j][2]/nevents_wgt)*100.0 << "%] " << std::endl;
+//   }
+//   std::cout << " *********************************************************** " << std::endl;
 
-  for( int i=0; i<numSelectors; i++ ){
-    for( int j=0; j<3; j++ ){
-      h_cutflow_expand->Fill(j+0.5,numSelectors-i-0.5,selected[i][j]);
-      h_cutflow_expand_wgt->Fill(j+0.5,numSelectors-i-0.5,selected_wgt[i][j]);
-    }
-  }
+//   for( int i=0; i<numSelectors; i++ ){
+//     for( int j=0; j<3; j++ ){
+//       h_cutflow_expand->Fill(j+0.5,numSelectors-i-0.5,selected[i][j]);
+//       h_cutflow_expand_wgt->Fill(j+0.5,numSelectors-i-0.5,selected_wgt[i][j]);
+//     }
+//   }
 
   std::cout << "How many events had jets close to leptons? " << nEventsWhereJetRemoved << endl;
 
