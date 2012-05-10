@@ -54,6 +54,13 @@
 #include "ProductArea/BNcollections/interface/BNtrigobj.h"
 #include "ProductArea/BNcollections/interface/BNprimaryvertex.h"
 
+// headers for python config processing
+
+#include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
+#include "FWCore/ParameterSet/interface/ProcessDesc.h"
+
+
+
 #include "AnglesUtil.h"
 
 #endif
@@ -106,10 +113,38 @@ int main ( int argc, char ** argv )
    gSystem->Load( "libFWCoreFWLite" );
    AutoLibraryLoader::enable();
 
+   //adding in python config parsing
+
+   if ( argc < 2 ) {
+        std::cout << "Usage : " << argv[0] << " [parameters.py]" << std::endl;
+        return 2;
+   }
+
+   //////////////////////////////////////////////////////////////////
+   //
+   // Get the python configuration
+   //
+   // Configuration will have
+   //   1. a process object that everyhting is attached to
+   //   2. various parameter sets, including input and output
+   //  
+   /////////////////////////////////////////////////////////////////////
+   
+   cout << "Unpacking configuation parameters." << endl;
+   PythonProcessDesc builder(argv[1],argc,argv);
+
+   edm::ParameterSet const& inputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("inputs");
+   edm::ParameterSet const& outputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("outputs");
+
+
+   std::vector<std::string> inputFileNames = inputs.getParameter< std::vector<std::string> >("fileNames");
+   std::string outputFileName = outputs.getParameter<std::string >("outputName");
+   
+
    int maxNentries = -1;
    //string sampleName = "doubleEle2012_week02_52Xonly";
    string sampleName = "ttH_m130";
-   int iJob =1;
+   //int iJob =1;
    string iLabel = "testTree";
 
   typedef BNeventCollection::const_iterator         EventIter;
@@ -191,41 +226,7 @@ int main ( int argc, char ** argv )
 
 
   // Load the files
-  vstring fileNames;
-
-  //fileNames.push_back("file:/store/user/slaunwhj/TTJets_TuneZ2_7TeV-madgraph-tauola/ttbar_BEAN_Fall11_atND_v1/bf3f7e6eadefdfce276392fc368ccaeb/pat_42x_fall11_withANDfilter_ttbar_366_1_sH5.root");
-
-
-
-  //====================== TTH samples   ==============================
-
-  string listFileName("lists/"+ sampleName + ".list");
-  ifstream listOfFiles(listFileName.c_str());
-  string iFileName;
-  int nLines = 0;
-
-  std::cout  << "  searching for input file in " << listFileName << "..." << std::endl;
-  
-  if (listOfFiles.is_open())
-    {
-      while ( listOfFiles.good() )
-        {
-          getline(listOfFiles, iFileName);
-
-          size_t foundIt = iFileName.find(".root");
-          
-          if (iFileName.find(".root") != string::npos){
-            
-            cout << "Line = " << nLines << ", Name = " <<iFileName << endl;
-            fileNames.push_back(iFileName);
-            
-          } else {
-            cout << "Line " << nLines << " doesn't have .root file in it " << endl;
-          }
-          nLines++;
-        }
-      listOfFiles.close();
-    }
+  vstring fileNames = inputFileNames;
 
   if (fileNames.size() < 1 ){
     cout << "You don't have any files in your list... this is is probably bad... exiting" << endl;
@@ -249,7 +250,7 @@ int main ( int argc, char ** argv )
   // Creates a ChainEvent, allowing files to be linked   
   fwlite::ChainEvent ev(fileNames);   
 
-  TFile histofile(histofilename.c_str(),"recreate");
+  TFile histofile(outputFileName.c_str(),"recreate");
 
   histofile.cd();
 
@@ -276,7 +277,7 @@ int main ( int argc, char ** argv )
   TH1D* h_mu_pt = new TH1D("h_mu_pt",";#mu p_{T}", NmuptBins, 0, muptmax );
   TH1D* h_mu_phi = new TH1D("h_mu_phi",";#mu #phi", 16, -3.2, 3.2 );
   TH1D* h_mu_eta = new TH1D("h_mu_eta",";#mu #eta", 25, -2.5, 2.5 );
-  TH1D* h_dR_mu_hlt = new TH1D("h_dR_mu_hlt",";#DeltaR(#mu,hlt #mu)", 120, 0., 6. );
+  //TH1D* h_dR_mu_hlt = new TH1D("h_dR_mu_hlt",";#DeltaR(#mu,hlt #mu)", 120, 0., 6. );
 
   TH1D* h_jet_pt = new TH1D("h_jet_pt",";jet p_{T}", NjetptBins, 0, jetptmax );
   TH1D* h_jet_phi = new TH1D("h_jet_phi",";jet #phi", 16, -3.2, 3.2 );
@@ -755,7 +756,7 @@ int main ( int argc, char ** argv )
 
       fwlite::Handle<BNtrigobjCollection> h_hltobj;
       h_hltobj.getByLabel(ev,"BNproducer","HLT");
-      BNtrigobjCollection const &hltobjs = *h_hltobj;
+      //BNtrigobjCollection const &hltobjs = *h_hltobj;
 
 
       // Some of the other collections in the tree that are not used here
@@ -810,12 +811,12 @@ int main ( int argc, char ** argv )
       EventIter event = events.begin();
 
       int sample = event->sample;
-      float weight = event->weight;
+      //float weight = event->weight;
 
       double numTruePV = event->numTruePV;
       int numGenPV = event->numGenPV;
 
-      int n0  = event->n0;
+      //int n0  = event->n0;
 
       float prescale = 1.;
 
@@ -850,7 +851,7 @@ int main ( int argc, char ** argv )
         bool debug_ = false;
         if (debug_) cout << "GENCUT: Sample is 2500" << endl;
    
-        int ttbarType_;
+        int ttbarType_ = -1;
 
 
         if( sampleName == "ttbar" ) ttbarType_ = 0;
