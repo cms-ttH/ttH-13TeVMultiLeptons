@@ -135,13 +135,14 @@ int main ( int argc, char ** argv )
 
    edm::ParameterSet const& inputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("inputs");
    edm::ParameterSet const& outputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("outputs");
-
+   edm::ParameterSet const& anaParams = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("dilAnalysis");
 
    std::vector<std::string> inputFileNames = inputs.getParameter< std::vector<std::string> >("fileNames");
    std::string outputFileName = outputs.getParameter<std::string >("outputName");
-   
+   //JES
+   int jes = anaParams.getParameter<int> ("jes");
 
-   int maxNentries = -1;
+   int maxNentries = inputs.getParameter<int> ("maxEvents");
    //string sampleName = "doubleEle2012_week02_52Xonly";
    string sampleName = "ttH_m130";
    //int iJob =1;
@@ -235,11 +236,11 @@ int main ( int argc, char ** argv )
 
   
   // Name of file containing histograms
-  std::stringstream outFileName;
+  //std::stringstream outFileName;
   //outFileName <<"batchBEAN/" << sampleName << "_" << iLabel << "/test_beans_v1_" << sampleName << "_" << iLabel << "_job_" << iJob << ".root";
-  outFileName << "checkCode_" << sampleName << ".root";
-  std::string histofilename = outFileName.str();
-  std::cout << "Writing out to file " << histofilename << endl;
+  //outFileName << "checkCode_" << sampleName << ".root";
+  //std::string histofilename = outFileName.str();
+  std::cout << "Writing out to file " << outputFileName << endl;
 
 
   // Print out your config
@@ -1392,10 +1393,7 @@ int main ( int argc, char ** argv )
       TLorentzVector jetV[100];
       std::list<float> jet_desc;      
 
-      //JES
-      int jes = 0 ;   // nominal
-      //      int jes = -1 ; // jes down
-      //      int jes = 1 ; // jes up
+
 
 
       for( int i=0; i<int(pfjets.size()); i++ ){
