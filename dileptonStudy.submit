@@ -27,10 +27,52 @@ NJobs = 2640
 arguments = $(List) $(Process) $(Label)
 output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
 error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
-queue $(NJobs)
+##queue $(NJobs)
 
 List = wjets
 NJobs = 2707
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+##queue $(NJobs)
+
+List = scaleup_ttbar
+NJobs = 2
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+##queue $(NJobs)
+
+List = scaleup_ttbar_bb
+NJobs = 2
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+##queue $(NJobs)
+
+List = scaleup_ttbar_cc
+NJobs = 2
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+##queue $(NJobs)
+
+List = scaledown_ttbar
+NJobs = 2
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+##queue $(NJobs)
+
+List = scaledown_ttbar_bb
+NJobs = 2
+arguments = $(List) $(Process) $(Label)
+output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
+error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
+##queue $(NJobs)
+
+List = scaledown_ttbar_cc
+NJobs = 2
 arguments = $(List) $(Process) $(Label)
 output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout
 error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr
