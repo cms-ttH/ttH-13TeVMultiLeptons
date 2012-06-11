@@ -52,7 +52,7 @@ void HistosFromTrees () {
   std::vector<string> OutputDirectories;
   std::vector<string> JetTagReqs;
   
-  std::string InputDirName = "../batchBEAN/";
+  std::string InputDirName = "treeFiles/";
 
 //   OutputDirectories.push_back("rootDiMuon/");
 //   OutputDirectories.push_back("rootDiEle/");
@@ -70,35 +70,90 @@ void HistosFromTrees () {
   OutputDirectories.push_back("rootMuEGAll/");
   
   std::string OutputDirectory = "holder";
+
+  //InputFileName format: InputDirName+InputFileName+".root"
+  
+  InputFileNames.push_back("singlet_s_JESDown_new");
+  InputFileNames.push_back("singlet_s_JESUp_new");
+  InputFileNames.push_back("singlet_s_nominal_new");
+  InputFileNames.push_back("singlet_tW_JESDown_new");
+  InputFileNames.push_back("singlet_tW_JESUp_new");
+  InputFileNames.push_back("singlet_tW_nominal_new");
+  InputFileNames.push_back("singlet_t_JESDown_new");
+  InputFileNames.push_back("singlet_t_JESUp_new");
+  InputFileNames.push_back("singlet_t_nominal_new");
+  InputFileNames.push_back("singletbar_s_JESDown_new");
+  InputFileNames.push_back("singletbar_s_JESUp_new");
+  InputFileNames.push_back("singletbar_s_nominal_new");
+  InputFileNames.push_back("singletbar_tW_JESDown_new");
+  InputFileNames.push_back("singletbar_tW_JESUp_new");
+  InputFileNames.push_back("singletbar_tW_nominal_new");
+  InputFileNames.push_back("singletbar_t_JESDown_new");
+  InputFileNames.push_back("singletbar_t_JESUp_new");
+  InputFileNames.push_back("singletbar_t_nominal_new");
+  InputFileNames.push_back("ttH120_JESDown_new");
+  InputFileNames.push_back("ttH120_JESUp_new");
+  InputFileNames.push_back("ttH120_nominal_new");
+  InputFileNames.push_back("ttbarW_JESDown_new");
+  InputFileNames.push_back("ttbarW_JESUp_new");
+  InputFileNames.push_back("ttbarW_nominal_new");
+  InputFileNames.push_back("ttbarZ_JESDown_new");
+  InputFileNames.push_back("ttbarZ_JESUp_new");
+  InputFileNames.push_back("ttbarZ_nominal_new");
+  InputFileNames.push_back("ttbar_JESDown_new");
+  InputFileNames.push_back("ttbar_JESUp_new");
+  InputFileNames.push_back("ttbar_nominal_new");
+  InputFileNames.push_back("ttbar_bb_JESDown_new");
+  InputFileNames.push_back("ttbar_bb_JESUp_new");
+  InputFileNames.push_back("ttbar_bb_nominal_new");
+  InputFileNames.push_back("ttbar_cc_JESDown_new");
+  InputFileNames.push_back("ttbar_cc_JESUp_new");
+  InputFileNames.push_back("ttbar_cc_nominal_new");
+  InputFileNames.push_back("wjets_JESDown_new");
+  InputFileNames.push_back("wjets_JESUp_new");
+  InputFileNames.push_back("wjets_nominal_new");
+  InputFileNames.push_back("ww_JESDown_new");
+  InputFileNames.push_back("ww_JESUp_new");
+  InputFileNames.push_back("ww_nominal_new");
+  InputFileNames.push_back("wz_JESDown_new");
+  InputFileNames.push_back("wz_JESUp_new");
+  InputFileNames.push_back("wz_nominal_new");
+  InputFileNames.push_back("zjets_JESDown_new");
+  InputFileNames.push_back("zjets_JESUp_new");
+  InputFileNames.push_back("zjets_nominal_new");
+  InputFileNames.push_back("zz_JESDown_new");
+  InputFileNames.push_back("zz_JESUp_new");
+  InputFileNames.push_back("zz_nominal_new");
   
   //InputFileName format: "../batchBEAN/"+InputFileName+"/test_beans_v1_"+InputFileName+"_ALL.root"
-  //InputFileNames.push_back("doubleMu2012_testTree_job_1_");
-  InputFileNames.push_back("DoubleMu_Run2011-v1_");
-  InputFileNames.push_back("DoubleElectron_Run2011-v1_");
-  InputFileNames.push_back("MuEG_Run2011-v1_");
-  //InputFileNames.push_back("doubleEle2012_week02_52Xonly_testTree");
   
-  InputFileNames.push_back("DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_");
-  InputFileNames.push_back("DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph_v1_PUTAG");
-  //InputFileNames.push_back("TTJets_TuneZ2_7TeV-madgraph-tauola_");
-  InputFileNames.push_back("WW_TuneZ2_7TeV_pythia6_tauola_");
-  InputFileNames.push_back("WZ_TuneZ2_7TeV_pythia6_tauola_");
-  InputFileNames.push_back("ZZ_TuneZ2_7TeV_pythia6_tauola_");
-  InputFileNames.push_back("T_TuneZ2_s-channel_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("Tbar_TuneZ2_s-channel_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("T_TuneZ2_t-channel_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("Tbar_TuneZ2_t-channel_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_PUTAG");
-  //  InputFileNames.push_back("TTH_HtoAll_M_120_7TeV_pythia6_");
-  InputFileNames.push_back("ttH_m120_PUTAG");
-  InputFileNames.push_back("tt");
-  InputFileNames.push_back("ttbb");
-  InputFileNames.push_back("ttcc");
-  InputFileNames.push_back("WJets");
-  InputFileNames.push_back("TTW_TuneZ2_7TeV-madgraph_PUTAG");
-  InputFileNames.push_back("TTZ_TuneZ2_7TeV-madgraph_PUTAG");
+//   //InputFileNames.push_back("doubleMu2012_testTree_job_1_");
+//   InputFileNames.push_back("DoubleMu_Run2011-v1_");
+//   InputFileNames.push_back("DoubleElectron_Run2011-v1_");
+//   InputFileNames.push_back("MuEG_Run2011-v1_");
+//   //InputFileNames.push_back("doubleEle2012_week02_52Xonly_testTree");
   
+//   InputFileNames.push_back("DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_");
+//   InputFileNames.push_back("DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph_v1_PUTAG");
+//   //InputFileNames.push_back("TTJets_TuneZ2_7TeV-madgraph-tauola_");
+//   InputFileNames.push_back("WW_TuneZ2_7TeV_pythia6_tauola_");
+//   InputFileNames.push_back("WZ_TuneZ2_7TeV_pythia6_tauola_");
+//   InputFileNames.push_back("ZZ_TuneZ2_7TeV_pythia6_tauola_");
+//   InputFileNames.push_back("T_TuneZ2_s-channel_7TeV-powheg-tauola_PUTAG");
+//   InputFileNames.push_back("Tbar_TuneZ2_s-channel_7TeV-powheg-tauola_PUTAG");
+//   InputFileNames.push_back("T_TuneZ2_t-channel_7TeV-powheg-tauola_PUTAG");
+//   InputFileNames.push_back("Tbar_TuneZ2_t-channel_7TeV-powheg-tauola_PUTAG");
+//   InputFileNames.push_back("T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_PUTAG");
+//   InputFileNames.push_back("Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_PUTAG");
+//   //  InputFileNames.push_back("TTH_HtoAll_M_120_7TeV_pythia6_");
+//   InputFileNames.push_back("ttH_m120_PUTAG");
+//   InputFileNames.push_back("tt");
+//   InputFileNames.push_back("ttbb");
+//   InputFileNames.push_back("ttcc");
+//   InputFileNames.push_back("WJets");
+//   InputFileNames.push_back("TTW_TuneZ2_7TeV-madgraph_PUTAG");
+//   InputFileNames.push_back("TTZ_TuneZ2_7TeV-madgraph_PUTAG");
+
 
   //  InputFileNames.push_back("Lannon_PUTAG");
 
@@ -129,10 +184,10 @@ void HistosFromTrees () {
   varList.push_back(avg_tagged_dijet_mass);
   //  varInfo *avg_untagged_dijet_mass = new varInfo("avg_untagged_dijet_mass", "avg_untagged_dijet_mass", "avg_untagged_dijet_mass", 1000, 0, 1000);
   //  varList.push_back(avg_untagged_dijet_mass);
-  varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 70, 80);
-  varList.push_back(CFMlpANN_e2je2t);
-  varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
-  varList.push_back(CFMlpANN_ge3t);
+  //varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 70, 80);
+  //varList.push_back(CFMlpANN_e2je2t);
+  //varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
+  //varList.push_back(CFMlpANN_ge3t);
   varInfo *closest_tagged_dijet_mass = new varInfo("closest_tagged_dijet_mass", "closest_tagged_dijet_mass", "closest_tagged_dijet_mass", 1000, 0, 1000);
   varList.push_back(closest_tagged_dijet_mass);
   //  varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, 0, pival);
@@ -197,12 +252,14 @@ void HistosFromTrees () {
   varList.push_back(numTightElectrons);
   varInfo *numTightMuons = new varInfo("numTightMuons", "numTightMuons", "numTightMuons", 10, 0, 10);
   varList.push_back(numTightMuons);
-  varInfo *prob1 = new varInfo("prob1", "prob1", "prob1", 1000, 0, 10);
-  varList.push_back(prob1);
-  varInfo *prob2 = new varInfo("prob2", "prob2", "prob2", 1000, 0, 10);
-  varList.push_back(prob2);
-  varInfo *probge3 = new varInfo("probge3", "probge3", "probge3", 1000, 0, 10);
-  varList.push_back(probge3);
+//   varInfo *prob1 = new varInfo("prob1", "prob1", "prob1", 1000, 0, 10);
+//   varList.push_back(prob1);
+//   varInfo *prob2 = new varInfo("prob2", "prob2", "prob2", 1000, 0, 10);
+//   varList.push_back(prob2);
+//   varInfo *probge3 = new varInfo("probge3", "probge3", "probge3", 1000, 0, 10);
+//   varList.push_back(probge3);
+  varInfo *prob = new varInfo("prob", "prob", "prob", 1000, 0, 10);
+  varList.push_back(prob);
   varInfo *pt_leplep = new varInfo("pt_leplep", "pt_leplep", "pt_leplep", 1000, 0, 1000);
   varList.push_back(pt_leplep);
   varInfo *pt_of_everything = new varInfo("pt_of_everything", "pt_of_everything", "pt_of_everything", 10000, 0, 10000);
@@ -278,29 +335,30 @@ void HistosFromTrees () {
       EffStr = "";
       TrigStr = "";
       WeightStr = "";
-      std::cout << "Set prob2/probge3 to 1" << std::endl;
+      std::cout << "Set prob and weightto 1" << std::endl;
     }
     else {
       WeightStr = "weight * ";
-      if (TagReq == "numTaggedJets == 0" || TagReq == "numTaggedJets >= 0") {
-        ProbStr = "prob * ";
-      }
-      else if (TagReq == "numTaggedJets == 1" || TagReq == "numTaggedJets >= 1") {
-        ProbStr = "prob1 * ";
-      }
-      else if (TagReq == "numTaggedJets == 2" || TagReq == "numTaggedJets >= 2") {
-        ProbStr = "prob2 * ";
-      }
-      else if (TagReq == "numTaggedJets == 3" || TagReq == "numTaggedJets >= 3") {
-        ProbStr = "probge3 * ";
-      }
-      else if (TagReq == "numTaggedJets == 4" || TagReq == "numTaggedJets >= 4") {
-        ProbStr == "probge4 * ";
-      }
-      else {
-        std::cout << "No options for ProbStr! continue ..." << std::endl;
-        continue;
-      }
+      ProbStr = "prob * ";
+//       if (TagReq == "numTaggedJets == 0" || TagReq == "numTaggedJets >= 0") {
+//         ProbStr = "prob * ";
+//       }
+//       else if (TagReq == "numTaggedJets == 1" || TagReq == "numTaggedJets >= 1") {
+//         ProbStr = "prob1 * ";
+//       }
+//       else if (TagReq == "numTaggedJets == 2" || TagReq == "numTaggedJets >= 2") {
+//         ProbStr = "prob2 * ";
+//       }
+//       else if (TagReq == "numTaggedJets == 3" || TagReq == "numTaggedJets >= 3") {
+//         ProbStr = "probge3 * ";
+//       }
+//       else if (TagReq == "numTaggedJets == 4" || TagReq == "numTaggedJets >= 4") {
+//         ProbStr == "probge4 * ";
+//       }
+//       else {
+//         std::cout << "No options for ProbStr! continue ..." << std::endl;
+//         continue;
+//       }
       
       if (OutputDirectory == "rootDiMuonAll/" || "rootDiMuon/" || OutputDirectory == "rootDiMuonLoose/" || OutputDirectory ==  "rootDiMuonZmask10/" || OutputDirectory == "rootDiMuonLooseZmask10/") {
         EffStr = "0.987 * 0.987 * ";
@@ -320,8 +378,9 @@ void HistosFromTrees () {
       }
     } 
     
-    TString InputFileName = InputDirName+InputFileLabel+"/test_beans_v1_"+InputFileLabel+"_ALL.root";
-
+    //TString InputFileName = InputDirName+InputFileLabel+"/test_beans_v1_"+InputFileLabel+"_ALL.root";
+    TString InputFileName = InputDirName+InputFileLabel+".root";
+    
     std::cout << "==== Processing File " << InputFileLabel << " ==== " << std::endl;
     TFile * DileptonFile = new TFile(InputFileName);
     TTree * DileptonSummaryTree = (TTree *) DileptonFile->Get("summaryTree");

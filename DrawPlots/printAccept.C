@@ -49,7 +49,7 @@ void printAccept () {
   //---------------------------------
   
   std::vector<string> InputFileNames;
-  std::string InputDirName = "../batchBEAN/";
+  std::string InputDirName = "treeFiles/";
 
   std::vector<string> Outputs;
   std::vector<string> JetTagReqs;
@@ -66,29 +66,59 @@ void printAccept () {
   Outputs.push_back("MuEGALL");
   
   //InputFileName format: "../batchBEAN/"+InputFileName+"/test_beans_v1_"+InputFileName+"_ALL.root"
-  InputFileNames.push_back("DoubleMu_Run2011-v1_");
-  InputFileNames.push_back("DoubleElectron_Run2011-v1_");
-  InputFileNames.push_back("MuEG_Run2011-v1_");
 
-  InputFileNames.push_back("TTJets_TuneZ2_7TeV-madgraph-tauola_");
-  InputFileNames.push_back("tt");
-  InputFileNames.push_back("ttbb");
-  InputFileNames.push_back("ttcc");
-  InputFileNames.push_back("DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph_v1_PUTAG");
-  InputFileNames.push_back("DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_");
-  InputFileNames.push_back("WW_TuneZ2_7TeV_pythia6_tauola_");
-  InputFileNames.push_back("WZ_TuneZ2_7TeV_pythia6_tauola_");
-  InputFileNames.push_back("ZZ_TuneZ2_7TeV_pythia6_tauola_");
-  InputFileNames.push_back("T_TuneZ2_s-channel_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("T_TuneZ2_t-channel_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("Tbar_TuneZ2_s-channel_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("Tbar_TuneZ2_t-channel_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_PUTAG");
-  InputFileNames.push_back("TTW_TuneZ2_7TeV-madgraph_PUTAG");
-  InputFileNames.push_back("TTZ_TuneZ2_7TeV-madgraph_PUTAG");
-  InputFileNames.push_back("WJets");
-  InputFileNames.push_back("ttH_m120_PUTAG");
+  InputFileNames.push_back("singlet_s_JESDown_new");
+  InputFileNames.push_back("singlet_s_JESUp_new");
+  InputFileNames.push_back("singlet_s_nominal_new");
+  InputFileNames.push_back("singlet_tW_JESDown_new");
+  InputFileNames.push_back("singlet_tW_JESUp_new");
+  InputFileNames.push_back("singlet_tW_nominal_new");
+  InputFileNames.push_back("singlet_t_JESDown_new");
+  InputFileNames.push_back("singlet_t_JESUp_new");
+  InputFileNames.push_back("singlet_t_nominal_new");
+  InputFileNames.push_back("singletbar_s_JESDown_new");
+  InputFileNames.push_back("singletbar_s_JESUp_new");
+  InputFileNames.push_back("singletbar_s_nominal_new");
+  InputFileNames.push_back("singletbar_tW_JESDown_new");
+  InputFileNames.push_back("singletbar_tW_JESUp_new");
+  InputFileNames.push_back("singletbar_tW_nominal_new");
+  InputFileNames.push_back("singletbar_t_JESDown_new");
+  InputFileNames.push_back("singletbar_t_JESUp_new");
+  InputFileNames.push_back("singletbar_t_nominal_new");
+  InputFileNames.push_back("ttH120_JESDown_new");
+  InputFileNames.push_back("ttH120_JESUp_new");
+  InputFileNames.push_back("ttH120_nominal_new");
+  InputFileNames.push_back("ttbarW_JESDown_new");
+  InputFileNames.push_back("ttbarW_JESUp_new");
+  InputFileNames.push_back("ttbarW_nominal_new");
+  InputFileNames.push_back("ttbarZ_JESDown_new");
+  InputFileNames.push_back("ttbarZ_JESUp_new");
+  InputFileNames.push_back("ttbarZ_nominal_new");
+  InputFileNames.push_back("ttbar_JESDown_new");
+  InputFileNames.push_back("ttbar_JESUp_new");
+  InputFileNames.push_back("ttbar_nominal_new");
+  InputFileNames.push_back("ttbar_bb_JESDown_new");
+  InputFileNames.push_back("ttbar_bb_JESUp_new");
+  InputFileNames.push_back("ttbar_bb_nominal_new");
+  InputFileNames.push_back("ttbar_cc_JESDown_new");
+  InputFileNames.push_back("ttbar_cc_JESUp_new");
+  InputFileNames.push_back("ttbar_cc_nominal_new");
+  InputFileNames.push_back("wjets_JESDown_new");
+  InputFileNames.push_back("wjets_JESUp_new");
+  InputFileNames.push_back("wjets_nominal_new");
+  InputFileNames.push_back("ww_JESDown_new");
+  InputFileNames.push_back("ww_JESUp_new");
+  InputFileNames.push_back("ww_nominal_new");
+  InputFileNames.push_back("wz_JESDown_new");
+  InputFileNames.push_back("wz_JESUp_new");
+  InputFileNames.push_back("wz_nominal_new");
+  InputFileNames.push_back("zjets_JESDown_new");
+  InputFileNames.push_back("zjets_JESUp_new");
+  InputFileNames.push_back("zjets_nominal_new");
+  InputFileNames.push_back("zz_JESDown_new");
+  InputFileNames.push_back("zz_JESUp_new");
+  InputFileNames.push_back("zz_nominal_new");
+ 
 
   std::vector<varInfo*> varList;
   double pival = 3.14159;
@@ -102,6 +132,8 @@ void printAccept () {
   JetTagReqs.push_back("eq2jeq2t");
   JetTagReqs.push_back("ge3jeq2t");
   JetTagReqs.push_back("ge3t");
+//  JetTagReqs.push_back("eq4t");
+//  JetTagReqs.push_back("ge4t");
   
   std::cout << " Jet Sel , Tag Sel , Lep Sel , Dataset , nGen , xSec , Lumi , nPass " << std::endl;
 
@@ -134,6 +166,14 @@ void printAccept () {
         JetReq = "numJets >= 3";
         TagReq = "numTaggedJets >= 3";
       }
+      else if (JetTagReq == "eq4t") {
+        JetReq = "numJets >= 4";
+        TagReq = "numTaggedJets == 4";
+      }
+      else if (JetTagReq == "ge4t") {
+        JetReq = "numJets >= 4";
+        TagReq = "numTaggedJets >= 4";
+      } 
 
       if (JetReq == "holder" || TagReq == "holder") {
         std::cout << "JetReq or TagReq == holder" << std::endl;
@@ -150,6 +190,9 @@ void printAccept () {
   for( unsigned int i = 0; i < nInputFiles; i++) {
 
     std::string InputFileLabel = InputFileNames[i];
+    if (std::string::npos != InputFileLabel.find("JES")) {
+          continue;
+        }
 
     if (std::string::npos != InputFileLabel.find("Run20")) {
       ProbStr = "";
@@ -160,25 +203,8 @@ void printAccept () {
     }
     else {
       WeightStr = "weight * ";
-      if (TagReq == "numTaggedJets == 0" || TagReq == "numTaggedJets >= 0") {
-        ProbStr = "prob * ";
-      }
-      else if (TagReq == "numTaggedJets == 1" || TagReq == "numTaggedJets >= 1") {
-        ProbStr = "prob1 * ";
-      }
-      else if (TagReq == "numTaggedJets == 2" || TagReq == "numTaggedJets >= 2") {
-        ProbStr = "prob2 * ";
-      }
-      else if (TagReq == "numTaggedJets == 3" || TagReq == "numTaggedJets >= 3") {
-        ProbStr = "probge3 * ";
-      }
-      else if (TagReq == "numTaggedJets == 4" || TagReq == "numTaggedJets >= 4") {
-        ProbStr == "probge4 * ";
-      }
-      else {
-        std::cout << "No options for ProbStr! continue ..." << std::endl;
-        continue;
-      } 
+      ProbStr = "prob * ";
+
       if (OutputDirectory == "Mu" || OutputDirectory == "MuLoose" || OutputDirectory ==  "MuZmask10" || OutputDirectory == "MuALL") {
         EffStr = "0.987 * 0.987 * ";
         TrigStr = "0.9885 * 0.9885 * ";
@@ -197,7 +223,7 @@ void printAccept () {
       } 
     } 
     
-    TString InputFileName = InputDirName+InputFileLabel+"/test_beans_v1_"+InputFileLabel+"_ALL.root";
+    TString InputFileName = InputDirName+InputFileLabel+".root";
 
     //std::cout << "==== Processing File " << InputFileLabel << " ==== " << std::endl;
     TFile * DileptonFile = new TFile(InputFileName);
@@ -288,73 +314,67 @@ void printAccept () {
 
       
       
-      if (InputFileLabel == "DoubleMu_Run2011-v1_") {
+      if (std::string::npos != InputFileLabel.find("DoubleMu_Run2011-v1_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , DoubleMu  , 1 , 0.0002007226 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "DoubleElectron_Run2011-v1_") {
+      else if (std::string::npos != InputFileLabel.find("DoubleElectron_Run2011-v1_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , DoubleEle  , 1 , 0.0002007226 , 4982.0 , " << Integral  << std::endl;
       }
-      else if (InputFileLabel == "MuEG_Run2011-v1_") {
+      else if (std::string::npos != InputFileLabel.find("MuEG_Run2011-v1_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , MuEG  , 1 , 0.0002007226 , 4982.0 , " << Integral  << std::endl;
       }
-      else if (InputFileLabel == "TTJets_TuneZ2_7TeV-madgraph-tauola_") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttbar  , 52135272 , 157.7 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph_v1_PUTAG") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ZJets_M10-50  , 31480628 , 12782.6 , 4982.0 , " << Integral << std::endl;
-      }        
-      else if (InputFileLabel == "DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola_") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ZJets  , 35891264 , 3048.0 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "WW_TuneZ2_7TeV_pythia6_tauola_") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , WW  , 4225916 , 43.0 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "WZ_TuneZ2_7TeV_pythia6_tauola_") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , WZ  , 4265241 , 18.0 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "ZZ_TuneZ2_7TeV_pythia6_tauola_") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ZZ  , 4191045 , 5.9 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "ttH_m120_PUTAG") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttH_120  , 998833 , 0.098 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "TTW_TuneZ2_7TeV-madgraph_PUTAG") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttW  , 1085456 , 0.163 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "TTZ_TuneZ2_7TeV-madgraph_PUTAG") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttZ  , 1458573  , 0.136 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "ttbar_PUTAG") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttbar_PUTAG , 52135272 , 157.7 ,   , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "tt") {
-        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , tt , 52135272 , 157.7 , 4982.0 , " << Integral << std::endl;
-      }
-      else if (InputFileLabel == "ttbb") {
+      else if (std::string::npos != InputFileLabel.find("ttbar_bb_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttbb , 52135272 , 157.7 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "ttcc") {
+      else if (std::string::npos != InputFileLabel.find("ttbar_cc_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttcc , 52135272 , 157.7 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "WJets") {
+      else if (std::string::npos != InputFileLabel.find("ttbar_")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttbar  , 52135272 , 157.7 , 4982.0 , " << Integral << std::endl;
+      }
+      else if (std::string::npos != InputFileLabel.find("DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph_v1_PUTAG")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ZJets_M10-50  , 31480628 , 12782.6 , 4982.0 , " << Integral << std::endl;
+      }        
+      else if (std::string::npos != InputFileLabel.find("zjets_")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ZJets  , 35891264 , 3048.0 , 4982.0 , " << Integral << std::endl;
+      }
+      else if (std::string::npos != InputFileLabel.find("ww_")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , WW  , 4225916 , 43.0 , 4982.0 , " << Integral << std::endl;
+      }
+      else if (std::string::npos != InputFileLabel.find("wz_")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , WZ  , 4265241 , 18.0 , 4982.0 , " << Integral << std::endl;
+      }
+      else if (std::string::npos != InputFileLabel.find("zz_")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ZZ  , 4191045 , 5.9 , 4982.0 , " << Integral << std::endl;
+      }
+      else if (std::string::npos != InputFileLabel.find("ttH120_")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttH_120  , 998833 , 0.098 , 4982.0 , " << Integral << std::endl;
+      }
+      else if (std::string::npos != InputFileLabel.find("ttbarW")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttW  , 1085456 , 0.163 , 4982.0 , " << Integral << std::endl;
+      }
+      else if (std::string::npos != InputFileLabel.find("ttbarZ")) {
+        std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , ttZ  , 1458573  , 0.136 , 4982.0 , " << Integral << std::endl;
+      }
+      else if (std::string::npos != InputFileLabel.find("wjets_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , WJets , 81011945 , 31314 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "T_TuneZ2_s-channel_7TeV-powheg-tauola_PUTAG") {
+      else if (std::string::npos != InputFileLabel.find("singlet_s_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , t_s , 259595 , 3.17 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "T_TuneZ2_t-channel_7TeV-powheg-tauola_PUTAG") {
+      else if (std::string::npos != InputFileLabel.find("singlet_t_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , t_t , 3891841 , 41.92 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_PUTAG") {
+      else if (std::string::npos != InputFileLabel.find("singlet_tW_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , t_tW , 812600 , 7.87 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "Tbar_TuneZ2_s-channel_7TeV-powheg-tauola_PUTAG") {
+      else if (std::string::npos != InputFileLabel.find("singletbar_s_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , tbar_s , 137662 , 1.44 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "Tbar_TuneZ2_t-channel_7TeV-powheg-tauola_PUTAG") {
+      else if (std::string::npos != InputFileLabel.find("singletbar_t_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , tbar_t , 1939703 , 22.65 , 4982.0 , " << Integral << std::endl;
       }
-      else if (InputFileLabel == "Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_PUTAG") {
+      else if (std::string::npos != InputFileLabel.find("singletbar_tW_")) {
         std::cout << JetReq << " , " << TagReq << " , " << OutputDirectory << " , tbar_tW , 808200 , 7.87 , 4982.0 , " << Integral << std::endl;
       }
 

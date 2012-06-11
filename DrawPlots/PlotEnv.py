@@ -34,6 +34,14 @@ class PlotInfo:
                 self.fileName = pval
                 self.rootFile = TFile(self.fileName)
 
+            if (pname == 'file_JESUp'):
+                self.fileName_JESUp = pval
+                self.rootFile_JESUp = TFile(self.fileName_JESUp)
+				
+            if (pname == 'file_JESDown'):
+                self.fileName_JESDown = pval
+                self.rootFile_JESDown = TFile(self.fileName_JESDown)
+
             if (pname == 'xsec'):                
                 self.xsec = pval
 
@@ -71,13 +79,21 @@ class PlotInfo:
 	# The PlotInfo will know how to normalize the histo
 	# according to the config
 
-    def getHist(self, histName, lumi, lepselection):
+    def getHist(self, histName, lumi, lepselection, JES):
         # add a namecycle to histName
         namePlusCycle = "%s;1" % (histName)
         # Get the histogram
-        targetHist = self.rootFile.Get(namePlusCycle)
+        if (JES == "nominal"):
+            targetHist = self.rootFile.Get(namePlusCycle)
+        elif (JES == "JESUp"):
+            targetHist = self.rootFile_JESUp.Get(namePlusCycle)
+        elif (JES == "JESDown"):
+            targetHist = self.rootFile_JESDown.Get(namePlusCycle)
+        else:
+            print "No valid JES specified"
+            pass
 		# Is it a null pointer?
-        if (targetHist == None) :
+        if (targetHist == None):
             print "Oops! Error looking for histo %s, exiting..." % (histName)
             sys.exit()
 
@@ -105,8 +121,8 @@ class PlotInfo:
 
             xsec_frac_err = self.xsec_err/self.xsec
 			
-            sys_frac_err = math.sqrt(math.pow(xsec_frac_err,2)+math.pow(self.sys_array[0]/100.0,2)+math.pow(self.sys_array[1]/100.0,2)+math.pow(self.sys_array[2]/100.0,2)+math.pow(self.sys_array[3]/100.0,2))
-                                     
+            sys_frac_err = math.sqrt(math.pow(xsec_frac_err,2)+math.pow(self.sys_array[0]/100.0,2)+math.pow(self.sys_array[1]/100.0,2)+math.pow(self.sys_array[2]/100.0,2))
+
             return targetHist, scaleRatio, sys_frac_err
 
         else:
@@ -140,8 +156,8 @@ class PlotInfo:
 
             xsec_frac_err = self.xsec_err/self.xsec
             # add up systematic errors
-            sys_frac_err = math.sqrt(math.pow(xsec_frac_err,2)+math.pow(self.sys_array[0]/100.0,2)+math.pow(self.sys_array[1]/100.0,2)+math.pow(self.sys_array[2]/100.0,2)+math.pow(self.sys_array[3]/100.0,2))
-                                     
+            sys_frac_err = math.sqrt(math.pow(xsec_frac_err,2)+math.pow(self.sys_array[0]/100.0,2)+math.pow(self.sys_array[1]/100.0,2)+math.pow(self.sys_array[2]/100.0,2))
+
             return targetHist, scaleRatio, sys_frac_err
         
     # end of getHist
@@ -208,12 +224,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
     for iplot in stackList:	
 
-       sys_frac_err = iplot.getHist(dist,lumi, lepselection)[2]
-       scaleRatio = iplot.getHist(dist,lumi, lepselection)[1]
-       origHist = iplot.getHist(dist,lumi, lepselection)[0]
+       sys_frac_err = iplot.getHist(dist,lumi, lepselection, "nominal")[2]
+       scaleRatio = iplot.getHist(dist,lumi, lepselection, "nominal")[1]
+       origHist_JESDown = iplot.getHist(dist,lumi, lepselection, "nominal")[0]
+       origHist_JESUp = iplot.getHist(dist,lumi, lepselection, "JESUp")[0]
+       origHist = iplot.getHist(dist,lumi, lepselection, "JESDown")[0]
 
        # This rebinning also adds in overflow
-       resultHist = rebinHistManual (origHist, nBins, xMin, xMax, scaleRatio, sys_frac_err)
+       resultHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, scaleRatio, sys_frac_err)
           
        # Save data for later
        Data2011Sum = 0
@@ -313,7 +331,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     ##Begin comment out for 2012
     downLin.cd()
 
-    ratioHist = rebinHistManual (origHist, nBins, xMin, xMax, 1.0, 0.0)
+    ratioHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, 1.0, 0.0)
     ratioHist.SetMinimum(0)
     ratioHist.SetMaximum(2)
     ratioHist.SetTitle(";;Data/MC")
@@ -322,7 +340,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     ratioHist.GetYaxis().CenterTitle()
     ratioHist.GetYaxis().SetLabelSize(0.1)
 
-    ratioErrHist = rebinHistManual (origHist, nBins, xMin, xMax, 1.0, 0.0)
+    ratioErrHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, 1.0, 0.0)
     ratioErrHist.SetMarkerColor(kGreen)
     ratioErrHist.SetFillColor(kGreen)
     ##ratioHistErr = rebinHistManual (origHist, nBins, xMin, xMax, 1.0)
@@ -375,7 +393,7 @@ def moveExtraIntoHist (hist):
 	
 	return hist
 
-def rebinHistManual (origHist, nBins, xMin, xMax, scaleRatio, sys_frac_err):
+def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, scaleRatio, sys_frac_err):
     
     nBinsOrig = int(origHist.GetNbinsX())
     xMinOrig = origHist.GetXaxis().GetXmin()
@@ -459,9 +477,10 @@ def rebinHistManual (origHist, nBins, xMin, xMax, scaleRatio, sys_frac_err):
     # first loop
     for origBin in range(origStart,origEnd):
         binCont += origHist.GetBinContent(origBin)
+        binJES_err = math.fabs(origHist_JESUp.GetBinContent(origBin) - origHist_JESDown.GetBinContent(origBin)) 
         binSumW2 += (origHist.GetBinError(origBin)**2)
         hist.SetBinContent(1,binCont)
-        hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)))
+        hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+math.pow(binJES_err,2)))
     # end loop over origBin
 
     # Do the bulk of the distribution
@@ -470,13 +489,14 @@ def rebinHistManual (origHist, nBins, xMin, xMax, scaleRatio, sys_frac_err):
         origEnd = origStart + int(binGroup)
         
         binCont = hist.GetBinContent(newBin)
+        binJES_err = math.fabs(origHist_JESUp.GetBinContent(newBin) - origHist_JESDown.GetBinContent(newBin))
         binSumW2 = hist.GetBinError(newBin)**2
         for origBin in range(origStart,origEnd):
             binCont += origHist.GetBinContent(origBin)
             binSumW2 += (origHist.GetBinError(origBin)**2)
         # end loop over orig bin
         hist.SetBinContent(newBin,binCont)
-        hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)))
+        hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+math.pow(binJES_err,2)))
         ##if (newBin == 2):
             ##print math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2))
         
@@ -486,6 +506,7 @@ def rebinHistManual (origHist, nBins, xMin, xMax, scaleRatio, sys_frac_err):
     origStart = origEnd
     origEnd = 2+nBinsOrig #Include the overflow in the original
     binCont = hist.GetBinContent(nBins)
+    binJES_err = math.fabs(origHist_JESUp.GetBinContent(nBins) - origHist_JESDown.GetBinContent(nBins))
     binSumW2 = hist.GetBinError(nBins)**2
     for origBin in range(origStart,origEnd):
         binCont += origHist.GetBinContent(origBin)
@@ -493,7 +514,7 @@ def rebinHistManual (origHist, nBins, xMin, xMax, scaleRatio, sys_frac_err):
     # end loop over origBin
 
     hist.SetBinContent(nBins,binCont)
-    hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)))
+    hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+math.pow(binJES_err,2)))
     
     hist.SetEntries(totalEntries)
                  
