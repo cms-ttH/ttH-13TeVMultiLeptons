@@ -38,11 +38,11 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
         directoryName = "pdf/"+lepselection+"_"+jetselection
     elif dirStr.startswith("rootDiEle"):
         #dataStr= dirStr+'data_DiEle'+rootStr
-        dataStr = dirStr+'DoubleElectron_Run2011-v1_'+rootStr
+        dataStr = dirStr+'DoubleElectron_Run2011-v1_'+'_'+jetselection+'_.root'
         directoryName = "pdf/"+lepselection+"_"+jetselection
     elif dirStr.startswith("rootMuEG"):
         #dataStr= dirStr+'data_MuEG'+rootStr
-        dataStr = dirStr+'MuEG_Run2011-v1_'+rootStr
+        dataStr = dirStr+'MuEG_Run2011-v1_'+'_'+jetselection+'_.root'
         directoryName = "pdf/"+lepselection+"_"+jetselection
     else:
         dataStr = dirStr+'data_ALL'+rootStr

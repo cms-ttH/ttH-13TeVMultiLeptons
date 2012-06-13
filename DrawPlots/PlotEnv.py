@@ -183,7 +183,7 @@ class PlotGroup :
 #
 ########################################
 
-def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection) :
+def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection, output) :
 
     stackList = myPlotGroup.plotList
     lumi = myPlotGroup.lumi
@@ -272,6 +272,16 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
                    legForStack.AddEntry(iHist, "ttW/ttZ ("+str(round(ttBosonSum,1))+")", "f")
            else:
                legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
+           if (iplot.name == "tt"):
+               ttSum = iHist.Integral()
+           if (iplot.name == "ttbb"):
+               ttbbSum = iHist.Integral()
+           if (iplot.name == "ttcc"):
+               ttccSum = iHist.Integral()
+           if (iplot.name == "WJets"):
+               WJetsSum = iHist.Integral()
+           if (iplot.name == "ttH_120"):
+               ttHSum = iHist.Integral()
 
     legForStack.AddEntry(myData2011, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
 
@@ -290,6 +300,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     MCErrHist.SetLineColor(0)
     MCErrHist.SetFillStyle(3354)
     MCErrHist.SetFillColor(1)
+    TotalMCErr = MCErrHist.GetBinError(1)
 
 
     ##Comment for 2012 data
@@ -309,6 +320,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     ##Begin comment out for 2012
     upLin = TPad("upLin", "up",0.005, 0.310, 0.995, 0.995);
     downLin =  TPad ("downLin", "down", 0.005, 0.005, 0.995, 0.3);
+		
     upLin.Draw()
     downLin.Draw()
     upLin.cd()
@@ -378,7 +390,13 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
     pdfName = "%s/%s_%s.pdf" % (directoryName, dist, groupName)
     pngName = "%s/%s_%s.png" % (directoryName, dist, groupName)
-    myCanvasLin.SaveAs(pngName)
+
+    if output == "draw":
+        myCanvasLin.SaveAs(pngName)
+    elif output == "print":
+        return [ttSum,ttbbSum,ttccSum,ttBosonSum,SingleTopSum,ZJetsSum,WJetsSum,DiBosonSum,ttHSum,100*ttHSum*998833/(4982*0.098*105138),TotalMCsum,TotalMCErr,Data2011Sum]
+    else:
+        print "No output!"
 
 # done with stack plot drawing
 
