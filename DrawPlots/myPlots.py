@@ -27,27 +27,27 @@ from ROOT import *
 from PlotEnv import *
 
 def getMyPlotsAndrewNorm (lepselection, jetselection) :
-    dirStr = "root"+lepselection+"/"
-    #dirStr = "../../BEAN/root"+lepselection+"/"
-    rootStr = "_new_"+jetselection+"_.root"
+
+    dirStr = lepselection+"/"
+    #dirStr = "root"+lepselection+"/"
+    rootStr = "_" + jetselection + "_" + lepselection +".root"
 
     defaultLumi = 4982.0
-    if dirStr.startswith("rootDiMuon"):
-        #dataStr = dirStr+'data_DiMuon'+rootStr
-        dataStr = dirStr+'DoubleMu_Run2011-v1_'+'_'+jetselection+'_.root'
-        directoryName = "pdf/"+lepselection+"_"+jetselection
-    elif dirStr.startswith("rootDiEle"):
-        #dataStr= dirStr+'data_DiEle'+rootStr
-        dataStr = dirStr+'DoubleElectron_Run2011-v1_'+'_'+jetselection+'_.root'
-        directoryName = "pdf/"+lepselection+"_"+jetselection
-    elif dirStr.startswith("rootMuEG"):
-        #dataStr= dirStr+'data_MuEG'+rootStr
-        dataStr = dirStr+'MuEG_Run2011-v1_'+'_'+jetselection+'_.root'
-        directoryName = "pdf/"+lepselection+"_"+jetselection
-    else:
-        dataStr = dirStr+'data_ALL'+rootStr
-        directoryName = "pdf/"+lepselection+"_"+jetselection
+    if dirStr.startswith("TwoMuon"):
+        dataStr = dirStr+'data_DiMuon'+'_' + jetselection + "_TwoMuon.root"
 
+    elif dirStr.startswith("TwoEle"):
+        dataStr = dirStr+'data_DiEle'+'_' + jetselection + "_TwoEle.root"
+
+    elif dirStr.startswith("MuonEle"):
+        dataStr = dirStr+'data_MuEG'+'_' + jetselection + "_MuonEle.root"
+
+    else:
+        dataStr = dirStr+'data_All'+rootStr
+
+  
+    directoryName = "pdf/"+lepselection+"_"+jetselection
+    
     groupName = lepselection+"_"+jetselection
 
     sys_arrays = {}
@@ -110,9 +110,9 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'tt',
-         'file': dirStr+'ttbar'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'ttbar'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'ttbar'+'_JESUp'+rootStr,
+         'file': dirStr+'ttbar' +rootStr,
+         'file_JESUp': dirStr+'ttbar'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'ttbar'+'_JESDown'+rootStr,
          'xsec': 0.1577,
          'xsec_err': 0.023,
          'sys_array': sys_arrays['tt'],
@@ -126,10 +126,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ttcc',
-         'file': dirStr+'ttbar_cc'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'ttbar_cc'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'ttbar_cc'+'_JESUp'+rootStr,
-		 'xsec': 0.1577,
+         'file': dirStr+'ttbarPlusCCbar' +rootStr,
+         'file_JESUp': dirStr+'ttbarPlusCCbar'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'ttbarPlusCCbar'+'_JESDown'+rootStr,
+         'xsec': 0.1577,
          'xsec_err': 0.3*0.1577,
          'sys_array': sys_arrays['ttcc'],
          'ngen': 52135272,
@@ -142,10 +142,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ttbb',
-         'file': dirStr+'ttbar_bb'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'ttbar_bb'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'ttbar_bb'+'_JESUp'+rootStr,
-		 'xsec': 0.1577,
+         'file': dirStr+'ttbarPlusBBbar' +rootStr,
+         'file_JESUp': dirStr+'ttbarPlusBBbar'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'ttbarPlusBBbar'+'_JESDown'+rootStr,
+         'xsec': 0.1577,
          'xsec_err': 0.3*0.1577,
          'sys_array': sys_arrays['ttbb'],
          'ngen': 52135272,
@@ -158,10 +158,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 't_s',
-         'file': dirStr+'singlet_s'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'singlet_s'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'singlet_s'+'_JESUp'+rootStr,
-		 'xsec': 0.00317,
+         'file': dirStr+'singlet_s' +rootStr,
+         'file_JESUp': dirStr+'singlet_s'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'singlet_s'+'_JESDown'+rootStr,
+         'xsec': 0.00317,
          'xsec_err': 0.00006*0.00317/(0.00317+0.00144),
          'sys_array': sys_arrays['t'],
          'ngen': 259595,
@@ -174,10 +174,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'tbar_s',
-         'file': dirStr+'singletbar_s'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'singletbar_s'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'singletbar_s'+'_JESUp'+rootStr,
-		 'xsec': 0.00144,
+         'file': dirStr+'singletbar_s' +rootStr,
+         'file_JESUp': dirStr+'singletbar_s'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'singletbar_s'+'_JESDown'+rootStr,
+         'xsec': 0.00144,
          'xsec_err': 0.00006*0.00144/(0.00317+0.00144),
          'sys_array': sys_arrays['t'],
          'ngen': 137662,
@@ -190,10 +190,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 't_t',
-         'file': dirStr+'singlet_t'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'singlet_t'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'singlet_t'+'_JESUp'+rootStr,
-		 'xsec': 0.04192,
+         'file': dirStr+'singlet_t' +rootStr,
+         'file_JESUp': dirStr+'singlet_t'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'singlet_t'+'_JESDown'+rootStr,
+         'xsec': 0.04192,
          'xsec_err': 0.0032*0.04192/(0.04192+0.02265),
          'sys_array': sys_arrays['t'],
          'ngen': 3891841 ,
@@ -206,10 +206,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'tbar_t',
-         'file': dirStr+'singletbar_t'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'singletbar_t'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'singletbar_t'+'_JESUp'+rootStr,
-		 'xsec': 0.02265,
+         'file': dirStr+'singletbar_t' +rootStr,
+         'file_JESUp': dirStr+'singletbar_t'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'singletbar_t'+'_JESDown'+rootStr,
+         'xsec': 0.02265,
          'xsec_err': 0.0032*0.02265/(0.04192+0.02265),
          'sys_array': sys_arrays['t'],
          'ngen': 1939703,
@@ -222,10 +222,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 't_tW',
-         'file': dirStr+'singlet_tW'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'singlet_tW'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'singlet_tW'+'_JESUp'+rootStr,
-		 'xsec': 0.00787,
+         'file': dirStr+'singlet_tW' +rootStr,
+         'file_JESUp': dirStr+'singlet_tW'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'singlet_tW'+'_JESDown'+rootStr,
+         'xsec': 0.00787,
          'xsec_err': 0.0008*0.00787/0.00106,
          'sys_array': sys_arrays['t'],
          'ngen': 812600,
@@ -238,10 +238,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'tbar_tW',
-         'file': dirStr+'singletbar_tW'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'singletbar_tW'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'singletbar_tW'+'_JESUp'+rootStr,
-		 'xsec': 0.00787,
+         'file': dirStr+'singletbar_tW' +rootStr,
+         'file_JESUp': dirStr+'singletbar_tW'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'singletbar_tW'+'_JESDown'+rootStr,
+         'xsec': 0.00787,
          'xsec_err': 0.0008*0.00787/0.00106,
          'sys_array': sys_arrays['t'],
          'ngen': 808200,
@@ -254,10 +254,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ttW',
-         'file': dirStr+'ttbarW'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'ttbarW'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'ttbarW'+'_JESUp'+rootStr,
-		 'xsec': 0.000163,
+         'file': dirStr+'ttbarW' +rootStr,
+         'file_JESUp': dirStr+'ttbarW'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'ttbarW'+'_JESDown'+rootStr,
+         'xsec': 0.000163,
          'xsec_err': 0.2*0.000163,
          'sys_array': sys_arrays['ttV'],
          'ngen': 1085456,
@@ -269,10 +269,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ttZ',
-         'file': dirStr+'ttbarZ'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'ttbarZ'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'ttbarZ'+'_JESUp'+rootStr,
-		 'xsec': 0.000136,
+         'file': dirStr+'ttbarZ' +rootStr,
+         'file_JESUp': dirStr+'ttbarZ'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'ttbarZ'+'_JESDown'+rootStr,
+         'xsec': 0.000136,
          'xsec_err': 0.2*0.000136,
          'sys_array': sys_arrays['ttV'],
          'ngen': 1458573,
@@ -285,14 +285,15 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'WW',
-         'file': dirStr+'ww'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'ww'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'ww'+'_JESUp'+rootStr,
-		 'xsec': 0.043,
+         'file': dirStr+'WW' +rootStr,
+         'file_JESUp': dirStr+'WW'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'WW'+'_JESDown'+rootStr,
+         'xsec': 0.043,
          'xsec_err': 0.0015,
          'sys_array': sys_arrays['diboson'],
          'ngen': 4225916,
-         'fillColor': ROOT.kCyan,
+#         'fillColor': ROOT.kCyan,
+         'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,}
         )
@@ -301,14 +302,15 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'WZ',
-         'file': dirStr+'wz'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'wz'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'wz'+'_JESUp'+rootStr,
-		 'xsec': 0.0182,
+         'file': dirStr+'WZ' +rootStr,
+         'file_JESUp': dirStr+'WZ'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'WZ'+'_JESDown'+rootStr,
+         'xsec': 0.0182,
          'xsec_err': 0.0007,
          'sys_array': sys_arrays['diboson'],
          'ngen': 4265241,
-         'fillColor': ROOT.kCyan,
+#         'fillColor': ROOT.kCyan,
+         'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,}
         )
@@ -318,14 +320,15 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ZZ',
-         'file': dirStr+'zz'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'zz'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'zz'+'_JESUp'+rootStr,
-		 'xsec': 0.0059,
+         'file': dirStr+'ZZ' +rootStr,
+         'file_JESUp': dirStr+'ZZ'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'ZZ'+'_JESUp'+rootStr,
+         'xsec': 0.0059,
          'xsec_err': 0.00015,
          'sys_array': sys_arrays['diboson'],
          'ngen': 4191045,
-         'fillColor': ROOT.kCyan,
+#         'fillColor': ROOT.kCyan,
+         'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,}
         )
@@ -334,14 +337,15 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'WJets',
-         'file': dirStr+'wjets'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'wjets'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'wjets'+'_JESUp'+rootStr,
-		 'xsec': 31.314,
+         'file': dirStr+'wjets' +rootStr,
+         'file_JESUp': dirStr+'wjets'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'wjets'+'_JESDown'+rootStr,
+         'xsec': 31.314,
          'xsec_err': 1.558,
          'sys_array': sys_arrays['WJets'],
          'ngen': 81011945,
-         'fillColor': ROOT.kAzure-1,
+#         'fillColor': ROOT.kAzure-1,
+         'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,}
         )
@@ -351,10 +355,10 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ZJets',
-         'file': dirStr+'zjets'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'zjets'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'zjets'+'_JESUp'+rootStr,
-		 'xsec': 3.048,
+         'file': dirStr+'zjets_h' +rootStr,
+         'file_JESUp': dirStr+'zjets_h'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'zjets_h'+'_JESDown'+rootStr,
+         'xsec': 3.048,
          'xsec_err': 0.132,
          'sys_array': sys_arrays['ZJets'],
          'ngen': 35891264,
@@ -364,30 +368,30 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
         )
         )
 
-#     plotList.append(
-#         PlotInfo(
-#         {'name': 'ZJets_M10-50',
-#          'file': dirStr+'DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph_v1_PUTAG'+'_nominal'+rootStr,
-# 		 'file_JESUp': dirStr+''+'_JESUp'+rootStr,
-# 		 'file_JESDown': dirStr+''+'_JESUp'+rootStr,
-# 		 'xsec': 12.7826,
-#          'xsec_err': 0.132*12.7826/3.048,
-#          'sys_array': sys_arrays['ZJets'],
-#          'ngen': 31480628,
-#          'fillColor': ROOT.kAzure+1,
-#          'fillPattern': 1001,
-#          'isNormPerJetBin': 0,}
-#         )
-#         )
-
+    plotList.append(
+        PlotInfo(
+        {'name': 'ZJets_M10-50',
+         'file': dirStr+'zjets_lowmass' +rootStr,
+         'file_JESUp': dirStr+'zjets_lowmass'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'zjets_lowmass'+'_JESDown'+rootStr,
+         'xsec': 12.7826,
+         'xsec_err': 0.132*12.7826/3.048,
+         'sys_array': sys_arrays['ZJets'],
+         'ngen': 31480628,
+         'fillColor': ROOT.kAzure+1,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,}
+        )
+        )
+    
 
     plotList.append(
         PlotInfo(
         {'name': 'ttH_120',
-         'file': dirStr+'ttH120'+'_nominal'+rootStr,
-		 'file_JESUp': dirStr+'ttH120'+'_JESUp'+rootStr,
-		 'file_JESDown': dirStr+'ttH120'+'_JESUp'+rootStr,
-		 'xsec': 0.000098,
+         'file': dirStr+'ttH120' +rootStr,
+         'file_JESUp': dirStr+'ttH120'+'_JESUp'+rootStr,
+         'file_JESDown': dirStr+'ttH120'+'_JESDown'+rootStr,
+         'xsec': 0.000098,
          'xsec_err': 0.0,
          'sys_array': sys_arrays['ttH_120'],
          'ngen': 998833,
@@ -397,14 +401,45 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
         )
         )
 
+##    plotList.append(
+##        PlotInfo(
+##        {'name': 'ttH_125',
+##         'file': dirStr+'ttH125' +rootStr,
+##         'file_JESUp': dirStr+'ttH125'+'_JESUp'+rootStr,
+##         'file_JESDown': dirStr+'ttH125'+'_JESDown'+rootStr,
+##         'xsec': 0.00008634, 
+##         'xsec_err': 0.0,
+##         'sys_array': sys_arrays['ttH_120'],
+##         'ngen': 99896,
+##         'fillColor': ROOT.kMagenta,
+##         'fillPattern': 1001,
+##         'isNormPerJetBin': 0,}
+##        )
+##        )
+
+##    plotList.append(
+##    PlotInfo(
+##    {'name': 'ttH_130',
+##     'file': dirStr+'ttH130' +rootStr,
+##     'file_JESUp': dirStr+'ttH130'+'_JESUp'+rootStr,
+##     'file_JESDown': dirStr+'ttH130'+'_JESDown'+rootStr,
+##     'xsec': 0.00007658,
+##     'xsec_err': 0.0,
+##     'sys_array': sys_arrays['ttH_120'],
+##     'ngen': 99915,
+##     'fillColor': ROOT.kMagenta,
+##     'fillPattern': 1001,
+##     'isNormPerJetBin': 0,}
+##    )
+##    )
     
     plotList.append(
         PlotInfo(
         {'name': 'data_2011',
          'file': dataStr,
-		 'file_JESUp': dataStr,
-		 'file_JESDown': dataStr,
-		 'xsec': 1,
+         'file_JESUp': dataStr,
+         'file_JESDown': dataStr,
+         'xsec': 1,
          'xsec_err': 0.0,
          'sys_array': [0,0,0,0],
          'ngen': 1,

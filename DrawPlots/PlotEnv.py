@@ -199,12 +199,20 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     legForStack.SetBorderSize(0)
     legForStack.SetNColumns(3)
 
-    myLumiString = directoryName.replace('pdf/','')+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV" 
+    TexTitle1 = directoryName.replace('pdf/','')
+    TexTitle2 = TexTitle1.replace('eq2jeq2t',' + 2 jets + 2 tags')
+    TexTitle3 = TexTitle2.replace('ge3t',' + #geq 3 tags')
+    TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e')
+    TexTitle =  TexTitle4.replace('ee_mm_',' #mu#mu/ee')
+    
+    myLumiString = TexTitle+"    CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
+#    myLumiString = TexTitle+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV"
+#    myLumiString = directoryName.replace('pdf/','')+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV" 
     myLumiTex = TLatex()
     myLumiTex.SetNDC()
     myLumiTex.SetTextFont(42)
     myLumiTex.SetTextAlign(13)
-    myLumiTex.SetTextSize(0.045)
+    myLumiTex.SetTextSize(0.035)
 
     # loop over the list of plots
     # save the data plot for later
@@ -226,9 +234,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
        sys_frac_err = iplot.getHist(dist,lumi, lepselection, "nominal")[2]
        scaleRatio = iplot.getHist(dist,lumi, lepselection, "nominal")[1]
-       origHist_JESDown = iplot.getHist(dist,lumi, lepselection, "nominal")[0]
+       origHist = iplot.getHist(dist,lumi, lepselection, "nominal")[0]
        origHist_JESUp = iplot.getHist(dist,lumi, lepselection, "JESUp")[0]
-       origHist = iplot.getHist(dist,lumi, lepselection, "JESDown")[0]
+       origHist_JESDown = iplot.getHist(dist,lumi, lepselection, "JESDown")[0]
 
        # This rebinning also adds in overflow
        resultHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, scaleRatio, sys_frac_err)
@@ -240,11 +248,15 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
        if (iplot.name == "data_2011"):                 
            myData2011 = resultHist.Clone("data_2011")
            Data2011Sum = myData2011.Integral()
-           legForStack.AddEntry(myData2011, iplot.name+" ("+str(round(Data2011Sum,0))+")", "lpe") 
+           legForStack.AddEntry(myData2011, "Data ("+str(round(Data2011Sum,0))+")", "lpe")
+#           legForStack.AddEntry(myData2011, iplot.name+" ("+str(round(Data2011Sum,0))+")", "lpe") 
        elif (iplot.name == "data_2012"):
            myData2012 = resultHist.Clone("data_2012")
            Data2012Sum = myData2012.Integral()
            legForStack.AddEntry(myData2012, iplot.name+" ("+str(round(Data2012Sum,0))+")", "lpe")
+       elif (iplot.name == "ttH_120"):
+           iSig = resultHist.Clone("signal")
+           ttHSum = iSig.Integral()
        else :
            iHist = resultHist.Clone("stack")
            MCsum += iHist.Integral()
@@ -254,37 +266,46 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
                SingleTopSum += iHist.Integral()
                SingleTopCounter += 1
                if (SingleTopCounter == 6):
-                   legForStack.AddEntry(iHist, "single_t ("+str(round(SingleTopSum,1))+")", "f")
-           elif (iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):
-               DiBosonSum += iHist.Integral()
-               DiBosonCounter += 1
-               if (DiBosonCounter == 3):
-                   legForStack.AddEntry(iHist, "DiBoson ("+str(round(DiBosonSum,1))+")", "f")
-           elif (iplot.name.startswith("ZJet")):
+                   legForStack.AddEntry(iHist, "single t ("+str(round(SingleTopSum,1))+")", "f")
+#           elif (iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):
+#               DiBosonSum += iHist.Integral()
+#               DiBosonCounter += 1
+#               if (DiBosonCounter == 3):
+#                   legForStack.AddEntry(iHist, "DiBoson ("+str(round(DiBosonSum,1))+")", "f")
+           elif (iplot.name.startswith("ZJet") or iplot.name == "WJets" or iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):
                ZJetsSum += iHist.Integral()
                ZJetsCounter += 1
-               if (ZJetsCounter == 2):
-                   legForStack.AddEntry(iHist, "ZJets ("+str(round(ZJetsSum,1))+")", "f")
+               if (ZJetsCounter == 6):
+                   legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
+#                   legForStack.AddEntry(iHist, "ZJets ("+str(round(ZJetsSum,1))+")", "f")
            elif (iplot.name == "ttW" or iplot.name == "ttZ"):
                ttBosonSum += iHist.Integral()
                ttBosonCounter += 1
                if (ttBosonCounter == 2):
-                   legForStack.AddEntry(iHist, "ttW/ttZ ("+str(round(ttBosonSum,1))+")", "f")
+                   legForStack.AddEntry(iHist, "t#bar{t} + W,Z ("+str(round(ttBosonSum,1))+")", "f")
+               
+           elif (iplot.name == "tt"):
+               ttSum = iHist.Integral()
+               legForStack.AddEntry(iHist, "t#bar{t}"+" ("+str(round(MCsum,1))+")", "f")
+           elif (iplot.name == "ttbb"):
+               ttbbSum = iHist.Integral()
+               legForStack.AddEntry(iHist, "t#bar{t} + b#bar{b}"+" ("+str(round(MCsum,1))+")", "f")
+           elif (iplot.name == "ttcc"):
+               ttccSum = iHist.Integral()
+               legForStack.AddEntry(iHist, "t#bar{t} + c#bar{c}"+" ("+str(round(MCsum,1))+")", "f")
+#           elif (iplot.name == "WJets"):
+#               WJetsSum = iHist.Integral()
+#               legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
            else:
                legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
-           if (iplot.name == "tt"):
-               ttSum = iHist.Integral()
-           if (iplot.name == "ttbb"):
-               ttbbSum = iHist.Integral()
-           if (iplot.name == "ttcc"):
-               ttccSum = iHist.Integral()
-           if (iplot.name == "WJets"):
-               WJetsSum = iHist.Integral()
-           if (iplot.name == "ttH_120"):
-               ttHSum = iHist.Integral()
 
-    legForStack.AddEntry(myData2011, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
+    iSig.Scale(TotalMCsum/ttHSum)
+    iSig.SetLineColor(kBlue)
+    iSig.SetFillColor(0)
+    iSig.SetLineWidth(2)
+    
 
+    
     lumi_err = 0.022
     trigSF_err = 0.02
     lumi_trigSF_err = math.sqrt(math.pow(lumi_err,2)+math.pow(trigSF_err,2))
@@ -295,42 +316,70 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
         MCErrHist.SetBinContent(i,myStack.GetStack().Last().GetBinContent(i))
         MCErrHist.SetBinError(i,math.sqrt(math.pow(myStack.GetStack().Last().GetBinError(i),2)+math.pow(lumi_trigSF_err*myStack.GetStack().Last().GetBinContent(i),2)))
 
-    gStyle.SetHatchesSpacing(0.4)
+#    gStyle.SetHatchesSpacing(0.4)
+#    gStyle.SetHatchesSpacing(0.8)
     ##gStyle.SetHatchesLineWidth(1)
-    MCErrHist.SetLineColor(0)
-    MCErrHist.SetFillStyle(3354)
-    MCErrHist.SetFillColor(1)
+#    MCErrHist.SetLineColor(0)
+#    MCErrHist.SetFillStyle(3354)
+    MCErrHist.SetFillStyle(3654)
+    MCErrHist.SetFillColor(kBlack)
     TotalMCErr = MCErrHist.GetBinError(1)
 
+#    legForStack.AddEntry(myData2011, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
+    legForStack.AddEntry(MCErrHist, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
+    legForStack.AddEntry(iSig, "t#bar{t}H120 ("+str(round(ttHSum,1))+"x"+str(round(TotalMCsum/ttHSum,1))+")", "l")
 
     ##Comment for 2012 data
     plotMax = max(myStack.GetMaximum(),myData2011.GetMaximum())    
     ##plotMax = max(myData2011.GetMaximum(), myData2012.GetMaximum())
-    titleString = "%s;%s;%s" % ("", plotXLabel, "Events")
+    titleString = "%s;%s;%s" % ("", "", "Events")
 
     myStack.SetTitle(titleString)
-    myStack.SetMinimum(0)
+    myStack.SetMinimum(0.001)
     myStack.SetMaximum(plotMax*1.3)
     ##Appropriate for log scale  
     ##myStack.SetMaximum(plotMax*10) 
 
-    myCanvasLin = TCanvas(dist+"Lin", dist, 600, 600)
+
+    myCanvasLin = TCanvas(dist+"Lin", dist, 600, 700)
+    #####
+    gStyle.SetPadBorderMode(0)
+    gStyle.SetFrameBorderMode(0)
+
     myCanvasLin.cd()
 
     ##Begin comment out for 2012
-    upLin = TPad("upLin", "up",0.005, 0.310, 0.995, 0.995);
-    downLin =  TPad ("downLin", "down", 0.005, 0.005, 0.995, 0.3);
+    upLin = TPad("upLin", "up", 1e-5, 0.3+1e-5, 1-1e-5, 1-1e-5)
+    downLin =  TPad ("downLin", "down", 1e-5, 1e-5, 1-1e-5, 0.3-1e-5)
+
+    upLin.SetLeftMargin(.11)
+    downLin.SetLeftMargin(.11)
+
+    upLin.SetRightMargin(.05)
+    downLin.SetRightMargin(.05)
+    upLin.SetBottomMargin(.3)
+    downLin.SetBottomMargin(.3)
+    upLin.Modified()
+    downLin.Modified()
 		
     upLin.Draw()
     downLin.Draw()
-    upLin.cd()
+
     ##End comment out for 2012
 
-    ##gPad.SetLogy()
+#    if (dist == "numJets"):
+#        upLin.cd()
+#        gPad.SetLogy()
+
+    upLin.cd()
+    gPad.SetBottomMargin(1e-5)
+    gPad.Modified()
+
     myStack.Draw()
 
     MCErrHist.Draw('e2same')
     myData2011.Draw('pesame')
+    iSig.Draw('histsame')
     
     try:
         myData2012.Draw('pesame') ##Add for 2012
@@ -338,20 +387,39 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
         pass
 
     legForStack.Draw()
-    myLumiTex.DrawLatex(0.25, 0.98, myLumiString)
+    myLumiTex.DrawLatex(0.15, 0.98, myLumiString)
+#    myLumiTex.DrawLatex(0.25, 0.98, myLumiString)
 
     ##Begin comment out for 2012
     downLin.cd()
+    gPad.SetTopMargin(1e-5)
+    gPad.SetTickx()
+    gPad.Modified()
 
     ratioHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, 1.0, 0.0)
     ratioHist.SetMinimum(0)
-    ratioHist.SetMaximum(2)
-    ratioHist.SetTitle(";;Data/MC")
+    ratioHist.SetMaximum(2.3)
+    ratiotitleString = "%s;%s;%s" % ("", plotXLabel, "Data/MC")  ###
+    ratioHist.SetTitle(ratiotitleString)  ###
+#    ratioHist.SetTitle(";;Data/MC")
     ratioHist.GetYaxis().SetTitleSize(0.1)
-    ratioHist.GetYaxis().SetTitleOffset(0.7)
+    ratioHist.GetYaxis().SetTitleOffset(0.5)
     ratioHist.GetYaxis().CenterTitle()
     ratioHist.GetYaxis().SetLabelSize(0.1)
+    ratioHist.GetYaxis().SetNdivisions(50000+404)
+    
+    ratioHist.GetXaxis().SetLabelSize(0.1)  ###
+    ratioHist.GetXaxis().SetLabelOffset(0.04)
+    ratioHist.GetXaxis().SetTitleOffset(1.1)
+    ratioHist.GetXaxis().SetTitleSize(0.12)
+    if (dist == "CFMlpANN_e2je2t"):
+        ratioHist.GetXaxis().SetNdivisions(504)
+    
+    ratioHist.SetLineColor(kBlack)
+    ratioHist.SetMarkerColor(kBlack)
 
+
+        
     ratioErrHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, 1.0, 0.0)
     ratioErrHist.SetMarkerColor(kGreen)
     ratioErrHist.SetFillColor(kGreen)
@@ -380,6 +448,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
         if (MCVal != 0):
             ratioErrHist.SetBinContent(i,1)
             ratioErrHist.SetBinError(i,ratErrMC)
+            
     ratioHist.Draw()
     ratioErrHist.Draw("e2same")
     ratioHist.Draw("pe1same")
@@ -393,6 +462,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
     if output == "draw":
         myCanvasLin.SaveAs(pngName)
+        myCanvasLin.SaveAs(pdfName)
     elif output == "print":
         return [ttSum,ttbbSum,ttccSum,ttBosonSum,SingleTopSum,ZJetsSum,WJetsSum,DiBosonSum,ttHSum,100*ttHSum*998833/(4982*0.098*105138),TotalMCsum,TotalMCErr,Data2011Sum]
     else:

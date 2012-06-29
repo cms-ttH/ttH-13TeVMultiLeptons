@@ -31,11 +31,11 @@ def main ():
         numBins = int(sys.argv[index+2])
     except:
         if "3t" in jetselection:
-            numBins = 10
+            numBins = 25
         elif "2t" in jetselection:
             numBins = 50
         else:
-            numBins = 100
+            numBins = 50
         
     parser = OptionParser()
     parser.add_option('-L', '--Lumi', dest='lumi', default=5.0, help='integrated lumi')
@@ -82,37 +82,46 @@ def main ():
     	# Echo the current config
 
     pg.show()
-        
-    drawStackPlot("all_sum_pt", pg, "all_sum_pt", numBins*8/10, 0, 800, lepselection, "draw")
-    drawStackPlot("avg_btag_disc_btags", pg, "avg_btag_disc_btags", numBins*40/50, 0.6, 1, lepselection, "draw")
-    drawStackPlot("avg_tagged_dijet_mass", pg, "avg_tagged_dijet_mass", numBins, 0, 500, lepselection, "draw")
-#     drawStackPlot("CFMlpANN_e2je2t", pg,  "CFMlpANN_e2je2t", numBins, 0.0072, 0.0074, lepselection, "draw")
-#     drawStackPlot("CFMlpANN_ge3t", pg, "CFMlpANN_ge3t", numBins, 0, 1, lepselection, "draw")
-    drawStackPlot("closest_tagged_dijet_mass", pg, "closest_tagged_dijet_mass", numBins, 0, 500, lepselection, "draw")
-    drawStackPlot("dR_leplep", pg, "dR_leplep", numBins, 0, 5, lepselection, "draw")
-    drawStackPlot("first_jet_pt", pg, "first_jet_pt", numBins, 0, 300, lepselection, "draw")
-    drawStackPlot("Ht", pg, "Ht", numBins*12/10, 0, 1200, lepselection, "draw")
-##         drawStackPlot("isCleanEvent", pg, "isCleanEvent", 2, 0, 2, lepselection, "draw")
-##         drawStackPlot("isTriggerPass", pg, "isTriggerPass", 2, 0, 2, lepselection, "draw")
-    drawStackPlot("lep1Eta", pg, "lep1Eta", numBins, -3, 3, lepselection, "draw")
-    drawStackPlot("lep1Phi", pg, "lep1Phi", numBins, -3.0, 3.0, lepselection, "draw")
-    drawStackPlot("lep1Pt", pg, "lep1Pt", numBins, 0, 200, lepselection, "draw")
-    drawStackPlot("lep2Eta", pg, "lep2Eta", numBins, -3, 3, lepselection, "draw")
-    drawStackPlot("lep2Phi", pg, "lep2Phi", numBins, -3.0, 3.0, lepselection, "draw")
-    drawStackPlot("lep2Pt", pg, "lep2Pt", numBins*15/10, 0, 150, lepselection, "draw")
-    drawStackPlot("mass_leplep", pg, "mass_leplep", numBins, 0, 300, lepselection, "draw")
-    drawStackPlot("mass_of_everything", pg, "mass_of_everything", numBins*12/10, 0, 1200, lepselection, "draw")
-    drawStackPlot("met", pg, "met", numBins, 0, 200, lepselection, "draw")
-    drawStackPlot("min_dr_tagged_jets", pg, "min_dr_tagged_jets", numBins, 0, 5, lepselection, "draw")
-    drawStackPlot("mindr_lep1_jet", pg, "mindr_lep1_jet", numBins, 0, 5, lepselection, "draw")
-    drawStackPlot("numJets", pg, "numJets", 10, 0, 10, lepselection, "draw")
-    drawStackPlot("numPV", pg, "numPV", 30, 0, 30, lepselection, "draw")
-    drawStackPlot("numTaggedJets", pg, "numTaggedJets", 6, 0, 6, lepselection, "draw")
-##         drawStackPlot("prob", pg, "prob1", numBins, 0, 2, lepselection, "draw")
-    drawStackPlot("pt_leplep", pg, "pt_leplep", numBins, 0, 200, lepselection, "draw")
-    drawStackPlot("second_jet_pt", pg, "second_jet_pt", numBins, 0, 200, lepselection, "draw")  
-    drawStackPlot("sum_pt", pg, "sum_pt", numBins, 0, 1000, lepselection, "draw")
-##         drawStackPlot("weight", pg, "weight", numBins, 0, 2, lepselection, "draw")
+
+
+    drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", 10, 0.5, 4.5, lepselection, "draw")
+    drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", numBins*2/5, 0, 4, lepselection, "draw")
+    drawStackPlot("numJets", pg, "Number of jets", 5, 3, 8, lepselection, "draw")
+    drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", 15, 0.7, 1, lepselection, "draw")
+    drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 430, lepselection, "draw")
+######    drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.0072, 0.0074, lepselection, "draw")
+######    drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1000, lepselection, "draw")
+    drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 15, 0.05, 0.8, lepselection, "draw")
+    drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1600, lepselection, "draw")
+
+
+
+    
+#/    drawStackPlot("all_sum_pt", pg, "all_sum_pt", numBins*20/50, 100, 1100, lepselection, "draw")
+######    drawStackPlot("all_sum_pt", pg, "all_sum_pt", numBins*20/50, 100, 900, lepselection, "draw")
+
+#    drawStackPlot("avg_tagged_dijet_mass", pg, "avg_tagged_dijet_mass", numBins*40/50, 0, 400, lepselection, "draw")
+#    drawStackPlot("closest_tagged_dijet_mass", pg, "closest_tagged_dijet_mass", numBins*40/50, 0, 400, lepselection, "draw")
+#    drawStackPlot("dR_leplep", pg, "dR_leplep", numBins, 0, 5, lepselection, "draw")
+    
+###         drawStackPlot("isCleanEvent", pg, "isCleanEvent", 2, 0, 2, lepselection, "draw")
+###         drawStackPlot("isTriggerPass", pg, "isTriggerPass", 2, 0, 2, lepselection, "draw")
+#    drawStackPlot("lep1Eta", pg, "lep1Eta", numBins, -2.5, 2.5, lepselection, "draw")
+###    drawStackPlot("lep1Phi", pg, "lep1Phi", 62, -3.1, 3.1, lepselection, "draw")
+#    drawStackPlot("lep1Pt", pg, "lep1Pt", numBins, 20, 220, lepselection, "draw")
+#    drawStackPlot("lep2Eta", pg, "lep2Eta", numBins, -2.5, 2.5, lepselection, "draw")
+###    drawStackPlot("lep2Phi", pg, "lep2Phi", numBins, -3.0, 3.0, lepselection, "draw")
+#    drawStackPlot("lep2Pt", pg, "lep2Pt", numBins, 20, 220, lepselection, "draw")
+#    drawStackPlot("mass_leplep", pg, "mass_leplep", numBins, 0, 350, lepselection, "draw")
+#    drawStackPlot("mass_of_everything", pg, "mass_of_everything", numBins, 0, 2000, lepselection, "draw")
+#    drawStackPlot("met", pg, "met", 50, 0, 250, lepselection, "draw")
+#    drawStackPlot("numPV", pg, "numPV", 30, 0, 30, lepselection, "draw")
+#    drawStackPlot("numTaggedJets", pg, "numTaggedJets", 6, 0, 6, lepselection, "draw")
+###         drawStackPlot("prob", pg, "prob1", numBins, 0, 2, lepselection, "draw")
+#    drawStackPlot("pt_leplep", pg, "pt_leplep", numBins, 0, 200, lepselection, "draw")
+#    drawStackPlot("second_jet_pt", pg, "second_jet_pt", numBins, 30, 230, lepselection, "draw")  
+#    drawStackPlot("sum_pt", pg, "sum_pt", numBins, 100, 1100, lepselection, "draw")
+###         drawStackPlot("weight", pg, "weight", numBins, 0, 2, lepselection, "draw")
     
     print "Done"
 
