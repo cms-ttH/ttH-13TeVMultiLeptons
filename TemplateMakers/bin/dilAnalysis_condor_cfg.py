@@ -4,6 +4,8 @@ import os
 import sys
 
 
+
+
 # read in arguments from cl
 # argv 0 = analysis executable
 # argv 1 = name of this file
@@ -11,10 +13,19 @@ import sys
 # argv 3 = which job are you, 0 to length of files
 # argv 4 = what JES should you use?
 
-sampleName = sys.argv[2]
+sampleNameCL = sys.argv[2]
 iJob = int(sys.argv[3])
 iLabel = sys.argv[4]
 iJes = int (sys.argv[5])
+
+# update serach path
+
+searchPath = os.environ['CMSSW_SEARCH_PATH']
+thisDir = os.environ['PWD']
+searchPath = "%s:%s" % (searchPath, thisDir)
+print "Using Search path %s" % searchPath
+
+os.environ['CMSSW_SEARCH_PATH'] = searchPath
 
 
 process = cms.Process("ttHDIL")
@@ -27,7 +38,7 @@ process.inputs = cms.PSet (
 	maxEvents = cms.int32(-1)
 )
 
-listFileName = "lists/" + sampleName + ".list"
+listFileName = "lists/" + sampleNameCL + ".list"
 # read in all files in the list
 print "Reading file names from list: %s" % listFileName
 listFile = open(listFileName)
@@ -48,11 +59,11 @@ print "Adding file: ", readFiles[iJob]
 process.inputs.fileNames.append(readFiles[iJob])
 
 
-outDir = "batchBEAN/%s_%s/" % (sampleName, iLabel)
+outDir = "batchBEAN/%s_%s/" % (sampleNameCL, iLabel)
 if not os.path.exists(outDir):
 	os.mkdir(outDir)
 
-outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_job%03d.root" % (sampleName, iLabel, iLabel, iJob)
+outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_job%03d.root" % (sampleNameCL, iLabel, iLabel, iJob)
 print "Output name will be ", outFileName
 
 process.outputs = cms.PSet (
@@ -67,5 +78,9 @@ if abs(iJes) > 1:
 	exit (-3)
 
 process.dilAnalysis = cms.PSet(
-	jes = cms.int32(iJes)	
+	jes = cms.int32(iJes),
+	jer = cms.int32(0),
+	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
+	puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
+	sampleName = cms.string(sampleNameCL)
 )

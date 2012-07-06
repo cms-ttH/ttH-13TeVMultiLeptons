@@ -18,6 +18,6 @@ process.outputs = cms.PSet (
 
 
 process.dilAnalysis = cms.PSet(
-	jes = cms.int32(0)
-	
+	jes = cms.int32(0),
+	jer = cms.int32(0)
 )
