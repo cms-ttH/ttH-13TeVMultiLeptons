@@ -53,12 +53,12 @@ void drawTwoSummaryTrees () {
   //TFile * newFile = new TFile ("dilSummaryTrees_checkJER_job002.root");
 
   TChain * origTree = new TChain ("summaryTree");
-  origTree->AddFile("test_beans_v1_zjets_baselineJER_job_2.root");
-  origTree->AddFile("test_beans_v1_zjets_baselineJER_job_1.root");
+  origTree->AddFile("test_beans_v1_ttH120_robinUpdates_job_0.root");
+  //origTree->AddFile("test_beans_v1_zjets_baselineJER_job_1.root");
   
   TChain * newTree = new TChain ("summaryTree");
-  newTree->AddFile("dilSummaryTrees_checkJER_job002.root");
-  newTree->AddFile("dilSummaryTrees_checkJER_job001.root");
+  newTree->AddFile("dilSummaryTrees_robinUpdates_job000.root");
+  //newTree->AddFile("dilSummaryTrees_checkJER_job001.root");
   
 
   
@@ -70,6 +70,14 @@ void drawTwoSummaryTrees () {
   myHistos.push_back(HistoInfo(TString("can2"), TString("met"), TString("(25,0,100)")));
   myHistos.push_back(HistoInfo(TString("can3"), TString("pt_of_everything"), TString("(25,0,250)")));
   myHistos.push_back(HistoInfo(TString("can4"), TString("mindr_lep1_jet"), TString("(25,0,6)")));
+  myHistos.push_back(HistoInfo(TString("can5"), TString("prob"), TString("(25,0,1.5)")));
+  myHistos.push_back(HistoInfo(TString("can6"), TString("prob_hfSFup"), TString("(25,0,1.5)")));
+  myHistos.push_back(HistoInfo(TString("can7"), TString("prob_hfSFdown"), TString("(25,0,1.5)")));
+  myHistos.push_back(HistoInfo(TString("can8"), TString("prob_lfSFdown"), TString("(25,0,1.5)")));
+  myHistos.push_back(HistoInfo(TString("can9"), TString("prob_lfSFup"), TString("(25,0,1.5)")));
+  myHistos.push_back(HistoInfo(TString("can10"), TString("weight"), TString("(25,0,1.5)")));
+  myHistos.push_back(HistoInfo(TString("can11"), TString("weight_PUdown"), TString("(25,0,1.5)")));
+  myHistos.push_back(HistoInfo(TString("can12"), TString("weight_PUup"), TString("(25,0,1.5)")));
   
   
 
