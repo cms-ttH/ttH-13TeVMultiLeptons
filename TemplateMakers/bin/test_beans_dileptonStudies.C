@@ -54,11 +54,15 @@
 #include "ProductArea/BNcollections/interface/BNtrigobj.h"
 #include "ProductArea/BNcollections/interface/BNprimaryvertex.h"
 
+
+
 // headers for python config processing
 
 #include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 
+#include "BtagWeight.h" 
 
 
 #include "AnglesUtil.h"
@@ -78,13 +82,15 @@ typedef std::vector<bool> vbool;
 typedef std::vector<int> vint;
 
 double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double recojetPT );
-void calculateTagProb( int useSample, std::vector<double> jetPts, std::vector<double> jetEtas, std::vector<double> jetTags, std::vector<int> jetIds, 
-		       double &Prob0, double &ProbGEQ1, double &Prob1, double &ProbGEQ2, double &Prob2, double &ProbGEQ3,double &Prob3, double &ProbGEQ4,
-		       int returnType, const double extraSFb, const double extraSFc, const double extraSFl ); 
 
-double jetTagProb( double jetPT, double jetETA, double jetTag, int jetID, 
-		  int returnType, const double extraSFb, const double extraSFc, const double extraSFl );
+std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );      
 
+//TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");                                                                               
+TH2D* h_jet_pt_eta_b_eff_ ;
+TH2D* h_jet_pt_eta_c_eff_ ;
+TH2D* h_jet_pt_eta_l_eff_ ;
+TH2D* h_jet_pt_eta_o_eff_ ;
+                                                                                   
 //bool filterTTbarPlusJets(string selectEventType, std::vector<BNmcparticle> mcparticles);
 
 //******************************************************************************
@@ -141,12 +147,27 @@ int main ( int argc, char ** argv )
    std::string outputFileName = outputs.getParameter<std::string >("outputName");
    //JES
    int jes = anaParams.getParameter<int> ("jes");
+   int jer = anaParams.getParameter<int> ("jer");
+   std::string sampleName = anaParams.getParameter<string>("sampleName");
+
+   std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
+
+   //  Btag file
+
+   edm::FileInPath btagFileName = anaParams.getParameter<edm::FileInPath> ("btagFile");
+   edm::FileInPath puFileName = anaParams.getParameter<edm::FileInPath> ("puFile");
+   
+
+
+   std::cout << "CONFIG: using btagFile = " << btagFileName.fullPath() << std::endl;
+
+   TFile * btagFile = new TFile (btagFileName.fullPath().c_str());
 
    int maxNentries = inputs.getParameter<int> ("maxEvents");
    //string sampleName = "doubleEle2012_week02_52Xonly";
-   string sampleName = "ttH_m130";
+
    //int iJob =1;
-   string iLabel = "testTree";
+   //string iLabel = "testTree";
 
   typedef BNeventCollection::const_iterator         EventIter;
   typedef BNelectronCollection::const_iterator      EleIter;
@@ -163,17 +184,8 @@ int main ( int argc, char ** argv )
   typedef BNtrigobjCollection::const_iterator       TrigObjIter;
 
 
-  // Used for PU re-weighting
-  std::vector< float > DataDist2011_it;
-  std::vector< float > MCDist2011_it;
-  for( int i=0; i<35; i++ ){
-    DataDist2011_it.push_back(pu::ObsDist2011_f[i]);
-    MCDist2011_it.push_back(pu::PoissonOneXDist_f[i]);
-  }
-  reweight::LumiReWeighting lumiWeights_it = reweight::LumiReWeighting( MCDist2011_it, DataDist2011_it );
-
   ////pile up Robin
-  TFile *f_pu = new TFile("collect_pileup_histos_v1_histo.root");
+  TFile *f_pu = new TFile(puFileName.fullPath().c_str());
 
   std::string str_data;
   str_data = "SingleMu";
@@ -183,33 +195,22 @@ int main ( int argc, char ** argv )
   TH1D* h_pu_data_up;
   TH1D* h_pu_data_down;
   TH1D* h_pu_mc;
-  int insample = 0;
-  if ( sampleName == "ttH_m100") insample = 100 ;
-  if ( sampleName == "ttH_m105") insample = 105 ;
-  if ( sampleName == "ttH_m110") insample = 110 ;
-  if ( sampleName == "ttH_m115") insample = 115 ;
-  if ( sampleName == "ttH_m120") insample = 120 ;
-  if ( sampleName == "ttH_m125") insample = 125 ;
-  if ( sampleName == "ttH_m130") insample = 130 ;
-  if ( sampleName == "ttH_m135") insample = 135 ;
-  if ( sampleName == "ttH_m140") insample = 140 ;
-  if ( sampleName == "ttW") insample = 2523 ;
-  if ( sampleName == "ttZ") insample = 2524 ;
 
-  if( (insample>=100 && insample<=140) || (insample==2523) || (insample==2524) ){
-    h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_observed")).c_str());
+  ////// file list name for ttH/W/Z has to match the following pattern                                                                           
+  if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){     
+    h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_observed")).c_str());   
     h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_observed")).c_str());
-    h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_observed")).c_str());
+    h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_observed")).c_str()); 
 
-    h_pu_mc = (TH1D*)f_pu->Get("h_ttH_numGenPV");
+    h_pu_mc = (TH1D*)f_pu->Get("h_ttH_numGenPV"); 
   }
-  else{
-    h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_true")).c_str());
-    h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_true")).c_str());
-    h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_true")).c_str());
+  else{   
+    h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_true")).c_str());   
+    h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_true")).c_str());     
+    h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_true")).c_str()); 
 
     h_pu_mc = (TH1D*)f_pu->Get("F2011exp");
-  }
+  }    
 
   h_pu_data->Scale( 1./h_pu_data->Integral() );
   h_pu_data_up->Scale( 1./h_pu_data_up->Integral() );
@@ -225,6 +226,9 @@ int main ( int argc, char ** argv )
   h_pu_ratio_up->Divide( h_pu_mc );
   h_pu_ratio_down->Divide( h_pu_mc );
 
+
+                                                                                                                                                 
+                                                                  
 
   // Load the files
   vstring fileNames = inputFileNames;
@@ -242,7 +246,23 @@ int main ( int argc, char ** argv )
   //std::string histofilename = outFileName.str();
   std::cout << "Writing out to file " << outputFileName << endl;
 
+  
 
+  ///btag efficiency  // file list name pattern   // ww, wz, zz                                                                                  
+  std::string histname = sampleName ;  
+  if( TString(sampleName).Contains("zjets"))      histname = "zjets";   // zjets,  zjets_lowmas  
+  else if( TString(sampleName).Contains("ttbar") && !(sampleName=="ttbarW" || sampleName=="ttbarZ") ) histname = "ttbar";  // ttbar, ttbar_bb, ttbar_cc   
+  else if( TString(sampleName).Contains("singlet") ) histname = "singlet";  // singlet_, singletbar_, 
+  else if( TString(sampleName).Contains("ttH") ) histname = "ttH120";  
+  
+  // Initialize these global variables once, and then refer to then in a function below 
+  h_jet_pt_eta_b_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_b_eff" ).c_str());                                         
+  h_jet_pt_eta_c_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_c_eff" ).c_str());                                         
+  h_jet_pt_eta_l_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_l_eff" ).c_str());                                         
+  h_jet_pt_eta_o_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_o_eff" ).c_str());
+
+
+  
   // Print out your config
 
   std::cout << "Using btag threshold " << btagThres << std::endl;
@@ -273,141 +293,161 @@ int main ( int argc, char ** argv )
   int NmassBins  = int( massmax/1. + 0.0001 );
 
 
-  // Book the histograms
+//   // Book the histograms
 
-  TH1D* h_mu_pt = new TH1D("h_mu_pt",";#mu p_{T}", NmuptBins, 0, muptmax );
-  TH1D* h_mu_phi = new TH1D("h_mu_phi",";#mu #phi", 16, -3.2, 3.2 );
-  TH1D* h_mu_eta = new TH1D("h_mu_eta",";#mu #eta", 25, -2.5, 2.5 );
-  //TH1D* h_dR_mu_hlt = new TH1D("h_dR_mu_hlt",";#DeltaR(#mu,hlt #mu)", 120, 0., 6. );
+  /////////////// split the nGen
+  TH1D* h_nGen = new TH1D("h_nGen",";ttH decay", 9, 0, 9 );
+  std::vector<std::string> ttHdecay_names;
+  ttHdecay_names.push_back("2tWb");
+  ttHdecay_names.push_back("qq_emu");
+  ttHdecay_names.push_back("qq_emutau");
+  ttHdecay_names.push_back("qq_emu_bb");
+  ttHdecay_names.push_back("qq_emutau_bb");
+  ttHdecay_names.push_back("2emu");
+  ttHdecay_names.push_back("2emutau");
+  ttHdecay_names.push_back("2emu_bb");
+  ttHdecay_names.push_back("2emutau_bb");
+  int numttHdecays = int(ttHdecay_names.size());
 
-  TH1D* h_jet_pt = new TH1D("h_jet_pt",";jet p_{T}", NjetptBins, 0, jetptmax );
-  TH1D* h_jet_phi = new TH1D("h_jet_phi",";jet #phi", 16, -3.2, 3.2 );
-  TH1D* h_jet_eta = new TH1D("h_jet_eta",";jet #eta", 25, -2.5, 2.5 );
+  for( int i=0; i<numttHdecays; i++ ){
+    h_nGen->GetXaxis()->SetBinLabel(i+1,ttHdecay_names[i].c_str());
+  }
+  /////////////////
 
-  TH1D* h_jet_pt_b = new TH1D("h_jet_pt_b",";b jet p_{T}", NjetptBins, 0, jetptmax );
-  TH1D* h_jet_pt_c = new TH1D("h_jet_pt_c",";c jet p_{T}", NjetptBins, 0, jetptmax );
-  TH1D* h_jet_pt_l = new TH1D("h_jet_pt_l",";light jet p_{T}", NjetptBins, 0, jetptmax );
+//   TH1D* h_mu_pt = new TH1D("h_mu_pt",";#mu p_{T}", NmuptBins, 0, muptmax );
+//   TH1D* h_mu_phi = new TH1D("h_mu_phi",";#mu #phi", 16, -3.2, 3.2 );
+//   TH1D* h_mu_eta = new TH1D("h_mu_eta",";#mu #eta", 25, -2.5, 2.5 );
+//   TH1D* h_dR_mu_hlt = new TH1D("h_dR_mu_hlt",";#DeltaR(#mu,hlt #mu)", 120, 0., 6. );
 
-  TH1D* h_jet_disc_b = new TH1D("h_jet_disc_b",";b jet SSVHE discriminant", 70, -1.0, 6.0 );
-  TH1D* h_jet_disc_c = new TH1D("h_jet_disc_c",";c jet SSVHE discriminant", 70, -1.0, 6.0 );
-  TH1D* h_jet_disc_l = new TH1D("h_jet_disc_l",";light jet SSHVE discriminant", 70, -1.0, 6.0 );
+//   TH1D* h_jet_pt = new TH1D("h_jet_pt",";jet p_{T}", NjetptBins, 0, jetptmax );
+//   TH1D* h_jet_phi = new TH1D("h_jet_phi",";jet #phi", 16, -3.2, 3.2 );
+//   TH1D* h_jet_eta = new TH1D("h_jet_eta",";jet #eta", 25, -2.5, 2.5 );
+
+//   TH1D* h_jet_pt_b = new TH1D("h_jet_pt_b",";b jet p_{T}", NjetptBins, 0, jetptmax );
+//   TH1D* h_jet_pt_c = new TH1D("h_jet_pt_c",";c jet p_{T}", NjetptBins, 0, jetptmax );
+//   TH1D* h_jet_pt_l = new TH1D("h_jet_pt_l",";light jet p_{T}", NjetptBins, 0, jetptmax );
+
+//   TH1D* h_jet_disc_b = new TH1D("h_jet_disc_b",";b jet SSVHE discriminant", 70, -1.0, 6.0 );
+//   TH1D* h_jet_disc_c = new TH1D("h_jet_disc_c",";c jet SSVHE discriminant", 70, -1.0, 6.0 );
+//   TH1D* h_jet_disc_l = new TH1D("h_jet_disc_l",";light jet SSHVE discriminant", 70, -1.0, 6.0 );
 
   TH1D* h_met_pt = new TH1D("h_met_pt",";MET p_{T}", NmetBins, 0, metmax );
   TH1D* h_met_phi = new TH1D("h_met_phi",";MET #phi", 16, -3.2, 3.2 );
   TH1D* h_met_Upt = new TH1D("h_met_Upt",";MET raw p_{T}", NmetBins, 0, metmax );
   TH1D* h_met_Uphi = new TH1D("h_met_Uphi",";MET raw #phi", 16, -3.2, 3.2 );
 
-  TH2D* h_W0_decay_W1_decay = new TH2D("h_W0_decay_W1_decay",";W0 decay;W1 decay", 13, 0, 13, 13, 0, 13 );
-  TH1D* h_H_decay = new TH1D("h_H_decay",";H decay", 9, 0, 9 );
-  TH1D* h_H_mass = new TH1D("h_H_mass",";H mass", NmassBins, 0, massmax );
+//   TH2D* h_W0_decay_W1_decay = new TH2D("h_W0_decay_W1_decay",";W0 decay;W1 decay", 13, 0, 13, 13, 0, 13 );
+//   TH1D* h_H_decay = new TH1D("h_H_decay",";H decay", 9, 0, 9 );
+//   TH1D* h_H_mass = new TH1D("h_H_mass",";H mass", NmassBins, 0, massmax );
 
 
-  std::vector<std::string> Wdecay_names;
-  Wdecay_names.push_back("ud");
-  Wdecay_names.push_back("us");
-  Wdecay_names.push_back("ub");
-  Wdecay_names.push_back("cd");
-  Wdecay_names.push_back("cs");
-  Wdecay_names.push_back("cb");
-  Wdecay_names.push_back("td");
-  Wdecay_names.push_back("ts");
-  Wdecay_names.push_back("tb");
-  Wdecay_names.push_back("e#nu");
-  Wdecay_names.push_back("#mu#nu");
-  Wdecay_names.push_back("#tau#nu");
-  Wdecay_names.push_back("Other");
 
-  int numWdecays = int(Wdecay_names.size());
+//   std::vector<std::string> Wdecay_names;
+//   Wdecay_names.push_back("ud");
+//   Wdecay_names.push_back("us");
+//   Wdecay_names.push_back("ub");
+//   Wdecay_names.push_back("cd");
+//   Wdecay_names.push_back("cs");
+//   Wdecay_names.push_back("cb");
+//   Wdecay_names.push_back("td");
+//   Wdecay_names.push_back("ts");
+//   Wdecay_names.push_back("tb");
+//   Wdecay_names.push_back("e#nu");
+//   Wdecay_names.push_back("#mu#nu");
+//   Wdecay_names.push_back("#tau#nu");
+//   Wdecay_names.push_back("Other");
 
-  for( int i=0; i<numWdecays; i++ ){
-    h_W0_decay_W1_decay->GetXaxis()->SetBinLabel(i+1,Wdecay_names[i].c_str());
-    h_W0_decay_W1_decay->GetYaxis()->SetBinLabel(i+1,Wdecay_names[i].c_str());
-  }
+//   int numWdecays = int(Wdecay_names.size());
 
-  std::vector<std::string> Hdecay_names;
-  Hdecay_names.push_back("b#bar{b}");
-  Hdecay_names.push_back("WW");
-  Hdecay_names.push_back("#tau#tau");
-  Hdecay_names.push_back("gg");
-  Hdecay_names.push_back("#gamma#gamma");
-  Hdecay_names.push_back("ZZ");
-  Hdecay_names.push_back("c#bar{c}");
-  Hdecay_names.push_back("Z#gamma");
-  Hdecay_names.push_back("Other");
+//   for( int i=0; i<numWdecays; i++ ){
+//     h_W0_decay_W1_decay->GetXaxis()->SetBinLabel(i+1,Wdecay_names[i].c_str());
+//     h_W0_decay_W1_decay->GetYaxis()->SetBinLabel(i+1,Wdecay_names[i].c_str());
+//   }
 
-  int numHdecays = int(Hdecay_names.size());
+//   std::vector<std::string> Hdecay_names;
+//   Hdecay_names.push_back("b#bar{b}");
+//   Hdecay_names.push_back("WW");
+//   Hdecay_names.push_back("#tau#tau");
+//   Hdecay_names.push_back("gg");
+//   Hdecay_names.push_back("#gamma#gamma");
+//   Hdecay_names.push_back("ZZ");
+//   Hdecay_names.push_back("c#bar{c}");
+//   Hdecay_names.push_back("Z#gamma");
+//   Hdecay_names.push_back("Other");
 
-  for( int i=0; i<numHdecays; i++ ) h_H_decay->GetXaxis()->SetBinLabel(i+1,Hdecay_names[i].c_str());
+//   int numHdecays = int(Hdecay_names.size());
+
+//   for( int i=0; i<numHdecays; i++ ) h_H_decay->GetXaxis()->SetBinLabel(i+1,Hdecay_names[i].c_str());
 
 
   // Used to determine number of events that pass each cut
 
-  std::vector<std::string> cutflow_name;
-  cutflow_name.push_back("All Events"); //0 
-  cutflow_name.push_back("Cleaning"); //1
-  cutflow_name.push_back("Trigger"); //2
-  cutflow_name.push_back("*** >=1 tight muon");//3
-  cutflow_name.push_back("==2 tight muon"); //4
-  cutflow_name.push_back(" >= 2 jets");//5
-  cutflow_name.push_back(">=2 b-tagged jets"); //6
-  cutflow_name.push_back(">=3 jets"); //7
-  cutflow_name.push_back(">=3 b-tagged jets"); //8
-  cutflow_name.push_back("*** ==1 mu && ==1 ele"); //9
-  cutflow_name.push_back(">=2 jets"); //10
-  cutflow_name.push_back(">=2 b-tagged jets"); //11
-  cutflow_name.push_back(">=3 jets"); //12
-  cutflow_name.push_back(">=3 b-tagged jets"); //13
-  cutflow_name.push_back("*** ==2 ele"); //14
-  cutflow_name.push_back(">=2 jets"); //15
-  cutflow_name.push_back(">=2 b-tagged jets"); //16
-  cutflow_name.push_back(">=3 b-tagged jets"); //17
-  cutflow_name.push_back(">=3 b-tagged jets"); //18
+//   std::vector<std::string> cutflow_name;
+//   cutflow_name.push_back("All Events"); //0 
+//   cutflow_name.push_back("Cleaning"); //1
+//   cutflow_name.push_back("Trigger"); //2
+//   cutflow_name.push_back("*** >=1 tight muon");//3
+//   cutflow_name.push_back("==2 tight muon"); //4
+//   cutflow_name.push_back(" >= 2 jets");//5
+//   cutflow_name.push_back(">=2 b-tagged jets"); //6
+//   cutflow_name.push_back(">=3 jets"); //7
+//   cutflow_name.push_back(">=3 b-tagged jets"); //8
+//   cutflow_name.push_back("*** ==1 mu && ==1 ele"); //9
+//   cutflow_name.push_back(">=2 jets"); //10
+//   cutflow_name.push_back(">=2 b-tagged jets"); //11
+//   cutflow_name.push_back(">=3 jets"); //12
+//   cutflow_name.push_back(">=3 b-tagged jets"); //13
+//   cutflow_name.push_back("*** ==2 ele"); //14
+//   cutflow_name.push_back(">=2 jets"); //15
+//   cutflow_name.push_back(">=2 b-tagged jets"); //16
+//   cutflow_name.push_back(">=3 b-tagged jets"); //17
+//   cutflow_name.push_back(">=3 b-tagged jets"); //18
 
 
-  int Ncuts = int(cutflow_name.size());
+//   int Ncuts = int(cutflow_name.size());
 
-  // cutflow
-  TH1D* h_cutflow_unwgt = new TH1D("h_cutflow_unwgt","",Ncuts, 0, Ncuts);
-  TH1D* h_cutflow = new TH1D("h_cutflow","",Ncuts, 0, Ncuts);
-  for( int i=0; i<Ncuts; i++ ){
-    h_cutflow->GetXaxis()->SetBinLabel(i+1,cutflow_name[i].c_str());
-    h_cutflow_unwgt->GetXaxis()->SetBinLabel(i+1,cutflow_name[i].c_str());
-  }
+//   // cutflow
+//   TH1D* h_cutflow_unwgt = new TH1D("h_cutflow_unwgt","",Ncuts, 0, Ncuts);
+//   TH1D* h_cutflow = new TH1D("h_cutflow","",Ncuts, 0, Ncuts);
+//   for( int i=0; i<Ncuts; i++ ){
+//     h_cutflow->GetXaxis()->SetBinLabel(i+1,cutflow_name[i].c_str());
+//     h_cutflow_unwgt->GetXaxis()->SetBinLabel(i+1,cutflow_name[i].c_str());
+//   }
 
 
-  std::vector<std::string> selector_name;
+//   std::vector<std::string> selector_name;
 
-  for( int i=0; i<int(cutflow_name.size()); i++ ) selector_name.push_back(cutflow_name[i]);
+//   for( int i=0; i<int(cutflow_name.size()); i++ ) selector_name.push_back(cutflow_name[i]);
 
-  int numSelectors = selector_name.size();
-  std::vector<std::vector<double> > selected(numSelectors, std::vector<double>(3) );
-  std::vector<std::vector<double> > selected_wgt(numSelectors, std::vector<double>(3) );
+//   int numSelectors = selector_name.size();
+//   std::vector<std::vector<double> > selected(numSelectors, std::vector<double>(3) );
+//   std::vector<std::vector<double> > selected_wgt(numSelectors, std::vector<double>(3) );
 
-  TH2D* h_cutflow_expand = new TH2D("h_cutflow_expand","", 3, 0, 3, numSelectors, 0, numSelectors );
-  TH2D* h_cutflow_expand_wgt = new TH2D("h_cutflow_expand_wgt","", 3, 0, 3, numSelectors, 0, numSelectors );
+//   TH2D* h_cutflow_expand = new TH2D("h_cutflow_expand","", 3, 0, 3, numSelectors, 0, numSelectors );
+//   TH2D* h_cutflow_expand_wgt = new TH2D("h_cutflow_expand_wgt","", 3, 0, 3, numSelectors, 0, numSelectors );
 
-  for( int i=0; i<numSelectors; i++ ){
-    h_cutflow_expand->GetYaxis()->SetBinLabel(numSelectors-i,selector_name[i].c_str());
-    h_cutflow_expand_wgt->GetYaxis()->SetBinLabel(numSelectors-i,selector_name[i].c_str());
-    for( int j=0; j<3; j++ ){
-      selected[i][j]=0.;
-      selected_wgt[i][j]=0.;
-      if( i==0 ){
-	if( j==0 ){
-	  h_cutflow_expand->GetXaxis()->SetBinLabel(j+1,"Selected");
-	  h_cutflow_expand_wgt->GetXaxis()->SetBinLabel(j+1,"Selected");
-	}
-	else if( j==1 ){
-	  h_cutflow_expand->GetXaxis()->SetBinLabel(j+1,"N - 1");
-	  h_cutflow_expand_wgt->GetXaxis()->SetBinLabel(j+1,"N - 1");
-	}
-	else if( j==2 ){
-	  h_cutflow_expand->GetXaxis()->SetBinLabel(j+1,"Cumulative");
-	  h_cutflow_expand_wgt->GetXaxis()->SetBinLabel(j+1,"Cumulative");
-	}
-      }
-    }
-  }
+//   for( int i=0; i<numSelectors; i++ ){
+//     h_cutflow_expand->GetYaxis()->SetBinLabel(numSelectors-i,selector_name[i].c_str());
+//     h_cutflow_expand_wgt->GetYaxis()->SetBinLabel(numSelectors-i,selector_name[i].c_str());
+//     for( int j=0; j<3; j++ ){
+//       selected[i][j]=0.;
+//       selected_wgt[i][j]=0.;
+//       if( i==0 ){
+// 	if( j==0 ){
+// 	  h_cutflow_expand->GetXaxis()->SetBinLabel(j+1,"Selected");
+// 	  h_cutflow_expand_wgt->GetXaxis()->SetBinLabel(j+1,"Selected");
+// 	}
+// 	else if( j==1 ){
+// 	  h_cutflow_expand->GetXaxis()->SetBinLabel(j+1,"N - 1");
+// 	  h_cutflow_expand_wgt->GetXaxis()->SetBinLabel(j+1,"N - 1");
+// 	}
+// 	else if( j==2 ){
+// 	  h_cutflow_expand->GetXaxis()->SetBinLabel(j+1,"Cumulative");
+// 	  h_cutflow_expand_wgt->GetXaxis()->SetBinLabel(j+1,"Cumulative");
+// 	}
+//       }
+//     }
+//   }
 
   ///////////////////////////////////////////////////////////////////
   //
@@ -443,59 +483,12 @@ int main ( int argc, char ** argv )
 
   ////Robin ///------------variables--------------------
   std::map<TString, float *> floatBranches;
-  //b-tag probabilities
-  floatBranches["prob0"] = new float(0.0);
-  floatBranches["prob1"] = new float(0.0);
-  floatBranches["prob2"] = new float(0.0);
-  floatBranches["prob3"] = new float(0.0);
-
-  floatBranches["probge1"] = new float(0.0);
-  floatBranches["probge2"] = new float(0.0);
-  floatBranches["probge3"] = new float(0.0);
-  floatBranches["probge4"] = new float(0.0);
-
-  //SF hf
-  floatBranches["prob0_SFhfup"] = new float(0.0);
-  floatBranches["prob1_SFhfup"] = new float(0.0);
-  floatBranches["prob2_SFhfup"] = new float(0.0);
-  floatBranches["prob3_SFhfup"] = new float(0.0);
-
-  floatBranches["probge1_SFhfup"] = new float(0.0);
-  floatBranches["probge2_SFhfup"] = new float(0.0);
-  floatBranches["probge3_SFhfup"] = new float(0.0);
-  floatBranches["probge4_SFhfup"] = new float(0.0);
-
-  floatBranches["prob0_SFhfdown"] = new float(0.0);
-  floatBranches["prob1_SFhfdown"] = new float(0.0);
-  floatBranches["prob2_SFhfdown"] = new float(0.0);
-  floatBranches["prob3_SFhfdown"] = new float(0.0);
-
-  floatBranches["probge1_SFhfdown"] = new float(0.0);
-  floatBranches["probge2_SFhfdown"] = new float(0.0);
-  floatBranches["probge3_SFhfdown"] = new float(0.0);
-  floatBranches["probge4_SFhfdown"] = new float(0.0);
-
-  //SF lf
-  floatBranches["prob0_SFlfup"] = new float(0.0);
-  floatBranches["prob1_SFlfup"] = new float(0.0);
-  floatBranches["prob2_SFlfup"] = new float(0.0);
-  floatBranches["prob3_SFlfup"] = new float(0.0);
-
-  floatBranches["probge1_SFlfup"] = new float(0.0);
-  floatBranches["probge2_SFlfup"] = new float(0.0);
-  floatBranches["probge3_SFlfup"] = new float(0.0);
-  floatBranches["probge4_SFlfup"] = new float(0.0);
-
-  floatBranches["prob0_SFlfdown"] = new float(0.0);
-  floatBranches["prob1_SFlfdown"] = new float(0.0);
-  floatBranches["prob2_SFlfdown"] = new float(0.0);
-  floatBranches["prob3_SFlfdown"] = new float(0.0);
-
-  floatBranches["probge1_SFlfdown"] = new float(0.0);
-  floatBranches["probge2_SFlfdown"] = new float(0.0);
-  floatBranches["probge3_SFlfdown"] = new float(0.0);
-  floatBranches["probge4_SFlfdown"] = new float(0.0);
-
+  //b-tag reweight                                                                                                               
+  floatBranches["prob"] = new float(0.0);                                                                                        
+  floatBranches["prob_hfSFup"] = new float(0.0);                                                                                 
+  floatBranches["prob_hfSFdown"] = new float(0.0);                                                                               
+  floatBranches["prob_lfSFup"] = new float(0.0);                                                                                 
+  floatBranches["prob_lfSFdown"] = new float(0.0);                                                                               
 
   //pile up
   floatBranches["numPV"] = new float(0.0);
@@ -557,33 +550,8 @@ int main ( int argc, char ** argv )
   floatBranches["all_sum_pt"] = new float(0.0);
   floatBranches["Ht"] = new float(0.0);
 
-  //shape info
-//   floatBranches["aplanarity"] = new float(0.0);  
-//   floatBranches["sphericity"] = new float(0.0);	   
-//   floatBranches["h0"] = new float(0.0);
-//   floatBranches["h1"] = new float(0.0);
-//   floatBranches["h2"] = new float(0.0);
-//   floatBranches["h3"] = new float(0.0);
-//   floatBranches["h4"] = new float(0.0);
 
-//   floatBranches["h0_mod"] = new float(0.0);
-//   floatBranches["h1_mod"] = new float(0.0);
-//   floatBranches["h2_mod"] = new float(0.0);
-//   floatBranches["h3_mod"] = new float(0.0);
-//   floatBranches["h4_mod"] = new float(0.0);
-
-//   floatBranches["h0_mod2"] = new float(0.0);
-//   floatBranches["h1_mod2"] = new float(0.0);
-//   floatBranches["h2_mod2"] = new float(0.0);
-//   floatBranches["h3_mod2"] = new float(0.0);
-//   floatBranches["h4_mod2"] = new float(0.0);
-//   floatBranches["h5_mod2"] = new float(0.0);
-//   floatBranches["h6_mod2"] = new float(0.0);
-//   floatBranches["h7_mod2"] = new float(0.0);
-//   floatBranches["h8_mod2"] = new float(0.0);
-//   floatBranches["h9_mod2"] = new float(0.0);
-//   floatBranches["h10_mod2"] = new float(0.0);
-  
+  ////////////////////  
   histofile.cd();
 
 
@@ -629,15 +597,6 @@ int main ( int argc, char ** argv )
   ///  Event variables
   //////////////////////////////////////////////////////////////////////////
 
-  // Triggers to be used
-  //  vstring mc_hlt_trigger_collection;
-  //mc_hlt_trigger_collection.push_back("HLT_IsoMu24_v");
-  //mc_hlt_trigger_collection.push_back("HLT_IsoMu24_eta2p1_v");
-  //mc_hlt_trigger_collection.push_back("HLT_DoubleMu7_v");
-
-  // Trigger filter name associated with trigger above
-//   vstring mc_hlt_filter_names;
-//   mc_hlt_filter_names.push_back("hltSingleMuIsoL3IsoFiltered24::HLT");
 
   ////// ============== trigger ===========
   vstring mc_hlt_trigger_collection;
@@ -678,6 +637,8 @@ int main ( int argc, char ** argv )
 
 
   int nEventsWhereJetRemoved = 0;
+
+  bool verbose = false;
   
   //
   // Loop over events
@@ -719,7 +680,8 @@ int main ( int argc, char ** argv )
 	* (iDMap->second)  = -9.99e3;
       }
 
-      
+
+      if (verbose) std::cout << "Getting collections... " <<std::endl;
       //std::cout << "========  Event! ========" << std::endl;
       // Get Handle for each collection used
       fwlite::Handle<BNeventCollection> h_event;
@@ -747,7 +709,6 @@ int main ( int argc, char ** argv )
       BNjetCollection const &pfjets = *h_pfjets;
 
       fwlite::Handle<BNelectronCollection> h_electrons;
-      //h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
       h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
       BNelectronCollection const &electrons = *h_electrons;
 
@@ -757,8 +718,9 @@ int main ( int argc, char ** argv )
 
       fwlite::Handle<BNtrigobjCollection> h_hltobj;
       h_hltobj.getByLabel(ev,"BNproducer","HLT");
-      //BNtrigobjCollection const &hltobjs = *h_hltobj;
+      BNtrigobjCollection const &hltobjs = *h_hltobj;
 
+      if (verbose) std::cout << "Getting collections... " <<std::endl;
 
       // Some of the other collections in the tree that are not used here
 
@@ -812,29 +774,25 @@ int main ( int argc, char ** argv )
       EventIter event = events.begin();
 
       int sample = event->sample;
-      //float weight = event->weight;
 
       double numTruePV = event->numTruePV;
       int numGenPV = event->numGenPV;
 
-      //int n0  = event->n0;
+      float wgt = 1 ;                                                                                                            
 
-      float prescale = 1.;
 
-      // Luminosity reweighting for the MC samples
-      // NOTE: if running over only a fraction of the sample, that must be included in the weight
+//       if( sample==2500 )      wgt = 157.7 * intLumi * 1./3627909;     //NNLL
+//       else if( sample==2300 ) wgt = 3048. * intLumi * 1./35504033;    // NNLO
+//       else if( sample==2400 ) wgt = 31314. * intLumi * 1./70681213;  //NNLO
+//       else if( sample==2455 ) wgt = 35.3 * intLumi * 1./21792790;    //LO
+//       else if( sample==2600 ) wgt = 3.19 * intLumi * 1./259971; //NNLO
+//       else if( sample==2601 ) wgt = 1.44 * intLumi * 1./137980; //NNLO
+//       else if( sample==2602 ) wgt = 41.92 * intLumi * 1./3861170; //NNLO
+//       else if( sample==2603 ) wgt = 22.65 * intLumi * 1./1944826; //NNLO
+//       else if( sample==2604 ) wgt = 7.87 * intLumi * 1./814390; //NNLO
+//       else if( sample==2605 ) wgt = 7.87 * intLumi * 1./809984; //NNLO
 
-      if( sample==3410 ) prescale *= 1.26;
 
-      float intLumi = 4470.;
-
-      if( sample>=100 && sample<=140 )  prescale *= intLumi * 1./4653;
-      if( sample==120 )                 prescale *= 1000000 * 1./999900;
-      
-      //       float wgt = prescale * weight;
-      float wgt = 1 ;
-
-      
 
       //============================================
       //
@@ -842,7 +800,15 @@ int main ( int argc, char ** argv )
       //
       //
       //===========================================
+      /////////  need modification for ttbar scale samples 
+      //      cout << "Sample type is = " <<sample <<endl;
 
+      if (sample == 2510 || sample == 2511){
+	//        cout << "ERROR: incorrect sample number detected for scale up down samples "  << endl
+	//             << "Resetting sample to 2500 "  <<endl;
+	sample = 2500;
+      }
+      
       if (sample==2500){
 
         
@@ -852,12 +818,12 @@ int main ( int argc, char ** argv )
         bool debug_ = false;
         if (debug_) cout << "GENCUT: Sample is 2500" << endl;
    
-        int ttbarType_ = -1;
+        int ttbarType_;
 
-
-        if( sampleName == "ttbar" ) ttbarType_ = 0;
-        else if (sampleName == "ttbar_bb") ttbarType_ = 1;
-        else if (sampleName == "ttbar_cc") ttbarType_ = 2;
+        TString ttbarName = sampleName ;
+        if( ttbarName.EndsWith("ttbar") ) ttbarType_ = 0;
+        else if (ttbarName.EndsWith("ttbar_bb")) ttbarType_ = 1;
+        else if (ttbarName.EndsWith("ttbar_cc")) ttbarType_ = 2;
         else {
           std::cout <<"ERROR: did not recognize ttbar sample type = " << sampleName
                     << std::endl
@@ -979,26 +945,11 @@ int main ( int argc, char ** argv )
         if(!keepEvent) continue;
       }// end if you are a top sample
 
+      //-------------------------------------
+      //-------------------------------------
+
+      if (verbose) std::cout << "met stuff " <<std::endl;
       
-
-
-//       if( sample==2500 )      wgt = 157.7 * intLumi * 1./3627909;     //NNLL
-//       else if( sample==2300 ) wgt = 3048. * intLumi * 1./35504033;    // NNLO
-//       else if( sample==2400 ) wgt = 31314. * intLumi * 1./70681213;  //NNLO
-//       else if( sample==2455 ) wgt = 35.3 * intLumi * 1./21792790;    //LO
-//       else if( sample==2600 ) wgt = 3.19 * intLumi * 1./259971; //NNLO
-//       else if( sample==2601 ) wgt = 1.44 * intLumi * 1./137980; //NNLO
-//       else if( sample==2602 ) wgt = 41.92 * intLumi * 1./3861170; //NNLO
-//       else if( sample==2603 ) wgt = 22.65 * intLumi * 1./1944826; //NNLO
-//       else if( sample==2604 ) wgt = 7.87 * intLumi * 1./814390; //NNLO
-//       else if( sample==2605 ) wgt = 7.87 * intLumi * 1./809984; //NNLO
-
-
-      // int run  = event->run;
-      // int lumi = event->lumi;
-      // long evt = event->evt;
-
-
       MetIter pfmet = pfmets.begin();
       // MetIter calomet = calomets.begin();
       // MetIter tcmet = tcmets.begin();
@@ -1021,13 +972,14 @@ int main ( int argc, char ** argv )
 	if( isGood && !isFake ) numpv++;
       }
 
+      if (verbose) std::cout << "about to do pu reweight " <<std::endl;
+      ///--------------------------------
       // Pile-up reweighting  ////Robin
       float PUwgt = 1;
       float PUwgt_up = 1;
       float PUwgt_down = 1;
-//       if( sample>=0 ) PUwgt = lumiWeights_it.ITweight( n0 );
 
-      if( sample>=0 ){
+      if( sample>=0 || sample==-2500){
 	if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
 	  PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numGenPV ) );
 	  PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numGenPV ) );
@@ -1042,16 +994,12 @@ int main ( int argc, char ** argv )
       wgt *= PUwgt;
 
 
-
+      ///--------------------------------
       // Trigger Requirement
       bool triggerFound = false;
       bool triggerPass  = false;
 
-      // assert the trigger req to be true
-
-//       triggerFound = true;
-//       triggerPass = true;
-      
+      if (verbose) std::cout << "about to do pu reweight " <<std::endl;
       //      if( sample>=0 ){
 	for( TrigIter hltbit = hlt.begin(); hltbit != hlt.end(); ++hltbit ){
 	  for( int t=0; t<int(mc_hlt_trigger_collection.size()); t++ ){
@@ -1079,23 +1027,13 @@ int main ( int argc, char ** argv )
 	break;
       }
 
-//       if( cnt==10 ) {
-// 	for( TrigIter hltbit = hlt.begin(); hltbit != hlt.end(); ++hltbit ){
-// 	  std::string hlt_name = hltbit->name;
-// 	  std::cout << "==>" << hlt_name << "\t\t ps is  " << hltbit->prescale << endl; 
-// 	   for( int t=0; t<int(mc_hlt_trigger_collection.size()); t++ ){
-// 	     if(hlt_name.find(mc_hlt_trigger_collection[t])!=std::string::npos) {
-// 	       std::cout << "--- we found " << hlt_name << " and ps is" << hltbit->prescale << endl;
-// 	     }
-// 	   }
-// 	}
-//       }
+
 
       nevents++;
       nevents_wgt+=wgt;
 
-      int mcut = 0;
-      h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // preselection 0
+//       int mcut = 0;
+//       h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // preselection 0
 
 
 
@@ -1105,87 +1043,137 @@ int main ( int argc, char ** argv )
       bool passHBHENoiseFilter = ( event->HBHENoiseFilter==1 ) ? true : false;
 
       bool cleanEvent = ( passGoodVertex && passFilterOutScraping && passHBHENoiseFilter );
-      cleanEvent = ( cleanEvent || (sample>=0) );
+      cleanEvent = ( cleanEvent || (sample>=0 || sample==-2500) );
 
 
+      //////////split nGen
+      if( sample==120 ){
+	bool has2tWb = false;
+	bool has2tWb_Wqq_Wemu = false;
+	bool has2tWb_Wqq_Wemutau = false;
+	bool has2tWb_Wqq_Wemu_Hbb = false;
+	bool has2tWb_Wqq_Wemutau_Hbb = false;
+	bool has2tWb_2Wemu = false;
+	bool has2tWb_2Wemutau = false;
+	bool has2tWb_2Wemu_Hbb = false;
+	bool has2tWb_2Wemutau_Hbb = false;
 
-
-      if( sample>=0 ){
-
-	double binW0decay = -99;
-	double binW1decay = -99;
-	double binHdecay  = -99;
-
-	// Get the decays product of the W
-	int W0decay = event->W0decay;
-	int W1decay = event->W1decay;
-
-	// loop over status==3 mc particles
-	std::vector<int> higgs_daughter_id;
+	int numWt=0, numbH=0, numqW=0, numlnuW=0, numlnutauW=0;
 	for( int i=0; i<int(mcparticles.size()); i++ ){
 	  int id = mcparticles.at(i).id;
 	  int motherID = mcparticles.at(i).motherId;
-	  int motherAbsID = fabs(motherID);
+	  int grandMotherID = mcparticles.at(i).grandMotherId;
 
-	  if( motherAbsID==25 ) higgs_daughter_id.push_back(id);
-	  if( abs(id)==25 ) h_H_mass->Fill(mcparticles.at(i).mass);
+	  if( abs(id)==24 && abs(motherID)==6 ) numWt++;
+	  if( abs(id)==5 && abs(motherID)==25 ) numbH++;
+	  if( abs(id)<=5 && abs(motherID)==24 && abs(grandMotherID)==6 ) numqW++;
+	  if( (abs(id)>=11 && abs(id)<=14) && abs(motherID)==24 && abs(grandMotherID)==6 ) numlnuW++;
+	  if( (abs(id)>=11 && abs(id)<=16) && abs(motherID)==24 && abs(grandMotherID)==6 ) numlnutauW++;
 	}
 
-	// Convert from decay to bin
-	if( (W0decay==201 || W0decay==102) )      binW0decay=0.5;
-	else if( (W0decay==203 || W0decay==302) ) binW0decay=1.5;
-	else if( (W0decay==205 || W0decay==502) ) binW0decay=2.5;
-	else if( (W0decay==401 || W0decay==104) ) binW0decay=3.5;
-	else if( (W0decay==403 || W0decay==304) ) binW0decay=4.5;
-	else if( (W0decay==405 || W0decay==504) ) binW0decay=5.5;
-	else if( (W0decay==601 || W0decay==106) ) binW0decay=6.5;
-	else if( (W0decay==603 || W0decay==306) ) binW0decay=7.5;
-	else if( (W0decay==605 || W0decay==506) ) binW0decay=8.5;
-	else if( (W0decay==1112 || W0decay==1211) ) binW0decay=9.5;
-	else if( (W0decay==1314 || W0decay==1413) ) binW0decay=10.5;
-	else if( (W0decay==1516 || W0decay==1615) ) binW0decay=11.5;
-	else                                        binW0decay=12.5;
-
-	if( (W1decay==201 || W1decay==102) )      binW1decay=0.5;
-	else if( (W1decay==203 || W1decay==302) ) binW1decay=1.5;
-	else if( (W1decay==205 || W1decay==502) ) binW1decay=2.5;
-	else if( (W1decay==401 || W1decay==104) ) binW1decay=3.5;
-	else if( (W1decay==403 || W1decay==304) ) binW1decay=4.5;
-	else if( (W1decay==405 || W1decay==504) ) binW1decay=5.5;
-	else if( (W1decay==601 || W1decay==106) ) binW1decay=6.5;
-	else if( (W1decay==603 || W1decay==306) ) binW1decay=7.5;
-	else if( (W1decay==605 || W1decay==506) ) binW1decay=8.5;
-	else if( (W1decay==1112 || W1decay==1211) ) binW1decay=9.5;
-	else if( (W1decay==1314 || W1decay==1413) ) binW1decay=10.5;
-	else if( (W1decay==1516 || W1decay==1615) ) binW1decay=11.5;
-	else                                        binW1decay=12.5;
-
-	h_W0_decay_W1_decay->Fill(binW0decay,binW1decay,wgt);
+	if( numWt==2 ) has2tWb = true;
+	if( numqW==2 && numlnuW==2 ) has2tWb_Wqq_Wemu = true;
+	if( numqW==2 && numlnutauW==2 ) has2tWb_Wqq_Wemutau = true;
+	if( has2tWb_Wqq_Wemu && numbH==2 ) has2tWb_Wqq_Wemu_Hbb = true;
+	if( has2tWb_Wqq_Wemutau && numbH==2 ) has2tWb_Wqq_Wemutau_Hbb = true;
+	if( numlnuW==4 ) has2tWb_2Wemu = true;
+	if( numlnutauW==4 ) has2tWb_2Wemutau = true;
+	if( has2tWb_2Wemu && numbH==2 ) has2tWb_2Wemu_Hbb = true;
+	if( has2tWb_2Wemutau && numbH==2 ) has2tWb_2Wemutau_Hbb = true;
 
 
-	// Loop over Higgs daughters
-	int d0 = -99, d1=-99;
-	for( int d=0; d<int(higgs_daughter_id.size()); d++ ){
-	  int id = higgs_daughter_id[d];
-	  double absId = fabs(id);
-
-	  if( d0==-99 ) d0 = absId;
-	  else if( d1==-99 ) d1 = absId;
-	}
-
-	if( d0==5 && d1==5 )        binHdecay=0.5;
-	else if( d0==24 && d1==24 ) binHdecay=1.5;
-	else if( d0==15 && d1==15 ) binHdecay=2.5;
-	else if( d0==21 && d1==21 ) binHdecay=3.5;
-	else if( d0==22 && d1==22 ) binHdecay=4.5;
-	else if( d0==23 && d1==23 ) binHdecay=5.5;
-	else if( d0==4  && d1==4  ) binHdecay=6.5;
-	else if( (d0==23 && d1==22) || (d1==23 && d0==22) ) binHdecay=7.5;
-	else                        binHdecay=8.5;
-
-	h_H_decay->Fill(binHdecay,wgt);
+	if( has2tWb ) h_nGen->Fill(0);
+	if( has2tWb_Wqq_Wemu ) h_nGen->Fill(1);
+	if( has2tWb_Wqq_Wemutau ) h_nGen->Fill(2);
+	if( has2tWb_Wqq_Wemu_Hbb ) h_nGen->Fill(3);
+	if( has2tWb_Wqq_Wemutau_Hbb ) h_nGen->Fill(4);
+	if( has2tWb_2Wemu ) h_nGen->Fill(5);
+	if( has2tWb_2Wemutau ) h_nGen->Fill(6);
+	if( has2tWb_2Wemu_Hbb ) h_nGen->Fill(7);
+	if( has2tWb_2Wemutau_Hbb ) h_nGen->Fill(8);
       }
+      //////////
 
+//      if( sample>=0 || sample==-2500){
+
+// 	double binW0decay = -99;
+// 	double binW1decay = -99;
+// 	double binHdecay  = -99;
+
+// 	// Get the decays product of the W
+// 	int W0decay = event->W0decay;
+// 	int W1decay = event->W1decay;
+
+// 	// loop over status==3 mc particles
+// 	std::vector<int> higgs_daughter_id;
+// 	for( int i=0; i<int(mcparticles.size()); i++ ){
+// 	  int id = mcparticles.at(i).id;
+// 	  int motherID = mcparticles.at(i).motherId;
+// 	  int motherAbsID = fabs(motherID);
+
+// 	  if( motherAbsID==25 ) higgs_daughter_id.push_back(id);
+// 	  if( abs(id)==25 ) h_H_mass->Fill(mcparticles.at(i).mass);
+// 	}
+
+// 	// Convert from decay to bin
+// 	if( (W0decay==201 || W0decay==102) )      binW0decay=0.5;
+// 	else if( (W0decay==203 || W0decay==302) ) binW0decay=1.5;
+// 	else if( (W0decay==205 || W0decay==502) ) binW0decay=2.5;
+// 	else if( (W0decay==401 || W0decay==104) ) binW0decay=3.5;
+// 	else if( (W0decay==403 || W0decay==304) ) binW0decay=4.5;
+// 	else if( (W0decay==405 || W0decay==504) ) binW0decay=5.5;
+// 	else if( (W0decay==601 || W0decay==106) ) binW0decay=6.5;
+// 	else if( (W0decay==603 || W0decay==306) ) binW0decay=7.5;
+// 	else if( (W0decay==605 || W0decay==506) ) binW0decay=8.5;
+// 	else if( (W0decay==1112 || W0decay==1211) ) binW0decay=9.5;
+// 	else if( (W0decay==1314 || W0decay==1413) ) binW0decay=10.5;
+// 	else if( (W0decay==1516 || W0decay==1615) ) binW0decay=11.5;
+// 	else                                        binW0decay=12.5;
+
+// 	if( (W1decay==201 || W1decay==102) )      binW1decay=0.5;
+// 	else if( (W1decay==203 || W1decay==302) ) binW1decay=1.5;
+// 	else if( (W1decay==205 || W1decay==502) ) binW1decay=2.5;
+// 	else if( (W1decay==401 || W1decay==104) ) binW1decay=3.5;
+// 	else if( (W1decay==403 || W1decay==304) ) binW1decay=4.5;
+// 	else if( (W1decay==405 || W1decay==504) ) binW1decay=5.5;
+// 	else if( (W1decay==601 || W1decay==106) ) binW1decay=6.5;
+// 	else if( (W1decay==603 || W1decay==306) ) binW1decay=7.5;
+// 	else if( (W1decay==605 || W1decay==506) ) binW1decay=8.5;
+// 	else if( (W1decay==1112 || W1decay==1211) ) binW1decay=9.5;
+// 	else if( (W1decay==1314 || W1decay==1413) ) binW1decay=10.5;
+// 	else if( (W1decay==1516 || W1decay==1615) ) binW1decay=11.5;
+// 	else                                        binW1decay=12.5;
+
+// 	h_W0_decay_W1_decay->Fill(binW0decay,binW1decay,wgt);
+
+
+// 	// Loop over Higgs daughters
+// 	int d0 = -99, d1=-99;
+// 	for( int d=0; d<int(higgs_daughter_id.size()); d++ ){
+// 	  int id = higgs_daughter_id[d];
+// 	  double absId = fabs(id);
+
+// 	  if( d0==-99 ) d0 = absId;
+// 	  else if( d1==-99 ) d1 = absId;
+// 	}
+
+// 	if( d0==5 && d1==5 )        binHdecay=0.5;
+// 	else if( d0==24 && d1==24 ) binHdecay=1.5;
+// 	else if( d0==15 && d1==15 ) binHdecay=2.5;
+// 	else if( d0==21 && d1==21 ) binHdecay=3.5;
+// 	else if( d0==22 && d1==22 ) binHdecay=4.5;
+// 	else if( d0==23 && d1==23 ) binHdecay=5.5;
+// 	else if( d0==4  && d1==4  ) binHdecay=6.5;
+// 	else if( (d0==23 && d1==22) || (d1==23 && d0==22) ) binHdecay=7.5;
+// 	else                        binHdecay=8.5;
+
+// 	h_H_decay->Fill(binHdecay,wgt);
+//     }
+
+
+      if (verbose) std::cout << "about to do ele selection " <<std::endl;
+
+      
       /////////
       ///
       /// Electrons
@@ -1311,9 +1299,9 @@ int main ( int argc, char ** argv )
     
 	if( ((muPt>20.) && (muAbsEta<2.1) && id && tightIso) ){
 	  tight_mu_index.push_back(i);
-	  h_mu_pt->Fill(muPt,wgt);
-	  h_mu_eta->Fill(muEta,wgt);
-	  h_mu_phi->Fill(muPhi,wgt);
+// 	  h_mu_pt->Fill(muPt,wgt);
+// 	  h_mu_eta->Fill(muEta,wgt);
+// 	  h_mu_phi->Fill(muPhi,wgt);
 
 	  if (muPt > fstMuPt) fstMuPt = muPt;  ///Robin
 
@@ -1347,15 +1335,10 @@ int main ( int argc, char ** argv )
       }// end muon loop
 
 
+      if (verbose) std::cout << "done with muons" <<std::endl;      
+
       int numTightMuons = int(tight_mu_index.size());
       int numLooseMuons = int(loose_mu_index.size()) - numTightMuons;
-
-//       ///Robin
-//       for( int m=0; m<int(tight_mu_index.size()); m++ ){
-// 	double ptMax = muPt;
-	
-//       }
-
 
 
 //       if (numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons >= 2 )
@@ -1394,16 +1377,30 @@ int main ( int argc, char ** argv )
       std::list<float> jet_desc;      
 
 
+      double totalDeltaPx = 0.0;
+      double totalDeltaPy = 0.0;
 
+      bool jerDebugPrint = false;
 
+      /////////////////////////////////////////////////
+      //
+      //   Loop over jets
+      //
+      // 
+      /////////////////////////////////////////////////
+
+      if (jerDebugPrint || verbose)
+        cout << "\n--------------new event------------------" << endl;
+        
       for( int i=0; i<int(pfjets.size()); i++ ){
-
+        
 	jet_px.push_back(pfjets.at(i).px);
 	jet_py.push_back(pfjets.at(i).py);
 	jet_pz.push_back(pfjets.at(i).pz);
 	jet_pt.push_back(pfjets.at(i).pt);
 	jet_energy.push_back(pfjets.at(i).energy);
-	
+
+    // Apply JES uncertainty to all jets
 	double unc = pfjets.at(i).JESunc;
 
 	jet_px[i] *= (1. + jes*unc);
@@ -1412,11 +1409,43 @@ int main ( int argc, char ** argv )
 	jet_pt[i] *= (1. + jes*unc);
 	jet_energy[i] *= (1. + jes*unc);
 
+    
 	double jetPt = pfjets.at(i).pt;
 	jetPt *= (1. + jes*unc);
-	double jetEta = pfjets.at(i).eta;
-	double jetPhi = pfjets.at(i).phi;
-	double jetAbsEta = fabs(jetEta);
+
+    // Apply JER uncertainty to all jets
+
+
+    // 0 for nominal, 1 for up, -1 for down
+    double jetEta = pfjets.at(i).eta;	
+    double jetAbsEta = fabs(jetEta);
+    double genJetPT = pfjets.at(i).genPartonPT;
+    double jetPhi = pfjets.at(i).phi;
+    
+    double myJER = getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
+    // testing w/o   JER
+    myJER = 1.0;
+
+
+    double deltaPx = jet_px[i] * (myJER - 1.0);
+    double deltaPy = jet_py[i] * (myJER - 1.0);
+
+    
+    if (jerDebugPrint || verbose)
+      std::cout << "Jet num " << i << "  Old px " << jet_px[i] << " new px " << jet_px[i]*myJER
+                << " delta px " << deltaPx << std::endl
+                << "      Old py " << jet_py[i] << " new py " << jet_py[i]*myJER
+                << " delta py " << deltaPy << std::endl;
+
+
+    jet_px[i] *= myJER;
+	jet_py[i] *= myJER;
+	jet_pz[i] *= myJER;
+	jet_pt[i] *= myJER;
+	jet_energy[i] *= myJER;	
+	jetPt *= myJER;
+    
+
 
 	bool kin = ( jetPt>30. );
 	bool eta = ( jetAbsEta<2.4 );
@@ -1424,38 +1453,50 @@ int main ( int argc, char ** argv )
 
 	if( !(kin && eta && id) ) continue;
 
-	bool hasCloseLepton = false;
-	for( int m=0; m<int(tight_mu_index.size()); m++ ){
-	  int mu_index = tight_mu_index[m];
-	  double dR_mu_jet = kinem::delta_R(muons.at(mu_index).eta,muons.at(mu_index).phi,jetEta,jetPhi);
-	  if( dR_mu_jet<0.3 ){
-	    hasCloseLepton = true;
-	    break;
-	  }
-	}
-	for( int m=0; m<int(tight_ele_index.size()); m++ ){
-	  int ele_index = tight_ele_index[m];
-	  double dR_ele_jet = kinem::delta_R(electrons.at(ele_index).eta,electrons.at(ele_index).phi,jetEta,jetPhi);
-	  if( dR_ele_jet<0.3 ){
-	    hasCloseLepton = true;
-	    break;
-	  }
-	}
+	/// remove dR_jet_lep cut
+// 	bool hasCloseLepton = false;
+// 	for( int m=0; m<int(tight_mu_index.size()); m++ ){
+// 	  int mu_index = tight_mu_index[m];
+// 	  double dR_mu_jet = kinem::delta_R(muons.at(mu_index).eta,muons.at(mu_index).phi,jetEta,jetPhi);
+// 	  if( dR_mu_jet<0.3 ){
+// 	    hasCloseLepton = true;
+// 	    break;
+// 	  }
+// 	}
+// 	for( int m=0; m<int(tight_ele_index.size()); m++ ){
+// 	  int ele_index = tight_ele_index[m];
+// 	  double dR_ele_jet = kinem::delta_R(electrons.at(ele_index).eta,electrons.at(ele_index).phi,jetEta,jetPhi);
+// 	  if( dR_ele_jet<0.3 ){
+// 	    hasCloseLepton = true;
+// 	    break;
+// 	  }
+// 	}
 
-	// this is probably too much... 
-	if( hasCloseLepton ) {
-	  nEventsWhereJetRemoved++;
-	  continue;
-	}
+// 	// this is probably too much... 
+// 	if( hasCloseLepton ) {
+// 	  nEventsWhereJetRemoved++;
+// 	  continue;
+// 	}
 	
 	jetV[numGoodJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
 	numGoodJets++;
 	tight_pfjet_index.push_back(i);
 
+    totalDeltaPx += deltaPx;
+    totalDeltaPy += deltaPy;
 
-	h_jet_pt->Fill(jetPt,wgt);
-	h_jet_eta->Fill(jetEta,wgt);
-	h_jet_phi->Fill(jetPhi,wgt);
+    if (jerDebugPrint || verbose) 
+      std::cout << "*** Tight Jet Num = " << i << "  Jet abs eta = " << jetAbsEta
+                << "  Gen Jet Pt = " << genJetPT << "  jetPt = " << jetPt
+                << "  JER factor = " << myJER << std::endl
+                << "    deltaPx = " << deltaPx << " deltaPy = " << deltaPy 
+                << "    totalDeltaPx = " << totalDeltaPx
+                << " totalDeltaPy = " << totalDeltaPy << std::endl ;
+
+
+// 	h_jet_pt->Fill(jetPt,wgt);
+// 	h_jet_eta->Fill(jetEta,wgt);
+// 	h_jet_phi->Fill(jetPhi,wgt);
 
 
 
@@ -1481,22 +1522,22 @@ int main ( int argc, char ** argv )
 	}
 	else        untag_pfjet_index.push_back(i);
 	
-	
-	int parId =  abs(pfjets.at(i).genPartonId);
-	int flavor =  pfjets.at(i).flavour;
+// 	int parId =  abs(pfjets.at(i).genPartonId);
 
-	if( parId==5  ){
-	  h_jet_pt_b->Fill(jetPt,wgt);
-	  h_jet_disc_b->Fill(csv,wgt);
-	}
-	else if( parId==4  ){
-	  h_jet_pt_c->Fill(jetPt,wgt);
-	  h_jet_disc_c->Fill(csv,wgt);
-	}
-	else if( parId==1 || parId==2 || parId==3 || parId==21 ){
-	  h_jet_pt_l->Fill(jetPt,wgt);
-	  h_jet_disc_l->Fill(csv,wgt);
-	}
+// 	if( parId==5  ){
+// 	  h_jet_pt_b->Fill(jetPt,wgt);
+// 	  h_jet_disc_b->Fill(csv,wgt);
+// 	}
+// 	else if( parId==4  ){
+// 	  h_jet_pt_c->Fill(jetPt,wgt);
+// 	  h_jet_disc_c->Fill(csv,wgt);
+// 	}
+// 	else if( parId==1 || parId==2 || parId==3 || parId==21 ){
+// 	  h_jet_pt_l->Fill(jetPt,wgt);
+// 	  h_jet_disc_l->Fill(csv,wgt);
+// 	}
+
+	int flavor =  pfjets.at(i).flavour;
 
 	good_jet_pt.push_back(jetPt);
 	good_jet_eta.push_back(jetEta);
@@ -1534,11 +1575,11 @@ int main ( int argc, char ** argv )
       bool oneEleOneMuon = ((numTightMuons ==1) && (numTightElectrons ==1));
       bool twoTightEle = (numTightElectrons ==2);
 
-      bool geOneTightMuon = (numTightMuons >=1);
-      bool geTwoJets = (numJet >=2 );
-      bool geThreeJets = (numJet >=3);
-      bool geTwoTags = (numTag >=2);
-      bool geThreeTags = (numTag >=3);
+//       bool geOneTightMuon = (numTightMuons >=1);
+//       bool geTwoJets = (numJet >=2 );
+//       bool geThreeJets = (numJet >=3);
+//       bool geTwoTags = (numTag >=2);
+//       bool geThreeTags = (numTag >=3);
 
       bool passTwoMuon = twoLeptons && ( twoTightMuon || TightMuonLooseMuon ) ;
       bool passTwoEle = twoLeptons && ( twoTightEle || TightEleLooseEle ) ;
@@ -1577,93 +1618,91 @@ int main ( int argc, char ** argv )
       ////------------b-tag SF
       ////
       //////////////////////////
-      double prob0,probge1,prob1,probge2,prob2,probge3,prob3,probge4;
-      
-      double prob0_SFhfup,probge1_SFhfup,prob1_SFhfup,probge2_SFhfup,prob2_SFhfup,probge3_SFhfup,prob3_SFhfup,probge4_SFhfup;
-      double prob0_SFlfup,probge1_SFlfup,prob1_SFlfup,probge2_SFlfup,prob2_SFlfup,probge3_SFlfup,prob3_SFlfup,probge4_SFlfup;
-      double prob0_SFhfdown,probge1_SFhfdown,prob1_SFhfdown,probge2_SFhfdown,prob2_SFhfdown,probge3_SFhfdown,prob3_SFhfdown,probge4_SFhfdown;
-      double prob0_SFlfdown,probge1_SFlfdown,prob1_SFlfdown,probge2_SFlfdown,prob2_SFlfdown,probge3_SFlfdown,prob3_SFlfdown,probge4_SFlfdown;
+      double wgt_prob=0, wgt_prob_hfSFup=0, wgt_prob_hfSFdown=0, wgt_prob_lfSFup=0, wgt_prob_lfSFdown=0;                                  
+      double wgt_prob_ge4=0, wgt_prob_ge4_hfSFup=0, wgt_prob_ge4_hfSFdown=0, wgt_prob_ge4_lfSFup=0, wgt_prob_ge4_lfSFdown=0;              
+
+
 	
-	if( sample>=0 ){
-	  // nominal
-	  calculateTagProb( sample, good_jet_pt, good_jet_eta, good_jet_tag, good_jet_flavor, 
-			    prob0, probge1, prob1, probge2, prob2, probge3, prob3, probge4, 
-			    0, 1, 1, 1);
+	if( sample>=0 || sample==-2500){
+          std::vector<BTagWeight::JetInfo> myjetinfo;                                                                   
+          std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
+          std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
+          std::vector<BTagWeight::JetInfo> myjetinfo_lfSFup;                                                            
+          std::vector<BTagWeight::JetInfo> myjetinfo_lfSFdown;
+          if (verbose) std::cout << "Looping over  jets for btag uncert" <<std::endl;
+          for( int j=0; j<int(good_jet_pt.size()); j++ ){
+            if (verbose) std::cout << "calling btag sf" <<std::endl;
+            if (verbose) std::cout << "one" <<std::endl;
+            std::vector<double> myEffSF = getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
+            if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
+            BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );      
+            myjetinfo.push_back(myjet);                                                                                                     
+            if (verbose) std::cout << "two" <<std::endl;
+            std::vector<double> myEffSF_hfSFup = getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);     
+            BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );  
+            myjetinfo_hfSFup.push_back(myjet_hfSFup);                            
+            if (verbose) std::cout << "three" <<std::endl;
+            std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );                     
+            BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );                                                 
+            myjetinfo_hfSFdown.push_back(myjet_hfSFdown);                                                                                   
+            if (verbose) std::cout << "four" <<std::endl;
+            std::vector<double> myEffSF_lfSFup = getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]  );                        
+            BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );                                                       
+            myjetinfo_lfSFup.push_back(myjet_lfSFup);                                                                                       
+            if (verbose) std::cout << "five" <<std::endl;
+            std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );                     
+            BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );                                                 
+            myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
 
-	  // SF, heavy and light flavors
-	  calculateTagProb( sample, good_jet_pt, good_jet_eta, good_jet_tag, good_jet_flavor, 
-			    prob0_SFhfdown, probge1_SFhfdown, prob1_SFhfdown, probge2_SFhfdown, prob2_SFhfdown, probge3_SFhfdown, prob3_SFhfdown, probge4_SFhfdown, 
-			    -1, 1, 1, 1);
-	  calculateTagProb( sample, good_jet_pt, good_jet_eta, good_jet_tag, good_jet_flavor, 
-			    prob0_SFlfdown, probge1_SFlfdown, prob1_SFlfdown, probge2_SFlfdown, prob2_SFlfdown, probge3_SFlfdown, prob3_SFlfdown, probge4_SFlfdown, 
-			    -2, 1, 1, 1);
-	  calculateTagProb( sample, good_jet_pt, good_jet_eta, good_jet_tag, good_jet_flavor, 
-			    prob0_SFhfup, probge1_SFhfup, prob1_SFhfup, probge2_SFhfup, prob2_SFhfup, probge3_SFhfup, prob3_SFhfup, probge4_SFhfup, 
-			    1, 1, 1, 1);
-	  calculateTagProb( sample, good_jet_pt, good_jet_eta, good_jet_tag, good_jet_flavor, 
-			    prob0_SFlfup, probge1_SFlfup, prob1_SFlfup, probge2_SFlfup, prob2_SFlfup, probge3_SFlfup, prob3_SFlfup, probge4_SFlfup, 
-			    2, 1, 1, 1);
+            if (verbose) std::cout << "done calling sf calc " <<std::endl;
+          }                                                                                                                                 
 
-	}
-	else{ /// why 0 for data???
-	  prob0=0; probge1=0; prob1=0; probge2=0; probge3=0; prob2=0;
-	  prob0_SFhfup=0; probge1_SFhfup=0; prob1_SFhfup=0; probge2_SFhfup=0; probge3_SFhfup=0; prob2_SFhfup=0;
-	  prob0_SFlfup=0; probge1_SFlfup=0; prob1_SFlfup=0; probge2_SFlfup=0; probge3_SFlfup=0; prob2_SFlfup=0;
-	  prob0_SFhfdown=0; probge1_SFhfdown=0; prob1_SFhfdown=0; probge2_SFhfdown=0; probge3_SFhfdown=0; prob2_SFhfdown=0;
-	  prob0_SFlfdown=0; probge1_SFlfdown=0; prob1_SFlfdown=0; probge2_SFlfdown=0; probge3_SFlfdown=0; prob2_SFlfdown=0;
+          if (verbose) std::cout << "Now using btag weight" <<std::endl;
 
-	}
+          
+          BTagWeight bweight(1,1);                                                                                                          
+          if( numTag<4 ){                                                         
+            wgt_prob = bweight.weight(myjetinfo,numTag,numTag);                   
+            wgt_prob_hfSFup   = bweight.weight(myjetinfo_hfSFup,numTag,numTag);   
+            wgt_prob_hfSFdown = bweight.weight(myjetinfo_hfSFdown,numTag,numTag); 
+            wgt_prob_lfSFup   = bweight.weight(myjetinfo_lfSFup,numTag,numTag);   
+            wgt_prob_lfSFdown = bweight.weight(myjetinfo_lfSFdown,numTag,numTag); 
+          }                                                                       
+          else {                                                                  
+            wgt_prob_ge4 = bweight.weight(myjetinfo,4,99);                        
+            wgt_prob_ge4_hfSFup   = bweight.weight(myjetinfo_hfSFup,4,99);        
+            wgt_prob_ge4_hfSFdown = bweight.weight(myjetinfo_hfSFdown,4,99);      
+            wgt_prob_ge4_lfSFup   = bweight.weight(myjetinfo_lfSFup,4,99);        
+            wgt_prob_ge4_lfSFdown = bweight.weight(myjetinfo_lfSFdown,4,99);      
+          }
+        }
 
-	*(floatBranches["prob0"]) = prob0;
-	*(floatBranches["prob1"]) = prob1;
-	*(floatBranches["prob2"]) = prob2;
-	*(floatBranches["prob3"]) = prob3;
+    if (verbose) std::cout << "done with btag weight loop" <<std::endl;
+    
+        double wgt_btag = 1, wgt_btag_hfSFup = 1, wgt_btag_hfSFdown = 1, wgt_btag_lfSFup = 1, wgt_btag_lfSFdown = 1;                        
+        if( sample>=0 || sample==-2500){                                                                                                                    
+          if( numTag<4 ){                                                                                                                   
+            wgt_btag = wgt_prob;                                                                                                        
+            wgt_btag_hfSFup   = wgt_prob_hfSFup;                                                                                        
+            wgt_btag_hfSFdown = wgt_prob_hfSFdown;                                                                                      
+            wgt_btag_lfSFup   = wgt_prob_lfSFup;                                                                                        
+            wgt_btag_lfSFdown = wgt_prob_lfSFdown;                                                                                      
+          }   
+          else {                                                                                                                            
+            wgt_btag = wgt_prob_ge4;                                                                                                    
+            wgt_btag_hfSFup   = wgt_prob_ge4_hfSFup;                                                                                    
+            wgt_btag_hfSFdown = wgt_prob_ge4_hfSFdown;                                                                                  
+            wgt_btag_lfSFup   = wgt_prob_ge4_lfSFup;                                                                                    
+            wgt_btag_lfSFdown = wgt_prob_ge4_lfSFdown;                                                                                  
+          }
+        }
 
-	*(floatBranches["probge1"]) = probge1;
-	*(floatBranches["probge2"]) = probge2;
-	*(floatBranches["probge3"]) = probge3;
-	*(floatBranches["probge4"]) = probge4;
-	//SF hf
-	*(floatBranches["prob0_SFhfdown"]) = prob0_SFhfdown;
-	*(floatBranches["prob1_SFhfdown"]) = prob1_SFhfdown;
-	*(floatBranches["prob2_SFhfdown"]) = prob2_SFhfdown;
-	*(floatBranches["prob3_SFhfdown"]) = prob3_SFhfdown;
-
-	*(floatBranches["probge1_SFhfdown"]) = probge1_SFhfdown;
-	*(floatBranches["probge2_SFhfdown"]) = probge2_SFhfdown;
-	*(floatBranches["probge3_SFhfdown"]) = probge3_SFhfdown;
-	*(floatBranches["probge4_SFhfdown"]) = probge4_SFhfdown;
-
-	*(floatBranches["prob0_SFhfup"]) = prob0_SFhfup;
-	*(floatBranches["prob1_SFhfup"]) = prob1_SFhfup;
-	*(floatBranches["prob2_SFhfup"]) = prob2_SFhfup;
-	*(floatBranches["prob3_SFhfup"]) = prob3_SFhfup;
-
-	*(floatBranches["probge1_SFhfup"]) = probge1_SFhfup;
-	*(floatBranches["probge2_SFhfup"]) = probge2_SFhfup;
-	*(floatBranches["probge3_SFhfup"]) = probge3_SFhfup;
-	*(floatBranches["probge4_SFhfup"]) = probge4_SFhfup;
-	//SF lf
-	*(floatBranches["prob0_SFlfdown"]) = prob0_SFlfdown;
-	*(floatBranches["prob1_SFlfdown"]) = prob1_SFlfdown;
-	*(floatBranches["prob2_SFlfdown"]) = prob2_SFlfdown;
-	*(floatBranches["prob3_SFlfdown"]) = prob3_SFlfdown;
-
-	*(floatBranches["probge1_SFlfdown"]) = probge1_SFlfdown;
-	*(floatBranches["probge2_SFlfdown"]) = probge2_SFlfdown;
-	*(floatBranches["probge3_SFlfdown"]) = probge3_SFlfdown;
-	*(floatBranches["probge4_SFlfdown"]) = probge4_SFlfdown;
-
-	*(floatBranches["prob0_SFlfup"]) = prob0_SFlfup;
-	*(floatBranches["prob1_SFlfup"]) = prob1_SFlfup;
-	*(floatBranches["prob2_SFlfup"]) = prob2_SFlfup;
-	*(floatBranches["prob3_SFlfup"]) = prob3_SFlfup;
-
-	*(floatBranches["probge1_SFlfup"]) = probge1_SFlfup;
-	*(floatBranches["probge2_SFlfup"]) = probge2_SFlfup;
-	*(floatBranches["probge3_SFlfup"]) = probge3_SFlfup;
-	*(floatBranches["probge4_SFlfup"]) = probge4_SFlfup;
-
+	//////
+        *(floatBranches["prob"]) = wgt_btag;                                                                                         
+        *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFup;                                                                       
+        *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFdown;                                                                           
+        *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFup;                                                                       
+        *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;                                                                           
 
 
       /////////////////////////////////
@@ -1673,9 +1712,31 @@ int main ( int argc, char ** argv )
       ////////////////////////////////
 
       //met
-      TLorentzVector metV(pfmet->px,pfmet->py,0.0,pfmet->pt);
-      float met = pfmet->pt;
+
+    double metx = pfmet->px;
+    double mety = pfmet->py;
+    double metpt = pfmet->pt;
+    double metx_new = metx - totalDeltaPx;
+    double mety_new = mety - totalDeltaPy;
+    double metpt_new = sqrt(metx_new*metx_new + mety_new *mety_new);
+    
+    if (jerDebugPrint || verbose)
+      cout << "---> MET " << endl
+           << "     metx " << metx << endl
+           << "     mety " << mety << endl
+           << "     metpt " << metpt <<endl
+           << "     totalDeltaPx " << totalDeltaPx << endl
+           << "     totalDeltaPy " << totalDeltaPy << endl
+           << "     metx_new " << metx_new  << endl
+           << "     mety_new " << mety_new  << endl
+           << "     metpt "    << metpt_new << endl;
+
+
+    
+      TLorentzVector metV(metx_new,mety_new,0.0,metpt_new);
+      float met = metpt_new;
       float unc_met = pfmet->Upt;
+
 
       //sort btag descrminator
       jet_desc.sort();  
@@ -1729,14 +1790,8 @@ int main ( int argc, char ** argv )
       TLorentzVector non_btag_vect2;
       float avg_untagged_dijet_mass = 0.0 ;
 
-//       float h0 = 0.0 ;
-//       float h1 = 0.0 ;
-//       float h2 = 0.0 ;
-//       float h3 = 0.0 ;
-//       float h4 = 0.0 ;
 
       if ( twoLeptons ){  //////// number of jets and number of tags
-//      if ( twoLeptons && (numGoodJets > 0) && (numTag > 0)){  //////// number of jets and number of tags
 	
 	int iMuon1 = -10 ;
 	int iMuon2 = -10 ;
@@ -1846,7 +1901,9 @@ int main ( int argc, char ** argv )
 	    lep_vect1.SetPxPyPzE(muons.at(iMuon).px, muons.at(iMuon).py, muons.at(iMuon).pz, muons.at(iMuon).energy);
 	    lep_vect2.SetPxPyPzE(electrons.at(iEle).px, electrons.at(iEle).py, electrons.at(iEle).pz, electrons.at(iEle).energy);
 	  
-	  }	 
+	  }
+
+      if (verbose) std::cout << "about to fill two lep vars " <<std::endl;
  
 	  // two leptons
 	  TLorentzVector two_lepton = lep_vect1 + lep_vect2;
@@ -1906,7 +1963,7 @@ int main ( int argc, char ** argv )
 	    
 	    if (pfjets.at(iJet).btagCombinedSecVertex <= 0.679){
 	      avg_btag_disc_non_btags += pfjets.at(iJet).btagCombinedSecVertex;   		  
-	    }												
+	    }									
 	  }
 	  
 	  *(floatBranches["first_jet_pt"]) = first_jet_pt;
@@ -1970,15 +2027,16 @@ int main ( int argc, char ** argv )
 		  closest_tagged_dijet_mass = dijet_vect.M();			
 		}
 		
-	      }	
+	      }
 	    }
 	    
 	    avg_tagged_dijet_mass /= denom_avg_cnt; 
 	    avg_dr_tagged_jets /= denom_avg_cnt;
 	    
+	    min_dr_tagged_jets = min_tagged_jets_dR;
 	  }
 	  
-	  min_dr_tagged_jets = min_tagged_jets_dR;
+
 	  
 	  ////non_tagged jets
 	  
@@ -2001,13 +2059,7 @@ int main ( int argc, char ** argv )
 	    avg_untagged_dijet_mass /= denom_avg_cnt;
 	  }
 	  
-
-	  
-// 	  getSp(lep_vect,metV,jetV,numGoodJets,aplanarity,sphericity);				
-//	  getFox(two_lepton,metV,jetV,numGoodJets,h0,h1,h2,h3,h4);
-// 	  getFox_mod(lep_vect,metV,jetV,numGoodJets,Ht,h0_mod,h1_mod,h2_mod,h3_mod,h4_mod);
-// 	  getFox_mod2(lep_vect,metV,jetV,numGoodJets,Ht,h0_mod2,h1_mod2,h2_mod2,h3_mod2,h4_mod2,h5_mod2,h6_mod2,h7_mod2,h8_mod2,h9_mod2,h10_mod2);
-	  	 
+	  ////	  	 
 	  if (numTag > 1){
 	    *(floatBranches["min_dr_tagged_jets"]) = min_dr_tagged_jets;
 	    *(floatBranches["avg_dr_tagged_jets"]) = avg_dr_tagged_jets;
@@ -2028,139 +2080,134 @@ int main ( int argc, char ** argv )
 	    if (numTag > 1) *(floatBranches["second_highest_btag"]) = second_highest_btag;
 	    *(floatBranches["lowest_btag"]) = lowest_btag;
 	  }
-// 	  *(floatBranches["h0"]) = h0;
-// 	  *(floatBranches["h1"]) = h1;
-// 	  *(floatBranches["h2"]) = h2;
-// 	  *(floatBranches["h3"]) = h3;
-// 	  *(floatBranches["h4"]) = h4;
-
-
 	  
 
       } // end neural net selection
 
       //--------------------
+
+      if (verbose) std::cout << "about to fill tree" <<std::endl;
       
       summaryTree->Fill();
       
       
 
-      if( cleanEvent ){
-        h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // cleaning 1
-        nevents_pass_cleaning++;
-        nevents_pass_cleaning_wgt += wgt;
+//       if( cleanEvent ){
+//         h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // cleaning 1
+//         nevents_pass_cleaning++;
+//         nevents_pass_cleaning_wgt += wgt;
 
-        if( triggerPass ){
-          h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // trigger 2
-          nevents_pass_trigger++;
-          nevents_pass_trigger_wgt += wgt;
+//         if( triggerPass ){
+//           h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // trigger 2
+//           nevents_pass_trigger++;
+//           nevents_pass_trigger_wgt += wgt;
 
 
-          //////////////////////////////////////////////////////////////////
-          //
-          //    Two tight muons selection
-          //
-          //////////////////////////////////////////////////////////////////
+//           //////////////////////////////////////////////////////////////////
+//           //
+//           //    Two tight muons selection
+//           //
+//           //////////////////////////////////////////////////////////////////
       
-          if( geOneTightMuon ){
-            h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 1 good muon 3
+//           if( geOneTightMuon ){
+//             h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 1 good muon 3
 
-            if( twoTightMuon ){
-              h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // exactly two tight muons 4
+//             if( twoTightMuon ){
+//               h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // exactly two tight muons 4
 
-              if( geTwoJets ){
-                h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 jets 5 
+//               if( geTwoJets ){
+//                 h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 jets 5 
 
-                if( geTwoTags ){
-                  h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 tags 6
+//                 if( geTwoTags ){
+//                   h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 tags 6
 
-                  if( geThreeJets ){
-                    h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 4 jets 7 
+//                   if( geThreeJets ){
+//                     h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 4 jets 7 
 
-                    if( geThreeTags ){
-                      h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 3 tags 8
-
-
-                    }
-                  }
-                }
-              }
-            }
-          }// end >=1 tight muon
-
-          /////////////////////////////////////////////////////////////
-          //
-          //   1 mu, 1 ele
-          //
-          /////////////////////////////////////////////////////////////
+//                     if( geThreeTags ){
+//                       h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 3 tags 8
 
 
-          // magic numbers ... skip to the start of the mu+ele selection
+//                     }
+//                   }
+//                 }
+//               }
+//             }
+//           }// end >=1 tight muon
 
-          mcut = 9;
+//           /////////////////////////////////////////////////////////////
+//           //
+//           //   1 mu, 1 ele
+//           //
+//           /////////////////////////////////////////////////////////////
+
+
+//           // magic numbers ... skip to the start of the mu+ele selection
+
+//           mcut = 9;
           
           
-          if( oneEleOneMuon  ){
-            h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // 1muo + 1ele 9 
+//           if( oneEleOneMuon  ){
+//             h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // 1muo + 1ele 9 
 
 
-            if( geTwoJets ){
-              h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 jets 10 
+//             if( geTwoJets ){
+//               h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 jets 10 
 
-              if( geTwoTags ){
-                h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 tags 11
+//               if( geTwoTags ){
+//                 h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 tags 11
 
-                if( geThreeJets ){
-                  h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 4 jets 12
+//                 if( geThreeJets ){
+//                   h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 4 jets 12
 
-                  if( geThreeTags ){
-                    h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 3 tags 13
+//                   if( geThreeTags ){
+//                     h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 3 tags 13
 
-                  }
-                }
-              }
-            }
+//                   }
+//                 }
+//               }
+//             }
             
-          }// end ==1 muon && ==1 electron
+//           }// end ==1 muon && ==1 electron
 
-          /////////////////////////////////////////////////////////////
-          //
-          //   2 ele
-          //
-          /////////////////////////////////////////////////////////////
+//           /////////////////////////////////////////////////////////////
+//           //
+//           //   2 ele
+//           //
+//           /////////////////////////////////////////////////////////////
 
-          // magic numbers... skip to start of 2 ele cuts
+//           // magic numbers... skip to start of 2 ele cuts
 
-          mcut = 14;
+//           mcut = 14;
 
           
-          if( twoTightEle  ){
-            h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // == 2 ele 14
+//           if( twoTightEle  ){
+//             h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // == 2 ele 14
 
 
-            if( geTwoJets ){
-              h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 jets 15
+//             if( geTwoJets ){
+//               h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 jets 15
 
-              if( geTwoTags ){
-                h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 tags 16
+//               if( geTwoTags ){
+//                 h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 2 tags 16
 
-                if( geThreeJets ){
-                  h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 4 jets 17
+//                 if( geThreeJets ){
+//                   h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 4 jets 17
 
-                  if( geThreeTags ){
-                    h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 3 tags 18
+//                   if( geThreeTags ){
+//                     h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // >= 3 tags 18
 
-                  }
-                }
-              }
-            }
+//                   }
+//                 }
+//               }
+//             }
             
-          }// end == 2 tight Ele
+//           }// end == 2 tight Ele
 
           
           
-        }// end if trigger pass
-      } // end clean event
+//         }// end if trigger pass
+//       } // end clean event
 
 //       bool passCleaning      = cleanEvent;
 //       bool passTrigger       = ( triggerPass );
@@ -2230,6 +2277,10 @@ int main ( int argc, char ** argv )
   }// end try
   catch(std::exception& e) {
     std::cerr << " ==> caught exception " << e.what() << std::endl;
+
+    std::cerr << " Whatever it was, it probably wasn't good, so I will crash" << std::endl;
+    bool foundException = true;
+    assert (foundException == false);
     //continue;
   }
 
@@ -2282,7 +2333,7 @@ int main ( int argc, char ** argv )
 //     }
 //   }
 
-  std::cout << "How many events had jets close to leptons? " << nEventsWhereJetRemoved << endl;
+//   std::cout << "How many events had jets close to leptons? " << nEventsWhereJetRemoved << endl;
 
   histofile.Write();
   histofile.Close();
@@ -2338,359 +2389,136 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
 }
 
 
-void calculateTagProb( int useSample, std::vector<double> jetPts, std::vector<double> jetEtas, std::vector<double> jetTags, std::vector<int> jetIds, 
-		       double &Prob0, double &ProbGEQ1, double &Prob1, double &ProbGEQ2, double &Prob2, double &ProbGEQ3, double &Prob3, double &ProbGEQ4,
-		       int returnType, const double extraSFb, const double extraSFc, const double extraSFl ){
 
-  if( useSample<0 ) return;
+/////////////////////
+std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
 
-  //must initialize correctly
-  Prob2 = 0; Prob3 = 0;
-  Prob0 = 1; Prob1 = 0; ProbGEQ1 = 1; ProbGEQ2 = 0; ProbGEQ3 = 0;
+  bool getEffVerbose = false;
 
-  for( int i=0; i<int(jetPts.size()); i++) {
-    double subprob1=0, subprob2_j=0;
-    double jet0Pt = jetPts[i];
-    double jet0Tag = jetTags[i];
-    double jet0Eta = jetEtas[i];
-    int    jet0Id  = jetIds[i];
-
-    double effi = jetTagProb(jet0Pt, jet0Eta, jet0Tag, jet0Id, returnType, extraSFb, extraSFc, extraSFl);
-    Prob0 = Prob0* ( 1 - effi);
-      
-    double product = 1;
-    for( int j=0; j<int(jetPts.size()); j++) {
-      double subprob2_k=0;
-      double jet1Pt = jetPts[j];
-      double jet1Tag = jetTags[j];
-      double jet1Eta = jetEtas[j];
-      int    jet1Id  = jetIds[j];
-
-      double effj = jetTagProb(jet1Pt, jet1Eta, jet1Tag, jet1Id, returnType, extraSFb, extraSFc, extraSFl);
-      if( i != j ){
-	product = product*(1-effj);
-      }
-      if( j > i ){
-	double subproduct = 1;
-	for( int k=0; k<int(jetPts.size()); k++ ){
-	  double jet2Pt = jetPts[k];
-	  double jet2Tag = jetTags[k];
-	  double jet2Eta = jetEtas[k];
-	  int    jet2Id  = jetIds[k];
-	  
-	  double effk = jetTagProb(jet2Pt, jet2Eta, jet2Tag, jet2Id, returnType, extraSFb, extraSFc, extraSFl);
-	  if( k != j && k != i ){
-	    subproduct = subproduct*(1-effk);
-	  }
-	  if( k > j ){
-	    double subproduct1 = 1;
-	    for( int l=0; l<int(jetPts.size()); l++ ){
-	      double jet3Pt = jetPts[l];
-	      double jet3Tag = jetTags[l];
-	      double jet3Eta = jetEtas[l];
-	      int    jet3Id  = jetIds[l];
-	  
-	      double effl = jetTagProb(jet3Pt, jet3Eta, jet3Tag, jet3Id, returnType, extraSFb, extraSFc, extraSFl);
-	      if( l != k && l != j && l != i ){
-		subproduct1 = subproduct1*(1-effl);
-	      }
-	    } //l loop
-	    subprob2_k += effk*subproduct1;
-	  }
-	} //k loop
-	subprob1 += effj*subproduct;
-	subprob2_j += effj*subprob2_k;
-      }
-
-    }//j loop
     
-    Prob1 += effi*product;
-    Prob2 += effi*subprob1;
-    Prob3 += effi*subprob2_j;
+  if (getEffVerbose) std::cout  << "getEffSF called with arguments:" << std::endl
+                                << "   returnType = " << returnType << std::endl
+                                << "   jetPt = " << jetPt << std::endl
+                                << "   jetEta = " << jetEta << std::endl
+                                << "   jetId = " << jetId << std::endl;
 
-  } //i loop
-  //*/
-
-  //std::cout << "prob0 = " << Prob0 << ", prob1 = " << Prob1 << ", prob2 = " << Prob2 << std::endl;  
-
-  ProbGEQ1 = 1 - Prob0;
-  ProbGEQ2 = 1 - Prob1 - Prob0;
-  ProbGEQ3 = 1 - Prob2 - Prob1 - Prob0;
-  ProbGEQ4 = 1 - Prob3 - Prob2 - Prob1 - Prob0;
-
-}
-
-double jetTagProb( double jetPT, double jetETA, double jetTag, int jetID, int returnType, 
-		   const double extraSFb, const double extraSFc, const double extraSFl ){
-
-  float ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
-  float ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
-
-  double tagprob=0;
-  double pt  = jetPT;
-  double eta = jetETA;
-  double tag = jetTag;
-  int flavor = jetID;
-
-  //https://twiki.cern.ch/twiki/pub/CMS/BtagPOG/SFb-mujet_payload.txt
-  //Tagger: CSVM within 30 < pt < 670 GeV, abs(eta) < 2.4, x = pt
-  if( tag<0.679 ) return 0.;
-
-  double m_type = 0.;
-  if( returnType==-1 )      m_type = -1.;
-  else if( returnType==1 )  m_type = 1.;
-  else                      m_type = 0.;
-
-  double absEta = fabs(eta);
-
-  double threshold = 670;
-  pt = ( pt>threshold ) ? threshold-0.0000001 : pt;
-
-  int use_bin=-1;
-  for( int p=0; p<14; p++ ){
-    if( pt>ptmin[p] && pt<ptmax[p] ){
-      use_bin = p; break;
-    }
+  
+    
+  double m_type = 0.;                                                                                                            
+  if( returnType==-1 )      m_type = -1.;                                                                                        
+  else if( returnType==1 )  m_type = 1.;                                                                                         
+  else                      m_type = 0.;                                                                                         
+                                                                                                                                 
+  float ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};                                              
+  float ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};                                              
+                                                                                                                                 
+  double SFb_error[] = {                                                                                                         
+    0.0295675,                                                                                                                   
+    0.0295095,                                                                                                                   
+    0.0210867,                                                                                                                   
+    0.0219349,                                                                                                                   
+    0.0227033,                                                                                                                   
+    0.0204062,                                                                                                                   
+    0.0185857,                                                                                                                   
+    0.0256242,                                                                                                                   
+    0.0383341,                                                                                                                   
+    0.0409675,                                                                                                                   
+    0.0420284,                                                                                                                   
+    0.0541299,                                                                                                                   
+    0.0578761,                                                                                                                   
+    0.0655432 };                                                                                                                 
+                                                                                                                                 
+  double pt  = jetPt;                                                                                                            
+  double eta = jetEta;                                                                                                           
+  int flavor = jetId;                                                                                                            
+                                                                                                                                 
+  double threshold = 670;                                                                                                        
+  pt = ( pt>threshold ) ? threshold-0.0000001 : pt;                                                                              
+                                                                                                                                 
+  double absEta = fabs(eta);                                                                                                     
+                                                                                                                                 
+  int use_bin=-1;                                                                                                                
+  for( int p=0; p<14; p++ ){                                                                                                     
+    if( pt>ptmin[p] && pt<ptmax[p] ){                                                                                            
+      use_bin = p; break;                                                                                                        
+    }                                                                                                                            
   }
-  if( use_bin<0 ) std::cout << "   ERROR!! use_bin < 0 " << std::endl;
-
-  double SFb_error[] = {
-    0.0295675,
-    0.0295095,
-    0.0210867,
-    0.0219349,
-    0.0227033,
-    0.0204062,
-    0.0185857,
-    0.0256242,
-    0.0383341,
-    0.0409675,
-    0.0420284,
-    0.0541299,
-    0.0578761,
-    0.0655432 };
+  if (getEffVerbose) std::cout  << "Use bin = " << use_bin << std::endl;
+  
+  if( use_bin<0 ) if (getEffVerbose) std::cout  << "   ERROR!! use_bin < 0 " << std::endl;                                                           
 
 
-  double SFb = 0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt)));
+  double SFb = 0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt)));                                                                              
+                                                                                                                                            
+  double SFc = SFb;                                                                                                                         
 
-  double SFc = SFb;
+  if (getEffVerbose) std::cout  << "Getting error" << use_bin << std::endl;
+  SFb = SFb + m_type * SFb_error[use_bin];                                                                                                  
+  SFc = SFc + m_type * 2* SFb_error[use_bin];                                                                                               
 
-  SFb = SFb + m_type * SFb_error[use_bin];
-  SFc = SFc + m_type * 2* SFb_error[use_bin];
+  if (getEffVerbose) std::cout  << "switch based on return type"  << std::endl;
+  double SFl = 1.;                                                                                                                          
+  if( returnType==-2 ){ // min                                                                                                              
+    if( absEta < 0.8 )                      SFl = ((0.972455+(7.51396e-06*pt))+(4.91857e-07*(pt*pt)))+(-1.47661e-09*(pt*(pt*pt)));          
+    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.02055+(-0.000378856*pt))+(1.49029e-06*(pt*pt)))+(-1.74966e-09*(pt*(pt*pt)));          
+    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((0.983476+(-0.000607242*pt))+(3.17997e-06*(pt*pt)))+(-4.01242e-09*(pt*(pt*pt)));         
+  }                                                                                                                                         
+  else if( returnType==2 ){ // max                                                                                                          
+    if( absEta < 0.8 )                      SFl = ((1.15116+(0.00122657*pt))+(-3.63826e-06*(pt*pt)))+(2.08242e-09*(pt*(pt*pt)));            
+    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.20146+(0.000359543*pt))+(-1.12866e-06*(pt*pt)))+(6.59918e-10*(pt*(pt*pt)));           
+    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.18654+(-0.000795808*pt))+(3.69226e-06*(pt*pt)))+(-4.22347e-09*(pt*(pt*pt)));          
+  }                                                                                                                                         
+  else { // mean                                                                                                                            
+    if( absEta < 0.8 )                      SFl = ((1.06182+(0.000617034*pt))+(-1.5732e-06*(pt*pt)))+(3.02909e-10*(pt*(pt*pt)));            
+    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.111+(-9.64191e-06*pt))+(1.80811e-07*(pt*pt)))+(-5.44868e-10*(pt*(pt*pt)));            
+    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.08498+(-0.000701422*pt))+(3.43612e-06*(pt*pt)))+(-4.11794e-09*(pt*(pt*pt)));          
+  }                                                                                                                                         
 
+  double SF=1;                                                                                                                              
+                                                                                                                                            
+  double tagEff=0;
+  if (getEffVerbose) std::cout  << "Calling get bin content and find bin"  << std::endl;
 
-  double SFl = 1.;
-  if( returnType==-2 ){ // min
-    if( absEta < 0.8 )                      SFl = ((0.972455+(7.51396e-06*pt))+(4.91857e-07*(pt*pt)))+(-1.47661e-09*(pt*(pt*pt)));
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.02055+(-0.000378856*pt))+(1.49029e-06*(pt*pt)))+(-1.74966e-09*(pt*(pt*pt)));
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((0.983476+(-0.000607242*pt))+(3.17997e-06*(pt*pt)))+(-4.01242e-09*(pt*(pt*pt)));
-  }
-  else if( returnType==2 ){ // max
-    if( absEta < 0.8 )                      SFl = ((1.15116+(0.00122657*pt))+(-3.63826e-06*(pt*pt)))+(2.08242e-09*(pt*(pt*pt)));
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.20146+(0.000359543*pt))+(-1.12866e-06*(pt*pt)))+(6.59918e-10*(pt*(pt*pt)));
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.18654+(-0.000795808*pt))+(3.69226e-06*(pt*pt)))+(-4.22347e-09*(pt*(pt*pt)));
-  }
-  else { // mean
-    if( absEta < 0.8 )                      SFl = ((1.06182+(0.000617034*pt))+(-1.5732e-06*(pt*pt)))+(3.02909e-10*(pt*(pt*pt)));
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.111+(-9.64191e-06*pt))+(1.80811e-07*(pt*pt)))+(-5.44868e-10*(pt*(pt*pt)));
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.08498+(-0.000701422*pt))+(3.43612e-06*(pt*pt)))+(-4.11794e-09*(pt*(pt*pt)));
-  }
+  
+  if( abs(flavor)==5 ){                                                                                                                     
+    tagEff = h_jet_pt_eta_b_eff_->GetBinContent( h_jet_pt_eta_b_eff_->FindBin( pt, absEta ) );                                              
+    SF = SFb;                                                                                                                               
+  }                                                                                                                                         
+  else if( abs(flavor)==4 ){                                                                                                                
+    tagEff = h_jet_pt_eta_c_eff_->GetBinContent( h_jet_pt_eta_c_eff_->FindBin( pt, absEta ) );                                              
+    SF = SFc;                                                                                                                               
+  }                                                                                                                                         
+  else if( abs(flavor)==1 || abs(flavor)==2 || abs(flavor)==3 || abs(flavor)==21 ){                                                         
+    tagEff = h_jet_pt_eta_l_eff_->GetBinContent( h_jet_pt_eta_l_eff_->FindBin( pt, absEta ) );                                              
+    SF = SFl;                                                                                                                               
+  }                                                                                                                                         
+  else {                                                                                                                                    
+    tagEff = h_jet_pt_eta_o_eff_->GetBinContent( h_jet_pt_eta_o_eff_->FindBin( pt, absEta ) );                                              
+    SF = SFl;                                                                                                                               
+  }                                                                                                                                         
 
+  if (getEffVerbose) std::cout  << "    Done with get bin, creating return vector" << std::endl;
+                                                                                                                                            
+  std::vector<double> result;                                                                                                               
+  result.clear();                                                                                                                           
+  result.push_back(tagEff);                                                                                                                 
+  result.push_back(SF);                                                                                                                     
 
-  // SFb = 1.;
-  // SFc = 1.;
-  // SFl = 1.;
-
-  if( abs(flavor) == 5)       tagprob = SFb*extraSFb;
-  else if( abs(flavor) == 4 ) tagprob = SFc*extraSFc;
-  else if( abs(flavor) == 1 || abs(flavor) == 2 || abs(flavor) == 3 || abs(flavor) == 21 ) tagprob = SFl*extraSFl;
-  else                        tagprob = SFl*extraSFl;
-
-  return tagprob;
-
+  if (getEffVerbose) std::cout  << " returning " << std::endl;
+  return result;
+  
 }
 
 
 
-// void getFox(TLorentzVector lepton, TLorentzVector met, TLorentzVector jets[100], int nJets,
-// 							float &h0, float &h1, float &h2, float &h3, float &h4) {
-
-//   int visObjects = nJets;
-//   //	if (visObjects < 100) {
-//   //  		jets[visObjects] = lepton;
-//   //		visObjects++;
-//   //	}
-  
-//   float eVis = 0.0;
-//   for (int i=0; i<visObjects; i++) {
-//     eVis += jets[i].E();
-//   }
-  
-//   h0 = 0.0;
-//   h1 = 0.0;
-//   h2 = 0.0;
-//   h3 = 0.0;
-//   h4 = 0.0;
-//   for (int i=0; i<visObjects-1; i++) {
-//     for (int j=i+1; j<visObjects; j++) {
-//       float costh = cos(jets[i].Angle(jets[j].Vect()));
-//       float p0 = 1.0;
-//       float p1 = costh;
-//       float p2 = 0.5*(3.0*costh*costh - 1.0);
-//       float p3 = 0.5*(5.0*costh*costh - 3.0*costh);
-//       float p4 = 0.125*(35.0*costh*costh*costh*costh - 30.0*costh*costh + 3.0);
-//       float pipj = jets[i].P()*jets[j].P();
-//       h0 += (pipj/(eVis*eVis))*p0;
-//       h1 += (pipj/(eVis*eVis))*p1;
-//       h2 += (pipj/(eVis*eVis))*p2;
-//       h3 += (pipj/(eVis*eVis))*p3;
-//       h4 += (pipj/(eVis*eVis))*p4;
-//     }
-//   }
-  
-//   return;
-// }
-
-
-
-// bool
-// filterTTbarPlusJets(string selectEventType, std::vector<BNmcparticle> mcparticles)
-// {
-//    using namespace edm;
-//    using namespace std;
-   
-//    bool FilterResult = false;
-
-
-//    bool debug_;
-   
-//    int ttbarType_;
-
-//    //BNmcparticleCollection mcparticles;
-//    BNjetCollection pfjets;
-
-//    if( selectEventType == "tt+jets" ) ttbarType_ = 0;
-//    else if (selectEventType == "tt+bb") ttbarType_ = 1;
-//    else if (selectEventType == "tt+cc") ttbarType_ = 2;
-//    else {
-//      std::cout <<"ERROR: did not recognize selectEventType = " << selectEventType
-//                << std::endl
-//                <<"Refusing to continue" << std::endl;
-//      assert(selectEventType == "tt+jets");
-     
-//    }
-
-
-//    //Handle<BNmcparticleCollection> h_mcparticles;
-//    //iEvent.getByLabel(InputTag("BNproducer","MCstatus3"), h_mcparticles);
-//    //BNmcparticleCollection const &mcparticles = *h_mcparticles;
-
-//    // Handle<BNjetCollection> h_pfjets;
-//    //    iEvent.getByLabel(InputTag("BNproducer","selectedPatJetsPFlow"), h_pfjets);
-//    //    BNjetCollection const &pfjets = *h_pfjets;
-
-//    bool isWtoCS = false;
-
-//    if (debug_) cout << "Num MC particles = " << mcparticles.size() << std::endl
-//                     << "Num pfjets " <<  int(pfjets.size()) << std::endl;
-   
-//    // check to see if the event has a c with a 
-//    // parent W
-//    for( int i=0; i< mcparticles.size(); i++ ){
-//      int id = mcparticles.at(i).id;
-//      int motherID = mcparticles.at(i).motherId;
-
-//      if (debug_) cout <<" Particle " << i << " has id " << id << endl;
-//      if( abs(id)==4  && abs(motherID)==24 ){
-//        isWtoCS = true;
-//        break;
-//      }
-//    }
-
-
-
-//    bool isBBbarEvent = false;
-//    bool isCCbarEvent = false;
-
-
-//    bool gotB = false;
-//    bool gotC = false;
-
-//    int numBmomB=0;
-//    int numBmomT=0;
-//    int numBbarmomBbar=0;
-//    int numBbarmomTbar=0;
-//    int numCmomC=0;
-//    int numCbarmomCbar=0;
-
-
-//    for( int i=0; i<int(pfjets.size()); i++ ){
-//      int id = pfjets.at(i).genPartonId;
-//      if( id==-99 ) continue;
-//      int motherID = pfjets.at(i).genPartonMotherId;
-
-//      // check to see if pf jets is from a  b/c and mother is a gluon
-//      // or, if mother is some light quark
-//      if( abs(id)==5 && ( motherID==21 || abs(motherID)<abs(id) ) ) gotB=true;
-//      if( abs(id)==4 && ( motherID==21 || abs(motherID)<abs(id) ) ) gotC=true;
-
-//      // if things are their own mother, 
-//      // where are they from? Does this mean stable?
-//      if( id==5  && motherID==id ) numBmomB++;
-//      if( id==-5 && motherID==id ) numBbarmomBbar++;
-
-//      if( id==4  && motherID==id ) numCmomC++;
-//      if( id==-4 && motherID==id ) numCbarmomCbar++;
-
-//      if( id==5  && motherID==6  ) numBmomT++;
-//      if( id==-5 && motherID==-6 ) numBbarmomTbar++;
-//    }
-
-//    // if at least one b from b & one b from t, or if CC, and your jet was not b
-//    if( ((numBmomB>=1 && numBmomT>=1) || (numBbarmomBbar>=1 && numBbarmomTbar>=1)) && !gotB ){
-//      // for each jet that is  b from b
-//      for( int i=0; i<int(pfjets.size()); i++ ){
-//        int id0 = pfjets.at(i).genPartonId;
-//        int motherID0 = pfjets.at(i).genPartonMotherId;
-//        if( !(abs(id0)==5 && motherID0==id0) ) continue;
-
-//        // for each jet that is b from t
-//        for( int j=0; j<int(pfjets.size()); j++ ){
-//          int id1 = pfjets.at(j).genPartonId;
-//          int motherID1 = pfjets.at(j).genPartonMotherId;
-//          if( !(id1==id0 && abs(motherID1)==6) ) continue;
-
-//          // if delta r between b from b and b from t is big enough, then b in final state is OK
-//          double dR = kinem::delta_R(pfjets.at(i).genPartonEta,
-//                                     pfjets.at(i).genPartonPhi,
-//                                     pfjets.at(j).genPartonEta,
-//                                     pfjets.at(j).genPartonPhi);
-//          if( dR>0.3 ){
-//            gotB = true;
-//            break;
-//          }
-//        }
-//        if( gotB ) break;
-//      }
-//    }
-
-//    if( (numCmomC>=1 || numCbarmomCbar>=1) && !isWtoCS ){
-//      gotC = true;
-//    }
-
-//    if( gotB ) isBBbarEvent = true;
-//    else if( gotC ) isCCbarEvent = true;
-    
-   
-//    if( ttbarType_<0 )       FilterResult = true;
-//    else if( ttbarType_ ==0 && !isBBbarEvent && !isCCbarEvent ) FilterResult = true;
-//    else if( ttbarType_ ==1 &&  isBBbarEvent && !isCCbarEvent ) FilterResult = true;
-//    else if( ttbarType_ >1  && !isBBbarEvent && isCCbarEvent  ) FilterResult = true;
-
-//    if (debug_) cout << "Filter result = " << FilterResult << endl
-//                     << "isBBbarEvent = " << isBBbarEvent << endl
-//                     << "isCCbarEvent = " << isCCbarEvent << endl;
-   
-//    return FilterResult;
-
-// }
+//       if( cnt==10 ) {
+// 	for( TrigIter hltbit = hlt.begin(); hltbit != hlt.end(); ++hltbit ){
+// 	  std::string hlt_name = hltbit->name;
+// 	  if (getEffVerbose) std::cout  << "==>" << hlt_name << "\t\t ps is  " << hltbit->prescale << endl; 
+// 	   for( int t=0; t<int(mc_hlt_trigger_collection.size()); t++ ){
+// 	     if(hlt_name.find(mc_hlt_trigger_collection[t])!=std::string::npos) {
+// 	       if (getEffVerbose) std::cout  << "--- we found " << hlt_name << " and ps is" << hltbit->prescale << endl;
+// 	     }
+// 	   }
+// 	}
+//       }
