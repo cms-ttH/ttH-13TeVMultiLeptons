@@ -1424,7 +1424,7 @@ int main ( int argc, char ** argv )
     
     double myJER = getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
     // testing w/o   JER
-    myJER = 1.0;
+    //myJER = 1.0;
 
 
     double deltaPx = jet_px[i] * (myJER - 1.0);
