@@ -63,7 +63,7 @@ outDir = "batchBEAN/%s_%s/" % (sampleNameCL, iLabel)
 if not os.path.exists(outDir):
 	os.mkdir(outDir)
 
-outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_job%03d.root" % (sampleNameCL, iLabel, iLabel, iJob)
+outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 print "Output name will be ", outFileName
 
 process.outputs = cms.PSet (
