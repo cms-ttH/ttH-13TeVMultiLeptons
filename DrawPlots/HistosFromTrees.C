@@ -48,9 +48,9 @@ void HistosFromTrees () {
   //  File names, etc
   //---------------------------------
   
-  std::string InputDirName = "../../simpleMVA/output/";
+  std::string InputDirName = "treeFiles/";
 
-  std::string OutputDirectory = "holder";
+  std::string OutputDirectory = "holder/";
 
   //////////
   std::vector<string> JetTagReqs;
@@ -70,12 +70,12 @@ void HistosFromTrees () {
   /////////// samples
   std::vector<string> InputFileNames;
   InputFileNames.push_back("ttH125");
-  InputFileNames.push_back("ttH125_JESUp");
-  InputFileNames.push_back("ttH125_JESDown");
+  //InputFileNames.push_back("ttH125_JESUp");
+  //InputFileNames.push_back("ttH125_JESDown");
 
   InputFileNames.push_back("ttH130");
-  InputFileNames.push_back("ttH130_JESUp");
-  InputFileNames.push_back("ttH130_JESDown");
+  //InputFileNames.push_back("ttH130_JESUp");
+  //InputFileNames.push_back("ttH130_JESDown");
 
 //   InputFileNames.push_back("ttH120");
 //   InputFileNames.push_back("ttH120_JESUp");
@@ -175,10 +175,10 @@ void HistosFromTrees () {
   varList.push_back(avg_tagged_dijet_mass);
   //  varInfo *avg_untagged_dijet_mass = new varInfo("avg_untagged_dijet_mass", "avg_untagged_dijet_mass", "avg_untagged_dijet_mass", 1000, 0, 1000);
   //  varList.push_back(avg_untagged_dijet_mass);
-  varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.007, 0.008);
-  varList.push_back(CFMlpANN_e2je2t);
-  varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
-  varList.push_back(CFMlpANN_ge3t);
+  //varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.007, 0.008);
+  //varList.push_back(CFMlpANN_e2je2t);
+  //varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
+  //varList.push_back(CFMlpANN_ge3t);
   varInfo *closest_tagged_dijet_mass = new varInfo("closest_tagged_dijet_mass", "closest_tagged_dijet_mass", "closest_tagged_dijet_mass", 1000, 0, 1000);
   varList.push_back(closest_tagged_dijet_mass);
   //  varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, 0, pival);
@@ -279,7 +279,7 @@ void HistosFromTrees () {
     
     std::string InputFileLabel = InputFileNames[i];
 
-    TString InputFileName = InputDirName + "mva_" + InputFileLabel+".root";
+    TString InputFileName = InputDirName + "dilSummaryTrees_" + InputFileLabel+"_betterNamesV1_all.root";
 
     std::cout << "==== Processing File " << InputFileLabel << " ==== " << std::endl;
     TFile * DileptonFile = new TFile(InputFileName);
@@ -303,17 +303,17 @@ void HistosFromTrees () {
       if (JetTagReq == "eq1t") {
         JetReq = "numJets >= 2";
         TagReq = "numTaggedJets == 1";
-	ProbStr = "prob1 * ";
+	ProbStr = "prob * ";
       }
       else if (JetTagReq == "eq2jeq2t") {
         JetReq = "numJets == 2";
         TagReq = "numTaggedJets == 2";
-	ProbStr = "prob2 * ";
+	ProbStr = "prob * ";
       }
       else if (JetTagReq == "ge3t") {
         JetReq = "numJets >= 3";
         TagReq = "numTaggedJets >= 3";
-	ProbStr = "probge3 * ";
+	ProbStr = "prob * ";
       }
       
       if (JetReq == "holder" || TagReq == "holder") {
