@@ -7,7 +7,7 @@ import sys
 ### that contains an "hadd" version
 ###
 
-for iDir in os.popen("find . -name '*_betterNamesV1' -type d").readlines():
+for iDir in os.popen("find batchBEAN -name '*_betterNamesV2' -type d").readlines():
 #for iDir in os.popen("ls -d zjets_testCondor").readlines():
 	dirStrip = iDir.strip()
 	print "Directory name is %s" % dirStrip
