@@ -258,9 +258,25 @@ int main ( int argc, char ** argv )
   // Initialize these global variables once, and then refer to then in a function below 
   h_jet_pt_eta_b_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_b_eff" ).c_str());                                         
   h_jet_pt_eta_c_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_c_eff" ).c_str());                                         
-  h_jet_pt_eta_l_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_l_eff" ).c_str());                                         
+  h_jet_pt_eta_l_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_l_eff" ).c_str());
+  // this histogram does not exist
   h_jet_pt_eta_o_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_o_eff" ).c_str());
 
+
+  // data detection
+  //
+  bool isData = false;
+  
+  if (TString(sampleName).Contains("DoubleElectron")
+      || TString(sampleName).Contains("DoubleMu")
+      || TString(sampleName).Contains("MuEG") ) {
+
+    std::cout << "CONFIG: DATA detected for sample " << sampleName << std::endl;
+
+    isData = true;
+
+  }
+  
 
   
   // Print out your config
@@ -778,7 +794,10 @@ int main ( int argc, char ** argv )
       double numTruePV = event->numTruePV;
       int numGenPV = event->numGenPV;
 
-      float wgt = 1 ;                                                                                                            
+      float wgt = 1 ;
+
+
+      std::cout << "CONFIG: Sample number from ntuple is: " << sample << std::endl;
 
 
 //       if( sample==2500 )      wgt = 157.7 * intLumi * 1./3627909;     //NNLL
@@ -979,17 +998,17 @@ int main ( int argc, char ** argv )
       float PUwgt_up = 1;
       float PUwgt_down = 1;
 
-      if( sample>=0 || sample==-2500){
-	if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
-	  PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numGenPV ) );
-	  PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numGenPV ) );
-	  PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numGenPV ) );
-	}
-	else{
-	  PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numTruePV ) );
-	  PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numTruePV ) );
-	  PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numTruePV ) );
-	}
+      if( (sample>=0 || sample==-2500) && !isData){
+        if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
+          PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numGenPV ) );
+          PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numGenPV ) );
+          PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numGenPV ) );
+        }
+        else{
+          PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numTruePV ) );
+          PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numTruePV ) );
+          PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numTruePV ) );
+        }
       }
       wgt *= PUwgt;
 
@@ -1043,7 +1062,7 @@ int main ( int argc, char ** argv )
       bool passHBHENoiseFilter = ( event->HBHENoiseFilter==1 ) ? true : false;
 
       bool cleanEvent = ( passGoodVertex && passFilterOutScraping && passHBHENoiseFilter );
-      cleanEvent = ( cleanEvent || (sample>=0 || sample==-2500) );
+      cleanEvent = (isData) ?  cleanEvent : true;
 
 
       //////////split nGen
@@ -1423,6 +1442,11 @@ int main ( int argc, char ** argv )
     double jetPhi = pfjets.at(i).phi;
     
     double myJER = getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
+
+    //don't scale data jets
+    if ( isData) {      
+      myJER = 1.0;
+    }
     // testing w/o   JER
     //myJER = 1.0;
 
@@ -1623,7 +1647,7 @@ int main ( int argc, char ** argv )
 
 
 	
-	if( sample>=0 || sample==-2500){
+      if( (sample>=0 || sample==-2500) && !isData){
           std::vector<BTagWeight::JetInfo> myjetinfo;                                                                   
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
@@ -1680,7 +1704,7 @@ int main ( int argc, char ** argv )
     if (verbose) std::cout << "done with btag weight loop" <<std::endl;
     
         double wgt_btag = 1, wgt_btag_hfSFup = 1, wgt_btag_hfSFdown = 1, wgt_btag_lfSFup = 1, wgt_btag_lfSFdown = 1;                        
-        if( sample>=0 || sample==-2500){                                                                                                                    
+        if( (sample>=0 || sample==-2500) && !isData){                                                                                                                    
           if( numTag<4 ){                                                                                                                   
             wgt_btag = wgt_prob;                                                                                                        
             wgt_btag_hfSFup   = wgt_prob_hfSFup;                                                                                        
@@ -2393,7 +2417,7 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
 /////////////////////
 std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
 
-  bool getEffVerbose = false;
+  bool getEffVerbose = true;
 
     
   if (getEffVerbose) std::cout  << "getEffSF called with arguments:" << std::endl
@@ -2477,7 +2501,7 @@ std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, doubl
   double SF=1;                                                                                                                              
                                                                                                                                             
   double tagEff=0;
-  if (getEffVerbose) std::cout  << "Calling get bin content and find bin"  << std::endl;
+  if (getEffVerbose) std::cout  << "Calling get bin content and find bin with flavor = " << flavor  << std::endl;
 
   
   if( abs(flavor)==5 ){                                                                                                                     
