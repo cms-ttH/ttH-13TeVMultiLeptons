@@ -42,6 +42,8 @@ public:
 
 void HistosFromTrees () {
 
+  
+
   //----------------------------------
   //
   //  Global job params
@@ -69,11 +71,61 @@ void HistosFromTrees () {
 
   /////////// samples
   std::vector<string> InputFileNames;
+
+  
+  InputFileNames.push_back("DoubleElectron_Run2011A-05Aug2011-v1");
+  InputFileNames.push_back("DoubleElectron_Run2011A-May10ReReco-v1");
+  InputFileNames.push_back("DoubleElectron_Run2011A-PromptReco-v4");
+  InputFileNames.push_back("DoubleElectron_Run2011A-PromptReco-v6");
+  InputFileNames.push_back("DoubleElectron_Run2011B-PromptReco-v1");
+  InputFileNames.push_back("DoubleMu_Run2011A-05Aug2011-v1");
+  InputFileNames.push_back("DoubleMu_Run2011A-May10ReReco-v1");
+  InputFileNames.push_back("DoubleMu_Run2011A-PromptReco-v4");
+  InputFileNames.push_back("DoubleMu_Run2011A-PromptReco-v6");
+  InputFileNames.push_back("DoubleMu_Run2011B-PromptReco-v1");
+  InputFileNames.push_back("MuEG_Run2011A-05Aug2011-v1");
+  InputFileNames.push_back("MuEG_Run2011A-May10ReReco-v1");
+  InputFileNames.push_back("MuEG_Run2011A-PromptReco-v4");
+  InputFileNames.push_back("MuEG_Run2011A-PromptReco-v6");
+  InputFileNames.push_back("MuEG_Run2011B-PromptReco-v1");
+  InputFileNames.push_back("scaledown_ttbar");
+  InputFileNames.push_back("scaledown_ttbar_bb");
+  InputFileNames.push_back("scaledown_ttbar_cc");
+  InputFileNames.push_back("scaleup_ttbar");
+  InputFileNames.push_back("scaleup_ttbar_bb");
+  InputFileNames.push_back("scaleup_ttbar_cc");
+  InputFileNames.push_back("singlet_s");
+  InputFileNames.push_back("singlet_t");
+  InputFileNames.push_back("singlet_tW");
+  InputFileNames.push_back("singletbar_s");
+  InputFileNames.push_back("singletbar_t");
+  InputFileNames.push_back("singletbar_tW");
+  InputFileNames.push_back("ttH100");
+  InputFileNames.push_back("ttH105");
+  InputFileNames.push_back("ttH110");
+  InputFileNames.push_back("ttH115");
+  InputFileNames.push_back("ttH120");
   InputFileNames.push_back("ttH125");
+  InputFileNames.push_back("ttH130");
+  InputFileNames.push_back("ttH135");
+  InputFileNames.push_back("ttH140");
+  InputFileNames.push_back("ttbar");
+  InputFileNames.push_back("ttbarW");
+  InputFileNames.push_back("ttbarZ");
+  InputFileNames.push_back("ttbar_bb");
+  InputFileNames.push_back("ttbar_cc");
+  InputFileNames.push_back("wjets");
+  InputFileNames.push_back("ww");
+  InputFileNames.push_back("wz");
+  InputFileNames.push_back("zjets");
+  InputFileNames.push_back("zz");
+
+
+  //InputFileNames.push_back("ttH125");
   //InputFileNames.push_back("ttH125_JESUp");
   //InputFileNames.push_back("ttH125_JESDown");
 
-  InputFileNames.push_back("ttH130");
+  //InputFileNames.push_back("ttH130");
   //InputFileNames.push_back("ttH130_JESUp");
   //InputFileNames.push_back("ttH130_JESDown");
 
@@ -279,7 +331,7 @@ void HistosFromTrees () {
     
     std::string InputFileLabel = InputFileNames[i];
 
-    TString InputFileName = InputDirName + "dilSummaryTrees_" + InputFileLabel+"_betterNamesV1_all.root";
+    TString InputFileName = InputDirName + "dilSummaryTrees_" + InputFileLabel+"_betterNamesV2_all.root";
 
     std::cout << "==== Processing File " << InputFileLabel << " ==== " << std::endl;
     TFile * DileptonFile = new TFile(InputFileName);
