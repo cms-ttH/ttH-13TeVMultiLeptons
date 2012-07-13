@@ -7,7 +7,7 @@ import sys
 ### that contains an "hadd" version
 ###
 
-for iDir in os.popen("find batchBEAN -name '*_betterNamesV2' -type d").readlines():
+for iDir in os.popen("find batchBEAN -name '*_fixJERV1' -type d").readlines():
 #for iDir in os.popen("ls -d zjets_testCondor").readlines():
 	dirStrip = iDir.strip()
 	print "Directory name is %s" % dirStrip
@@ -46,6 +46,12 @@ for iDir in os.popen("find batchBEAN -name '*_betterNamesV2' -type d").readlines
 		print "Created %s" % newName
 
 	
+print "Now copying results to tree files!"
+
+for iLine in os.popen("find . -wholename '*fixJERV1/*_all.root' -exec cp {} ~/releases/CMSSW_4_2_8_patch7/src/BEAN/DrawPlots/treeFiles \;"):
+	print iLine
+
+print "Done copying files"
 	
 
 print "-----Done------"
