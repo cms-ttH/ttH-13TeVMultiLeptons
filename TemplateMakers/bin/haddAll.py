@@ -48,7 +48,7 @@ for iDir in os.popen("find batchBEAN -name '*_fixJERV1' -type d").readlines():
 	
 print "Now copying results to tree files!"
 
-for iLine in os.popen("find . -wholename '*fixJERV1/*_all.root' -exec cp {} ~/releases/CMSSW_4_2_8_patch7/src/BEAN/DrawPlots/treeFiles \;"):
+for iLine in os.popen("find . -wholename '*fixJERV1/*_all.root' -exec cp {} ~/releases/CMSSW_4_2_8_patch7/src/BEAN/DrawPlots/bin/treeFiles \;"):
 	print iLine
 
 print "Done copying files"
