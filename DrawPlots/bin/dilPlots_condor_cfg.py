@@ -17,7 +17,17 @@ sampleNameCL = sys.argv[2]
 #iJob = int(sys.argv[3])
 iLabel = sys.argv[3]
 iJes = int (sys.argv[4])
+iJer = int (sys.argv[5])
 
+if (iJes == 1):
+    iLabel = iLabel+"_JesUp"
+if (iJer == 1):
+    iLabel = iLabel+"_JerUp"
+if (iJes == -1):
+    iLabel = iLabel+"_JesDown"
+if (iJer == -1):
+    iLabel = iLabel+"_JerDown"
+		
 # update serach path
 
 searchPath = os.environ['CMSSW_SEARCH_PATH']
@@ -67,9 +77,13 @@ process.inputs.fileName = treeFileName
 if abs(iJes) > 1:
 	print "Did not recognize requested JES = %d. Valid entries are 0,1,-1." % iJes
 	exit (-3)
+if abs(iJer) > 1:
+    print "Did not recognize requested JER = %d. Valid entries are 0,1,-1." % iJer
+    exit (-3)
+			
 
 process.dilAnalysis = cms.PSet(
 	jes = cms.int32(iJes),
-	jer = cms.int32(0),	
+	jer = cms.int32(iJer),	
 	sampleName = cms.string(sampleNameCL)
 )
