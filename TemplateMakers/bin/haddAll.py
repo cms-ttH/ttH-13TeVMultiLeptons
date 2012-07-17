@@ -7,7 +7,7 @@ import sys
 ### that contains an "hadd" version
 ###
 
-for iDir in os.popen("find batchBEAN -name '*_fixJERV1' -type d").readlines():
+for iDir in os.popen("find batchBEAN -name '*_V1' -type d").readlines():
 #for iDir in os.popen("ls -d zjets_testCondor").readlines():
 	dirStrip = iDir.strip()
 	print "Directory name is %s" % dirStrip
@@ -25,7 +25,7 @@ for iDir in os.popen("find batchBEAN -name '*_fixJERV1' -type d").readlines():
 		#print "One file found. Copying it to _all"		
 		oldName = listOfFiles[0].strip()
 		newName = oldName.replace('job000', 'all')
-		haddCommand = "mv %s %s" % ( oldName,  newName)
+		haddCommand = "cp %s %s" % ( oldName,  newName)
 		#print "using this command"
 		#print haddCommand
 		for feedback in os.popen(haddCommand).readlines():
@@ -48,7 +48,7 @@ for iDir in os.popen("find batchBEAN -name '*_fixJERV1' -type d").readlines():
 	
 print "Now copying results to tree files!"
 
-for iLine in os.popen("find . -wholename '*fixJERV1/*_all.root' -exec cp {} ~/releases/CMSSW_4_2_8_patch7/src/BEAN/DrawPlots/bin/treeFiles \;"):
+for iLine in os.popen("find . -wholename '*_V1/*_all.root' -exec cp {} ~/releases/CMSSW_4_2_8_patch7/src/BEAN/DrawPlots/bin/treeFiles \;"):
 	print iLine
 
 print "Done copying files"
