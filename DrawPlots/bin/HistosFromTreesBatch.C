@@ -114,6 +114,19 @@ int main ( int argc, char ** argv )
 
    std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
 
+   std::string JesJerStr = "";
+   if (jes == 1) {
+     JesJerStr = "_JesUp";
+   }
+   if (jes == -1) {
+     JesJerStr = "_JesDown";
+   }
+   if (jer == 1) {
+     JesJerStr = "_JerUp";
+   }
+   if (jer == -1) {
+     JesJerStr = "JerDown";
+   }
 
    
 
@@ -127,7 +140,7 @@ int main ( int argc, char ** argv )
   //  File names, etc
   //---------------------------------
   
-  std::string InputDirName = "../treeFiles/";
+  std::string InputDirName = "treeFiles/";
 
   std::string OutputDirectory = "holder/";
 
@@ -135,6 +148,7 @@ int main ( int argc, char ** argv )
   std::vector<string> JetTagReqs;
   JetTagReqs.push_back("eq1t");
   JetTagReqs.push_back("eq2jeq2t");
+  JetTagReqs.push_back("ge3jeq2t");
   JetTagReqs.push_back("ge3t");
 
   const unsigned int nJetTagReqs = JetTagReqs.size();
@@ -440,6 +454,11 @@ int main ( int argc, char ** argv )
         TagReq = "numTaggedJets == 2";
 	ProbStr = "prob * ";
       }
+      else if (JetTagReq == "ge3jeq2t") {
+        JetReq = "numJets >= 3";
+        TagReq = "numTaggedJets == 2";
+        ProbStr = "prob * ";
+      }
       else if (JetTagReq == "ge3t") {
         JetReq = "numJets >= 3";
         TagReq = "numTaggedJets >= 3";
@@ -482,7 +501,7 @@ int main ( int argc, char ** argv )
     
 	////////
 	TString OutputFileName = "holder";
-	OutputFileName = OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+	OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + JesJerStr + ".root";
 	TFile * OutputFile = new TFile(OutputFileName, "RECREATE");
 
 	OutputFile->cd();
