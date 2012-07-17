@@ -12,11 +12,13 @@ import sys
 # argv 2 = sample name
 # argv 3 = which job are you, 0 to length of files
 # argv 4 = what JES should you use?
+# argv 5 = what JER should you use?
 
 sampleNameCL = sys.argv[2]
 iJob = int(sys.argv[3])
 iLabel = sys.argv[4]
 iJes = int (sys.argv[5])
+iJer = int (sys.argv[6])
 
 # update serach path
 
@@ -38,7 +40,7 @@ process.inputs = cms.PSet (
 	maxEvents = cms.int32(-1)
 )
 
-listFileName = "lists/" + sampleNameCL + ".list"
+listFileName = "../../listsForSkims/" + sampleNameCL + ".list"
 # read in all files in the list
 print "Reading file names from list: %s" % listFileName
 listFile = open(listFileName)
@@ -58,12 +60,26 @@ if iJob > len(readFiles):
 print "Adding file: ", readFiles[iJob]
 process.inputs.fileNames.append(readFiles[iJob])
 
+if iJes == 0:
+    if iJer == 0:
+	    outDir = "batchBEAN/%s_%s/" % (sampleNameCL, iLabel)
+	    outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+    if iJer == -1:
+        outDir = "batchBEAN/%s_%s_JerDown/" % (sampleNameCL, iLabel)
+        outFileName = "batchBEAN/%s_%s_JerDown/dilSummaryTrees_%s_%s_JerDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+    if iJer == 1:
+        outDir = "batchBEAN/%s_%s_JerUp/" % (sampleNameCL, iLabel)
+        outFileName = "batchBEAN/%s_%s_JerUp/dilSummaryTrees_%s_%s_JerUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+if iJes == -1:
+	outDir = "batchBEAN/%s_%s_JesDown/" % (sampleNameCL, iLabel)
+	outFileName = "batchBEAN/%s_%s_JesDown/dilSummaryTrees_%s_%s_JesDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+if iJes == 1:
+	outDir = "batchBEAN/%s_%s_JesUp/" % (sampleNameCL, iLabel)
+	outFileName = "batchBEAN/%s_%s_JesUp/dilSummaryTrees_%s_%s_JesUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 
-outDir = "batchBEAN/%s_%s/" % (sampleNameCL, iLabel)
 if not os.path.exists(outDir):
 	os.mkdir(outDir)
 
-outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 print "Output name will be ", outFileName
 
 process.outputs = cms.PSet (
@@ -76,10 +92,13 @@ process.outputs = cms.PSet (
 if abs(iJes) > 1:
 	print "Did not recognize requested JES = %d. Valid entries are 0,1,-1." % iJes
 	exit (-3)
+if abs(iJer) > 1:
+    print "Did not recognize requested JES = %d. Valid entries are 0,1,-1." % iJes
+    exit (-3)
 
 process.dilAnalysis = cms.PSet(
 	jes = cms.int32(iJes),
-	jer = cms.int32(0),
+	jer = cms.int32(iJer),
 	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
 	sampleName = cms.string(sampleNameCL)
