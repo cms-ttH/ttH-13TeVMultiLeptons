@@ -7,11 +7,6 @@ import time
 
 def main ():
 
-
-
-
-
-
 	listOfSamples = ['DoubleElectron_Run2011A-05Aug2011-v1', 
 					 'DoubleElectron_Run2011A-May10ReReco-v1',
 					 'DoubleElectron_Run2011A-PromptReco-v4',
@@ -57,13 +52,15 @@ def main ():
 					 'ww',
 					 'wz',
 					 'zjets',
+                     'zjets_lowmass',					 
 					 'zz']
 
 
 
 		
 	jesChoice = 0
-	jobLabel = "betterNamesV1"
+    jerChoice = 0	
+	jobLabel = "V1"
 
 	for iList in listOfSamples:
 		condorHeader = "universe = vanilla\n"+"executable = runTemplatesCondor_modDilep.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
@@ -77,7 +74,7 @@ def main ():
 		condorJobFile.write( "List = %s\n" % iList)
 		numJobs = 0
 		foundJobs = False
-		for iLine in os.popen("wc -l lists/%s.list" % iList).readlines():
+		for iLine in os.popen("wc -l ../../listsForSkims/%s.list" % iList).readlines():
 			words = iLine.split()
 			print "Line is ="
 			print words
@@ -91,8 +88,19 @@ def main ():
 			
 		condorJobFile.write( "NJobs = %s\n" % numJobs)
 		condorJobFile.write( "JES = %s\n" % jesChoice)
-		condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES)\n")
-		condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")
+		condorJobFile.write( "JER = %s\n" % jerChoice)
+		condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER)\n")
+		if (jesChoice == 0 and jerChoice == 0):
+            JetStr = ""
+        if (jesChoice == 1):
+            JetStr = "_JesUp"
+        if (jesChoice == -1):
+            JetStr = "_JesDown"
+        if (jerChoice == 1):
+            JetStr = "_JerUp"
+        if (jerChoice == -1):
+            JetStr = "_JerDown"		
+		condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process)"+JetStr+".stdout\n")
 		condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n")	
 		condorJobFile.write( "queue $(NJobs)\n")
 
