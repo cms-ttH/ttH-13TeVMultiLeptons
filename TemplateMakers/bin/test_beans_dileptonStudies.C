@@ -1610,7 +1610,6 @@ int main ( int argc, char ** argv )
       bool passTwoMuon = twoLeptons && ( twoTightMuon || TightMuonLooseMuon ) ;
       bool passTwoEle = twoLeptons && ( twoTightEle || TightEleLooseEle ) ;
       bool passMuonEle = twoLeptons && ( TightMuonLooseEle || TightEleLooseMuon || oneEleOneMuon );
-      bool passBigDiamondZmask = ((mass_leplep < (65.5 + 3*met/8)) || (mass_leplep > (108 - met/4)) || (mass_leplep < (79 - 3*met/4)) || (mass_leplep > (99 + met/2)) );
       
       *(intBranches["PassTwoLepton"]) =  twoLeptons ? 1 : 0;
       *(intBranches["TwoMuon"]) = passTwoMuon ? 1 : 0;
@@ -1632,7 +1631,6 @@ int main ( int argc, char ** argv )
       *(intBranches["numTightElectrons"]) = numTightElectrons;
       *(intBranches["numLooseElectrons"]) = numLooseElectrons;
 
-      *(intBranches["PassZmask"]) = passBigDiamondZmask ? 1 : 0;
       //long tempLongEventNum = event->evt;
       //unsigned tempUEventNum = (unsigned) tempLongEventNum;
       //std::cout << "Check event num: long " << tempLongEventNum << " uint " << tempUEventNum << std::endl;
@@ -2033,6 +2031,9 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["sum_pt"]) = sum_pt; 
 	  *(floatBranches["all_sum_pt"]) = all_sum_pt;
 	  *(floatBranches["Ht"]) = Ht;
+
+      bool passBigDiamondZmask = ((dilep_mass < (65.5 + 3*met/8)) || (dilep_mass > (108 - met/4)) || (dilep_mass < (79 - 3*met/4)) || (dilep_mass > (99 + met/2)) );
+      *(intBranches["PassZmask"]) = passBigDiamondZmask ? 1 : 0;
 
 	  //// tagged jets
 	  if (numTag > 1) {
