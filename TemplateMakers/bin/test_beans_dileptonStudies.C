@@ -2417,7 +2417,7 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
 /////////////////////
 std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
 
-  bool getEffVerbose = true;
+  bool getEffVerbose = false;
 
     
   if (getEffVerbose) std::cout  << "getEffSF called with arguments:" << std::endl
