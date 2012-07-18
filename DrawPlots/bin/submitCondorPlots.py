@@ -10,9 +10,9 @@ def main ():
 
 	jobLabel = "fixJERV1"
 	jesChoice = 0
+	jerChoice = 0
 
-
- 	listOfSamples = ['zjets']
+ 	listOfSamples = ['DoubleElectron', 'DoubleMu', 'MuEG']
 
 # 	listOfSamples = ['DoubleElectron',
 # 					 'DoubleMu',
@@ -65,7 +65,8 @@ def main ():
 
 					
 		condorJobFile.write( "JES = %s\n" % jesChoice)
-		condorJobFile.write( "arguments = $(List) $(Label) $(JES)\n")
+		condorJobFile.write( "JER = %s\n" % jerChoice)
+		condorJobFile.write( "arguments = $(List) $(Label) $(JES) $(JER)\n")
 		condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")
 		condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n")	
 		condorJobFile.write( "queue 1\n")
