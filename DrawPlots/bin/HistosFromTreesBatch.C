@@ -491,12 +491,14 @@ int main ( int argc, char ** argv )
 	}
 	
 	////////////// no weight, SF for data
-	if (std::string::npos != InputFileLabel.find("data")) {
+	if (std::string::npos != InputFileLabel.find("DoubleMu")
+        || std::string::npos != InputFileLabel.find("DoubleElectron")
+        || std::string::npos != InputFileLabel.find("MuEG")) {
 	  ProbStr = "";
 	  WeightStr = "";
 	  EffStr = "";
 	  TrigStr = "";
-	  std::cout << "Set prob2/probge3 to 1" << std::endl;
+	  std::cout << "DATA DETECTED: Set prob2/probge3 to 1" << std::endl;
 	}
     
 	////////
