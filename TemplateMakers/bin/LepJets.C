@@ -29,6 +29,7 @@
 #include "TSystem.h"
 #include "TStyle.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
+#include "PhysicsTools/FWLite/interface/TFileService.h"
 
 #include "LumiReweightingStandAlone.h"
 #include "PUConstants.h"
@@ -292,8 +293,12 @@ int main ( int argc, char ** argv )
   //////////////////////////////////////////////////////////////////////////
   ///  Booking Histograms
   //////////////////////////////////////////////////////////////////////////
+  // book a set of histograms
+  cout << "Booking histograms." << endl;
+  fwlite::TFileService fs = fwlite::TFileService( outputs.getParameter<std::string>("outputName") );
 
-
+  std::map<TString,TH1*> histograms;
+  
   // Variables used for histogram ranges and binning
   double metmax   = 500.;
   double muptmax  = 350.;
@@ -349,18 +354,92 @@ int main ( int argc, char ** argv )
   TH1D* h_met_Upt = new TH1D("h_met_Upt",";MET raw p_{T}", NmetBins, 0, metmax );
   TH1D* h_met_Uphi = new TH1D("h_met_Uphi",";MET raw #phi", 16, -3.2, 3.2 );
 
+  int maxJetPlot = 6; // this determines how many jet plots you make
+
   //Muon Variable Plots
   TH1F* h_muPt       = new TH1F("h_muPt", "Muon p_{T}", 500, 0, 500);
   TH1F* h_muEta      = new TH1F("h_muEta", "Muon #eta}", 628,-3.14, 3.14);
   TH1F* h_muMET      = new TH1F("h_muMET", "MET", 500, 0, 500);
-  TH1F* h_muMt       = new TH1F("h_muMT", "Transverse mass #mu + #nu", 500, 0, 500);
-  TH1F* h_muHt       = new TH1F("h_muHT", "h_{T}", 2000, 0, 2000);
+  TH1F* h_muMt       = new TH1F("h_muMt", "Transverse mass #mu + #nu", 500, 0, 500);
+  TH1F* h_muHt       = new TH1F("h_muHt", "h_{T}", 2000, 0, 2000);
   TH1F* h_muM3       = new TH1F("h_muM3", "M3", 2000, 0, 2000);
   TH1F* h_muMttbar   = new TH1F("h_muMttbar", "M_{ttbar}", 4000, 0, 4000);
   TH1F* h_muTTbarPt  = new TH1F("h_muTTbarPT", "ttbar_{Pt}", 4000, 0, 4000);
   TH1F* h_muTTbarEta = new TH1F("h_muTTbarEta", "ttbar_{Eta}", 628,-3.14, 3.14);
 
-  //Electron Variable Plots
+ //  for (int iJet = minJets; iJet <=maxJetPlot ; ++iJet) {
+//     TString histName = "h_muPt_"; histName += iJet; histName += "j";
+//     TString histTitle = "Muon p_{T} (GeV/c) (N_{jets}";
+//     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+//     histTitle += iJet;
+//     histTitle += ")";
+//     histograms[histName] = fs.make<TH1F>(histName, histTitle, 500, 0., 500.);
+//   }
+//   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+//     TString histName = "h_muEta_"; histName += iJet; histName += "j";
+//     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+//     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+//     histTitle += iJet;
+//     histTitle += ")";
+//     histograms[histName] = fs.make<TH1F>(histName, histTitle,628,-3.14, 3.14);
+//  }
+//   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+//     TString histName = "h_muMET_"; histName += iJet; histName += "j";
+//     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+//     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+//     histTitle += iJet;
+//     histTitle += ")";
+//     histograms[histName] = fs.make<TH1F>(histName, histTitle, 500, 0., 500.);
+//   }
+   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+     TString histName = "h_muMt_"; histName += iJet; histName += "j";
+     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+     histTitle += iJet;
+     histTitle += ")";
+     histograms[histName] = fs.make<TH1F>(histName, histTitle, 500, 0., 500.);
+  }
+//    for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+//      TString histName = "h_muHt_"; histName += iJet; histName += "j";
+//      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+//      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+//      histTitle += iJet;
+//      histTitle += ")";
+//      histograms[histName] = fs.make<TH1F>(histName, histTitle, 2000, 0., 2000.);
+//   }
+//    for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+//      TString histName = "h_muM3_"; histName += iJet; histName += "j";
+//      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+//      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+//      histTitle += iJet;
+//      histTitle += ")";
+//      histograms[histName] = fs.make<TH1F>(histName, histTitle, 500, 0., 500.);
+//    }
+//    for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+//      TString histName = "h_muMttbar_"; histName += iJet; histName += "j";
+//      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+//      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+//      histTitle += iJet;
+//      histTitle += ")";
+//      histograms[histName] = fs.make<TH1F>(histName, histTitle, 4000, 0., 4000.);
+//    }
+//     for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+//       TString histName = "h_muTTbarPt_"; histName += iJet; histName += "j";
+//       TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+//       histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+//       histTitle += iJet;
+//       histTitle += ")";
+//       histograms[histName] = fs.make<TH1F>(histName, histTitle, 4000, 0., 4000.);
+//    }
+//     for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+//       TString histName = "h_muTTbarEta_"; histName += iJet; histName += "j";
+//       TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+//       histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+//       histTitle += iJet;
+//       histTitle += ")";
+//       histograms[histName] = fs.make<TH1F>(histName, histTitle, 628,-3.14, 3.14);
+//    }
+//   //Electron Variable Plots
   TH1F* h_elePt = new TH1F("h_elePt", "Electron p_{T}", 500, 0, 500);
 
 //   TH2D* h_W0_decay_W1_decay = new TH2D("h_W0_decay_W1_decay",";W0 decay;W1 decay", 13, 0, 13, 13, 0, 13 );
@@ -671,10 +750,11 @@ int main ( int argc, char ** argv )
   int nEventsWhereJetRemoved = 0;
 
   bool verbose = false;
-  
+  TString histName;
   //
   // Loop over events
   //
+  int nJets = -1;
   std::cout << "========  Starting Event Loop  ========" << std::endl;
   try {
     for( ev.toBegin(); !ev.atEnd(); ++ev) {
@@ -1263,7 +1343,7 @@ int main ( int argc, char ** argv )
         }
       }// end muon loop
 
-      if(UseMuonSelection){
+      if(useMuonSelection){
         if(loose_mu_index.size()>0) continue;
         if(loose_ele_index.size()>0) continue;
       }
@@ -1450,7 +1530,15 @@ int main ( int argc, char ** argv )
       *(floatBranches["leptonEta"]) = leptonEta ;
       if(isMuonEvent == true){
         h_muPt->Fill(leptonPt);
+        // histName = "h_muPt_";
+//         histName += numGoodJets;
+//         histName += "j";
+//         histograms[histName]->Fill(leptonPt);
         h_muEta->Fill(leptonEta);
+       //  histName = "h_muEta_";
+//         histName += numGoodJets;
+//         histName += "j";
+        // histograms[histName]->Fill(leptonEta);
       }
       if(isEleEvent == true){h_elePt->Fill(leptonPt);}
 
@@ -1860,7 +1948,13 @@ int main ( int argc, char ** argv )
       leptonTrans.SetE(lep_vect1.Pt());
       TLorentzVector WTrans = metV + leptonTrans;
       *(floatBranches["mT"]) = WTrans.M();
-      if(isMuonEvent == true){h_muMt->Fill(WTrans.M());}
+      if(isMuonEvent == true){
+        h_muMt->Fill(WTrans.M());
+       //  histName = "h_muMt_";
+//         histName += numGoodJets;
+//         histName += "j";
+//         histograms[histName]->Fill(WTrans.M());
+      }
 
       
 	  TLorentzVector everything_vect = metV + lep_vect1 + sum_jet_vect; //Lept+Jets Mttbar
@@ -1874,7 +1968,31 @@ int main ( int argc, char ** argv )
         h_muMttbar->Fill(ttbar_mass);
         h_muTTbarPt->Fill(ttbar_pt);
         h_muTTbarEta->Fill(ttbar_eta);
+        
+      //   histName = "h_muMttbar_";
+//         histName += numGoodJets;
+//         histName += "j";
+//         histograms[histName]->Fill(ttbar_mass);
+//         histName = "h_muTTbarPt_";
+//         histName += numGoodJets;
+//         histName += "j";
+//         histograms[histName]->Fill(ttbar_pt);
+//         histName = "h_muTTbarEta_";
+//         histName += numGoodJets;
+//         histName += "j";
+//         histograms[histName]->Fill(ttbar_eta);
       }
+      //M3
+      if(numGoodJets>=3){
+        // TLorentzVector top3Jets = jetV[0] +  jetV[1] +  jetV[2];
+//         h_muM3->Fill(top3Jets.M());
+//         histName = "h_muM3_";
+//         histName += numGoodJets;
+//         histName += "j";
+//         histograms[histName]->Fill(top3Jets.M());
+        
+      }
+
       
 
 	  ///loop jet	  
@@ -1949,7 +2067,15 @@ int main ( int argc, char ** argv )
 
        if(isMuonEvent == true){
          h_muMET->Fill(met);
+        //  histName = "h_muMET_";
+//          histName += numGoodJets;
+//          histName += "j";
+//          histograms[histName]->Fill(met);
          h_muHt->Fill(Ht);
+        //  histName = "h_muHt_";
+//          histName += numGoodJets;
+//          histName += "j";
+//          histograms[histName]->Fill(Ht);
        }
 
 	  //// tagged jets
