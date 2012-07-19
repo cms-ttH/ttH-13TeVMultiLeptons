@@ -47,7 +47,7 @@ def main ():
 				oldName = listOfFiles[0].strip()
 				newName = oldName.replace('job000', 'all')
 				haddCommand = "hadd -f %s " % (newName)
-				for iFile in listOfFiles[1:]:
+				for iFile in listOfFiles[0:]:
 					haddCommand = haddCommand + " " + iFile.strip()
 				for feedback in os.popen(haddCommand).readlines():
 						print feedback
@@ -117,7 +117,7 @@ def main ():
 	if (options.copyFiles):
 		print "Now copying results to tree files!"
 		
-		for iLine in os.popen("find . -wholename '*_all.root' -exec cp {} ~/releases/CMSSW_4_2_8_patch7/src/BEAN/DrawPlots/bin/treeFiles \;"):
+		for iLine in os.popen("find . -wholename '*_all.root' -exec cp {} ../../DrawPlots/bin/treeFiles \;"):
 			print iLine
 
 		
