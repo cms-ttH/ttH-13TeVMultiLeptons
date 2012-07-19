@@ -125,7 +125,7 @@ int main ( int argc, char ** argv )
      JesJerStr = "_JerUp";
    }
    if (jer == -1) {
-     JesJerStr = "JerDown";
+     JesJerStr = "_JerDown";
    }
 
    
@@ -140,8 +140,6 @@ int main ( int argc, char ** argv )
   //  File names, etc
   //---------------------------------
   
-  std::string InputDirName = "treeFiles/";
-
   std::string OutputDirectory = "holder/";
 
   //////////
@@ -440,7 +438,13 @@ int main ( int argc, char ** argv )
       std::string TagReq = "holder";
       std::string ProbStr = "holder";
       std::string WeightStr = "holder";
-
+      //std::string ZmaskStr = "PassZmask == 0 && "; //Events inside the mask (mostly Zjets)
+      //std::string ZmaskStr = "PassZmask == 1 && "; //Events outside the mask (reduced Zjets)
+      //std::string TightLepStr = "(numTightMuons + numTightElectrons == 2) && "; //Only tight leptons
+      //std::string TightLepStr = "(numTightMuons + numTightElectrons != 2) && "; //Only tight+loose events
+      std::string ZmaskStr = "";
+      std::string TightLepStr = "";
+      
       std::string EffStr = "holder";
       std::string TrigStr = "holder";
       
@@ -491,14 +495,14 @@ int main ( int argc, char ** argv )
 	}
 	
 	////////////// no weight, SF for data
-	if (std::string::npos != InputFileLabel.find("DoubleMu")
-        || std::string::npos != InputFileLabel.find("DoubleElectron")
-        || std::string::npos != InputFileLabel.find("MuEG")) {
+	if (std::string::npos != InputFileLabel.find("DoubleMu") ||
+        std::string::npos != InputFileLabel.find("DoubleEle") ||
+        std::string::npos != InputFileLabel.find("MuEG")) {
 	  ProbStr = "";
 	  WeightStr = "";
 	  EffStr = "";
 	  TrigStr = "";
-	  std::cout << "DATA DETECTED: Set prob2/probge3 to 1" << std::endl;
+	  std::cout << "DATA DETECTED: Set prob, weight, and eff to 1" << std::endl;
 	}
     
 	////////
@@ -518,12 +522,12 @@ int main ( int argc, char ** argv )
 	  TString histName = u->hName ;
 
 	  ///// selection cuts
-	  //Selection string: ==2 tags or >=3 tags; DiMu, DiEle, MuEG, or DiMuZmask10
+	  //Selection string
 	  std::string SelectionStr = "holder";
 	  std::string CleanTrig = "holder";
 	  CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
 	  
-	  SelectionStr = WeightStr+ProbStr+EffStr+TrigStr +"( ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
+	  SelectionStr = WeightStr+ProbStr+EffStr+TrigStr +"(" + ZmaskStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
 	  	    
 	  if (SelectionStr == "holder") {
 	    std::cout << "SelectionStr == holder" << std::endl;
