@@ -84,7 +84,9 @@ typedef std::vector<int> vint;
 
 double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double recojetPT );
 
-std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );      
+std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );
+
+double getSingleMuEffSF(double muEta);
 
 // //TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");                                                                               
 
@@ -201,7 +203,6 @@ int main ( int argc, char ** argv )
 
   std::string str_data;
   str_data = "SingleMu";
-  //  str_data = "ElectronHad";
 
   TH1D* h_pu_data;
   TH1D* h_pu_data_up;
@@ -238,9 +239,6 @@ int main ( int argc, char ** argv )
   h_pu_ratio_up->Divide( h_pu_mc );
   h_pu_ratio_down->Divide( h_pu_mc );
 
-
-                                                                                                                                                 
-                                                                  
 
   // Load the files
   vstring fileNames = inputFileNames;
@@ -628,11 +626,11 @@ int main ( int argc, char ** argv )
   // floatBranches["lep2Eta"] = new float(0.0);
   floatBranches["lep1Phi"] = new float(0.0);
   //floatBranches["lep2Phi"] = new float(0.0);
-  floatBranches["mass_leplep"] = new float(0.0);
-  floatBranches["pt_leplep"] = new float(0.0);
-  floatBranches["dPhi_leplep"] = new float(0.0);
-  //  floatBranches["dEta_leplep"] = new float(0.0);
-  floatBranches["dR_leplep"] = new float(0.0);
+ //  floatBranches["mass_leplep"] = new float(0.0);
+//   floatBranches["pt_leplep"] = new float(0.0);
+//   floatBranches["dPhi_leplep"] = new float(0.0);
+//   //  floatBranches["dEta_leplep"] = new float(0.0);
+//   floatBranches["dR_leplep"] = new float(0.0);
 
   /// jet variables
   floatBranches["numJets_float"] = new float (0);
@@ -645,7 +643,7 @@ int main ( int argc, char ** argv )
 
   floatBranches["min_dr_tagged_jets"] = new float(0.0);
   floatBranches["avg_dr_tagged_jets"] = new float(0.0);
-  floatBranches["mindr_lep1_jet"] = new float(0.0);
+  //floatBranches["mindr_lep1_jet"] = new float(0.0);
   // floatBranches["mindr_lep2_jet"] = new float(0.0);
   floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
   floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
@@ -765,7 +763,6 @@ int main ( int argc, char ** argv )
   std::cout << "========  Starting Event Loop  ========" << std::endl;
   try {
     for( ev.toBegin(); !ev.atEnd(); ++ev) {
-     
       cnt++;
 
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
@@ -1443,7 +1440,7 @@ int main ( int argc, char ** argv )
         // Apply JER uncertainty to all jets
 
         // 0 for nominal, 1 for up, -1 for down
-        double jetEta = pfjets.at(i).eta;	
+        double jetEta = pfjets.at(i).eta;
         double jetAbsEta = fabs(jetEta);
         double genJetPT = pfjets.at(i).genPartonPT;
         double jetPhi = pfjets.at(i).phi;
@@ -1535,8 +1532,8 @@ int main ( int argc, char ** argv )
         if(tag_pfjet_index.size()> 0){continue;}
       }
 
-      //Information about each event that passes cuts
-     //  cout << "This event has passed! "<< endl;
+     //  //Information about each event that passes cuts
+//       cout << "This event has passed! "<< endl;
 //       cout << "n btags: " <<tag_pfjet_index.size() << endl;
 //       for( int i=0; i<int(muons.size()); i++ ){
 //         cout << "mu " << i << ":  pt: " << muons.at(i).pt << endl;
@@ -1546,23 +1543,31 @@ int main ( int argc, char ** argv )
 //         cout << "jet " << i << ":  pt: " << jetV[i].Pt() << endl;
 //         //  cout << "jet " << i << ":  pt: " << pfjets.at(i).pt << endl;
 //       }
-     
+
+//Calculate the Single Muon ID and Trigger Efficiency
+      double IDandTrigSF =0;
+      if(isMuonEvent){
+        IDandTrigSF = getSingleMuEffSF(leptonEta);
+        // cout << "Scale Factor: " << IDandTrigSF << endl;
+        wgt *= IDandTrigSF;
+      }
+      
       
       *(floatBranches["leptonPt"]) = leptonPt ;
       *(floatBranches["leptonEta"]) = leptonEta ;
       if(isMuonEvent == true){
-           h_muPt->Fill(leptonPt);
+           h_muPt->Fill(leptonPt,wgt);
            histName = "h_muPt_";
            histName += nJetsPlot;
            histName += "j";
            //           cout << "muPt Njet Hist Name: " << histName << " njets: " << numGoodJets
            //   << " muPt: " << leptonPt << endl;
-        histograms[histName]->Fill(leptonPt);
-         h_muEta->Fill(leptonEta);
+        histograms[histName]->Fill(leptonPt,wgt);
+         h_muEta->Fill(leptonEta,wgt);
         histName = "h_muEta_";
         histName += nJetsPlot;
         histName += "j";
-        histograms[histName]->Fill(leptonEta);
+        histograms[histName]->Fill(leptonEta,wgt);
       }
       //if(isEleEvent == true){h_elePt->Fill(leptonPt);}
 
@@ -1641,7 +1646,6 @@ int main ( int argc, char ** argv )
       //////////////////////////
       double wgt_prob=0, wgt_prob_hfSFup=0, wgt_prob_hfSFdown=0, wgt_prob_lfSFup=0, wgt_prob_lfSFdown=0;                                  
       double wgt_prob_ge4=0, wgt_prob_ge4_hfSFup=0, wgt_prob_ge4_hfSFdown=0, wgt_prob_ge4_lfSFup=0, wgt_prob_ge4_lfSFdown=0;              
-
 
 	
       if( (sample>=0 || sample==-2500) && !isData){
@@ -1726,6 +1730,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;                                                                           
 
 
+       
       /////////////////////////////////
       ///////
       /////// final selection for neural net training:
@@ -1833,6 +1838,7 @@ int main ( int argc, char ** argv )
       lep1_eta = muons.at(iMuon1).eta;
       lep1_phi = muons.at(iMuon1).phi;
       lep_vect1.SetPxPyPzE(muons.at(iMuon1).px, muons.at(iMuon1).py, muons.at(iMuon1).pz, muons.at(iMuon1).energy);
+      //lep_vect1.SetEta(lep1_eta);
     }
     if(oneTightEle){
       iEle1=tight_ele_index[0];
@@ -1841,7 +1847,7 @@ int main ( int argc, char ** argv )
       lep1_eta = electrons.at(iEle1).eta;
       lep1_phi = electrons.at(iEle1).phi;
       lep_vect1.SetPxPyPzE(electrons.at(iEle1).px, electrons.at(iEle1).py, electrons.at(iEle1).pz, electrons.at(iEle1).energy);
-     
+      // lep_vect1.SetEta(lep1_eta);
     }
 
 // 	  if( twoTightMuon || TightMuonLooseMuon ){
@@ -1940,20 +1946,20 @@ int main ( int argc, char ** argv )
 // 	    lep_vect2.SetPxPyPzE(electrons.at(iEle).px, electrons.at(iEle).py, electrons.at(iEle).pz, electrons.at(iEle).energy);
 	  
 // 	  }
-
+   
       if (verbose) std::cout << "about to fill two lep vars " <<std::endl;
  
-	  // two leptons
-	  TLorentzVector two_lepton = lep_vect1 + lep_vect2;
-	  float dilep_mass = two_lepton.M();
-	  float dilep_pt = two_lepton.Pt();
-	  float dPhi_dilep = lep_vect1.DeltaPhi(lep_vect2);
-	  float dR_dilep = lep_vect1.DeltaR(lep_vect2);
-
-	  *(floatBranches["mass_leplep"]) = dilep_mass;
-	  *(floatBranches["pt_leplep"]) = dilep_pt;
-	  *(floatBranches["dPhi_leplep"]) = dPhi_dilep;
-	  *(floatBranches["dR_leplep"]) = dR_dilep;
+	 //  // two leptons
+// 	  TLorentzVector two_lepton = lep_vect1 + lep_vect2;
+// 	  float dilep_mass = two_lepton.M();
+// 	  float dilep_pt = two_lepton.Pt();
+// 	  float dPhi_dilep = lep_vect1.DeltaPhi(lep_vect2);
+// 	  float dR_dilep = lep_vect1.DeltaR(lep_vect2);
+     
+// 	  *(floatBranches["mass_leplep"]) = dilep_mass;
+// 	  *(floatBranches["pt_leplep"]) = dilep_pt;
+// 	  *(floatBranches["dPhi_leplep"]) = dPhi_dilep;
+// 	  *(floatBranches["dR_leplep"]) = dR_dilep;
 
 	  *(floatBranches["lep1Pt"]) =  lep1_pt;
       // *(floatBranches["lep2Pt"]) =  lep2_pt;
@@ -1964,24 +1970,24 @@ int main ( int argc, char ** argv )
 
 	  sum_pt += lep1_pt;
 	  Ht += lep1_et ;
-
+    
       // sum_pt += lep2_pt;
       // Ht += lep2_et ;
 	  TLorentzVector leptonTrans = lep_vect1;
       leptonTrans.SetPz(0.);
       leptonTrans.SetE(lep_vect1.Pt());
       TLorentzVector WTrans = metV + leptonTrans;
+    
       *(floatBranches["mT"]) = WTrans.M();
       if(isMuonEvent == true){
-         h_muMt->Fill(WTrans.M());
+        h_muMt->Fill(WTrans.M(),wgt);
         histName = "h_muMt_";
         histName += nJetsPlot;
         histName += "j";
-        histograms[histName]->Fill(WTrans.M());
+        histograms[histName]->Fill(WTrans.M(),wgt);
       }
 
-      
-	  TLorentzVector everything_vect = metV + lep_vect1 + sum_jet_vect; //Lept+Jets Mttbar
+      TLorentzVector everything_vect = metV + lep_vect1 + sum_jet_vect; //Lept+Jets Mttbar
 	  float ttbar_mass = everything_vect.M();
 	  float ttbar_pt = everything_vect.Pt();
       float ttbar_eta = everything_vect.Eta();
@@ -1989,53 +1995,54 @@ int main ( int argc, char ** argv )
       *(floatBranches["ttbarPt"]) = ttbar_pt;
       *(floatBranches["ttbarEta"]) = ttbar_eta;
       if(isMuonEvent == true){
-        h_muMttbar->Fill(ttbar_mass);
-        h_muTTbarPt->Fill(ttbar_pt);
-        h_muTTbarEta->Fill(ttbar_eta);
+        h_muMttbar->Fill(ttbar_mass,wgt);
+        h_muTTbarPt->Fill(ttbar_pt,wgt);
+        h_muTTbarEta->Fill(ttbar_eta,wgt);
         
         histName = "h_muMttbar_";
         histName += nJetsPlot;
         histName += "j";
-        histograms[histName]->Fill(ttbar_mass);
+        histograms[histName]->Fill(ttbar_mass,wgt);
         histName = "h_muTTbarPt_";
         histName += nJetsPlot;
         histName += "j";
-        histograms[histName]->Fill(ttbar_pt);
+        histograms[histName]->Fill(ttbar_pt,wgt);
         histName = "h_muTTbarEta_";
         histName += nJetsPlot;
         histName += "j";
-        histograms[histName]->Fill(ttbar_eta);
+        histograms[histName]->Fill(ttbar_eta,wgt);
       }
       //M3
       if(numGoodJets>=3){
         TLorentzVector top3Jets = jetV[0] +  jetV[1] +  jetV[2];
-        h_muM3->Fill(top3Jets.M());
+        h_muM3->Fill(top3Jets.M(),wgt);
         histName = "h_muM3_";
         histName += nJetsPlot;
         histName += "j";
-        histograms[histName]->Fill(top3Jets.M());
+        histograms[histName]->Fill(top3Jets.M(),wgt);
         
       }
-
+     
       
-
+    
 	  ///loop jet	  
 	  for (int i=0; i < numGoodJets; i++) {
 	    int iJet = tight_pfjet_index[i] ;
 	    sum_pt += jet_pt[iJet];
 	    Ht += jet_energy[iJet];
-	    
+	   
 	    jet_vect.SetPxPyPzE(jet_px[iJet],jet_py[iJet],jet_pz[iJet],jet_energy[iJet]);
-	    
+	   
 	    if (i==0)  first_jet_pt = jet_pt[iJet];
 	    if (i==1)  second_jet_pt = jet_pt[iJet];
 	    if (i==2)  third_jet_pt = jet_pt[iJet];
 	    if (i==3)  fourth_jet_pt = jet_pt[iJet];
-	    
-	    if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
-	      min_jet_lep1_dR = lep_vect1.DeltaR(jet_vect); 
-	    }
-	    
+
+       //  cout << "lep1 pt: " << lep_vect1.Pt() << " eta: " <<  lep_vect1.Eta() << endl;
+// 	    if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
+// 	      min_jet_lep1_dR = lep_vect1.DeltaR(jet_vect); 
+// 	    }
+	   
         //  if (min_jet_lep2_dR > lep_vect2.DeltaR(jet_vect)){
         // min_jet_lep2_dR = lep_vect2.DeltaR(jet_vect); 
         // }
@@ -2056,9 +2063,9 @@ int main ( int argc, char ** argv )
 	  
 	  float mindr_lep1_jet = min_jet_lep1_dR;
 	  //float mindr_lep2_jet = min_jet_lep2_dR;
-	  *(floatBranches["mindr_lep1_jet"]) = mindr_lep1_jet;
+      //  *(floatBranches["mindr_lep1_jet"]) = mindr_lep1_jet;
 	  //*(floatBranches["mindr_lep2_jet"]) = mindr_lep2_jet;
-	  
+	 
 	  if ( numTag > 0 ) avg_btag_disc_btags /= numTag;
 	  
 	  if ((numGoodJets - numTag) != 0){
@@ -2073,7 +2080,7 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["avg_btag_disc_btags"]) = avg_btag_disc_btags;
 	  *(floatBranches["avg_btag_disc_non_btags"]) = avg_btag_disc_non_btags;
 	  *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
-
+ 
 	  /////
 	  all_sum_pt = sum_pt + met;
 	  Ht += met;
@@ -2090,16 +2097,16 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["Ht"]) = Ht;
 
        if(isMuonEvent == true){
-          h_muMET->Fill(met);
+          h_muMET->Fill(met,wgt);
          histName = "h_muMET_";
          histName += nJetsPlot;
          histName += "j";
-         histograms[histName]->Fill(met);
-         h_muHt->Fill(Ht);
+         histograms[histName]->Fill(met,wgt);
+         h_muHt->Fill(Ht,wgt);
          histName = "h_muHt_";
          histName += nJetsPlot;
          histName += "j";
-         histograms[histName]->Fill(Ht);
+         histograms[histName]->Fill(Ht,wgt);
        }
 
 	  //// tagged jets
@@ -2133,7 +2140,6 @@ int main ( int argc, char ** argv )
 	  }
 	  
 
-	  
 	  ////non_tagged jets
 	  
 	  denom_avg_cnt = 0.;
@@ -2154,7 +2160,7 @@ int main ( int argc, char ** argv )
 	  
 	    avg_untagged_dijet_mass /= denom_avg_cnt;
 	  }
-	  
+    
 	  ////	  	 
 	  if (numTag > 1){
 	    *(floatBranches["min_dr_tagged_jets"]) = min_dr_tagged_jets;
@@ -2482,6 +2488,50 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
   if( !(genjetPT>10.) ) factor = 1.;
 
   return factor;
+}
+
+double getSingleMuEffSF(double muEta){
+  cout << "get single muon efficiency for mu passing IsoMu24" << endl;
+  double muonSF = 1;
+  double muonTriggerSF;
+
+  //muon ID and Trigger Eff from AN2012 218 v3
+  //and are a function of eta for pt values of >26GeV Muon POG Tight Muons
+  double muonIDSF= 0.999;
+
+  double etaMin[12] = {-2.1, -1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6};
+  double etaMax[12] = {-1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6, 2.1};
+
+  double TrigSF[13] ={
+    1.010,
+    1.001,
+    0.983,
+    0.998,
+    1.008,
+    0.965,
+    1.007,
+    0.985,
+    1.007,
+    0.984,
+    1.003,
+    0.980,
+    0.977};
+    
+  
+
+  int use_bin=-1;                                                                                                                
+  for( int e=0; e<12; e++ ){                                                                                                     
+    if( muEta> etaMin[e] && muEta <etaMax[e] ){                                                                                            
+      use_bin = e; break;                                                                                                        
+    }                                                                                                                            
+  }
+  muonTriggerSF = TrigSF[use_bin];
+
+  
+  muonSF *= muonIDSF;
+  muonSF *= muonTriggerSF;
+   
+  return muonSF;
 }
 
 
