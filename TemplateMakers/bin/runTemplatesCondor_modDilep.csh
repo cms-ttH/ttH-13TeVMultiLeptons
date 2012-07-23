@@ -9,27 +9,40 @@ set iJer = $5
 
 #set sample = ${listFileName:r}
 set sample = ${listFileName}
-if (iJes == 0) then
-    if (iJer == 0) then
+
+set outDirName = ""
+
+if ($iJes == "0") then
+    if ($iJer == "0") then
         set outDirName = batchBEAN/${sample}_${iLabel}/log
     endif
-    if (iJer == -1) then
+    if ($iJer == "-1") then
         set outDirName = batchBEAN/${sample}_${iLabel}_JerDown/log
     endif
-    if (iJer == 1) then
+    if ($iJer == "1") then
         set outDirName = batchBEAN/${sample}_${iLabel}_JerUp/log
     endif
 endif
-if (iJes == -1) then
+if ($iJes == "-1") then
     set outDirName = batchBEAN/${sample}_${iLabel}_JesDown/log
 endif
-if (iJes == 1) then
+if ($iJes == "1") then
     set outDirName = batchBEAN/${sample}_${iLabel}_JerUp/log
 endif
+
+if ($outDirName == "") then
+
+  echo "Script called with bad arguments, can't make the output dir"
+  echo "Failed trying to create $outDirName"
+  exit (5)
+
+endif 
+
 
 if (! -e $outDirName) then
 	mkdir -p $outDirName
 endif
+
 
 #shyft_pretag shyftPretag_main_condor.py $listFileName $iJob $nJobs \
 #	>&! $outDirName/shyftPretag_${sample}_${iJob}.log
