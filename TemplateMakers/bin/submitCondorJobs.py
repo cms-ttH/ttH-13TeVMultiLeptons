@@ -106,8 +106,8 @@ def main ():
         condorJobFile.close()
         print "Trying to submit jobs..."
         print os.popen("condor_submit dilBatch.submit").readlines()
-        print "Now sleeping for a little..."
-        time.sleep(5)
+        #print "Now sleeping for a little..."
+        #time.sleep(5)
 
     print "Done with loop over samples"
     
