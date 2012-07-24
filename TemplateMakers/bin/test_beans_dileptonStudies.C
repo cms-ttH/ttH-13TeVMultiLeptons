@@ -492,6 +492,8 @@ int main ( int argc, char ** argv )
   intBranches["isTriggerPass"] = new int (0);
 
   intBranches["PassZmask"] = new int (0);
+
+  intBranches["oppositeLepCharge"] = new int (0);
   
   std::map<TString, unsigned int *> uintBranches;
 
@@ -536,6 +538,9 @@ int main ( int argc, char ** argv )
   floatBranches["dR_leplep"] = new float(0.0);
   floatBranches["correctedDZ_leplep"] = new float(0.0);
   floatBranches["tkDZ_leplep"] = new float(0.0);
+  floatBranches["lep1TkCharge"] = new float (0.0);
+  floatBranches["lep2TkCharge"] = new float (0.0);
+  
 
   /// jet variables
   floatBranches["numJets_float"] = new float (0);
@@ -1901,6 +1906,8 @@ int main ( int argc, char ** argv )
     float lep2_tkDZ = 0 ;
     float lep1_correctedDZ = 0 ;
     float lep2_correctedDZ = 0 ;
+    float lep1TkCharge = -10;
+    float lep2TkCharge = -10;
 
 	  if( twoTightMuon || TightMuonLooseMuon ){
 	    if( twoTightMuon ) {
@@ -1934,6 +1941,10 @@ int main ( int argc, char ** argv )
 
         lep1_correctedDZ = muons.at(iMuon1).correctedDZ;
         lep2_correctedDZ = muons.at(iMuon2).correctedDZ;
+
+        lep1TkCharge = muons.at(iMuon1).tkCharge;
+        lep2TkCharge = muons.at(iMuon2).tkCharge;
+        
         
         lep_vect1.SetPxPyPzE(muons.at(iMuon1).px, muons.at(iMuon1).py, muons.at(iMuon1).pz, muons.at(iMuon1).energy);
 	    lep_vect2.SetPxPyPzE(muons.at(iMuon2).px, muons.at(iMuon2).py, muons.at(iMuon2).pz, muons.at(iMuon2).energy);
@@ -1972,6 +1983,9 @@ int main ( int argc, char ** argv )
 
         lep1_correctedDZ = electrons.at(iEle1).correctedDZ;
         lep2_correctedDZ = electrons.at(iEle2).correctedDZ;
+
+        lep1TkCharge = electrons.at(iEle1).tkCharge;
+        lep2TkCharge = electrons.at(iEle2).tkCharge;
         
 	    lep_vect1.SetPxPyPzE(electrons.at(iEle1).px, electrons.at(iEle1).py, electrons.at(iEle1).pz, electrons.at(iEle1).energy);
 	    lep_vect2.SetPxPyPzE(electrons.at(iEle2).px, electrons.at(iEle2).py, electrons.at(iEle2).pz, electrons.at(iEle2).energy);
@@ -2011,6 +2025,9 @@ int main ( int argc, char ** argv )
 
         lep1_correctedDZ = muons.at(iMuon).correctedDZ;
         lep2_correctedDZ = electrons.at(iEle).correctedDZ;
+
+        lep1TkCharge = muons.at(iMuon).tkCharge;
+        lep2TkCharge = electrons.at(iEle).tkCharge;
         
 	    lep_vect1.SetPxPyPzE(muons.at(iMuon).px, muons.at(iMuon).py, muons.at(iMuon).pz, muons.at(iMuon).energy);
 	    lep_vect2.SetPxPyPzE(electrons.at(iEle).px, electrons.at(iEle).py, electrons.at(iEle).pz, electrons.at(iEle).energy);
@@ -2028,6 +2045,17 @@ int main ( int argc, char ** argv )
       float dEta_dilep = lep_vect1.Eta() - lep_vect2.Eta();
       float correctedDZ_dilep = lep1_correctedDZ - lep2_correctedDZ;
       float tkDZ_dilep = lep1_tkDZ - lep2_tkDZ;
+      int oppositeLepCharge = -1;
+
+      // check to see if the product is negative
+      // it can only be negative if the charges
+      // have opposite signs
+      if ((lep1TkCharge * lep2TkCharge) < 0) {
+        oppositeLepCharge = 1;
+      } else {
+        oppositeLepCharge = 0;
+      }
+      
       
 	  *(floatBranches["mass_leplep"]) = dilep_mass;
 	  *(floatBranches["pt_leplep"]) = dilep_pt;
@@ -2043,6 +2071,12 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["lep2Eta"]) = lep2_eta;
 	  *(floatBranches["lep1Phi"]) = lep1_phi;
 	  *(floatBranches["lep2Phi"]) = lep2_phi;
+      *(floatBranches["lep1TkCharge"]) = lep1TkCharge;
+      *(floatBranches["lep2TkCharge"]) = lep2TkCharge;
+
+
+      *(intBranches["oppositeLepCharge"]) = oppositeLepCharge;
+      
 
 	  sum_pt += lep1_pt;
 	  Ht += lep1_et ;
