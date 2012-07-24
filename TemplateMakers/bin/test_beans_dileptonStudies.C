@@ -532,7 +532,7 @@ int main ( int argc, char ** argv )
   floatBranches["mass_leplep"] = new float(0.0);
   floatBranches["pt_leplep"] = new float(0.0);
   floatBranches["dPhi_leplep"] = new float(0.0);
-  //  floatBranches["dEta_leplep"] = new float(0.0);
+  floatBranches["dEta_leplep"] = new float(0.0);
   floatBranches["dR_leplep"] = new float(0.0);
   floatBranches["correctedDZ_leplep"] = new float(0.0);
   floatBranches["tkDZ_leplep"] = new float(0.0);
@@ -2025,12 +2025,14 @@ int main ( int argc, char ** argv )
 	  float dilep_pt = two_lepton.Pt();
 	  float dPhi_dilep = lep_vect1.DeltaPhi(lep_vect2);
 	  float dR_dilep = lep_vect1.DeltaR(lep_vect2);
+      float dEta_dilep = lep_vect1.Eta() - lep_vect2.Eta();
       float correctedDZ_dilep = lep1_correctedDZ - lep2_correctedDZ;
       float tkDZ_dilep = lep1_tkDZ - lep2_tkDZ;
       
 	  *(floatBranches["mass_leplep"]) = dilep_mass;
 	  *(floatBranches["pt_leplep"]) = dilep_pt;
 	  *(floatBranches["dPhi_leplep"]) = dPhi_dilep;
+      *(floatBranches["dEta_leplep"]) = dEta_dilep;
 	  *(floatBranches["dR_leplep"]) = dR_dilep;
       *(floatBranches["correctedDZ_leplep"]) = correctedDZ_dilep;
       *(floatBranches["tkDZ_leplep"]) = tkDZ_dilep;
