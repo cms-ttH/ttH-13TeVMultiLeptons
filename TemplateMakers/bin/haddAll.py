@@ -117,7 +117,7 @@ def main ():
 	if (options.copyFiles):
 		print "Now copying results to tree files!"
 		
-		for iLine in os.popen("find . -wholename '*_all.root' -exec cp {} ../../DrawPlots/bin/treeFiles \;"):
+		for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} ../../DrawPlots/bin/treeFiles \;" % dirLabel  ):
 			print iLine
 
 		
