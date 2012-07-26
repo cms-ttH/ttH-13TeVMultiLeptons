@@ -479,9 +479,13 @@ int main ( int argc, char ** argv )
   intBranches["TwoEle"] = new int (0);
   intBranches["MuonEle"] = new int (0);
 
+  intBranches["numAllJets"] = new int(0);
+  intBranches["numBadJets"] = new int(0);
   intBranches["numJets"] = new int (0);
   intBranches["numTaggedJets"] = new int (0);
   intBranches["numNonTaggedJets"] = new int (0);
+  intBranches["numHiggsJets"] = new int (0);
+  intBranches["numHiggsAllJets"] = new int (0);
 
   intBranches["numTightMuons"] = new int (0);
   intBranches["numLooseMuons"] = new int (0);
@@ -490,9 +494,12 @@ int main ( int argc, char ** argv )
 
   intBranches["isCleanEvent"] = new int (0);
   intBranches["isTriggerPass"] = new int (0);
-
+  intBranches["isHtoBB"] = new int(0);
+  intBranches["isHtoCC"] = new int(0);
+  intBranches["isHtoTT"] = new int(0);
+  intBranches["isHtoGG"] = new int(0);
+  intBranches["isHtoWW"] = new int(0);
   intBranches["PassZmask"] = new int (0);
-
   intBranches["oppositeLepCharge"] = new int (0);
   
   std::map<TString, unsigned int *> uintBranches;
@@ -503,6 +510,12 @@ int main ( int argc, char ** argv )
 
   ////Robin ///------------variables--------------------
   std::map<TString, float *> floatBranches;
+  //Generator kinematics
+  floatBranches["higgs_pt"] = new float(0.0);
+  floatBranches["higgs_pz"] = new float(0.0);
+  floatBranches["top1_pt"] = new float(0.0);
+  floatBranches["top1_pz"] = new float(0.0);
+  
   //b-tag reweight                                                                                                               
   floatBranches["prob"] = new float(0.0);                                                                                        
   floatBranches["prob_hfSFup"] = new float(0.0);                                                                                 
@@ -540,8 +553,6 @@ int main ( int argc, char ** argv )
   floatBranches["tkDZ_leplep"] = new float(0.0);
   floatBranches["lep1TkCharge"] = new float (0.0);
   floatBranches["lep2TkCharge"] = new float (0.0);
-  
-
   /// jet variables
   floatBranches["numJets_float"] = new float (0);
   floatBranches["numTaggedJets_float"] = new float (0);
@@ -551,8 +562,14 @@ int main ( int argc, char ** argv )
   floatBranches["third_jet_pt"] = new float(0.0);
   floatBranches["fourth_jet_pt"] = new float(0.0);
 
+  floatBranches["first_allJet_pt"] = new float(0.0);
+  floatBranches["second_allJet_pt"] = new float(0.0);
+  floatBranches["third_allJet_pt"] = new float(0.0);
+  floatBranches["fourth_allJet_pt"] = new float(0.0);
+  
   floatBranches["higgs_dijet_mass"] = new float(0.0);
   floatBranches["higgsLike_dijet_mass"] = new float(0.0);
+  floatBranches["higgsLike_allDijet_mass"] = new float(0.0);
   floatBranches["higgs_genJet_mass"] = new float(0.0);
   floatBranches["higgs_genParton_mass"] = new float(0.0);
   floatBranches["min_dr_tagged_jets"] = new float(0.0);
@@ -563,7 +580,9 @@ int main ( int argc, char ** argv )
   floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
   floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
   floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
-
+  floatBranches["min_dr_genB1_allJet"] = new float (0.0);
+  floatBranches["min_dr_genB2_allJet"] = new float (0.0);
+  
   floatBranches["avg_btag_disc_btags"] = new float(0.0);
   floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
   floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
@@ -836,6 +855,47 @@ int main ( int argc, char ** argv )
       //      cout << "Sample type is = " <<sample <<endl;
 
 
+
+      bool HtoBB = false;
+      bool HtoCC = false;
+      bool HtoTT = false;
+      bool HtoGG = false;
+      bool HtoWW = false;
+
+      float higgs_pt = 0.0;
+      float higgs_pz = 0.0;
+      float top1_pt = 0.0;
+      float top1_pz = 0.0;
+      
+      TLorentzVector higgsGenBV[100];
+        //std::cout << "Event: " << cnt << std::endl;
+      for( unsigned i=0; i< mcparticles.size(); i++ ){
+        int Aid = mcparticles.at(i).id;
+        int AmotherID = mcparticles.at(i).motherId;
+        int AgrandMotherID = mcparticles.at(i).grandMotherId;
+        if ((Aid == 5 || Aid == -5) && AmotherID == 25) {
+          if (HtoBB) higgsGenBV[0].SetPtEtaPhiE(mcparticles.at(i).pt,mcparticles.at(i).eta,mcparticles.at(i).phi,mcparticles.at(i).energy);
+          else higgsGenBV[1].SetPtEtaPhiE(mcparticles.at(i).pt,mcparticles.at(i).eta,mcparticles.at(i).phi,mcparticles.at(i).energy);
+          HtoBB = true;
+        }
+        if ((Aid == 4 || Aid == -4) && AmotherID == 25) HtoCC = true;
+        if ((Aid == 15 || Aid == -15) && AmotherID == 25) HtoTT = true;
+        if ((Aid == 21 || Aid == -21) && AmotherID == 25) HtoGG = true;
+        if ((Aid == 24 || Aid == -24) && AmotherID == 25) HtoWW = true;
+
+        if  (Aid == 25) {
+          higgs_pt = mcparticles.at(i).pt;
+          higgs_pz = mcparticles.at(i).pz;
+        }
+        if (Aid == 6 || Aid == -6) {
+          top1_pt = mcparticles.at(i).pt;
+          top1_pz = mcparticles.at(i).pz;
+        }
+        //std::cout << "Particle " << i << " is " << Aid << ", has mother " << AmotherID << " and grandmother " << AgrandMotherID << std::endl;
+        
+        }
+
+
       if (sample == 2510 || sample == 2511) {
 	//        cout << "ERROR: incorrect sample number detected for scale up down samples "  << endl
 	//             << "Resetting sample to 2500 "  <<endl;
@@ -877,6 +937,9 @@ int main ( int argc, char ** argv )
         for( unsigned i=0; i< mcparticles.size(); i++ ){
           int id = mcparticles.at(i).id;
           int motherID = mcparticles.at(i).motherId;
+          int grandMotherID = mcparticles.at(i).grandMotherId;
+
+          if (debug_) std::cout << "Particle " << i << " is " << id << ", has mother " << motherID << " and grandmother " << grandMotherID << std::endl;
 
           if (debug_) cout <<" Particle " << i << " has id " << id << endl;
           if( abs(id)==4  && abs(motherID)==24 ){
@@ -1420,8 +1483,10 @@ int main ( int argc, char ** argv )
 
       int numGoodJets=0;
       int numHiggsJets=0;
+      int numHiggsAllJets=0;
       int numGoodAndBadJets=0;
       TLorentzVector jetV[100];
+      TLorentzVector allJetV[100];
       TLorentzVector higgsJetV[100];
       TLorentzVector higgsGenJetV[100];
       TLorentzVector higgsGenPartonV[100];
@@ -1503,10 +1568,10 @@ int main ( int argc, char ** argv )
 	jetPt *= myJER;
 
     if (pfjets.at(i).genPartonMotherId == 25) {
-      higgsJetV[numHiggsJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
-      higgsGenJetV[numHiggsJets].SetPtEtaPhiE(pfjets.at(i).genJetPT,pfjets.at(i).genJetEta,pfjets.at(i).genJetPhi,pfjets.at(i).genJetET/sin(2*atan(exp(-pfjets.at(i).genJetEta))));
-      higgsGenPartonV[numHiggsJets].SetPtEtaPhiE(pfjets.at(i).genPartonPT,pfjets.at(i).genPartonEta,pfjets.at(i).genPartonPhi,pfjets.at(i).genPartonET/sin(2*atan(exp(-pfjets.at(i).genPartonEta))));
-      numHiggsJets++;
+      higgsJetV[numHiggsAllJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+      higgsGenJetV[numHiggsAllJets].SetPtEtaPhiE(pfjets.at(i).genJetPT,pfjets.at(i).genJetEta,pfjets.at(i).genJetPhi,pfjets.at(i).genJetET/sin(2*atan(exp(-pfjets.at(i).genJetEta))));
+      higgsGenPartonV[numHiggsAllJets].SetPtEtaPhiE(pfjets.at(i).genPartonPT,pfjets.at(i).genPartonEta,pfjets.at(i).genPartonPhi,pfjets.at(i).genPartonET/sin(2*atan(exp(-pfjets.at(i).genPartonEta))));
+      numHiggsAllJets++;
     } 
     //std::cout << "Jet " << i << " ID: " << pfjets.at(i).genPartonMotherId << std::endl;
     jet_motherID.push_back(pfjets.at(i).genPartonMotherId);
@@ -1518,7 +1583,7 @@ int main ( int argc, char ** argv )
 //         std::cout << "GrandMother for jet " << i << " is " << pfjets.at(i).genPartonGrandMotherId << std::endl;
 //       }
 //     }
-
+    allJetV[numGoodAndBadJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
     numGoodAndBadJets++;
     
 	bool kin = ( jetPt>30. );
@@ -1526,6 +1591,10 @@ int main ( int argc, char ** argv )
 	bool id  = ( pfjets.at(i).jetIDLoose==1 );
     
 	if( !(kin && eta && id) ) continue;
+
+    if (pfjets.at(i).genPartonMotherId == 25) {
+      numHiggsJets++;
+    } 
 
 	/// remove dR_jet_lep cut
 // 	bool hasCloseLepton = false;
@@ -1628,7 +1697,9 @@ int main ( int argc, char ** argv )
       *(floatBranches["sndElePt"]) = sndElePt ;
 
       //------------------------
+      int numAllJet = numGoodAndBadJets;
       int numJet = int(tight_pfjet_index.size());
+      int numBadJet = numAllJet - numJet;
       int numTag = int(tag_pfjet_index.size());
       int numNonTag = int(untag_pfjet_index.size());
 
@@ -1666,11 +1737,19 @@ int main ( int argc, char ** argv )
 
       *(intBranches["isCleanEvent"]) = cleanEvent ? 1 : 0;
       *(intBranches["isTriggerPass"]) = triggerPass ? 1 : 0;
-
+      *(intBranches["isHtoBB"]) = HtoBB ? 1 : 0;
+      *(intBranches["isHtoCC"]) = HtoCC ? 1 : 0;
+      *(intBranches["isHtoTT"]) = HtoTT ? 1 : 0;
+      *(intBranches["isHtoGG"]) = HtoGG ? 1 : 0;
+      *(intBranches["isHtoWW"]) = HtoWW ? 1 : 0;
       *(intBranches["numJets"]) = numJet ;
+      *(intBranches["numAllJets"]) = numAllJet;
+      *(intBranches["numBadJets"]) = numBadJet;
       *(intBranches["numTaggedJets"]) = numTag;
       *(intBranches["numNonTaggedJets"]) = numNonTag;
-
+      *(intBranches["numHiggsJets"]) = numHiggsJets;
+      *(intBranches["numHiggsAllJets"]) = numHiggsAllJets;
+      
       *(floatBranches["numJets_float"]) = float(numJet);
       *(floatBranches["numTaggedJets_float"]) = float(numTag);
 
@@ -1830,16 +1909,19 @@ int main ( int argc, char ** argv )
       
       TLorentzVector sum_higgs_dijet_vect(0.0,0.0,0.0,0.0);
       TLorentzVector sum_higgsLike_dijet_vect(0.0,0.0,0.0,0.0);
+      TLorentzVector sum_higgsLike_allDijet_vect(0.0,0.0,0.0,0.0);
       TLorentzVector sum_higgs_genJet_vect(0.0,0.0,0.0,0.0);
       TLorentzVector sum_higgs_genParton_vect(0.0,0.0,0.0,0.0);
       
       float higgs_dijet_mass = -10.0;
       float higgsLike_dijet_mass1 = -10.0;
       float higgsLike_dijet_mass2 = -10.0;
+      float higgsLike_allDijet_mass1 = -10.0;
+      float higgsLike_allDijet_mass2 = -10.0;
       float higgs_genJet_mass = -10.0;
       float higgs_genParton_mass = -10.0;
       
-      if (numHiggsJets == 2) {
+      if (numHiggsAllJets == 2) {
         sum_higgs_dijet_vect = higgsJetV[0] + higgsJetV[1];
         higgs_dijet_mass = sum_higgs_dijet_vect.M();
         sum_higgs_genJet_vect = higgsGenJetV[0] + higgsGenJetV[1];
@@ -1847,7 +1929,7 @@ int main ( int argc, char ** argv )
         sum_higgs_genParton_vect = higgsGenPartonV[0] + higgsGenPartonV[1];
         higgs_genParton_mass = sum_higgs_genParton_vect.M();
       }
-      if (numHiggsJets > 2) {
+      if (numHiggsAllJets > 2) {
         std::cout << "First three higgs jets have pt " << higgsJetV[0].Pt() << ", " << higgsJetV[1].Pt() << ", " << higgsJetV[2].Pt() << std::endl;
       }
       
@@ -1855,6 +1937,7 @@ int main ( int argc, char ** argv )
       TLorentzVector lep_vect1;
       TLorentzVector lep_vect2;
       TLorentzVector jet_vect;
+      TLorentzVector allJet_vect;
       
       TLorentzVector btag_vect1;
       TLorentzVector btag_vect2;
@@ -1864,10 +1947,15 @@ int main ( int argc, char ** argv )
       float third_jet_pt = 0.0 ;
       float fourth_jet_pt = 0.0 ;
 
+      float first_allJet_pt = 0.0 ;
+      float second_allJet_pt = 0.0 ;
+      float third_allJet_pt = 0.0 ;
+      float fourth_allJet_pt = 0.0 ;
+      
       float min_jet_lep1_dR = 10000.;
       float min_jet_lep2_dR = 10000.;
       float min_tagged_jets_dR = 10000.;
- 
+      
       float denom_avg_cnt = 0.;
       float avg_btag_disc_btags = 0.;     
       float avg_btag_disc_non_btags = 0.;     
@@ -1883,7 +1971,9 @@ int main ( int argc, char ** argv )
       float avg_tagged_dijet_mass = 0.0 ;
       float closest_tagged_dijet_mass = 0.0 ;
       float M2_of_closest_tagged_jets = 0.0 ;
- 
+      float min_dr_genB1_allJet = -10.0;
+      float min_dr_genB2_allJet = -10.0;
+      
       TLorentzVector non_btag_vect1;
       TLorentzVector non_btag_vect2;
       float avg_untagged_dijet_mass = 0.0 ;
@@ -1908,7 +1998,7 @@ int main ( int argc, char ** argv )
     float lep2_correctedDZ = 0 ;
     float lep1TkCharge = -10;
     float lep2TkCharge = -10;
-
+    
 	  if( twoTightMuon || TightMuonLooseMuon ){
 	    if( twoTightMuon ) {
 	      iMuon1 = tight_mu_index[0] ;
@@ -1944,7 +2034,6 @@ int main ( int argc, char ** argv )
 
         lep1TkCharge = muons.at(iMuon1).tkCharge;
         lep2TkCharge = muons.at(iMuon2).tkCharge;
-        
         
         lep_vect1.SetPxPyPzE(muons.at(iMuon1).px, muons.at(iMuon1).py, muons.at(iMuon1).pz, muons.at(iMuon1).energy);
 	    lep_vect2.SetPxPyPzE(muons.at(iMuon2).px, muons.at(iMuon2).py, muons.at(iMuon2).pz, muons.at(iMuon2).energy);
@@ -2045,17 +2134,23 @@ int main ( int argc, char ** argv )
       float dEta_dilep = lep_vect1.Eta() - lep_vect2.Eta();
       float correctedDZ_dilep = lep1_correctedDZ - lep2_correctedDZ;
       float tkDZ_dilep = lep1_tkDZ - lep2_tkDZ;
-      int oppositeLepCharge = -1;
 
+      int oppositeLepCharge = -1;
       // check to see if the product is negative
       // it can only be negative if the charges
       // have opposite signs
-      if ((lep1TkCharge * lep2TkCharge) < 0) {
+      if ((lep1TkCharge * lep2TkCharge) == -1) {
         oppositeLepCharge = 1;
-      } else {
+      } else if ((lep1TkCharge * lep2TkCharge) == 1) {
         oppositeLepCharge = 0;
+      } else if (fabs(lep2TkCharge) == 99) {
+        oppositeLepCharge = -1;
+      } else if (fabs(lep1TkCharge) == 99) {
+        oppositeLepCharge = -2;
       }
+      else std::cout << "Lep1 has charge " << lep1TkCharge << " and Lep2 has charge " << lep2TkCharge << std::endl;
       
+          
       
 	  *(floatBranches["mass_leplep"]) = dilep_mass;
 	  *(floatBranches["pt_leplep"]) = dilep_pt;
@@ -2071,13 +2166,15 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["lep2Eta"]) = lep2_eta;
 	  *(floatBranches["lep1Phi"]) = lep1_phi;
 	  *(floatBranches["lep2Phi"]) = lep2_phi;
+
+      *(floatBranches["higgs_pt"]) = higgs_pt;
+      *(floatBranches["higgs_pz"]) = higgs_pz;
+      *(floatBranches["top1_pt"]) = top1_pt;
+      *(floatBranches["top1_pz"]) = top1_pz;
       *(floatBranches["lep1TkCharge"]) = lep1TkCharge;
       *(floatBranches["lep2TkCharge"]) = lep2TkCharge;
-
-
       *(intBranches["oppositeLepCharge"]) = oppositeLepCharge;
       
-
 	  sum_pt += lep1_pt;
 	  Ht += lep1_et ;
 
@@ -2090,7 +2187,35 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["mass_of_everything"]) = mass_of_everything;	  
 	  *(floatBranches["pt_of_everything"]) = pt_of_everything;	  
 
-	  ///loop jet	  
+	  ///loop jet
+
+      for (int i=0; i<numGoodAndBadJets; i++) {
+        allJet_vect.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+        if (HtoBB) {
+          if (min_dr_genB1_allJet != -10.0 && higgsGenBV[0].DeltaR(allJet_vect) < min_dr_genB1_allJet) {
+            min_dr_genB1_allJet = higgsGenBV[0].DeltaR(allJet_vect);
+          }
+          if (min_dr_genB2_allJet != -10.0 && higgsGenBV[1].DeltaR(allJet_vect) < min_dr_genB2_allJet) {
+            min_dr_genB2_allJet = higgsGenBV[1].DeltaR(allJet_vect);
+          }
+        }
+        
+	    if (i==0)  first_allJet_pt = jet_pt[i];
+	    if (i==1)  second_allJet_pt = jet_pt[i];
+	    if (i==2)  third_allJet_pt = jet_pt[i];
+	    if (i==3)  fourth_allJet_pt = jet_pt[i];
+        
+        for (int j=i+1; j < numGoodAndBadJets; j++) {
+          sum_higgsLike_allDijet_vect = allJetV[i] + allJetV[j];
+          higgsLike_allDijet_mass2 = sum_higgsLike_allDijet_vect.M();
+          if (fabs(110 - higgsLike_allDijet_mass1) > fabs(110 - higgsLike_allDijet_mass2) || higgsLike_allDijet_mass1 == -10.0) {
+            higgsLike_allDijet_mass1 = higgsLike_allDijet_mass2;
+          }
+        }
+      }
+
+        
+
 	  for (int i=0; i < numGoodJets; i++) {
 	    int iJet = tight_pfjet_index[i] ;
 	    sum_pt += jet_pt[iJet];
@@ -2132,7 +2257,15 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["second_jet_pt"]) = second_jet_pt;
 	  *(floatBranches["third_jet_pt"]) = third_jet_pt;
 	  *(floatBranches["fourth_jet_pt"]) = fourth_jet_pt;
-	  
+
+      *(floatBranches["first_allJet_pt"]) = first_allJet_pt;
+	  *(floatBranches["second_allJet_pt"]) = second_allJet_pt;
+	  *(floatBranches["third_allJet_pt"]) = third_allJet_pt;
+	  *(floatBranches["fourth_allJet_pt"]) = fourth_allJet_pt;
+
+      *(floatBranches["min_dr_genB1_allJet"]) = min_dr_genB1_allJet;
+      *(floatBranches["min_dr_genB2_allJet"]) = min_dr_genB2_allJet;
+      
 	  float mindr_lep1_jet = min_jet_lep1_dR;
 	  float mindr_lep2_jet = min_jet_lep2_dR;
 	  *(floatBranches["mindr_lep1_jet"]) = mindr_lep1_jet;
@@ -2227,6 +2360,7 @@ int main ( int argc, char ** argv )
 	  ////
       *(floatBranches["higgs_dijet_mass"]) = higgs_dijet_mass;
       *(floatBranches["higgsLike_dijet_mass"]) = higgsLike_dijet_mass1;
+      *(floatBranches["higgsLike_allDijet_mass"]) = higgsLike_allDijet_mass1;
       *(floatBranches["higgs_genJet_mass"]) = higgs_genJet_mass;
       *(floatBranches["higgs_genParton_mass"]) = higgs_genParton_mass;
       
