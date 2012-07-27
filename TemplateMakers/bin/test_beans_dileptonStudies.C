@@ -562,6 +562,18 @@ int main ( int argc, char ** argv )
   floatBranches["third_jet_pt"] = new float(0.0);
   floatBranches["fourth_jet_pt"] = new float(0.0);
 
+  floatBranches["first_jet_eta"] = new float(0.0);
+  floatBranches["second_jet_eta"] = new float(0.0);
+  floatBranches["third_jet_eta"] = new float(0.0);
+  floatBranches["fourth_jet_eta"] = new float(0.0);
+
+  floatBranches["dPhi_jet1jet2"] = new float(0.0);
+  floatBranches["dPhi_jet1jet3"] = new float(0.0);
+  floatBranches["dPhi_jet1jet4"] = new float(0.0);
+  floatBranches["dPhi_jet2jet3"] = new float(0.0);
+  floatBranches["dPhi_jet2jet4"] = new float(0.0);
+  floatBranches["dPhi_jet3jet4"] = new float(0.0);
+
   floatBranches["first_allJet_pt"] = new float(0.0);
   floatBranches["second_allJet_pt"] = new float(0.0);
   floatBranches["third_allJet_pt"] = new float(0.0);
@@ -1946,6 +1958,19 @@ int main ( int argc, char ** argv )
       float second_jet_pt = 0.0 ;
       float third_jet_pt = 0.0 ;
       float fourth_jet_pt = 0.0 ;
+      
+      float first_jet_eta = 10000.;
+      float second_jet_eta = 10000.;
+      float third_jet_eta = 10000.;
+      float fourth_jet_eta = 10000.;
+
+
+      float dPhi_jet1jet2 = 10000.;
+      float dPhi_jet1jet3 = 10000.;
+      float dPhi_jet1jet4 = 10000.;
+      float dPhi_jet2jet3 = 10000.;
+      float dPhi_jet2jet4 = 10000.;
+      float dPhi_jet3jet4 = 10000.;
 
       float first_allJet_pt = 0.0 ;
       float second_allJet_pt = 0.0 ;
@@ -2231,10 +2256,23 @@ int main ( int argc, char ** argv )
           }
         }
         
-	    if (i==0)  first_jet_pt = jet_pt[iJet];
-	    if (i==1)  second_jet_pt = jet_pt[iJet];
-	    if (i==2)  third_jet_pt = jet_pt[iJet];
-	    if (i==3)  fourth_jet_pt = jet_pt[iJet];
+	    if (i==0)  {        
+          first_jet_pt = jet_pt[iJet];
+          first_jet_eta = jet_vect.Eta();
+          
+        }
+	    if (i==1)  {
+          second_jet_pt = jet_pt[iJet];
+          second_jet_eta = jet_vect.Eta();
+        }
+	    if (i==2)  {
+          third_jet_pt = jet_pt[iJet];
+          third_jet_eta = jet_vect.Eta();
+        }
+	    if (i==3)  {
+          fourth_jet_pt = jet_pt[iJet];
+          fourth_jet_eta = jet_vect.Eta();
+        }
 	    
 	    if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
 	      min_jet_lep1_dR = lep_vect1.DeltaR(jet_vect); 
@@ -2258,7 +2296,18 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["third_jet_pt"]) = third_jet_pt;
 	  *(floatBranches["fourth_jet_pt"]) = fourth_jet_pt;
 
-      *(floatBranches["first_allJet_pt"]) = first_allJet_pt;
+      *(floatBranches["first_jet_eta"]) = first_jet_eta;
+      *(floatBranches["second_jet_eta"]) = second_jet_eta;
+      *(floatBranches["third_jet_eta"]) = third_jet_eta;
+      *(floatBranches["fourth_jet_eta"]) = fourth_jet_eta;
+
+      *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
+      *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
+      *(floatBranches["dPhi_jet1jet4"]) = dPhi_jet1jet4;
+      *(floatBranches["dPhi_jet2jet3"]) = dPhi_jet2jet3;
+      *(floatBranches["dPhi_jet2jet4"]) = dPhi_jet2jet4;
+      *(floatBranches["dPhi_jet3jet4"]) = dPhi_jet3jet4;
+*(floatBranches["first_allJet_pt"]) = first_allJet_pt;
 	  *(floatBranches["second_allJet_pt"]) = second_allJet_pt;
 	  *(floatBranches["third_allJet_pt"]) = third_allJet_pt;
 	  *(floatBranches["fourth_allJet_pt"]) = fourth_allJet_pt;
