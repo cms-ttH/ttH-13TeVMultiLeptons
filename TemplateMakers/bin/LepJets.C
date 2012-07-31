@@ -371,7 +371,9 @@ int main ( int argc, char ** argv )
   TH1F* h_muMttbar   = new TH1F("h_muMttbar", "M_{ttbar}", 4000, 0, 4000);
   TH1F* h_muTTbarPt  = new TH1F("h_muTTbarPT", "ttbar_{Pt}", 4000, 0, 4000);
   TH1F* h_muTTbarEta = new TH1F("h_muTTbarEta", "ttbar_{Eta}", 628,-3.14, 3.14);
+  TH1F* h_muTTbarY   = new TH1F("h_muTTbarY", "ttbar_{Y}", 628,-3.14, 3.14);
 
+  
   for (int iJet = minJets; iJet <=maxJetPlot ; ++iJet) {
     TString histName = "h_muPt_"; histName += iJet; histName += "j";
     TString histTitle = "Muon p_{T} (GeV/c) (N_{jets}";
@@ -438,6 +440,14 @@ int main ( int argc, char ** argv )
    }
     for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
       TString histName = "h_muTTbarEta_"; histName += iJet; histName += "j";
+      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+      histTitle += iJet;
+      histTitle += ")";
+      histograms[histName] = fs.make<TH1F>(histName, histTitle, 628,-3.14, 3.14);
+   }
+    for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+      TString histName = "h_muTTbarY_"; histName += iJet; histName += "j";
       TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
       histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
       histTitle += iJet;
@@ -662,6 +672,7 @@ int main ( int argc, char ** argv )
   floatBranches["Mttbar"] = new float(0.0);
   floatBranches["ttbarPt"] = new float(0.0);
   floatBranches["ttbarEta"] = new float(0.0);
+  floatBranches["ttbarY"] = new float(0.0);
   floatBranches["sum_pt"] = new float(0.0); 
   floatBranches["all_sum_pt"] = new float(0.0);
   floatBranches["Ht"] = new float(0.0);
@@ -1991,13 +2002,16 @@ int main ( int argc, char ** argv )
 	  float ttbar_mass = everything_vect.M();
 	  float ttbar_pt = everything_vect.Pt();
       float ttbar_eta = everything_vect.Eta();
+      float ttbar_y = everything_vect.Rapidity();
 	  *(floatBranches["Mttbar"]) = ttbar_mass;
       *(floatBranches["ttbarPt"]) = ttbar_pt;
       *(floatBranches["ttbarEta"]) = ttbar_eta;
+      *(floatBranches["ttbarY"]) = ttbar_y;
       if(isMuonEvent == true){
         h_muMttbar->Fill(ttbar_mass,wgt);
         h_muTTbarPt->Fill(ttbar_pt,wgt);
         h_muTTbarEta->Fill(ttbar_eta,wgt);
+        h_muTTbarY->Fill(ttbar_y,wgt);
         
         histName = "h_muMttbar_";
         histName += nJetsPlot;
@@ -2011,6 +2025,10 @@ int main ( int argc, char ** argv )
         histName += nJetsPlot;
         histName += "j";
         histograms[histName]->Fill(ttbar_eta,wgt);
+        histName = "h_muTTbarY_";
+        histName += nJetsPlot;
+        histName += "j";
+        histograms[histName]->Fill(ttbar_y,wgt);
       }
       //M3
       if(numGoodJets>=3){
@@ -2491,7 +2509,7 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
 }
 
 double getSingleMuEffSF(double muEta){
-  cout << "get single muon efficiency for mu passing IsoMu24" << endl;
+  // cout << "get single muon efficiency for mu passing IsoMu24" << endl;
   double muonSF = 1;
   double muonTriggerSF;
 
