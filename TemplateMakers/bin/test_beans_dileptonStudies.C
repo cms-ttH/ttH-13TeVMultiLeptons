@@ -501,6 +501,7 @@ int main ( int argc, char ** argv )
   intBranches["isHtoWW"] = new int(0);
   intBranches["PassZmask"] = new int (0);
   intBranches["oppositeLepCharge"] = new int (0);
+  intBranches["oppositeGenLepCharge"] = new int (0);
   
   std::map<TString, unsigned int *> uintBranches;
 
@@ -552,7 +553,9 @@ int main ( int argc, char ** argv )
   floatBranches["correctedDZ_leplep"] = new float(0.0);
   floatBranches["tkDZ_leplep"] = new float(0.0);
   floatBranches["lep1TkCharge"] = new float (0.0);
+  floatBranches["lep1GenCharge"] = new float (0.0);
   floatBranches["lep2TkCharge"] = new float (0.0);
+  floatBranches["lep2GenCharge"] = new float (0.0);
   /// jet variables
   floatBranches["numJets_float"] = new float (0);
   floatBranches["numTaggedJets_float"] = new float (0);
@@ -605,7 +608,11 @@ int main ( int argc, char ** argv )
 
   /////entire system variables
   floatBranches["mass_of_everything"] = new float(0.0);
+  floatBranches["mass_of_leps_and_jets"] = new float(0.0);
+  floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
   floatBranches["pt_of_everything"] = new float(0.0);
+  floatBranches["pt_of_leps_and_jets"] = new float(0.0);
+  floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
   floatBranches["sum_pt"] = new float(0.0); 
   floatBranches["all_sum_pt"] = new float(0.0);
   floatBranches["Ht"] = new float(0.0);
@@ -1913,10 +1920,15 @@ int main ( int argc, char ** argv )
 
       //sum of all jets
       TLorentzVector sum_jet_vect(0.0,0.0,0.0,0.0);
+      TLorentzVector sum_allJet_vect(0.0,0.0,0.0,0.0);
       
       for (int sumv=0; sumv < numJet; sumv++) {
 	sum_jet_vect += jetV[sumv];
       }
+      for (int sumv=0; sumv < numAllJet; sumv++) {
+	sum_allJet_vect += allJetV[sumv];
+      }
+
 
       
       TLorentzVector sum_higgs_dijet_vect(0.0,0.0,0.0,0.0);
@@ -2022,7 +2034,9 @@ int main ( int argc, char ** argv )
     float lep1_correctedDZ = 0 ;
     float lep2_correctedDZ = 0 ;
     float lep1TkCharge = -10;
+    float lep1GenCharge = -10;
     float lep2TkCharge = -10;
+    float lep2GenCharge = -10;
     
 	  if( twoTightMuon || TightMuonLooseMuon ){
 	    if( twoTightMuon ) {
@@ -2059,6 +2073,9 @@ int main ( int argc, char ** argv )
 
         lep1TkCharge = muons.at(iMuon1).tkCharge;
         lep2TkCharge = muons.at(iMuon2).tkCharge;
+
+        lep1GenCharge = muons.at(iMuon1).genCharge;
+        lep2GenCharge = muons.at(iMuon2).genCharge;
         
         lep_vect1.SetPxPyPzE(muons.at(iMuon1).px, muons.at(iMuon1).py, muons.at(iMuon1).pz, muons.at(iMuon1).energy);
 	    lep_vect2.SetPxPyPzE(muons.at(iMuon2).px, muons.at(iMuon2).py, muons.at(iMuon2).pz, muons.at(iMuon2).energy);
@@ -2100,7 +2117,10 @@ int main ( int argc, char ** argv )
 
         lep1TkCharge = electrons.at(iEle1).tkCharge;
         lep2TkCharge = electrons.at(iEle2).tkCharge;
-        
+
+        lep1GenCharge = electrons.at(iEle1).genCharge;
+        lep2GenCharge = electrons.at(iEle2).genCharge;
+
 	    lep_vect1.SetPxPyPzE(electrons.at(iEle1).px, electrons.at(iEle1).py, electrons.at(iEle1).pz, electrons.at(iEle1).energy);
 	    lep_vect2.SetPxPyPzE(electrons.at(iEle2).px, electrons.at(iEle2).py, electrons.at(iEle2).pz, electrons.at(iEle2).energy);
 	  
@@ -2142,6 +2162,9 @@ int main ( int argc, char ** argv )
 
         lep1TkCharge = muons.at(iMuon).tkCharge;
         lep2TkCharge = electrons.at(iEle).tkCharge;
+
+        lep1GenCharge = muons.at(iMuon).genCharge;
+        lep2GenCharge = electrons.at(iEle).genCharge;
         
 	    lep_vect1.SetPxPyPzE(muons.at(iMuon).px, muons.at(iMuon).py, muons.at(iMuon).pz, muons.at(iMuon).energy);
 	    lep_vect2.SetPxPyPzE(electrons.at(iEle).px, electrons.at(iEle).py, electrons.at(iEle).pz, electrons.at(iEle).energy);
@@ -2161,6 +2184,7 @@ int main ( int argc, char ** argv )
       float tkDZ_dilep = lep1_tkDZ - lep2_tkDZ;
 
       int oppositeLepCharge = -1;
+      int oppositeGenLepCharge = -1;
       // check to see if the product is negative
       // it can only be negative if the charges
       // have opposite signs
@@ -2174,7 +2198,18 @@ int main ( int argc, char ** argv )
         oppositeLepCharge = -2;
       }
       else std::cout << "Lep1 has charge " << lep1TkCharge << " and Lep2 has charge " << lep2TkCharge << std::endl;
-      
+
+      if ((lep1GenCharge * lep2GenCharge) == -1) {
+        oppositeGenLepCharge = 1;
+      } else if ((lep1GenCharge * lep2GenCharge) == 1) {
+        oppositeGenLepCharge = 0;
+      } else if (fabs(lep2GenCharge) == 99) {
+        oppositeGenLepCharge = -1;
+      } else if (fabs(lep1GenCharge) == 99) {
+        oppositeGenLepCharge = -2;
+      }
+      else std::cout << "Lep1 has charge " << lep1GenCharge << " and Lep2 has charge " << lep2GenCharge << std::endl;
+
           
       
 	  *(floatBranches["mass_leplep"]) = dilep_mass;
@@ -2198,8 +2233,11 @@ int main ( int argc, char ** argv )
       *(floatBranches["top1_pz"]) = top1_pz;
       *(floatBranches["lep1TkCharge"]) = lep1TkCharge;
       *(floatBranches["lep2TkCharge"]) = lep2TkCharge;
+      *(floatBranches["lep1GenCharge"]) = lep1GenCharge;
+      *(floatBranches["lep2GenCharge"]) = lep2GenCharge;
       *(intBranches["oppositeLepCharge"]) = oppositeLepCharge;
-      
+      *(intBranches["oppositeGenLepCharge"]) = oppositeGenLepCharge;
+
 	  sum_pt += lep1_pt;
 	  Ht += lep1_et ;
 
@@ -2207,10 +2245,21 @@ int main ( int argc, char ** argv )
 	  Ht += lep2_et ;
 	  
 	  TLorentzVector everything_vect = metV + lep_vect1 + lep_vect2 + sum_jet_vect;
+      TLorentzVector leps_and_jets_vect = lep_vect1 + lep_vect2 + sum_jet_vect;
+      TLorentzVector leps_and_allJets_vect = lep_vect1 + lep_vect2 + sum_allJet_vect;
 	  float mass_of_everything = everything_vect.M();
-	  float pt_of_everything = everything_vect.Pt();
+      float mass_of_leps_and_jets = leps_and_jets_vect.M();
+      float mass_of_leps_and_allJets = leps_and_allJets_vect.M();
+      float pt_of_everything = everything_vect.Pt();
+      float pt_of_leps_and_jets = leps_and_jets_vect.Pt();
+      float pt_of_leps_and_allJets = leps_and_allJets_vect.Pt();
 	  *(floatBranches["mass_of_everything"]) = mass_of_everything;	  
-	  *(floatBranches["pt_of_everything"]) = pt_of_everything;	  
+      *(floatBranches["mass_of_leps_and_jets"]) = mass_of_leps_and_jets;
+      *(floatBranches["mass_of_leps_and_allJets"]) = mass_of_leps_and_allJets;
+	  *(floatBranches["pt_of_everything"]) = pt_of_everything;
+      *(floatBranches["pt_of_leps_and_jets"]) = pt_of_leps_and_jets;
+      *(floatBranches["pt_of_leps_and_allJets"]) = pt_of_leps_and_allJets;
+
 
 	  ///loop jet
 
