@@ -11,6 +11,7 @@
 <use   name="PhysicsTools/FWLite"/>
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/KinFitter" />
+<lib   name="TMVA" />
 <environment>
   <bin   file="test_beans_dileptonStudies.C">
   </bin>
