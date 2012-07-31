@@ -52,19 +52,19 @@ process.inputs.fileNames.append(readFiles[iJob])
 if iJes == 0:
     if iJer == 0:
 	    outDir = "batchBEAN/%s_%s/" % (sampleNameCL, iLabel)
-	    outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	    outFileName = "batchBEAN/%s_%s/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
     if iJer == -1:
         outDir = "batchBEAN/%s_%s_JerDown/" % (sampleNameCL, iLabel)
-        outFileName = "batchBEAN/%s_%s_JerDown/dilSummaryTrees_%s_%s_JerDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+        outFileName = "batchBEAN/%s_%s_JerDown/lepJetsTemplateTrees_%s_%s_JerDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
     if iJer == 1:
         outDir = "batchBEAN/%s_%s_JerUp/" % (sampleNameCL, iLabel)
-        outFileName = "batchBEAN/%s_%s_JerUp/dilSummaryTrees_%s_%s_JerUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+        outFileName = "batchBEAN/%s_%s_JerUp/lepJetsTemplateTrees_%s_%s_JerUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 if iJes == -1:
 	outDir = "batchBEAN/%s_%s_JesDown/" % (sampleNameCL, iLabel)
-	outFileName = "batchBEAN/%s_%s_JesDown/dilSummaryTrees_%s_%s_JesDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	outFileName = "batchBEAN/%s_%s_JesDown/lepJetsTemplateTrees_%s_%s_JesDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 if iJes == 1:
 	outDir = "batchBEAN/%s_%s_JesUp/" % (sampleNameCL, iLabel)
-	outFileName = "batchBEAN/%s_%s_JesUp/dilSummaryTrees_%s_%s_JesUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	outFileName = "batchBEAN/%s_%s_JesUp/lepJetsTemplateTrees_%s_%s_JesUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 
 
 if not os.path.exists(outDir):
