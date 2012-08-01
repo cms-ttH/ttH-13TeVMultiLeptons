@@ -25,4 +25,4 @@ endif
 
 #root -b -q head.C 'test_beans_dileptonStudies.C+(-1,"'${sample}'", '$iJob', "'$iLabel'")' >&! $outDirName/test_beans_dileptonStudies_${sample}_${iLabel}_${iJob}.log
 
-HistosFromTreesBatch dilPlots_condor_cfg.py ${sample}  $iLabel $iJes $iJer > & ! $outDirName/dilAnalysis_${sample}_${iLabel}_${iJes}_${iJer}.log
+HistosFromTreesBatch dilPlots_condor_cfg.py ${sample}  $iLabel $iJes $iJer > & ! $outDirName/dilAnalysis_${sample}_${iLabel}.log
