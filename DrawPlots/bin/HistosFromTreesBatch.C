@@ -105,28 +105,36 @@ int main ( int argc, char ** argv )
    //edm::ParameterSet const& outputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("outputs");
    edm::ParameterSet const& anaParams = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("dilAnalysis");
 
-   std::string treeFile = inputs.getParameter< std::string >("fileName");
+   std::string treeFileNameNominal = inputs.getParameter< std::string >("fileName");
+   std::string treeFileNameJESUp = inputs.getParameter< std::string >("fileNameJESUp");
+   std::string treeFileNameJESDown = inputs.getParameter< std::string >("fileNameJESDown");
+   std::string treeFileNameJERUp = inputs.getParameter< std::string >("fileNameJERUp");
+   std::string treeFileNameJERDown = inputs.getParameter< std::string >("fileNameJERDown");
+
+   
+
+   
 
    //JES
-   int jes = anaParams.getParameter<int> ("jes");
-   int jer = anaParams.getParameter<int> ("jer");
+   //int jes = anaParams.getParameter<int> ("jes");
+   //int jer = anaParams.getParameter<int> ("jer");
    std::string sampleName = anaParams.getParameter<string>("sampleName");
 
-   std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
+   //std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
 
-   std::string JesJerStr = "";
-   if (jes == 1) {
-     JesJerStr = "_JesUp";
-   }
-   if (jes == -1) {
-     JesJerStr = "_JesDown";
-   }
-   if (jer == 1) {
-     JesJerStr = "_JerUp";
-   }
-   if (jer == -1) {
-     JesJerStr = "_JerDown";
-   }
+   // std::string JesJerStr = "";
+   //    if (jes == 1) {
+   //      JesJerStr = "_JesUp";
+   //    }
+   //    if (jes == -1) {
+   //      JesJerStr = "_JesDown";
+   //    }
+   //    if (jer == 1) {
+   //      JesJerStr = "_JerUp";
+   //    }
+   //    if (jer == -1) {
+   //      JesJerStr = "_JerDown";
+   //    }
 
    
 
@@ -157,144 +165,39 @@ int main ( int argc, char ** argv )
   lepCatList.push_back("TwoEle");
   lepCatList.push_back("MuonEle");
   
+  ///////   systematics
+  std::vector< TString > sysList ;
+  sysList.push_back("CMS_scale_jUp");
+  sysList.push_back("CMS_scale_jDown");
+  sysList.push_back("");
+  sysList.push_back("PUUp");
+  sysList.push_back("PUDown");
+  sysList.push_back("CMS_eff_bUp");
+  sysList.push_back("CMS_eff_bDown");
+  sysList.push_back("CMS_fake_bUp");
+  sysList.push_back("CMS_fake_bDown");
+  const unsigned int NumSys = sysList.size();
+
+  ////////// prepare the weight
+  vector<std::string> weight(NumSys, std::string(""));
+  weight[0] = "weight*prob*"  ;
+  weight[1] = "weight*prob*"  ;
+  weight[2] = "weight*prob*"  ;
+  
+  weight[3] = "weight_PUup*prob*"  ;
+  weight[4] = "weight_PUdown*prob*"  ;
+  
+  weight[5] = "weight*prob_hfSFup*";
+  weight[6] = "weight*prob_hfSFdown*";
+  weight[7] = "weight*prob_lfSFup*";
+  weight[8] = "weight*prob_lfSFdown*";
+
 
   /////////// samples
   std::vector<string> InputFileNames;
   InputFileNames.push_back(sampleName);
   
-  // InputFileNames.push_back("DoubleElectron_Run2011A-05Aug2011-v1");
-//   InputFileNames.push_back("DoubleElectron_Run2011A-May10ReReco-v1");
-//   InputFileNames.push_back("DoubleElectron_Run2011A-PromptReco-v4");
-//   InputFileNames.push_back("DoubleElectron_Run2011A-PromptReco-v6");
-//   InputFileNames.push_back("DoubleElectron_Run2011B-PromptReco-v1");
-//   InputFileNames.push_back("DoubleMu_Run2011A-05Aug2011-v1");
-//   InputFileNames.push_back("DoubleMu_Run2011A-May10ReReco-v1");
-//   InputFileNames.push_back("DoubleMu_Run2011A-PromptReco-v4");
-//   InputFileNames.push_back("DoubleMu_Run2011A-PromptReco-v6");
-//   InputFileNames.push_back("DoubleMu_Run2011B-PromptReco-v1");
-//   InputFileNames.push_back("MuEG_Run2011A-05Aug2011-v1");
-//   InputFileNames.push_back("MuEG_Run2011A-May10ReReco-v1");
-//   InputFileNames.push_back("MuEG_Run2011A-PromptReco-v4");
-//   InputFileNames.push_back("MuEG_Run2011A-PromptReco-v6");
-//   InputFileNames.push_back("MuEG_Run2011B-PromptReco-v1");
-//   InputFileNames.push_back("scaledown_ttbar");
-//   InputFileNames.push_back("scaledown_ttbar_bb");
-//   InputFileNames.push_back("scaledown_ttbar_cc");
-//   InputFileNames.push_back("scaleup_ttbar");
-//   InputFileNames.push_back("scaleup_ttbar_bb");
-//   InputFileNames.push_back("scaleup_ttbar_cc");
-//   InputFileNames.push_back("singlet_s");
-//   InputFileNames.push_back("singlet_t");
-//   InputFileNames.push_back("singlet_tW");
-//   InputFileNames.push_back("singletbar_s");
-//   InputFileNames.push_back("singletbar_t");
-//   InputFileNames.push_back("singletbar_tW");
-//   InputFileNames.push_back("ttH100");
-//   InputFileNames.push_back("ttH105");
-//   InputFileNames.push_back("ttH110");
-//   InputFileNames.push_back("ttH115");
-//   InputFileNames.push_back("ttH120");
-//   InputFileNames.push_back("ttH125");
-//   InputFileNames.push_back("ttH130");
-//   InputFileNames.push_back("ttH135");
-//   InputFileNames.push_back("ttH140");
-//   InputFileNames.push_back("ttbar");
-//   InputFileNames.push_back("ttbarW");
-//   InputFileNames.push_back("ttbarZ");
-//   InputFileNames.push_back("ttbar_bb");
-//   InputFileNames.push_back("ttbar_cc");
-//   InputFileNames.push_back("wjets");
-//   InputFileNames.push_back("ww");
-//   InputFileNames.push_back("wz");
-//   InputFileNames.push_back("zjets");
-//   InputFileNames.push_back("zjets_lowmass");
-//   InputFileNames.push_back("zz");
 
-
-  //InputFileNames.push_back("ttH125");
-  //InputFileNames.push_back("ttH125_JESUp");
-  //InputFileNames.push_back("ttH125_JESDown");
-
-  //InputFileNames.push_back("ttH130");
-  //InputFileNames.push_back("ttH130_JESUp");
-  //InputFileNames.push_back("ttH130_JESDown");
-
-//   InputFileNames.push_back("ttH120");
-//   InputFileNames.push_back("ttH120_JESUp");
-//   InputFileNames.push_back("ttH120_JESDown");
-
-//   InputFileNames.push_back("ttbar");
-//   InputFileNames.push_back("ttbar_JESUp");
-//   InputFileNames.push_back("ttbar_JESDown");
-
-//   InputFileNames.push_back("ttbarPlusBBbar");
-//   InputFileNames.push_back("ttbarPlusBBbar_JESUp");
-//   InputFileNames.push_back("ttbarPlusBBbar_JESDown");
-
-//   InputFileNames.push_back("ttbarPlusCCbar");
-//   InputFileNames.push_back("ttbarPlusCCbar_JESUp");
-//   InputFileNames.push_back("ttbarPlusCCbar_JESDown");
-
-//   InputFileNames.push_back("ttbarW");
-//   InputFileNames.push_back("ttbarW_JESUp");
-//   InputFileNames.push_back("ttbarW_JESDown");
-
-//   InputFileNames.push_back("ttbarZ");
-//   InputFileNames.push_back("ttbarZ_JESUp");
-//   InputFileNames.push_back("ttbarZ_JESDown");
-
-//   InputFileNames.push_back("wjets");
-//   InputFileNames.push_back("wjets_JESUp");
-//   InputFileNames.push_back("wjets_JESDown");
-
-//   InputFileNames.push_back("zjets_h");
-//   InputFileNames.push_back("zjets_h_JESUp");
-//   InputFileNames.push_back("zjets_h_JESDown");
-
-//   InputFileNames.push_back("zjets_lowmass");
-//   InputFileNames.push_back("zjets_lowmass_JESUp");
-//   InputFileNames.push_back("zjets_lowmass_JESDown");
-
-//   InputFileNames.push_back("singlet_s");
-//   InputFileNames.push_back("singlet_s_JESUp");
-//   InputFileNames.push_back("singlet_s_JESDown");
-
-//   InputFileNames.push_back("singlet_t");
-//   InputFileNames.push_back("singlet_t_JESUp");
-//   InputFileNames.push_back("singlet_t_JESDown");
-
-//   InputFileNames.push_back("singlet_tW");
-//   InputFileNames.push_back("singlet_tW_JESUp");
-//   InputFileNames.push_back("singlet_tW_JESDown");
-
-//   InputFileNames.push_back("singletbar_s");
-//   InputFileNames.push_back("singletbar_s_JESUp");
-//   InputFileNames.push_back("singletbar_s_JESDown");
-
-//   InputFileNames.push_back("singletbar_t");
-//   InputFileNames.push_back("singletbar_t_JESUp");
-//   InputFileNames.push_back("singletbar_t_JESDown");
-
-//   InputFileNames.push_back("singletbar_tW");
-//   InputFileNames.push_back("singletbar_tW_JESUp");
-//   InputFileNames.push_back("singletbar_tW_JESDown");
-
-//   InputFileNames.push_back("WW");
-//   InputFileNames.push_back("WW_JESUp");
-//   InputFileNames.push_back("WW_JESDown");
-
-//   InputFileNames.push_back("WZ");
-//   InputFileNames.push_back("WZ_JESUp");
-//   InputFileNames.push_back("WZ_JESDown");
-
-//   InputFileNames.push_back("ZZ");
-//   InputFileNames.push_back("ZZ_JESUp");
-//   InputFileNames.push_back("ZZ_JESDown");
-
-  
-//   InputFileNames.push_back("data_DiMuon");
-//   InputFileNames.push_back("data_DiEle");
-//   InputFileNames.push_back("data_MuEG");
 
   ////////////////////
   std::vector<varInfo*> varList;
@@ -412,8 +315,16 @@ int main ( int argc, char ** argv )
 //   varInfo *weight = new varInfo("weight", "weight", "weight", 1000, 0, 10);
 //   varList.push_back(weight);
 
-  
+  varInfo *dEta_leplep = new varInfo("dEta_leplep", "dEta_leplep", "dEta_leplep", 1000, -6.0, 6.0);
+  varList.push_back(dEta_leplep);
 
+  varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, -6.3, 6.3);
+  varList.push_back(dPhi_leplep);
+
+
+
+  
+  
 
   ////////// start sample loop
   const unsigned int nInputFiles = InputFileNames.size();
@@ -421,10 +332,42 @@ int main ( int argc, char ** argv )
     
     std::string InputFileLabel = InputFileNames[i];
 
-    TString InputFileName = treeFile;
+    std::cout << "==== Processing Sample " << InputFileLabel << " ====" << std::endl;
 
-    std::cout << "==== Processing File " << InputFileLabel << " ==== " << std::endl;
-    TFile * DileptonFile = new TFile(InputFileName);
+    bool isData = false;
+    
+    if (std::string::npos != InputFileLabel.find("DoubleMu") ||
+        std::string::npos != InputFileLabel.find("DoubleEle") ||
+        std::string::npos != InputFileLabel.find("MuEG") ||
+        std::string::npos != InputFileLabel.find("data") ) {
+      isData = true;
+    }
+
+    for (unsigned int ksys = 0 ; ksys < NumSys ; ++ksys ){
+      if (isData && ksys!=2) continue;
+      TString syst = sysList[ksys];
+      std::cout << "  == start systematic " << syst << " ==  " << std::endl;
+
+      TString InputFileName = treeFileNameNominal;
+
+      if (ksys == 0 ) {
+        //InputFileName = "_JESUp.root" ;
+        InputFileName = treeFileNameJESUp;
+      }
+      else if (ksys == 1 ) {
+        //InputFileName += "_JESDown.root" ;
+        InputFileName = treeFileNameJESDown;
+      }
+      //else  InputFileName += ".root" ;
+      
+      std::cout << "Looking for file " << InputFileName << std::endl;
+      TFile * DileptonFile = new TFile(InputFileName);
+
+      if (DileptonFile->IsZombie()) {
+        std::cout << "ERROR: Can't find the file," << InputFileName <<  ", sorry... quitting" << std::endl;
+        return -22;
+      }
+    
     TTree * DileptonSummaryTree = (TTree *) DileptonFile->Get("summaryTree");
 
 
@@ -436,7 +379,7 @@ int main ( int argc, char ** argv )
       
       std::string JetReq = "holder";
       std::string TagReq = "holder";
-      std::string ProbStr = "holder";
+      //      std::string ProbStr = "holder";
       std::string WeightStr = "holder";
       //std::string ZmaskStr = "PassZmask == 0 && "; //Events inside the mask (mostly Zjets)
       //std::string ZmaskStr = "PassZmask == 1 && "; //Events outside the mask (reduced Zjets)
@@ -451,22 +394,18 @@ int main ( int argc, char ** argv )
       if (JetTagReq == "eq1t") {
         JetReq = "numJets >= 2";
         TagReq = "numTaggedJets == 1";
-	ProbStr = "prob * ";
       }
       else if (JetTagReq == "eq2jeq2t") {
         JetReq = "numJets == 2";
         TagReq = "numTaggedJets == 2";
-	ProbStr = "prob * ";
       }
       else if (JetTagReq == "ge3jeq2t") {
         JetReq = "numJets >= 3";
         TagReq = "numTaggedJets == 2";
-        ProbStr = "prob * ";
       }
       else if (JetTagReq == "ge3t") {
         JetReq = "numJets >= 3";
         TagReq = "numTaggedJets >= 3";
-	ProbStr = "prob * ";
       }
       
       if (JetReq == "holder" || TagReq == "holder") {
@@ -474,86 +413,96 @@ int main ( int argc, char ** argv )
         continue;
       }
 
-      WeightStr = "weight * ";
+      //      ProbStr = "prob * ";
+      WeightStr = weight[ksys] ;
 
       /////// start sub-lepton category loop    
       const unsigned int nlepCatList = lepCatList.size();
       for( unsigned int j = 0; j < nlepCatList; j++) {
         OutputDirectory = lepCatList[j];
-	std::cout << "    ==>start sub-lep category " << OutputDirectory.c_str() << std::endl;
-	if (OutputDirectory == "TwoMuon" ) {
-	  EffStr = "0.987 * 0.987 * ";
-	  TrigStr = "0.9885 * 0.9885 * ";
-	}
-	else if (OutputDirectory ==  "TwoEle" ) {
-	  EffStr = "1.004 * 1.004 * ";
-	  TrigStr = "";
-	}
-	else if (OutputDirectory ==  "MuonEle"  ) {
-	  EffStr = "0.987 * 1.004 * ";
-	  TrigStr = "0.9885 * ";
-	}
+        std::cout << "    ==>start sub-lep category " << OutputDirectory.c_str() << std::endl;
+        if (OutputDirectory == "TwoMuon" ) {
+          EffStr = "0.987 * 0.987 * ";
+          TrigStr = "0.9885 * 0.9885 * ";
+        }
+        else if (OutputDirectory ==  "TwoEle" ) {
+          EffStr = "1.004 * 1.004 * ";
+          TrigStr = "";
+        }
+        else if (OutputDirectory ==  "MuonEle"  ) {
+          EffStr = "0.987 * 1.004 * ";
+          TrigStr = "0.9885 * ";
+        }
 	
-	////////////// no weight, SF for data
-	if (std::string::npos != InputFileLabel.find("DoubleMu") ||
-        std::string::npos != InputFileLabel.find("DoubleEle") ||
-        std::string::npos != InputFileLabel.find("MuEG")) {
-	  ProbStr = "";
-	  WeightStr = "";
-	  EffStr = "";
-	  TrigStr = "";
-	  std::cout << "DATA DETECTED: Set prob, weight, and eff to 1" << std::endl;
-	}
+        ////////////// no weight, SF for data
+        if (isData) {
+
+          //	if (std::string::npos != InputFileLabel.find("data")){
+          //	  ProbStr = "";
+          WeightStr = "";
+          EffStr = "";
+          TrigStr = "";
+          std::cout << "DATA DETECTED: Set prob, weight, and eff to 1" << std::endl;
+        }
     
-	////////
-	TString OutputFileName = "holder";
-	OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + JesJerStr + ".root";
-	TFile * OutputFile = new TFile(OutputFileName, "RECREATE");
 
-	OutputFile->cd();
+        ////////  book only a few histogram folders
+        TString OutputFileName = "holder";
+        OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+        TFile * OutputFile = new TFile(OutputFileName, "UPDATE");
+        
+        OutputFile->cd();
 
-	///// start variables loop
-	for(std::vector<varInfo*>::iterator tIter1 = varList.begin(); tIter1 != varList.end(); tIter1++) {
+        ///// start variables loop
+        for(std::vector<varInfo*>::iterator tIter1 = varList.begin(); tIter1 != varList.end(); tIter1++) {
 
-	  varInfo *u = *tIter1;
-	  int nBins = u->nBins;
-	  double Xmin = u->min;
-	  double Xmax = u->max;
-	  TString histName = u->hName ;
+          varInfo *u = *tIter1;
+          int nBins = u->nBins;
+          double Xmin = u->min;
+          double Xmax = u->max;
+          TString histName = u->hName ;
 
-	  ///// selection cuts
-	  //Selection string
-	  std::string SelectionStr = "holder";
-	  std::string CleanTrig = "holder";
-	  CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
+          //update the histogram name based on systematic
+          if (ksys != 2){
+            histName = histName + TString("_") + syst;
+          }
+
+          ///// selection cuts
+          //Selection string
+          std::string SelectionStr = "holder";
+          std::string CleanTrig = "holder";
+          //CleanTrig = "(isTriggerPass == 1) && ";
+          CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
 	  
-	  SelectionStr = WeightStr+ProbStr+EffStr+TrigStr +"(" + ZmaskStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
+          SelectionStr = WeightStr+EffStr+TrigStr +"(" + ZmaskStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
 	  	    
-	  if (SelectionStr == "holder") {
-	    std::cout << "SelectionStr == holder" << std::endl;
-	    continue;
-	  }
+          if (SelectionStr == "holder") {
+            std::cout << "SelectionStr == holder" << std::endl;
+            continue;
+          }
 
-	  TH1F *histTemp = new TH1F(histName, histName , nBins, Xmin, Xmax);
-	  TString varSig =  histName + ">>" + histName;
+          TH1F *histTemp = new TH1F(histName, histName , nBins, Xmin, Xmax);
+          TString varSig =  histName + ">>" + histName;
 	  
-	  DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
-	  //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
-	  //      	  std::cout << "Drawing histogram " << histName << std::endl;
-	  histTemp->SetDirectory(OutputFile);
-	} // end var loop
+          DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
+          //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
+          //      	  std::cout << "Drawing histogram " << histName << std::endl;
+          histTemp->SetDirectory(OutputFile);
+        } // end var loop
 	
-	OutputFile->Write();
-	std::cout << "    Wrote out " << OutputFileName << std::endl;
+        OutputFile->Write();
+        std::cout << "    Wrote out " << OutputFileName << std::endl;
 
-	OutputFile->Close();
+        OutputFile->Close();
 
       } // end sub-lep cat loop
-	std::cout << '\n' ;
+      std::cout << '\n' ;
     }// end Cat loop
 
     DileptonFile->Close();
-
+    
+    std::cout << "  == End systematic " << syst << " ==  " << std::endl;
+    } // end sys
   } // end sample loop
 
 }// end main
