@@ -270,9 +270,10 @@ int main ( int argc, char ** argv )
 
   ///btag efficiency  // file list name pattern   // ww, wz, zz                                                                                  
   std::string histname = sampleName ;  
-  if( TString(sampleName).Contains("zjets"))      histname = "zjets";   // zjets,  zjets_lowmas  
-  else if( TString(sampleName).Contains("ttbar") && !(sampleName=="ttbarW" || sampleName=="ttbarZ") ) histname = "ttbar";  // ttbar, ttbar_bb, ttbar_cc   
-  else if( TString(sampleName).Contains("singlet") ) histname = "singlet";  // singlet_, singletbar_, 
+  if( TString(sampleName).Contains("Zjets"))      histname = "zjets";   // zjets,  zjets_lowmas
+  else if(TString(sampleName).Contains("Wjets"))      histname = "wjets";
+  else if( TString(sampleName).Contains("TTbar") && !(sampleName=="ttbarW" || sampleName=="ttbarZ") ) histname = "ttbar";  // ttbar, ttbar_bb, ttbar_cc   
+  else if( TString(sampleName).Contains("single") ) histname = "singlet";  // singlet_, singletbar_, 
   else if( TString(sampleName).Contains("ttH") ) histname = "ttH120";  
   
  
@@ -1630,7 +1631,7 @@ int main ( int argc, char ** argv )
         // cout << "Scale Factor: " << IDandTrigSF << endl;
         wgt *= IDandTrigSF;
       }
-      
+  
       
       *(floatBranches["leptonPt"]) = leptonPt ;
       *(floatBranches["leptonEta"]) = leptonEta ;
@@ -1727,23 +1728,23 @@ int main ( int argc, char ** argv )
       double wgt_prob_ge4=0, wgt_prob_ge4_hfSFup=0, wgt_prob_ge4_hfSFdown=0, wgt_prob_ge4_lfSFup=0, wgt_prob_ge4_lfSFdown=0;              
 
       if( (sample>=0 || sample==-2500) && !isData){
-        cout << "Im dumb so I go in this loop" << endl;
-          std::vector<BTagWeight::JetInfo> myjetinfo;                                                                   
+        std::vector<BTagWeight::JetInfo> myjetinfo;                                                                   
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
           std::vector<BTagWeight::JetInfo> myjetinfo_lfSFup;                                                            
           std::vector<BTagWeight::JetInfo> myjetinfo_lfSFdown;
+
           if (verbose) std::cout << "Looping over  jets for btag uncert" <<std::endl;
           for( int j=0; j<int(good_jet_pt.size()); j++ ){
             if (verbose) std::cout << "calling btag sf" <<std::endl;
             if (verbose) std::cout << "one" <<std::endl;
             std::vector<double> myEffSF = getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
             if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
-            BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );      
-            myjetinfo.push_back(myjet);                                                                                                     
+            BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );
+            myjetinfo.push_back(myjet);
             if (verbose) std::cout << "two" <<std::endl;
             std::vector<double> myEffSF_hfSFup = getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);     
-            BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );  
+            BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );
             myjetinfo_hfSFup.push_back(myjet_hfSFup);                            
             if (verbose) std::cout << "three" <<std::endl;
             std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );                     
@@ -2729,7 +2730,7 @@ std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, doubl
   double tagEff=0;
   if (getEffVerbose) std::cout  << "Calling get bin content and find bin"  << std::endl;
 
- 
+  
   if( abs(flavor)==5 ){                                                                                                                     
     tagEff = h_jet_pt_eta_b_eff_->GetBinContent( h_jet_pt_eta_b_eff_->FindBin( pt, absEta ) );                                              
     SF = SFb;                                                                                                                               
@@ -2742,9 +2743,10 @@ std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, doubl
     tagEff = h_jet_pt_eta_l_eff_->GetBinContent( h_jet_pt_eta_l_eff_->FindBin( pt, absEta ) );                                              
     SF = SFl;                                                                                                                               
   }                                                                                                                                         
-  else {                                                                                                                                    
-    tagEff = h_jet_pt_eta_o_eff_->GetBinContent( h_jet_pt_eta_o_eff_->FindBin( pt, absEta ) );                                              
-    SF = SFl;                                                                                                                               
+  else {
+    tagEff = h_jet_pt_eta_o_eff_->GetBinContent( h_jet_pt_eta_o_eff_->FindBin( pt, absEta ) );
+    SF = SFl;
+    
   }
  
 
