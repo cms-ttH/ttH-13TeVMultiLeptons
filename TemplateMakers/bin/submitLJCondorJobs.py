@@ -10,9 +10,18 @@ def main ():
     jesChoice = int(sys.argv[1])
     jerChoice = int(sys.argv[2])
     btagChoice = int(sys.argv[3])
-    jobLabel = str(sys.argv[4])
-            
-    listOfSamples = ['TTbar_skims_8TeV']
+    jobLabel = str(sys.argv[4])            
+    listOfSamples = ['TTbar_skims_8TeV',
+					 'Wjets_skims_8TeV',
+					 'Zjets_skims_8TeV',
+					 'SingleTop_tbar-sChan_skims_8TeV',
+					 'SingleTop_tbar-tChan_skims_8TeV',
+					 'SingleTop_tbar-tWChan_skims_8TeV',
+					 'SingleTop_top-sChan_skims_8TeV',
+					 'SingleTop_top-tChan_skims_8TeV',
+					 'SingleTop_top-tWChan_skims_8TeV',
+					 'Data2012'
+					 ]
 
         
     for iList in listOfSamples:
@@ -38,12 +47,13 @@ def main ():
                 numJobs = words[0]
                 foundJobs = True
         # done with for
-            
+
         condorJobFile.write( "NJobs = %s\n" % numJobs)
         condorJobFile.write( "JES = %s\n" % jesChoice)
         condorJobFile.write( "JER = %s\n" % jerChoice)
         condorJobFile.write( "BTAG = %s\n" % btagChoice)
-        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER) $(BTAG)\n")
+        #condorJobFile.write( "SampleName = %s\n" % iList )
+        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER) $(BTAG) \n")
 
         if (jesChoice == 0 and jerChoice == 0):
             JetStr = ""
