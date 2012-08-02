@@ -155,7 +155,9 @@ int main ( int argc, char ** argv )
    //JES
    int jes = anaParams.getParameter<int> ("jes");
    int jer = anaParams.getParameter<int> ("jer");
+   cout << "About to read in the sample name" << endl;
    std::string sampleName = anaParams.getParameter<string>("sampleName");
+   cout << "The sampleName: " << sampleName << endl; 
 
    //If you need to make cuts on the event flow
    //you can use the electron, muon and Jet selection
@@ -199,6 +201,7 @@ int main ( int argc, char ** argv )
 
 
   ////pile up Robin
+  // std::cout << "CONFIG: using PUFile = " << puFileName.fullPath() << std::endl;
   TFile *f_pu = new TFile(puFileName.fullPath().c_str());
 
   std::string str_data;
@@ -212,34 +215,41 @@ int main ( int argc, char ** argv )
   //  file list name for ttH/W/Z has to match the following pattern                                                                           
   if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){     
     h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_observed")).c_str());   
-    h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_observed")).c_str());
-    h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_observed")).c_str()); 
+    //h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_observed")).c_str());
+    //h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_observed")).c_str()); 
 
     h_pu_mc = (TH1D*)f_pu->Get("h_ttH_numGenPV"); 
   }
   else{   
-    h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_true")).c_str());   
-    h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_true")).c_str());     
-    h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_true")).c_str()); 
+    //h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_true")).c_str());   
+    h_pu_data   = (TH1D*)f_pu->Get((std::string("pileup")).c_str()); 
+    //h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_true")).c_str());     
+    //h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_true")).c_str()); 
 
-    h_pu_mc = (TH1D*)f_pu->Get("F2011exp");
+    h_pu_mc = (TH1D*)f_pu->Get("2012mc");
+    // h_pu_mc = (TH1D*)f_pu->Get("F2011exp");
   }    
-
+  
   h_pu_data->Scale( 1./h_pu_data->Integral() );
-  h_pu_data_up->Scale( 1./h_pu_data_up->Integral() );
-  h_pu_data_down->Scale( 1./h_pu_data_down->Integral() );
-
+  //Tessa - temporarly comment out pu up and down syst
+  //h_pu_data_up->Scale( 1./h_pu_data_up->Integral() );
+  //h_pu_data_down->Scale( 1./h_pu_data_down->Integral() );
+ 
   h_pu_mc->Scale( 1./h_pu_mc->Integral() );
-
+ 
   TH1D* h_pu_ratio      = (TH1D*)h_pu_data->Clone();
-  TH1D* h_pu_ratio_up   = (TH1D*)h_pu_data_up->Clone();
-  TH1D* h_pu_ratio_down = (TH1D*)h_pu_data_down->Clone();
+  //Tessa - temporarly comment out pu up and down syst
+  //TH1D* h_pu_ratio_up   = (TH1D*)h_pu_data_up->Clone();
+  //TH1D* h_pu_ratio_down = (TH1D*)h_pu_data_down->Clone();
+  cout << "Not doing the pu up and down systematic untill we get the pu files for it" << endl;
+  TH1D* h_pu_ratio_up = (TH1D*)h_pu_ratio->Clone();
+  TH1D* h_pu_ratio_down = (TH1D*)h_pu_ratio->Clone();
 
   h_pu_ratio->Divide( h_pu_mc );
   h_pu_ratio_up->Divide( h_pu_mc );
   h_pu_ratio_down->Divide( h_pu_mc );
 
-
+ 
   // Load the files
   vstring fileNames = inputFileNames;
 
@@ -275,7 +285,9 @@ int main ( int argc, char ** argv )
   
   //data detection
   bool isData = false;
-  if (TString(sampleName).Contains("SingleMu")){
+  if (TString(sampleName).Contains("SingleMu") ||
+      TString(sampleName).Contains("Data") ||
+      TString(sampleName).Contains("data")){
     isData = true;
   }
   
@@ -362,19 +374,8 @@ int main ( int argc, char ** argv )
 
   //Muon Variable Plots
   TH1F* h_muPt       = new TH1F("h_muPt", "Muon p_{T}", 500, 0, 500);
-  // histograms["h_muPt"] = fs.make<TH1F>("h_muPt", "Muon p_{T}", 500, 0, 500);
   TH1F* h_muEta      = new TH1F("h_muEta", "Muon #eta}", 628,-3.14, 3.14);
-  TH1F* h_muMET      = new TH1F("h_muMET", "MET", 500, 0, 500);
-  TH1F* h_muMt       = new TH1F("h_muMt", "Transverse mass #mu + #nu", 500, 0, 500);
-  TH1F* h_muHt       = new TH1F("h_muHt", "h_{T}", 2000, 0, 2000);
-  TH1F* h_muM3       = new TH1F("h_muM3", "M3", 2000, 0, 2000);
-  TH1F* h_muMttbar   = new TH1F("h_muMttbar", "M_{ttbar}", 4000, 0, 4000);
-  TH1F* h_muTTbarPt  = new TH1F("h_muTTbarPT", "ttbar_{Pt}", 4000, 0, 4000);
-  TH1F* h_muTTbarEta = new TH1F("h_muTTbarEta", "ttbar_{Eta}", 628,-3.14, 3.14);
-  TH1F* h_muTTbarY   = new TH1F("h_muTTbarY", "ttbar_{Y}", 628,-3.14, 3.14);
-
-  
-  for (int iJet = minJets; iJet <=maxJetPlot ; ++iJet) {
+   for (int iJet = minJets; iJet <=maxJetPlot ; ++iJet) {
     TString histName = "h_muPt_"; histName += iJet; histName += "j";
     TString histTitle = "Muon p_{T} (GeV/c) (N_{jets}";
     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
@@ -390,6 +391,9 @@ int main ( int argc, char ** argv )
     histTitle += ")";
     histograms[histName] = fs.make<TH1F>(histName, histTitle,628,-3.14, 3.14);
  }
+  // W Variable Plots
+  TH1F* h_muMET      = new TH1F("h_muMET", "MET", 500, 0, 500);
+  TH1F* h_muMt       = new TH1F("h_muMt", "Transverse mass #mu + #nu", 500, 0, 500);
   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
     TString histName = "h_muMET_"; histName += iJet; histName += "j";
     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
@@ -406,15 +410,11 @@ int main ( int argc, char ** argv )
      histTitle += ")";
      histograms[histName] = fs.make<TH1F>(histName, histTitle, 500, 0., 500.);
   }
-   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
-     TString histName = "h_muHt_"; histName += iJet; histName += "j";
-     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
-     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
-     histTitle += iJet;
-     histTitle += ")";
-     histograms[histName] = fs.make<TH1F>(histName, histTitle, 2000, 0., 2000.);
-  }
-   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+  
+  //Jet Variable Plots
+  TH1F* h_nJets      = new TH1F("h_nJets", "number of Jets", 6,-2.5, 8.5);
+  TH1F* h_muM3       = new TH1F("h_muM3", "M3", 2000, 0, 2000);
+     for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
      TString histName = "h_muM3_"; histName += iJet; histName += "j";
      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
@@ -422,6 +422,66 @@ int main ( int argc, char ** argv )
      histTitle += ")";
      histograms[histName] = fs.make<TH1F>(histName, histTitle, 500, 0., 500.);
    }
+  //Individual jet plots
+  for (int iJet = 1; iJet <= maxJetPlot; ++iJet) {
+    TString histName = "h_jet"; histName += iJet;
+    TString histTitle = ""; histTitle += iJet;
+    switch (iJet) {
+    case 1:
+      histTitle += "st";
+      break;
+    case 2:
+      histTitle += "nd";
+      break;
+    case 3:
+      histTitle += "rd";
+      break;
+    default:
+      histTitle += "th";
+      break;
+    }
+    histTitle += " Leading Jet";
+    cout << "Jet Pt Hist Name " << histName + "Pt" << endl; 
+
+    histograms[histName + "Pt"] = fs.make<TH1F>( histName+"Pt",   histTitle + " p_{T}", 300, 0, 300);
+    histograms[histName + "Eta"] = fs.make<TH1F>( histName+"Eta",  histTitle + " #eta", 50, -3.0,   3.0);
+  
+  //Now, get really crazy and separate the above histograms by jet bin (i.e. Jet1Pt_1j, Jet1Pt_2j, etc.)
+  for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
+    TString histName2 = histName + "Pt_"; histName2 += jJet; histName2 += "j";
+    TString histTitle2 = histTitle + " p_{T} (";
+    histTitle2 += ((jJet == maxJetPlot) ? "#geq" : "=");
+    histTitle2 += jJet;
+    histTitle2 += "-Jet Bin)";
+    histograms[histName2] = fs.make<TH1F>(histName2, histTitle2, 500, 0., 500.);
+  }
+  
+  for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
+    TString histName2 = histName + "Eta_"; histName2 += jJet; histName2 += "j";
+    TString histTitle2 = histTitle + " #eta (";
+    histTitle2 += ((jJet == maxJetPlot) ? "#geq" : "=");
+    histTitle2 += jJet;
+    histTitle2 += "-Jet Bin)";
+    histograms[histName2] = fs.make<TH1F>(histName2, histTitle2, 600, -3, 3);
+  }
+  }
+      
+
+  //TTbar Variable Plots
+  TH1F* h_muHt       = new TH1F("h_muHt", "h_{T}", 2000, 0, 2000);
+  TH1F* h_muMttbar   = new TH1F("h_muMttbar", "M_{ttbar}", 4000, 0, 4000);
+  TH1F* h_muTTbarPt  = new TH1F("h_muTTbarPt", "ttbar_{Pt}", 4000, 0, 4000);
+  TH1F* h_muTTbarEta = new TH1F("h_muTTbarEta", "ttbar_{Eta}", 628,-3.14, 3.14);
+  TH1F* h_muTTbarY   = new TH1F("h_muTTbarY", "ttbar_{Y}", 628,-3.14, 3.14);
+  for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+     TString histName = "h_muHt_"; histName += iJet; histName += "j";
+     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+     histTitle += iJet;
+     histTitle += ")";
+     histograms[histName] = fs.make<TH1F>(histName, histTitle, 2000, 0., 2000.);
+  }
+
    for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
      TString histName = "h_muMttbar_"; histName += iJet; histName += "j";
      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
@@ -454,6 +514,12 @@ int main ( int argc, char ** argv )
       histTitle += ")";
       histograms[histName] = fs.make<TH1F>(histName, histTitle, 628,-3.14, 3.14);
    }
+  //Other Plots 
+    TH1F* h_nPV   = new TH1F("h_nPV", "Number of Primary Verticies", 50,-0.5,49.5);
+  
+ 
+
+ 
 //   //Electron Variable Plots
     // TH1F* h_elePt = new TH1F("h_elePt", "Electron p_{T}", 500, 0, 500);
 
@@ -775,7 +841,7 @@ int main ( int argc, char ** argv )
   try {
     for( ev.toBegin(); !ev.atEnd(); ++ev) {
       cnt++;
-
+   
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
       if( cnt%1000==0 && cnt!=1 ) std::cout << "           " << cnt << "\t" 
 					      << int(double(cnt)/double(nentries)*100) << "% done" << std::endl;
@@ -929,7 +995,7 @@ int main ( int argc, char ** argv )
 //       else if( sample==2604 ) wgt = 7.87 * intLumi * 1./814390; //NNLO
 //       else if( sample==2605 ) wgt = 7.87 * intLumi * 1./809984; //NNLO
 
-
+ 
 
       //============================================
       //
@@ -990,7 +1056,7 @@ int main ( int argc, char ** argv )
         }
 
 
-
+ 
         bool isBBbarEvent = false;
         bool isCCbarEvent = false;
 
@@ -1311,7 +1377,7 @@ int main ( int argc, char ** argv )
       ///
       ////////
       
-     
+
       std::vector<int> tight_mu_index;
       std::vector<int> loose_mu_index;
       std::vector<int> only_loose_mu_index;
@@ -1404,6 +1470,7 @@ int main ( int argc, char ** argv )
       vdouble jet_py;
       vdouble jet_pz;
       vdouble jet_pt;
+      vdouble jet_eta;
       vdouble jet_energy;
 
       int numGoodJets=0;
@@ -1434,6 +1501,7 @@ int main ( int argc, char ** argv )
         jet_py.push_back(pfjets.at(i).py);
         jet_pz.push_back(pfjets.at(i).pz);
         jet_pt.push_back(pfjets.at(i).pt);
+        jet_eta.push_back(pfjets.at(i).eta);
         jet_energy.push_back(pfjets.at(i).energy);
 
         // Apply JES uncertainty to all jets
@@ -1649,7 +1717,7 @@ int main ( int argc, char ** argv )
       *(uintBranches["runNumber"]) = event->run ;
       *(uintBranches["luminosityBlock"]) = event->lumi ;
       *(uintBranches["eventNumber"]) = unsigned(event->evt) ;
-      
+
       //////////////////////////
       ////
       ////------------b-tag SF
@@ -1658,8 +1726,8 @@ int main ( int argc, char ** argv )
       double wgt_prob=0, wgt_prob_hfSFup=0, wgt_prob_hfSFdown=0, wgt_prob_lfSFup=0, wgt_prob_lfSFdown=0;                                  
       double wgt_prob_ge4=0, wgt_prob_ge4_hfSFup=0, wgt_prob_ge4_hfSFdown=0, wgt_prob_ge4_lfSFup=0, wgt_prob_ge4_lfSFdown=0;              
 
-	
       if( (sample>=0 || sample==-2500) && !isData){
+        cout << "Im dumb so I go in this loop" << endl;
           std::vector<BTagWeight::JetInfo> myjetinfo;                                                                   
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
@@ -1689,9 +1757,9 @@ int main ( int argc, char ** argv )
             std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );                     
             BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );                                                 
             myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
-
             if (verbose) std::cout << "done calling sf calc " <<std::endl;
-          }                                                                                                                                 
+          }
+          
 
           if (verbose) std::cout << "Now using btag weight" <<std::endl;
 
@@ -1711,7 +1779,7 @@ int main ( int argc, char ** argv )
             wgt_prob_ge4_lfSFup   = bweight.weight(myjetinfo_lfSFup,4,99);        
             wgt_prob_ge4_lfSFdown = bweight.weight(myjetinfo_lfSFdown,4,99);      
           }
-        }
+      }
 
     if (verbose) std::cout << "done with btag weight loop" <<std::endl;
     
@@ -1827,7 +1895,7 @@ int main ( int argc, char ** argv )
       TLorentzVector non_btag_vect2;
       float avg_untagged_dijet_mass = 0.0 ;
 
-
+ 
       //    if ( twoLeptons ){  //////// number of jets and number of tags
 	
 	int iMuon1 = -10 ;
@@ -1981,7 +2049,7 @@ int main ( int argc, char ** argv )
 
 	  sum_pt += lep1_pt;
 	  Ht += lep1_et ;
-    
+ 
       // sum_pt += lep2_pt;
       // Ht += lep2_et ;
 	  TLorentzVector leptonTrans = lep_vect1;
@@ -2042,25 +2110,40 @@ int main ( int argc, char ** argv )
       }
      
       
+	  ///loop jet
+      h_nJets->Fill(nJetsPlot,wgt);
+      for (int i=0; i < numGoodJets; i++){
+              
+	    int iJet = tight_pfjet_index[i];
     
-	  ///loop jet	  
-	  for (int i=0; i < numGoodJets; i++) {
-	    int iJet = tight_pfjet_index[i] ;
 	    sum_pt += jet_pt[iJet];
 	    Ht += jet_energy[iJet];
-	   
+       
 	    jet_vect.SetPxPyPzE(jet_px[iJet],jet_py[iJet],jet_pz[iJet],jet_energy[iJet]);
-	   
+            
 	    if (i==0)  first_jet_pt = jet_pt[iJet];
 	    if (i==1)  second_jet_pt = jet_pt[iJet];
 	    if (i==2)  third_jet_pt = jet_pt[iJet];
 	    if (i==3)  fourth_jet_pt = jet_pt[iJet];
-
-       //  cout << "lep1 pt: " << lep_vect1.Pt() << " eta: " <<  lep_vect1.Eta() << endl;
+      
+        TString histName = "h_jet";
+        histName += (i+1);
+        TString ptHistName = "h_jetPt";
+             
+         if((i+1)<=maxJetPlot){
+         histograms[histName + "Pt"]->Fill(jet_pt[iJet],wgt);
+         histograms[histName + "Eta"]->Fill(jet_eta[iJet],wgt);
+       
+         TString histName2 = histName + "Pt_"; histName2+= nJetsPlot; histName2 += "j";
+         histograms[histName2]->Fill(jet_pt[iJet],wgt);
+         histName2 = histName + "Eta_"; histName2+= nJetsPlot; histName2 += "j";
+         histograms[histName2]->Fill(jet_eta[iJet],wgt);
+         }
+             //  cout << "lep1 pt: " << lep_vect1.Pt() << " eta: " <<  lep_vect1.Eta() << endl;
 // 	    if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
 // 	      min_jet_lep1_dR = lep_vect1.DeltaR(jet_vect); 
 // 	    }
-	   
+	  
         //  if (min_jet_lep2_dR > lep_vect2.DeltaR(jet_vect)){
         // min_jet_lep2_dR = lep_vect2.DeltaR(jet_vect); 
         // }
@@ -2068,12 +2151,12 @@ int main ( int argc, char ** argv )
 	    if (pfjets.at(iJet).btagCombinedSecVertex > 0.679){
 	      avg_btag_disc_btags += pfjets.at(iJet).btagCombinedSecVertex;
 	    }
-	    
 	    if (pfjets.at(iJet).btagCombinedSecVertex <= 0.679){
 	      avg_btag_disc_non_btags += pfjets.at(iJet).btagCombinedSecVertex;   		  
-	    }									
+	    }
+
 	  }
-	  
+ 
 	  *(floatBranches["first_jet_pt"]) = first_jet_pt;
 	  *(floatBranches["second_jet_pt"]) = second_jet_pt;
 	  *(floatBranches["third_jet_pt"]) = third_jet_pt;
@@ -2103,6 +2186,9 @@ int main ( int argc, char ** argv )
 	  all_sum_pt = sum_pt + met;
 	  Ht += met;
 
+      h_nPV->Fill(numpv,wgt);
+           //  cout << "nPV: " << numpv << endl;
+      
 	  *(floatBranches["numPV"]) = numpv ;
 	  *(floatBranches["weight"]) = wgt ;
 	  *(floatBranches["weight_PUup"]) = PUwgt_up ;
@@ -2175,7 +2261,7 @@ int main ( int argc, char ** argv )
 		++denom_avg_cnt;
 	      }
 	    }
-	  
+	 
 	    avg_untagged_dijet_mass /= denom_avg_cnt;
 	  }
     
