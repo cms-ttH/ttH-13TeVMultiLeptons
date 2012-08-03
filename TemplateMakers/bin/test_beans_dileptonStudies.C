@@ -670,10 +670,10 @@ int main ( int argc, char ** argv )
 
   /////entire system variables
   floatBranches["mass_of_everything"] = new float(0.0);
-  floatBranches["mass_of_leps_and_jets"] = new float(0.0);
+  floatBranches["mass_MHT"] = new float(0.0);
   floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
   floatBranches["pt_of_everything"] = new float(0.0);
-  floatBranches["pt_of_leps_and_jets"] = new float(0.0);
+  floatBranches["MHT"] = new float(0.0);
   floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
   floatBranches["sum_pt"] = new float(0.0); 
   floatBranches["all_sum_pt"] = new float(0.0);
@@ -2310,16 +2310,16 @@ int main ( int argc, char ** argv )
       TLorentzVector leps_and_jets_vect = lep_vect1 + lep_vect2 + sum_jet_vect;
       TLorentzVector leps_and_allJets_vect = lep_vect1 + lep_vect2 + sum_allJet_vect;
 	  float mass_of_everything = everything_vect.M();
-      float mass_of_leps_and_jets = leps_and_jets_vect.M();
+      float mass_MHT = leps_and_jets_vect.M();
       float mass_of_leps_and_allJets = leps_and_allJets_vect.M();
       float pt_of_everything = everything_vect.Pt();
-      float pt_of_leps_and_jets = leps_and_jets_vect.Pt();
+      float MHT = leps_and_jets_vect.Pt();
       float pt_of_leps_and_allJets = leps_and_allJets_vect.Pt();
 	  *(floatBranches["mass_of_everything"]) = mass_of_everything;	  
-      *(floatBranches["mass_of_leps_and_jets"]) = mass_of_leps_and_jets;
+      *(floatBranches["mass_MHT"]) = mass_MHT;
       *(floatBranches["mass_of_leps_and_allJets"]) = mass_of_leps_and_allJets;
 	  *(floatBranches["pt_of_everything"]) = pt_of_everything;
-      *(floatBranches["pt_of_leps_and_jets"]) = pt_of_leps_and_jets;
+      *(floatBranches["MHT"]) = MHT;
       *(floatBranches["pt_of_leps_and_allJets"]) = pt_of_leps_and_allJets;
 
 
@@ -2447,8 +2447,8 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
 
 	  /////
-	  all_sum_pt = sum_pt + met;
-	  Ht += met;
+	  all_sum_pt = sum_pt + MHT;
+	  Ht += MHT;
 
 	  *(floatBranches["numPV"]) = numpv ;
 	  *(floatBranches["weight"]) = wgt ;
@@ -2461,7 +2461,7 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["all_sum_pt"]) = all_sum_pt;
 	  *(floatBranches["Ht"]) = Ht;
 
-      bool passBigDiamondZmask = ((dilep_mass < (65.5 + 3*met/8)) || (dilep_mass > (108 - met/4)) || (dilep_mass < (79 - 3*met/4)) || (dilep_mass > (99 + met/2)) );
+      bool passBigDiamondZmask = ((dilep_mass < (65.5 + 3*MHT/8)) || (dilep_mass > (108 - MHT/4)) || (dilep_mass < (79 - 3*MHT/4)) || (dilep_mass > (99 + MHT/2)) );
       *(intBranches["PassZmask"]) = passBigDiamondZmask ? 1 : 0;
 
 	  //// tagged jets
