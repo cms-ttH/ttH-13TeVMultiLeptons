@@ -67,6 +67,14 @@
 
 #include "AnglesUtil.h"
 
+// For MVA reprocessing
+//#include "TMVAGui.C"
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
+#include "TMVA/MethodCuts.h"
+
+
+
 #endif
 
 using std::string;
@@ -156,6 +164,8 @@ int main ( int argc, char ** argv )
 
    edm::FileInPath btagFileName = anaParams.getParameter<edm::FileInPath> ("btagFile");
    edm::FileInPath puFileName = anaParams.getParameter<edm::FileInPath> ("puFile");
+   //edm::FileInPath annFileName = anaParams.getParameter<edm::FileInPath> ("annFile");
+   
    
 
 
@@ -276,7 +286,59 @@ int main ( int argc, char ** argv )
     isData = true;
 
   }
+
+
+  // ================= TMVA STUFF  =====================
+
+  // One NN for each category (just tag categories for now)
+  // One NN for each category
+  // 
   
+  std::vector< TString >catList ;
+  catList.push_back("ge3t");
+  catList.push_back("e2je2t");   /////
+  const unsigned int nCat = catList.size();
+
+  //Float_t fCFMlpANN[nCat];
+  //TBranch* branchCFMlpANN[nCat] ;
+  
+  
+  Float_t                 varfirst_jet_pt;
+  Float_t                 varmin_dr_tagged_jets; 
+  Float_t                 varnumJets_float; 
+  Float_t                 varmindr_lep1_jet;
+  Float_t                 varavg_btag_disc_btags;
+  Float_t                 varHt;
+
+  vector<TMVA::Reader *> reader;
+
+  for( unsigned int j = 0 ; j < nCat ; ++j ){
+      TString label = catList[j];
+      reader.push_back( new TMVA::Reader( "!Color:!Silent" ));    
+
+      reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+      reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
+      if (j==0)   reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+      reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
+      reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
+      reader[j]->AddVariable( "Ht",         &varHt   );
+
+
+      TString dir    = "/afs/crc.nd.edu/user/j/jslaunwh/releases/CMSSW_4_2_8_patch7/src/BEAN/simpleweights/" + label + "/";
+      TString prefix = "TMVAClassification";
+      TString wfName = dir + prefix + TString("_CFMlpANN.weights.xml");
+
+      std::cout << "Loading  weight file  " << wfName << std::endl; 
+      
+      
+      // Book method(s)
+      reader[j]->BookMVA( "CFMlpANN method", wfName);  
+      
+      
+      
+      
+
+  }// end for each category 
 
   
   // Print out your config
