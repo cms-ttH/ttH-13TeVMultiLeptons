@@ -463,6 +463,7 @@ int main ( int argc, char ** argv )
           double Xmin = u->min;
           double Xmax = u->max;
           TString histName = u->hName ;
+          TString variableName = u->hName ;
 
           //update the histogram name based on systematic
           if (ksys != 2){
@@ -484,7 +485,7 @@ int main ( int argc, char ** argv )
           }
 
           TH1F *histTemp = new TH1F(histName, histName , nBins, Xmin, Xmax);
-          TString varSig =  histName + ">>" + histName;
+          TString varSig =  variableName + ">>" + histName;
 	  
           DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
           //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
