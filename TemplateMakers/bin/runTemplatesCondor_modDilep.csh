@@ -8,6 +8,8 @@ set iLabel = $4
 set iJes = $5
 set iJer = $6
 
+#echo "listFileName, iYear, iJob, iLabel, iJes, iJer = "${listFileName}" , "${iYear}" , "${iJob}" , "${iLabel}" , "${iJes}" , "${iJer}
+
 #set sample = ${listFileName:r}
 set sample = ${listFileName}
 

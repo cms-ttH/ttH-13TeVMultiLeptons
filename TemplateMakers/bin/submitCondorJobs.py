@@ -26,12 +26,12 @@ def main ():
                      'MuEG_Run2011A-PromptReco-v6',
                      'MuEG_Run2011B-PromptReco-v1']
 	
-    listOfSamples2012Data = ['DoubleElectron_Run2012A.list',
-							 'DoubleElectron_Run2012B.list',
-							 'DoubleMu_Run2012A.list',
-							 'DoubleMu_Run2012B.list',
-							 'MuEG_Run2012A.list',
-							 'MuEG_Run2012B.list']
+    listOfSamples2012Data = ['DoubleElectron_Run2012A',
+							 'DoubleElectron_Run2012B',
+							 'DoubleMu_Run2012A',
+							 'DoubleMu_Run2012B',
+							 'MuEG_Run2012A',
+							 'MuEG_Run2012B']
 							 
     listOfSamples = ['ttbar',
                      #'scaledown_ttbar',
@@ -62,7 +62,7 @@ def main ():
                      'wjets',
                      'ww',
                      'wz',
-                     'zjets_h',
+                     #'zjets_h',
                      'zjets_part1',
                      'zjets_part2',
                      'zjets_part3',
@@ -82,6 +82,7 @@ def main ():
         listOfSamples = listOfSamples2011Data + listOfSamples
     elif yearChoice == 2012:
         listOfSamples = listOfSamples2012Data + listOfSamples
+
     for iList in listOfSamples:
         condorHeader = "universe = vanilla\n"+"executable = runTemplatesCondor_modDilep.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
         
@@ -114,7 +115,7 @@ def main ():
         condorJobFile.write( "NJobs = %s\n" % numJobs)
         condorJobFile.write( "JES = %s\n" % jesChoice)
         condorJobFile.write( "JER = %s\n" % jerChoice)
-        condorJobFile.write( "arguments = $(Year) $(List) $(Process) $(Label) $(JES) $(JER)\n")
+        condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER)\n")
 
         if (jesChoice == 0 and jerChoice == 0):
             JetStr = ""
