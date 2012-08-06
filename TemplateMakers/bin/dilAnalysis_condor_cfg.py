@@ -15,10 +15,11 @@ import sys
 # argv 5 = what JER should you use?
 
 sampleNameCL = sys.argv[2]
-iJob = int(sys.argv[3])
-iLabel = sys.argv[4]
-iJes = int (sys.argv[5])
-iJer = int (sys.argv[6])
+iYear = str(sys.argv[3])
+iJob = int(sys.argv[4])
+iLabel = sys.argv[5]
+iJes = int (sys.argv[6])
+iJer = int (sys.argv[7])
 
 # update serach path
 
@@ -39,8 +40,10 @@ process.inputs = cms.PSet (
     fileNames = cms.vstring(),
 	maxEvents = cms.int32(-1)
 )
-
-listFileName = "../../listsForSkims/" + sampleNameCL + ".list"  ###2011
+if iYear == '2011':
+    listFileName = "../../listsForSkims/" + sampleNameCL + ".list"  ###2011
+elif iYear == '2012':
+    listFileName = "../../listsForSkims2012/" + sampleNameCL + ".list"
 #listFileName = "listsForSkims/" + sampleNameCL + ".list"         ###2012
 
 # read in all files in the list
@@ -64,20 +67,20 @@ process.inputs.fileNames.append(readFiles[iJob])
 
 if iJes == 0:
     if iJer == 0:
-	    outDir = "batchBEAN/%s_%s/" % (sampleNameCL, iLabel)
-	    outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	    outDir = "batchBEAN/%s_%s_%s/" % (sampleNameCL, iYear, iLabel)
+	    outFileName = "batchBEAN/%s_%s_%s/dilSummaryTrees_%s_%s_%s_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
     if iJer == -1:
-        outDir = "batchBEAN/%s_%s_JERDown/" % (sampleNameCL, iLabel)
-        outFileName = "batchBEAN/%s_%s_JERDown/dilSummaryTrees_%s_%s_JERDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+        outDir = "batchBEAN/%s_%s_%s_JERDown/" % (sampleNameCL, iYear, iLabel)
+        outFileName = "batchBEAN/%s_%s_%s_JERDown/dilSummaryTrees_%s_%s_%s_JERDown_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
     if iJer == 1:
-        outDir = "batchBEAN/%s_%s_JERUp/" % (sampleNameCL, iLabel)
-        outFileName = "batchBEAN/%s_%s_JERUp/dilSummaryTrees_%s_%s_JERUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+        outDir = "batchBEAN/%s_%s_%s_JERUp/" % (sampleNameCL, iYear, iLabel)
+        outFileName = "batchBEAN/%s_%s_%s_JERUp/dilSummaryTrees_%s_%s_%s_JERUp_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
 if iJes == -1:
-	outDir = "batchBEAN/%s_%s_JESDown/" % (sampleNameCL, iLabel)
-	outFileName = "batchBEAN/%s_%s_JESDown/dilSummaryTrees_%s_%s_JESDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	outDir = "batchBEAN/%s_%s_%s_JESDown/" % (sampleNameCL, iYear, iLabel)
+	outFileName = "batchBEAN/%s_%s_%s_JESDown/dilSummaryTrees_%s_%s_%s_JESDown_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
 if iJes == 1:
-	outDir = "batchBEAN/%s_%s_JESUp/" % (sampleNameCL, iLabel)
-	outFileName = "batchBEAN/%s_%s_JESUp/dilSummaryTrees_%s_%s_JESUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	outDir = "batchBEAN/%s_%s_%s_JESUp/" % (sampleNameCL, iYear, iLabel)
+	outFileName = "batchBEAN/%s_%s_%s_JESUp/dilSummaryTrees_%s_%s_%s_JESUp_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
 
 if not os.path.exists(outDir):
 	os.mkdir(outDir)
@@ -99,11 +102,12 @@ if abs(iJer) > 1:
     exit (-3)
 
 process.dilAnalysis = cms.PSet(
+
 	jes = cms.int32(iJes),
 	jer = cms.int32(iJer),
 	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
 	sampleName = cms.string(sampleNameCL),
 
-	selection = cms.string('2012')
+	selectionYear = cms.string(iYear)
 )

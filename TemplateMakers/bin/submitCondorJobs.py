@@ -6,12 +6,11 @@ import time
 
 
 def main ():
-
-    jesChoice = int(sys.argv[1])
-    jerChoice = int(sys.argv[2])
-    jobLabel = str(sys.argv[3])
-            
-    listOfSamples = ['DoubleElectron_Run2011A-05Aug2011-v1', 
+    yearChoice = int(sys.argv[1])
+    jesChoice = int(sys.argv[2])
+    jerChoice = int(sys.argv[3])
+    jobLabel = str(sys.argv[4])
+    listOfSamples2011Data = ['DoubleElectron_Run2011A-05Aug2011-v1',
                      'DoubleElectron_Run2011A-May10ReReco-v1',
                      'DoubleElectron_Run2011A-PromptReco-v4',
                      'DoubleElectron_Run2011A-PromptReco-v6',
@@ -25,13 +24,22 @@ def main ():
                      'MuEG_Run2011A-May10ReReco-v1',
                      'MuEG_Run2011A-PromptReco-v4',
                      'MuEG_Run2011A-PromptReco-v6',
-                     'MuEG_Run2011B-PromptReco-v1',
-                     'scaledown_ttbar',
-                     'scaledown_ttbar_bb',
-                     'scaledown_ttbar_cc',
-                     'scaleup_ttbar',
-                     'scaleup_ttbar_bb',
-                     'scaleup_ttbar_cc',
+                     'MuEG_Run2011B-PromptReco-v1']
+	
+    listOfSamples2012Data = ['DoubleElectron_Run2012A.list',
+							 'DoubleElectron_Run2012B.list',
+							 'DoubleMu_Run2012A.list',
+							 'DoubleMu_Run2012B.list',
+							 'MuEG_Run2012A.list',
+							 'MuEG_Run2012B.list']
+							 
+    listOfSamples = ['ttbar',
+                     #'scaledown_ttbar',
+                     #'scaledown_ttbar_bb',
+                     #'scaledown_ttbar_cc',
+                     #'scaleup_ttbar',
+                     #'scaleup_ttbar_bb',
+                     #'scaleup_ttbar_cc',
                      'singlet_s',
                      'singlet_t',
                      'singlet_tW',
@@ -47,7 +55,6 @@ def main ():
                      'ttH130',
                      'ttH135',
                      'ttH140',
-                     'ttbar',
                      'ttbarW',
                      'ttbarZ',
                      'ttbar_bb',
@@ -55,7 +62,7 @@ def main ():
                      'wjets',
                      'ww',
                      'wz',
-                     #'zjets',
+                     'zjets_h',
                      'zjets_part1',
                      'zjets_part2',
                      'zjets_part3',
@@ -71,7 +78,10 @@ def main ():
                      'zjets_lowmass',                    
                      'zz']
 
-        
+    if yearChoice == 2011:
+        listOfSamples = listOfSamples2011Data + listOfSamples
+    elif yearChoice == 2012:
+        listOfSamples = listOfSamples2012Data + listOfSamples
     for iList in listOfSamples:
         condorHeader = "universe = vanilla\n"+"executable = runTemplatesCondor_modDilep.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
         
@@ -85,7 +95,11 @@ def main ():
         numJobs = 0
         foundJobs = False
 #        for iLine in os.popen("wc -l listsForSkims/%s.list" % iList).readlines():
-        for iLine in os.popen("wc -l ../../listsForSkims/%s.list" % iList).readlines():
+        if yearChoice == 2011:
+            listStr = "wc -l ../../listsForSkims/"
+        elif yearChoice == 2012:
+            listStr = "wc -l ../../listsForSkims2012/"
+        for iLine in os.popen(listStr+"%s.list" % iList).readlines():
             words = iLine.split()
             print "Line is ="
             print words
@@ -96,11 +110,11 @@ def main ():
                 numJobs = words[0]
                 foundJobs = True
         # done with for
-            
+        condorJobFile.write( "Year = %s\n" % yearChoice)            
         condorJobFile.write( "NJobs = %s\n" % numJobs)
         condorJobFile.write( "JES = %s\n" % jesChoice)
         condorJobFile.write( "JER = %s\n" % jerChoice)
-        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER)\n")
+        condorJobFile.write( "arguments = $(Year) $(List) $(Process) $(Label) $(JES) $(JER)\n")
 
         if (jesChoice == 0 and jerChoice == 0):
             JetStr = ""
@@ -112,8 +126,8 @@ def main ():
             JetStr = "_JERUp"
         if (jerChoice == -1):
             JetStr = "_JERDown"     
-        condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process)"+JetStr+".stdout\n")
-        condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n") 
+        condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_"+str(yearChoice)+"_$(Process)"+JetStr+".stdout\n")
+        condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_"+str(yearChoice)+"_$(Process).stderr\n") 
         condorJobFile.write( "queue $(NJobs)\n")
 
         condorJobFile.close()

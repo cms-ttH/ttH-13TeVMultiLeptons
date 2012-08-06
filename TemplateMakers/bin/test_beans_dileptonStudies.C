@@ -154,7 +154,7 @@ int main ( int argc, char ** argv )
    std::vector<std::string> inputFileNames = inputs.getParameter< std::vector<std::string> >("fileNames");
    std::string outputFileName = outputs.getParameter<std::string >("outputName");
    //// switch between 2011 and 2012
-   std::string selection_ = anaParams.getParameter<std::string>("selection");
+   std::string selectionYear_ = anaParams.getParameter<std::string>("selectionYear");
 
    //JES
    int jes = anaParams.getParameter<int> ("jes");
@@ -733,7 +733,7 @@ int main ( int argc, char ** argv )
   ////// ============== trigger ===========
   vstring mc_hlt_trigger_collection;
 
-  if( selection_ == "2011"){
+  if( selectionYear_ == "2011"){
     mc_hlt_trigger_collection.push_back("HLT_DoubleMu7_v");
     mc_hlt_trigger_collection.push_back("HLT_Mu13_Mu8_v");
     mc_hlt_trigger_collection.push_back("HLT_Mu17_Mu8_v");
@@ -829,12 +829,12 @@ int main ( int argc, char ** argv )
       BNeventCollection const &events = *h_event;
 
       fwlite::Handle<BNmuonCollection> h_muons;
-      if ( selection_ == "2011" ) h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsLoosePFlow");
+      if ( selectionYear_ == "2011" ) h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsLoosePFlow");
       else    h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsPFlow");
       BNmuonCollection const &muons = *h_muons;
 
       fwlite::Handle<BNmetCollection> h_pfmet;
-      if ( selection_ == "2011" ) h_pfmet.getByLabel(ev,"BNproducer","patMETsTypeIPFlow");
+      if ( selectionYear_ == "2011" ) h_pfmet.getByLabel(ev,"BNproducer","patMETsTypeIPFlow");
       else h_pfmet.getByLabel(ev,"BNproducer","patMETsPFlow");
       BNmetCollection const &pfmets = *h_pfmet;
 
@@ -851,7 +851,7 @@ int main ( int argc, char ** argv )
       BNjetCollection const &pfjets = *h_pfjets;
 
       fwlite::Handle<BNelectronCollection> h_electrons;
-      if ( selection_ == "2011" ) h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
+      if ( selectionYear_ == "2011" ) h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
       else    h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
       BNelectronCollection const &electrons = *h_electrons;
 
@@ -1388,7 +1388,7 @@ int main ( int argc, char ** argv )
       ////////////////////////////////
       std::vector<int> tight_ele_index;
       std::vector<int> loose_ele_index;
-      BEANs::electronSelector( electrons, false, selection_, tight_ele_index, loose_ele_index );
+      BEANs::electronSelector( electrons, false, selectionYear_, tight_ele_index, loose_ele_index );
 
       int numTightElectrons = int(tight_ele_index.size());
       int numLooseElectrons = int(loose_ele_index.size());
@@ -1469,7 +1469,7 @@ int main ( int argc, char ** argv )
       ////////////////////////////////
       std::vector<int> tight_mu_index;
       std::vector<int> loose_mu_index;
-      BEANs::muonSelector( muons, false, selection_, tight_mu_index, loose_mu_index );
+      BEANs::muonSelector( muons, false, selectionYear_, tight_mu_index, loose_mu_index );
 
       int numTightMuons = int(tight_mu_index.size());
       int numLooseMuons = int(loose_mu_index.size());

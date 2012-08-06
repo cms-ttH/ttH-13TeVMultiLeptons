@@ -1,11 +1,12 @@
 #!/bin/csh -f
 
 set listFileName = $1
-set iJob = $2
+set iYear = $2
+set iJob = $3
 #set nJobs = $3
-set iLabel = $3
-set iJes = $4
-set iJer = $5
+set iLabel = $4
+set iJes = $5
+set iJer = $6
 
 #set sample = ${listFileName:r}
 set sample = ${listFileName}
@@ -14,20 +15,20 @@ set outDirName = ""
 
 if ($iJes == "0") then
     if ($iJer == "0") then
-        set outDirName = batchBEAN/${sample}_${iLabel}/log
+        set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}/log
     endif
     if ($iJer == "-1") then
-        set outDirName = batchBEAN/${sample}_${iLabel}_JERDown/log
+        set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_JERDown/log
     endif
     if ($iJer == "1") then
-        set outDirName = batchBEAN/${sample}_${iLabel}_JERUp/log
+        set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_JERUp/log
     endif
 endif
 if ($iJes == "-1") then
-    set outDirName = batchBEAN/${sample}_${iLabel}_JESDown/log
+    set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_JESDown/log
 endif
 if ($iJes == "1") then
-    set outDirName = batchBEAN/${sample}_${iLabel}_JESUp/log
+    set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_JESUp/log
 endif
 
 if ($outDirName == "") then
@@ -54,4 +55,4 @@ endif
 
 #root -b -q head.C 'test_beans_dileptonStudies.C+(-1,"'${sample}'", '$iJob', "'$iLabel'")' >&! $outDirName/test_beans_dileptonStudies_${sample}_${iLabel}_${iJob}.log
 
-test_beans_dileptonStudies dilAnalysis_condor_cfg.py ${sample} $iJob $iLabel $iJes $iJer > & ! $outDirName/dilAnalysis_${sample}_${iLabel}_${iJob}.log
+test_beans_dileptonStudies dilAnalysis_condor_cfg.py ${sample} $iYear $iJob $iLabel $iJes $iJer > & ! $outDirName/dilAnalysis_${sample}_${iYear}_${iLabel}_${iJob}.log
