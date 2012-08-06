@@ -220,10 +220,12 @@ int main ( int argc, char ** argv )
   varList.push_back(avg_tagged_dijet_mass);
   //  varInfo *avg_untagged_dijet_mass = new varInfo("avg_untagged_dijet_mass", "avg_untagged_dijet_mass", "avg_untagged_dijet_mass", 1000, 0, 1000);
   //  varList.push_back(avg_untagged_dijet_mass);
-  //varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.007, 0.008);
-  //varList.push_back(CFMlpANN_e2je2t);
-  //varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
-  //varList.push_back(CFMlpANN_ge3t);
+
+  varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.007, 0.008);
+  varList.push_back(CFMlpANN_e2je2t);
+  varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
+  varList.push_back(CFMlpANN_ge3t);
+
   varInfo *closest_tagged_dijet_mass = new varInfo("closest_tagged_dijet_mass", "closest_tagged_dijet_mass", "closest_tagged_dijet_mass", 1000, 0, 1000);
   varList.push_back(closest_tagged_dijet_mass);
   //  varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, 0, pival);
