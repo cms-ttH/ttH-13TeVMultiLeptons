@@ -30,7 +30,7 @@
 #include "TStyle.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 
-#include "LumiReweightingStandAlone.h"
+//#include "LumiReweightingStandAlone.h"
 #include "PUConstants.h"
 
 #if !defined(__CINT__) && !defined(__MAKECINT__)
@@ -63,10 +63,10 @@
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
 #include "BtagWeight.h" 
-
+#include "NtupleMaker/BEANmaker/interface/BEANsUtilities.h"
 
 #include "AnglesUtil.h"
-
+#include "PhysicsTools/Utilities/interface/LumiReweightingStandAlone.h"
 // For MVA reprocessing
 //#include "TMVAGui.C"
 #include "TMVA/Tools.h"
@@ -93,7 +93,7 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
 
 std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );      
 
-//TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");                                                                               
+//TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");
 TH2D* h_jet_pt_eta_b_eff_ ;
 TH2D* h_jet_pt_eta_c_eff_ ;
 TH2D* h_jet_pt_eta_l_eff_ ;
@@ -153,11 +153,14 @@ int main ( int argc, char ** argv )
 
    std::vector<std::string> inputFileNames = inputs.getParameter< std::vector<std::string> >("fileNames");
    std::string outputFileName = outputs.getParameter<std::string >("outputName");
+   //// switch between 2011 and 2012
+   std::string selection_ = anaParams.getParameter<std::string>("selection");
+
    //JES
    int jes = anaParams.getParameter<int> ("jes");
    int jer = anaParams.getParameter<int> ("jer");
    std::string sampleName = anaParams.getParameter<string>("sampleName");
-
+   TString tmpName = sampleName;
    std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
 
    //  Btag file
@@ -206,7 +209,7 @@ int main ( int argc, char ** argv )
   TH1D* h_pu_data_down;
   TH1D* h_pu_mc;
 
-  ////// file list name for ttH/W/Z has to match the following pattern                                                                           
+  ////// file list name for ttH/W/Z has to match the following pattern
   if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){     
     h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_observed")).c_str());   
     h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_observed")).c_str());
@@ -237,8 +240,7 @@ int main ( int argc, char ** argv )
   h_pu_ratio_down->Divide( h_pu_mc );
 
 
-                                                                                                                                                 
-                                                                  
+
 
   // Load the files
   vstring fileNames = inputFileNames;
@@ -258,16 +260,16 @@ int main ( int argc, char ** argv )
 
   
 
-  ///btag efficiency  // file list name pattern   // ww, wz, zz                                                                                  
+  ///btag efficiency  // file list name pattern   // ww, wz, zz
   std::string histname = sampleName ;  
-  if( TString(sampleName).Contains("zjets"))      histname = "zjets";   // zjets,  zjets_lowmas  
+  if( TString(sampleName).Contains("zjets"))      histname = "zjets";   // zjets_h,  zjets_lowmas  
   else if( TString(sampleName).Contains("ttbar") && !(sampleName=="ttbarW" || sampleName=="ttbarZ") ) histname = "ttbar";  // ttbar, ttbar_bb, ttbar_cc   
   else if( TString(sampleName).Contains("singlet") ) histname = "singlet";  // singlet_, singletbar_, 
   else if( TString(sampleName).Contains("ttH") ) histname = "ttH120";  
   
   // Initialize these global variables once, and then refer to then in a function below 
-  h_jet_pt_eta_b_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_b_eff" ).c_str());                                         
-  h_jet_pt_eta_c_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_c_eff" ).c_str());                                         
+  h_jet_pt_eta_b_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_b_eff" ).c_str());
+  h_jet_pt_eta_c_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_c_eff" ).c_str());
   h_jet_pt_eta_l_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_l_eff" ).c_str());
   // this histogram does not exist
   h_jet_pt_eta_o_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_o_eff" ).c_str());
@@ -324,7 +326,7 @@ int main ( int argc, char ** argv )
       reader[j]->AddVariable( "Ht",         &varHt   );
 
 
-      TString dir    = "/afs/crc.nd.edu/user/j/jslaunwh/releases/CMSSW_4_2_8_patch7/src/BEAN/simpleweights/" + label + "/";
+      TString dir    = "../../simpleweights/" + label + "/";
       TString prefix = "TMVAClassification";
       TString wfName = dir + prefix + TString("_CFMlpANN.weights.xml");
 
@@ -333,9 +335,6 @@ int main ( int argc, char ** argv )
       
       // Book method(s)
       reader[j]->BookMVA( "CFMlpANN method", wfName);  
-      
-      
-      
       
 
   }// end for each category 
@@ -573,6 +572,10 @@ int main ( int argc, char ** argv )
 
   ////Robin ///------------variables--------------------
   std::map<TString, float *> floatBranches;
+  /// MVA output var
+  floatBranches["CFMlpANN_ge3t"] = new float(0.0);
+  floatBranches["CFMlpANN_e2je2t"] = new float(0.0);
+
   //Generator kinematics
   floatBranches["higgs_pt"] = new float(0.0);
   floatBranches["higgs_pz"] = new float(0.0);
@@ -597,10 +600,10 @@ int main ( int argc, char ** argv )
   floatBranches["unc_met"] = new float(0.0);
 
   ///lepton variables
-  floatBranches["fstMuPt"] = new float(0.0);
-  floatBranches["sndMuPt"] = new float(0.0);
-  floatBranches["fstElePt"] = new float(0.0);
-  floatBranches["sndElePt"] = new float(0.0);
+//   floatBranches["fstMuPt"] = new float(0.0);
+//   floatBranches["sndMuPt"] = new float(0.0);
+//   floatBranches["fstElePt"] = new float(0.0);
+//   floatBranches["sndElePt"] = new float(0.0);
   floatBranches["lep1Pt"] = new float(0.0);
   floatBranches["lep2Pt"] = new float(0.0);
   floatBranches["lep1Eta"] = new float(0.0);
@@ -730,18 +733,26 @@ int main ( int argc, char ** argv )
   ////// ============== trigger ===========
   vstring mc_hlt_trigger_collection;
 
-  mc_hlt_trigger_collection.push_back("HLT_DoubleMu7_v");
-  mc_hlt_trigger_collection.push_back("HLT_Mu13_Mu8_v");
-  mc_hlt_trigger_collection.push_back("HLT_Mu17_Mu8_v");
-
-  mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v");
-  mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-  mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v");
-
-  mc_hlt_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdL_v");
-  mc_hlt_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdL_v");
-  mc_hlt_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v");
-  mc_hlt_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v");
+  if( selection_ == "2011"){
+    mc_hlt_trigger_collection.push_back("HLT_DoubleMu7_v");
+    mc_hlt_trigger_collection.push_back("HLT_Mu13_Mu8_v");
+    mc_hlt_trigger_collection.push_back("HLT_Mu17_Mu8_v");
+    
+    mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v");
+    mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v");
+    
+    mc_hlt_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdL_v");
+    mc_hlt_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdL_v");
+    mc_hlt_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v");
+    mc_hlt_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v");
+  }
+  else {
+    mc_hlt_trigger_collection.push_back("HLT_Mu17_Mu8_v");
+    mc_hlt_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    mc_hlt_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+  }
 
   ///
   double minNDOF = 4;
@@ -818,11 +829,13 @@ int main ( int argc, char ** argv )
       BNeventCollection const &events = *h_event;
 
       fwlite::Handle<BNmuonCollection> h_muons;
-      h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsLoosePFlow");
+      if ( selection_ == "2011" ) h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsLoosePFlow");
+      else    h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsPFlow");
       BNmuonCollection const &muons = *h_muons;
 
       fwlite::Handle<BNmetCollection> h_pfmet;
-      h_pfmet.getByLabel(ev,"BNproducer","patMETsTypeIPFlow");
+      if ( selection_ == "2011" ) h_pfmet.getByLabel(ev,"BNproducer","patMETsTypeIPFlow");
+      else h_pfmet.getByLabel(ev,"BNproducer","patMETsPFlow");
       BNmetCollection const &pfmets = *h_pfmet;
 
       fwlite::Handle<BNtriggerCollection> h_hlt;
@@ -838,7 +851,8 @@ int main ( int argc, char ** argv )
       BNjetCollection const &pfjets = *h_pfjets;
 
       fwlite::Handle<BNelectronCollection> h_electrons;
-      h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
+      if ( selection_ == "2011" ) h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
+      else    h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
       BNelectronCollection const &electrons = *h_electrons;
 
       fwlite::Handle<BNmcparticleCollection> h_mcparticles;
@@ -983,8 +997,8 @@ int main ( int argc, char ** argv )
 	sample = 2500;
       }
       
-      if (sample==2500) {
-        
+      //      if (sample==2500) {
+      if( tmpName.EndsWith("ttbar") || tmpName.Contains("ttbar_") ){        
         
         bool keepEvent = false;
 
@@ -1115,8 +1129,9 @@ int main ( int argc, char ** argv )
         else if( gotC ) isCCbarEvent = true;
     
    
-        if( ttbarType_<0 || sample != 2500)       keepEvent = true;
-        else if( ttbarType_ ==0 && !isBBbarEvent && !isCCbarEvent ) keepEvent = true;
+//         if( ttbarType_<0 || sample != 2500)       keepEvent = true;
+//         else if( ttbarType_ ==0 && !isBBbarEvent && !isCCbarEvent ) keepEvent = true;
+	if( ttbarType_ ==0 && !isBBbarEvent && !isCCbarEvent ) keepEvent = true;
         else if( ttbarType_ ==1 &&  isBBbarEvent && !isCCbarEvent ) keepEvent = true;
         else if( ttbarType_ >1  && !isBBbarEvent && isCCbarEvent  ) keepEvent = true;
 
@@ -1167,8 +1182,10 @@ int main ( int argc, char ** argv )
       float PUwgt_up = 1;
       float PUwgt_down = 1;
 
-      if( (sample>=0 || sample==-2500) && !isData){
-        if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
+      //      if( (sample>=0 || sample==-2500) && !isData){
+      if(!isData){
+	if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){ 
+  //        if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
           PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numGenPV ) );
           PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numGenPV ) );
           PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numGenPV ) );
@@ -1367,68 +1384,80 @@ int main ( int argc, char ** argv )
       /// Electrons
       ///
       ////////
-      float fstElePt = 0.0 ;
-      float sndElePt = 0.0 ;
-
+      ////--------- using selectors in "BEANsUtilities.h"
+      ////////////////////////////////
       std::vector<int> tight_ele_index;
       std::vector<int> loose_ele_index;
-      std::vector<int> only_loose_ele_index;
-      for( int i=0; i<int(electrons.size()); i++ ){
-
-        double eleSCEta = electrons.at(i).scEta;
-        double absSCeta = fabs(eleSCEta);
-        double eleEta = electrons.at(i).eta;
-        float elePt = electrons.at(i).pt;
-
-	bool isCrack = ( (absSCeta>1.4442) && (absSCeta<1.5660) );
-
-      	bool kin = ( (elePt>10.) && !isCrack && fabs(eleEta)<2.5 );
-
-      	if( !kin ) continue;
-
-	double chargedHadronIso = electrons.at(i).chargedHadronIso;
-	double neutralHadronIso = electrons.at(i).neutralHadronIso;
-	double photonIso = electrons.at(i).photonIso;
-
-	double relIso = ( chargedHadronIso + neutralHadronIso + photonIso ) * 1./elePt;
-
-      	bool looseIso = ( relIso < 0.2 );
-
-	if( !looseIso ) continue;
-
-      	loose_ele_index.push_back(i);
-
-	int eidBitTight = electrons.at(i).eidTight;
-	if( eidBitTight<0 ){
-	  std::cout << "   ===>>>>  BREAK!!  eidBitTight = " << eidBitTight << std::endl;
-	  break;
-	}
-	bool eidTight = ( (eidBitTight & 1)==1 );
-
-	bool d0 = ( fabs(electrons.at(i).correctedD0) < 0.02 );
-	bool dZ = ( fabs(electrons.at(i).correctedDZ) < 1. );
-
-	bool dist  = ( fabs(electrons.at(i).dist)<0.02 );
-	bool dcot  = ( fabs(electrons.at(i).dcot)<0.02 );
-	bool nlost = ( electrons.at(i).numberOfLostHits<1 );
-        bool notConv = ( !(dist && dcot) && nlost );
-
-	bool tightIso = ( relIso < 0.1 );
-
-      	bool id = ( eidTight && d0 && dZ && notConv );
-
-      	if( ((elePt>20.) && id && tightIso) ) {
-	  tight_ele_index.push_back(i);
-	  if (elePt > fstElePt) fstElePt = elePt;
-	}
-	else {
-	  only_loose_ele_index.push_back(i);
-	  if (elePt > sndElePt) sndElePt = elePt;
-	}
-      }// end electron loop
+      BEANs::electronSelector( electrons, false, selection_, tight_ele_index, loose_ele_index );
 
       int numTightElectrons = int(tight_ele_index.size());
-      int numLooseElectrons = int(loose_ele_index.size()) - numTightElectrons;
+      int numLooseElectrons = int(loose_ele_index.size());
+
+      ////////////////////////////////
+      ////--------- old frame work
+      ////////////////////////////////
+//       float fstElePt = 0.0 ;
+//       float sndElePt = 0.0 ;
+
+//       std::vector<int> tight_ele_index;
+//       std::vector<int> loose_ele_index;
+//       std::vector<int> only_loose_ele_index;
+//       for( int i=0; i<int(electrons.size()); i++ ){
+
+//         double eleSCEta = electrons.at(i).scEta;
+//         double absSCeta = fabs(eleSCEta);
+//         double eleEta = electrons.at(i).eta;
+//         float elePt = electrons.at(i).pt;
+
+// 	bool isCrack = ( (absSCeta>1.4442) && (absSCeta<1.5660) );
+
+//       	bool kin = ( (elePt>10.) && !isCrack && fabs(eleEta)<2.5 );
+
+//       	if( !kin ) continue;
+
+// 	double chargedHadronIso = electrons.at(i).chargedHadronIso;
+// 	double neutralHadronIso = electrons.at(i).neutralHadronIso;
+// 	double photonIso = electrons.at(i).photonIso;
+
+// 	double relIso = ( chargedHadronIso + neutralHadronIso + photonIso ) * 1./elePt;
+
+//       	bool looseIso = ( relIso < 0.2 );
+
+// 	if( !looseIso ) continue;
+
+//       	loose_ele_index.push_back(i);
+
+// 	int eidBitTight = electrons.at(i).eidTight;
+// 	if( eidBitTight<0 ){
+// 	  std::cout << "   ===>>>>  BREAK!!  eidBitTight = " << eidBitTight << std::endl;
+// 	  break;
+// 	}
+// 	bool eidTight = ( (eidBitTight & 1)==1 );
+
+// 	bool d0 = ( fabs(electrons.at(i).correctedD0) < 0.02 );
+// 	bool dZ = ( fabs(electrons.at(i).correctedDZ) < 1. );
+
+// 	bool dist  = ( fabs(electrons.at(i).dist)<0.02 );
+// 	bool dcot  = ( fabs(electrons.at(i).dcot)<0.02 );
+// 	bool nlost = ( electrons.at(i).numberOfLostHits<1 );
+//         bool notConv = ( !(dist && dcot) && nlost );
+
+// 	bool tightIso = ( relIso < 0.1 );
+
+//       	bool id = ( eidTight && d0 && dZ && notConv );
+
+//       	if( ((elePt>20.) && id && tightIso) ) {
+// 	  tight_ele_index.push_back(i);
+// 	  if (elePt > fstElePt) fstElePt = elePt;
+// 	}
+// 	else {
+// 	  only_loose_ele_index.push_back(i);
+// 	  if (elePt > sndElePt) sndElePt = elePt;
+// 	}
+//       }// end electron loop
+
+//       int numTightElectrons = int(tight_ele_index.size());
+//       int numLooseElectrons = int(loose_ele_index.size()) - numTightElectrons;
 
 
       /////////
@@ -1436,97 +1465,109 @@ int main ( int argc, char ** argv )
       /// Muons
       ///
       ////////
-      float fstMuPt = 0.0 ;
-      float sndMuPt = 0.0 ;
-
+      ////--------- using selectors in "BEANsUtilities.h"
+      ////////////////////////////////
       std::vector<int> tight_mu_index;
       std::vector<int> loose_mu_index;
-      std::vector<int> only_loose_mu_index;
-      for( int i=0; i<int(muons.size()); i++ ){
-
-	float muPt  = muons.at(i).pt;
-	double muEta = muons.at(i).eta;
-	double muPhi = muons.at(i).phi;
-	double muAbsEta = fabs(muEta);
-
-	bool kin = ( (muPt>10.) && (muAbsEta<2.4) );
-
-	if( !kin ) continue;
-
-	double chargedHadronIso = muons.at(i).chargedHadronIso;
-	double neutralHadronIso = muons.at(i).neutralHadronIso;
-	double photonIso = muons.at(i).photonIso;
-
-	double relIso = ( chargedHadronIso + neutralHadronIso + photonIso ) * 1./muPt;
-
-	bool looseIso = ( relIso<0.2 );
-
-	bool isGlobalMuon = ( muons.at(i).isGlobalMuon==1 );
-
-	if( !(isGlobalMuon && looseIso) ) continue;
-
-	loose_mu_index.push_back(i);
-
-	bool isTrackerMuon = ( muons.at(i).isTrackerMuon==1 );
-	bool isGlobalMuonPromptTight = ( muons.at(i).isGlobalMuonPromptTight==1 );
-
-	bool numTrackHits = ( muons.at(i).numberOfValidTrackerHitsInnerTrack > 10 );
-	bool numPixelHits = ( muons.at(i).pixelLayersWithMeasurement>0 );
-	bool numberOfMatches = ( muons.at(i).numberOfMatches>1 );
-
-	bool passd0 = ( fabs(muons.at(i).correctedD0)<0.02 );
-	bool passdz = ( fabs(muons.at(i).correctedDZ)<1. );
-
-	bool id = ( isTrackerMuon && isGlobalMuonPromptTight && numTrackHits && numPixelHits && numberOfMatches && passd0 && passdz );
-
-	bool tightIso = ( relIso<0.125 );
-
-    // JMS Changed muon pt cut
-    // JMS used to be 30
-    // is now back to 30
-    
-	if( ((muPt>20.) && (muAbsEta<2.1) && id && tightIso) ){
-	  tight_mu_index.push_back(i);
-// 	  h_mu_pt->Fill(muPt,wgt);
-// 	  h_mu_eta->Fill(muEta,wgt);
-// 	  h_mu_phi->Fill(muPhi,wgt);
-
-	  if (muPt > fstMuPt) fstMuPt = muPt;  ///Robin
-
-      // just assert that you fired a double muon trigger
-	  bool mu_fired_trigger = false;
-      mu_fired_trigger = true;
-
-      
-	  // for( TrigObjIter hltobj = hltobjs.begin(); hltobj != hltobjs.end(); ++hltobj ){
-// 	    //// Dump out filter name, pt, eta, phi for each HLT object
-// 	    //std::cout << "\t" << hltobj->filter << "\t pt, eta, phi = " << hltobj->pt << ",\t " << hltobj->eta << ",\t " << hltobj->phi << std::endl;
-// 	    if( hltobj->filter==mc_hlt_filter_names[0] ){
-// 	      double trigEta = hltobj->eta;
-// 	      double trigPhi = hltobj->phi;
-
-// 	      double dR_mu_hlt = kinem::delta_R(trigEta,trigPhi,muEta,muPhi);
-// 	      h_dR_mu_hlt->Fill(dR_mu_hlt,wgt);
-// 	      if( dR_mu_hlt<0.3 ){
-// 		mu_fired_trigger = true;
-// 		break;
-// 	      }
-// 	    }
-// 	  } // end for each trigger object
-      
-      
-	} // end if tight muon
-	else {
-	  only_loose_mu_index.push_back(i);
-	  if (muPt>sndMuPt) sndMuPt = muPt;      ///Robin
-	}
-      }// end muon loop
-
-
-      if (verbose) std::cout << "done with muons" <<std::endl;      
+      BEANs::muonSelector( muons, false, selection_, tight_mu_index, loose_mu_index );
 
       int numTightMuons = int(tight_mu_index.size());
-      int numLooseMuons = int(loose_mu_index.size()) - numTightMuons;
+      int numLooseMuons = int(loose_mu_index.size());
+
+      ////////////////////////////////
+      ////--------- old frame work
+      ////////////////////////////////
+//       float fstMuPt = 0.0 ;
+//       float sndMuPt = 0.0 ;
+
+//       std::vector<int> tight_mu_index;
+//       std::vector<int> loose_mu_index;
+//       std::vector<int> only_loose_mu_index;
+//       for( int i=0; i<int(muons.size()); i++ ){
+
+// 	float muPt  = muons.at(i).pt;
+// 	double muEta = muons.at(i).eta;
+// 	double muPhi = muons.at(i).phi;
+// 	double muAbsEta = fabs(muEta);
+
+// 	bool kin = ( (muPt>10.) && (muAbsEta<2.4) );
+
+// 	if( !kin ) continue;
+
+// 	double chargedHadronIso = muons.at(i).chargedHadronIso;
+// 	double neutralHadronIso = muons.at(i).neutralHadronIso;
+// 	double photonIso = muons.at(i).photonIso;
+
+// 	double relIso = ( chargedHadronIso + neutralHadronIso + photonIso ) * 1./muPt;
+
+// 	bool looseIso = ( relIso<0.2 );
+
+// 	bool isGlobalMuon = ( muons.at(i).isGlobalMuon==1 );
+
+// 	if( !(isGlobalMuon && looseIso) ) continue;
+
+// 	loose_mu_index.push_back(i);
+
+// 	bool isTrackerMuon = ( muons.at(i).isTrackerMuon==1 );
+// 	bool isGlobalMuonPromptTight = ( muons.at(i).isGlobalMuonPromptTight==1 );
+
+// 	bool numTrackHits = ( muons.at(i).numberOfValidTrackerHitsInnerTrack > 10 );
+// 	bool numPixelHits = ( muons.at(i).pixelLayersWithMeasurement>0 );
+// 	bool numberOfMatches = ( muons.at(i).numberOfMatches>1 );
+
+// 	bool passd0 = ( fabs(muons.at(i).correctedD0)<0.02 );
+// 	bool passdz = ( fabs(muons.at(i).correctedDZ)<1. );
+
+// 	bool id = ( isTrackerMuon && isGlobalMuonPromptTight && numTrackHits && numPixelHits && numberOfMatches && passd0 && passdz );
+
+// 	bool tightIso = ( relIso<0.125 );
+
+//     // JMS Changed muon pt cut
+//     // JMS used to be 30
+//     // is now back to 30
+    
+// 	if( ((muPt>20.) && (muAbsEta<2.1) && id && tightIso) ){
+// 	  tight_mu_index.push_back(i);
+// // 	  h_mu_pt->Fill(muPt,wgt);
+// // 	  h_mu_eta->Fill(muEta,wgt);
+// // 	  h_mu_phi->Fill(muPhi,wgt);
+
+// 	  if (muPt > fstMuPt) fstMuPt = muPt;  ///Robin
+
+//       // just assert that you fired a double muon trigger
+// 	  bool mu_fired_trigger = false;
+//       mu_fired_trigger = true;
+
+      
+// 	  // for( TrigObjIter hltobj = hltobjs.begin(); hltobj != hltobjs.end(); ++hltobj ){
+// // 	    //// Dump out filter name, pt, eta, phi for each HLT object
+// // 	    //std::cout << "\t" << hltobj->filter << "\t pt, eta, phi = " << hltobj->pt << ",\t " << hltobj->eta << ",\t " << hltobj->phi << std::endl;
+// // 	    if( hltobj->filter==mc_hlt_filter_names[0] ){
+// // 	      double trigEta = hltobj->eta;
+// // 	      double trigPhi = hltobj->phi;
+
+// // 	      double dR_mu_hlt = kinem::delta_R(trigEta,trigPhi,muEta,muPhi);
+// // 	      h_dR_mu_hlt->Fill(dR_mu_hlt,wgt);
+// // 	      if( dR_mu_hlt<0.3 ){
+// // 		mu_fired_trigger = true;
+// // 		break;
+// // 	      }
+// // 	    }
+// // 	  } // end for each trigger object
+      
+      
+// 	} // end if tight muon
+// 	else {
+// 	  only_loose_mu_index.push_back(i);
+// 	  if (muPt>sndMuPt) sndMuPt = muPt;      ///Robin
+// 	}
+//       }// end muon loop
+
+
+//       if (verbose) std::cout << "done with muons" <<std::endl;      
+
+//       int numTightMuons = int(tight_mu_index.size());
+//       int numLooseMuons = int(loose_mu_index.size()) - numTightMuons;
 
 
 //       if (numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons >= 2 )
@@ -1673,9 +1714,9 @@ int main ( int argc, char ** argv )
     
 	if( !(kin && eta && id) ) continue;
 
-    if (pfjets.at(i).genPartonMotherId == 25) {
-      numHiggsJets++;
-    } 
+	if (pfjets.at(i).genPartonMotherId == 25) {
+	  numHiggsJets++;
+	} 
 
 	/// remove dR_jet_lep cut
 // 	bool hasCloseLepton = false;
@@ -1703,7 +1744,7 @@ int main ( int argc, char ** argv )
 // 	}
 	
 	jetV[numGoodJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
-    numGoodJets++;
+	numGoodJets++;
 	tight_pfjet_index.push_back(i);
 
     totalDeltaPx += deltaPx;
@@ -1771,11 +1812,11 @@ int main ( int argc, char ** argv )
       }// end for each pf jet
       
       //Robin
-      *(floatBranches["fstMuPt"]) = fstMuPt ;
-      *(floatBranches["sndMuPt"]) = sndMuPt ;
+//       *(floatBranches["fstMuPt"]) = fstMuPt ;
+//       *(floatBranches["sndMuPt"]) = sndMuPt ;
 
-      *(floatBranches["fstElePt"]) = fstElePt ;
-      *(floatBranches["sndElePt"]) = sndElePt ;
+//       *(floatBranches["fstElePt"]) = fstElePt ;
+//       *(floatBranches["sndElePt"]) = sndElePt ;
 
       //------------------------
       int numAllJet = numGoodAndBadJets;
@@ -1852,12 +1893,12 @@ int main ( int argc, char ** argv )
       ////------------b-tag SF
       ////
       //////////////////////////
-      double wgt_prob=0, wgt_prob_hfSFup=0, wgt_prob_hfSFdown=0, wgt_prob_lfSFup=0, wgt_prob_lfSFdown=0;                                  
-      double wgt_prob_ge4=0, wgt_prob_ge4_hfSFup=0, wgt_prob_ge4_hfSFdown=0, wgt_prob_ge4_lfSFup=0, wgt_prob_ge4_lfSFdown=0;              
+      double wgt_prob=0, wgt_prob_hfSFup=0, wgt_prob_hfSFdown=0, wgt_prob_lfSFup=0, wgt_prob_lfSFdown=0;
+      double wgt_prob_ge4=0, wgt_prob_ge4_hfSFup=0, wgt_prob_ge4_hfSFdown=0, wgt_prob_ge4_lfSFup=0, wgt_prob_ge4_lfSFdown=0;
 
 
-	
-      if( (sample>=0 || sample==-2500) && !isData){
+      //      if( (sample>=0 || sample==-2500) && !isData){
+      if (!isData) {
           std::vector<BTagWeight::JetInfo> myjetinfo;                                                                   
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
@@ -1869,32 +1910,33 @@ int main ( int argc, char ** argv )
             if (verbose) std::cout << "one" <<std::endl;
             std::vector<double> myEffSF = getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
             if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
-            BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );      
-            myjetinfo.push_back(myjet);                                                                                                     
+            BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] ); 
+            myjetinfo.push_back(myjet);
+
             if (verbose) std::cout << "two" <<std::endl;
-            std::vector<double> myEffSF_hfSFup = getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);     
-            BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );  
-            myjetinfo_hfSFup.push_back(myjet_hfSFup);                            
+            std::vector<double> myEffSF_hfSFup = getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);
+            BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );
+            myjetinfo_hfSFup.push_back(myjet_hfSFup);
             if (verbose) std::cout << "three" <<std::endl;
-            std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );                     
-            BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );                                                 
-            myjetinfo_hfSFdown.push_back(myjet_hfSFdown);                                                                                   
+            std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
+            BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );
+            myjetinfo_hfSFdown.push_back(myjet_hfSFdown);
             if (verbose) std::cout << "four" <<std::endl;
-            std::vector<double> myEffSF_lfSFup = getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]  );                        
-            BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );                                                       
-            myjetinfo_lfSFup.push_back(myjet_lfSFup);                                                                                       
+            std::vector<double> myEffSF_lfSFup = getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]  );
+            BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );
+            myjetinfo_lfSFup.push_back(myjet_lfSFup);
             if (verbose) std::cout << "five" <<std::endl;
-            std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );                     
-            BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );                                                 
+            std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
+            BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );
             myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
 
             if (verbose) std::cout << "done calling sf calc " <<std::endl;
-          }                                                                                                                                 
+          }
 
           if (verbose) std::cout << "Now using btag weight" <<std::endl;
 
           
-          BTagWeight bweight(1,1);                                                                                                          
+          BTagWeight bweight(1,1);
           if( numTag<4 ){                                                         
             wgt_prob = bweight.weight(myjetinfo,numTag,numTag);                   
             wgt_prob_hfSFup   = bweight.weight(myjetinfo_hfSFup,numTag,numTag);   
@@ -1913,30 +1955,30 @@ int main ( int argc, char ** argv )
 
     if (verbose) std::cout << "done with btag weight loop" <<std::endl;
     
-        double wgt_btag = 1, wgt_btag_hfSFup = 1, wgt_btag_hfSFdown = 1, wgt_btag_lfSFup = 1, wgt_btag_lfSFdown = 1;                        
-        if( (sample>=0 || sample==-2500) && !isData){                                                                                                                    
-          if( numTag<4 ){                                                                                                                   
-            wgt_btag = wgt_prob;                                                                                                        
-            wgt_btag_hfSFup   = wgt_prob_hfSFup;                                                                                        
-            wgt_btag_hfSFdown = wgt_prob_hfSFdown;                                                                                      
-            wgt_btag_lfSFup   = wgt_prob_lfSFup;                                                                                        
-            wgt_btag_lfSFdown = wgt_prob_lfSFdown;                                                                                      
-          }   
-          else {                                                                                                                            
-            wgt_btag = wgt_prob_ge4;                                                                                                    
-            wgt_btag_hfSFup   = wgt_prob_ge4_hfSFup;                                                                                    
-            wgt_btag_hfSFdown = wgt_prob_ge4_hfSFdown;                                                                                  
-            wgt_btag_lfSFup   = wgt_prob_ge4_lfSFup;                                                                                    
-            wgt_btag_lfSFdown = wgt_prob_ge4_lfSFdown;                                                                                  
+        double wgt_btag = 1, wgt_btag_hfSFup = 1, wgt_btag_hfSFdown = 1, wgt_btag_lfSFup = 1, wgt_btag_lfSFdown = 1;
+        if( (sample>=0 || sample==-2500) && !isData){
+          if( numTag<4 ){
+            wgt_btag = wgt_prob;
+            wgt_btag_hfSFup   = wgt_prob_hfSFup;
+            wgt_btag_hfSFdown = wgt_prob_hfSFdown;
+            wgt_btag_lfSFup   = wgt_prob_lfSFup;
+            wgt_btag_lfSFdown = wgt_prob_lfSFdown;
+          }
+          else {
+            wgt_btag = wgt_prob_ge4;
+            wgt_btag_hfSFup   = wgt_prob_ge4_hfSFup;
+            wgt_btag_hfSFdown = wgt_prob_ge4_hfSFdown;
+            wgt_btag_lfSFup   = wgt_prob_ge4_lfSFup;
+            wgt_btag_lfSFdown = wgt_prob_ge4_lfSFdown;
           }
         }
 
 	//////
-        *(floatBranches["prob"]) = wgt_btag;                                                                                         
-        *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFup;                                                                       
-        *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFdown;                                                                           
-        *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFup;                                                                       
-        *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;                                                                           
+        *(floatBranches["prob"]) = wgt_btag;
+        *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFup;
+        *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFdown;
+        *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFup;
+        *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;
 
 
       /////////////////////////////////
@@ -2112,7 +2154,7 @@ int main ( int argc, char ** argv )
 	    
 	    if( TightMuonLooseMuon ) {
 	      iMuon1 = tight_mu_index[0] ;
-	      iMuon2 = only_loose_mu_index[0] ;
+	      iMuon2 = loose_mu_index[0] ;
 	    }
 	    
 	    lep1_pt = muons.at(iMuon1).pt;
@@ -2156,7 +2198,7 @@ int main ( int argc, char ** argv )
 
 	    if( TightEleLooseEle ){
 	      iEle1 = tight_ele_index[0] ;
-	      iEle2 = only_loose_ele_index[0] ;
+	      iEle2 = loose_ele_index[0] ;
 	    }
 	  
 	    lep1_pt = electrons.at(iEle1).pt;
@@ -2196,12 +2238,12 @@ int main ( int argc, char ** argv )
 	      iEle = tight_ele_index[0] ;
 	    }  
 	    if ( TightEleLooseMuon ){
-	      iMuon = only_loose_mu_index[0] ;
+	      iMuon = loose_mu_index[0] ;
 	      iEle = tight_ele_index[0] ;
 	    }
 	    if( TightMuonLooseEle ){
 	      iMuon = tight_mu_index[0] ;
-	      iEle = only_loose_ele_index[0] ;
+	      iEle = loose_ele_index[0] ;
 	    }
 
 	    lep1_pt = muons.at(iMuon).pt;
@@ -2544,7 +2586,33 @@ int main ( int argc, char ** argv )
 	    if (numTag > 1) *(floatBranches["second_highest_btag"]) = second_highest_btag;
 	    *(floatBranches["lowest_btag"]) = lowest_btag;
 	  }
-	  
+
+
+      //------------------------------------------
+      //
+      // Assign values to the vars the MVA will use
+      // 
+      //------------------------------------------
+
+      varfirst_jet_pt = first_jet_pt;
+      varmin_dr_tagged_jets 		  = min_dr_tagged_jets;  
+      varnumJets_float 		  = float(numJet);       
+      varmindr_lep1_jet		  = mindr_lep1_jet;      
+      varavg_btag_disc_btags		  = avg_btag_disc_btags; 
+      varHt                              = Ht;
+
+      for( unsigned int j = 0 ; j < nCat ; ++j ){
+        // --- Return the MVA outputs and weights
+        TString branchName = TString("CFMlpANN_") + catList[j];
+        cout << "This is NN category " << catList[j] << "saving into branch " << branchName << endl;
+
+        Float_t annOut  = reader[j]->EvaluateMVA( "CFMlpANN method" );
+        *(floatBranches[branchName]) = annOut;        
+
+      } // End category loop
+
+
+      
 
       } // end neural net selection
 
