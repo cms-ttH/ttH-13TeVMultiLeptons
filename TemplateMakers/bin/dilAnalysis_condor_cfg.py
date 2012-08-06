@@ -40,7 +40,9 @@ process.inputs = cms.PSet (
 	maxEvents = cms.int32(-1)
 )
 
-listFileName = "../../listsForSkims/" + sampleNameCL + ".list"
+listFileName = "../../listsForSkims/" + sampleNameCL + ".list"  ###2011
+#listFileName = "listsForSkims/" + sampleNameCL + ".list"         ###2012
+
 # read in all files in the list
 print "Reading file names from list: %s" % listFileName
 listFile = open(listFileName)
@@ -65,17 +67,17 @@ if iJes == 0:
 	    outDir = "batchBEAN/%s_%s/" % (sampleNameCL, iLabel)
 	    outFileName = "batchBEAN/%s_%s/dilSummaryTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
     if iJer == -1:
-        outDir = "batchBEAN/%s_%s_JerDown/" % (sampleNameCL, iLabel)
-        outFileName = "batchBEAN/%s_%s_JerDown/dilSummaryTrees_%s_%s_JerDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+        outDir = "batchBEAN/%s_%s_JERDown/" % (sampleNameCL, iLabel)
+        outFileName = "batchBEAN/%s_%s_JERDown/dilSummaryTrees_%s_%s_JERDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
     if iJer == 1:
-        outDir = "batchBEAN/%s_%s_JerUp/" % (sampleNameCL, iLabel)
-        outFileName = "batchBEAN/%s_%s_JerUp/dilSummaryTrees_%s_%s_JerUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+        outDir = "batchBEAN/%s_%s_JERUp/" % (sampleNameCL, iLabel)
+        outFileName = "batchBEAN/%s_%s_JERUp/dilSummaryTrees_%s_%s_JERUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 if iJes == -1:
-	outDir = "batchBEAN/%s_%s_JesDown/" % (sampleNameCL, iLabel)
-	outFileName = "batchBEAN/%s_%s_JesDown/dilSummaryTrees_%s_%s_JesDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	outDir = "batchBEAN/%s_%s_JESDown/" % (sampleNameCL, iLabel)
+	outFileName = "batchBEAN/%s_%s_JESDown/dilSummaryTrees_%s_%s_JESDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 if iJes == 1:
-	outDir = "batchBEAN/%s_%s_JesUp/" % (sampleNameCL, iLabel)
-	outFileName = "batchBEAN/%s_%s_JesUp/dilSummaryTrees_%s_%s_JesUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	outDir = "batchBEAN/%s_%s_JESUp/" % (sampleNameCL, iLabel)
+	outFileName = "batchBEAN/%s_%s_JESUp/dilSummaryTrees_%s_%s_JESUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
 
 if not os.path.exists(outDir):
 	os.mkdir(outDir)
@@ -101,5 +103,7 @@ process.dilAnalysis = cms.PSet(
 	jer = cms.int32(iJer),
 	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
-	sampleName = cms.string(sampleNameCL)
+	sampleName = cms.string(sampleNameCL),
+
+	selection = cms.string('2012')
 )

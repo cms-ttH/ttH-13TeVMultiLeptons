@@ -55,7 +55,19 @@ def main ():
                      'wjets',
                      'ww',
                      'wz',
-                     'zjets',
+                     #'zjets',
+                     'zjets_part1',
+                     'zjets_part2',
+                     'zjets_part3',
+                     'zjets_part4',
+                     'zjets_part5',
+                     'zjets_part6',
+                     'zjets_part7',
+                     'zjets_part8',
+                     'zjets_part9',
+                     'zjets_part10',
+                     'zjets_part11',
+                     'zjets_part12',
                      'zjets_lowmass',                    
                      'zz']
 
@@ -72,6 +84,7 @@ def main ():
         condorJobFile.write( "List = %s\n" % iList)
         numJobs = 0
         foundJobs = False
+#        for iLine in os.popen("wc -l listsForSkims/%s.list" % iList).readlines():
         for iLine in os.popen("wc -l ../../listsForSkims/%s.list" % iList).readlines():
             words = iLine.split()
             print "Line is ="
@@ -92,13 +105,13 @@ def main ():
         if (jesChoice == 0 and jerChoice == 0):
             JetStr = ""
         if (jesChoice == 1):
-            JetStr = "_JesUp"
+            JetStr = "_JESUp"
         if (jesChoice == -1):
-            JetStr = "_JesDown"
+            JetStr = "_JESDown"
         if (jerChoice == 1):
-            JetStr = "_JerUp"
+            JetStr = "_JERUp"
         if (jerChoice == -1):
-            JetStr = "_JerDown"     
+            JetStr = "_JERDown"     
         condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process)"+JetStr+".stdout\n")
         condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n") 
         condorJobFile.write( "queue $(NJobs)\n")

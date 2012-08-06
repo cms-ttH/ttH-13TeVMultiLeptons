@@ -17,17 +17,17 @@ if ($iJes == "0") then
         set outDirName = batchBEAN/${sample}_${iLabel}/log
     endif
     if ($iJer == "-1") then
-        set outDirName = batchBEAN/${sample}_${iLabel}_JerDown/log
+        set outDirName = batchBEAN/${sample}_${iLabel}_JERDown/log
     endif
     if ($iJer == "1") then
-        set outDirName = batchBEAN/${sample}_${iLabel}_JerUp/log
+        set outDirName = batchBEAN/${sample}_${iLabel}_JERUp/log
     endif
 endif
 if ($iJes == "-1") then
-    set outDirName = batchBEAN/${sample}_${iLabel}_JesDown/log
+    set outDirName = batchBEAN/${sample}_${iLabel}_JESDown/log
 endif
 if ($iJes == "1") then
-    set outDirName = batchBEAN/${sample}_${iLabel}_JerUp/log
+    set outDirName = batchBEAN/${sample}_${iLabel}_JESUp/log
 endif
 
 if ($outDirName == "") then
