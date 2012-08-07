@@ -9,6 +9,7 @@ def main ():
 	parser = OptionParser()
 	parser.add_option('-s', '--sumData', dest='sumData', action='store_true', default=False)
 	parser.add_option('-c', '--copyFiles', dest='copyFiles', action='store_true', default=False)
+	parser.add_option('-m', '--moveFiles', dest='moveFiles', action='store_true', default=False)
 	parser.add_option('-n', '--skipHadd', dest='skipHadd', action='store_true', default=False)
 
 	(options, args) = parser.parse_args()
@@ -25,7 +26,7 @@ def main ():
 
 	if not (options.skipHadd):
 		print "Hadding everything together"
-		for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (dirLabel)  ).readlines():
+		for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (dirLabel)	 ).readlines():
 			dirStrip = iDir.strip()
 			print "Directory name is %s" % dirStrip
 			lsCommand = "ls %s/*.root | grep -v '_all'" % dirStrip
@@ -57,7 +58,7 @@ def main ():
 
 	if (options.sumData):
 		print "Summing data Files"
-		dataNames = {"DoubleElectron":['DoubleElectron_Run2011A-05Aug2011-v1', 
+		dataNames2011 = {"DoubleElectron":['DoubleElectron_Run2011A-05Aug2011-v1', 
 									   'DoubleElectron_Run2011A-May10ReReco-v1',
 									   'DoubleElectron_Run2011A-PromptReco-v4',
 									   'DoubleElectron_Run2011A-PromptReco-v6',
@@ -73,6 +74,17 @@ def main ():
 							 'MuEG_Run2011A-PromptReco-v6',
 							 'MuEG_Run2011B-PromptReco-v1']
 					 }
+		dataNames2012 = {"DoubleElectron":['DoubleElectron_Run2011A',
+										   'DoubleElectron_Run2011B'],
+						 "DoubleMu":['DoubleMu_Run2012A',
+									 'DoubleMu_Run2012B'],
+						 "MuEG":['MuEG_Run2012A',
+								 'MuEG_Run2012B']
+					 }
+		if dirLabel.startswith('2011'):
+			dataNames = dataNames2011
+		elif dirLabel.startswith('2012'):
+			dataNames = dataNames2012
 
 		print "Data names are..."
 		print dataNames
@@ -81,7 +93,7 @@ def main ():
 			print "=========Data category is %s=============" % dataCat
 			# get a whole list of file names
 			matchedDirs = []
-			for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (dirLabel)  ).readlines():
+			for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (dirLabel)	 ).readlines():
 				for iMatch in listOfNames:
 					if iMatch in iDir:
 						print "Directory %s matches name %s" % (iDir,iMatch)
@@ -103,9 +115,9 @@ def main ():
 					exit (4)
 				theRootFile = rootFiles[0].strip()
 				print "Adding file %s " % theRootFile
-				haddCommand = haddCommand + theRootFile + "  "
-			print ">>>>>>>>>> Running >>>>>>>>>  "
-			print "       %s" % haddCommand
+				haddCommand = haddCommand + theRootFile + "	 "
+			print ">>>>>>>>>> Running >>>>>>>>>	 "
+			print "		  %s" % haddCommand
 			for iFeedback in os.popen(haddCommand).readlines():
 				print iFeedback
 			print "-------Done suming data---------"
@@ -116,14 +128,17 @@ def main ():
 		
 	if (options.copyFiles):
 		print "Now copying results to tree files!"
-		
-		for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} ../../DrawPlots/bin/treeFiles \;" % dirLabel  ):
+		for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} ../../DrawPlots/bin/treeFiles \;" % dirLabel	):
 			print iLine
-
-		
 		print "Done copying files"
-
 	# end copy files
+
+	if (options.moveFiles):
+		print "Now moving results to tree files!"
+		for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec mv {} ../../DrawPlots/bin/treeFiles \;" % dirLabel	):
+			print iLine
+		print "Done moving files"
+	# end move files
 
 	print "-----Done------"
 
