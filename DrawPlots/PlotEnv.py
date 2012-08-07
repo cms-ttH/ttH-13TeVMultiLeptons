@@ -513,21 +513,21 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     myCanvasLin.cd()
 
     ##Begin comment out for 2012
-    upLin = TPad("upLin", "up", 1e-5, 0.3+1e-5, 1-1e-5, 1-1e-5)
-    downLin =  TPad ("downLin", "down", 1e-5, 1e-5, 1-1e-5, 0.3-1e-5)
+    #upLin = TPad("upLin", "up", 1e-5, 0.3+1e-5, 1-1e-5, 1-1e-5)
+    #downLin =  TPad ("downLin", "down", 1e-5, 1e-5, 1-1e-5, 0.3-1e-5)
 
-    upLin.SetLeftMargin(.11)
-    downLin.SetLeftMargin(.11)
+    #upLin.SetLeftMargin(.11)
+    #downLin.SetLeftMargin(.11)
 
-    upLin.SetRightMargin(.05)
-    downLin.SetRightMargin(.05)
-    upLin.SetBottomMargin(.3)
-    downLin.SetBottomMargin(.3)
-    upLin.Modified()
-    downLin.Modified()
+    #upLin.SetRightMargin(.05)
+    #downLin.SetRightMargin(.05)
+    #upLin.SetBottomMargin(.3)
+    #downLin.SetBottomMargin(.3)
+    #upLin.Modified()
+    #downLin.Modified()
 		
-    upLin.Draw()
-    downLin.Draw()
+    #upLin.Draw()
+    #downLin.Draw()
 
     ##End comment out for 2012
 
@@ -535,9 +535,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #        upLin.cd()
 #        gPad.SetLogy()
 
-    upLin.cd()
-    gPad.SetBottomMargin(1e-5)
-    gPad.Modified()
+    #upLin.cd()
+    #gPad.SetBottomMargin(1e-5)
+    #gPad.Modified()
 
     myStack.Draw()
 
@@ -555,10 +555,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #    myLumiTex.DrawLatex(0.25, 0.98, myLumiString)
 
     ##Begin comment out for 2012
-    downLin.cd()
-    gPad.SetTopMargin(1e-5)
-    gPad.SetTickx()
-    gPad.Modified()
+    #downLin.cd()
+    #gPad.SetTopMargin(1e-5)
+    #gPad.SetTickx()
+    #gPad.Modified()
 
     ratioHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, 1.0, 0.0)
     ratioHist.SetMinimum(0)
