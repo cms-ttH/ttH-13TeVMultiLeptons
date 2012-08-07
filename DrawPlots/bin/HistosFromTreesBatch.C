@@ -325,6 +325,23 @@ int main ( int argc, char ** argv )
 
 
 
+
+  std::map<TString, TFile*> outputRootFiles;
+  for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
+    for (unsigned iLep = 0; iLep < lepCatList.size(); iLep++){
+      std::string JetTagReq = JetTagReqs[iTag];
+      OutputDirectory = lepCatList[iLep];
+      std::string InputFileLabel = InputFileNames[0];
+      ////////  book only a few histogram folders
+      TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+      TFile * OutputFile = new TFile(OutputFileName, "RECREATE");
+      std::cout << "Storing root file named " << OutputFileName << std::endl;
+      outputRootFiles[OutputFileName] = OutputFile;
+    }      
+  }
+  
+
+    
   
   
 
@@ -448,11 +465,11 @@ int main ( int argc, char ** argv )
         }
     
 
-        ////////  book only a few histogram folders
-        TString OutputFileName = "holder";
-        OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
-        TFile * OutputFile = new TFile(OutputFileName, "UPDATE");
         
+        TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+        TFile * OutputFile = outputRootFiles[OutputFileName];
+
+        cout << "Switching to output file" << OutputFile->GetName() << std::endl;
         OutputFile->cd();
 
         ///// start variables loop
@@ -493,11 +510,7 @@ int main ( int argc, char ** argv )
           histTemp->SetDirectory(OutputFile);
         } // end var loop
 	
-        OutputFile->Write();
-        std::cout << "    Wrote out " << OutputFileName << std::endl;
-
-        OutputFile->Close();
-
+        
       } // end sub-lep cat loop
       std::cout << '\n' ;
     }// end Cat loop
@@ -507,5 +520,24 @@ int main ( int argc, char ** argv )
     std::cout << "  == End systematic " << syst << " ==  " << std::endl;
     } // end sys
   } // end sample loop
+
+
+  //Close all the files
+  for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
+    for (unsigned iLep = 0; iLep < lepCatList.size(); iLep++){
+      std::string JetTagReq = JetTagReqs[iTag];
+      OutputDirectory = lepCatList[iLep];
+      std::string InputFileLabel = InputFileNames[0];
+      ////////  book only a few histogram folders
+      TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+
+      std::cout << "Closing root file named " << OutputFileName << std::endl;      
+      outputRootFiles[OutputFileName]->Write();
+      outputRootFiles[OutputFileName]->Close();
+
+      
+    }
+  }
+
 
 }// end main
