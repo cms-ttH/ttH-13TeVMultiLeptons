@@ -25,6 +25,9 @@ class PlotInfo:
 		# No checking to see if this is valid yet
 		# it will only store information it
 		# understands, and will ignore everything else
+
+        # first, a dummy declaration
+        self.limitPlotName = ''
 		
         for (pname,pval) in initDict.iteritems() :
             if (pname == 'name'):
@@ -65,6 +68,9 @@ class PlotInfo:
 
             if (pname == 'normsPerJetBin') :
                 self.normsPerJetBin = pval
+
+            if (pname == 'limitPlotName') :
+                self.limitPlotName = pval
         
         #done with loop over iter items
         
@@ -99,10 +105,12 @@ class PlotInfo:
             namePlusCycle = "%s_CMS_scale_jDown;1" % (histName)
             #print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
             targetHist = self.rootFile.Get(namePlusCycle).Clone()
-        elif (JES == "eff_bUp"):
+        elif (JES == "eff_bUp"):            
             namePlusCycle = "%s_CMS_eff_bUp;1" % (histName)
-            #print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+            #print "%s: Getting  shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
             targetHist = self.rootFile.Get(namePlusCycle).Clone()
+            #print targetHist
+            #print "Integral is %f" % (targetHist.Integral())
         elif (JES == "eff_bDown"):
             namePlusCycle = "%s_CMS_eff_bDown;1" % (histName)
             #print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
@@ -120,7 +128,7 @@ class PlotInfo:
             #print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
             targetHist = self.rootFile.Get(namePlusCycle).Clone()
         elif (JES == "PUDown"):
-            namePlusCycle = "%s_PUUp;1" % (histName)
+            namePlusCycle = "%s_PUDown;1" % (histName)
             #print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
             targetHist = self.rootFile.Get(namePlusCycle).Clone()
         else:
@@ -193,6 +201,8 @@ class PlotInfo:
             xsec_frac_err = self.xsec_err/self.xsec
             # add up systematic errors
             sys_frac_err = math.sqrt(math.pow(xsec_frac_err,2)+math.pow(self.sys_array[0]/100.0,2)+math.pow(self.sys_array[1]/100.0,2)+math.pow(self.sys_array[2]/100.0,2))
+
+            #print "DEBGUG: Sending back histograms a histogram with Integral %f" % (targetHist.Integral())
 
             return targetHist, scaleRatio, sys_frac_err
         
@@ -284,8 +294,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     foundFirstSingleTop = False
     foundFirstZjets = False
 
-    for iplot in stackList:	
+    for iplot in stackList:
 
+        
        sys_frac_err = iplot.getHist(dist,lumi, lepselection, "nominal")[2]
        scaleRatio = iplot.getHist(dist,lumi, lepselection, "nominal")[1]
        origHist = iplot.getHist(dist,lumi, lepselection, "nominal")[0]       
@@ -297,6 +308,15 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
        origHist_fake_bDown = iplot.getHist(dist,lumi, lepselection, "fake_bDown")[0]
        origHist_PUUp = iplot.getHist(dist,lumi, lepselection, "PUUp")[0]
        origHist_PUDown = iplot.getHist(dist,lumi, lepselection, "PUDown")[0]
+
+
+       ############ Plot renaming
+       # Translate old plot names into new names
+
+       limitPlotName = iplot.name       
+       if not iplot.limitPlotName == '':
+           limitPlotName = iplot.limitPlotName
+       
        
        #
        #print "Got info from plots: sys_frac_err: %s, scaleRatio %s, origHist , origHist_JESUp , origHist_JESDown" % (sys_frac_err , scaleRatio)
@@ -317,11 +337,33 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
        resultHist_MCErrorsOnly_fake_bUp = rebinHistManual (origHist_fake_bUp, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
        resultHist_MCErrorsOnly_fake_bDown = rebinHistManual (origHist_fake_bDown, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
        resultHist_MCErrorsOnly_PUUp = rebinHistManual (origHist_PUUp, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
-       resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUUp, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
+       resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUDown, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
        
 
-       print "Original histogram has integral %f, resultHist has integral %f" % (origHist.Integral(), resultHist.Integral())
-       print "Orignal histogram has bins %f, resultHist has bins %f" % (origHist.GetNbinsX(), resultHist.GetNbinsX())
+       #print "Original histogram has integral %f, resultHist has integral %f" % (origHist.Integral(), resultHist.Integral())
+       #print "Orignal histogram has bins %f, resultHist has bins %f" % (origHist.GetNbinsX(), resultHist.GetNbinsX())
+       #print "CMS_eff_bUp Integral for orig = %s rebin = %s" % (origHist_eff_bUp.Integral(), resultHist_MCErrorsOnly_eff_bUp.Integral())
+       #print "CMS_eff_bDown Integral for orig = %s, rebin = %s" % (origHist_eff_bDown.Integral(), resultHist_MCErrorsOnly_eff_bDown.Integral())
+
+       storeName = "%s_CFMlpANN_%s" % (limitPlotName, jetSelection)
+       storeNameJESUp = "%s_CFMlpANN_%s_CMS_scale_jUp" % (limitPlotName, jetSelection)
+       storeNameJESDown = "%s_CFMlpANN_%s_CMS_scale_jDown" % (limitPlotName, jetSelection)
+       storeName_eff_bUp = "%s_CFMlpANN_%s_CMS_eff_bUp" % (limitPlotName, jetSelection)
+       storeName_eff_bDown = "%s_CFMlpANN_%s_CMS_eff_bDown" % (limitPlotName, jetSelection)
+       storeName_fake_bUp = "%s_CFMlpANN_%s_CMS_fake_bUp" % (limitPlotName, jetSelection)
+       storeName_fake_bDown = "%s_CFMlpANN_%s_CMS_fake_bDown" % (limitPlotName, jetSelection)
+       storeName_PUUp = "%s_CFMlpANN_%s_PUUp" % (limitPlotName, jetSelection)
+       storeName_PUDown = "%s_CFMlpANN_%s_PUDown" % (limitPlotName, jetSelection)
+       
+       keyName = limitPlotName
+       keyNameJESUp = "%s_JESUp" % keyName
+       keyNameJESDown = "%s_JESDown" % keyName
+       keyName_eff_bUp = "%s_eff_bUp" % keyName
+       keyName_eff_bDown = "%s_eff_bDown" % keyName
+       keyName_fake_bUp = "%s_fake_bUp" % keyName
+       keyName_fake_bDown = "%s_fake_bDown" % keyName
+       keyName_PUUp = "%s_PUUp" % keyName
+       keyName_PUDown = "%s_PUDown" % keyName
        
        
        # Save data for later
@@ -332,62 +374,42 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
            myData2011 = resultHist_MCErrorsOnly.Clone("data_2011")
            Data2011Sum = myData2011.Integral()
            legForStack.AddEntry(myData2011, "Data ("+str(round(Data2011Sum,0))+")", "lpe")
-           print "Adding data_2011 histo to output list"
-           histoStorageList["data_2011"] = myData2011.Clone ("data_2011_CFMlpANN_%s" % (jetSelection)  )
+           #print "Adding data_2011 histo to output list"
+           histoStorageList["data_obs"] = myData2011.Clone ("data_obs_CFMlpANN_%s" % (jetSelection)  )
 #           legForStack.AddEntry(myData2011, iplot.name+" ("+str(round(Data2011Sum,0))+")", "lpe")
        elif (iplot.name == "data_2012"):
            myData2012 = resultHist_MCErrorsOnly.Clone("data_2012")
            Data2012Sum = myData2012.Integral()
-           histoStorageList["data_2012"] = myData2012.Clone("data_2012_CFMlpANN_%s" % (jetSelection)  )
+           histoStorageList["data_obs"] = myData2012.Clone("data_obs_CFMlpANN_%s" % (jetSelection)  )
            legForStack.AddEntry(myData2012, iplot.name+" ("+str(round(Data2012Sum,0))+")", "lpe")
        elif (iplot.name == "ttH_120"):
            iSig = resultHist.Clone("signal")
            ttHSum = iSig.Integral()
-           print "adding ttH_120 to output list"
-           histoStorageList["ttH_120"] = resultHist_MCErrorsOnly.Clone("ttH120_CFMlpANN_%s" % (jetSelection)  )
-           histoStorageList["ttH_120_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("ttH120_CFMlpANN_%s_CMS_scale_jUp" % (jetSelection,))
-           histoStorageList["ttH_120_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("ttH120_CFMlpANN_%s_CMS_scale_jDown" % (jetSelection,))
-           histoStorageList["ttH_120_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("ttH120_CFMlpANN_%s_CMS_eff_bUp" % (jetSelection,))
-           histoStorageList["ttH_120_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("ttH120_CFMlpANN_%s_CMS_eff_bDown" % (jetSelection,))
-           histoStorageList["ttH_120_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("ttH120_CFMlpANN_%s_CMS_fake_bUp" % (jetSelection,))
-           histoStorageList["ttH_120_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("ttH120_CFMlpANN_%s_CMS_fake_bDown" % (jetSelection,))
-           histoStorageList["ttH_120_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("ttH120_CFMlpANN_%s_PUUp" % (jetSelection,))
-           histoStorageList["ttH_120_PUDown"] = resultHist_MCErrorsOnly_PUUp.Clone("ttH120_CFMlpANN_%s_PUDown" % (jetSelection,))
-           
-       else :
-           iHist = resultHist.Clone("stack")
-           storeName = "%s_CFMlpANN_%s" % (iplot.name, jetSelection)
-           storeNameJESUp = "%s_CFMlpANN_%s_CMS_scale_jUp" % (iplot.name, jetSelection)
-           storeNameJESDown = "%s_CFMlpANN_%s_CMS_scale_jDown" % (iplot.name, jetSelection)
-           storeName_eff_bUp = "%s_CFMlpANN_%s_CMS_eff_bUp" % (iplot.name, jetSelection)
-           storeName_eff_bDown = "%s_CFMlpANN_%s_CMS_eff_bUp" % (iplot.name, jetSelection)
-           storeName_fake_bUp = "%s_CFMlpANN_%s_CMS_fake_bUp" % (iplot.name, jetSelection)
-           storeName_fake_bDown = "%s_CFMlpANN_%s_CMS_fake_bDown" % (iplot.name, jetSelection)
-           storeName_PUUp = "%s_CFMlpANN_%s_CMS_PUUp" % (iplot.name, jetSelection)
-           storeName_PUDown = "%s_CFMlpANN_%s_CMS_PUDown" % (iplot.name, jetSelection)
-           
-           keyName = iplot.name
-           keyNameJESUp = "%s_JESUp" % keyName
-           keyNameJESDown = "%s_JESDown" % keyName
-           keyName_eff_bUp = "%s_eff_bUp" % keyName
-           keyName_eff_bDown = "%s_eff_bDown" % keyName
-           keyName_fake_bUp = "%s_eff_bUp" % keyName
-           keyName_fake_bDown = "%s_eff_bDown" % keyName
-           keyName_PUUp = "%s_PUUp" % keyName
-           keyName_PUDown = "%s_PUDown" % keyName
-           
-           print "adding %s to storage list with clone name %s" % (iplot.name, storeName)
-           
+           #print "adding ttH_120 to output list"
            histoStorageList[keyName] = resultHist_MCErrorsOnly.Clone(storeName)
            histoStorageList[keyNameJESUp] = resultHist_MCErrorsOnly_JESUp.Clone(storeNameJESUp)
-           histoStorageList[keyNameJESDown] = resultHist_MCErrorsOnly_JESDown.Clone(storeNameJESDown)
-           
+           histoStorageList[keyNameJESDown] = resultHist_MCErrorsOnly_JESDown.Clone(storeNameJESDown)           
            histoStorageList[keyName_eff_bUp] = resultHist_MCErrorsOnly_eff_bUp.Clone(storeName_eff_bUp)
            histoStorageList[keyName_eff_bDown] = resultHist_MCErrorsOnly_eff_bDown.Clone(storeName_eff_bDown)
            histoStorageList[keyName_fake_bUp] = resultHist_MCErrorsOnly_fake_bUp.Clone(storeName_fake_bUp)
            histoStorageList[keyName_fake_bDown] = resultHist_MCErrorsOnly_fake_bDown.Clone(storeName_fake_bDown)
            histoStorageList[keyName_PUUp] = resultHist_MCErrorsOnly_PUUp.Clone(storeName_PUUp)
-           histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUUp.Clone(storeName_PUDown)
+           histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
+           
+       else :
+           iHist = resultHist.Clone("stack")
+           
+           #print "adding %s to storage list with clone name %s" % (iplot.name, storeName)
+           
+           histoStorageList[keyName] = resultHist_MCErrorsOnly.Clone(storeName)
+           histoStorageList[keyNameJESUp] = resultHist_MCErrorsOnly_JESUp.Clone(storeNameJESUp)
+           histoStorageList[keyNameJESDown] = resultHist_MCErrorsOnly_JESDown.Clone(storeNameJESDown)           
+           histoStorageList[keyName_eff_bUp] = resultHist_MCErrorsOnly_eff_bUp.Clone(storeName_eff_bUp)
+           histoStorageList[keyName_eff_bDown] = resultHist_MCErrorsOnly_eff_bDown.Clone(storeName_eff_bDown)
+           histoStorageList[keyName_fake_bUp] = resultHist_MCErrorsOnly_fake_bUp.Clone(storeName_fake_bUp)
+           histoStorageList[keyName_fake_bDown] = resultHist_MCErrorsOnly_fake_bDown.Clone(storeName_fake_bDown)
+           histoStorageList[keyName_PUUp] = resultHist_MCErrorsOnly_PUUp.Clone(storeName_PUUp)
+           histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 
            
            MCsum += iHist.Integral()
@@ -398,49 +420,90 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
                SingleTopCounter += 1
                if (SingleTopCounter == 6):
                    legForStack.AddEntry(iHist, "single t ("+str(round(SingleTopSum,1))+")", "f")
+               #print "SINGLETOP: recognized name %s" % iplot.name
+               if not foundFirstSingleTop:
+                   #print ".... first!"
+                   histoStorageList["singlet"] = resultHist_MCErrorsOnly.Clone("singlet_CFMlpANN_%s" % (jetSelection))
+                   histoStorageList["singlet_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("singlet_CFMlpANN_%s_CMS_scale_jUp" % (jetSelection))
+                   histoStorageList["singlet_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("singlet_CFMlpANN_%s_CMS_scale_jDown" % (jetSelection))
+                   histoStorageList["singlet_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("singlet_CFMlpANN_%s_CMS_eff_bUp" % (jetSelection))
+                   histoStorageList["singlet_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("singlet_CFMlpANN_%s_CMS_eff_bDown" % (jetSelection))
+                   histoStorageList["singlet_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("singlet_CFMlpANN_%s_CMS_fake_bUp" % (jetSelection))
+                   histoStorageList["singlet_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("singlet_CFMlpANN_%s_CMS_fake_bDown" % (jetSelection))
+                   histoStorageList["singlet_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("singlet_CFMlpANN_%s_PUUp" % (jetSelection))
+                   histoStorageList["singlet_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("singlet_CFMlpANN_%s_PUDown" % (jetSelection))
+                   foundFirstSingleTop = true
+               else:
+                   histoStorageList["singlet"].Add(resultHist_MCErrorsOnly)
+                   histoStorageList["singlet_JESUp"].Add(resultHist_MCErrorsOnly_JESUp)
+                   histoStorageList["singlet_JESDown"].Add(resultHist_MCErrorsOnly_JESDown)
+                   histoStorageList["singlet_eff_bUp"].Add(resultHist_MCErrorsOnly_eff_bUp)
+                   histoStorageList["singlet_eff_bDown"].Add(resultHist_MCErrorsOnly_eff_bDown)
+                   histoStorageList["singlet_fake_bUp"].Add(resultHist_MCErrorsOnly_fake_bUp)
+                   histoStorageList["singlet_fake_bDown"].Add(resultHist_MCErrorsOnly_fake_bDown)
+                   histoStorageList["singlet_PUUp"].Add(resultHist_MCErrorsOnly_PUUp)
+                   histoStorageList["singlet_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
            elif (iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):
-               print "DIBOSON: recognized name %s" % iplot.name
+               ZJetsSum += iHist.Integral()
+               ZJetsCounter += 1
+               if (ZJetsCounter == 6):
+                   legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
+               #print "DIBOSON: recognized name %s" % iplot.name
                if not foundFirstDiboson:
-                   print ".... first!"
-                   histoStorageList["diboson"] = resultHist_MCErrorsOnly.Clone("diboson_CFMlpAnn_%s" % (jetSelection))
-                   histoStorageList["diboson_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("diboson_CFMlpAnn_%s_CMS_scale_jUp" % (jetSelection))
-                   histoStorageList["diboson_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("diboson_CFMlpAnn_%s_CMS_scale_jDown" % (jetSelection))
+                   #print ".... first!"
+                   histoStorageList["diboson"] = resultHist_MCErrorsOnly.Clone("diboson_CFMlpANN_%s" % (jetSelection))
+                   histoStorageList["diboson_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("diboson_CFMlpANN_%s_CMS_scale_jUp" % (jetSelection))
+                   histoStorageList["diboson_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("diboson_CFMlpANN_%s_CMS_scale_jDown" % (jetSelection))
+                   histoStorageList["diboson_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("diboson_CFMlpANN_%s_CMS_eff_bUp" % (jetSelection))
+                   histoStorageList["diboson_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("diboson_CFMlpANN_%s_CMS_eff_bDown" % (jetSelection))
+                   histoStorageList["diboson_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("diboson_CFMlpANN_%s_CMS_fake_bUp" % (jetSelection))
+                   histoStorageList["diboson_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("diboson_CFMlpANN_%s_CMS_fake_bDown" % (jetSelection))
+                   histoStorageList["diboson_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("diboson_CFMlpANN_%s_PUUp" % (jetSelection))
+                   histoStorageList["diboson_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("diboson_CFMlpANN_%s_PUDown" % (jetSelection))
                    foundFirstDiboson = true
                else:
                    histoStorageList["diboson"].Add(resultHist_MCErrorsOnly)
                    histoStorageList["diboson_JESUp"].Add(resultHist_MCErrorsOnly_JESUp)
                    histoStorageList["diboson_JESDown"].Add(resultHist_MCErrorsOnly_JESDown)
-           elif (iplot.name.startswith("t_") or iplot.name.startswith("tbar_")):
-               print "SINGLETOP: recognized name %s" % iplot.name
-               if not foundFirstSingleTop:
-                   print ".... first!"
-                   histoStorageList["singlet"] = resultHist_MCErrorsOnly.Clone("singlet_CFMlpAnn_%s" % (jetSelection))
-                   histoStorageList["singlet_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("singlet_CFMlpAnn_%s_CMS_scale_jUp" % (jetSelection))
-                   histoStorageList["singlet_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("singlet_CFMlpAnn_%s_CMS_scale_jDown" % (jetSelection))
-                   foundFirstSingleTop = true
-               else:
-                   print ".... first!"
-                   histoStorageList["singlet"].Add(resultHist_MCErrorsOnly)
-                   histoStorageList["singlet_JESUp"].Add(resultHist_MCErrorsOnly_JESUp)
-                   histoStorageList["singlet_JESDown"].Add(resultHist_MCErrorsOnly_JESDown)
+                   histoStorageList["diboson_eff_bUp"].Add(resultHist_MCErrorsOnly_eff_bUp)
+                   histoStorageList["diboson_eff_bDown"].Add(resultHist_MCErrorsOnly_eff_bDown)
+                   histoStorageList["diboson_fake_bUp"].Add(resultHist_MCErrorsOnly_fake_bUp)
+                   histoStorageList["diboson_fake_bDown"].Add(resultHist_MCErrorsOnly_fake_bDown)
+                   histoStorageList["diboson_PUUp"].Add(resultHist_MCErrorsOnly_PUUp)
+                   histoStorageList["diboson_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
+
            elif (iplot.name.startswith("ZJet")):
-               print "ZJETS: recognized name %s" % iplot.name
+               ZJetsSum += iHist.Integral()
+               ZJetsCounter += 1
+               if (ZJetsCounter == 6):
+                   legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
+               #print "ZJETS: recognized name %s" % iplot.name
                if not foundFirstZjets:
-                   print ".... first!"
-                   histoStorageList["zjets"] = resultHist_MCErrorsOnly.Clone("zjets_CFMlpAnn_%s" % (jetSelection))
-                   histoStorageList["zjets_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("zjets_CFMlpAnn_%s_CMS_scale_jUp" % (jetSelection))
-                   histoStorageList["zjets_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("zjets_CFMlpAnn_%s_CMS_scale_jDown" % (jetSelection))
+                   #print ".... first!"
+                   histoStorageList["zjets"] = resultHist_MCErrorsOnly.Clone("zjets_CFMlpANN_%s" % (jetSelection))
+                   histoStorageList["zjets_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("zjets_CFMlpANN_%s_CMS_scale_jUp" % (jetSelection))
+                   histoStorageList["zjets_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("zjets_CFMlpANN_%s_CMS_scale_jDown" % (jetSelection))
+                   histoStorageList["zjets_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("zjets_CFMlpANN_%s_CMS_eff_bUp" % (jetSelection))
+                   histoStorageList["zjets_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("zjets_CFMlpANN_%s_CMS_eff_bDown" % (jetSelection))
+                   histoStorageList["zjets_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("zjets_CFMlpANN_%s_CMS_fake_bUp" % (jetSelection))
+                   histoStorageList["zjets_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("zjets_CFMlpANN_%s_CMS_fake_bDown" % (jetSelection))
+                   histoStorageList["zjets_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("zjets_CFMlpANN_%s_PUUp" % (jetSelection))
+                   histoStorageList["zjets_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("zjets_CFMlpANN_%s_PUDown" % (jetSelection))
+
                    foundFirstZjets = true
                else:
                    histoStorageList["zjets"].Add(resultHist_MCErrorsOnly)
                    histoStorageList["zjets_JESUp"].Add(resultHist_MCErrorsOnly_JESUp)
                    histoStorageList["zjets_JESDown"].Add(resultHist_MCErrorsOnly_JESDown)
+                   histoStorageList["zjets_eff_bUp"].Add(resultHist_MCErrorsOnly_eff_bUp)
+                   histoStorageList["zjets_eff_bDown"].Add(resultHist_MCErrorsOnly_eff_bDown)
+                   histoStorageList["zjets_fake_bUp"].Add(resultHist_MCErrorsOnly_fake_bUp)
+                   histoStorageList["zjets_fake_bDown"].Add(resultHist_MCErrorsOnly_fake_bDown)
+                   histoStorageList["zjets_PUUp"].Add(resultHist_MCErrorsOnly_PUUp)
+                   histoStorageList["zjets_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
            
-           elif (iplot.name.startswith("ZJet") or iplot.name == "WJets" or iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):
-               ZJetsSum += iHist.Integral()
-               ZJetsCounter += 1
-               if (ZJetsCounter == 6):
-                   legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
+           #elif (iplot.name.startswith("ZJet") or iplot.name == "WJets" or iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):
+               
 #                   legForStack.AddEntry(iHist, "ZJets ("+str(round(ZJetsSum,1))+")", "f")
            elif (iplot.name == "ttW" or iplot.name == "ttZ"):
                ttBosonSum += iHist.Integral()
@@ -632,7 +695,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     elif output == "root":
         print "Root output selected"
         rootFileName = "histosForLimits_%s_%s.root" % (lepselection, jetSelection)
-        rootOutput = TFile(rootFileName,"UPDATE")
+        rootOutput = TFile(rootFileName,"RECREATE")
         print "histograms you will store has length %s" % len(histoStorageList)
         print histoStorageList
         for iName, iPlot in histoStorageList.iteritems():
@@ -670,11 +733,11 @@ def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xM
     useSysErrors = False
     if binErrors == "default" or binErrors == "all":
         useSysErrors = True
-        print "Not using systematic errors in rebin"
+        #print "Not using systematic errors in rebin"
     else:        
         useSysErrors = False
         sys_frac_err = 1.0
-        print "Rebinning with MC errors only, forcing sys_frac_error = %f" % sys_frac_err
+        #print "Rebinning with MC errors only, forcing sys_frac_error = %f" % sys_frac_err
     
     
     # Output histogram
