@@ -110,7 +110,8 @@ int main ( int argc, char ** argv )
    std::string treeFileNameJESDown = inputs.getParameter< std::string >("fileNameJESDown");
    std::string treeFileNameJERUp = inputs.getParameter< std::string >("fileNameJERUp");
    std::string treeFileNameJERDown = inputs.getParameter< std::string >("fileNameJERDown");
-
+   std::string inputYear = inputs.getParameter< std::string >("inputYear");
+   std::string inputZmask = inputs.getParameter< std::string >("inputZmask");
    
 
    
@@ -154,7 +155,8 @@ int main ( int argc, char ** argv )
   std::vector<string> JetTagReqs;
   JetTagReqs.push_back("eq1t");
   JetTagReqs.push_back("eq2jeq2t");
-  JetTagReqs.push_back("ge3jeq2t");
+  JetTagReqs.push_back("eq3jeq2t");
+  JetTagReqs.push_back("ge4jeq2t");
   JetTagReqs.push_back("ge3t");
 
   const unsigned int nJetTagReqs = JetTagReqs.size();
@@ -203,85 +205,122 @@ int main ( int argc, char ** argv )
   std::vector<varInfo*> varList;
   double pival = 3.14;
   
-  varInfo *Ht = new varInfo("Ht", "Ht", "Ht", 1000, 0, 10000);
-  varList.push_back(Ht);
-
   varInfo *all_sum_pt = new varInfo("all_sum_pt", "all_sum_pt", "all_sum_pt", 10000, 0, 10000);
   varList.push_back(all_sum_pt);
-
   varInfo *avg_btag_disc_btags = new varInfo("avg_btag_disc_btags", "avg_btag_disc_btags", "avg_btag_disc_btags", 1000, 0, 1);
   varList.push_back(avg_btag_disc_btags);
   //  varInfo *avg_btag_disc_non_btags = new varInfo("avg_btag_disc_non_btags", "avg_btag_disc_non_btags", "avg_btag_disc_non_btags", 1000, 0, 1);
   //  varList.push_back(avg_btag_disc_non_btags);
   varInfo *avg_dr_tagged_jets = new varInfo("avg_dr_tagged_jets", "avg_dr_tagged_jets", "avg_dr_tagged_jets", 1000, 0, 10);
   varList.push_back(avg_dr_tagged_jets);
-
   varInfo *avg_tagged_dijet_mass = new varInfo("avg_tagged_dijet_mass", "avg_tagged_dijet_mass", "avg_tagged_dijet_mass", 1000, 0, 1000);
   varList.push_back(avg_tagged_dijet_mass);
   //  varInfo *avg_untagged_dijet_mass = new varInfo("avg_untagged_dijet_mass", "avg_untagged_dijet_mass", "avg_untagged_dijet_mass", 1000, 0, 1000);
   //  varList.push_back(avg_untagged_dijet_mass);
-
   varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.007, 0.008);
   varList.push_back(CFMlpANN_e2je2t);
   varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
   varList.push_back(CFMlpANN_ge3t);
-
+  varInfo *CFMlpANN_ge3t_new = new varInfo("CFMlpANN_ge3t_new", "CFMlpANN_ge3t_new", "CFMlpANN_ge3t_new", 1000, 0, 1);
+  varList.push_back(CFMlpANN_ge3t_new);
+  varInfo *CFMlpANN_e3je2t = new varInfo("CFMlpANN_e3je2t", "CFMlpANN_e3je2t", "CFMlpANN_e3je2t", 1000, 0, 1);
+  varList.push_back(CFMlpANN_e3je2t);
+  varInfo *CFMlpANN_ge4je2t = new varInfo("CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", 1000, 0, 1);
+  varList.push_back(CFMlpANN_ge4je2t);
+  varInfo *CFMlpANN_var_best8 = new varInfo("CFMlpANN_var_best8", "CFMlpANN_var_best8", "CFMlpANN_var_best8", 1000, 0, 1);
+  varList.push_back(CFMlpANN_var_best8);
   varInfo *closest_tagged_dijet_mass = new varInfo("closest_tagged_dijet_mass", "closest_tagged_dijet_mass", "closest_tagged_dijet_mass", 1000, 0, 1000);
   varList.push_back(closest_tagged_dijet_mass);
+  varInfo *correctedDZ_leplep = new varInfo("correctedDZ_leplep", "correctedDZ_leplep", "correctedDZ_leplep", 1000, -0.5, 0.5);
+  varList.push_back(correctedDZ_leplep);
+  varInfo *dEta_leplep = new varInfo("dEta_leplep", "dEta_leplep", "dEta_leplep", 1000, -5, 5);
+  varList.push_back(dEta_leplep);
+  varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, -1*pival, pival);
+  varList.push_back(dPhi_leplep);
+  varInfo *dijet_mass_first = new varInfo("dijet_mass_first", "dijet_mass_first", "dijet_mass_first", 1000, 0, 1000);
+  varList.push_back(dijet_mass_first);
+  varInfo *dijet_mass_m2H = new varInfo("dijet_mass_m2H", "dijet_mass_m2H", "dijet_mass_m2H", 1000, 0, 1000);
+  varList.push_back(dijet_mass_m2H);
+  varInfo *dijet_mass_second = new varInfo("dijet_mass_second", "dijet_mass_second", "dijet_mass_second", 1000, 0, 1000);
+  varList.push_back(dijet_mass_second);
+  varInfo *dijet_mass_third = new varInfo("dijet_mass_third", "dijet_mass_third", "dijet_mass_third", 1000, 0, 1000);
+  varList.push_back(dijet_mass_third);
   //  varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, 0, pival);
   //  varList.push_back(dPhi_leplep);
   varInfo *dR_leplep = new varInfo("dR_leplep", "dR_leplep", "dR_leplep", 1000, 0, 10);
   varList.push_back(dR_leplep);
   varInfo *dev_from_avg_disc_btags = new varInfo("dev_from_avg_disc_btags", "dev_from_avg_disc_btags", "dev_from_avg_disc_btags", 1000, 0, 1);
   varList.push_back(dev_from_avg_disc_btags);
+  varInfo *first_dibjet_mass = new varInfo("first_dibjet_mass", "first_dibjet_mass", "first_dibjet_mass", 1000, 0, 1000);
+  varList.push_back(first_dibjet_mass);
   varInfo *first_highest_btag = new varInfo("first_highest_btag", "first_highest_btag", "first_highest_btag", 1000, 0, 1);
   varList.push_back(first_highest_btag);
+  varInfo *first_jet_eta = new varInfo("first_jet_eta", "first_jet_eta", "first_jet_eta", 1000, -5, 5);
+  varList.push_back(first_jet_eta);
   varInfo *first_jet_pt = new varInfo("first_jet_pt", "first_jet_pt", "first_jet_pt", 1000, 0, 1000);
   varList.push_back(first_jet_pt);
+  varInfo *fourth_allJet_pt = new varInfo("fourth_allJet_pt", "fourth_allJet_pt", "fourth_allJet_pt", 1000, 0, 1000);
+  varList.push_back(fourth_allJet_pt);
+  varInfo *fourth_jet_eta = new varInfo("fourth_jet_eta", "fourth_jet_eta", "fourth_jet_eta", 1000, -5, 5);
+  varList.push_back(fourth_jet_eta);
   varInfo *fourth_jet_pt = new varInfo("fourth_jet_pt", "fourth_jet_pt", "fourth_jet_pt", 1000, 0, 1000);
   varList.push_back(fourth_jet_pt);
-  //  varInfo *fstElePt = new varInfo("fstElePt", "fstElePt", "fstElePt", 1000, 0, 1000);
-  //  varList.push_back(fstElePt);
-  //  varInfo *fstMuPt = new varInfo("fstMuPt", "fstMuPt", "fstMuPt", 1000, 0, 1000);
-  //  varList.push_back(fstMuPt);
-//   varInfo *isTriggerPass = new varInfo("isTriggerPass", "isTriggerPass", "isTriggerPass", 2, 0, 2);
+  varInfo *higgsLike_dijet_mass = new varInfo("higgsLike_dijet_mass", "higgsLike_dijet_mass", "higgsLike_dijet_mass", 1000, 0, 1000);
+  varList.push_back(higgsLike_dijet_mass);
+  varInfo *higgsLike_allDijet_mass = new varInfo("higgsLike_allDijet_mass", "higgsLike_allDijet_mass", "higgsLike_allDijet_mass", 1000, 0, 1000);
+  varList.push_back(higgsLike_allDijet_mass);
+  varInfo *Ht = new varInfo("Ht", "Ht", "Ht", 1000, 0, 10000);
+  varList.push_back(Ht);
+  //   varInfo *isTriggerPass = new varInfo("isTriggerPass", "isTriggerPass", "isTriggerPass", 2, 0, 2);
 //   varList.push_back(isTriggerPass);
 //   varInfo *isCleanEvent = new varInfo("isCleanEvent", "isCleanEvent", "isCleanEvent", 2, 0, 2);
 //   varList.push_back(isCleanEvent);
   varInfo *lep1Eta = new varInfo("lep1Eta", "lep1Eta", "lep1Eta", 1000, -5, 5);
   varList.push_back(lep1Eta);
-  varInfo *lep1Phi = new varInfo("lep1Phi", "lep1Phi", "lep1Phi", 1000, -pival, pival);
+  varInfo *lep1Phi = new varInfo("lep1Phi", "lep1Phi", "lep1Phi", 1000, -1*pival, pival);
   varList.push_back(lep1Phi);
   varInfo *lep1Pt = new varInfo("lep1Pt", "lep1Pt", "lep1Pt", 1000, 0, 1000);
   varList.push_back(lep1Pt);
   varInfo *lep2Eta = new varInfo("lep2Eta", "lep2Eta", "lep2Eta", 1000, -5, 5);
   varList.push_back(lep2Eta);
-  varInfo *lep2Phi = new varInfo("lep2Phi", "lep2Phi", "lep2Phi", 1000, -pival, pival);
+  varInfo *lep2Phi = new varInfo("lep2Phi", "lep2Phi", "lep2Phi", 1000, -1*pival, pival);
   varList.push_back(lep2Phi);
   varInfo *lep2Pt = new varInfo("lep2Pt", "lep2Pt", "lep2Pt", 1000, 0, 1000);
   varList.push_back(lep2Pt);
   varInfo *lowest_btag = new varInfo("lowest_btag", "lowest_btag", "lowest_btag", 1000, 0, 1);
   varList.push_back(lowest_btag);
+  varInfo *m2H_btag = new varInfo("m2H_btag", "m2H_btag", "m2H_btag", 1000, 0, 1000);
+  varList.push_back(m2H_btag);
   varInfo *mass_leplep = new varInfo("mass_leplep", "mass_leplep", "mass_leplep", 1000, 0, 1000);
   varList.push_back(mass_leplep);
-  varInfo *mass_of_everything = new varInfo("mass_of_everything", "mass_of_everything", "mass_of_everything", 10000, 0, 10000);
-  varList.push_back(mass_of_everything);
+  varInfo *mass_MHT = new varInfo("mass_MHT", "mass_MHT", "mass_MHT", 10000, 0, 10000);
+  varList.push_back(mass_MHT);
+  //varInfo *mass_of_everything = new varInfo("mass_of_everything", "mass_of_everything", "mass_of_everything", 10000, 0, 10000);
+  //varList.push_back(mass_of_everything);
+  varInfo *mass_of_leps_and_allJets = new varInfo("mass_of_leps_and_allJets", "mass_of_leps_and_allJets", "mass_of_leps_and_allJets", 10000, 0, 10000);
+  varList.push_back(mass_of_leps_and_allJets);
   varInfo *met = new varInfo("met", "met", "met", 1000, 0, 1000);
   varList.push_back(met);
+  varInfo *MHT = new varInfo("MHT", "MHT", "MHT", 1000, 0, 1000);
+  varList.push_back(MHT);
   varInfo *min_dr_tagged_jets = new varInfo("min_dr_tagged_jets", "min_dr_tagged_jets", "min_dr_tagged_jets", 1000, 0, 10);
   varList.push_back(min_dr_tagged_jets);
   varInfo *mindr_lep1_jet = new varInfo("mindr_lep1_jet", "mindr_lep1_jet", "mindr_lep1_jet", 1000, 0, 10);
   varList.push_back(mindr_lep1_jet);
   varInfo *mindr_lep2_jet = new varInfo("mindr_lep2_jet", "mindr_lep2_jet", "mindr_lep2_jet", 1000, 0, 10);
   varList.push_back(mindr_lep2_jet);
+  varInfo *numAllJets = new varInfo("numAllJets", "numAllJets", "numAllJets", 20, 0, 20);
+  varList.push_back(numAllJets);
+  varInfo *numBadJets = new varInfo("numBadJets", "numBadJets", "numBadJets", 20, 0, 20);
+  varList.push_back(numBadJets);
   varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 10, 0, 10);
   varList.push_back(numJets);
 //   varInfo *numLooseElectrons = new varInfo("numLooseElectrons", "numLooseElectrons", "numLooseElectrons", 10, 0, 10);
 //   varList.push_back(numLooseElectrons);
 //   varInfo *numLooseMuons = new varInfo("numLooseMuons", "numLooseMuons", "numLooseMuons", 10, 0, 10);
 //   varList.push_back(numLooseMuons);
-  //  varInfo *numNonTaggedJets = new varInfo("numNonTaggedJets", "numNonTaggedJets", "numNonTaggedJets", 10, 0, 10);
-  //  varList.push_back(numNonTaggedJets);
+  varInfo *numNonTaggedJets = new varInfo("numNonTaggedJets", "numNonTaggedJets", "numNonTaggedJets", 10, 0, 10);
+  varList.push_back(numNonTaggedJets);
   varInfo *numPV = new varInfo("numPV", "numPV", "numPV", 50, 0, 50);
   varList.push_back(numPV);
   varInfo *numTaggedJets = new varInfo("numTaggedJets", "numTaggedJets", "numTaggedJets", 10, 0, 10);
@@ -298,10 +337,16 @@ int main ( int argc, char ** argv )
 //   varList.push_back(probge3);
   varInfo *pt_leplep = new varInfo("pt_leplep", "pt_leplep", "pt_leplep", 1000, 0, 1000);
   varList.push_back(pt_leplep);
-  varInfo *pt_of_everything = new varInfo("pt_of_everything", "pt_of_everything", "pt_of_everything", 10000, 0, 10000);
-  varList.push_back(pt_of_everything);
+  //varInfo *pt_of_everything = new varInfo("pt_of_everything", "pt_of_everything", "pt_of_everything", 10000, 0, 10000);
+  //varList.push_back(pt_of_everything);
+  varInfo *pt_of_leps_and_allJets = new varInfo("pt_of_leps_and_allJets", "pt_of_leps_and_allJets", "pt_of_leps_and_allJets", 10000, 0, 10000);
+  varList.push_back(pt_of_leps_and_allJets);
+  varInfo *second_dibjet_mass = new varInfo("second_dibjet_mass", "second_dibjet_mass", "second_dibjet_mass", 1000, 0, 1000);
+  varList.push_back(second_dibjet_mass);
   varInfo *second_highest_btag = new varInfo("second_highest_btag", "second_highest_btag", "second_highest_btag", 1000, 0, 1);
   varList.push_back(second_highest_btag);
+  varInfo *second_jet_eta = new varInfo("second_jet_eta", "second_jet_eta", "second_jet_eta", 1000, -5, 5);
+  varList.push_back(second_jet_eta);
   varInfo *second_jet_pt = new varInfo("second_jet_pt", "second_jet_pt", "second_jet_pt", 1000, 0, 1000);
   varList.push_back(second_jet_pt);
   //  varInfo *sndElePt = new varInfo("sndElePt", "sndElePt", "sndElePt", 1000, 0, 1000);
@@ -310,6 +355,10 @@ int main ( int argc, char ** argv )
   //  varList.push_back(sndMuPt);
   varInfo *sum_pt = new varInfo("sum_pt", "sum_pt", "sum_pt", 10000, 0, 10000);
   varList.push_back(sum_pt);
+  varInfo *third_dibjet_mass = new varInfo("third_dibjet_mass", "third_dibjet_mass", "third_dibjet_mass", 1000, 0, 1000);
+  varList.push_back(third_dibjet_mass);
+  varInfo *third_jet_eta = new varInfo("third_jet_eta", "third_jet_eta", "third_jet_eta", 1000, -5, 5);
+  varList.push_back(third_jet_eta);
   varInfo *third_jet_pt = new varInfo("third_jet_pt", "third_jet_pt", "third_jet_pt", 1000, 0, 1000);
   varList.push_back(third_jet_pt);
   //  varInfo *unc_met = new varInfo("unc_met", "unc_met", "unc_met", 1000, 0, 1000);
@@ -317,6 +366,49 @@ int main ( int argc, char ** argv )
 //   varInfo *weight = new varInfo("weight", "weight", "weight", 1000, 0, 10);
 //   varList.push_back(weight);
 
+<<<<<<< HistosFromTreesBatch.C
+  std::string OutputParams = "";
+  //std::string TightLepStr = "(numTightMuons + numTightElectrons == 2) && "; //Only tight leptons
+  //std::string TightLepStr = "(numTightMuons + numTightElectrons != 2) && "; //Only tight+loose events
+  std::string OppositeLepStr = "(oppositeLepCharge == 1) && "; //Leptons have opposite charge
+  //std::string OppositeLepStr = "(oppositeLepCharge == 0) && "; //Leptons have same charge
+  //std::string OppositeLepStr = "(oppositeGenLepCharge == 0) && "; //GenLeptons have same charge
+  //std::string OppositeLepStr = "(lep1TkCharge != lep1GenCharge) && "; //Lep1 wrong charge
+  
+  std::string ZmaskStr = "";
+  std::string TightLepStr = "";
+  
+  if (inputZmask == "noZmask") {
+    OutputParams = OutputParams+"noZmask";
+    ZmaskStr = "";
+  }
+  if (inputZmask == "Zmask") {
+    OutputParams = OutputParams+"Zmask";
+    ZmaskStr = "PassZmask == 1 && "; //Events outside the mask (reduced Zjets)
+  }
+  if (inputZmask == "Zpeak") {
+    OutputParams = OutputParams+"Zpeak";
+    std::string ZmaskStr = "PassZmask == 0 && "; //Events inside the mask (mostly Zjets)
+  }
+  
+  if (OppositeLepStr == "(oppositeLepCharge == 0) && ") OutputParams = OutputParams+"SameCharge";
+  if (OppositeLepStr == "(oppositeGenLepCharge == 0) && ") OutputParams = OutputParams+"SameGenCharge";
+  if (OppositeLepStr == "(lep1TkCharge != lep1GenCharge) && ") OutputParams = OutputParams+"WrongCharge";
+
+  std::map<TString, TFile*> outputRootFiles;
+  for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
+    for (unsigned iLep = 0; iLep < lepCatList.size(); iLep++){
+      std::string JetTagReq = JetTagReqs[iTag];
+      OutputDirectory = lepCatList[iLep];
+      std::string InputFileLabel = InputFileNames[0];
+      ////////  book only a few histogram folders
+      TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+      TFile * OutputFile = new TFile(OutputFileName, "RECREATE");
+      std::cout << "Storing root file named " << OutputFileName << std::endl;
+      outputRootFiles[OutputFileName] = OutputFile;
+    }
+  }
+=======
   varInfo *dEta_leplep = new varInfo("dEta_leplep", "dEta_leplep", "dEta_leplep", 1000, -6.0, 6.0);
   varList.push_back(dEta_leplep);
 
@@ -342,6 +434,7 @@ int main ( int argc, char ** argv )
   
 
     
+>>>>>>> 1.8
   
   
 
@@ -400,13 +493,8 @@ int main ( int argc, char ** argv )
       std::string TagReq = "holder";
       //      std::string ProbStr = "holder";
       std::string WeightStr = "holder";
-      //std::string ZmaskStr = "PassZmask == 0 && "; //Events inside the mask (mostly Zjets)
-      //std::string ZmaskStr = "PassZmask == 1 && "; //Events outside the mask (reduced Zjets)
-      //std::string TightLepStr = "(numTightMuons + numTightElectrons == 2) && "; //Only tight leptons
-      //std::string TightLepStr = "(numTightMuons + numTightElectrons != 2) && "; //Only tight+loose events
-      std::string ZmaskStr = "";
-      std::string TightLepStr = "";
-      
+
+
       std::string EffStr = "holder";
       std::string TrigStr = "holder";
       
@@ -418,8 +506,12 @@ int main ( int argc, char ** argv )
         JetReq = "numJets == 2";
         TagReq = "numTaggedJets == 2";
       }
-      else if (JetTagReq == "ge3jeq2t") {
-        JetReq = "numJets >= 3";
+      else if (JetTagReq == "eq3jeq2t") {
+        JetReq = "numJets == 3";
+        TagReq = "numTaggedJets == 2";
+      }
+      else if (JetTagReq == "ge4jeq2t") {
+        JetReq = "numJets >= 4";
         TagReq = "numTaggedJets == 2";
       }
       else if (JetTagReq == "ge3t") {
@@ -465,11 +557,24 @@ int main ( int argc, char ** argv )
         }
     
 
+<<<<<<< HistosFromTreesBatch.C
+        ////////  book only a few histogram folders
+        //TString OutputFileName = "holder";
+        //OutputFileName = "../" + OutputParams + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+        //TFile * OutputFile = new TFile(OutputFileName, "UPDATE");
+        TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+        TFile * OutputFile = outputRootFiles[OutputFileName];
+=======
+>>>>>>> 1.8
         
+<<<<<<< HistosFromTreesBatch.C
+        cout << "Switching to output file" << OutputFile->GetName() << std::endl;
+=======
         TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
         TFile * OutputFile = outputRootFiles[OutputFileName];
 
         cout << "Switching to output file" << OutputFile->GetName() << std::endl;
+>>>>>>> 1.8
         OutputFile->cd();
 
         ///// start variables loop
@@ -491,10 +596,14 @@ int main ( int argc, char ** argv )
           //Selection string
           std::string SelectionStr = "holder";
           std::string CleanTrig = "holder";
-          //CleanTrig = "(isTriggerPass == 1) && ";
-          CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
-	  
-          SelectionStr = WeightStr+EffStr+TrigStr +"(" + ZmaskStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
+          CleanTrig = "(isTriggerPass == 1) && ";
+          if (inputYear == "2011") {
+            CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
+          }
+          if (OutputDirectory == "MuonEle") {
+            ZmaskStr = "";
+          }
+          SelectionStr = WeightStr+EffStr+TrigStr +"(" + OppositeLepStr + ZmaskStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
 	  	    
           if (SelectionStr == "holder") {
             std::cout << "SelectionStr == holder" << std::endl;
@@ -503,14 +612,22 @@ int main ( int argc, char ** argv )
 
           TH1F *histTemp = new TH1F(histName, histName , nBins, Xmin, Xmax);
           TString varSig =  variableName + ">>" + histName;
-	  
+
           DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
           //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
           //      	  std::cout << "Drawing histogram " << histName << std::endl;
           histTemp->SetDirectory(OutputFile);
         } // end var loop
 	
+<<<<<<< HistosFromTreesBatch.C
+        //OutputFile->Write();
+        //std::cout << "    Wrote out " << OutputFileName << std::endl;
+
+        //OutputFile->Close();
+
+=======
         
+>>>>>>> 1.8
       } // end sub-lep cat loop
       std::cout << '\n' ;
     }// end Cat loop
@@ -520,6 +637,24 @@ int main ( int argc, char ** argv )
     std::cout << "  == End systematic " << syst << " ==  " << std::endl;
     } // end sys
   } // end sample loop
+<<<<<<< HistosFromTreesBatch.C
+  //Close all the files
+  for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
+    for (unsigned iLep = 0; iLep < lepCatList.size(); iLep++){
+      std::string JetTagReq = JetTagReqs[iTag];
+      OutputDirectory = lepCatList[iLep];
+      std::string InputFileLabel = InputFileNames[0];
+      ////////  book only a few histogram folders
+      TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+      
+      std::cout << "Closing root file named " << OutputFileName << std::endl;
+      outputRootFiles[OutputFileName]->Write();
+      outputRootFiles[OutputFileName]->Close();
+      
+      
+    }
+  }
+=======
 
 
   //Close all the files
@@ -540,4 +675,5 @@ int main ( int argc, char ** argv )
   }
 
 
+>>>>>>> 1.8
 }// end main

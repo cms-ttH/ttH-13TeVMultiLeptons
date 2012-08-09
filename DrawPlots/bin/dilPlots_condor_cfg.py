@@ -15,18 +15,20 @@ import sys
 
 sampleNameCL = sys.argv[2]
 #iJob = int(sys.argv[3])
-iLabel = sys.argv[3]
-iJes = int (sys.argv[4])
-iJer = int (sys.argv[5])
+iYear = sys.argv[3]
+iZmask = sys.argv[4]
+iLabel = sys.argv[5]
+iJes = int (sys.argv[6])
+iJer = int (sys.argv[7])
 
 ## if (iJes == 1):
-##     iLabel = iLabel+"_JesUp"
+##	   iLabel = iLabel+"_JesUp"
 ## if (iJer == 1):
-##     iLabel = iLabel+"_JerUp"
+##	   iLabel = iLabel+"_JerUp"
 ## if (iJes == -1):
-##     iLabel = iLabel+"_JesDown"
+##	   iLabel = iLabel+"_JesDown"
 ## if (iJer == -1):
-##     iLabel = iLabel+"_JerDown"
+##	   iLabel = iLabel+"_JerDown"
 		
 # update serach path
 
@@ -47,16 +49,18 @@ print "Inside dil config"
 
 ####### Calculate input files
 process.inputs = cms.PSet (
-    fileName = cms.string("dummy.root"),
+	fileName = cms.string("dummy.root"),
 	fileNameJESUp = cms.string("dummy_JESUp.root"),
 	fileNameJESDown = cms.string("dummy_JESDown.root"),
 	fileNameJERUp = cms.string("dummy_JERUp.root"),
 	fileNameJERDown = cms.string("dummy_JERDown.root"),
-	maxEvents = cms.int32(-1)
+	maxEvents = cms.int32(-1),
+	inputYear = cms.string(iYear),
+	inputZmask = cms.string(iZmask)
 )
 
 
-treeFileName = "treeFiles/dilSummaryTrees_%s_%s_all.root" % (sampleNameCL, iLabel)
+treeFileName = "treeFiles/dilSummaryTrees_%s_%s_%s_all.root" % (sampleNameCL, iYear, iLabel)
 process.inputs.fileName = treeFileName
 
 
@@ -65,15 +69,15 @@ process.inputs.fileName = treeFileName
 # something with an actual shift
 
 if iJes != 0:
-	process.inputs.fileNameJESUp = "treeFiles/dilSummaryTrees_%s_%s_JESUp_all.root" % (sampleNameCL, iLabel)
-	process.inputs.fileNameJESDown = "treeFiles/dilSummaryTrees_%s_%s_JESDown_all.root" % (sampleNameCL, iLabel)
+	process.inputs.fileNameJESUp = "treeFiles/dilSummaryTrees_%s_%s_%s_JESUp_all.root" % (sampleNameCL, iYear, iLabel)
+	process.inputs.fileNameJESDown = "treeFiles/dilSummaryTrees_%s_%s_%s_JESDown_all.root" % (sampleNameCL, iYear, iLabel)
 else:
 	process.inputs.fileNameJESUp = process.inputs.fileName
 	process.inputs.fileNameJESDown = process.inputs.fileName
 
 if iJer != 0:
-	process.inputs.fileNameJERUp = "treeFiles/dilSummaryTrees_%s_%s_JERUp_all.root" % (sampleNameCL, iLabel)
-	process.inputs.fileNameJERDown = "treeFiles/dilSummaryTrees_%s_%s_JERDown_all.root" % (sampleNameCL, iLabel)
+	process.inputs.fileNameJERUp = "treeFiles/dilSummaryTrees_%s_%s_%s_JERUp_all.root" % (sampleNameCL, iYear, iLabel)
+	process.inputs.fileNameJERDown = "treeFiles/dilSummaryTrees_%s_%s_%s_JERDown_all.root" % (sampleNameCL, iYear, iLabel)
 else:
 	process.inputs.fileNameJERUp = process.inputs.fileName
 	process.inputs.fileNameJERDown = process.inputs.fileName
@@ -85,11 +89,11 @@ else:
 
 
 print "Trying to use files: "
-print "  Nominal   %s" % process.inputs.fileName
-print "  JESUp     %s" % process.inputs.fileNameJESUp
-print "  JESDown   %s" % process.inputs.fileNameJESDown
-print "  JERUp     %s" % process.inputs.fileNameJERUp
-print "  JERDown   %s" % process.inputs.fileNameJERDown 
+print "	 Nominal   %s" % process.inputs.fileName
+print "	 JESUp	   %s" % process.inputs.fileNameJESUp
+print "	 JESDown   %s" % process.inputs.fileNameJESDown
+print "	 JERUp	   %s" % process.inputs.fileNameJERUp
+print "	 JERDown   %s" % process.inputs.fileNameJERDown 
 
 
 
@@ -102,18 +106,18 @@ print "  JERDown   %s" % process.inputs.fileNameJERDown
 #print "Output name will be ", outFileName
 
 #process.outputs = cms.PSet (
-#    outputName = cms.string("dummy.root")
+#	 outputName = cms.string("dummy.root")
 #)
 
 
 # validate iJes input
 
 # if abs(iJes) > 1:
-# 	print "Did not recognize requested JES = %d. Valid entries are 0,1,-1." % iJes
-# 	exit (-3)
+#	print "Did not recognize requested JES = %d. Valid entries are 0,1,-1." % iJes
+#	exit (-3)
 # if abs(iJer) > 1:
-#     print "Did not recognize requested JER = %d. Valid entries are 0,1,-1." % iJer
-#     exit (-3)
+#	  print "Did not recognize requested JER = %d. Valid entries are 0,1,-1." % iJer
+#	  exit (-3)
 			
 
 process.dilAnalysis = cms.PSet(

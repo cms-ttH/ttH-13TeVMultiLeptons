@@ -3,9 +3,11 @@
 set listFileName = $1
 #set iJob = $2
 #set nJobs = $3
-set iLabel = $2
-set iJes = $3
-set iJer = $4
+set iYear = $2
+set iZmask = $3
+set iLabel = $4
+set iJes = $5
+set iJer = $6
 
 #set sample = ${listFileName:r}
 set sample = ${listFileName}
@@ -25,4 +27,4 @@ endif
 
 #root -b -q head.C 'test_beans_dileptonStudies.C+(-1,"'${sample}'", '$iJob', "'$iLabel'")' >&! $outDirName/test_beans_dileptonStudies_${sample}_${iLabel}_${iJob}.log
 
-HistosFromTreesBatch dilPlots_condor_cfg.py ${sample}  $iLabel $iJes $iJer > & ! $outDirName/dilAnalysis_${sample}_${iLabel}.log
+HistosFromTreesBatch dilPlots_condor_cfg.py ${sample}  $iYear $iZmask $iLabel $iJes $iJer > & ! $outDirName/dilAnalysis_${sample}_${iYear}_${iZmask}_${iLabel}.log
