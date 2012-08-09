@@ -10,10 +10,10 @@ Method         : CFMlpANN::CFMlpANN
 TMVA Release   : 4.0.7         [262151]
 ROOT Release   : 5.27/06       [334598]
 Creator        : lwming
-Date           : Wed Apr 18 18:00:11 2012
+Date           : Tue Jul 10 22:50:28 2012
 Host           : Linux lxbuild051.cern.ch 2.6.18-238.1.1.el5 #1 SMP Wed Jan 19 11:06:36 CET 2011 x86_64 x86_64 x86_64 GNU/Linux
-Dir            : /data/ndpc4/c/lwming/CMSSW_4_2_8_patch7/src/simpleMVA
-Training events: 8434
+Dir            : /data/ndpc3/b/lwming/CMSSW_4_2_8_patch7/src/simpleMVA_new
+Training events: 6848
 Analysis type  : [Classification]
 
 
@@ -35,12 +35,12 @@ IgnoreNegWeightsInTraining: "False" [Events with negative weights are ignored in
 #VAR -*-*-*-*-*-*-*-*-*-*-*-* variables *-*-*-*-*-*-*-*-*-*-*-*-
 
 NVar 6
-first_jet_pt                  first_jet_pt                  first_jet_pt                  first_jet_pt                                                    'F'    [33.2276229858,783.141113281]
-min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets                                              'F'    [0.501024663448,3.35230112076]
-numJets_float                 numJets_float                 numJets_float                 numJets_float                                                   'F'    [3,10]
-mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                                                  'F'    [0.00620844447985,3.53619360924]
-avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags                                             'F'    [0.7193313241,0.999990224838]
-Ht                            Ht                            Ht                            Ht                                                              'F'    [231.240402222,3386.56860352]
+first_jet_pt                  first_jet_pt                  first_jet_pt                  first_jet_pt                                                    'F'    [35.0625038147,684.46862793]
+min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets                                              'F'    [0.500093877316,3.35230112076]
+numJets_float                 numJets_float                 numJets_float                 numJets_float                                                   'F'    [3,9]
+mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                                                  'F'    [0.0360848121345,3.12314295769]
+avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags                                             'F'    [0.7193313241,0.999987602234]
+Ht                            Ht                            Ht                            Ht                                                              'F'    [240.362167358,2895.7355957]
 NSpec 0
 
 
@@ -111,18 +111,18 @@ class ReadCFMlpANN : public IClassifierReader {
       }
 
       // initialize min and max vectors (for normalisation)
-      fVmin[0] = 33.2276229858398;
-      fVmax[0] = 783.14111328125;
-      fVmin[1] = 0.501024663448334;
+      fVmin[0] = 35.0625038146973;
+      fVmax[0] = 684.468627929688;
+      fVmin[1] = 0.500093877315521;
       fVmax[1] = 3.35230112075806;
       fVmin[2] = 3;
-      fVmax[2] = 10;
-      fVmin[3] = 0.00620844447985291;
-      fVmax[3] = 3.53619360923767;
+      fVmax[2] = 9;
+      fVmin[3] = 0.0360848121345043;
+      fVmax[3] = 3.12314295768738;
       fVmin[4] = 0.719331324100494;
-      fVmax[4] = 0.999990224838257;
-      fVmin[5] = 231.24040222168;
-      fVmax[5] = 3386.56860351562;
+      fVmax[4] = 0.999987602233887;
+      fVmin[5] = 240.362167358398;
+      fVmax[5] = 2895.73559570312;
 
       // initialize input variable types
       fType[0] = 'F';
