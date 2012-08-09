@@ -299,6 +299,10 @@ int main ( int argc, char ** argv )
   std::vector< TString >catList ;
   catList.push_back("ge3t");
   catList.push_back("e2je2t");   /////
+  catList.push_back("e3je2t");   /////
+  catList.push_back("ge4je2t");   /////
+  catList.push_back("var_best8");
+  catList.push_back("ge3t_new");
   const unsigned int nCat = catList.size();
 
   //Float_t fCFMlpANN[nCat];
@@ -312,19 +316,50 @@ int main ( int argc, char ** argv )
   Float_t                 varavg_btag_disc_btags;
   Float_t                 varHt;
 
+  Float_t                 varavg_dr_tagged_jets;
+  Float_t                 varavg_tagged_dijet_mass;
+  Float_t                 varsecond_dibjet_mass;
+
+  Float_t                 varmin_dr_jets; 
+  Float_t                 varavg_dr_jets;
+  Float_t                 varavg_dijet_mass;
+  Float_t                 vardijet_mass_second;
+
+  Float_t                 varCFMlpANN_var_best8;
+
   vector<TMVA::Reader *> reader;
 
   for( unsigned int j = 0 ; j < nCat ; ++j ){
       TString label = catList[j];
       reader.push_back( new TMVA::Reader( "!Color:!Silent" ));    
+      if(j < 4) {
+	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
+	if (j==0)   reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+	reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
+	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
+	reader[j]->AddVariable( "Ht",         &varHt   );
+      }
+      else if (j==4){
+	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
+	reader[j]->AddVariable( "avg_dr_tagged_jets",         &varavg_dr_tagged_jets   ); ///
+	reader[j]->AddVariable( "avg_tagged_dijet_mass",         &varavg_tagged_dijet_mass   ); ///
+	reader[j]->AddVariable( "second_dibjet_mass",         &varsecond_dibjet_mass   ); ///
 
-      reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
-      reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
-      if (j==0)   reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
-      reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
-      reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
-      reader[j]->AddVariable( "Ht",         &varHt   );
-
+	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+	reader[j]->AddVariable( "avg_dijet_mass",         &varavg_dijet_mass   ); ///
+	reader[j]->AddVariable( "dijet_mass_second",         &vardijet_mass_second   ); ///
+      }
+      else {
+	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
+	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+	reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
+	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
+	reader[j]->AddVariable( "CFMlpANN_var_best8",         &varCFMlpANN_var_best8   );
+	reader[j]->AddVariable( "Ht",         &varHt   );
+      }
 
       TString dir    = "../../simpleweights/" + label + "/";
       TString prefix = "TMVAClassification";
@@ -575,7 +610,10 @@ int main ( int argc, char ** argv )
   /// MVA output var
   floatBranches["CFMlpANN_ge3t"] = new float(0.0);
   floatBranches["CFMlpANN_e2je2t"] = new float(0.0);
-
+  floatBranches["CFMlpANN_e3je2t"] = new float(0.0);
+  floatBranches["CFMlpANN_ge4je2t"] = new float(0.0);
+  floatBranches["CFMlpANN_var_best8"] = new float(0.0);
+  floatBranches["CFMlpANN_ge3t_new"] = new float(0.0);
   //Generator kinematics
   //floatBranches["higgs_pt"] = new float(0.0);
   //floatBranches["higgs_pz"] = new float(0.0);
@@ -660,6 +698,23 @@ int main ( int argc, char ** argv )
   floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
   floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
   floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
+  ////// ttbb bkg
+  floatBranches["min_dr_jets"] = new float(0.0);
+  floatBranches["avg_dr_jets"] = new float(0.0);
+  floatBranches["avg_dijet_mass"] = new float(0.0);
+  floatBranches["closest_dijet_mass"] = new float(0.0);
+  floatBranches["M2_of_closest_jets"] = new float(0.0);
+
+  floatBranches["m2H_btag"] = new float(0.0);
+  floatBranches["first_dibjet_mass"] = new float(0.0);
+  floatBranches["second_dibjet_mass"] = new float(0.0);
+  floatBranches["third_dibjet_mass"] = new float(0.0);
+
+  floatBranches["dijet_mass_m2H"] = new float(0.0);
+  floatBranches["dijet_mass_first"] = new float(0.0);
+  floatBranches["dijet_mass_second"] = new float(0.0);
+  floatBranches["dijet_mass_third"] = new float(0.0);
+
   //floatBranches["min_dr_genB1_allJet"] = new float (0.0);
   //floatBranches["min_dr_genB2_allJet"] = new float (0.0);
   
@@ -2022,6 +2077,13 @@ int main ( int argc, char ** argv )
 	jet_sort_vect.push_back(*listint);  //accessible form
       }
 
+      //////  ttbb bkg -- dibjet mass combinations
+      std::list<float> dibjet_mass_combinations;
+      float m2H_btag = 0.0 ;
+
+      std::list<float> dijet_mass_combinations;
+      float dijet_mass_m2H = 0.0 ;
+
       //sum of all jets
       TLorentzVector sum_jet_vect(0.0,0.0,0.0,0.0);
       TLorentzVector sum_allJet_vect(0.0,0.0,0.0,0.0);
@@ -2069,6 +2131,10 @@ int main ( int argc, char ** argv )
       
       TLorentzVector btag_vect1;
       TLorentzVector btag_vect2;
+
+      // ttbb
+      TLorentzVector jet_vect1;
+      TLorentzVector jet_vect2;
       
       float first_jet_pt = 0.0 ;
       float second_jet_pt = 0.0 ;
@@ -2096,6 +2162,7 @@ int main ( int argc, char ** argv )
       float min_jet_lep1_dR = 10000.;
       float min_jet_lep2_dR = 10000.;
       float min_tagged_jets_dR = 10000.;
+      float min_jets_dR = 10000.;   //ttbb
       
       float denom_avg_cnt = 0.;
       float avg_btag_disc_btags = 0.;     
@@ -2106,6 +2173,21 @@ int main ( int argc, char ** argv )
       float all_sum_pt = 0.0 ;
       float Ht = 0.0 ;
       //      float mass_of_everything = 0.0 ;
+      //ttbb
+
+      float dijet_mass_first  = 0.0;
+      float dijet_mass_second = 0.0;
+      float dijet_mass_third  = 0.0;
+
+      float first_dibjet_mass  = 0.0;
+      float second_dibjet_mass = 0.0;
+      float third_dibjet_mass  = 0.0;
+
+      float min_dr_jets = 0.0 ;
+      float avg_dr_jets = 0.0 ;
+      float avg_dijet_mass = 0.0 ;
+      float closest_dijet_mass = 0.0 ;
+      float M2_of_closest_jets = 0.0 ;
      
       float min_dr_tagged_jets = 0.0 ;
       float avg_dr_tagged_jets = 0.0 ;
@@ -2507,6 +2589,8 @@ int main ( int argc, char ** argv )
       *(intBranches["PassZmask"]) = passBigDiamondZmask ? 1 : 0;
 
 	  //// tagged jets
+	  float deltaHMass = 9999. ;
+	  float deltaHMass2 = 9999. ;
 	  if (numTag > 1) {
 	    for (int j=0; j < (numTag - 1); j++) {
 	      int jbtag = tag_pfjet_index[j] ;
@@ -2526,6 +2610,14 @@ int main ( int argc, char ** argv )
 		  M2_of_closest_tagged_jets = dijet_vect.M2();	
 		  closest_tagged_dijet_mass = dijet_vect.M();			
 		}
+
+		//////// ttbb bkg
+		dibjet_mass_combinations.push_back(dijet_vect.M()); 
+		float deltaHMassTemp = abs(120 - dijet_vect.M());
+		if (deltaHMassTemp < deltaHMass) {
+		  deltaHMass = deltaHMassTemp ;
+		  m2H_btag = dijet_vect.M() ;
+		}
 		
 	      }
 	    }
@@ -2534,8 +2626,29 @@ int main ( int argc, char ** argv )
 	    avg_dr_tagged_jets /= denom_avg_cnt;
 	    
 	    min_dr_tagged_jets = min_tagged_jets_dR;
+
+
+	    ///// ttbb bkg
+	    *(floatBranches["m2H_btag"]) = m2H_btag;
+
+	    dibjet_mass_combinations.sort();
+	    std::vector<float> dibjet_mass_sort_vect;
+	    std::list<float>::iterator listintaa;
+	    for (listintaa = dibjet_mass_combinations.begin(); listintaa != dibjet_mass_combinations.end(); listintaa++){
+	      dibjet_mass_sort_vect.push_back(*listintaa);  //accessible form
+	    }
+	    int numCom = dibjet_mass_sort_vect.size();
+	    if (numCom > 2) {
+	      first_dibjet_mass  = dibjet_mass_sort_vect[numCom - 1];
+	      second_dibjet_mass = dibjet_mass_sort_vect[numCom - 2];
+	      third_dibjet_mass  = dibjet_mass_sort_vect[numCom - 3];
+
+	      *(floatBranches["first_dibjet_mass"]) =  first_dibjet_mass;
+	      *(floatBranches["second_dibjet_mass"]) = second_dibjet_mass;
+	      *(floatBranches["third_dibjet_mass"]) =  third_dibjet_mass;
+	    }
+
 	  }
-	  
 
 	  
 	  ////non_tagged jets
@@ -2558,7 +2671,73 @@ int main ( int argc, char ** argv )
 	  
 	    avg_untagged_dijet_mass /= denom_avg_cnt;
 	  }
+
 	  
+	  ///// ttbb dijet_mass
+	  denom_avg_cnt = 0.;
+	  if(numJet > 1 ){
+	    for (int j=0; j < (numJet - 1); j++) {
+	      int jJet = tight_pfjet_index[j] ;
+	      jet_vect1.SetPxPyPzE(jet_px[jJet],jet_py[jJet],jet_pz[jJet],jet_energy[jJet]);
+	      
+	      for (int k=j+1; k < numJet; k++) {
+		int kJet = tight_pfjet_index[k] ; 
+		jet_vect2.SetPxPyPzE(jet_px[kJet],jet_py[kJet],jet_pz[kJet],jet_energy[kJet]);
+		
+		dijet_vect = jet_vect1 + jet_vect2;
+		avg_dijet_mass += dijet_vect.M();
+		avg_dr_jets += jet_vect1.DeltaR(jet_vect2);
+		++denom_avg_cnt;		      
+		
+		if (min_jets_dR > jet_vect1.DeltaR(jet_vect2)){
+		  min_jets_dR = jet_vect1.DeltaR(jet_vect2);
+		  M2_of_closest_jets = dijet_vect.M2();	
+		  closest_dijet_mass = dijet_vect.M();			
+		}
+
+		//////// ttbb bkg
+		dijet_mass_combinations.push_back(dijet_vect.M()); 
+		float deltaHMassTemp2 = abs(120 - dijet_vect.M());
+		if (deltaHMassTemp2 < deltaHMass2) {
+		  deltaHMass2 = deltaHMassTemp2 ;
+		  dijet_mass_m2H = dijet_vect.M() ;
+		}
+		
+	      }
+	    }
+
+	    avg_dijet_mass /= denom_avg_cnt; 
+	    avg_dr_jets /= denom_avg_cnt;
+	    
+	    min_dr_jets = min_jets_dR;
+
+	    *(floatBranches["min_dr_jets"]) = min_dr_jets;
+	    *(floatBranches["avg_dr_jets"]) = avg_dr_jets;
+	    *(floatBranches["avg_dijet_mass"]) = avg_dijet_mass;
+	    *(floatBranches["closest_dijet_mass"]) = closest_dijet_mass;
+	    *(floatBranches["M2_of_closest_jets"]) = M2_of_closest_jets;
+
+	    *(floatBranches["dijet_mass_m2H"]) = dijet_mass_m2H;
+
+	    dijet_mass_combinations.sort();
+	    std::vector<float> dijet_mass_sort_vect; 
+	    std::list<float>::iterator listintbb;
+	    for (listintbb = dijet_mass_combinations.begin(); listintbb != dijet_mass_combinations.end(); listintbb++){
+	      dijet_mass_sort_vect.push_back(*listintbb);  //accessible form
+	    }
+	    int numCom = dijet_mass_sort_vect.size();
+	    if (numCom > 2) {
+	      dijet_mass_first  = dijet_mass_sort_vect[numCom - 1];
+	      dijet_mass_second = dijet_mass_sort_vect[numCom - 2];
+	      dijet_mass_third  = dijet_mass_sort_vect[numCom - 3];
+
+	      *(floatBranches["dijet_mass_first"]) =  dijet_mass_first;
+	      *(floatBranches["dijet_mass_second"]) = dijet_mass_second;
+	      *(floatBranches["dijet_mass_third"]) =  dijet_mass_third;
+	    }
+
+	  }
+
 	  ////
       //*(floatBranches["higgs_dijet_mass"]) = higgs_dijet_mass;
       *(floatBranches["higgsLike_dijet_mass"]) = higgsLike_dijet_mass1;
@@ -2600,16 +2779,37 @@ int main ( int argc, char ** argv )
       varmindr_lep1_jet		  = mindr_lep1_jet;      
       varavg_btag_disc_btags		  = avg_btag_disc_btags; 
       varHt                              = Ht;
+      
+      varavg_dr_tagged_jets	         =  avg_dr_tagged_jets;
+      varavg_tagged_dijet_mass       =  avg_tagged_dijet_mass;
+      varsecond_dibjet_mass	        =   second_dibjet_mass;
 
+      varavg_dijet_mass =       avg_dijet_mass;	   
+      vardijet_mass_second =    dijet_mass_second; 
+      varmin_dr_jets = 	      min_dr_jets; 	   
+      varavg_dr_jets =          avg_dr_jets;       
+      
+
+      //      std::cout << "-->error0 " << std::endl;
+      Float_t  ttbbANN = 0.;
       for( unsigned int j = 0 ; j < nCat ; ++j ){
         // --- Return the MVA outputs and weights
+	TMVA::Reader  *tmpReader = reader[j];  
         TString branchName = TString("CFMlpANN_") + catList[j];
-        cout << "This is NN category " << catList[j] << "saving into branch " << branchName << endl;
+	//        cout << "This is NN category " << catList[j] << " saving into branch " << branchName << endl;
+	if( j < 5){
+	  Float_t annOut  = tmpReader->EvaluateMVA( "CFMlpANN method" );
+	  *(floatBranches[branchName]) = annOut;  
+	  if ( j==4 ) ttbbANN = annOut ;
+	}
+	else {
+	  varCFMlpANN_var_best8 = ttbbANN ;
+	  Float_t annOut1  = tmpReader->EvaluateMVA( "CFMlpANN method" );
+	  *(floatBranches[branchName]) = annOut1;  
 
-        Float_t annOut  = reader[j]->EvaluateMVA( "CFMlpANN method" );
-        *(floatBranches[branchName]) = annOut;        
-
+	}
       } // End category loop
+
 
 
       
