@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<MethodSetup Method="CFMlpANN::CFMlpANN">
+  <GeneralInfo>
+    <Info name="TMVA Release" value="4.0.7 [262151]"/>
+    <Info name="ROOT Release" value="5.27/06 [334598]"/>
+    <Info name="Creator" value="wluo1"/>
+    <Info name="Date" value="Wed Aug  8 00:56:06 2012"/>
+    <Info name="Host" value="Linux lxbuild051.cern.ch 2.6.18-238.1.1.el5 #1 SMP Wed Jan 19 11:06:36 CET 2011 x86_64 x86_64 x86_64 GNU/Linux"/>
+    <Info name="Dir" value="/afs/crc.nd.edu/user/w/wluo1/work/CMSSW_5_2_5/src/simpleMVA_ttbb"/>
+    <Info name="Training events" value="6702"/>
+    <Info name="TrainingTime" value="55.0496"/>
+    <Info name="AnalysisType" value="Classification"/>
+  </GeneralInfo>
+  <Options>
+    <Option name="V" modified="Yes">False</Option>
+    <Option name="VerbosityLevel" modified="No">Default</Option>
+    <Option name="VarTransform" modified="No">None</Option>
+    <Option name="H" modified="Yes">False</Option>
+    <Option name="CreateMVAPdfs" modified="No">False</Option>
+    <Option name="IgnoreNegWeightsInTraining" modified="No">False</Option>
+    <Option name="NCycles" modified="Yes">2000</Option>
+    <Option name="HiddenLayers" modified="Yes">N,N-1</Option>
+  </Options>
+  <Variables NVar="7">
+    <Variable VarIndex="0" Expression="first_jet_pt" Label="first_jet_pt" Title="first_jet_pt" Unit="" Internal="first_jet_pt" Type="F" Min="35.3451" Max="685.677"/>
+    <Variable VarIndex="1" Expression="min_dr_tagged_jets" Label="min_dr_tagged_jets" Title="min_dr_tagged_jets" Unit="" Internal="min_dr_tagged_jets" Type="F" Min="0.496648" Max="3.36795"/>
+    <Variable VarIndex="2" Expression="numJets_float" Label="numJets_float" Title="numJets_float" Unit="" Internal="numJets_float" Type="F" Min="3" Max="9"/>
+    <Variable VarIndex="3" Expression="mindr_lep1_jet" Label="mindr_lep1_jet" Title="mindr_lep1_jet" Unit="" Internal="mindr_lep1_jet" Type="F" Min="0.00429687" Max="3.53619"/>
+    <Variable VarIndex="4" Expression="avg_btag_disc_btags" Label="avg_btag_disc_btags" Title="avg_btag_disc_btags" Unit="" Internal="avg_btag_disc_btags" Type="F" Min="0.72895" Max="0.999972"/>
+    <Variable VarIndex="5" Expression="CFMlpANN_var_best8" Label="CFMlpANN_var_best8" Title="CFMlpANN_var_best8" Unit="" Internal="CFMlpANN_var_best8" Type="F" Min="0.0935528" Max="0.798576"/>
+    <Variable VarIndex="6" Expression="Ht" Label="Ht" Title="Ht" Unit="" Internal="Ht" Type="F" Min="207.719" Max="3087.13"/>
+  </Variables>
+  <Spectators NSpec="0"/>
+  <Transformations NTransformations="0"/>
+  <MVAPdfs/>
+  <Weights NVars="7" NClasses="2" NLayers="4">
+    <VarMinMax>
+      3.5345066070556641e+01 6.8567675781250000e+02 4.9664837121963501e-01 3.3679542541503906e+00 3.0000000000000000e+00 9.0000000000000000e+00 4.2968699708580971e-03 3.5361936092376709e+00 7.2895002365112305e-01 9.9997216463088989e-01 9.3552805483341217e-02 7.9857575893402100e-01 2.0771926879882812e+02 3.0871301269531250e+03 
+    </VarMinMax>
+    <NNeurons>
+      7 7 6 2 
+    </NNeurons>
+    <Layer1 NNeurons="7">
+      <Neuron0>
+        -9.1508548385768079e-02 2.6289407814552856e-01 -1.0709085784073348e-01 3.3474168876864363e-01 -2.1751351393240564e-01 2.8959920650968296e-01 1.9104947929178603e-01 -5.3585801889446061e-02
+      </Neuron0>
+      <Neuron1>
+        -3.2546845933066469e-02 -1.1097273345843196e-01 1.6575496499909945e-01 1.1339243144915261e-01 -4.1807578452716598e-02 -4.3880950300174143e-01 -4.0455407896930190e-01 8.0489485755305429e-02
+      </Neuron1>
+      <Neuron2>
+        -4.0837980566831675e-02 2.5187522719583871e-01 6.0298458144619782e-01 8.1822734448540979e-01 1.1124371589906633e-01 -4.0313137206073241e-01 -1.3776965550902947e+00 1.0455854372971114e+00
+      </Neuron2>
+      <Neuron3>
+        -1.7208510321557585e-01 3.7895136993544737e-01 5.8997533593912833e-02 2.8172889633869391e-01 -3.4884331863583207e-01 2.3184706872814173e-01 2.8213067954956450e-01 -9.2559941462781847e-02
+      </Neuron3>
+      <Neuron4>
+        -5.2406446310556340e-02 2.4448911819700244e-03 6.5262821338603713e-02 1.5888118391351760e-01 9.5400580072035807e-02 -1.6876704095738967e-01 -3.4336715512626237e-01 4.8205984860893319e-01
+      </Neuron4>
+      <Neuron5>
+        1.3485359701902894e-01 -1.4637863747774918e-01 1.8605264980431238e-01 -2.9271045735246495e-02 -9.6066751547203233e-02 1.6287229698959702e-01 -2.0469520801694016e-01 -2.2490255193823486e-02
+      </Neuron5>
+      <Neuron6>
+        2.8779026751241255e-01 1.2192439405897395e+00 2.4231889286793352e-02 9.9613309830657026e-01 -1.0289528342709666e+00 1.2624660973255364e+00 6.0176374018141321e-01 -3.4190842772742130e-01
+      </Neuron6>
+    </Layer1>
+    <Layer2 NNeurons="6">
+      <Neuron0>
+        -3.1310910603517367e-01 2.1737083096761628e-01 -3.7103128543896480e-01 -7.2278033884113235e-01 1.9053471148703377e-01 -9.1630277504164970e-02 2.8592384806448042e-02 1.1429092141996628e+00
+      </Neuron0>
+      <Neuron1>
+        -1.8702372101658915e-01 3.3825000510393932e-01 -2.9019427991431918e-01 -6.0325541680795902e-01 3.7075098220442038e-01 -1.9600725089686749e-01 3.1009494971047055e-03 9.6635494835856639e-01
+      </Neuron1>
+      <Neuron2>
+        -2.5778785587385272e-01 1.5638520295653664e-02 -2.1430299193537611e-01 -2.5913114146468269e-01 2.1596979695091681e-01 -1.2270985222516832e-01 -1.8292016164080649e-01 6.2340288081366102e-01
+      </Neuron2>
+      <Neuron3>
+        -1.4225894880368803e-01 9.9841466214803026e-02 -3.6023178231054213e-02 -4.8184787060959899e-01 1.3282206908821320e-01 6.9009685786628264e-02 1.0694904649972288e-01 6.1057022145300976e-01
+      </Neuron3>
+      <Neuron4>
+        1.7914444472527594e-01 -1.5419098730596126e-01 6.2653687369525868e-02 6.0266540142833303e-01 -2.0774392624328605e-01 3.3152225867416291e-01 1.2949700947039161e-01 -8.5196555434569132e-01
+      </Neuron4>
+      <Neuron5>
+        2.6570200680045658e-01 -3.6740009100443721e-01 -1.1545160885504812e-02 8.8087544453606115e-01 -4.1961723220323860e-01 2.9615238416856848e-01 3.7554389275954121e-02 -9.0391068018438370e-01
+      </Neuron5>
+    </Layer2>
+    <Layer3 NNeurons="2">
+      <Neuron0>
+        -4.9681570436205486e-01 1.0959619784468291e+00 8.8214827705090570e-01 6.5767568166098356e-01 5.4152580058831357e-01 -7.6836197312815391e-01 -8.2942616378863432e-01
+      </Neuron0>
+      <Neuron1>
+        5.4185512984419526e-01 -9.3496693672876796e-01 -8.9075316464298726e-01 -3.9318591270184339e-01 -5.4735543336910408e-01 7.9699512246276127e-01 1.1322541094946557e+00
+      </Neuron1>
+    </Layer3>
+    <LayerTemp>
+      1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 1.0000000000000000e+00 
+    </LayerTemp>
+  </Weights>
+</MethodSetup>
