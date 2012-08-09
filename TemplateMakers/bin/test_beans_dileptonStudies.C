@@ -1911,8 +1911,10 @@ int main ( int argc, char ** argv )
       *(intBranches["TwoMuon"]) = passTwoMuon ? 1 : 0;
       *(intBranches["TwoEle"]) =  passTwoEle ? 1 : 0;
       *(intBranches["MuonEle"]) = passMuonEle ? 1 : 0;
-
-      *(intBranches["isCleanEvent"]) = cleanEvent ? 1 : 0;
+      *(intBranches["isCleanEvent"]) = 1;
+      if( selectionYear_ == "2011") {
+        *(intBranches["isCleanEvent"]) = cleanEvent ? 1 : 0;
+      }
       *(intBranches["isTriggerPass"]) = triggerPass ? 1 : 0;
       //*(intBranches["isHtoBB"]) = HtoBB ? 1 : 0;
       //*(intBranches["isHtoCC"]) = HtoCC ? 1 : 0;
@@ -2585,7 +2587,7 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["all_sum_pt"]) = all_sum_pt;
 	  *(floatBranches["Ht"]) = Ht;
 
-      bool passBigDiamondZmask = ((dilep_mass < (65.5 + 3*MHT/8)) || (dilep_mass > (108 - MHT/4)) || (dilep_mass < (79 - 3*MHT/4)) || (dilep_mass > (99 + MHT/2)) );
+      bool passBigDiamondZmask = (passMuonEle || (dilep_mass < (65.5 + 3*MHT/8)) || (dilep_mass > (108 - MHT/4)) || (dilep_mass < (79 - 3*MHT/4)) || (dilep_mass > (99 + MHT/2)) );
       *(intBranches["PassZmask"]) = passBigDiamondZmask ? 1 : 0;
 
 	  //// tagged jets
