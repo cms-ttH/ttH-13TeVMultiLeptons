@@ -85,6 +85,9 @@ def main ():
 			dataNames = dataNames2011
 		elif dirLabel.startswith('2012'):
 			dataNames = dataNames2012
+		else :
+			print "WARNING: Didn't understand the year based on the name... assuming 2011 (is that ok?)"
+			dataNames = dataNames2011
 
 		print "Data names are..."
 		print dataNames
