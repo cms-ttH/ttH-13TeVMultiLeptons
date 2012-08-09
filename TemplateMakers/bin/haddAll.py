@@ -74,8 +74,8 @@ def main ():
 							 'MuEG_Run2011A-PromptReco-v6',
 							 'MuEG_Run2011B-PromptReco-v1']
 					 }
-		dataNames2012 = {"DoubleElectron":['DoubleElectron_Run2011A',
-										   'DoubleElectron_Run2011B'],
+		dataNames2012 = {"DoubleElectron":['DoubleElectron_Run2012A',
+										   'DoubleElectron_Run2012B'],
 						 "DoubleMu":['DoubleMu_Run2012A',
 									 'DoubleMu_Run2012B'],
 						 "MuEG":['MuEG_Run2012A',
