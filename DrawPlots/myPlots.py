@@ -119,7 +119,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 52135272,
          'fillColor': ROOT.kRed,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbar'}
         )
         )
 
@@ -135,7 +136,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 52135272,
          'fillColor': ROOT.kGreen-3,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbarPlusCCbar'}
         )
         )
 
@@ -151,7 +153,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 52135272,
          'fillColor': ROOT.kMagenta+2,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbarPlusBBbar'}
         )
         )
 
@@ -167,7 +170,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 259595,
          'fillColor': ROOT.kOrange+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singlet_s'}
         )
         )
     
@@ -183,7 +187,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 137662,
          'fillColor': ROOT.kOrange+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singletbar_s'}
         )
         )
 
@@ -199,7 +204,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 3891841 ,
          'fillColor': ROOT.kOrange+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singlet_t'}
         )
         )
 
@@ -215,7 +221,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 1939703,
          'fillColor': ROOT.kOrange+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singletbar_t',}
         )
         )
 
@@ -231,7 +238,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 812600,
          'fillColor': ROOT.kOrange+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singlet_tW'}
         )
         )
 
@@ -247,7 +255,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 808200,
          'fillColor': ROOT.kOrange+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singletbar_tW'}
         )
         )
 
@@ -263,7 +272,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 1085456,
          'fillColor': ROOT.kBlue-9,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbarW'}
         )
         )
     plotList.append(
@@ -278,7 +288,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 1458573,
          'fillColor': ROOT.kBlue-9,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbarZ'}
         )
         )
 
@@ -347,7 +358,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
 #         'fillColor': ROOT.kAzure-1,
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'wjets'}
         )
         )
     
@@ -364,7 +376,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 35891264,
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'zjets_h'}
         )
         )
     
@@ -380,7 +393,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 31480628,
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'zjets_lowmass'}
         )
         )
     
@@ -397,7 +411,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 998833,
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttH120'}
         )
         )
 
@@ -445,7 +460,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'ngen': 1,
          'fillColor': ROOT.kBlack,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0
+         'isNormPerJetBin': 0,
+         'limitPlotName':'data_obs'
          }
         )
         )
