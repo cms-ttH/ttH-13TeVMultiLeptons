@@ -245,8 +245,6 @@ int main ( int argc, char ** argv )
   varList.push_back(dijet_mass_second);
   varInfo *dijet_mass_third = new varInfo("dijet_mass_third", "dijet_mass_third", "dijet_mass_third", 1000, 0, 1000);
   varList.push_back(dijet_mass_third);
-  //  varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, 0, pival);
-  //  varList.push_back(dPhi_leplep);
   varInfo *dR_leplep = new varInfo("dR_leplep", "dR_leplep", "dR_leplep", 1000, 0, 10);
   varList.push_back(dR_leplep);
   varInfo *dev_from_avg_disc_btags = new varInfo("dev_from_avg_disc_btags", "dev_from_avg_disc_btags", "dev_from_avg_disc_btags", 1000, 0, 1);
@@ -366,7 +364,6 @@ int main ( int argc, char ** argv )
 //   varInfo *weight = new varInfo("weight", "weight", "weight", 1000, 0, 10);
 //   varList.push_back(weight);
 
-<<<<<<< HistosFromTreesBatch.C
   std::string OutputParams = "";
   //std::string TightLepStr = "(numTightMuons + numTightElectrons == 2) && "; //Only tight leptons
   //std::string TightLepStr = "(numTightMuons + numTightElectrons != 2) && "; //Only tight+loose events
@@ -408,35 +405,7 @@ int main ( int argc, char ** argv )
       outputRootFiles[OutputFileName] = OutputFile;
     }
   }
-=======
-  varInfo *dEta_leplep = new varInfo("dEta_leplep", "dEta_leplep", "dEta_leplep", 1000, -6.0, 6.0);
-  varList.push_back(dEta_leplep);
 
-  varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, -6.3, 6.3);
-  varList.push_back(dPhi_leplep);
-
-
-
-
-  std::map<TString, TFile*> outputRootFiles;
-  for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
-    for (unsigned iLep = 0; iLep < lepCatList.size(); iLep++){
-      std::string JetTagReq = JetTagReqs[iTag];
-      OutputDirectory = lepCatList[iLep];
-      std::string InputFileLabel = InputFileNames[0];
-      ////////  book only a few histogram folders
-      TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
-      TFile * OutputFile = new TFile(OutputFileName, "RECREATE");
-      std::cout << "Storing root file named " << OutputFileName << std::endl;
-      outputRootFiles[OutputFileName] = OutputFile;
-    }      
-  }
-  
-
-    
->>>>>>> 1.8
-  
-  
 
   ////////// start sample loop
   const unsigned int nInputFiles = InputFileNames.size();
@@ -557,24 +526,14 @@ int main ( int argc, char ** argv )
         }
     
 
-<<<<<<< HistosFromTreesBatch.C
         ////////  book only a few histogram folders
         //TString OutputFileName = "holder";
         //OutputFileName = "../" + OutputParams + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + JetTagReq + "_" + OutputDirectory + ".root";
         //TFile * OutputFile = new TFile(OutputFileName, "UPDATE");
         TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
         TFile * OutputFile = outputRootFiles[OutputFileName];
-=======
->>>>>>> 1.8
-        
-<<<<<<< HistosFromTreesBatch.C
-        cout << "Switching to output file" << OutputFile->GetName() << std::endl;
-=======
-        TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
-        TFile * OutputFile = outputRootFiles[OutputFileName];
 
         cout << "Switching to output file" << OutputFile->GetName() << std::endl;
->>>>>>> 1.8
         OutputFile->cd();
 
         ///// start variables loop
@@ -618,16 +577,6 @@ int main ( int argc, char ** argv )
           //      	  std::cout << "Drawing histogram " << histName << std::endl;
           histTemp->SetDirectory(OutputFile);
         } // end var loop
-	
-<<<<<<< HistosFromTreesBatch.C
-        //OutputFile->Write();
-        //std::cout << "    Wrote out " << OutputFileName << std::endl;
-
-        //OutputFile->Close();
-
-=======
-        
->>>>>>> 1.8
       } // end sub-lep cat loop
       std::cout << '\n' ;
     }// end Cat loop
@@ -637,7 +586,7 @@ int main ( int argc, char ** argv )
     std::cout << "  == End systematic " << syst << " ==  " << std::endl;
     } // end sys
   } // end sample loop
-<<<<<<< HistosFromTreesBatch.C
+
   //Close all the files
   for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
     for (unsigned iLep = 0; iLep < lepCatList.size(); iLep++){
@@ -654,26 +603,4 @@ int main ( int argc, char ** argv )
       
     }
   }
-=======
-
-
-  //Close all the files
-  for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
-    for (unsigned iLep = 0; iLep < lepCatList.size(); iLep++){
-      std::string JetTagReq = JetTagReqs[iTag];
-      OutputDirectory = lepCatList[iLep];
-      std::string InputFileLabel = InputFileNames[0];
-      ////////  book only a few histogram folders
-      TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + JetTagReq + "_" + OutputDirectory + ".root";
-
-      std::cout << "Closing root file named " << OutputFileName << std::endl;      
-      outputRootFiles[OutputFileName]->Write();
-      outputRootFiles[OutputFileName]->Close();
-
-      
-    }
-  }
-
-
->>>>>>> 1.8
 }// end main
