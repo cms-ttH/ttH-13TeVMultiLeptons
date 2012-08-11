@@ -53,10 +53,13 @@ class PlotInfo:
 
             if (pname == 'sys_array'):
                 self.sys_array = pval
-
+            if (pname == 'year'):
+                self.year = pval
             if (pname == 'ngen'):
-                self.ngen = pval
-
+                self.ngen = pval            
+            if (pname == 'ngen2012'):
+                self.ngen2012 = pval
+            
             if (pname == 'fillColor'):
                 self.fillColor = pval
 
@@ -85,7 +88,7 @@ class PlotInfo:
 	# The PlotInfo will know how to normalize the histo
 	# according to the config
 
-    def getHist(self, histName, lumi, lepselection, JES):
+    def getHist(self, histName, lumi, lepselection, year, JES):
         # add a namecycle to histName
         namePlusCycle = "%s;1" % (histName)
         isData = False
@@ -230,7 +233,7 @@ class PlotGroup :
 #
 ########################################
 
-def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection, output) :
+def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection, year,  output) :
 
     stackList = myPlotGroup.plotList
     lumi = myPlotGroup.lumi
@@ -303,17 +306,17 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     for iplot in stackList:
 
         
-       sys_frac_err = iplot.getHist(dist,lumi, lepselection, "nominal")[2]
-       scaleRatio = iplot.getHist(dist,lumi, lepselection, "nominal")[1]
-       origHist = iplot.getHist(dist,lumi, lepselection, "nominal")[0]       
-       origHist_JESUp = iplot.getHist(dist,lumi, lepselection, "JESUp")[0]
-       origHist_JESDown = iplot.getHist(dist,lumi, lepselection, "JESDown")[0]
-       origHist_eff_bUp = iplot.getHist(dist,lumi, lepselection, "eff_bUp")[0]
-       origHist_eff_bDown = iplot.getHist(dist,lumi, lepselection, "eff_bDown")[0]
-       origHist_fake_bUp = iplot.getHist(dist,lumi, lepselection, "fake_bUp")[0]
-       origHist_fake_bDown = iplot.getHist(dist,lumi, lepselection, "fake_bDown")[0]
-       origHist_PUUp = iplot.getHist(dist,lumi, lepselection, "PUUp")[0]
-       origHist_PUDown = iplot.getHist(dist,lumi, lepselection, "PUDown")[0]
+       sys_frac_err = iplot.getHist(dist,lumi, lepselection, year, "nominal")[2]
+       scaleRatio = iplot.getHist(dist,lumi, lepselection, year,  "nominal")[1]
+       origHist = iplot.getHist(dist,lumi, lepselection, year, "nominal")[0]       
+       origHist_JESUp = iplot.getHist(dist,lumi, lepselection, year, "JESUp")[0]
+       origHist_JESDown = iplot.getHist(dist,lumi, lepselection, year,  "JESDown")[0]
+       origHist_eff_bUp = iplot.getHist(dist,lumi, lepselection, year, "eff_bUp")[0]
+       origHist_eff_bDown = iplot.getHist(dist,lumi, lepselection, year,  "eff_bDown")[0]
+       origHist_fake_bUp = iplot.getHist(dist,lumi, lepselection, year,  "fake_bUp")[0]
+       origHist_fake_bDown = iplot.getHist(dist,lumi, lepselection, year, "fake_bDown")[0]
+       origHist_PUUp = iplot.getHist(dist,lumi, lepselection, year,  "PUUp")[0]
+       origHist_PUDown = iplot.getHist(dist,lumi, lepselection, year, "PUDown")[0]
 
 
        ############ Plot renaming
@@ -582,21 +585,21 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     myCanvasLin.cd()
 
     ##Begin comment out for 2012
-    #upLin = TPad("upLin", "up", 1e-5, 0.3+1e-5, 1-1e-5, 1-1e-5)
-    #downLin =  TPad ("downLin", "down", 1e-5, 1e-5, 1-1e-5, 0.3-1e-5)
+    upLin = TPad("upLin", "up", 1e-5, 0.3+1e-5, 1-1e-5, 1-1e-5)
+    downLin =  TPad ("downLin", "down", 1e-5, 1e-5, 1-1e-5, 0.3-1e-5)
 
-    #upLin.SetLeftMargin(.11)
-    #downLin.SetLeftMargin(.11)
+    upLin.SetLeftMargin(.11)
+    downLin.SetLeftMargin(.11)
 
-    #upLin.SetRightMargin(.05)
-    #downLin.SetRightMargin(.05)
-    #upLin.SetBottomMargin(.3)
-    #downLin.SetBottomMargin(.3)
-    #upLin.Modified()
-    #downLin.Modified()
+    upLin.SetRightMargin(.05)
+    downLin.SetRightMargin(.05)
+    upLin.SetBottomMargin(.05)
+    downLin.SetBottomMargin(.3)
+    upLin.Modified()
+    downLin.Modified()
 		
-    #upLin.Draw()
-    #downLin.Draw()
+    upLin.Draw()
+    downLin.Draw()
 
     ##End comment out for 2012
 
@@ -604,7 +607,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #        upLin.cd()
 #        gPad.SetLogy()
 
-    #upLin.cd()
+    upLin.cd()
     #gPad.SetBottomMargin(1e-5)
     #gPad.Modified()
 
@@ -624,7 +627,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #    myLumiTex.DrawLatex(0.25, 0.98, myLumiString)
 
     ##Begin comment out for 2012
-    #downLin.cd()
+    downLin.cd()
     #gPad.SetTopMargin(1e-5)
     #gPad.SetTickx()
     #gPad.Modified()
@@ -742,7 +745,7 @@ def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xM
         #print "Not using systematic errors in rebin"
     else:        
         useSysErrors = False
-        sys_frac_err = 1.0
+        sys_frac_err = 0.0
         #print "Rebinning with MC errors only, forcing sys_frac_error = %f" % sys_frac_err
     
     
