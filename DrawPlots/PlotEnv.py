@@ -452,11 +452,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
                    histoStorageList["singlet_fake_bDown"].Add(resultHist_MCErrorsOnly_fake_bDown)
                    histoStorageList["singlet_PUUp"].Add(resultHist_MCErrorsOnly_PUUp)
                    histoStorageList["singlet_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
-           elif (iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):
+           elif (iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):               
                ZJetsSum += iHist.Integral()
                ZJetsCounter += 1
-               if (ZJetsCounter == 6):
-                   legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
+               print "Found zjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
                #print "DIBOSON: recognized name %s" % iplot.name
                if not foundFirstDiboson:
                    #print ".... first!"
@@ -484,8 +483,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
            elif (iplot.name.startswith("ZJet")):
                ZJetsSum += iHist.Integral()
                ZJetsCounter += 1
-               if (ZJetsCounter == 6):
-                   legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
+               print "Found zjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
                #print "ZJETS: recognized name %s" % iplot.name
                if not foundFirstZjets:
                    #print ".... first!"
@@ -529,11 +527,16 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
            elif (iplot.name == "ttcc"):
                ttccSum = iHist.Integral()
                legForStack.AddEntry(iHist, "t#bar{t} + c#bar{c}"+" ("+str(round(MCsum,1))+")", "f")
-#           elif (iplot.name == "WJets"):
-#               WJetsSum = iHist.Integral()
-#               legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
+           elif (iplot.name == "WJets"):
+               ZJetsSum += iHist.Integral()
+               ZJetsCounter += 1
+               print "Found wjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
+               #legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
            else:
                legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
+
+    if (ZJetsCounter == 6):
+        legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
 
     iSig.Scale(TotalMCsum/ttHSum)
     iSig.SetLineColor(kBlue)
