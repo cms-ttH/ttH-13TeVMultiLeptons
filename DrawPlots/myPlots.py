@@ -43,7 +43,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
         dataStr = dirStr+'MuEG_' + jetselection + "_MuonEle.root"
 
     else:
-        dataStr = dirStr+'data_All'+rootStr
+        dataStr = dirStr+'SameLep'+rootStr
 
   
     directoryName = "pdf/"+lepselection+"_"+jetselection
@@ -367,9 +367,9 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ZJets',
-         'file': dirStr+'zjets' +rootStr,
-         'file_JESUp': dirStr+'zjets'+rootStr,
-         'file_JESDown': dirStr+'zjets'+rootStr,
+         'file': dirStr+'zjets_h' +rootStr,
+         'file_JESUp': dirStr+'zjets_h'+rootStr,
+         'file_JESDown': dirStr+'zjets_h'+rootStr,
          'xsec': 3.048,
          'xsec_err': 0.132,
          'sys_array': sys_arrays['ZJets'],
