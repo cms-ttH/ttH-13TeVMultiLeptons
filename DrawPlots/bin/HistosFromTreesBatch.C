@@ -372,7 +372,8 @@ int main ( int argc, char ** argv )
   //std::string OppositeLepStr = "(oppositeGenLepCharge == 0) && "; //GenLeptons have same charge
   //std::string OppositeLepStr = "(lep1TkCharge != lep1GenCharge) && "; //Lep1 wrong charge
   
-  std::string ZmaskStr = "";
+  std::string ZmaskStr = "holder";
+  std::string ZmaskStrSaver = "holder";
   std::string TightLepStr = "";
   
   if (inputZmask == "noZmask") {
@@ -488,8 +489,8 @@ int main ( int argc, char ** argv )
         TagReq = "numTaggedJets >= 3";
       }
       
-      if (JetReq == "holder" || TagReq == "holder") {
-        std::cout << "JetReq or TagReq == holder" << std::endl;
+      if (JetReq == "holder" || TagReq == "holder" || ZmaskStr == "holder") {
+        std::cout << "JetReq or TagReq or ZmaskStr == holder" << std::endl;
         continue;
       }
 
@@ -559,11 +560,14 @@ int main ( int argc, char ** argv )
           if (inputYear == "2011") {
             CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
           }
+          ZmaskStrSaver = ZmaskStr;
           if (OutputDirectory == "MuonEle") {
             ZmaskStr = "";
           }
           SelectionStr = WeightStr+EffStr+TrigStr +"(" + OppositeLepStr + ZmaskStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
-	  	    
+
+          ZmaskStr = ZmaskStrSaver; 
+          
           if (SelectionStr == "holder") {
             std::cout << "SelectionStr == holder" << std::endl;
             continue;
