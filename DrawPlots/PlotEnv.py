@@ -379,18 +379,19 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
        Data2011Sum = 0
        Data2012Sum = 0
        MCsum = 0
-       if (iplot.name == "data_2011"):                 
+       if (iplot.name == "data_2011" and year == "2011"):                 
            myData2011 = resultHist_MCErrorsOnly.Clone("data_2011")
            Data2011Sum = myData2011.Integral()
            legForStack.AddEntry(myData2011, "Data ("+str(round(Data2011Sum,0))+")", "lpe")
            #print "Adding data_2011 histo to output list"
            histoStorageList["data_obs"] = myData2011.Clone ("data_obs_CFMlpANN_%s" % (printedJetSelection)  )
-#           legForStack.AddEntry(myData2011, iplot.name+" ("+str(round(Data2011Sum,0))+")", "lpe")
-       elif (iplot.name == "data_2012"):
+           
+       elif (iplot.name == "data_2012" and year == "2012"):
            myData2012 = resultHist_MCErrorsOnly.Clone("data_2012")
            Data2012Sum = myData2012.Integral()
+           legForStack.AddEntry(myData2012, "Data ("+str(round(Data2012Sum,0))+")", "lpe")
            histoStorageList["data_obs"] = myData2012.Clone("data_obs_CFMlpANN_%s" % (printedJetSelection)  )
-           legForStack.AddEntry(myData2012, iplot.name+" ("+str(round(Data2012Sum,0))+")", "lpe")
+           
        elif (iplot.name == "ttH_120"):
            iSig = resultHist.Clone("signal")
            ttHSum = iSig.Integral()
@@ -568,9 +569,19 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     legForStack.AddEntry(MCErrHist, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
     legForStack.AddEntry(iSig, "t#bar{t}H120 ("+str(round(ttHSum,1))+"x"+str(round(TotalMCsum/ttHSum,1))+")", "l")
 
+    if year == "2011":
+        theDataHisto = myData2011.Clone()
+    elif year == "2012":
+        theDataHisto = myData2012.Clone()
+    else:
+        print "Year %s could not be understood. Crashing...." % year
+        exit (11)
+
     ##Comment for 2012 data
-    plotMax = max(myStack.GetMaximum(),myData2011.GetMaximum())    
-    ##plotMax = max(myData2011.GetMaximum(), myData2012.GetMaximum())
+    
+    plotMax = max(myStack.GetMaximum(),theDataHisto.GetMaximum())
+    
+    
     titleString = "%s;%s;%s" % ("", "", "Events")
 
     myStack.SetTitle(titleString)
@@ -617,13 +628,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     myStack.Draw()
 
     MCErrHist.Draw('e2same')
-    myData2011.Draw('pesame')
-    iSig.Draw('histsame')
     
-    try:
-        myData2012.Draw('pesame') ##Add for 2012
-    except:
-        pass
+    iSig.Draw('histsame')
+
+    theDataHisto.Draw("pesame")
+    
 
     legForStack.Draw()
     myLumiTex.DrawLatex(0.15, 0.98, myLumiString)
@@ -665,11 +674,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     ##ratioHistErr = rebinHistManual (origHist, nBins, xMin, xMax, 1.0)
     
     ## Create ratio plot
+    
     for i in range(1, nBins+1):
         MCVal = myStack.GetStack().Last().GetBinContent(i)
-        DataVal = myData2011.GetBinContent(i)
+        DataVal = theDataHisto.GetBinContent(i)
         MCErr = math.sqrt(math.pow(myStack.GetStack().Last().GetBinError(i),2)+math.pow(lumi_trigSF_err*myStack.GetStack().Last().GetBinContent(i),2))
-        DataErr = myData2011.GetBinError(i)
+        DataErr = theDataHisto.GetBinError(i)
         if (MCVal !=0 and DataVal !=0):
             ratioVal = DataVal/MCVal
             ratErr = ratioVal*DataErr/DataVal
