@@ -813,7 +813,8 @@ def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xM
         
     # Make sure the original bins divide evenly into the new bins
     binRatio =  binSize / binSizeOrig
-    binGroup = int(binRatio)
+    #binGroup = int(binRatio)
+    binGroup = round(binRatio)
 
     #  if (binSize % binSizeOrig != 0) :
     if (binRatio - binGroup > 1e-10) :     
