@@ -53,12 +53,12 @@ class PlotInfo:
 
             if (pname == 'sys_array'):
                 self.sys_array = pval
-            if (pname == 'year'):
-                self.year = pval
+#            if (pname == 'year'):
+#                self.year = pval
             if (pname == 'ngen'):
                 self.ngen = pval            
-            if (pname == 'ngen2012'):
-                self.ngen2012 = pval
+#            if (pname == 'ngen2012'):
+#                self.ngen2012 = pval
             
             if (pname == 'fillColor'):
                 self.fillColor = pval
@@ -271,7 +271,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
     TexTitle2 = TexTitle1.replace('eq2jeq2t',' + 2 jets + 2 tags')
     TexTitle3 = TexTitle2.replace('ge3t',' + #geq 3 tags')
     TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e')
-    TexTitle =  TexTitle4.replace('ee_mm_',' #mu#mu/ee')
+    TexTitle5 = TexTitle4.replace('pdf_2012/','')
+    TexTitle =  TexTitle5.replace('ee_mm_',' #mu#mu/ee')
     
     myLumiString = TexTitle+"    CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
 #    myLumiString = TexTitle+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV"
@@ -456,7 +457,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
            elif (iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):               
                ZJetsSum += iHist.Integral()
                ZJetsCounter += 1
-               print "Found zjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
+#               print "Found zjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
                #print "DIBOSON: recognized name %s" % iplot.name
                if not foundFirstDiboson:
                    #print ".... first!"
@@ -484,8 +485,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
            elif (iplot.name.startswith("ZJet")):
                ZJetsSum += iHist.Integral()
                ZJetsCounter += 1
-               print "Found zjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
+#               print "Found zjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
                #print "ZJETS: recognized name %s" % iplot.name
+               if (ZJetsCounter == 6):
+                   legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
+
                if not foundFirstZjets:
                    #print ".... first!"
                    histoStorageList["zjets"] = resultHist_MCErrorsOnly.Clone("zjets_CFMlpANN_%s" % (printedJetSelection))
@@ -531,13 +535,13 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
            elif (iplot.name == "WJets"):
                ZJetsSum += iHist.Integral()
                ZJetsCounter += 1
-               print "Found wjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
+#               print "Found wjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
                #legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
            else:
                legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
 
-    if (ZJetsCounter == 6):
-        legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
+#    if (ZJetsCounter == 6):
+#        legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
 
     iSig.Scale(TotalMCsum/ttHSum)
     iSig.SetLineColor(kBlue)
@@ -617,13 +621,13 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
     ##End comment out for 2012
 
-#    if (dist == "numJets"):
-#        upLin.cd()
-#        gPad.SetLogy()
+    if (dist == "numJets"):
+        upLin.cd()
+        gPad.SetLogy()
 
     upLin.cd()
-    #gPad.SetBottomMargin(1e-5)
-    #gPad.Modified()
+    gPad.SetBottomMargin(1e-5)
+    gPad.Modified()
 
     myStack.Draw()
 
@@ -640,9 +644,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
     ##Begin comment out for 2012
     downLin.cd()
-    #gPad.SetTopMargin(1e-5)
-    #gPad.SetTickx()
-    #gPad.Modified()
+    gPad.SetTopMargin(1e-5)
+    gPad.SetTickx()
+    gPad.Modified()
 
     ratioHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, 1.0, 0.0)
     ratioHist.SetMinimum(0)
