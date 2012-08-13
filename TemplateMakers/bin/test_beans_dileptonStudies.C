@@ -1116,16 +1116,29 @@ int main ( int argc, char ** argv )
         int numCmomHiggs=0;
         int numCbarmomHiggs=0;
 
+        if (debug_) cout << "Starting loop over pf jet parton ids to see if you have a b" <<endl;
+
         for( int i=0; i<int(pfjets.size()); i++ ){
+
+
+          
           int id = pfjets.at(i).genPartonId;
           if( id==-99 ) continue;
           int motherID = pfjets.at(i).genPartonMotherId;
+          int mother0ID =  pfjets.at(i).genPartonMother0Id;
+          int mother1ID =  pfjets.at(i).genPartonMother1Id;
+          
 
+
+          if (debug_) std::cout << "Jet index " << i << " is generator id " << id
+                                << ", has mother " << motherID << ", mother0ID = " << mother0ID << ", mother1ID = " << mother1ID  << std::endl;
+          
           // check to see if pf jets is from a  b/c and mother is a gluon
           // or, if mother is some light quark
           if( abs(id)==5 && ( motherID==21 || abs(motherID)<abs(id) ) ) gotB=true;
           if( abs(id)==4 && ( motherID==21 || abs(motherID)<abs(id) ) ) gotC=true;
 
+          if (debug_) std::cout << "----------------> Got B = " << gotB << endl;
           // if things are their own mother, 
           // where are they from? Does this mean stable?
           if( id==5  && motherID==id ) numBmomB++;
@@ -1150,27 +1163,40 @@ int main ( int argc, char ** argv )
 
         // if at least one b from b & one b from t, or if CC, and your jet was not b
         if( ((numBmomB>=1 && numBmomT>=1) || (numBbarmomBbar>=1 && numBbarmomTbar>=1)) && !gotB ){
+          if (debug_) std::cout << "No sign of a b jet, but looping over jets again to check"
+                                 <<std::endl;
           // for each jet that is  b from b
           for( int i=0; i<int(pfjets.size()); i++ ){
+            cout << "LOOP: i = " << i << endl;
             int id0 = pfjets.at(i).genPartonId;
             int motherID0 = pfjets.at(i).genPartonMotherId;
             if( !(abs(id0)==5 && motherID0==id0) ) continue;
 
+            if (debug_) std::cout << "Jet index " << i  << " is a bjet, let us see that it is not from top" <<std::endl;
             // for each jet that is b from t
             for( int j=0; j<int(pfjets.size()); j++ ){
+              cout << "LOOP: j = " << j << endl;
               int id1 = pfjets.at(j).genPartonId;
               int motherID1 = pfjets.at(j).genPartonMotherId;
+              if (debug_) std::cout << "LOOP: id0 = " << id0 << ", motherID0 = " << motherID0
+                                    << ", id1 = " << id1 << ", motherID1 = " << motherID1 << endl
+                                    << "continue? = " << !(id1==id0 && abs(motherID1)==6) << endl;
+                
               if( !(id1==id0 && abs(motherID1)==6) ) continue;
-
+              if (debug_) std::cout << "You didn't skip this event!" << endl;
               // if delta r between b from b and b from t is big enough, then b in final state is OK
               double dR = kinem::delta_R(pfjets.at(i).genPartonEta,
                                          pfjets.at(i).genPartonPhi,
                                          pfjets.at(j).genPartonEta,
                                          pfjets.at(j).genPartonPhi);
+              if (debug_) std::cout << "dR = " << dR << endl;
+              if (debug_) std::cout << "gotB = " << gotB << endl;
               if( dR>0.3 ){
                 gotB = true;
+                if (debug_) std::cout << "Found something with dR > 0.3... now gotB = " << gotB << endl;
                 break;
               }
+              if (debug_) std::cout << "SECOND: b not from top with dR = " << dR << " gotB = " << gotB << endl;
             }
             if( gotB ) break;
           }
@@ -1182,6 +1208,8 @@ int main ( int argc, char ** argv )
 
         if( gotB ) isBBbarEvent = true;
         else if( gotC ) isCCbarEvent = true;
+
+
     
    
 //         if( ttbarType_<0 || sample != 2500)       keepEvent = true;
@@ -1197,8 +1225,25 @@ int main ( int argc, char ** argv )
         
         // if you don't pass the filter, skip this event
 
-        if (debug_) cout << "Keep event no matter what" << endl;
+        //if (debug_) cout << "Keep event no matter what" << endl;
         //keepEvent = true;
+
+
+        TString wordsForType = "";
+        if (ttbarType_ ==0 ) wordsForType = "ttbar";
+        else if (ttbarType_ == 1) wordsForType = "ttbar_bb";
+        else if (ttbarType_ >= 1) wordsForType = "ttbar_cc";
+
+        bool externalKeepEvent = ttPlusHeavyKeepEvent (mcparticles, pfjets, wordsForType, selectionYear_);
+
+        if (debug_)
+          std::cout << "externalKeepEvent = " << externalKeepEvent <<", localKeepEvent = " << keepEvent << std::endl;
+
+        if ( keepEvent != externalKeepEvent)
+          if (debug_) std::cout << "KEEPER CHECK: event filtering decisions did not match... this is ok for 2012" << std::endl;
+
+
+        keepEvent = externalKeepEvent;
         
         if(!keepEvent) continue;
       }// end if you are a top sample
