@@ -105,8 +105,8 @@ process.dilAnalysis = cms.PSet(
 
 	jes = cms.int32(iJes),
 	jer = cms.int32(iJer),
-	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
-	puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
+	#btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
+	#puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
 	sampleName = cms.string(sampleNameCL),
 
 	selectionYear = cms.string(iYear)
