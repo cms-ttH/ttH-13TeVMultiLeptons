@@ -83,6 +83,7 @@ def main ():
 
     pg.show()
 
+    year = "2011"
 
     #drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", numBins, 0, 5, lepselection, "root")
     #drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", numBins, 0, 5, lepselection, "draw")
@@ -91,7 +92,7 @@ def main ():
     #drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", numBins, 0, 300, lepselection, "draw")
     #drawStackPlot("CFMlpANN_eq2jeq2t", pg,  "ANN output", 10, 0.0072, 0.0074, lepselection, "root")
     #drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1000, lepselection, "draw")
-    drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 20, 0.04, 0.84, lepselection, "root")
+    drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection, year, "root")
     #drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*12/10, 0, 1200, lepselection, "draw")
 
 

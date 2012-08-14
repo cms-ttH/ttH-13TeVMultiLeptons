@@ -46,8 +46,10 @@ def main ():
 	# This function is defined in
 	# myPlots.py
 	# it returns the plots you want
-	
+    year = "2011"
+    Zmask = ""	
 ##    defaultPlotGroup = getMyPlotsDefaultNorm()
+    #AndrewPlotGroup = getMyPlotsAndrewNorm(lepselection,year,Zmask,jetselection)
     AndrewPlotGroup = getMyPlotsAndrewNorm(lepselection,jetselection)
 
 ##    defaultPlotGroup.lumi = myLumi*1e6
@@ -84,15 +86,15 @@ def main ():
     pg.show()
 
 
-    drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", 10, 0.5, 4.5, lepselection, "draw")
-    drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", numBins*2/5, 0, 4, lepselection, "draw")
-    drawStackPlot("numJets", pg, "Number of jets", 5, 3, 8, lepselection, "draw")
-    drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", 15, 0.7, 1, lepselection, "draw")
-    drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 430, lepselection, "draw")
-######    drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.0072, 0.0074, lepselection, "draw")
-######    drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1000, lepselection, "draw")
-    drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 15, 0.05, 0.8, lepselection, "draw")
-    drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1600, lepselection, "draw")
+    drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", 10, 0.5, 4.5, lepselection, year, "draw")
+    drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", numBins*2/5, 0, 4, lepselection, year, "draw")
+#     drawStackPlot("numJets", pg, "Number of jets", 5, 3, 8, lepselection, "draw")
+#     drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", 15, 0.7, 1, lepselection, "draw")
+#     drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 430, lepselection, "draw")
+# ######    drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.0072, 0.0074, lepselection, "draw")
+# ######    drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1000, lepselection, "draw")
+#     drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 15, 0.05, 0.8, lepselection, "draw")
+#     drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1600, lepselection, "draw")
 
 
 

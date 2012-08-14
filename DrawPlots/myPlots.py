@@ -28,7 +28,7 @@ from PlotEnv import *
 
 def getMyPlotsAndrewNorm (lepselection, jetselection) :
 
-    dirStr =  lepselection+"/"
+    dirStr =  lepselection+"_2011_ref/"
     #dirStr = "root"+lepselection+"/"
     rootStr = "_" + jetselection + "_" + lepselection +".root"
 
@@ -367,9 +367,9 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ZJets',
-         'file': dirStr+'zjets_h' +rootStr,
-         'file_JESUp': dirStr+'zjets_h'+rootStr,
-         'file_JESDown': dirStr+'zjets_h'+rootStr,
+         'file': dirStr+'zjets' +rootStr,
+         'file_JESUp': dirStr+'zjets'+rootStr,
+         'file_JESDown': dirStr+'zjets'+rootStr,
          'xsec': 3.048,
          'xsec_err': 0.132,
          'sys_array': sys_arrays['ZJets'],

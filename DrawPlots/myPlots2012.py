@@ -28,27 +28,31 @@ from PlotEnv import *
 
 def getMyPlotsAndrewNorm (lepselection, jetselection) :
 
-    dirStr = lepselection+"_2012/"
+    year = "2012"
+    zMask = "noZmask"
+
+
+    dirStr = lepselection+"/"
     #dirStr = "root"+lepselection+"/"
-    rootStr = "_" + jetselection + "_" + lepselection +".root"
+    rootStr = "_" + year + "_" + zMask + "_" + jetselection + "_" + lepselection +".root"
 
     defaultLumi = 5117.0
     if lepselection.startswith("TwoMuon"):
-        dataStr = dirStr+'DoubleMu_'+ jetselection + "_TwoMuon.root"
+        dataStr = dirStr+'DoubleMu_'+ year + "_" + zMask + "_" + jetselection + "_TwoMuon.root"
 
     elif lepselection.startswith("TwoEle"):
-        dataStr = dirStr+'DoubleElectron_'+  jetselection + "_TwoEle.root"
+        dataStr = dirStr+'DoubleElectron_'+  year + "_" + zMask + "_" + jetselection +  "_TwoEle.root"
 
     elif lepselection.startswith("MuonEle"):
-        dataStr = dirStr+'MuEG_' + jetselection + "_MuonEle.root"
+        dataStr = dirStr+'MuEG_' + year + "_" + zMask + "_" + jetselection +  "_MuonEle.root"
 
     else:
         dataStr = dirStr+'SameLep'+rootStr
 
   
-    directoryName = "pdf_2012/"+lepselection+"_"+jetselection
+    directoryName = "pdf_2012/"+lepselection+"_"+year + "_" + zMask + "_" + jetselection 
     
-    groupName = lepselection+"_"+jetselection
+    groupName = lepselection+"_"+year + "_" + zMask + "_" + jetselection
 
     sys_arrays = {}
     ##sys_array['sample'] = [PU, hfSF, lfSF]
@@ -367,9 +371,9 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
     plotList.append(
         PlotInfo(
         {'name': 'ZJets',
-         'file': dirStr+'zjets_h' +rootStr,
-         'file_JESUp': dirStr+'zjets_h'+rootStr,
-         'file_JESDown': dirStr+'zjets_h'+rootStr,
+         'file': dirStr+'zjets' +rootStr,
+         'file_JESUp': dirStr+'zjets'+rootStr,
+         'file_JESDown': dirStr+'zjets'+rootStr,
          'xsec': 3.5057,
          'xsec_err': 0.132,
          'sys_array': sys_arrays['ZJets'],
@@ -397,8 +401,9 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'limitPlotName':'zjets_lowmass'}
         )
         )
-  
 
+  
+    #print "WARNING: using hacked xsec for PU reweighting"
     plotList.append(
         PlotInfo(
         {'name': 'ttH_120',
@@ -408,7 +413,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'xsec': 0.000147,
          'xsec_err': 0.0,
          'sys_array': sys_arrays['ttH_120'],
-         'ngen': 250000,
+         'ngen': 972496, # 250000 for partial skim
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,

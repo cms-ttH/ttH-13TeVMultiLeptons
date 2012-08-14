@@ -1,11 +1,13 @@
 #include <utility>
 
 
-void compareNorms (bool crossSyst) {
+void compareNorms (bool crossSyst = false) {
 
 
-  TFile * robinRef = new TFile ("result_combined.root");
-  TFile * newCombo = new TFile ("histosForLimits_AllLep_ge3t.root");
+  //TFile * robinRef = new TFile ("result_combined.root");
+  TFile * robinRef = new TFile ("histosForLimits_TwoMuon_2011_e2je2t.root");
+  TFile * newCombo = new TFile ("histosForLimits_TwoMuon_2012_e2je2t.root");
+  
 
   std::vector<std::string> histNames;
 
@@ -36,28 +38,28 @@ void compareNorms (bool crossSyst) {
 
 
 
-  histNames.push_back("ttH120_CFMlpANN_ge3t");
-  histNames.push_back("ttbar_CFMlpANN_ge3t");
-  histNames.push_back("ttbarPlusBBbar_CFMlpANN_ge3t");
-  histNames.push_back("ttbarPlusCCbar_CFMlpANN_ge3t");
-  histNames.push_back("zjets_h_CFMlpANN_ge3t");
-  histNames.push_back("zjets_CFMlpANN_ge3t");
-  histNames.push_back("zjets_lowmass_CFMlpANN_ge3t");
-  histNames.push_back("WW_CFMlpANN_ge3t");
-  histNames.push_back("diboson_CFMlpANN_ge3t");
-  histNames.push_back("WZ_CFMlpANN_ge3t");
-  histNames.push_back("ZZ_CFMlpANN_ge3t");
-  histNames.push_back("singlet_s_CFMlpANN_ge3t");
-  histNames.push_back("singlet_CFMlpANN_ge3t");
-  histNames.push_back("singlet_t_CFMlpANN_ge3t");
-  histNames.push_back("singlet_tW_CFMlpANN_ge3t");
-  histNames.push_back("singletbar_s_CFMlpANN_ge3t");
-  histNames.push_back("singletbar_t_CFMlpANN_ge3t");
-  histNames.push_back("singletbar_tW_CFMlpANN_ge3t");
-  histNames.push_back("ttbarW_CFMlpANN_ge3t");
-  histNames.push_back("ttbarZ_CFMlpANN_ge3t");
-  histNames.push_back("wjets_CFMlpANN_ge3t");
-  histNames.push_back("data_obs_CFMlpANN_ge3t");
+  histNames.push_back("ttH120_CFMlpANN_e2je2t");
+  histNames.push_back("ttbar_CFMlpANN_e2je2t");
+  histNames.push_back("ttbarPlusBBbar_CFMlpANN_e2je2t");
+  histNames.push_back("ttbarPlusCCbar_CFMlpANN_e2je2t");
+  histNames.push_back("zjets_h_CFMlpANN_e2je2t");
+  histNames.push_back("zjets_CFMlpANN_e2je2t");
+  histNames.push_back("zjets_lowmass_CFMlpANN_e2je2t");
+  histNames.push_back("WW_CFMlpANN_e2je2t");
+  histNames.push_back("diboson_CFMlpANN_e2je2t");
+  histNames.push_back("WZ_CFMlpANN_e2je2t");
+  histNames.push_back("ZZ_CFMlpANN_e2je2t");
+  histNames.push_back("singlet_s_CFMlpANN_e2je2t");
+  histNames.push_back("singlet_CFMlpANN_e2je2t");
+  histNames.push_back("singlet_t_CFMlpANN_e2je2t");
+  histNames.push_back("singlet_tW_CFMlpANN_e2je2t");
+  histNames.push_back("singletbar_s_CFMlpANN_e2je2t");
+  histNames.push_back("singletbar_t_CFMlpANN_e2je2t");
+  histNames.push_back("singletbar_tW_CFMlpANN_e2je2t");
+  histNames.push_back("ttbarW_CFMlpANN_e2je2t");
+  histNames.push_back("ttbarZ_CFMlpANN_e2je2t");
+  histNames.push_back("wjets_CFMlpANN_e2je2t");
+  histNames.push_back("data_obs_CFMlpANN_e2je2t");
 
 
   string systNameUp = "CMS_eff_bUp";
@@ -96,6 +98,9 @@ void compareNorms (bool crossSyst) {
       float oldInt = oldHist->Integral();
       float newInt = newHist->Integral();
 
+      float oldEntries = oldHist->GetEntries();
+      float newEntries = newHist->GetEntries();
+
       oldIntegrals[targetName] = oldInt;
       newIntegrals[targetName] = newInt;
 
@@ -103,8 +108,8 @@ void compareNorms (bool crossSyst) {
       
 
       if (!crossSyst){
-        cout << "  Old: " << oldInt << endl
-             << "  New: " << newInt << endl
+        cout << "  Old: " << oldInt << " (Entries: " << oldEntries << ")" << endl
+             << "  New: " << newInt << " (Entries: " << newEntries << ")" << endl
              << "Ratio: " << newInt/oldInt << endl;
       }
       

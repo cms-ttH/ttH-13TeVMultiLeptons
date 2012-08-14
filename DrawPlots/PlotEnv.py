@@ -100,6 +100,7 @@ class PlotInfo:
         if (JES == "nominal" or isData):
             #print "%s: Getting histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
             targetHist = self.rootFile.Get(namePlusCycle).Clone()
+            #print "EFFSTUDY: %s %0.2f %0.2f %0.3e" % (self.name, targetHist.GetEntries(), self.ngen, targetHist.GetEntries()/self.ngen)
         elif (JES == "JESUp"):
             namePlusCycle = "%s_CMS_scale_jUp;1" % (histName)
             #print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
@@ -191,6 +192,11 @@ class PlotInfo:
             targetHist.Scale(trigSF * self.xsec * lumi / self.ngen)
 			
             integralAfter = targetHist.Integral()
+            if (JES == "nominal" ):
+                print "EFFSTUDY: %s %0.3e %0.3f " % (self.name, self.xsec, targetHist.Integral())
+
+            #if self.name == "ttH_120":
+                #print "Got ttH120, trigSF = %f, xsec= %f, lumi=%f, ngen=%f, integralBefore = %f, integralAfter=%f" % (trigSF, self.xsec, lumi, self.ngen, integralBefore, integralAfter)
 
             targetHist.SetLineColor(self.fillColor)
             targetHist.SetFillColor(self.fillColor)
@@ -720,7 +726,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
         return [ttSum,ttbbSum,ttccSum,ttBosonSum,SingleTopSum,ZJetsSum,WJetsSum,DiBosonSum,ttHSum,100*ttHSum*998833/(4982*0.098*105138),TotalMCsum,TotalMCErr,Data2011Sum]
     elif output == "root":
         print "Root output selected"
-        rootFileName = "histosForLimits_%s_%s.root" % (lepselection, printedJetSelection)
+        rootFileName = "histosForLimits_%s_%s_%s.root" % (lepselection, year, printedJetSelection)
         rootOutput = TFile(rootFileName,"RECREATE")
         print "histograms you will store has length %s" % len(histoStorageList)
         print histoStorageList
