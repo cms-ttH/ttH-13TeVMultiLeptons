@@ -45,7 +45,7 @@
 #include <string>
 #include <sstream>
 #include "TGraphAsymmErrors.h"
-
+#include "TStopwatch.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 
 
@@ -217,7 +217,7 @@ int main ( int argc, char ** argv )
   varList.push_back(avg_tagged_dijet_mass);
   //  varInfo *avg_untagged_dijet_mass = new varInfo("avg_untagged_dijet_mass", "avg_untagged_dijet_mass", "avg_untagged_dijet_mass", 1000, 0, 1000);
   //  varList.push_back(avg_untagged_dijet_mass);
-  varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.007, 0.008);
+  varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.4, 0.6);
   varList.push_back(CFMlpANN_e2je2t);
   varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
   varList.push_back(CFMlpANN_ge3t);
@@ -408,6 +408,16 @@ int main ( int argc, char ** argv )
   }
 
 
+  /////////////// Debuging root file
+
+  TFile * debugOutput = new TFile (std::string("batchBean/" + InputFileNames[0] + "_debugTimer.root").c_str());
+
+  debugOutput->cd();
+  TH1F * drawTimesReal = new TH1F ("drawTimesReal", "drawTimesReal", 5000, 0, 1);
+  TH1F * drawTimesCPU = new TH1F ("drawTimesCPU", "drawTimesCPU", 5000, 0, 1);
+  unsigned numDraws = 0;
+   
+
   ////////// start sample loop
   const unsigned int nInputFiles = InputFileNames.size();
   for( unsigned int i = 0; i < nInputFiles; i++) {
@@ -575,8 +585,11 @@ int main ( int argc, char ** argv )
 
           TH1F *histTemp = new TH1F(histName, histName , nBins, Xmin, Xmax);
           TString varSig =  variableName + ">>" + histName;
-
+          TStopwatch myTime; // this starts the timer
           DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
+          myTime.Stop();
+          drawTimesReal->Fill(myTime.RealTime());
+          drawTimesCPU->Fill(myTime.CpuTime());
           //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
           //      	  std::cout << "Drawing histogram " << histName << std::endl;
           histTemp->SetDirectory(OutputFile);
