@@ -218,7 +218,7 @@ int main ( int argc, char ** argv )
     if (tmpName.Contains("zjets_part")) sampleNumber = 2300; 
     if (sampleName == "zjets_lowmass") sampleNumber = 2310; 
     if (sampleName == "wjets") sampleNumber = 2400; 
-    if (sampleName == "ttbar" || sampleName == "ttbar_bb" || sampleName == "ttbar_cc") sampleNumber = 2500; 
+    if (sampleName == "ttbar" || tmpName.Contains("ttbar_part") || sampleName == "ttbar_bb" || sampleName == "ttbar_cc") sampleNumber = 2500; 
     if (tmpName.Contains("scaleup_ttbar")) sampleNumber = 2510; 
     if (tmpName.Contains("scaledown_ttbar")) sampleNumber = 2511; 
     if (sampleName == "ttbarZ") sampleNumber = 2523; 
@@ -233,7 +233,7 @@ int main ( int argc, char ** argv )
     if (tmpName.Contains("zjets_part")) sampleNumber = 2800; 
     if (sampleName == "zjets_lowmass") sampleNumber = 2850; 
     if (sampleName == "wjets") sampleNumber = 2400; 
-    if (tmpName.Contains("ttbar_part") || sampleName == "ttbar_bb" || sampleName == "ttbar_cc") sampleNumber = 2500;  //// 12 parts???
+    if (sampleName == "ttbar" || tmpName.Contains("ttbar_part") || sampleName == "ttbar_bb" || sampleName == "ttbar_cc") sampleNumber = 2500;  //// 12 parts???
     //if (sampleName == "ttbar_scaleup") sampleNumber = ; 
     //if (sampleName == "ttbar_scaledown") sampleNumber = ; 
     if (sampleName == "ttbarZ") sampleNumber = 2523; 
@@ -1090,7 +1090,7 @@ int main ( int argc, char ** argv )
         int ttbarType_;
 
         TString ttbarName = sampleName ;
-        if( ttbarName.Contains("ttbar_part") ) ttbarType_ = 0;     /////// 12 parts??? 
+        if( tmpName.EndsWith("ttbar") || tmpName.Contains("ttbar_part") ) ttbarType_ = 0;     /////// 12 parts??? 
         else if (ttbarName.EndsWith("ttbar_bb")) ttbarType_ = 1;
         else if (ttbarName.EndsWith("ttbar_cc")) ttbarType_ = 2;
         else {
