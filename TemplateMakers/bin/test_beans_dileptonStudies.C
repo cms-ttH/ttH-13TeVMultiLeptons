@@ -1005,7 +1005,7 @@ int main ( int argc, char ** argv )
       float wgt = 1 ;
 
 
-            std::cout << "CONFIG: Sample number from ntuple is: " << sample << std::endl;
+      if(cnt<5)  std::cout << "CONFIG: Sample number from ntuple is: " << sample << std::endl;
 
 
 //       if( sample==2500 )      wgt = 157.7 * intLumi * 1./3627909;     //NNLL
