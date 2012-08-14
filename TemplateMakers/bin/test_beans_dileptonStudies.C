@@ -62,7 +62,7 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
-#include "BtagWeight.h" 
+#include "NtupleMaker/BEANmaker/interface/BtagWeight.h"
 #include "NtupleMaker/BEANmaker/interface/BEANsUtilities.h"
 
 #include "AnglesUtil.h"
@@ -89,15 +89,15 @@ typedef std::vector<string> vstring;
 typedef std::vector<bool> vbool;
 typedef std::vector<int> vint;
 
-double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double recojetPT );
+// double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double recojetPT );
 
-std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );      
+// std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );      
 
 //TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");
-TH2D* h_jet_pt_eta_b_eff_ ;
-TH2D* h_jet_pt_eta_c_eff_ ;
-TH2D* h_jet_pt_eta_l_eff_ ;
-TH2D* h_jet_pt_eta_o_eff_ ;
+// TH2D* h_jet_pt_eta_b_eff_ ;
+// TH2D* h_jet_pt_eta_c_eff_ ;
+// TH2D* h_jet_pt_eta_l_eff_ ;
+// TH2D* h_jet_pt_eta_o_eff_ ;
                                                                                    
 //bool filterTTbarPlusJets(string selectEventType, std::vector<BNmcparticle> mcparticles);
 
@@ -165,16 +165,16 @@ int main ( int argc, char ** argv )
 
    //  Btag file
 
-   edm::FileInPath btagFileName = anaParams.getParameter<edm::FileInPath> ("btagFile");
-   edm::FileInPath puFileName = anaParams.getParameter<edm::FileInPath> ("puFile");
+//    edm::FileInPath btagFileName = anaParams.getParameter<edm::FileInPath> ("btagFile");
+//    edm::FileInPath puFileName = anaParams.getParameter<edm::FileInPath> ("puFile");
    //edm::FileInPath annFileName = anaParams.getParameter<edm::FileInPath> ("annFile");
    
    
 
 
-   std::cout << "CONFIG: using btagFile = " << btagFileName.fullPath() << std::endl;
+//    std::cout << "CONFIG: using btagFile = " << btagFileName.fullPath() << std::endl;
 
-   TFile * btagFile = new TFile (btagFileName.fullPath().c_str());
+//    TFile * btagFile = new TFile (btagFileName.fullPath().c_str());
 
    int maxNentries = inputs.getParameter<int> ("maxEvents");
    //string sampleName = "doubleEle2012_week02_52Xonly";
@@ -197,48 +197,68 @@ int main ( int argc, char ** argv )
   typedef BNtrigobjCollection::const_iterator       TrigObjIter;
 
 
-  ////pile up Robin
-  TFile *f_pu = new TFile(puFileName.fullPath().c_str());
+  // data detection
+  //
+  bool isData = false;
+  
+  if (TString(sampleName).Contains("DoubleElectron")
+      || TString(sampleName).Contains("DoubleMu")
+      || TString(sampleName).Contains("MuEG") ) {
 
-  std::string str_data;
-  str_data = "SingleMu";
-  //  str_data = "ElectronHad";
+    std::cout << "CONFIG: DATA detected for sample " << sampleName << std::endl;
 
-  TH1D* h_pu_data;
-  TH1D* h_pu_data_up;
-  TH1D* h_pu_data_down;
-  TH1D* h_pu_mc;
+    isData = true;
 
-  ////// file list name for ttH/W/Z has to match the following pattern
-  if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){     
-    h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_observed")).c_str());   
-    h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_observed")).c_str());
-    h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_observed")).c_str()); 
-
-    h_pu_mc = (TH1D*)f_pu->Get("h_ttH_numGenPV"); 
   }
-  else{   
-    h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_true")).c_str());   
-    h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_true")).c_str());     
-    h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_true")).c_str()); 
 
-    h_pu_mc = (TH1D*)f_pu->Get("F2011exp");
-  }    
+  //Sample numbers may not match event->sample; used for setMCsample() only
+  std::string dset = "SingleMu" ;
+  int sampleNumber = 999999;
+  if (selectionYear_ == "2011") {
+    if (tmpName.Contains("zjets_part")) sampleNumber = 2300; 
+    if (sampleName == "zjets_lowmass") sampleNumber = 2310; 
+    if (sampleName == "wjets") sampleNumber = 2400; 
+    if (sampleName == "ttbar" || sampleName == "ttbar_bb" || sampleName == "ttbar_cc") sampleNumber = 2500; 
+    if (tmpName.Contains("scaleup_ttbar")) sampleNumber = 2510; 
+    if (tmpName.Contains("scaledown_ttbar")) sampleNumber = 2511; 
+    if (sampleName == "ttbarZ") sampleNumber = 2523; 
+    if (sampleName == "ttbarW") sampleNumber = 2524; 
+    if (tmpName.Contains("singlet")) sampleNumber = 2600; 
+    if (sampleName == "ww") sampleNumber = 2700; 
+    if (sampleName == "wz") sampleNumber = 2701; 
+    if (sampleName == "zz") sampleNumber = 2702; 
+    if (sampleName.find("ttH")!=std::string::npos) sampleNumber = 120;
+  }
+  else if (selectionYear_ == "2012") {
+    if (tmpName.Contains("zjets_part")) sampleNumber = 2800; 
+    if (sampleName == "zjets_lowmass") sampleNumber = 2850; 
+    if (sampleName == "wjets") sampleNumber = 2400; 
+    if (tmpName.Contains("ttbar_part") || sampleName == "ttbar_bb" || sampleName == "ttbar_cc") sampleNumber = 2500;  //// 12 parts???
+    //if (sampleName == "ttbar_scaleup") sampleNumber = ; 
+    //if (sampleName == "ttbar_scaledown") sampleNumber = ; 
+    if (sampleName == "ttbarZ") sampleNumber = 2523; 
+    if (sampleName == "ttbarW") sampleNumber = 2524; 
+    if (sampleName == "singlet_s") sampleNumber = 2600; 
+    if (sampleName == "singlet_t") sampleNumber = 2602; 
+    if (sampleName == "singlet_tW") sampleNumber = 2504; 
+    if (sampleName == "singletbar_s") sampleNumber = 2501; 
+    if (sampleName == "singletbar_t") sampleNumber = 2503; 
+    if (sampleName == "singletbar_tW") sampleNumber = 2505; 
+    if (sampleName == "ww") sampleNumber = 2700; 
+    if (sampleName == "wz") sampleNumber = 2701; 
+    if (sampleName == "zz") sampleNumber = 2702;
+//     if ((sampleName.find("ttH")!=std::string::npos) && (sampleName.find("FullSim")!=std::string::npos)) sampleNumber = 8120;
+//     if ((sampleName.find("ttH")!=std::string::npos) && (sampleName.find("FastSim")!=std::string::npos)) sampleNumber = 9120;
+    if (sampleName.find("ttH")!=std::string::npos) sampleNumber = 9120;
+  }
 
-  h_pu_data->Scale( 1./h_pu_data->Integral() );
-  h_pu_data_up->Scale( 1./h_pu_data_up->Integral() );
-  h_pu_data_down->Scale( 1./h_pu_data_down->Integral() );
+  bool is8TeV = selectionYear_.find("2012")!=std::string::npos; 
 
-  h_pu_mc->Scale( 1./h_pu_mc->Integral() );
-
-  TH1D* h_pu_ratio      = (TH1D*)h_pu_data->Clone();
-  TH1D* h_pu_ratio_up   = (TH1D*)h_pu_data_up->Clone();
-  TH1D* h_pu_ratio_down = (TH1D*)h_pu_data_down->Clone();
-
-  h_pu_ratio->Divide( h_pu_mc );
-  h_pu_ratio_up->Divide( h_pu_mc );
-  h_pu_ratio_down->Divide( h_pu_mc );
-
+  if (!isData)  {
+    cout << "Calling setMCsample with arguments: sampleNumber = " << sampleNumber
+         << ", is8TeV = " << is8TeV << ", dset = " << dset << endl;
+    setMCsample(sampleNumber,is8TeV,dset);
+  }
 
 
 
@@ -261,33 +281,21 @@ int main ( int argc, char ** argv )
   
 
   ///btag efficiency  // file list name pattern   // ww, wz, zz
-  std::string histname = sampleName ;  
-  if( TString(sampleName).Contains("zjets"))      histname = "zjets";   // zjets_h,  zjets_lowmas  
-  else if( TString(sampleName).Contains("ttbar") && !(sampleName=="ttbarW" || sampleName=="ttbarZ") ) histname = "ttbar";  // ttbar, ttbar_bb, ttbar_cc   
-  else if( TString(sampleName).Contains("singlet") ) histname = "singlet";  // singlet_, singletbar_, 
-  else if( TString(sampleName).Contains("ttH") ) histname = "ttH120";  
+//   std::string histname = sampleName ;  
+//   if( TString(sampleName).Contains("zjets"))      histname = "zjets";   // zjets_h,  zjets_lowmas  
+//   else if( TString(sampleName).Contains("ttbar") && !(sampleName=="ttbarW" || sampleName=="ttbarZ") ) histname = "ttbar";  // ttbar, ttbar_bb, ttbar_cc   
+//   else if( TString(sampleName).Contains("singlet") ) histname = "singlet";  // singlet_, singletbar_, 
+//   else if( TString(sampleName).Contains("ttH") ) histname = "ttH120";  
   
-  // Initialize these global variables once, and then refer to then in a function below 
-  h_jet_pt_eta_b_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_b_eff" ).c_str());
-  h_jet_pt_eta_c_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_c_eff" ).c_str());
-  h_jet_pt_eta_l_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_l_eff" ).c_str());
-  // this histogram does not exist
-  h_jet_pt_eta_o_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_o_eff" ).c_str());
+//   // Initialize these global variables once, and then refer to then in a function below 
+//   h_jet_pt_eta_b_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_b_eff" ).c_str());
+//   h_jet_pt_eta_c_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_c_eff" ).c_str());
+//   h_jet_pt_eta_l_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_l_eff" ).c_str());
+//   // this histogram does not exist
+//   h_jet_pt_eta_o_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_o_eff" ).c_str());
 
 
-  // data detection
-  //
-  bool isData = false;
-  
-  if (TString(sampleName).Contains("DoubleElectron")
-      || TString(sampleName).Contains("DoubleMu")
-      || TString(sampleName).Contains("MuEG") ) {
 
-    std::cout << "CONFIG: DATA detected for sample " << sampleName << std::endl;
-
-    isData = true;
-
-  }
 
 
   // ================= TMVA STUFF  =====================
@@ -833,7 +841,7 @@ int main ( int argc, char ** argv )
 
   int nEventsWhereJetRemoved = 0;
 
-  bool verbose = false;
+  bool verbose = true; //false;
   
   //
   // Loop over events
@@ -974,12 +982,12 @@ int main ( int argc, char ** argv )
       int sample = event->sample;
 
       double numTruePV = event->numTruePV;
-      int numGenPV = event->numGenPV;
+      double numGenPV = event->numGenPV;
 
       float wgt = 1 ;
 
 
-      //      std::cout << "CONFIG: Sample number from ntuple is: " << sample << std::endl;
+            std::cout << "CONFIG: Sample number from ntuple is: " << sample << std::endl;
 
 
 //       if( sample==2500 )      wgt = 157.7 * intLumi * 1./3627909;     //NNLL
@@ -1053,7 +1061,7 @@ int main ( int argc, char ** argv )
       }
       
       //      if (sample==2500) {
-      if( tmpName.EndsWith("ttbar") || tmpName.Contains("ttbar_") ){        
+      if( tmpName.EndsWith("ttbar") || tmpName.Contains("ttbar_") ){   /////// 12 parts???       
         
         bool keepEvent = false;
 
@@ -1064,7 +1072,7 @@ int main ( int argc, char ** argv )
         int ttbarType_;
 
         TString ttbarName = sampleName ;
-        if( ttbarName.EndsWith("ttbar") ) ttbarType_ = 0;
+        if( ttbarName.Contains("ttbar_part") ) ttbarType_ = 0;     /////// 12 parts??? 
         else if (ttbarName.EndsWith("ttbar_bb")) ttbarType_ = 1;
         else if (ttbarName.EndsWith("ttbar_cc")) ttbarType_ = 2;
         else {
@@ -1278,23 +1286,29 @@ int main ( int argc, char ** argv )
       if (verbose) std::cout << "about to do pu reweight " <<std::endl;
       ///--------------------------------
       // Pile-up reweighting  ////Robin
-      float PUwgt = 1;
-      float PUwgt_up = 1;
-      float PUwgt_down = 1;
+      double PUwgt = 1;
+      double PUwgt_up = 1;
+      double PUwgt_down = 1;
 
       //      if( (sample>=0 || sample==-2500) && !isData){
       if(!isData){
-	if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){ 
-  //        if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
-          PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numGenPV ) );
-          PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numGenPV ) );
-          PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numGenPV ) );
+        if(selectionYear_ == "2011" && ((TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ")) ){
+          getPUwgt(numGenPV,PUwgt,PUwgt_up,PUwgt_down);
+	}
+        else {
+          getPUwgt(numTruePV,PUwgt,PUwgt_up,PUwgt_down);
         }
-        else{
-          PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numTruePV ) );
-          PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numTruePV ) );
-          PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numTruePV ) );
-        }
+// 	if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){ 
+//   //        if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
+//           PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numGenPV ) );
+//           PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numGenPV ) );
+//           PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numGenPV ) );
+//         }
+//         else{
+//           PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numTruePV ) );
+//           PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numTruePV ) );
+//           PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numTruePV ) );
+//         }
       }
       wgt *= PUwgt;
 
@@ -1352,7 +1366,7 @@ int main ( int argc, char ** argv )
 
 
       //////////split nGen
-      if( sample==120 ){
+      if( sample==120 || sample==9120){                   ////// 2012 ???
 	bool has2tWb = false;
 	bool has2tWb_Wqq_Wemu = false;
 	bool has2tWb_Wqq_Wemutau = false;
@@ -1761,7 +1775,7 @@ int main ( int argc, char ** argv )
     double genJetPT = pfjets.at(i).genPartonPT;
     double jetPhi = pfjets.at(i).phi;
     
-    double myJER = getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
+    double myJER = BEANs::getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
 
     //don't scale data jets
     if ( isData) {      
@@ -1956,10 +1970,10 @@ int main ( int argc, char ** argv )
       *(intBranches["TwoMuon"]) = passTwoMuon ? 1 : 0;
       *(intBranches["TwoEle"]) =  passTwoEle ? 1 : 0;
       *(intBranches["MuonEle"]) = passMuonEle ? 1 : 0;
-      *(intBranches["isCleanEvent"]) = 1;
-      if( selectionYear_ == "2011") {
+//       *(intBranches["isCleanEvent"]) = 1;
+//       if( selectionYear_ == "2011") {
         *(intBranches["isCleanEvent"]) = cleanEvent ? 1 : 0;
-      }
+//       }
       *(intBranches["isTriggerPass"]) = triggerPass ? 1 : 0;
       //*(intBranches["isHtoBB"]) = HtoBB ? 1 : 0;
       //*(intBranches["isHtoCC"]) = HtoCC ? 1 : 0;
@@ -2010,25 +2024,25 @@ int main ( int argc, char ** argv )
           for( int j=0; j<int(good_jet_pt.size()); j++ ){
             if (verbose) std::cout << "calling btag sf" <<std::endl;
             if (verbose) std::cout << "one" <<std::endl;
-            std::vector<double> myEffSF = getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
+            std::vector<double> myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j], selectionYear_ );
             if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
             BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] ); 
             myjetinfo.push_back(myjet);
 
             if (verbose) std::cout << "two" <<std::endl;
-            std::vector<double> myEffSF_hfSFup = getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);
+            std::vector<double> myEffSF_hfSFup = BEANs::getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j], selectionYear_);
             BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );
             myjetinfo_hfSFup.push_back(myjet_hfSFup);
             if (verbose) std::cout << "three" <<std::endl;
-            std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
+            std::vector<double> myEffSF_hfSFdown = BEANs::getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j], selectionYear_ );
             BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );
             myjetinfo_hfSFdown.push_back(myjet_hfSFdown);
             if (verbose) std::cout << "four" <<std::endl;
-            std::vector<double> myEffSF_lfSFup = getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]  );
+            std::vector<double> myEffSF_lfSFup = BEANs::getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j], selectionYear_  );
             BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );
             myjetinfo_lfSFup.push_back(myjet_lfSFup);
             if (verbose) std::cout << "five" <<std::endl;
-            std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
+            std::vector<double> myEffSF_lfSFdown = BEANs::getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j], selectionYear_ );
             BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );
             myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
 
@@ -2058,7 +2072,8 @@ int main ( int argc, char ** argv )
     if (verbose) std::cout << "done with btag weight loop" <<std::endl;
     
         double wgt_btag = 1, wgt_btag_hfSFup = 1, wgt_btag_hfSFdown = 1, wgt_btag_lfSFup = 1, wgt_btag_lfSFdown = 1;
-        if( (sample>=0 || sample==-2500) && !isData){
+	//        if( (sample>=0 || sample==-2500) && !isData){
+        if (!isData){
           if( numTag<4 ){
             wgt_btag = wgt_prob;
             wgt_btag_hfSFup   = wgt_prob_hfSFup;
@@ -3127,166 +3142,166 @@ int main ( int argc, char ** argv )
 /// additional functions	
 /////*******************************************
 
-double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double recojetPT){
+// double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double recojetPT){
 
-  double factor = 1.;
+//   double factor = 1.;
 
-  double scale_JER = 1., scale_JERup = 1., scale_JERdown = 1.;
-  if( jetAbsETA<0.5 ){ 
-    scale_JER = 1.052; scale_JERup = 1.052 + sqrt( 0.012*0.012 + 0.062*0.062 ); scale_JERdown = 1.052 - sqrt( 0.012*0.012 + 0.061*0.061 );
-  }
-  else if( jetAbsETA<1.1 ){ 
-    scale_JER = 1.057; scale_JERup = 1.057 + sqrt( 0.012*0.012 + 0.056*0.056 ); scale_JERdown = 1.057 - sqrt( 0.012*0.012 + 0.055*0.055 );
-  }
-  else if( jetAbsETA<1.7 ){ 
-    scale_JER = 1.096; scale_JERup = 1.096 + sqrt( 0.017*0.017 + 0.063*0.063 ); scale_JERdown = 1.096 - sqrt( 0.017*0.017 + 0.062*0.062 );
-  }
-  else if( jetAbsETA<2.3 ){ 
-    scale_JER = 1.134; scale_JERup = 1.134 + sqrt( 0.035*0.035 + 0.087*0.087 ); scale_JERdown = 1.134 - sqrt( 0.035*0.035 + 0.085*0.085 );
-  }
-  else if( jetAbsETA<5.0 ){ 
-    scale_JER = 1.288; scale_JERup = 1.288 + sqrt( 0.127*0.127 + 0.155*0.155 ); scale_JERdown = 1.288 - sqrt( 0.127*0.127 + 0.153*0.153 );
-  }
+//   double scale_JER = 1., scale_JERup = 1., scale_JERdown = 1.;
+//   if( jetAbsETA<0.5 ){ 
+//     scale_JER = 1.052; scale_JERup = 1.052 + sqrt( 0.012*0.012 + 0.062*0.062 ); scale_JERdown = 1.052 - sqrt( 0.012*0.012 + 0.061*0.061 );
+//   }
+//   else if( jetAbsETA<1.1 ){ 
+//     scale_JER = 1.057; scale_JERup = 1.057 + sqrt( 0.012*0.012 + 0.056*0.056 ); scale_JERdown = 1.057 - sqrt( 0.012*0.012 + 0.055*0.055 );
+//   }
+//   else if( jetAbsETA<1.7 ){ 
+//     scale_JER = 1.096; scale_JERup = 1.096 + sqrt( 0.017*0.017 + 0.063*0.063 ); scale_JERdown = 1.096 - sqrt( 0.017*0.017 + 0.062*0.062 );
+//   }
+//   else if( jetAbsETA<2.3 ){ 
+//     scale_JER = 1.134; scale_JERup = 1.134 + sqrt( 0.035*0.035 + 0.087*0.087 ); scale_JERdown = 1.134 - sqrt( 0.035*0.035 + 0.085*0.085 );
+//   }
+//   else if( jetAbsETA<5.0 ){ 
+//     scale_JER = 1.288; scale_JERup = 1.288 + sqrt( 0.127*0.127 + 0.155*0.155 ); scale_JERdown = 1.288 - sqrt( 0.127*0.127 + 0.153*0.153 );
+//   }
 
-  double jetPt_JER = recojetPT;
-  double jetPt_JERup = recojetPT;
-  double jetPt_JERdown = recojetPT;
+//   double jetPt_JER = recojetPT;
+//   double jetPt_JERup = recojetPT;
+//   double jetPt_JERdown = recojetPT;
 
-  if( genjetPT>10. ){
-    jetPt_JER = std::max( 0., genjetPT + scale_JER * ( recojetPT - genjetPT ) );
-    jetPt_JERup = std::max( 0., genjetPT + scale_JERup * ( recojetPT - genjetPT ) );
-    jetPt_JERdown = std::max( 0., genjetPT + scale_JERdown * ( recojetPT - genjetPT ) );
-  }
+//   if( genjetPT>10. ){
+//     jetPt_JER = std::max( 0., genjetPT + scale_JER * ( recojetPT - genjetPT ) );
+//     jetPt_JERup = std::max( 0., genjetPT + scale_JERup * ( recojetPT - genjetPT ) );
+//     jetPt_JERdown = std::max( 0., genjetPT + scale_JERdown * ( recojetPT - genjetPT ) );
+//   }
 
-  if( returnType==1 )       factor = jetPt_JERup/recojetPT;
-  else if( returnType==-1 ) factor = jetPt_JERdown/recojetPT;
-  else                      factor = jetPt_JER/recojetPT;
+//   if( returnType==1 )       factor = jetPt_JERup/recojetPT;
+//   else if( returnType==-1 ) factor = jetPt_JERdown/recojetPT;
+//   else                      factor = jetPt_JER/recojetPT;
 
-  if( !(genjetPT>10.) ) factor = 1.;
+//   if( !(genjetPT>10.) ) factor = 1.;
 
-  return factor;
-}
+//   return factor;
+// }
 
 
 
 /////////////////////
-std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
+// std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
 
-  bool getEffVerbose = false;
+//   bool getEffVerbose = false;
 
     
-  if (getEffVerbose) std::cout  << "getEffSF called with arguments:" << std::endl
-                                << "   returnType = " << returnType << std::endl
-                                << "   jetPt = " << jetPt << std::endl
-                                << "   jetEta = " << jetEta << std::endl
-                                << "   jetId = " << jetId << std::endl;
+//   if (getEffVerbose) std::cout  << "getEffSF called with arguments:" << std::endl
+//                                 << "   returnType = " << returnType << std::endl
+//                                 << "   jetPt = " << jetPt << std::endl
+//                                 << "   jetEta = " << jetEta << std::endl
+//                                 << "   jetId = " << jetId << std::endl;
 
   
     
-  double m_type = 0.;                                                                                                            
-  if( returnType==-1 )      m_type = -1.;                                                                                        
-  else if( returnType==1 )  m_type = 1.;                                                                                         
-  else                      m_type = 0.;                                                                                         
+//   double m_type = 0.;                                                                                                            
+//   if( returnType==-1 )      m_type = -1.;                                                                                        
+//   else if( returnType==1 )  m_type = 1.;                                                                                         
+//   else                      m_type = 0.;                                                                                         
                                                                                                                                  
-  float ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};                                              
-  float ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};                                              
+//   float ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};                                              
+//   float ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};                                              
                                                                                                                                  
-  double SFb_error[] = {                                                                                                         
-    0.0295675,                                                                                                                   
-    0.0295095,                                                                                                                   
-    0.0210867,                                                                                                                   
-    0.0219349,                                                                                                                   
-    0.0227033,                                                                                                                   
-    0.0204062,                                                                                                                   
-    0.0185857,                                                                                                                   
-    0.0256242,                                                                                                                   
-    0.0383341,                                                                                                                   
-    0.0409675,                                                                                                                   
-    0.0420284,                                                                                                                   
-    0.0541299,                                                                                                                   
-    0.0578761,                                                                                                                   
-    0.0655432 };                                                                                                                 
+//   double SFb_error[] = {                                                                                                         
+//     0.0295675,                                                                                                                   
+//     0.0295095,                                                                                                                   
+//     0.0210867,                                                                                                                   
+//     0.0219349,                                                                                                                   
+//     0.0227033,                                                                                                                   
+//     0.0204062,                                                                                                                   
+//     0.0185857,                                                                                                                   
+//     0.0256242,                                                                                                                   
+//     0.0383341,                                                                                                                   
+//     0.0409675,                                                                                                                   
+//     0.0420284,                                                                                                                   
+//     0.0541299,                                                                                                                   
+//     0.0578761,                                                                                                                   
+//     0.0655432 };                                                                                                                 
                                                                                                                                  
-  double pt  = jetPt;                                                                                                            
-  double eta = jetEta;                                                                                                           
-  int flavor = jetId;                                                                                                            
+//   double pt  = jetPt;                                                                                                            
+//   double eta = jetEta;                                                                                                           
+//   int flavor = jetId;                                                                                                            
                                                                                                                                  
-  double threshold = 670;                                                                                                        
-  pt = ( pt>threshold ) ? threshold-0.0000001 : pt;                                                                              
+//   double threshold = 670;                                                                                                        
+//   pt = ( pt>threshold ) ? threshold-0.0000001 : pt;                                                                              
                                                                                                                                  
-  double absEta = fabs(eta);                                                                                                     
+//   double absEta = fabs(eta);                                                                                                     
                                                                                                                                  
-  int use_bin=-1;                                                                                                                
-  for( int p=0; p<14; p++ ){                                                                                                     
-    if( pt>ptmin[p] && pt<ptmax[p] ){                                                                                            
-      use_bin = p; break;                                                                                                        
-    }                                                                                                                            
-  }
-  if (getEffVerbose) std::cout  << "Use bin = " << use_bin << std::endl;
+//   int use_bin=-1;                                                                                                                
+//   for( int p=0; p<14; p++ ){                                                                                                     
+//     if( pt>ptmin[p] && pt<ptmax[p] ){                                                                                            
+//       use_bin = p; break;                                                                                                        
+//     }                                                                                                                            
+//   }
+//   if (getEffVerbose) std::cout  << "Use bin = " << use_bin << std::endl;
   
-  if( use_bin<0 ) if (getEffVerbose) std::cout  << "   ERROR!! use_bin < 0 " << std::endl;                                                           
+//   if( use_bin<0 ) if (getEffVerbose) std::cout  << "   ERROR!! use_bin < 0 " << std::endl;                                                           
 
 
-  double SFb = 0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt)));                                                                              
+//   double SFb = 0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt)));                                                                              
                                                                                                                                             
-  double SFc = SFb;                                                                                                                         
+//   double SFc = SFb;                                                                                                                         
 
-  if (getEffVerbose) std::cout  << "Getting error" << use_bin << std::endl;
-  SFb = SFb + m_type * SFb_error[use_bin];                                                                                                  
-  SFc = SFc + m_type * 2* SFb_error[use_bin];                                                                                               
+//   if (getEffVerbose) std::cout  << "Getting error" << use_bin << std::endl;
+//   SFb = SFb + m_type * SFb_error[use_bin];                                                                                                  
+//   SFc = SFc + m_type * 2* SFb_error[use_bin];                                                                                               
 
-  if (getEffVerbose) std::cout  << "switch based on return type"  << std::endl;
-  double SFl = 1.;                                                                                                                          
-  if( returnType==-2 ){ // min                                                                                                              
-    if( absEta < 0.8 )                      SFl = ((0.972455+(7.51396e-06*pt))+(4.91857e-07*(pt*pt)))+(-1.47661e-09*(pt*(pt*pt)));          
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.02055+(-0.000378856*pt))+(1.49029e-06*(pt*pt)))+(-1.74966e-09*(pt*(pt*pt)));          
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((0.983476+(-0.000607242*pt))+(3.17997e-06*(pt*pt)))+(-4.01242e-09*(pt*(pt*pt)));         
-  }                                                                                                                                         
-  else if( returnType==2 ){ // max                                                                                                          
-    if( absEta < 0.8 )                      SFl = ((1.15116+(0.00122657*pt))+(-3.63826e-06*(pt*pt)))+(2.08242e-09*(pt*(pt*pt)));            
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.20146+(0.000359543*pt))+(-1.12866e-06*(pt*pt)))+(6.59918e-10*(pt*(pt*pt)));           
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.18654+(-0.000795808*pt))+(3.69226e-06*(pt*pt)))+(-4.22347e-09*(pt*(pt*pt)));          
-  }                                                                                                                                         
-  else { // mean                                                                                                                            
-    if( absEta < 0.8 )                      SFl = ((1.06182+(0.000617034*pt))+(-1.5732e-06*(pt*pt)))+(3.02909e-10*(pt*(pt*pt)));            
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.111+(-9.64191e-06*pt))+(1.80811e-07*(pt*pt)))+(-5.44868e-10*(pt*(pt*pt)));            
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.08498+(-0.000701422*pt))+(3.43612e-06*(pt*pt)))+(-4.11794e-09*(pt*(pt*pt)));          
-  }                                                                                                                                         
+//   if (getEffVerbose) std::cout  << "switch based on return type"  << std::endl;
+//   double SFl = 1.;                                                                                                                          
+//   if( returnType==-2 ){ // min                                                                                                              
+//     if( absEta < 0.8 )                      SFl = ((0.972455+(7.51396e-06*pt))+(4.91857e-07*(pt*pt)))+(-1.47661e-09*(pt*(pt*pt)));          
+//     else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.02055+(-0.000378856*pt))+(1.49029e-06*(pt*pt)))+(-1.74966e-09*(pt*(pt*pt)));          
+//     else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((0.983476+(-0.000607242*pt))+(3.17997e-06*(pt*pt)))+(-4.01242e-09*(pt*(pt*pt)));         
+//   }                                                                                                                                         
+//   else if( returnType==2 ){ // max                                                                                                          
+//     if( absEta < 0.8 )                      SFl = ((1.15116+(0.00122657*pt))+(-3.63826e-06*(pt*pt)))+(2.08242e-09*(pt*(pt*pt)));            
+//     else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.20146+(0.000359543*pt))+(-1.12866e-06*(pt*pt)))+(6.59918e-10*(pt*(pt*pt)));           
+//     else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.18654+(-0.000795808*pt))+(3.69226e-06*(pt*pt)))+(-4.22347e-09*(pt*(pt*pt)));          
+//   }                                                                                                                                         
+//   else { // mean                                                                                                                            
+//     if( absEta < 0.8 )                      SFl = ((1.06182+(0.000617034*pt))+(-1.5732e-06*(pt*pt)))+(3.02909e-10*(pt*(pt*pt)));            
+//     else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.111+(-9.64191e-06*pt))+(1.80811e-07*(pt*pt)))+(-5.44868e-10*(pt*(pt*pt)));            
+//     else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.08498+(-0.000701422*pt))+(3.43612e-06*(pt*pt)))+(-4.11794e-09*(pt*(pt*pt)));          
+//   }                                                                                                                                         
 
-  double SF=1;                                                                                                                              
+//   double SF=1;                                                                                                                              
                                                                                                                                             
-  double tagEff=0;
-  if (getEffVerbose) std::cout  << "Calling get bin content and find bin with flavor = " << flavor  << std::endl;
+//   double tagEff=0;
+//   if (getEffVerbose) std::cout  << "Calling get bin content and find bin with flavor = " << flavor  << std::endl;
 
   
-  if( abs(flavor)==5 ){                                                                                                                     
-    tagEff = h_jet_pt_eta_b_eff_->GetBinContent( h_jet_pt_eta_b_eff_->FindBin( pt, absEta ) );                                              
-    SF = SFb;                                                                                                                               
-  }                                                                                                                                         
-  else if( abs(flavor)==4 ){                                                                                                                
-    tagEff = h_jet_pt_eta_c_eff_->GetBinContent( h_jet_pt_eta_c_eff_->FindBin( pt, absEta ) );                                              
-    SF = SFc;                                                                                                                               
-  }                                                                                                                                         
-  else if( abs(flavor)==1 || abs(flavor)==2 || abs(flavor)==3 || abs(flavor)==21 ){                                                         
-    tagEff = h_jet_pt_eta_l_eff_->GetBinContent( h_jet_pt_eta_l_eff_->FindBin( pt, absEta ) );                                              
-    SF = SFl;                                                                                                                               
-  }                                                                                                                                         
-  else {                                                                                                                                    
-    tagEff = h_jet_pt_eta_o_eff_->GetBinContent( h_jet_pt_eta_o_eff_->FindBin( pt, absEta ) );                                              
-    SF = SFl;                                                                                                                               
-  }                                                                                                                                         
+//   if( abs(flavor)==5 ){                                                                                                                     
+//     tagEff = h_jet_pt_eta_b_eff_->GetBinContent( h_jet_pt_eta_b_eff_->FindBin( pt, absEta ) );                                              
+//     SF = SFb;                                                                                                                               
+//   }                                                                                                                                         
+//   else if( abs(flavor)==4 ){                                                                                                                
+//     tagEff = h_jet_pt_eta_c_eff_->GetBinContent( h_jet_pt_eta_c_eff_->FindBin( pt, absEta ) );                                              
+//     SF = SFc;                                                                                                                               
+//   }                                                                                                                                         
+//   else if( abs(flavor)==1 || abs(flavor)==2 || abs(flavor)==3 || abs(flavor)==21 ){                                                         
+//     tagEff = h_jet_pt_eta_l_eff_->GetBinContent( h_jet_pt_eta_l_eff_->FindBin( pt, absEta ) );                                              
+//     SF = SFl;                                                                                                                               
+//   }                                                                                                                                         
+//   else {                                                                                                                                    
+//     tagEff = h_jet_pt_eta_o_eff_->GetBinContent( h_jet_pt_eta_o_eff_->FindBin( pt, absEta ) );                                              
+//     SF = SFl;                                                                                                                               
+//   }                                                                                                                                         
 
-  if (getEffVerbose) std::cout  << "    Done with get bin, creating return vector" << std::endl;
+//   if (getEffVerbose) std::cout  << "    Done with get bin, creating return vector" << std::endl;
                                                                                                                                             
-  std::vector<double> result;                                                                                                               
-  result.clear();                                                                                                                           
-  result.push_back(tagEff);                                                                                                                 
-  result.push_back(SF);                                                                                                                     
+//   std::vector<double> result;                                                                                                               
+//   result.clear();                                                                                                                           
+//   result.push_back(tagEff);                                                                                                                 
+//   result.push_back(SF);                                                                                                                     
 
-  if (getEffVerbose) std::cout  << " returning " << std::endl;
-  return result;
+//   if (getEffVerbose) std::cout  << " returning " << std::endl;
+//   return result;
   
-}
+// }
 
 
 
