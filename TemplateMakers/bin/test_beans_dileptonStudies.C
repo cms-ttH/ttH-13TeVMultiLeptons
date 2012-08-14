@@ -744,6 +744,10 @@ int main ( int argc, char ** argv )
   floatBranches["sum_pt"] = new float(0.0); 
   floatBranches["all_sum_pt"] = new float(0.0);
   floatBranches["Ht"] = new float(0.0);
+  floatBranches["Q2ScaleUpWgt"] = new float(0.0);
+  floatBranches["Q2ScaleDownWgt"] = new float(0.0);
+  floatBranches["numTruePV"] = new float(0.0);
+  floatBranches["numGenPV"] = new float(0.0);
 
 
   ////////////////////  
@@ -841,7 +845,7 @@ int main ( int argc, char ** argv )
 
   int nEventsWhereJetRemoved = 0;
 
-  bool verbose = true; //false;
+  bool verbose = false; //false;
   
   //
   // Loop over events
@@ -983,6 +987,20 @@ int main ( int argc, char ** argv )
 
       double numTruePV = event->numTruePV;
       double numGenPV = event->numGenPV;
+
+      double Q2ScaleUpWgt = 1.0;
+      double Q2ScaleDownWgt = 1.0; 
+
+      if (selectionYear_ == "2012") {
+        Q2ScaleUpWgt = event->Q2ScaleUpWgt;
+        Q2ScaleDownWgt = event->Q2ScaleDownWgt;
+      }
+
+      *(floatBranches["Q2ScaleUpWgt"]) = Q2ScaleUpWgt;
+      *(floatBranches["Q2ScaleDownWgt"]) = Q2ScaleDownWgt;
+      *(floatBranches["numTruePV"]) = numTruePV;
+      *(floatBranches["numGenPV"]) = numGenPV;
+      
 
       float wgt = 1 ;
 
