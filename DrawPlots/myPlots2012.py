@@ -391,7 +391,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'file': dirStr+'zjets_lowmass' +rootStr,
          'file_JESUp': dirStr+'zjets_lowmass'+rootStr,
          'file_JESDown': dirStr+'zjets_lowmass'+rootStr,
-         'xsec': 12.7826,                     ######
+         'xsec': 0.800,                     ######
          'xsec_err': 0.132*1.27826/3.5057,
          'sys_array': sys_arrays['ZJets'],
          'ngen': 7132223,
