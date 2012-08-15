@@ -27,6 +27,8 @@ def main ():
 
     lepselection = str(sys.argv[index])
     jetselection = str(sys.argv[index+1])
+	year = "2011"
+	Zmask = "noZmask"
     try:
         numBins = int(sys.argv[index+2])
     except:
@@ -48,7 +50,7 @@ def main ():
 	# it returns the plots you want
 	
 ##    defaultPlotGroup = getMyPlotsDefaultNorm()
-    AndrewPlotGroup = getMyPlotsAndrewNorm(lepselection,jetselection)
+    AndrewPlotGroup = getMyPlotsAndrewNorm(lepselection,year,Zmask,jetselection)
 
 ##    defaultPlotGroup.lumi = myLumi*1e6
     myLumi = AndrewPlotGroup.lumi
@@ -85,47 +87,47 @@ def main ():
 
     year = "2011"
 
-    #drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", numBins, 0, 5, lepselection, "root")
-    #drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", numBins, 0, 5, lepselection, "draw")
-    #drawStackPlot("numJets", pg, "Number of jets", 5, 3, 8, lepselection, "draw")
-    #drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", numBins*40/50, 0.6, 1, lepselection, "draw")
-    #drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", numBins, 0, 300, lepselection, "draw")
-    #drawStackPlot("CFMlpANN_eq2jeq2t", pg,  "ANN output", 10, 0.0072, 0.0074, lepselection, "root")
-    #drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1000, lepselection, "draw")
+    #drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", numBins, 0, 5, lepselection, year, "root")
+    #drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", numBins, 0, 5, lepselection, year, "draw")
+    #drawStackPlot("numJets", pg, "Number of jets", 5, 3, 8, lepselection, year, "draw")
+    #drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", numBins*40/50, 0.6, 1, lepselection, year, "draw")
+    #drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", numBins, 0, 300, lepselection, year, "draw")
+    #drawStackPlot("CFMlpANN_eq2jeq2t", pg,  "ANN output", 10, 0.0072, 0.0074, lepselection, year, "root")
+    #drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*20/50, 200, 1000, lepselection, year, "draw")
     drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection, year, "root")
-    #drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*12/10, 0, 1200, lepselection, "draw")
+    #drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MET)", numBins*12/10, 0, 1200, lepselection, year, "draw")
 
 
 
     
-    #drawStackPlot("all_sum_pt", pg, "all_sum_pt", numBins*8/10, 0, 800, lepselection, "draw")
-####    drawStackPlot("all_sum_pt", pg, "all_sum_pt", numBins*20/50, 100, 900, lepselection, "draw")
+    #drawStackPlot("all_sum_pt", pg, "all_sum_pt", numBins*8/10, 0, 800, lepselection, year, "draw")
+####    drawStackPlot("all_sum_pt", pg, "all_sum_pt", numBins*20/50, 100, 900, lepselection, year, "draw")
 
-    #drawStackPlot("avg_tagged_dijet_mass", pg, "avg_tagged_dijet_mass", numBins*40/50, 0, 400, lepselection, "draw")
-    #drawStackPlot("closest_tagged_dijet_mass", pg, "closest_tagged_dijet_mass", numBins*40/50, 0, 400, lepselection, "draw")
-    #drawStackPlot("dR_leplep", pg, "dR_leplep", numBins, 0, 5, lepselection, "draw")
-    #drawStackPlot("dPhi_leplep", pg, "dPhi_leplep", numBins, -6.3, 6.3, lepselection, "draw")
-    #drawStackPlot("dEta_leplep", pg, "dEta_leplep", numBins, -6, 6, lepselection, "draw")
+    #drawStackPlot("avg_tagged_dijet_mass", pg, "avg_tagged_dijet_mass", numBins*40/50, 0, 400, lepselection, year, "draw")
+    #drawStackPlot("closest_tagged_dijet_mass", pg, "closest_tagged_dijet_mass", numBins*40/50, 0, 400, lepselection, year, "draw")
+    #drawStackPlot("dR_leplep", pg, "dR_leplep", numBins, 0, 5, lepselection, year, "draw")
+    #drawStackPlot("dPhi_leplep", pg, "dPhi_leplep", numBins, -6.3, 6.3, lepselection, year, "draw")
+    #drawStackPlot("dEta_leplep", pg, "dEta_leplep", numBins, -6, 6, lepselection, year, "draw")
     
-#         drawStackPlot("isCleanEvent", pg, "isCleanEvent", 2, 0, 2, lepselection, "draw")
-#         drawStackPlot("isTriggerPass", pg, "isTriggerPass", 2, 0, 2, lepselection, "draw")
-    #drawStackPlot("lep1Eta", pg, "lep1Eta", numBins, -2.5, 2.5, lepselection, "draw")
-#    drawStackPlot("lep1Phi", pg, "lep1Phi", 62, -3.1, 3.1, lepselection, "draw")
-    #drawStackPlot("lep1Pt", pg, "lep1Pt", numBins, 20, 220, lepselection, "draw")
-    #drawStackPlot("lep2Eta", pg, "lep2Eta", numBins, -2.5, 2.5, lepselection, "draw")
-#    drawStackPlot("lep2Phi", pg, "lep2Phi", numBins, -3.0, 3.0, lepselection, "draw")
-    #drawStackPlot("lep2Pt", pg, "lep2Pt", numBins, 20, 220, lepselection, "draw")
-    #drawStackPlot("mass_leplep", pg, "mass_leplep", 30, 60, 120, lepselection, "draw")
-    #drawStackPlot("mass_of_everything", pg, "mass_of_everything", numBins, 0, 2000, lepselection, "draw")
-    #drawStackPlot("met", pg, "met", 50, 0, 150, lepselection, "draw")
-    #drawStackPlot("numPV", pg, "numPV", 30, 0, 30, lepselection, "draw")
-    #drawStackPlot("numTaggedJets", pg, "numTaggedJets", 6, 0, 6, lepselection, "draw")
-#         drawStackPlot("prob", pg, "prob1", numBins, 0, 2, lepselection, "draw")
-    #drawStackPlot("pt_leplep", pg, "pt_leplep", numBins, 0, 200, lepselection, "draw")
-    #drawStackPlot("second_jet_pt", pg, "second_jet_pt", numBins, 30, 230, lepselection, "draw")  
-    #drawStackPlot("sum_pt", pg, "sum_pt", numBins, 100, 1100, lepselection, "draw")
-	#drawStackPlot("dR_leplep", pg, "sum_pt", numBins, 20, 1100, lepselection, "draw")
-#         drawStackPlot("weight", pg, "weight", numBins, 0, 2, lepselection, "draw")
+#         drawStackPlot("isCleanEvent", pg, "isCleanEvent", 2, 0, 2, lepselection, year, "draw")
+#         drawStackPlot("isTriggerPass", pg, "isTriggerPass", 2, 0, 2, lepselection, year, "draw")
+    #drawStackPlot("lep1Eta", pg, "lep1Eta", numBins, -2.5, 2.5, lepselection, year, "draw")
+#    drawStackPlot("lep1Phi", pg, "lep1Phi", 62, -3.1, 3.1, lepselection, year, "draw")
+    #drawStackPlot("lep1Pt", pg, "lep1Pt", numBins, 20, 220, lepselection, year, "draw")
+    #drawStackPlot("lep2Eta", pg, "lep2Eta", numBins, -2.5, 2.5, lepselection, year, "draw")
+#    drawStackPlot("lep2Phi", pg, "lep2Phi", numBins, -3.0, 3.0, lepselection, year, "draw")
+    #drawStackPlot("lep2Pt", pg, "lep2Pt", numBins, 20, 220, lepselection, year, "draw")
+    #drawStackPlot("mass_leplep", pg, "mass_leplep", 30, 60, 120, lepselection, year, "draw")
+    #drawStackPlot("mass_of_everything", pg, "mass_of_everything", numBins, 0, 2000, lepselection, year, "draw")
+    #drawStackPlot("met", pg, "met", 50, 0, 150, lepselection, year, "draw")
+    #drawStackPlot("numPV", pg, "numPV", 30, 0, 30, lepselection, year, "draw")
+    #drawStackPlot("numTaggedJets", pg, "numTaggedJets", 6, 0, 6, lepselection, year, "draw")
+#         drawStackPlot("prob", pg, "prob1", numBins, 0, 2, lepselection, year, "draw")
+    #drawStackPlot("pt_leplep", pg, "pt_leplep", numBins, 0, 200, lepselection, year, "draw")
+    #drawStackPlot("second_jet_pt", pg, "second_jet_pt", numBins, 30, 230, lepselection, year, "draw")  
+    #drawStackPlot("sum_pt", pg, "sum_pt", numBins, 100, 1100, lepselection, year, "draw")
+	#drawStackPlot("dR_leplep", pg, "sum_pt", numBins, 20, 1100, lepselection, year, "draw")
+#         drawStackPlot("weight", pg, "weight", numBins, 0, 2, lepselection, year, "draw")
     
     print "Done"
 
