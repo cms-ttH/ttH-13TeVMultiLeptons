@@ -29,7 +29,8 @@ from PlotEnv import *
 def getMyPlotsAndrewNorm (lepselection, jetselection) :
 
     year = "2012"
-    zMask = "noZmask"
+    zMask = "Zmask"
+#    zMask = "noZmask"
 
 
     dirStr = lepselection+"/"
@@ -120,7 +121,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'xsec': 0.2340,
          'xsec_err': 0.023,
          'sys_array': sys_arrays['tt'],
-         'ngen':  6736135,
+         'ngen':  7619888,
          'fillColor': ROOT.kRed,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -137,7 +138,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'xsec': 0.2340,
          'xsec_err': 0.3*0.2340,
          'sys_array': sys_arrays['ttcc'],
-         'ngen':  6736135,
+         'ngen':  7619888,
          'fillColor': ROOT.kGreen-3,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -154,7 +155,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'xsec': 0.2340,
          'xsec_err': 0.3*0.2340,
          'sys_array': sys_arrays['ttbb'],
-         'ngen':  6736135,
+         'ngen':  7619888,
          'fillColor': ROOT.kMagenta+2,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -222,7 +223,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'xsec': 0.0307,
          'xsec_err': 0.0032*0.0307/(0.0564+0.0307),
          'sys_array': sys_arrays['t'],
-         'ngen': 1915072,
+         'ngen': 1935072,
          'fillColor': ROOT.kOrange+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -341,7 +342,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'xsec': 0.00826,
          'xsec_err': 0.00015,
          'sys_array': sys_arrays['diboson'],
-         'ngen':  9389033,
+         'ngen':  9799908,
          'fillColor': ROOT.kCyan,
 #         'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
@@ -377,7 +378,7 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'xsec': 3.5057,
          'xsec_err': 0.132,
          'sys_array': sys_arrays['ZJets'],
-         'ngen':   30451829,
+         'ngen':    30461028,
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -391,8 +392,8 @@ def getMyPlotsAndrewNorm (lepselection, jetselection) :
          'file': dirStr+'zjets_lowmass' +rootStr,
          'file_JESUp': dirStr+'zjets_lowmass'+rootStr,
          'file_JESDown': dirStr+'zjets_lowmass'+rootStr,
-         'xsec': 0.800,                     ######
-         'xsec_err': 0.132*1.27826/3.5057,
+         'xsec': 0.860,                     ######
+         'xsec_err': 0.132*0.86/3.5057,
          'sys_array': sys_arrays['ZJets'],
          'ngen': 7132223,
          'fillColor': ROOT.kAzure+1,
