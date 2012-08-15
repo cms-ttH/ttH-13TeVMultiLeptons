@@ -97,6 +97,7 @@ class PlotInfo:
         # Get the histogram
 		# Added some cloning into it
 		# because without cloning you have problems with the data
+        print " Looking in file %s" % self.fileName
         if (JES == "nominal" or isData):
             #print "%s: Getting histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
             targetHist = self.rootFile.Get(namePlusCycle).Clone()
@@ -312,7 +313,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
     for iplot in stackList:
 
-        
+       print "ITERATOR: name = %s" % iplot.name
        sys_frac_err = iplot.getHist(dist,lumi, lepselection, year, "nominal")[2]
        scaleRatio = iplot.getHist(dist,lumi, lepselection, year,  "nominal")[1]
        origHist = iplot.getHist(dist,lumi, lepselection, year, "nominal")[0]       
@@ -402,6 +403,21 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
        elif (iplot.name == "ttH_120"):
            iSig = resultHist.Clone("signal")
            ttHSum = iSig.Integral()
+           #print "adding ttH_120 to output list"
+           histoStorageList[keyName] = resultHist_MCErrorsOnly.Clone(storeName)
+           histoStorageList[keyNameJESUp] = resultHist_MCErrorsOnly_JESUp.Clone(storeNameJESUp)
+           histoStorageList[keyNameJESDown] = resultHist_MCErrorsOnly_JESDown.Clone(storeNameJESDown)           
+           histoStorageList[keyName_eff_bUp] = resultHist_MCErrorsOnly_eff_bUp.Clone(storeName_eff_bUp)
+           histoStorageList[keyName_eff_bDown] = resultHist_MCErrorsOnly_eff_bDown.Clone(storeName_eff_bDown)
+           histoStorageList[keyName_fake_bUp] = resultHist_MCErrorsOnly_fake_bUp.Clone(storeName_fake_bUp)
+           histoStorageList[keyName_fake_bDown] = resultHist_MCErrorsOnly_fake_bDown.Clone(storeName_fake_bDown)
+           histoStorageList[keyName_PUUp] = resultHist_MCErrorsOnly_PUUp.Clone(storeName_PUUp)
+           histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
+
+       elif (iplot.name.find("ttH_1") >= 0):
+           print "Just storing the ttH histo, not stacking it!"
+           #iSig = resultHist.Clone("signal")
+           #ttHSum = iSig.Integral()
            #print "adding ttH_120 to output list"
            histoStorageList[keyName] = resultHist_MCErrorsOnly.Clone(storeName)
            histoStorageList[keyNameJESUp] = resultHist_MCErrorsOnly_JESUp.Clone(storeNameJESUp)
