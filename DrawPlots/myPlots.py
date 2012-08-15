@@ -26,32 +26,28 @@
 from ROOT import *
 from PlotEnv import *
 
-def getMyPlotsAndrewNorm (lepselection, jetselection) :
+def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 
-    year = "2011"
-    zMask = "Zmask"
-#    zMask = "noZmask"    
-    
     dirStr =  lepselection+"/"
     #dirStr = "root"+lepselection+"/"
-    rootStr = "_" + year + "_" + zMask + "_" + jetselection + "_" + lepselection +".root"    
+    rootStr = "_" + year + "_" + Zmask + "_" + jetselection + "_" + lepselection +".root"    
 
     defaultLumi = 4982.0
     if lepselection.startswith("TwoMuon"):
-        dataStr = dirStr+'DoubleMu_'+ year + "_" + zMask + "_" + jetselection + "_TwoMuon.root"
+        dataStr = dirStr+'DoubleMu_'+ year + "_" + Zmask + "_" + jetselection + "_TwoMuon.root"
 
     elif lepselection.startswith("TwoEle"):
-        dataStr = dirStr+'DoubleElectron_'+  year + "_" + zMask + "_" + jetselection +  "_TwoEle.root"
+        dataStr = dirStr+'DoubleElectron_'+  year + "_" + Zmask + "_" + jetselection +  "_TwoEle.root"
 
     elif lepselection.startswith("MuonEle"):
-        dataStr = dirStr+'MuEG_' + year + "_" + zMask + "_" + jetselection +  "_MuonEle.root"
+        dataStr = dirStr+'MuEG_' + year + "_" + Zmask + "_" + jetselection +  "_MuonEle.root"
 
     else:
         dataStr = dirStr+'SameLep'+rootStr
 
-    directoryName = "pdf/"+lepselection+"_"+year + "_" + zMask + "_" + jetselection   
+    directoryName = "pdf/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection   
     
-    groupName = lepselection+"_"+year + "_" + zMask + "_" + jetselection
+    groupName = lepselection+"_"+year + "_" + Zmask + "_" + jetselection
 
     sys_arrays = {}
     ##sys_array['sample'] = [PU, hfSF, lfSF]
