@@ -28,27 +28,30 @@ from PlotEnv import *
 
 def getMyPlotsAndrewNorm (lepselection, jetselection) :
 
-    dirStr =  lepselection+"_2011_ref/"
+    year = "2011"
+    zMask = "Zmask"
+#    zMask = "noZmask"    
+    
+    dirStr =  lepselection+"/"
     #dirStr = "root"+lepselection+"/"
-    rootStr = "_" + jetselection + "_" + lepselection +".root"
+    rootStr = "_" + year + "_" + zMask + "_" + jetselection + "_" + lepselection +".root"    
 
     defaultLumi = 4982.0
     if lepselection.startswith("TwoMuon"):
-        dataStr = dirStr+'DoubleMu_'+ jetselection + "_TwoMuon.root"
+        dataStr = dirStr+'DoubleMu_'+ year + "_" + zMask + "_" + jetselection + "_TwoMuon.root"
 
     elif lepselection.startswith("TwoEle"):
-        dataStr = dirStr+'DoubleElectron_'+  jetselection + "_TwoEle.root"
+        dataStr = dirStr+'DoubleElectron_'+  year + "_" + zMask + "_" + jetselection +  "_TwoEle.root"
 
     elif lepselection.startswith("MuonEle"):
-        dataStr = dirStr+'MuEG_' + jetselection + "_MuonEle.root"
+        dataStr = dirStr+'MuEG_' + year + "_" + zMask + "_" + jetselection +  "_MuonEle.root"
 
     else:
         dataStr = dirStr+'SameLep'+rootStr
 
-  
-    directoryName = "pdf/"+lepselection+"_"+jetselection
+    directoryName = "pdf/"+lepselection+"_"+year + "_" + zMask + "_" + jetselection   
     
-    groupName = lepselection+"_"+jetselection
+    groupName = lepselection+"_"+year + "_" + zMask + "_" + jetselection
 
     sys_arrays = {}
     ##sys_array['sample'] = [PU, hfSF, lfSF]
