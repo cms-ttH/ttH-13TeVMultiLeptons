@@ -94,6 +94,16 @@ class PlotInfo:
 		isData = False
 		if (self.name == "data_2011" or self.name == "data_2012"):
 			isData = True
+
+		tmpSysName = ""
+		if (self.name == "tt"):
+			tmpSysName = "ttbar"
+		if (self.name == "ttbb"):
+			tmpSysName = "ttbar_bb"
+		if (self.name == "ttcc"):
+			tmpSysName = "ttbar_cc"
+
+
 		# Get the histogram
 		# Added some cloning into it
 		# because without cloning you have problems with the data
@@ -136,6 +146,15 @@ class PlotInfo:
 			namePlusCycle = "%s_PUDown;1" % (histName)
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "Q2Up"):
+			namePlusCycle = "%s_Q2scale_ttH_%sUp;1" % (histName, tmpSysName)
+#			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "Q2Down"):
+			namePlusCycle = "%s_Q2scale_ttH_%sDown;1" % (histName, tmpSysName)
+#			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+
 		else:
 			print "No valid JES specified"
 			pass
@@ -281,7 +300,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	TexTitle5 = TexTitle4.replace('pdf_2012/','')
 	TexTitle =	TexTitle5.replace('ee_mm_',' #mu#mu/ee')
 	
-	myLumiString = TexTitle+"	 CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
+	if year == "2011" :
+		myLumiString = TexTitle+"    CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
+	else :
+		myLumiString = TexTitle+"    CMS Preliminary,  #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}" 	
 #	 myLumiString = TexTitle+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV"
 #	 myLumiString = directoryName.replace('pdf/','')+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV" 
 	myLumiTex = TLatex()
@@ -327,6 +349,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   origHist_PUUp = iplot.getHist(dist,lumi, lepselection, year,	 "PUUp")[0]
 	   origHist_PUDown = iplot.getHist(dist,lumi, lepselection, year, "PUDown")[0]
 
+	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):
+		   origHist_Q2Up = iplot.getHist(dist,lumi, lepselection, year,  "Q2Up")[0]
+		   origHist_Q2Down = iplot.getHist(dist,lumi, lepselection, year, "Q2Down")[0]
 
 	   ############ Plot renaming
 	   # Translate old plot names into new names
@@ -334,7 +359,13 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   limitPlotName = iplot.name		
 	   if not iplot.limitPlotName == '':
 		   limitPlotName = iplot.limitPlotName
-	   
+	   sysStr = ""
+	   if (iplot.name == "tt"):
+		   sysStr = "ttbar"
+	   if (iplot.name == "ttbb"):
+		   sysStr = "ttbar_bb"
+	   if (iplot.name == "ttcc"):
+		   sysStr = "ttbar_cc"	   
 	   
 	   #
 	   #print "Got info from plots: sys_frac_err: %s, scaleRatio %s, origHist , origHist_JESUp , origHist_JESDown" % (sys_frac_err , scaleRatio)
@@ -357,7 +388,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   resultHist_MCErrorsOnly_PUUp = rebinHistManual (origHist_PUUp, 0, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 	   resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUDown, 0, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 	   
-
+	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):       
+		   resultHist_MCErrorsOnly_Q2Up = rebinHistManual (origHist_Q2Up, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_Q2Down = rebinHistManual (origHist_Q2Down, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   
 	   #print "Original histogram has integral %f, resultHist has integral %f" % (origHist.Integral(), resultHist.Integral())
 	   #print "Orignal histogram has bins %f, resultHist has bins %f" % (origHist.GetNbinsX(), resultHist.GetNbinsX())
 	   #print "CMS_eff_bUp Integral for orig = %s rebin = %s" % (origHist_eff_bUp.Integral(), resultHist_MCErrorsOnly_eff_bUp.Integral())
@@ -372,7 +406,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   storeName_fake_bDown = "%s_CFMlpANN_%s_CMS_fake_bDown" % (limitPlotName, printedJetSelection)
 	   storeName_PUUp = "%s_CFMlpANN_%s_PUUp" % (limitPlotName, printedJetSelection)
 	   storeName_PUDown = "%s_CFMlpANN_%s_PUDown" % (limitPlotName, printedJetSelection)
-	   
+
+#	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):       
+           storeName_Q2Up = "%s_CFMlpANN_%s_Q2scale_ttH_%sUp" % (limitPlotName, printedJetSelection, sysStr)
+	   storeName_Q2Down = "%s_CFMlpANN_%s_Q2scale_ttH_%sDown" % (limitPlotName, printedJetSelection, sysStr)	   
+
+
 	   keyName = limitPlotName
 	   keyNameJESUp = "%s_JESUp" % keyName
 	   keyNameJESDown = "%s_JESDown" % keyName
@@ -382,7 +421,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   keyName_fake_bDown = "%s_fake_bDown" % keyName
 	   keyName_PUUp = "%s_PUUp" % keyName
 	   keyName_PUDown = "%s_PUDown" % keyName
-	   
+	   keyName_Q2Up = "%s_Q2Up" % keyName
+	   keyName_Q2Down = "%s_Q2Down" % keyName	   
 	   
 	   # Save data for later
 	   Data2011Sum = 0
@@ -416,7 +456,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 
 	   elif (iplot.name.find("ttH_1") >= 0):
-		   print "Just storing the ttH histo, not stacking it!"
+#		   print "Just storing the %s histo, not stacking it!" % (iplot.name)
 		   #iSig = resultHist.Clone("signal")
 		   #ttHSum = iSig.Integral()
 		   #print "adding ttH_120 to output list"
@@ -445,6 +485,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   histoStorageList[keyName_PUUp] = resultHist_MCErrorsOnly_PUUp.Clone(storeName_PUUp)
 		   histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 
+		   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):
+			   histoStorageList[keyName_Q2Up] = resultHist_MCErrorsOnly_Q2Up.Clone(storeName_Q2Up)
+			   histoStorageList[keyName_Q2Down] = resultHist_MCErrorsOnly_Q2Down.Clone(storeName_Q2Down)
 		   
 		   MCsum += iHist.Integral()
 		   TotalMCsum += iHist.Integral()
@@ -753,9 +796,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		rootFileName = "histosForLimits_%s_%s_%s.root" % (lepselection, year, printedJetSelection)
 		rootOutput = TFile(rootFileName,"RECREATE")
 		print "histograms you will store has length %s" % len(histoStorageList)
-		print histoStorageList
+#		print histoStorageList
 		for iName, iPlot in histoStorageList.iteritems():
-			print "Saving plot stored under name %s" % iName
+#			print "Saving plot stored under name %s" % iName
 			iPlot.SetDirectory(rootOutput)
 			iPlot.Write()
 		rootOutput.Close()
