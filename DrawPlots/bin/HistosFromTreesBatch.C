@@ -155,8 +155,8 @@ int main ( int argc, char ** argv )
   std::vector<string> JetTagReqs;
   JetTagReqs.push_back("eq1t");
   JetTagReqs.push_back("eq2jeq2t");
-  JetTagReqs.push_back("eq3jeq2t");
-  JetTagReqs.push_back("ge4jeq2t");
+  JetTagReqs.push_back("e3je2t");
+  JetTagReqs.push_back("ge4je2t");
   JetTagReqs.push_back("ge3t");
 
   const unsigned int nJetTagReqs = JetTagReqs.size();
@@ -178,6 +178,8 @@ int main ( int argc, char ** argv )
   sysList.push_back("CMS_eff_bDown");
   sysList.push_back("CMS_fake_bUp");
   sysList.push_back("CMS_fake_bDown");
+  sysList.push_back("Q2scale_ttH");
+  sysList.push_back("Q2scale_ttH");
   const unsigned int NumSys = sysList.size();
 
   ////////// prepare the weight
@@ -194,6 +196,11 @@ int main ( int argc, char ** argv )
   weight[7] = "weight*prob_lfSFup*";
   weight[8] = "weight*prob_lfSFdown*";
 
+  weight[9] = "weight*prob*Q2ScaleUpWgt*1.403*"  ;     
+  weight[10] = "weight*prob*Q2ScaleDownWgt*0.683*"  ;  
+  // for 2011
+//   weight[9] = "weight*prob*Q2ScaleUpWgt*1.406*"  ;     
+//   weight[10] = "weight*prob*Q2ScaleDownWgt*0.681*"  ;  
 
   /////////// samples
   std::vector<string> InputFileNames;
@@ -217,7 +224,7 @@ int main ( int argc, char ** argv )
   varList.push_back(avg_tagged_dijet_mass);
   //  varInfo *avg_untagged_dijet_mass = new varInfo("avg_untagged_dijet_mass", "avg_untagged_dijet_mass", "avg_untagged_dijet_mass", 1000, 0, 1000);
   //  varList.push_back(avg_untagged_dijet_mass);
-  varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.4, 0.6);
+  varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.45, 0.55);
   varList.push_back(CFMlpANN_e2je2t);
   varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
   varList.push_back(CFMlpANN_ge3t);
@@ -386,7 +393,7 @@ int main ( int argc, char ** argv )
   }
   if (inputZmask == "Zpeak") {
     OutputParams = OutputParams+"Zpeak";
-    std::string ZmaskStr = "PassZmask == 0 && "; //Events inside the mask (mostly Zjets)
+    ZmaskStr = "PassZmask == 0 && "; //Events inside the mask (mostly Zjets)
   }
   
   if (OppositeLepStr == "(oppositeLepCharge == 0) && ") OutputParams = OutputParams+"SameCharge";
@@ -423,6 +430,7 @@ int main ( int argc, char ** argv )
   for( unsigned int i = 0; i < nInputFiles; i++) {
     
     std::string InputFileLabel = InputFileNames[i];
+    TString tmpName = InputFileLabel ;
 
     std::cout << "==== Processing Sample " << InputFileLabel << " ====" << std::endl;
 
@@ -437,7 +445,24 @@ int main ( int argc, char ** argv )
 
     for (unsigned int ksys = 0 ; ksys < NumSys ; ++ksys ){
       if (isData && ksys!=2) continue;
+
+      if (!tmpName.Contains("ttbar_") && ksys > 8) continue;
+
       TString syst = sysList[ksys];
+
+      if (tmpName.Contains("ttbar_part")){
+	if (ksys == 9) syst += "_ttbarUp";
+	if (ksys == 10) syst += "_ttbarDown";
+      }
+      if (tmpName.Contains("ttbar_bb")){
+	if (ksys == 9) syst += "_ttbar_bbUp";
+	if (ksys == 10) syst += "_ttbar_bbDown";
+      }
+      if (tmpName.Contains("ttbar_cc")){
+	if (ksys == 9) syst += "_ttbar_ccUp";
+	if (ksys == 10) syst += "_ttbar_ccDown";
+      }
+
       std::cout << "  == start systematic " << syst << " ==  " << std::endl;
 
       TString InputFileName = treeFileNameNominal;
@@ -486,11 +511,11 @@ int main ( int argc, char ** argv )
         JetReq = "numJets == 2";
         TagReq = "numTaggedJets == 2";
       }
-      else if (JetTagReq == "eq3jeq2t") {
+      else if (JetTagReq == "e3je2t") {
         JetReq = "numJets == 3";
         TagReq = "numTaggedJets == 2";
       }
-      else if (JetTagReq == "ge4jeq2t") {
+      else if (JetTagReq == "ge4je2t") {
         JetReq = "numJets >= 4";
         TagReq = "numTaggedJets == 2";
       }
@@ -566,10 +591,10 @@ int main ( int argc, char ** argv )
           //Selection string
           std::string SelectionStr = "holder";
           std::string CleanTrig = "holder";
-          CleanTrig = "(isTriggerPass == 1) && ";
-          if (inputYear == "2011") {
+	  //          CleanTrig = "(isTriggerPass == 1) && ";
+	  //          if (inputYear == "2011") {
             CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
-          }
+	    //          }
           ZmaskStrSaver = ZmaskStr;
           if (OutputDirectory == "MuonEle") {
             ZmaskStr = "";
