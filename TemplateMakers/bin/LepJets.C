@@ -842,7 +842,7 @@ int main ( int argc, char ** argv )
   try {
     for( ev.toBegin(); !ev.atEnd(); ++ev) {
       cnt++;
-   
+    
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
       if( cnt%1000==0 && cnt!=1 ) std::cout << "           " << cnt << "\t" 
 					      << int(double(cnt)/double(nentries)*100) << "% done" << std::endl;
@@ -865,7 +865,7 @@ int main ( int argc, char ** argv )
         *(uBranchMap->second) = 0;
         
       }
-      
+     
       ////Robin
       for (std::map<TString, float*>::iterator iDMap = floatBranches.begin();
 	   iDMap != floatBranches.end();
@@ -876,10 +876,11 @@ int main ( int argc, char ** argv )
 
       bool isMuonEvent = false;
       bool isEleEvent = false;
-
+     
       if (verbose) std::cout << "Getting collections... " <<std::endl;
       //std::cout << "========  Event! ========" << std::endl;
       // Get Handle for each collection used
+     
       fwlite::Handle<BNeventCollection> h_event;
       h_event.getByLabel(ev,"BNproducer");
       BNeventCollection const &events = *h_event;
