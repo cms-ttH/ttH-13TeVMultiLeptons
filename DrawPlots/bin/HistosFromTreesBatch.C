@@ -155,8 +155,8 @@ int main ( int argc, char ** argv )
   std::vector<string> JetTagReqs;
   JetTagReqs.push_back("eq1t");
   JetTagReqs.push_back("eq2jeq2t");
-  JetTagReqs.push_back("e3je2t");
-  JetTagReqs.push_back("ge4je2t");
+  JetTagReqs.push_back("eq3jeq2t");
+  JetTagReqs.push_back("ge4jeq2t");
   JetTagReqs.push_back("ge3t");
 
   const unsigned int nJetTagReqs = JetTagReqs.size();
@@ -282,12 +282,16 @@ int main ( int argc, char ** argv )
 //   varList.push_back(isCleanEvent);
   varInfo *lep1Eta = new varInfo("lep1Eta", "lep1Eta", "lep1Eta", 1000, -5, 5);
   varList.push_back(lep1Eta);
+  //varInfo *lep1Iso = new varInfo("lep1Iso", "lep1Iso", "lep1Iso", 2000, 0, 0.2);
+  //varList.push_back(lep1Iso);
   varInfo *lep1Phi = new varInfo("lep1Phi", "lep1Phi", "lep1Phi", 1000, -1*pival, pival);
   varList.push_back(lep1Phi);
   varInfo *lep1Pt = new varInfo("lep1Pt", "lep1Pt", "lep1Pt", 1000, 0, 1000);
   varList.push_back(lep1Pt);
   varInfo *lep2Eta = new varInfo("lep2Eta", "lep2Eta", "lep2Eta", 1000, -5, 5);
   varList.push_back(lep2Eta);
+  //varInfo *lep2Iso = new varInfo("lep2Iso", "lep2Iso", "lep2Iso", 2000, 0, 0.2);
+  //varList.push_back(lep2Iso);
   varInfo *lep2Phi = new varInfo("lep2Phi", "lep2Phi", "lep2Phi", 1000, -1*pival, pival);
   varList.push_back(lep2Phi);
   varInfo *lep2Pt = new varInfo("lep2Pt", "lep2Pt", "lep2Pt", 1000, 0, 1000);
@@ -334,8 +338,8 @@ int main ( int argc, char ** argv )
 //   varList.push_back(numTightElectrons);
 //   varInfo *numTightMuons = new varInfo("numTightMuons", "numTightMuons", "numTightMuons", 10, 0, 10);
 //   varList.push_back(numTightMuons);
-//   varInfo *prob1 = new varInfo("prob1", "prob1", "prob1", 1000, 0, 10);
-//   varList.push_back(prob1);
+  varInfo *prob = new varInfo("prob", "prob", "prob", 1000, 0, 10);
+  varList.push_back(prob);
 //   varInfo *prob2 = new varInfo("prob2", "prob2", "prob2", 1000, 0, 10);
 //   varList.push_back(prob2);
 //   varInfo *probge3 = new varInfo("probge3", "probge3", "probge3", 1000, 0, 10);
@@ -368,8 +372,8 @@ int main ( int argc, char ** argv )
   varList.push_back(third_jet_pt);
   //  varInfo *unc_met = new varInfo("unc_met", "unc_met", "unc_met", 1000, 0, 1000);
   //  varList.push_back(unc_met);
-//   varInfo *weight = new varInfo("weight", "weight", "weight", 1000, 0, 10);
-//   varList.push_back(weight);
+  varInfo *PUweight = new varInfo("weight", "weight", "weight", 1000, 0, 10);
+  varList.push_back(PUweight);
 
   std::string OutputParams = "";
   //std::string TightLepStr = "(numTightMuons + numTightElectrons == 2) && "; //Only tight leptons
@@ -407,6 +411,7 @@ int main ( int argc, char ** argv )
       OutputDirectory = lepCatList[iLep];
       std::string InputFileLabel = InputFileNames[0];
       ////////  book only a few histogram folders
+      //TString OutputFileName = "../" + inputYear + "/" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
       TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
       TFile * OutputFile = new TFile(OutputFileName, "RECREATE");
       std::cout << "Storing root file named " << OutputFileName << std::endl;
@@ -511,11 +516,11 @@ int main ( int argc, char ** argv )
         JetReq = "numJets == 2";
         TagReq = "numTaggedJets == 2";
       }
-      else if (JetTagReq == "e3je2t") {
+      else if (JetTagReq == "eq3jeq2t") {
         JetReq = "numJets == 3";
         TagReq = "numTaggedJets == 2";
       }
-      else if (JetTagReq == "ge4je2t") {
+      else if (JetTagReq == "ge4jeq2t") {
         JetReq = "numJets >= 4";
         TagReq = "numTaggedJets == 2";
       }
@@ -566,6 +571,7 @@ int main ( int argc, char ** argv )
         //TString OutputFileName = "holder";
         //OutputFileName = "../" + OutputParams + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + JetTagReq + "_" + OutputDirectory + ".root";
         //TFile * OutputFile = new TFile(OutputFileName, "UPDATE");
+        //TString OutputFileName = "../" + inputYear + "/" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
         TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
         TFile * OutputFile = outputRootFiles[OutputFileName];
 
@@ -591,10 +597,10 @@ int main ( int argc, char ** argv )
           //Selection string
           std::string SelectionStr = "holder";
           std::string CleanTrig = "holder";
-	  //          CleanTrig = "(isTriggerPass == 1) && ";
-	  //          if (inputYear == "2011") {
+          CleanTrig = "(isTriggerPass == 1) && ";
+          if (inputYear == "2011") {
             CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
-	    //          }
+          }
           ZmaskStrSaver = ZmaskStr;
           if (OutputDirectory == "MuonEle") {
             ZmaskStr = "";
@@ -636,6 +642,7 @@ int main ( int argc, char ** argv )
       OutputDirectory = lepCatList[iLep];
       std::string InputFileLabel = InputFileNames[0];
       ////////  book only a few histogram folders
+      //TString OutputFileName = "../" + inputYear + "/" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
       TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
       
       std::cout << "Closing root file named " << OutputFileName << std::endl;
