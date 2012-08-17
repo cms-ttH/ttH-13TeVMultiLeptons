@@ -338,6 +338,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	foundFirstSingleTop = False
 	foundFirstZjets = False
 
+	binWidthChecker = -99
+
 	for iplot in stackList:
 
 	   sys_hist_array = []
@@ -361,6 +363,15 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   sys_hist_array.append(origHist_fake_bDown)
 	   sys_hist_array.append(origHist_PUUp)
 	   sys_hist_array.append(origHist_PUDown)
+
+	   if (binWidthChecker == -99 or origHist.GetBinWidth(1) == binWidthChecker):
+		   binWidthChecker = origHist.GetBinWidth(1)
+		   lastSampleName = iplot.name
+	   else:
+		   print "MASSIVE ERROR - ORIGHIST BIN WIDTH FOR "+str(iplot.name)+" IN "+str(origHist.GetName())+" IS "+str(origHist.GetBinWidth(1))
+		   print "BIN SIZE FOR "+lastSampleName+" WAS "+str(binWidthChecker)+". EXITING"
+		   sys.exit()
+		   
 
 	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):
 		   origHist_Q2Up = iplot.getHist(dist,lumi, lepselection, year,	 "Q2Up")[0]
