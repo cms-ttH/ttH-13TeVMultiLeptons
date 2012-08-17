@@ -90,6 +90,7 @@ class PlotInfo:
 
 	def getHist(self, histName, lumi, lepselection, year, JES):
 		# add a namecycle to histName
+#		print histName
 		namePlusCycle = "%s;1" % (histName)
 		isData = False
 		if (self.name == "data_2011" or self.name == "data_2012"):
@@ -189,8 +190,8 @@ class PlotInfo:
 
 			xsec_frac_err = self.xsec_err/self.xsec
 			
-			sys_frac_err = math.sqrt(math.pow(xsec_frac_err,2)+math.pow(self.sys_array[0]/100.0,2)+math.pow(self.sys_array[1]/100.0,2)+math.pow(self.sys_array[2]/100.0,2))
-
+			#sys_frac_err = math.sqrt(math.pow(xsec_frac_err,2)+math.pow(self.sys_array[0]/100.0,2)+math.pow(self.sys_array[1]/100.0,2)+math.pow(self.sys_array[2]/100.0,2))
+			sys_frac_err = xsec_frac_err*1.0
 			return targetHist, scaleRatio, sys_frac_err
 
 		else:
@@ -239,6 +240,8 @@ class PlotInfo:
 
 class PlotGroup :
 	def __init__ (self, plotList, lumi, plotGroupName, directoryName) :
+		#Uncomment for blinding
+		#directoryName = directoryName+'_blind'
 		self.plotList = plotList
 		self.lumi = lumi
 		self.groupName = plotGroupName
@@ -298,12 +301,13 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	TexTitle3 = TexTitle2.replace('ge3t',' + #geq 3 tags')
 	TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e')
 	TexTitle5 = TexTitle4.replace('pdf_2012/','')
-	TexTitle =	TexTitle5.replace('ee_mm_',' #mu#mu/ee')
+	TexTitle6 = TexTitle5.replace('2012_noZmask_','')
+	TexTitle =  TexTitle6.replace('ee_mm_',' #mu#mu/ee')
 	
 	if year == "2011" :
-		myLumiString = TexTitle+"    CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
+		myLumiString = TexTitle+"   CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
 	else :
-		myLumiString = TexTitle+"    CMS Preliminary,  #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}" 	
+		myLumiString = TexTitle+"   CMS Preliminary,  #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 #	 myLumiString = TexTitle+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV"
 #	 myLumiString = directoryName.replace('pdf/','')+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV" 
 	myLumiTex = TLatex()
@@ -336,6 +340,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	for iplot in stackList:
 
+	   sys_hist_array = []
 	   #print "ITERATOR: name = %s" % iplot.name
 	   sys_frac_err = iplot.getHist(dist,lumi, lepselection, year, "nominal")[2]
 	   scaleRatio = iplot.getHist(dist,lumi, lepselection, year,  "nominal")[1]
@@ -348,10 +353,20 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   origHist_fake_bDown = iplot.getHist(dist,lumi, lepselection, year, "fake_bDown")[0]
 	   origHist_PUUp = iplot.getHist(dist,lumi, lepselection, year,	 "PUUp")[0]
 	   origHist_PUDown = iplot.getHist(dist,lumi, lepselection, year, "PUDown")[0]
+	   sys_hist_array.append(origHist_JESUp)
+	   sys_hist_array.append(origHist_JESDown)
+	   sys_hist_array.append(origHist_eff_bUp)
+	   sys_hist_array.append(origHist_eff_bDown)
+	   sys_hist_array.append(origHist_fake_bUp)
+	   sys_hist_array.append(origHist_fake_bDown)
+	   sys_hist_array.append(origHist_PUUp)
+	   sys_hist_array.append(origHist_PUDown)
 
 	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):
-		   origHist_Q2Up = iplot.getHist(dist,lumi, lepselection, year,  "Q2Up")[0]
+		   origHist_Q2Up = iplot.getHist(dist,lumi, lepselection, year,	 "Q2Up")[0]
 		   origHist_Q2Down = iplot.getHist(dist,lumi, lepselection, year, "Q2Down")[0]
+		   sys_hist_array.append(origHist_Q2Up)
+		   sys_hist_array.append(origHist_Q2Down)
 
 	   ############ Plot renaming
 	   # Translate old plot names into new names
@@ -377,20 +392,20 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   # It also adds in the errors
 	   # JMS: Someone should probably make this loop work better
 	   # 
-	   resultHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, scaleRatio, sys_frac_err)
-	   resultHist_MCErrorsOnly = rebinHistManual (origHist, 0, 0, nBins, xMin, xMax, scaleRatio, 1.0, "off")
-	   resultHist_MCErrorsOnly_JESUp = rebinHistManual (origHist_JESUp, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
-	   resultHist_MCErrorsOnly_JESDown = rebinHistManual (origHist_JESDown, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
-	   resultHist_MCErrorsOnly_eff_bUp = rebinHistManual (origHist_eff_bUp, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
-	   resultHist_MCErrorsOnly_eff_bDown = rebinHistManual (origHist_eff_bDown, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
-	   resultHist_MCErrorsOnly_fake_bUp = rebinHistManual (origHist_fake_bUp, 0, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
-	   resultHist_MCErrorsOnly_fake_bDown = rebinHistManual (origHist_fake_bDown, 0, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
-	   resultHist_MCErrorsOnly_PUUp = rebinHistManual (origHist_PUUp, 0, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
-	   resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUDown, 0, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist = rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sys_frac_err, "all")
+	   resultHist_MCErrorsOnly = rebinHistManual (origHist, 0, nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist_MCErrorsOnly_JESUp = rebinHistManual (origHist_JESUp, 0,	nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist_MCErrorsOnly_JESDown = rebinHistManual (origHist_JESDown, 0,	nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist_MCErrorsOnly_eff_bUp = rebinHistManual (origHist_eff_bUp, 0,	nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist_MCErrorsOnly_eff_bDown = rebinHistManual (origHist_eff_bDown, 0,	nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist_MCErrorsOnly_fake_bUp = rebinHistManual (origHist_fake_bUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist_MCErrorsOnly_fake_bDown = rebinHistManual (origHist_fake_bDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist_MCErrorsOnly_PUUp = rebinHistManual (origHist_PUUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 	   
-	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):       
-		   resultHist_MCErrorsOnly_Q2Up = rebinHistManual (origHist_Q2Up, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
-		   resultHist_MCErrorsOnly_Q2Down = rebinHistManual (origHist_Q2Down, 0, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
+	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
+		   resultHist_MCErrorsOnly_Q2Up = rebinHistManual (origHist_Q2Up, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_Q2Down = rebinHistManual (origHist_Q2Down, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
 	   
 	   #print "Original histogram has integral %f, resultHist has integral %f" % (origHist.Integral(), resultHist.Integral())
 	   #print "Orignal histogram has bins %f, resultHist has bins %f" % (origHist.GetNbinsX(), resultHist.GetNbinsX())
@@ -407,9 +422,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   storeName_PUUp = "%s_CFMlpANN_%s_PUUp" % (limitPlotName, printedJetSelection)
 	   storeName_PUDown = "%s_CFMlpANN_%s_PUDown" % (limitPlotName, printedJetSelection)
 
-#	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):       
-           storeName_Q2Up = "%s_CFMlpANN_%s_Q2scale_ttH_%sUp" % (limitPlotName, printedJetSelection, sysStr)
-	   storeName_Q2Down = "%s_CFMlpANN_%s_Q2scale_ttH_%sDown" % (limitPlotName, printedJetSelection, sysStr)	   
+	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
+		   storeName_Q2Up = "%s_CFMlpANN_%s_Q2scale_ttH_%sUp" % (limitPlotName, printedJetSelection, sysStr)
+		   storeName_Q2Down = "%s_CFMlpANN_%s_Q2scale_ttH_%sDown" % (limitPlotName, printedJetSelection, sysStr)	   
 
 
 	   keyName = limitPlotName
@@ -438,7 +453,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   elif (iplot.name == "data_2012" and year == "2012"):
 		   myData2012 = resultHist_MCErrorsOnly.Clone("data_2012")
 		   Data2012Sum = myData2012.Integral()
-		   legForStack.AddEntry(myData2012, "Data ("+str(round(Data2012Sum,0))+")", "lpe")
+		   legForStack.AddEntry(myData2012, "Data ("+str(round(Data2012Sum,0))+")", "lpe") ##Comment out for blinding
 		   histoStorageList["data_obs"] = myData2012.Clone("data_obs_CFMlpANN_%s" % (printedJetSelection)  )
 		   
 	   elif (iplot.name == "ttH_120"):
@@ -649,10 +664,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		print "Year %s could not be understood. Crashing...." % year
 		exit (11)
 
-	##Comment for 2012 data
+
 	
-	plotMax = max(myStack.GetMaximum(),theDataHisto.GetMaximum())
-	
+	plotMax = max(myStack.GetMaximum(),iSig.GetMaximum())  	
+	plotMax = max(myStack.GetMaximum(),theDataHisto.GetMaximum())  ##Comment out for blinding
 	
 	titleString = "%s;%s;%s" % ("", "", "Events")
 
@@ -689,9 +704,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	##End comment out for 2012
 
-	if (dist == "numJets"):
+	if ((dist == "numJets" or dist == "numTaggedJets") and jetSelection=="ge1t"):
 		myStack.SetMinimum(0.1)
-		myStack.SetMaximum(plotMax*10)
+		myStack.SetMaximum(plotMax*13)
 		upLin.cd()
 		gPad.SetLogy()
 
@@ -705,7 +720,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	
 	iSig.Draw('histsame')
 
-	theDataHisto.Draw("pesame")
+	theDataHisto.Draw("pesame")   	##Comment out for blinding
 	
 
 	legForStack.Draw()
@@ -718,7 +733,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	gPad.SetTickx()
 	gPad.Modified()
 
-	ratioHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, 1.0, 0.0)
+	ratioHist = rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, 1.0, 0.0)
 	ratioHist.SetMinimum(0)
 	ratioHist.SetMaximum(2.3)
 	ratiotitleString = "%s;%s;%s" % ("", plotXLabel, "Data/MC")	 ###
@@ -734,15 +749,18 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	ratioHist.GetXaxis().SetLabelOffset(0.04)
 	ratioHist.GetXaxis().SetTitleOffset(1.1)
 	ratioHist.GetXaxis().SetTitleSize(0.12)
-	if (dist == "CFMlpANN_e2je2t"):
-		ratioHist.GetXaxis().SetNdivisions(504)
+#	if (dist == "CFMlpANN_e2je2t"):
+#		ratioHist.GetXaxis().SetNdivisions(504)
 	
-	ratioHist.SetLineColor(kBlack)
-	ratioHist.SetMarkerColor(kBlack)
+	ratioHist.SetLineColor(0)    
+	ratioHist.SetMarkerColor(0)  
+
+	ratioHist.SetLineColor(kBlack)     ##Comment out for blinding 
+	ratioHist.SetMarkerColor(kBlack)   ##Comment out for blinding 
 
 
 		
-	ratioErrHist = rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, 1.0, 0.0)
+	ratioErrHist = rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, 1.0, 0.0)
 	ratioErrHist.SetMarkerColor(kGreen)
 	ratioErrHist.SetFillColor(kGreen)
 	##ratioHistErr = rebinHistManual (origHist, nBins, xMin, xMax, 1.0)
@@ -771,9 +789,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		if (MCVal != 0):
 			ratioErrHist.SetBinContent(i,1)
 			ratioErrHist.SetBinError(i,ratErrMC)
-			
+
 	ratioHist.Draw()
-	ratioErrHist.Draw("e2same")
+	ratioErrHist.Draw("e2same")  	##Comment out for blinding 
 	ratioHist.Draw("pe1same")
 	l = TLine()
 	l.SetLineStyle(2)
@@ -818,7 +836,7 @@ def moveExtraIntoHist (hist):
 	
 	return hist
 
-def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xMax, scaleRatio, sys_frac_err, binErrors = "default"):
+def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sys_frac_err, binErrors = "default"):
 	
 	nBinsOrig = int(origHist.GetNbinsX())
 	xMinOrig = origHist.GetXaxis().GetXmin()
@@ -914,12 +932,20 @@ def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xM
 	# first loop
 	for origBin in range(origStart,origEnd):
 		binCont += origHist.GetBinContent(origBin)
-		binJES_err = 0
+		binALL_err_squared = 0
 		if useSysErrors:
-			binJES_err = math.fabs(origHist_JESUp.GetBinContent(origBin) - origHist_JESDown.GetBinContent(origBin))		   
+			#print 'origBin = '+str(origBin)
+			#print 'binErrors = '+str(binErrors)
+			#print 'name = '+str(origHist.GetName())
+			#print 'sys_frac_err = '+str(sys_frac_err)
+			ii = 0
+			while (ii < len(sys_hist_array)):
+				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+				#print 'Entries '+str(ii)+' , '+str(ii+1)+' = '+str(sys_hist_array[ii].GetBinContent(origBin))+' , '+str(sys_hist_array[ii+1].GetBinContent(origBin))
+				ii+=2
 		binSumW2 += (origHist.GetBinError(origBin)**2)
 		hist.SetBinContent(1,binCont)
-		hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+math.pow(binJES_err,2)))
+		hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 	# end loop over origBin
 
 	# Do the bulk of the distribution
@@ -928,16 +954,19 @@ def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xM
 		origEnd = origStart + int(binGroup)
 		
 		binCont = hist.GetBinContent(newBin)
-		binJES_err = 0
+		binALL_err_squared = 0
 		if useSysErrors:
-			binJES_err = math.fabs(origHist_JESUp.GetBinContent(newBin) - origHist_JESDown.GetBinContent(newBin))
+			ii = 0
+			while (ii < len(sys_hist_array)):
+				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+				ii+=2
 		binSumW2 = hist.GetBinError(newBin)**2
 		for origBin in range(origStart,origEnd):
 			binCont += origHist.GetBinContent(origBin)
 			binSumW2 += (origHist.GetBinError(origBin)**2)
 		# end loop over orig bin
 		hist.SetBinContent(newBin,binCont)
-		hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+math.pow(binJES_err,2)))
+		hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 		##if (newBin == 2):
 			##print math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2))
 		
@@ -947,9 +976,12 @@ def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xM
 	origStart = origEnd
 	origEnd = 2+nBinsOrig #Include the overflow in the original
 	binCont = hist.GetBinContent(nBins)
-	binJES_err = 0
+	binALL_err_squared = 0
 	if useSysErrors:
-		binJES_err = math.fabs(origHist_JESUp.GetBinContent(nBins) - origHist_JESDown.GetBinContent(nBins))
+			ii = 0
+			while (ii < len(sys_hist_array)):
+				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+				ii+=2
 	binSumW2 = hist.GetBinError(nBins)**2
 	for origBin in range(origStart,origEnd):
 		binCont += origHist.GetBinContent(origBin)
@@ -957,7 +989,7 @@ def rebinHistManual (origHist, origHist_JESUp, origHist_JESDown, nBins, xMin, xM
 	# end loop over origBin
 
 	hist.SetBinContent(nBins,binCont)
-	hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+math.pow(binJES_err,2)))
+	hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 	
 	hist.SetEntries(totalEntries)
 				 

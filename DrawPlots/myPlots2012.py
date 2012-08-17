@@ -42,8 +42,10 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
     elif lepselection.startswith("MuonEle"):
         dataStr = dirStr+'MuEG_' + year + "_" + Zmask + "_" + jetselection +  "_MuonEle.root"
 
-    else:
+    elif lepselection.startswith("ee_mm"):
         dataStr = dirStr+'SameLep'+rootStr
+    else:
+        dataStr = dirStr+'AllLep'+rootStr
 
   
     directoryName = "pdf_2012/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection 
@@ -113,7 +115,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'file': dirStr+'ttbar' +rootStr,
          'file_JESUp': dirStr+'ttbar'+rootStr,
          'file_JESDown': dirStr+'ttbar'+rootStr,
-         'xsec': 0.2340,
+         'xsec': 0.225197,
          'xsec_err': 0.023,
          'sys_array': sys_arrays['tt'],
          'ngen':  7619888,
@@ -130,8 +132,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'file': dirStr+'ttbar_cc' +rootStr,
          'file_JESUp': dirStr+'ttbar_cc'+rootStr,
          'file_JESDown': dirStr+'ttbar_cc'+rootStr,
-         'xsec': 0.2340,
-         'xsec_err': 0.3*0.2340,
+         'xsec': 0.225197,
+         'xsec_err': 0.3*0.225197,
          'sys_array': sys_arrays['ttcc'],
          'ngen':  7619888,
          'fillColor': ROOT.kGreen-3,
@@ -147,8 +149,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'file': dirStr+'ttbar_bb' +rootStr,
          'file_JESUp': dirStr+'ttbar_bb'+rootStr,
          'file_JESDown': dirStr+'ttbar_bb'+rootStr,
-         'xsec': 0.2340,
-         'xsec_err': 0.3*0.2340,
+         'xsec': 0.225197,
+         'xsec_err': 0.3*0.225197,
          'sys_array': sys_arrays['ttbb'],
          'ngen':  7619888,
          'fillColor': ROOT.kMagenta+2,
@@ -266,8 +268,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'file': dirStr+'ttbarW' +rootStr,
          'file_JESUp': dirStr+'ttbarW'+rootStr,
          'file_JESDown': dirStr+'ttbarW'+rootStr,
-         'xsec': 0.000163*1.5,
-         'xsec_err': 0.2*0.000163,
+         'xsec': 0.000249, #0.000163*1.5,
+         'xsec_err': 0.2*0.000249,
          'sys_array': sys_arrays['ttV'],
          'ngen':  195301,
          'fillColor': ROOT.kBlue-9,
@@ -282,8 +284,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'file': dirStr+'ttbarZ' +rootStr,
          'file_JESUp': dirStr+'ttbarZ'+rootStr,
          'file_JESDown': dirStr+'ttbarZ'+rootStr,
-         'xsec': 0.000136*1.5,
-         'xsec_err': 0.2*0.000136,
+         'xsec': 0.000208,#0.000136*1.5,
+         'xsec_err': 0.2*0.000208,
          'sys_array': sys_arrays['ttV'],
          'ngen':  209741,
          'fillColor': ROOT.kBlue-9,
@@ -299,7 +301,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'file': dirStr+'ww' +rootStr,
          'file_JESUp': dirStr+'ww'+rootStr,
          'file_JESDown': dirStr+'ww'+rootStr,
-         'xsec': 0.0571,
+         'xsec': 0.0548,#0.0571,
          'xsec_err': 0.0015,
          'sys_array': sys_arrays['diboson'],
          'ngen': 10000431,
@@ -334,7 +336,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'file': dirStr+'zz' +rootStr,
          'file_JESUp': dirStr+'zz'+rootStr,
          'file_JESDown': dirStr+'zz'+rootStr,
-         'xsec': 0.00826,
+         'xsec': 0.0077,#0.00826,
          'xsec_err': 0.00015,
          'sys_array': sys_arrays['diboson'],
          'ngen':  9799908,
