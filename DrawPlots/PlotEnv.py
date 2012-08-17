@@ -299,10 +299,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	TexTitle1 = directoryName.replace('pdf/','')
 	TexTitle2 = TexTitle1.replace('eq2jeq2t',' + 2 jets + 2 tags')
 	TexTitle3 = TexTitle2.replace('ge3t',' + #geq 3 tags')
-	TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e')
+	TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e ')
 	TexTitle5 = TexTitle4.replace('pdf_2012/','')
 	TexTitle6 = TexTitle5.replace('2012_noZmask_','')
-	TexTitle =  TexTitle6.replace('ee_mm_',' #mu#mu/ee')
+	TexTitle =  TexTitle6.replace('ee_mm_',' #mu#mu/ee ')
 	
 	if year == "2011" :
 		myLumiString = TexTitle+"   CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
@@ -704,7 +704,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	##End comment out for 2012
 
-	if ((dist == "numJets" or dist == "numTaggedJets") and jetSelection=="ge1t"):
+	if ((dist == "numJets" and (jetSelection.startswith("ge") or jetSelection == "eq1t")) or (dist == "numTaggedJets" and jetSelection=="ge1t")):
 		myStack.SetMinimum(0.1)
 		myStack.SetMaximum(plotMax*13)
 		upLin.cd()
