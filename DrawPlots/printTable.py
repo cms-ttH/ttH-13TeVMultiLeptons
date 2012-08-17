@@ -104,7 +104,7 @@ def main ():
 			
 			pg.show()
 
-			Outputs[jet][lep] = drawStackPlot("numJets", pg, "numJets", 1, 0, 1, lep, year, "print")
+			Outputs[jet][lep] = drawStackPlot("numTaggedJets", pg, "numTaggedJets", 1, 0, 10, lep, year, "print")
 
 	#print "\documentclass[landscape]{article}"
 	#print "\usepackage[english]{babel}"
