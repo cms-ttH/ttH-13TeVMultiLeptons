@@ -991,7 +991,8 @@ int main ( int argc, char ** argv )
       double Q2ScaleUpWgt = 1.0;
       double Q2ScaleDownWgt = 1.0; 
 
-      if (selectionYear_ == "2012") {
+      //      if (selectionYear_ == "2012") {
+      if (sampleNumber == 2500) {
         Q2ScaleUpWgt = event->Q2ScaleUpWgt;
         Q2ScaleDownWgt = event->Q2ScaleDownWgt;
       }
@@ -2110,10 +2111,10 @@ int main ( int argc, char ** argv )
 
 	//////
         *(floatBranches["prob"]) = wgt_btag;
-        *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFup;
-        *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFdown;
-        *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFup;
-        *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;
+        *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFdown ;
+        *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFup ;
+        *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFdown ;
+        *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFup ;
 
 
       /////////////////////////////////
