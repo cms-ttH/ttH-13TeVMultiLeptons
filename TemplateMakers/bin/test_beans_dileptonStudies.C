@@ -170,7 +170,7 @@ int main ( int argc, char ** argv )
    //edm::FileInPath annFileName = anaParams.getParameter<edm::FileInPath> ("annFile");
    
    
-
+   bool debug_ = false;
 
 //    std::cout << "CONFIG: using btagFile = " << btagFileName.fullPath() << std::endl;
 
@@ -257,7 +257,9 @@ int main ( int argc, char ** argv )
   if (!isData)  {
     cout << "Calling setMCsample with arguments: sampleNumber = " << sampleNumber
          << ", is8TeV = " << is8TeV << ", dset = " << dset << endl;
-    setMCsample(sampleNumber,is8TeV,dset);
+
+    // bool argument isLJ is always false
+    BEANs::setMCsample(sampleNumber,is8TeV, false, dset);
   }
 
 
@@ -402,15 +404,15 @@ int main ( int argc, char ** argv )
 
 
   // Variables used for histogram ranges and binning
-  double metmax   = 500.;
-  double muptmax  = 350.;
-  double jetptmax = 500.;
-  double massmax  = 200.;
+  // double metmax   = 500.;
+  //double muptmax  = 350.;
+  //double jetptmax = 500.;
+  //double massmax  = 200.;
 
-  int NmetBins   = int( metmax/10. + 0.0001 );
-  int NmuptBins  = int( muptmax/10. + 0.0001 );
-  int NjetptBins = int( jetptmax/10. + 0.0001 );
-  int NmassBins  = int( massmax/1. + 0.0001 );
+  //int NmetBins   = int( metmax/10. + 0.0001 );
+  //int NmuptBins  = int( muptmax/10. + 0.0001 );
+  //int NjetptBins = int( jetptmax/10. + 0.0001 );
+  //int NmassBins  = int( massmax/1. + 0.0001 );
 
 
 //   // Book the histograms
@@ -451,10 +453,10 @@ int main ( int argc, char ** argv )
 //   TH1D* h_jet_disc_c = new TH1D("h_jet_disc_c",";c jet SSVHE discriminant", 70, -1.0, 6.0 );
 //   TH1D* h_jet_disc_l = new TH1D("h_jet_disc_l",";light jet SSHVE discriminant", 70, -1.0, 6.0 );
 
-  TH1D* h_met_pt = new TH1D("h_met_pt",";MET p_{T}", NmetBins, 0, metmax );
-  TH1D* h_met_phi = new TH1D("h_met_phi",";MET #phi", 16, -3.2, 3.2 );
-  TH1D* h_met_Upt = new TH1D("h_met_Upt",";MET raw p_{T}", NmetBins, 0, metmax );
-  TH1D* h_met_Uphi = new TH1D("h_met_Uphi",";MET raw #phi", 16, -3.2, 3.2 );
+  //TH1D* h_met_pt = new TH1D("h_met_pt",";MET p_{T}", NmetBins, 0, metmax );
+  //TH1D* h_met_phi = new TH1D("h_met_phi",";MET #phi", 16, -3.2, 3.2 );
+  //TH1D* h_met_Upt = new TH1D("h_met_Upt",";MET raw p_{T}", NmetBins, 0, metmax );
+  //TH1D* h_met_Uphi = new TH1D("h_met_Uphi",";MET raw #phi", 16, -3.2, 3.2 );
 
 //   TH2D* h_W0_decay_W1_decay = new TH2D("h_W0_decay_W1_decay",";W0 decay;W1 decay", 13, 0, 13, 13, 0, 13 );
 //   TH1D* h_H_decay = new TH1D("h_H_decay",";H decay", 9, 0, 9 );
@@ -685,6 +687,10 @@ int main ( int argc, char ** argv )
   floatBranches["lep1GenCharge"] = new float (0.0);
   floatBranches["lep2TkCharge"] = new float (0.0);
   floatBranches["lep2GenCharge"] = new float (0.0);
+  floatBranches["lep1SF"] = new float (0.0);
+  floatBranches["lep2SF"] = new float (0.0);
+  floatBranches["lepTotalSF"] = new float (0.0);
+  
   /// jet variables
   floatBranches["numJets_float"] = new float (0);
   floatBranches["numTaggedJets_float"] = new float (0);
@@ -853,12 +859,12 @@ int main ( int argc, char ** argv )
   double maxd0   = 2.;
 
   int nevents=0;
-  int nevents_pass_trigger=0;
-  int nevents_pass_cleaning=0;
+  //int nevents_pass_trigger=0;
+  //int nevents_pass_cleaning=0;
 
   double nevents_wgt=0;
-  double nevents_pass_trigger_wgt=0;
-  double nevents_pass_cleaning_wgt=0;
+  //double nevents_pass_trigger_wgt=0;
+  //double nevents_pass_cleaning_wgt=0;
 
   int nentries = ev.size();
   std::cout << "\n\t Number of entries = " << nentries << std::endl;
@@ -869,7 +875,7 @@ int main ( int argc, char ** argv )
   int cnt = 0;
 
 
-  int nEventsWhereJetRemoved = 0;
+  //int nEventsWhereJetRemoved = 0;
 
   bool verbose = false; //false;
   
@@ -952,9 +958,9 @@ int main ( int argc, char ** argv )
       h_mcparticles.getByLabel(ev,"BNproducer","MCstatus3");
       BNmcparticleCollection const &mcparticles = *h_mcparticles;
 
-      fwlite::Handle<BNtrigobjCollection> h_hltobj;
-      h_hltobj.getByLabel(ev,"BNproducer","HLT");
-      BNtrigobjCollection const &hltobjs = *h_hltobj;
+      //fwlite::Handle<BNtrigobjCollection> h_hltobj;
+      //h_hltobj.getByLabel(ev,"BNproducer","HLT");
+      //BNtrigobjCollection const &hltobjs = *h_hltobj;
 
       if (verbose) std::cout << "Getting collections... " <<std::endl;
 
@@ -1075,7 +1081,7 @@ int main ( int argc, char ** argv )
       for( unsigned i=0; i< mcparticles.size(); i++ ){
         int Aid = mcparticles.at(i).id;
         int AmotherID = mcparticles.at(i).motherId;
-        int AgrandMotherID = mcparticles.at(i).grandMotherId;
+        //int AgrandMotherID = mcparticles.at(i).grandMotherId;
         if ((Aid == 5 || Aid == -5) && AmotherID == 25) {
           if (HtoBB) higgsGenBV[0].SetPtEtaPhiE(mcparticles.at(i).pt,mcparticles.at(i).eta,mcparticles.at(i).phi,mcparticles.at(i).energy);
           else higgsGenBV[1].SetPtEtaPhiE(mcparticles.at(i).pt,mcparticles.at(i).eta,mcparticles.at(i).phi,mcparticles.at(i).energy);
@@ -1086,6 +1092,7 @@ int main ( int argc, char ** argv )
         if ((Aid == 21 || Aid == -21) && AmotherID == 25) HtoGG = true;
         if ((Aid == 24 || Aid == -24) && AmotherID == 25) HtoWW = true;
 
+
         if  (Aid == 25) {
           higgs_pt = mcparticles.at(i).pt;
           higgs_pz = mcparticles.at(i).pz;
@@ -1095,6 +1102,19 @@ int main ( int argc, char ** argv )
           top1_pz = mcparticles.at(i).pz;
         }
         //std::cout << "Particle " << i << " is " << Aid << ", has mother " << AmotherID << " and grandmother " << AgrandMotherID << std::endl;
+        if (debug_)
+          std::cout <<"Print to remove warning messages: "
+                    << HtoCC  << " "
+                    << HtoTT << " "
+                    << HtoGG << " "
+                    << HtoWW << " "
+                    << higgs_pt << " "
+                    << higgs_pz << " "
+                    << top1_pt << " "
+                    << top1_pz << " "
+                    << endl;
+            
+
         
         }
 
@@ -1111,10 +1131,10 @@ int main ( int argc, char ** argv )
         bool keepEvent = false;
 
 
-        bool debug_ = false;
+        //bool debug_ = false;
         if (debug_) cout << "GENCUT: Sample is 2500" << endl;
    
-        int ttbarType_;
+        int ttbarType_ = 0;
 
         TString ttbarName = sampleName ;
         if( tmpName.EndsWith("ttbar") || tmpName.Contains("ttbar_part") ) ttbarType_ = 0;     /////// 12 parts??? 
@@ -1287,7 +1307,7 @@ int main ( int argc, char ** argv )
         else if (ttbarType_ == 1) wordsForType = "ttbar_bb";
         else if (ttbarType_ >= 1) wordsForType = "ttbar_cc";
 
-        bool externalKeepEvent = ttPlusHeavyKeepEvent (mcparticles, pfjets, wordsForType, selectionYear_);
+        bool externalKeepEvent = BEANs::ttPlusHeavyKeepEvent (mcparticles, pfjets, wordsForType, selectionYear_);
 
         if (debug_)
           std::cout << "externalKeepEvent = " << externalKeepEvent <<", localKeepEvent = " << keepEvent << std::endl;
@@ -1311,11 +1331,11 @@ int main ( int argc, char ** argv )
       // MetIter tcmet = tcmets.begin();
 
       // Type I corrected MET
-      h_met_pt->Fill(pfmet->pt,wgt);
-      h_met_phi->Fill(pfmet->phi,wgt);
+      //h_met_pt->Fill(pfmet->pt,wgt);
+      //h_met_phi->Fill(pfmet->phi,wgt);
       // Uncorrected / raw MET
-      h_met_Upt->Fill(pfmet->Upt,wgt);
-      h_met_Uphi->Fill(pfmet->Uphi,wgt);
+      //h_met_Upt->Fill(pfmet->Upt,wgt);
+      //h_met_Uphi->Fill(pfmet->Uphi,wgt);
 
       
       // Loop over and count the number of primary vertices
@@ -1338,10 +1358,10 @@ int main ( int argc, char ** argv )
       //      if( (sample>=0 || sample==-2500) && !isData){
       if(!isData){
         if(selectionYear_ == "2011" && ((TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ")) ){
-          getPUwgt(numGenPV,PUwgt,PUwgt_up,PUwgt_down);
+          BEANs::getPUwgt(numGenPV,PUwgt,PUwgt_up,PUwgt_down);
 	}
         else {
-          getPUwgt(numTruePV,PUwgt,PUwgt_up,PUwgt_down);
+          BEANs::getPUwgt(numTruePV,PUwgt,PUwgt_up,PUwgt_down);
         }
 // 	if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){ 
 //   //        if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
@@ -1436,6 +1456,23 @@ int main ( int argc, char ** argv )
     }
     if (DoubleMuTriggerPass || DoubleElectronTriggerPass || MuEGTriggerPass) triggerPass = true;
     if (DoubleMuTriggerFound || DoubleElectronTriggerFound || MuEGTriggerFound) triggerFound = true;
+
+
+    if (debug_)
+      cout << "More trigger printing to avoid warnings "
+           << HLT_DoubleMu7_v << " " 
+           << HLT_Mu8_v << " "
+           << HLT_Mu13_Mu8_v << " "
+           << HLT_Mu17_Mu8_v  << " "
+           << HLT_Mu17_TkMu8_v << " "
+           << HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v  << " "
+           << HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v  << " "
+           << HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v  << " "
+           << HLT_Ele8_CaloIdL_CaloIsoVL_v  << " "
+           << HLT_Mu22_Photon22_CaloIdL_v << " "
+           << HLT_Mu30_Ele30_CaloIdL_v << " "
+           << endl;
+    
     
 	//      }
 
@@ -1607,7 +1644,9 @@ int main ( int argc, char ** argv )
       ////////////////////////////////
       std::vector<int> tight_ele_index;
       std::vector<int> loose_ele_index;
-      BEANs::electronSelector( electrons, false, selectionYear_, tight_ele_index, loose_ele_index );
+      std::vector<double> tightElectronSF;
+      std::vector<double> looseElectronSF;
+      BEANs::electronSelector( electrons, false, selectionYear_, tight_ele_index, loose_ele_index, tightElectronSF, looseElectronSF );
 
       int numTightElectrons = int(tight_ele_index.size());
       int numLooseElectrons = int(loose_ele_index.size());
@@ -1688,7 +1727,9 @@ int main ( int argc, char ** argv )
       ////////////////////////////////
       std::vector<int> tight_mu_index;
       std::vector<int> loose_mu_index;
-      BEANs::muonSelector( muons, false, selectionYear_, tight_mu_index, loose_mu_index );
+      std::vector<double> tightMuonSF;
+      std::vector<double> looseMuonSF;
+      BEANs::muonSelector( muons, false, selectionYear_, tight_mu_index, loose_mu_index, tightMuonSF, looseMuonSF );
 
       int numTightMuons = int(tight_mu_index.size());
       int numLooseMuons = int(loose_mu_index.size());
@@ -1881,7 +1922,7 @@ int main ( int argc, char ** argv )
     double jetEta = pfjets.at(i).eta;	
     double jetAbsEta = fabs(jetEta);
     double genJetPT = pfjets.at(i).genPartonPT;
-    double jetPhi = pfjets.at(i).phi;
+    //double jetPhi = pfjets.at(i).phi;
     double jetCHEF = pfjets.at(i).chargedHadronEnergyFraction;
     
     double myJER = BEANs::getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
@@ -2310,6 +2351,13 @@ int main ( int argc, char ** argv )
       if (numHiggsAllJets > 2) {
         std::cout << "First three higgs jets have pt " << higgsJetV[0].Pt() << ", " << higgsJetV[1].Pt() << ", " << higgsJetV[2].Pt() << std::endl;
       }
+
+      if (debug_)
+        cout << "more printing to avoid warnings problems  "
+             << higgs_dijet_mass << " "
+             << higgs_genJet_mass << " "
+             << higgs_genParton_mass << " "
+             << endl;
       
       TLorentzVector dijet_vect;
       TLorentzVector lep_vect1;
@@ -2417,22 +2465,35 @@ int main ( int argc, char ** argv )
     float lep1GenCharge = -10;
     float lep2TkCharge = -10;
     float lep2GenCharge = -10;
+    float lep1SF = 1.0;
+    float lep2SF = 1.0;
+    
     
 	  if( twoTightMuon || TightMuonLooseMuon ){
 	    if( twoTightMuon ) {
 	      iMuon1 = tight_mu_index[0] ;
 	      iMuon2 = tight_mu_index[1] ;
+          lep1SF = tightMuonSF[0];
+          lep2SF = tightMuonSF[1];
+          
 	      if(muons.at(iMuon1).pt < muons.at(iMuon2).pt) {
-		iMuon1 = tight_mu_index[1] ;
-		iMuon2 = tight_mu_index[0] ;
+            iMuon1 = tight_mu_index[1] ;
+            iMuon2 = tight_mu_index[0] ;
+            lep1SF = tightMuonSF[1];
+            lep2SF = tightMuonSF[0];
+        
 	      }
 	    }
 	    
 	    if( TightMuonLooseMuon ) {
 	      iMuon1 = tight_mu_index[0] ;
 	      iMuon2 = loose_mu_index[0] ;
+          lep1SF = tightMuonSF[0];
+          lep2SF = looseMuonSF[0];
 	    }
-	    
+
+        
+        
 	    lep1_pt = muons.at(iMuon1).pt;
 	    lep2_pt = muons.at(iMuon2).pt;
 	    
@@ -2475,15 +2536,23 @@ int main ( int argc, char ** argv )
 	    if( twoTightEle ){
 	      iEle1 = tight_ele_index[0] ;
 	      iEle2 = tight_ele_index[1] ;
+          lep1SF = tightElectronSF[0];
+          lep2SF = tightElectronSF[1];
+          
 	      if(electrons.at(iEle1).pt < electrons.at(iEle2).pt){
-		iEle1 = tight_ele_index[1] ;
-		iEle2 = tight_ele_index[0] ;
+            iEle1 = tight_ele_index[1] ;
+            iEle2 = tight_ele_index[0] ;
+            lep1SF = tightElectronSF[1];
+            lep2SF = tightElectronSF[0];
 	      }
 	    }
 
 	    if( TightEleLooseEle ){
 	      iEle1 = tight_ele_index[0] ;
 	      iEle2 = loose_ele_index[0] ;
+          lep1SF = tightElectronSF[0];
+          lep2SF = looseElectronSF[0];
+          
 	    }
 	  
 	    lep1_pt = electrons.at(iEle1).pt;
@@ -2579,7 +2648,9 @@ int main ( int argc, char ** argv )
 	  }
 
       if (verbose) std::cout << "about to fill two lep vars " <<std::endl;
- 
+
+      float lepTotalSF = lep1SF * lep2SF;
+      
 	  // two leptons
 	  TLorentzVector two_lepton = lep_vect1 + lep_vect2;
 	  float dilep_mass = two_lepton.M();
@@ -2636,6 +2707,11 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["lep1Iso"]) = lep1_iso;
 	  *(floatBranches["lep2Iso"]) = lep2_iso;
 
+      *(floatBranches["lep1SF"]) = lep1SF;
+      *(floatBranches["lep2SF"]) = lep2SF;
+      *(floatBranches["lepTotalSF"]) = lepTotalSF;
+      
+
       //*(floatBranches["higgs_pt"]) = higgs_pt;
       //*(floatBranches["higgs_pz"]) = higgs_pz;
       //*(floatBranches["top1_pt"]) = top1_pt;
@@ -2656,10 +2732,10 @@ int main ( int argc, char ** argv )
 	  TLorentzVector everything_vect = metV + lep_vect1 + lep_vect2 + sum_jet_vect;
       TLorentzVector leps_and_jets_vect = lep_vect1 + lep_vect2 + sum_jet_vect;
       TLorentzVector leps_and_allJets_vect = lep_vect1 + lep_vect2 + sum_allJet_vect;
-	  float mass_of_everything = everything_vect.M();
+	  //float mass_of_everything = everything_vect.M();
       float mass_MHT = leps_and_jets_vect.M();
       float mass_of_leps_and_allJets = leps_and_allJets_vect.M();
-      float pt_of_everything = everything_vect.Pt();
+      //float pt_of_everything = everything_vect.Pt();
       float MHT = leps_and_jets_vect.Pt();
       float pt_of_leps_and_allJets = leps_and_allJets_vect.Pt();
 	  //*(floatBranches["mass_of_everything"]) = mass_of_everything;	  
