@@ -598,6 +598,22 @@ int main ( int argc, char ** argv )
 
   intBranches["isCleanEvent"] = new int (0);
   intBranches["isTriggerPass"] = new int (0);
+  //  intBranches["isTriggerPassPrescaled"] = new int (0);
+  intBranches["isDoubleMuTriggerPass"] = new int (0);
+  intBranches["isDoubleElectronTriggerPass"] = new int (0);
+  intBranches["isMuEGTriggerPass"] = new int (0);
+//   intBranches["isDoubleMu7Pass"] = new int (0);
+//   intBranches["isMu8Pass"] = new int (0);
+//   intBranches["isMu13_Mu8Pass"] = new int (0);
+//   intBranches["isMu17_Mu8Pass"] = new int (0);
+//   intBranches["isMu17_TkMu8Pass"] = new int (0);
+//   intBranches["isMu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVLPass"] = new int (0);
+//   intBranches["isMu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVLPass"] = new int (0);
+//   intBranches["isEle17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVLPass"] = new int (0);
+//   intBranches["isMu22_Photon22_CaloIdLPass"] = new int (0);
+//   intBranches["isMu30_Ele30_CaloIdLPass"] = new int (0);
+//   intBranches["isEle8_CaloIdL_CaloIsoVLPass"] = new int (0);
+
   //intBranches["isHtoBB"] = new int(0);
   //intBranches["isHtoCC"] = new int(0);
   //intBranches["isHtoTT"] = new int(0);
@@ -656,6 +672,8 @@ int main ( int argc, char ** argv )
   floatBranches["lep2Eta"] = new float(0.0);
   floatBranches["lep1Phi"] = new float(0.0);
   floatBranches["lep2Phi"] = new float(0.0);
+  floatBranches["lep1Iso"] = new float(0.0);
+  floatBranches["lep2Iso"] = new float(0.0);
   floatBranches["mass_leplep"] = new float(0.0);
   floatBranches["pt_leplep"] = new float(0.0);
   floatBranches["dPhi_leplep"] = new float(0.0);
@@ -680,6 +698,11 @@ int main ( int argc, char ** argv )
   floatBranches["second_jet_eta"] = new float(0.0);
   floatBranches["third_jet_eta"] = new float(0.0);
   floatBranches["fourth_jet_eta"] = new float(0.0);
+
+  floatBranches["first_jet_CHEF"] = new float(0.0);
+  floatBranches["second_jet_CHEF"] = new float(0.0);
+  floatBranches["third_jet_CHEF"] = new float(0.0);
+  floatBranches["fourth_jet_CHEF"] = new float(0.0);
 
   floatBranches["dPhi_jet1jet2"] = new float(0.0);
   floatBranches["dPhi_jet1jet3"] = new float(0.0);
@@ -798,27 +821,30 @@ int main ( int argc, char ** argv )
 
 
   ////// ============== trigger ===========
-  vstring mc_hlt_trigger_collection;
+  vstring mc_hlt_DoubleMu_trigger_collection;
+  vstring mc_hlt_DoubleElectron_trigger_collection;
+  vstring mc_hlt_MuEG_trigger_collection;
 
   if( selectionYear_ == "2011"){
-    mc_hlt_trigger_collection.push_back("HLT_DoubleMu7_v");
-    mc_hlt_trigger_collection.push_back("HLT_Mu13_Mu8_v");
-    mc_hlt_trigger_collection.push_back("HLT_Mu17_Mu8_v");
+    mc_hlt_DoubleMu_trigger_collection.push_back("HLT_DoubleMu7_v");
+    mc_hlt_DoubleMu_trigger_collection.push_back("HLT_Mu13_Mu8_v");
+    mc_hlt_DoubleMu_trigger_collection.push_back("HLT_Mu17_Mu8_v");
     
-    mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v");
-    mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-    mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v");
+    mc_hlt_DoubleElectron_trigger_collection.push_back("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v");
+    mc_hlt_DoubleElectron_trigger_collection.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    mc_hlt_DoubleElectron_trigger_collection.push_back("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v");
     
-    mc_hlt_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdL_v");
-    mc_hlt_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdL_v");
-    mc_hlt_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v");
-    mc_hlt_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v");
+    mc_hlt_MuEG_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdL_v");
+    mc_hlt_MuEG_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdL_v");
+    mc_hlt_MuEG_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v");
+    mc_hlt_MuEG_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v");
   }
   else {
-    mc_hlt_trigger_collection.push_back("HLT_Mu17_Mu8_v");
-    mc_hlt_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-    mc_hlt_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-    mc_hlt_trigger_collection.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    mc_hlt_DoubleMu_trigger_collection.push_back("HLT_Mu17_Mu8_v");
+    mc_hlt_DoubleMu_trigger_collection.push_back("HLT_Mu17_TkMu8_v");
+    mc_hlt_DoubleElectron_trigger_collection.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    mc_hlt_MuEG_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
+    mc_hlt_MuEG_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
   }
 
   ///
@@ -991,7 +1017,7 @@ int main ( int argc, char ** argv )
       double Q2ScaleUpWgt = 1.0;
       double Q2ScaleDownWgt = 1.0; 
 
-      //      if (selectionYear_ == "2012") {
+      //if (selectionYear_ == "2012") {
       if (sampleNumber == 2500) {
         Q2ScaleUpWgt = event->Q2ScaleUpWgt;
         Q2ScaleDownWgt = event->Q2ScaleDownWgt;
@@ -1335,22 +1361,82 @@ int main ( int argc, char ** argv )
       ///--------------------------------
       // Trigger Requirement
       bool triggerFound = false;
-      bool triggerPass  = false;
-
+      bool DoubleMuTriggerFound = false;
+      bool DoubleElectronTriggerFound = false;
+      bool MuEGTriggerFound = false;
+      bool triggerPass = false;
+      bool triggerPassPrescaled = false;
+      bool DoubleMuTriggerPass = false;
+      bool DoubleElectronTriggerPass = false;
+      bool MuEGTriggerPass = false;
+      bool HLT_DoubleMu7_v = false;
+      bool HLT_Mu8_v = false;
+      bool HLT_Mu13_Mu8_v = false;
+      bool HLT_Mu17_Mu8_v = false;
+      bool HLT_Mu17_TkMu8_v = false;
+      bool HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v = false;
+      bool HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v = false;
+      bool HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v = false;
+      bool HLT_Ele8_CaloIdL_CaloIsoVL_v = false;
+      bool HLT_Mu22_Photon22_CaloIdL_v = false;
+      bool HLT_Mu30_Ele30_CaloIdL_v = false;
+      
       if (verbose) std::cout << "about to do pu reweight " <<std::endl;
       //      if( sample>=0 ){
+      std::string hlt_name = "holder";
+
 	for( TrigIter hltbit = hlt.begin(); hltbit != hlt.end(); ++hltbit ){
-	  for( int t=0; t<int(mc_hlt_trigger_collection.size()); t++ ){
-	    std::string hlt_name = hltbit->name;
-	    if( (hlt_name.find(mc_hlt_trigger_collection[t])!=std::string::npos) ){
-	      if( hltbit->prescale!=1 ) continue;
-              triggerFound = true;
-              triggerPass = ( hltbit->pass==1 );
-            }
-            if( triggerPass ) break;
+      hlt_name = hltbit->name;
+      if(hlt_name.find("HLT_Mu8_v")!=std::string::npos) HLT_Mu8_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_DoubleMu7_v")!=std::string::npos) HLT_DoubleMu7_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Mu13_Mu8_v")!=std::string::npos) HLT_Mu13_Mu8_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Mu17_Mu8_v")!=std::string::npos) HLT_Mu17_Mu8_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Mu17_TkMu8_v")!=std::string::npos) HLT_Mu17_TkMu8_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")!=std::string::npos) HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")!=std::string::npos) HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")!=std::string::npos) HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Ele8_CaloIdL_CaloIsoVL_v")!=std::string::npos) HLT_Ele8_CaloIdL_CaloIsoVL_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Mu22_Photon22_CaloIdL_v")!=std::string::npos) HLT_Mu22_Photon22_CaloIdL_v = ( hltbit->pass==1 );
+      if(hlt_name.find("HLT_Mu30_Ele30_CaloIdL_v")!=std::string::npos) HLT_Mu30_Ele30_CaloIdL_v = ( hltbit->pass==1 );
+      
+      for( int t=0; t<int(mc_hlt_DoubleMu_trigger_collection.size()); t++ ){
+        //hlt_name = hltbit->name;
+	    if( (hlt_name.find(mc_hlt_DoubleMu_trigger_collection[t])!=std::string::npos) ) {
+	      if( hltbit->prescale==1 ) {
+            DoubleMuTriggerFound = true;
+            DoubleMuTriggerPass = ( hltbit->pass==1 || DoubleMuTriggerPass);
           }
-          if( triggerPass ) break;
+          else triggerPassPrescaled = ( hltbit->pass==1 || triggerPassPrescaled);
         }
+        if( DoubleMuTriggerPass ) break;
+      }
+      for( int t=0; t<int(mc_hlt_DoubleElectron_trigger_collection.size()); t++ ){
+        //hlt_name = hltbit->name;
+	    if( (hlt_name.find(mc_hlt_DoubleElectron_trigger_collection[t])!=std::string::npos) ) {
+	      if( hltbit->prescale==1 ) {
+            DoubleElectronTriggerFound = true;
+            DoubleElectronTriggerPass = ( hltbit->pass==1 || DoubleElectronTriggerPass);
+          }
+          else triggerPassPrescaled = ( hltbit->pass==1 || triggerPassPrescaled);
+        }
+        if( DoubleElectronTriggerPass ) break;
+      }
+      for( int t=0; t<int(mc_hlt_MuEG_trigger_collection.size()); t++ ){
+        //hlt_name = hltbit->name;
+	    if( (hlt_name.find(mc_hlt_MuEG_trigger_collection[t])!=std::string::npos) ) {
+	      if( hltbit->prescale==1 ) {
+            MuEGTriggerFound = true;
+            MuEGTriggerPass = ( hltbit->pass==1 || MuEGTriggerPass);
+          }
+          else triggerPassPrescaled = ( hltbit->pass==1 || triggerPassPrescaled);
+        }
+        if( MuEGTriggerPass ) break;
+      }
+      //if( triggerPass ) break;
+    }
+    if (DoubleMuTriggerPass || DoubleElectronTriggerPass || MuEGTriggerPass) triggerPass = true;
+    if (DoubleMuTriggerFound || DoubleElectronTriggerFound || MuEGTriggerFound) triggerFound = true;
+    
 	//      }
 
       // Print triggers
@@ -1359,7 +1445,7 @@ int main ( int argc, char ** argv )
       if( !triggerFound ){
 	std::cout << "  error ===> Trigger not found!!!  Here are the available triggers: " << std::endl;
 	for( TrigIter hltbit = hlt.begin(); hltbit != hlt.end(); ++hltbit ){
-	  std::string hlt_name = hltbit->name;
+	  hlt_name = hltbit->name;
 	  std::cout << "\t\t " << hlt_name << "\t\t prescale = " << hltbit->prescale << "\t\t pass = " << hltbit->pass << std::endl;
 	}
 	break;
@@ -1725,6 +1811,7 @@ int main ( int argc, char ** argv )
 
       std::vector<double> good_jet_pt;
       std::vector<double> good_jet_eta;
+      std::vector<double> good_jet_CHEF;
       std::vector<double> good_jet_tag;
       std::vector<int>    good_jet_flavor;
 
@@ -1735,6 +1822,7 @@ int main ( int argc, char ** argv )
       vdouble jet_pz;
       vdouble jet_pt;
       vdouble jet_energy;
+      vdouble jet_CHEF;
 
       int numGoodJets=0;
       int numHiggsJets=0;
@@ -1771,6 +1859,7 @@ int main ( int argc, char ** argv )
 	jet_pz.push_back(pfjets.at(i).pz);
 	jet_pt.push_back(pfjets.at(i).pt);
 	jet_energy.push_back(pfjets.at(i).energy);
+    jet_CHEF.push_back(pfjets.at(i).chargedHadronEnergyFraction);
 
     // Apply JES uncertainty to all jets
 	double unc = pfjets.at(i).JESunc;
@@ -1793,6 +1882,7 @@ int main ( int argc, char ** argv )
     double jetAbsEta = fabs(jetEta);
     double genJetPT = pfjets.at(i).genPartonPT;
     double jetPhi = pfjets.at(i).phi;
+    double jetCHEF = pfjets.at(i).chargedHadronEnergyFraction;
     
     double myJER = BEANs::getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
 
@@ -1941,6 +2031,7 @@ int main ( int argc, char ** argv )
 	good_jet_eta.push_back(jetEta);
 	good_jet_tag.push_back(csv);
 	good_jet_flavor.push_back(flavor);
+    good_jet_CHEF.push_back(jetCHEF);
 
       }// end for each pf jet
       
@@ -1994,6 +2085,22 @@ int main ( int argc, char ** argv )
         *(intBranches["isCleanEvent"]) = cleanEvent ? 1 : 0;
 //       }
       *(intBranches["isTriggerPass"]) = triggerPass ? 1 : 0;
+      //      *(intBranches["isTriggerPassPrescaled"]) = triggerPassPrescaled ? 1 : 0;
+      *(intBranches["isDoubleMuTriggerPass"]) = DoubleMuTriggerPass ? 1 : 0;
+      *(intBranches["isDoubleElectronTriggerPass"]) = DoubleElectronTriggerPass ? 1 : 0;
+      *(intBranches["isMuEGTriggerPass"]) = MuEGTriggerPass ? 1 : 0;
+//       *(intBranches["isMu8Pass"]) =  HLT_Mu8_v ? 1 : 0;
+//       *(intBranches["isDoubleMu7Pass"]) =  HLT_DoubleMu7_v ? 1 : 0;
+//       *(intBranches["isMu13_Mu8Pass"]) =  HLT_Mu13_Mu8_v ? 1 : 0;
+//       *(intBranches["isMu17_Mu8Pass"]) =  HLT_Mu17_Mu8_v ? 1 : 0;
+//       *(intBranches["isMu17_TkMu8Pass"]) =  HLT_Mu17_TkMu8_v ? 1 : 0;
+//       *(intBranches["isMu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVLPass"]) =  HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v ? 1 : 0;
+//       *(intBranches["isMu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVLPass"]) =  HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v ? 1 : 0;
+//       *(intBranches["isEle17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVLPass"]) =  HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v ? 1 : 0;
+//       *(intBranches["isEle8_CaloIdL_CaloIsoVLPass"]) =  HLT_Ele8_CaloIdL_CaloIsoVL_v ? 1 : 0;
+//       *(intBranches["isMu22_Photon22_CaloIdLPass"]) = HLT_Mu22_Photon22_CaloIdL_v ? 1 : 0;
+//       *(intBranches["isMu30_Ele30_CaloIdLPass"]) = HLT_Mu30_Ele30_CaloIdL_v ? 1 : 0;
+      
       //*(intBranches["isHtoBB"]) = HtoBB ? 1 : 0;
       //*(intBranches["isHtoCC"]) = HtoCC ? 1 : 0;
       //*(intBranches["isHtoTT"]) = HtoTT ? 1 : 0;
@@ -2111,10 +2218,10 @@ int main ( int argc, char ** argv )
 
 	//////
         *(floatBranches["prob"]) = wgt_btag;
-        *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFdown ;
-        *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFup ;
-        *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFdown ;
-        *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFup ;
+        *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFdown;
+        *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFup;
+        *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFdown;
+        *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFup;
 
 
       /////////////////////////////////
@@ -2227,6 +2334,10 @@ int main ( int argc, char ** argv )
       float third_jet_eta = 10000.;
       float fourth_jet_eta = 10000.;
 
+      float first_jet_CHEF = 10000.;
+      float second_jet_CHEF = 10000.;
+      float third_jet_CHEF = 10000.;
+      float fourth_jet_CHEF = 10000.;
 
       float dPhi_jet1jet2 = 10000.;
       float dPhi_jet1jet3 = 10000.;
@@ -2298,6 +2409,8 @@ int main ( int argc, char ** argv )
 	float lep2_phi = 0 ;
     float lep1_tkDZ = 0 ;
     float lep2_tkDZ = 0 ;
+    float lep1_iso = 0 ;
+    float lep2_iso = 0 ;
     float lep1_correctedDZ = 0 ;
     float lep2_correctedDZ = 0 ;
     float lep1TkCharge = -10;
@@ -2343,7 +2456,16 @@ int main ( int argc, char ** argv )
 
         lep1GenCharge = muons.at(iMuon1).genCharge;
         lep2GenCharge = muons.at(iMuon2).genCharge;
-        
+
+        if (selectionYear_ == "2011") {
+          lep1_iso = (muons.at(iMuon1).chargedHadronIso + muons.at(iMuon1).neutralHadronIso + muons.at(iMuon1).photonIso) * 1.0 / lep1_pt;
+          lep2_iso = (muons.at(iMuon2).chargedHadronIso + muons.at(iMuon2).neutralHadronIso + muons.at(iMuon2).photonIso) * 1.0 / lep2_pt;
+        }
+        if (selectionYear_ == "2012") {
+          lep1_iso = (muons.at(iMuon1).pfIsoR04SumChargedHadronPt + std::max(0.0, muons.at(iMuon1).pfIsoR04SumNeutralHadronEt + muons.at(iMuon1).pfIsoR04SumPhotonEt - 0.5*muons.at(iMuon1).pfIsoR04SumPUPt)) * 1.0 /lep1_pt;
+          lep2_iso = (muons.at(iMuon2).pfIsoR04SumChargedHadronPt + std::max(0.0, muons.at(iMuon2).pfIsoR04SumNeutralHadronEt + muons.at(iMuon2).pfIsoR04SumPhotonEt - 0.5*muons.at(iMuon2).pfIsoR04SumPUPt)) * 1.0 /lep2_pt;
+        }
+
         lep_vect1.SetPxPyPzE(muons.at(iMuon1).px, muons.at(iMuon1).py, muons.at(iMuon1).pz, muons.at(iMuon1).energy);
 	    lep_vect2.SetPxPyPzE(muons.at(iMuon2).px, muons.at(iMuon2).py, muons.at(iMuon2).pz, muons.at(iMuon2).energy);
 	  
@@ -2387,6 +2509,15 @@ int main ( int argc, char ** argv )
 
         lep1GenCharge = electrons.at(iEle1).genCharge;
         lep2GenCharge = electrons.at(iEle2).genCharge;
+
+        if (selectionYear_ == "2011") {
+          lep1_iso = (electrons.at(iEle1).chargedHadronIso + electrons.at(iEle1).neutralHadronIso + electrons.at(iEle1).photonIso) * 1.0 / lep1_pt;
+          lep2_iso = (electrons.at(iEle2).chargedHadronIso + electrons.at(iEle2).neutralHadronIso + electrons.at(iEle2).photonIso) * 1.0 / lep2_pt;
+        }
+        if (selectionYear_ == "2012") {
+          lep1_iso = ( electrons.at(iEle1).chargedHadronIso + std::max(0.0, electrons.at(iEle1).neutralHadronIso + electrons.at(iEle1).photonIso - electrons.at(iEle1).AEffDr03*electrons.at(iEle1).rhoPrime) ) * 1.0 /lep1_pt;
+          lep2_iso = ( electrons.at(iEle2).chargedHadronIso + std::max(0.0, electrons.at(iEle2).neutralHadronIso + electrons.at(iEle2).photonIso - electrons.at(iEle2).AEffDr03*electrons.at(iEle2).rhoPrime) ) * 1.0 /lep2_pt;
+        }
 
 	    lep_vect1.SetPxPyPzE(electrons.at(iEle1).px, electrons.at(iEle1).py, electrons.at(iEle1).pz, electrons.at(iEle1).energy);
 	    lep_vect2.SetPxPyPzE(electrons.at(iEle2).px, electrons.at(iEle2).py, electrons.at(iEle2).pz, electrons.at(iEle2).energy);
@@ -2433,6 +2564,15 @@ int main ( int argc, char ** argv )
         lep1GenCharge = muons.at(iMuon).genCharge;
         lep2GenCharge = electrons.at(iEle).genCharge;
         
+        if (selectionYear_ == "2011") {
+          lep1_iso = (muons.at(iMuon).chargedHadronIso + muons.at(iMuon).neutralHadronIso + muons.at(iMuon).photonIso) * 1.0 / lep1_pt;
+          lep2_iso = (electrons.at(iEle).chargedHadronIso + electrons.at(iEle).neutralHadronIso + electrons.at(iEle).photonIso) * 1.0 / lep2_pt;
+        }
+        if (selectionYear_ == "2012") {
+          lep1_iso = (muons.at(iMuon).pfIsoR04SumChargedHadronPt + std::max(0.0, muons.at(iMuon).pfIsoR04SumNeutralHadronEt + muons.at(iMuon).pfIsoR04SumPhotonEt - 0.5*muons.at(iMuon).pfIsoR04SumPUPt)) * 1.0 /lep1_pt;
+          lep2_iso = ( electrons.at(iEle).chargedHadronIso + std::max(0.0, electrons.at(iEle).neutralHadronIso + electrons.at(iEle).photonIso - electrons.at(iEle).AEffDr03*electrons.at(iEle).rhoPrime) ) * 1.0 /lep2_pt;
+        }
+
 	    lep_vect1.SetPxPyPzE(muons.at(iMuon).px, muons.at(iMuon).py, muons.at(iMuon).pz, muons.at(iMuon).energy);
 	    lep_vect2.SetPxPyPzE(electrons.at(iEle).px, electrons.at(iEle).py, electrons.at(iEle).pz, electrons.at(iEle).energy);
 	  
@@ -2493,6 +2633,8 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["lep2Eta"]) = lep2_eta;
 	  *(floatBranches["lep1Phi"]) = lep1_phi;
 	  *(floatBranches["lep2Phi"]) = lep2_phi;
+	  *(floatBranches["lep1Iso"]) = lep1_iso;
+	  *(floatBranches["lep2Iso"]) = lep2_iso;
 
       //*(floatBranches["higgs_pt"]) = higgs_pt;
       //*(floatBranches["higgs_pz"]) = higgs_pz;
@@ -2575,19 +2717,23 @@ int main ( int argc, char ** argv )
 	    if (i==0)  {        
           first_jet_pt = jet_pt[iJet];
           first_jet_eta = jet_vect.Eta();
+          first_jet_CHEF = jet_CHEF[iJet];
           
         }
 	    if (i==1)  {
           second_jet_pt = jet_pt[iJet];
           second_jet_eta = jet_vect.Eta();
+          second_jet_CHEF = jet_CHEF[iJet];
         }
 	    if (i==2)  {
           third_jet_pt = jet_pt[iJet];
           third_jet_eta = jet_vect.Eta();
+          third_jet_CHEF = jet_CHEF[iJet];
         }
 	    if (i==3)  {
           fourth_jet_pt = jet_pt[iJet];
           fourth_jet_eta = jet_vect.Eta();
+          fourth_jet_CHEF = jet_CHEF[iJet];
         }
 	    
 	    if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
@@ -2616,6 +2762,11 @@ int main ( int argc, char ** argv )
       *(floatBranches["second_jet_eta"]) = second_jet_eta;
       *(floatBranches["third_jet_eta"]) = third_jet_eta;
       *(floatBranches["fourth_jet_eta"]) = fourth_jet_eta;
+
+      *(floatBranches["first_jet_CHEF"]) = first_jet_CHEF;
+      *(floatBranches["second_jet_CHEF"]) = second_jet_CHEF;
+      *(floatBranches["third_jet_CHEF"]) = third_jet_CHEF;
+      *(floatBranches["fourth_jet_CHEF"]) = fourth_jet_CHEF;
 
       *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
       *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
