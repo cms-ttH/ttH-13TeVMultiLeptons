@@ -31,7 +31,9 @@
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 
-#include "LumiReweightingStandAlone.h"
+#include "NtupleMaker/BEANmaker/interface/BEANsUtilities.h"
+
+//#include "LumiReweightingStandAlone.h"
 #include "PUConstants.h"
 
 #if !defined(__CINT__) && !defined(__MAKECINT__)
@@ -55,6 +57,7 @@
 #include "ProductArea/BNcollections/interface/BNtrigobj.h"
 #include "ProductArea/BNcollections/interface/BNprimaryvertex.h"
 
+#include "PhysicsTools/Utilities/interface/LumiReweightingStandAlone.h"
 
 
 // headers for python config processing
@@ -200,56 +203,7 @@ int main ( int argc, char ** argv )
   typedef BNtrigobjCollection::const_iterator       TrigObjIter;
 
 
-  ////pile up Robin
-  // std::cout << "CONFIG: using PUFile = " << puFileName.fullPath() << std::endl;
-  TFile *f_pu = new TFile(puFileName.fullPath().c_str());
 
-  std::string str_data;
-  str_data = "SingleMu";
-
-  TH1D* h_pu_data;
-  TH1D* h_pu_data_up;
-  TH1D* h_pu_data_down;
-  TH1D* h_pu_mc;
-
-  //  file list name for ttH/W/Z has to match the following pattern                                                                           
-  if( (TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ") ){     
-    h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_observed")).c_str());   
-    //h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_observed")).c_str());
-    //h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_observed")).c_str()); 
-
-    h_pu_mc = (TH1D*)f_pu->Get("h_ttH_numGenPV"); 
-  }
-  else{   
-    //h_pu_data      = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_68000_true")).c_str());   
-    h_pu_data   = (TH1D*)f_pu->Get((std::string("pileup")).c_str()); 
-    //h_pu_data_up   = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_73440_true")).c_str());     
-    //h_pu_data_down = (TH1D*)f_pu->Get((std::string("h_pileup_" + str_data + "_62560_true")).c_str()); 
-
-    h_pu_mc = (TH1D*)f_pu->Get("2012mc");
-    // h_pu_mc = (TH1D*)f_pu->Get("F2011exp");
-  }    
-  
-  h_pu_data->Scale( 1./h_pu_data->Integral() );
-  //Tessa - temporarly comment out pu up and down syst
-  //h_pu_data_up->Scale( 1./h_pu_data_up->Integral() );
-  //h_pu_data_down->Scale( 1./h_pu_data_down->Integral() );
- 
-  h_pu_mc->Scale( 1./h_pu_mc->Integral() );
- 
-  TH1D* h_pu_ratio      = (TH1D*)h_pu_data->Clone();
-  //Tessa - temporarly comment out pu up and down syst
-  //TH1D* h_pu_ratio_up   = (TH1D*)h_pu_data_up->Clone();
-  //TH1D* h_pu_ratio_down = (TH1D*)h_pu_data_down->Clone();
-  cout << "Not doing the pu up and down systematic untill we get the pu files for it" << endl;
-  TH1D* h_pu_ratio_up = (TH1D*)h_pu_ratio->Clone();
-  TH1D* h_pu_ratio_down = (TH1D*)h_pu_ratio->Clone();
-
-  h_pu_ratio->Divide( h_pu_mc );
-  h_pu_ratio_up->Divide( h_pu_mc );
-  h_pu_ratio_down->Divide( h_pu_mc );
-
- 
   // Load the files
   vstring fileNames = inputFileNames;
 
@@ -273,7 +227,7 @@ int main ( int argc, char ** argv )
   if( TString(sampleName).Contains("Zjets"))      histname = "zjets";   // zjets,  zjets_lowmas
   else if(TString(sampleName).Contains("Wjets"))      histname = "wjets";
   else if( TString(sampleName).Contains("TTbar") && !(sampleName=="ttbarW" || sampleName=="ttbarZ") ) histname = "ttbar";  // ttbar, ttbar_bb, ttbar_cc   
-  else if( TString(sampleName).Contains("single") ) histname = "singlet";  // singlet_, singletbar_, 
+  else if( TString(sampleName).Contains("Single") || TString(sampleName).Contains("Chan") ) histname = "singlet";  // singlet_, singletbar_, 
   else if( TString(sampleName).Contains("ttH") ) histname = "ttH120";  
   
  
@@ -283,14 +237,8 @@ int main ( int argc, char ** argv )
   h_jet_pt_eta_l_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_l_eff" ).c_str());                                         
   h_jet_pt_eta_o_eff_ = (TH2D*)btagFile->Get(std::string( histname + "_h_jet_pt_eta_o_eff" ).c_str());
 
-  
-  //data detection
-  bool isData = false;
-  if (TString(sampleName).Contains("SingleMu") ||
-      TString(sampleName).Contains("Data") ||
-      TString(sampleName).Contains("data")){
-    isData = true;
-  }
+
+ 
   
   // Print out your config
 
@@ -304,7 +252,36 @@ int main ( int argc, char ** argv )
 
   histofile.cd();
 
+  int sample = 0;
+  //TString(sampleName).Contains("Wjets")
+  if( TString(sampleName).Contains("SingleMu")  )       sample = -1;
+  if( TString(sampleName).Contains("SingleElectron")  ) sample = -1;
+  if( TString(sampleName).Contains("ElectronHad")  )    sample = -1;
+  if( TString(sampleName).Contains("Data")  )           sample = -1;
+  
+  //data detection
+  bool isData = false;
+  if(sample==-1) isData = true;
 
+  if( TString(sampleName).Contains("TTJets")  )         sample = 2500;
+  if( TString(sampleName).Contains("T_sChan")  )        sample = 2600;
+  if( TString(sampleName).Contains("T_tChan")  )        sample = 2602;
+  if( TString(sampleName).Contains("T_tWChan")  )       sample = 2604;
+  if( TString(sampleName).Contains("Tbar_sChan")  )     sample = 2501;
+  if( TString(sampleName).Contains("Tbar_tChan")  )     sample = 2503;
+  if( TString(sampleName).Contains("Tbar_tWChan")  )    sample = 2505;
+  if( TString(sampleName).Contains("DYJetsToLL")  )     sample = 2800;
+  if( TString(sampleName).Contains("WJetsToLNu")  )     sample = 2400;
+  if( TString(sampleName).Contains("WW")  )             sample = 2700;
+  if( TString(sampleName).Contains("WZ")  )             sample = 2701;
+  if( TString(sampleName).Contains("ZZ")  )             sample = 2702;
+  if( TString(sampleName).Contains("FastSim")  )        sample = 9500;
+  if( TString(sampleName).Contains("FullSim")  )        sample = 8500;
+
+  cout << "Sample Name: " << sampleName<< "  Sample #:    " << sample << endl;
+  setMCsample(sample, true, "");
+      
+  
   //////////////////////////////////////////////////////////////////////////
   ///  Booking Histograms
   //////////////////////////////////////////////////////////////////////////
@@ -421,7 +398,7 @@ int main ( int argc, char ** argv )
      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
      histTitle += iJet;
      histTitle += ")";
-     histograms[histName] = fs.make<TH1F>(histName, histTitle, 500, 0., 500.);
+     histograms[histName] = fs.make<TH1F>(histName, histTitle, 2000, 0., 2000.);
    }
   //Individual jet plots
   for (int iJet = 1; iJet <= maxJetPlot; ++iJet) {
@@ -516,7 +493,8 @@ int main ( int argc, char ** argv )
       histograms[histName] = fs.make<TH1F>(histName, histTitle, 628,-3.14, 3.14);
    }
   //Other Plots 
-    TH1F* h_nPV   = new TH1F("h_nPV", "Number of Primary Verticies", 50,-0.5,49.5);
+    TH1F* h_nPV    = new TH1F("h_nPV", "Number of Primary Verticies", 50,-0.5,49.5);
+    TH1F* h_weight = new TH1F("h_weight", "weights", 10000,0,100);
   
  
 
@@ -839,10 +817,11 @@ int main ( int argc, char ** argv )
   //
   int nJets = -1;
   std::cout << "========  Starting Event Loop  ========" << std::endl;
-  try {
+  try { cout << "try? "<< endl;
+    cout << "next" << endl;
+    cout << "event begin?" << ev.toBegin()<< endl;
     for( ev.toBegin(); !ev.atEnd(); ++ev) {
       cnt++;
-    
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
       if( cnt%1000==0 && cnt!=1 ) std::cout << "           " << cnt << "\t" 
 					      << int(double(cnt)/double(nentries)*100) << "% done" << std::endl;
@@ -865,7 +844,7 @@ int main ( int argc, char ** argv )
         *(uBranchMap->second) = 0;
         
       }
-     
+      
       ////Robin
       for (std::map<TString, float*>::iterator iDMap = floatBranches.begin();
 	   iDMap != floatBranches.end();
@@ -876,11 +855,10 @@ int main ( int argc, char ** argv )
 
       bool isMuonEvent = false;
       bool isEleEvent = false;
-     
+
       if (verbose) std::cout << "Getting collections... " <<std::endl;
       //std::cout << "========  Event! ========" << std::endl;
       // Get Handle for each collection used
-     
       fwlite::Handle<BNeventCollection> h_event;
       h_event.getByLabel(ev,"BNproducer");
       BNeventCollection const &events = *h_event;
@@ -978,24 +956,30 @@ int main ( int argc, char ** argv )
 
       EventIter event = events.begin();
 
-      int sample = event->sample;
-
+     
       double numTruePV = event->numTruePV;
       int numGenPV = event->numGenPV;
 
-      float wgt = 1 ;                                                                                                            
+      //Pile Up Reweighting with BeanUtilities.h
+      float PUwgt = 1;
+      float PUwgt_up = 1;
+      float PUwgt_down = 1;
+
+      float wgt = 1 ;
+      double PU = 0.0;
+      double PUup = 0.0;
+      double PUdown =0.0;
+      getPUwgt(numTruePV,PU,PUup,PUdown);
+      PUwgt = PU;
+      PUwgt_up = PUup;
+      PUwgt_down = PUdown;
+      if(isData) PUwgt = 1;
 
 
-//       if( sample==2500 )      wgt = 157.7 * intLumi * 1./3627909;     //NNLL
-//       else if( sample==2300 ) wgt = 3048. * intLumi * 1./35504033;    // NNLO
-//       else if( sample==2400 ) wgt = 31314. * intLumi * 1./70681213;  //NNLO
-//       else if( sample==2455 ) wgt = 35.3 * intLumi * 1./21792790;    //LO
-//       else if( sample==2600 ) wgt = 3.19 * intLumi * 1./259971; //NNLO
-//       else if( sample==2601 ) wgt = 1.44 * intLumi * 1./137980; //NNLO
-//       else if( sample==2602 ) wgt = 41.92 * intLumi * 1./3861170; //NNLO
-//       else if( sample==2603 ) wgt = 22.65 * intLumi * 1./1944826; //NNLO
-//       else if( sample==2604 ) wgt = 7.87 * intLumi * 1./814390; //NNLO
-//       else if( sample==2605 ) wgt = 7.87 * intLumi * 1./809984; //NNLO
+      wgt *= PUwgt;
+      // cout << "PUwgt for this event: " << PUwgt  << " New weight: " << wgt << endl;
+
+
 
  
 
@@ -1180,28 +1164,10 @@ int main ( int argc, char ** argv )
 
       if (verbose) std::cout << "about to do pu reweight " <<std::endl;
       ///--------------------------------
-      // Pile-up reweighting  ////Robin
-      float PUwgt = 1;
-      float PUwgt_up = 1;
-      float PUwgt_down = 1;
+     
+     
 
-
-      if( sample>=0 || sample==-2500 && !isData){
-	if( (sample>=100 && sample<=140) || (sample==2523) || (sample==2524) ){
-	  PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numGenPV ) );
-	  PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numGenPV ) );
-	  PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numGenPV ) );
-	}
-	else{
-	  PUwgt      = h_pu_ratio->GetBinContent( h_pu_ratio->FindBin( numTruePV ) );
-	  PUwgt_up   = h_pu_ratio_up->GetBinContent( h_pu_ratio_up->FindBin( numTruePV ) );
-	  PUwgt_down = h_pu_ratio_down->GetBinContent( h_pu_ratio_down->FindBin( numTruePV ) );
-	}
-   }
-      wgt *= PUwgt;
-    
-
-
+      
       ///--------------------------------
       // Trigger Requirement
       bool triggerFound = false;
@@ -1550,8 +1516,8 @@ int main ( int argc, char ** argv )
     
 
         bool tightJetPt = ( jetPt>30. );
-        bool looseJetPt = ( jetPt>20. );
-        bool eta = ( jetAbsEta<2.4 );
+        bool looseJetPt = ( jetPt>30. );//Tessa change this back to 20!!!
+        bool eta = ( jetAbsEta<2.5 );
         //bool id  = ( pfjets.at(i).jetIDLoose==1 );
         bool id = (     (pfjets.at(i).nconstituents > 1)   &&
                         (pfjets.at(i).neutralHadronEnergyFraction < 0.99) &&
@@ -1632,8 +1598,7 @@ int main ( int argc, char ** argv )
         // cout << "Scale Factor: " << IDandTrigSF << endl;
         wgt *= IDandTrigSF;
       }
-  
-      
+           
       *(floatBranches["leptonPt"]) = leptonPt ;
       *(floatBranches["leptonEta"]) = leptonEta ;
       if(isMuonEvent == true){
@@ -1739,7 +1704,8 @@ int main ( int argc, char ** argv )
           for( int j=0; j<int(good_jet_pt.size()); j++ ){
             if (verbose) std::cout << "calling btag sf" <<std::endl;
             if (verbose) std::cout << "one" <<std::endl;
-            std::vector<double> myEffSF = getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );
+            std::vector<double> myEffSF = getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);
+            // vdouble myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],);
             if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
             BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );
             myjetinfo.push_back(myjet);
@@ -1748,15 +1714,15 @@ int main ( int argc, char ** argv )
             BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );
             myjetinfo_hfSFup.push_back(myjet_hfSFup);                            
             if (verbose) std::cout << "three" <<std::endl;
-            std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );                     
+            std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                     
             BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );                                                 
             myjetinfo_hfSFdown.push_back(myjet_hfSFdown);                                                                                   
             if (verbose) std::cout << "four" <<std::endl;
-            std::vector<double> myEffSF_lfSFup = getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]  );                        
+            std::vector<double> myEffSF_lfSFup = getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                        
             BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );                                                       
             myjetinfo_lfSFup.push_back(myjet_lfSFup);                                                                                       
             if (verbose) std::cout << "five" <<std::endl;
-            std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j] );                     
+            std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                     
             BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );                                                 
             myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
             if (verbose) std::cout << "done calling sf calc " <<std::endl;
@@ -2189,7 +2155,9 @@ int main ( int argc, char ** argv )
 	  Ht += met;
 
       h_nPV->Fill(numpv,wgt);
-           //  cout << "nPV: " << numpv << endl;
+      //      cout << "weight for event: "<< wgt << endl;
+      h_weight->Fill(wgt);
+      //  cout << "nPV: " << numpv << endl;
       
 	  *(floatBranches["numPV"]) = numpv ;
 	  *(floatBranches["weight"]) = wgt ;
@@ -2646,7 +2614,7 @@ double getSingleMuEffSF(double muEta){
 std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
 
   bool getEffVerbose = false;
-
+  //cout << "GetEffSF function in LepJets.C" << endl;
     
   if (getEffVerbose) std::cout  << "getEffSF called with arguments:" << std::endl
                                 << "   returnType = " << returnType << std::endl
