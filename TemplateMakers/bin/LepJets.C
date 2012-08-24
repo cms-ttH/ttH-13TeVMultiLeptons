@@ -32,9 +32,10 @@
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 
 #include "NtupleMaker/BEANmaker/interface/BEANsUtilities.h"
+#include "NtupleMaker/BEANmaker/interface/BtagWeight.h" 
 
 //#include "LumiReweightingStandAlone.h"
-#include "PUConstants.h"
+//#include "PUConstants.h"
 
 #if !defined(__CINT__) && !defined(__MAKECINT__)
 
@@ -66,7 +67,7 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
-#include "BtagWeight.h" 
+//#include "BtagWeight.h" 
 
 
 #include "AnglesUtil.h"
@@ -279,7 +280,7 @@ int main ( int argc, char ** argv )
   if( TString(sampleName).Contains("FullSim")  )        sample = 8500;
 
   cout << "Sample Name: " << sampleName<< "  Sample #:    " << sample << endl;
-  setMCsample(sample, true, "");
+  BEANs::setMCsample(sample, true, true, "");
       
   
   //////////////////////////////////////////////////////////////////////////
@@ -493,8 +494,10 @@ int main ( int argc, char ** argv )
       histograms[histName] = fs.make<TH1F>(histName, histTitle, 628,-3.14, 3.14);
    }
   //Other Plots 
-    TH1F* h_nPV    = new TH1F("h_nPV", "Number of Primary Verticies", 50,-0.5,49.5);
-    TH1F* h_weight = new TH1F("h_weight", "weights", 10000,0,100);
+    TH1F* h_nPV         = new TH1F("h_nPV", "Number of Primary Verticies", 50,-0.5,49.5);
+    TH1F* h_numTrueMCPV = new TH1F("h_numTrueMCPV", "Number of Primary Verticies in MC", 50,-0.5,49.5);
+    TH1F* h_weight      = new TH1F("h_weight", "weights", 10000,0,100);
+    TH1F* h_PUweight    = new TH1F("h_PUweight", "Pile Up weights", 10000,0,100);
   
  
 
@@ -969,12 +972,15 @@ int main ( int argc, char ** argv )
       double PU = 0.0;
       double PUup = 0.0;
       double PUdown =0.0;
-      getPUwgt(numTruePV,PU,PUup,PUdown);
+      BEANs::getPUwgt(numTruePV,PU,PUup,PUdown);
       PUwgt = PU;
       PUwgt_up = PUup;
       PUwgt_down = PUdown;
-      if(isData) PUwgt = 1;
-
+      if(isData) {
+        PUwgt = 1;
+        PUwgt_up = 1;
+        PUwgt_down = 1;
+      }
 
       wgt *= PUwgt;
       // cout << "PUwgt for this event: " << PUwgt  << " New weight: " << wgt << endl;
@@ -2155,7 +2161,9 @@ int main ( int argc, char ** argv )
 	  Ht += met;
 
       h_nPV->Fill(numpv,wgt);
+      h_nPV->Fill(numTruePV);
       //      cout << "weight for event: "<< wgt << endl;
+      h_PUweight->Fill(PUwgt);
       h_weight->Fill(wgt);
       //  cout << "nPV: " << numpv << endl;
       
