@@ -1479,14 +1479,14 @@ int main ( int argc, char ** argv )
       // Print triggers
       //triggerFound = false;
       /// make sure trigger used to tag exists in the event
-      if( !triggerFound ){
-	std::cout << "  error ===> Trigger not found!!!  Here are the available triggers: " << std::endl;
-	for( TrigIter hltbit = hlt.begin(); hltbit != hlt.end(); ++hltbit ){
-	  hlt_name = hltbit->name;
-	  std::cout << "\t\t " << hlt_name << "\t\t prescale = " << hltbit->prescale << "\t\t pass = " << hltbit->pass << std::endl;
-	}
-	break;
+    if( !triggerFound ){
+      std::cout << "  error ===> Trigger not found!!!  Here are the available triggers: " << std::endl;
+      for( TrigIter hltbit = hlt.begin(); hltbit != hlt.end(); ++hltbit ){
+        hlt_name = hltbit->name;
+        std::cout << "\t\t " << hlt_name << "\t\t prescale = " << hltbit->prescale << "\t\t pass = " << hltbit->pass << std::endl;
       }
+//       break;
+    }
 
 
 
@@ -2599,14 +2599,21 @@ int main ( int argc, char ** argv )
 	    if ( oneEleOneMuon ){
 	      iMuon = tight_mu_index[0] ;
 	      iEle = tight_ele_index[0] ;
+          lep1SF = tightMuonSF[0];
+          lep2SF = tightElectronSF[0];
+          
 	    }  
 	    if ( TightEleLooseMuon ){
 	      iMuon = loose_mu_index[0] ;
 	      iEle = tight_ele_index[0] ;
+          lep1SF = looseMuonSF[0];
+          lep2SF = tightElectronSF[0];
 	    }
 	    if( TightMuonLooseEle ){
 	      iMuon = tight_mu_index[0] ;
 	      iEle = loose_ele_index[0] ;
+          lep1SF = tightMuonSF[0];
+          lep2SF = looseElectronSF[0];
 	    }
 
 	    lep1_pt = muons.at(iMuon).pt;
@@ -2647,9 +2654,21 @@ int main ( int argc, char ** argv )
 	  
 	  }
 
-      if (verbose) std::cout << "about to fill two lep vars " <<std::endl;
 
       float lepTotalSF = lep1SF * lep2SF;
+      
+      
+      if (verbose) std::cout << "about to fill two lep vars " <<std::endl
+                             << "TwoMuon = " << passTwoMuon << " twoTightMuon = " << twoTightMuon << " TightMuonLooseMuon = " << TightMuonLooseMuon   << endl
+                             << "TwoEle = " << passTwoEle  << " twoTightEle = " << twoTightEle << " TightEleLooseEle  " << TightEleLooseEle << endl
+                             << "MuonEle = " << passMuonEle << " TightMuonLooseEle = " << TightMuonLooseEle << " TightEleLooseMuon = " << TightEleLooseMuon << " oneEleOneMuon = " << endl
+                             << "lep1SF = " << lep1SF << " lep2SF = " << lep2SF   << " lepTotalSF = " << lepTotalSF
+                             << endl;
+        
+        
+
+
+      
       
 	  // two leptons
 	  TLorentzVector two_lepton = lep_vect1 + lep_vect2;
