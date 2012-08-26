@@ -260,12 +260,16 @@ int main ( int argc, char ** argv )
   varList.push_back(first_dibjet_mass);
   varInfo *first_highest_btag = new varInfo("first_highest_btag", "first_highest_btag", "first_highest_btag", 1000, 0, 1);
   varList.push_back(first_highest_btag);
+//   varInfo *first_jet_CHEF = new varInfo("first_jet_CHEF", "first_jet_CHEF", "first_jet_CHEF", 1000, 0, 1);
+//   varList.push_back(first_jet_CHEF);
   varInfo *first_jet_eta = new varInfo("first_jet_eta", "first_jet_eta", "first_jet_eta", 1000, -5, 5);
   varList.push_back(first_jet_eta);
   varInfo *first_jet_pt = new varInfo("first_jet_pt", "first_jet_pt", "first_jet_pt", 1000, 0, 1000);
   varList.push_back(first_jet_pt);
   varInfo *fourth_allJet_pt = new varInfo("fourth_allJet_pt", "fourth_allJet_pt", "fourth_allJet_pt", 1000, 0, 1000);
   varList.push_back(fourth_allJet_pt);
+//   varInfo *fourth_jet_CHEF = new varInfo("fourth_jet_CHEF", "fourth_jet_CHEF", "fourth_jet_CHEF", 1000, 0, 1);
+//   varList.push_back(fourth_jet_CHEF);
   varInfo *fourth_jet_eta = new varInfo("fourth_jet_eta", "fourth_jet_eta", "fourth_jet_eta", 1000, -5, 5);
   varList.push_back(fourth_jet_eta);
   varInfo *fourth_jet_pt = new varInfo("fourth_jet_pt", "fourth_jet_pt", "fourth_jet_pt", 1000, 0, 1000);
@@ -282,16 +286,16 @@ int main ( int argc, char ** argv )
 //   varList.push_back(isCleanEvent);
   varInfo *lep1Eta = new varInfo("lep1Eta", "lep1Eta", "lep1Eta", 1000, -5, 5);
   varList.push_back(lep1Eta);
-  //varInfo *lep1Iso = new varInfo("lep1Iso", "lep1Iso", "lep1Iso", 2000, 0, 0.2);
-  //varList.push_back(lep1Iso);
+//   varInfo *lep1Iso = new varInfo("lep1Iso", "lep1Iso", "lep1Iso", 2000, 0, 0.2);
+//   varList.push_back(lep1Iso);
   varInfo *lep1Phi = new varInfo("lep1Phi", "lep1Phi", "lep1Phi", 1000, -1*pival, pival);
   varList.push_back(lep1Phi);
   varInfo *lep1Pt = new varInfo("lep1Pt", "lep1Pt", "lep1Pt", 1000, 0, 1000);
   varList.push_back(lep1Pt);
   varInfo *lep2Eta = new varInfo("lep2Eta", "lep2Eta", "lep2Eta", 1000, -5, 5);
   varList.push_back(lep2Eta);
-  //varInfo *lep2Iso = new varInfo("lep2Iso", "lep2Iso", "lep2Iso", 2000, 0, 0.2);
-  //varList.push_back(lep2Iso);
+//   varInfo *lep2Iso = new varInfo("lep2Iso", "lep2Iso", "lep2Iso", 2000, 0, 0.2);
+//   varList.push_back(lep2Iso);
   varInfo *lep2Phi = new varInfo("lep2Phi", "lep2Phi", "lep2Phi", 1000, -1*pival, pival);
   varList.push_back(lep2Phi);
   varInfo *lep2Pt = new varInfo("lep2Pt", "lep2Pt", "lep2Pt", 1000, 0, 1000);
@@ -354,6 +358,8 @@ int main ( int argc, char ** argv )
   varList.push_back(second_dibjet_mass);
   varInfo *second_highest_btag = new varInfo("second_highest_btag", "second_highest_btag", "second_highest_btag", 1000, 0, 1);
   varList.push_back(second_highest_btag);
+//   varInfo *second_jet_CHEF = new varInfo("second_jet_CHEF", "second_jet_CHEF", "second_jet_CHEF", 1000, 0, 1);
+//   varList.push_back(second_jet_CHEF);
   varInfo *second_jet_eta = new varInfo("second_jet_eta", "second_jet_eta", "second_jet_eta", 1000, -5, 5);
   varList.push_back(second_jet_eta);
   varInfo *second_jet_pt = new varInfo("second_jet_pt", "second_jet_pt", "second_jet_pt", 1000, 0, 1000);
@@ -366,6 +372,8 @@ int main ( int argc, char ** argv )
   varList.push_back(sum_pt);
   varInfo *third_dibjet_mass = new varInfo("third_dibjet_mass", "third_dibjet_mass", "third_dibjet_mass", 1000, 0, 1000);
   varList.push_back(third_dibjet_mass);
+//   varInfo *third_jet_CHEF = new varInfo("third_jet_CHEF", "third_jet_CHEF", "third_jet_CHEF", 1000, 0, 1);
+//   varList.push_back(third_jet_CHEF);
   varInfo *third_jet_eta = new varInfo("third_jet_eta", "third_jet_eta", "third_jet_eta", 1000, -5, 5);
   varList.push_back(third_jet_eta);
   varInfo *third_jet_pt = new varInfo("third_jet_pt", "third_jet_pt", "third_jet_pt", 1000, 0, 1000);
@@ -542,6 +550,7 @@ int main ( int argc, char ** argv )
       for( unsigned int j = 0; j < nlepCatList; j++) {
         OutputDirectory = lepCatList[j];
         std::cout << "    ==>start sub-lep category " << OutputDirectory.c_str() << std::endl;
+        if (inputYear == "2011") {
         if (OutputDirectory == "TwoMuon" ) {
           EffStr = "0.987 * 0.987 * ";
           TrigStr = "0.9885 * 0.9885 * ";
@@ -554,6 +563,23 @@ int main ( int argc, char ** argv )
           EffStr = "0.987 * 1.004 * ";
           TrigStr = "0.9885 * ";
         }
+        }
+        else {
+        if (OutputDirectory == "TwoMuon" ) {
+          TrigStr = "0.994 * (0.932 / 0.938) * ";
+	  //          EffStr = "0.993 * ";
+        }
+        else if (OutputDirectory ==  "TwoEle" ) {
+          TrigStr = "0.955 * (0.935 / 0.928) * ";
+	  //          EffStr = "0.979 * ";
+        }
+        else if (OutputDirectory ==  "MuonEle"  ) {
+          TrigStr = "0.978 * (0.890 / 0.862) *  ";
+	  //          EffStr = "0.986 * ";
+        }
+	EffStr = "lepTotalSF * ";
+        }
+          
 	
         ////////////// no weight, SF for data
         if (isData) {
@@ -597,7 +623,11 @@ int main ( int argc, char ** argv )
           //Selection string
           std::string SelectionStr = "holder";
           std::string CleanTrig = "holder";
-          CleanTrig = "(isTriggerPass == 1) && ";
+
+          if (OutputDirectory == "TwoMuon") CleanTrig = "(isCleanEvent == 1) && (isDoubleMuTriggerPass == 1) && ";
+          if (OutputDirectory == "TwoEle") CleanTrig =  "(isCleanEvent == 1) && (isDoubleElectronTriggerPass == 1) && ";
+          if (OutputDirectory == "MuonEle") CleanTrig = "(isCleanEvent == 1) && (isMuEGTriggerPass == 1) && ";
+
           if (inputYear == "2011") {
             CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
           }
