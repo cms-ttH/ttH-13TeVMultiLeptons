@@ -600,10 +600,13 @@ int main ( int argc, char ** argv )
 
   intBranches["isCleanEvent"] = new int (0);
   intBranches["isTriggerPass"] = new int (0);
-  //  intBranches["isTriggerPassPrescaled"] = new int (0);
+   intBranches["isTriggerPassPrescaled"] = new int (0);
   intBranches["isDoubleMuTriggerPass"] = new int (0);
   intBranches["isDoubleElectronTriggerPass"] = new int (0);
   intBranches["isMuEGTriggerPass"] = new int (0);
+  intBranches["isDoubleMuTriggerPassPS0"] = new int (0);
+  intBranches["isDoubleElectronTriggerPassPS0"] = new int (0);
+  intBranches["isMuEGTriggerPassPS0"] = new int (0);
 //   intBranches["isDoubleMu7Pass"] = new int (0);
 //   intBranches["isMu8Pass"] = new int (0);
 //   intBranches["isMu13_Mu8Pass"] = new int (0);
@@ -1389,6 +1392,9 @@ int main ( int argc, char ** argv )
       bool DoubleMuTriggerPass = false;
       bool DoubleElectronTriggerPass = false;
       bool MuEGTriggerPass = false;
+      bool DoubleMuTriggerPassPS0 = false;
+      bool DoubleElectronTriggerPassPS0 = false;
+      bool MuEGTriggerPassPS0 = false;
       bool HLT_DoubleMu7_v = false;
       bool HLT_Mu8_v = false;
       bool HLT_Mu13_Mu8_v = false;
@@ -1422,9 +1428,10 @@ int main ( int argc, char ** argv )
       for( int t=0; t<int(mc_hlt_DoubleMu_trigger_collection.size()); t++ ){
         //hlt_name = hltbit->name;
 	    if( (hlt_name.find(mc_hlt_DoubleMu_trigger_collection[t])!=std::string::npos) ) {
-	      if( hltbit->prescale==1 ) {
+	      if( hltbit->prescale==1 || hltbit->prescale==0 ) {
             DoubleMuTriggerFound = true;
-            DoubleMuTriggerPass = ( hltbit->pass==1 || DoubleMuTriggerPass);
+            DoubleMuTriggerPass = ( ( hltbit->pass==1 && hltbit->prescale==1 ) || DoubleMuTriggerPass);
+            DoubleMuTriggerPassPS0 = ( ( hltbit->pass==1 && hltbit->prescale==0 ) || DoubleMuTriggerPassPS0);
           }
           else triggerPassPrescaled = ( hltbit->pass==1 || triggerPassPrescaled);
         }
@@ -1433,9 +1440,10 @@ int main ( int argc, char ** argv )
       for( int t=0; t<int(mc_hlt_DoubleElectron_trigger_collection.size()); t++ ){
         //hlt_name = hltbit->name;
 	    if( (hlt_name.find(mc_hlt_DoubleElectron_trigger_collection[t])!=std::string::npos) ) {
-	      if( hltbit->prescale==1 ) {
+	      if( hltbit->prescale==1 || hltbit->prescale==0 ) {
             DoubleElectronTriggerFound = true;
-            DoubleElectronTriggerPass = ( hltbit->pass==1 || DoubleElectronTriggerPass);
+            DoubleElectronTriggerPass = ( ( hltbit->pass==1 && hltbit->prescale==1 ) || DoubleElectronTriggerPass);
+            DoubleElectronTriggerPassPS0 = ( ( hltbit->pass==1 && hltbit->prescale==0 ) || DoubleElectronTriggerPassPS0);
           }
           else triggerPassPrescaled = ( hltbit->pass==1 || triggerPassPrescaled);
         }
@@ -1444,9 +1452,10 @@ int main ( int argc, char ** argv )
       for( int t=0; t<int(mc_hlt_MuEG_trigger_collection.size()); t++ ){
         //hlt_name = hltbit->name;
 	    if( (hlt_name.find(mc_hlt_MuEG_trigger_collection[t])!=std::string::npos) ) {
-	      if( hltbit->prescale==1 ) {
+	      if( hltbit->prescale==1 || hltbit->prescale==0 ) {
             MuEGTriggerFound = true;
-            MuEGTriggerPass = ( hltbit->pass==1 || MuEGTriggerPass);
+            MuEGTriggerPass = ( ( hltbit->pass==1 && hltbit->prescale==1 ) || MuEGTriggerPass);
+            MuEGTriggerPassPS0 = ( ( hltbit->pass==1 && hltbit->prescale==0 ) || MuEGTriggerPassPS0);
           }
           else triggerPassPrescaled = ( hltbit->pass==1 || triggerPassPrescaled);
         }
@@ -2126,10 +2135,13 @@ int main ( int argc, char ** argv )
         *(intBranches["isCleanEvent"]) = cleanEvent ? 1 : 0;
 //       }
       *(intBranches["isTriggerPass"]) = triggerPass ? 1 : 0;
-      //      *(intBranches["isTriggerPassPrescaled"]) = triggerPassPrescaled ? 1 : 0;
+           *(intBranches["isTriggerPassPrescaled"]) = triggerPassPrescaled ? 1 : 0;
       *(intBranches["isDoubleMuTriggerPass"]) = DoubleMuTriggerPass ? 1 : 0;
       *(intBranches["isDoubleElectronTriggerPass"]) = DoubleElectronTriggerPass ? 1 : 0;
       *(intBranches["isMuEGTriggerPass"]) = MuEGTriggerPass ? 1 : 0;
+      *(intBranches["isDoubleMuTriggerPassPS0"]) = DoubleMuTriggerPassPS0 ? 1 : 0;
+      *(intBranches["isDoubleElectronTriggerPassPS0"]) = DoubleElectronTriggerPassPS0 ? 1 : 0;
+      *(intBranches["isMuEGTriggerPassPS0"]) = MuEGTriggerPassPS0 ? 1 : 0;
 //       *(intBranches["isMu8Pass"]) =  HLT_Mu8_v ? 1 : 0;
 //       *(intBranches["isDoubleMu7Pass"]) =  HLT_DoubleMu7_v ? 1 : 0;
 //       *(intBranches["isMu13_Mu8Pass"]) =  HLT_Mu13_Mu8_v ? 1 : 0;

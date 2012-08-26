@@ -11,58 +11,58 @@ def main ():
     jerChoice = int(sys.argv[3])
     jobLabel = str(sys.argv[4])
     listOfSamples2011Data = ['DoubleElectron_Run2011A-05Aug2011-v1',
-                     'DoubleElectron_Run2011A-May10ReReco-v1',
-                     'DoubleElectron_Run2011A-PromptReco-v4',
-                     'DoubleElectron_Run2011A-PromptReco-v6',
-                     'DoubleElectron_Run2011B-PromptReco-v1',
-                     'DoubleMu_Run2011A-05Aug2011-v1',
-                     'DoubleMu_Run2011A-May10ReReco-v1',
-                     'DoubleMu_Run2011A-PromptReco-v4',
-                     'DoubleMu_Run2011A-PromptReco-v6',
-                     'DoubleMu_Run2011B-PromptReco-v1',
-                     'MuEG_Run2011A-05Aug2011-v1',
-                     'MuEG_Run2011A-May10ReReco-v1',
-                     'MuEG_Run2011A-PromptReco-v4',
-                     'MuEG_Run2011A-PromptReco-v6',
-                     'MuEG_Run2011B-PromptReco-v1']
+                             'DoubleElectron_Run2011A-May10ReReco-v1',
+                             'DoubleElectron_Run2011A-PromptReco-v4',
+                             'DoubleElectron_Run2011A-PromptReco-v6',
+                             'DoubleElectron_Run2011B-PromptReco-v1',
+                             'DoubleMu_Run2011A-05Aug2011-v1',
+                             'DoubleMu_Run2011A-May10ReReco-v1',
+                             'DoubleMu_Run2011A-PromptReco-v4',
+                             'DoubleMu_Run2011A-PromptReco-v6',
+                             'DoubleMu_Run2011B-PromptReco-v1',
+                             'MuEG_Run2011A-05Aug2011-v1',
+                             'MuEG_Run2011A-May10ReReco-v1',
+                             'MuEG_Run2011A-PromptReco-v4',
+                             'MuEG_Run2011A-PromptReco-v6',
+                             'MuEG_Run2011B-PromptReco-v1',
+                             ]
 	
     listOfSamples2012Data = ['DoubleElectron_Run2012A',
-							 'DoubleElectron_Run2012B',
-							 'DoubleMu_Run2012A',
-							 'DoubleMu_Run2012B',
-							 'MuEG_Run2012A',
-							 'MuEG_Run2012B']
+                             'DoubleElectron_Run2012B',
+                             'DoubleMu_Run2012A',
+                             'DoubleMu_Run2012B',
+                             'MuEG_Run2012A',
+                             'MuEG_Run2012B',
+                             ]
 							 
-    listOfSamples = ['ttbar',
+    listOfSamples = [
                      #'scaledown_ttbar',
                      #'scaledown_ttbar_bb',
                      #'scaledown_ttbar_cc',
                      #'scaleup_ttbar',
                      #'scaleup_ttbar_bb',
                      #'scaleup_ttbar_cc',
-                     'singlet_s',
-                     'singlet_t',
-                     'singlet_tW',
-                     'singletbar_s',
-                     'singletbar_t',
-                     'singletbar_tW',
-                     'ttH100',
-                     'ttH105',
-                     'ttH110',
-                     'ttH115',
+                    'singlet_s',
+                    'singlet_t',
+                    'singlet_tW',
+                    'singletbar_s',
+                    'singletbar_t',
+                    'singletbar_tW',
+                    'ttH110',
+                    'ttH115',
                      'ttH120',
-                     'ttH125',
-                     'ttH130',
-                     'ttH135',
-                     'ttH140',
-                     'ttbarW',
-                     'ttbarZ',
-                     'ttbar_bb',
-                     'ttbar_cc',
-                     'wjets',
+                    'ttH125',
+                    'ttH130',
+                    'ttH135',
+                    'ttH140',
+                    'ttbarW',
+                    'ttbarZ',
+                    'ttbar_bb',
+                    'ttbar_cc',
+                    'wjets',
                      'ww',
                      'wz',
-                     #'zjets_h',
+                     'zz',
                      'zjets_part1',
                      'zjets_part2',
                      'zjets_part3',
@@ -76,7 +76,19 @@ def main ():
                      'zjets_part11',
                      'zjets_part12',
                      'zjets_lowmass',                    
-                     'zz']
+                     'ttbar_part1',
+                     'ttbar_part2',
+                     'ttbar_part3',
+                     'ttbar_part4',
+                     'ttbar_part5',
+                     'ttbar_part6',
+                     'ttbar_part7',
+                     'ttbar_part8',
+                     'ttbar_part9',
+                     'ttbar_part10',
+                     'ttbar_part11',
+                     'ttbar_part12',                     
+                     ]
 
     if yearChoice == 2011:
         listOfSamples = listOfSamples2011Data + listOfSamples
@@ -99,7 +111,8 @@ def main ():
         if yearChoice == 2011:
             listStr = "wc -l ../../listsForSkims/"
         elif yearChoice == 2012:
-            listStr = "wc -l ../../listsForSkims2012/"
+#            listStr = "wc -l listsForSkims/"
+            listStr = "wc -l ../../listsForSkims2012_v3/"
         for iLine in os.popen(listStr+"%s.list" % iList).readlines():
             words = iLine.split()
             print "Line is ="
@@ -127,8 +140,8 @@ def main ():
             JetStr = "_JERUp"
         if (jerChoice == -1):
             JetStr = "_JERDown"     
-        condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_"+str(yearChoice)+"_$(Process)"+JetStr+".stdout\n")
-        condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_"+str(yearChoice)+"_$(Process).stderr\n") 
+        condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")
+        condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n") 
         condorJobFile.write( "queue $(NJobs)\n")
 
         condorJobFile.close()
