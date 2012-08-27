@@ -108,7 +108,8 @@ class PlotInfo:
 		# Get the histogram
 		# Added some cloning into it
 		# because without cloning you have problems with the data
-		#print " Looking in file %s" % self.fileName
+ 		#print " Looking in file %s" % self.fileName
+ 		#print namePlusCycle
 		if (JES == "nominal" or isData):
 			#print "%s: Getting histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
@@ -235,6 +236,7 @@ class PlotInfo:
 			#print "DEBGUG: Sending back histograms a histogram with Integral %f" % (targetHist.Integral())
 
 			return targetHist, scaleRatio, sys_frac_err
+			
 		
 	# end of getHist
 
@@ -812,10 +814,21 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	pdfName = "%s/%s_%s.pdf" % (directoryName, dist, groupName)
 	pngName = "%s/%s_%s.png" % (directoryName, dist, groupName)
 
+
 	if output == "draw":
 		myCanvasLin.SaveAs(pngName)
 		myCanvasLin.SaveAs(pdfName)
+		gPad.Close()
+		upLin.Close()
+		downLin.Close()
+		myStack.Delete()
+		myCanvasLin.Close()
 	elif output == "print":
+		gPad.Close()
+		upLin.Close()
+		downLin.Close()
+		myStack.Delete()
+		myCanvasLin.Close()
 		if (year == "2011"):
 			return [ttSum,ttbbSum,ttccSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum,WJetsSum,DiBosonSum,ttHSum,100*ttHSum*998833/(4982*0.098*105138),TotalMCsum,TotalMCErr,Data2011Sum]
 		else:
@@ -831,8 +844,19 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			iPlot.SetDirectory(rootOutput)
 			iPlot.Write()
 		rootOutput.Close()
+		gPad.Close()
+		upLin.Close()
+		downLin.Close()
+		myStack.Delete()
+		myCanvasLin.Close()
 	else:
+		gPad.Close()
+		upLin.Close()
+		downLin.Close()
+		myStack.Delete()
+		myCanvasLin.Close()
 		print "No output!"
+
 
 # done with stack plot drawing
 
