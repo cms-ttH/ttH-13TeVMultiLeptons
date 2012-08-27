@@ -108,8 +108,8 @@ class PlotInfo:
 		# Get the histogram
 		# Added some cloning into it
 		# because without cloning you have problems with the data
- 		#print " Looking in file %s" % self.fileName
- 		#print namePlusCycle
+		#print " Looking in file %s" % self.fileName
+		#print namePlusCycle
 		if (JES == "nominal" or isData):
 			#print "%s: Getting histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
@@ -304,12 +304,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e ')
 	TexTitle5 = TexTitle4.replace('pdf_2012/','')
 	TexTitle6 = TexTitle5.replace('2012_noZmask_','')
-	TexTitle =  TexTitle6.replace('ee_mm_',' #mu#mu/ee ')
+	TexTitle =	TexTitle6.replace('ee_mm_',' #mu#mu/ee ')
 	
 	if year == "2011" :
-		myLumiString = TexTitle+"   CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
+		myLumiString = TexTitle+"	CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
 	else :
-		myLumiString = TexTitle+"   CMS Preliminary,  #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
+		myLumiString = TexTitle+"	CMS Preliminary,  #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 #	 myLumiString = TexTitle+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV"
 #	 myLumiString = directoryName.replace('pdf/','')+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV" 
 	myLumiTex = TLatex()
@@ -639,7 +639,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #	 if (ZJetsCounter == 6):
 #		 legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
 
-	iSig.Scale(TotalMCsum/ttHSum)
+	if (ttHSum > 0):
+		iSig.Scale(TotalMCsum/ttHSum)
 	iSig.SetLineColor(kBlue)
 	iSig.SetFillColor(0)
 	iSig.SetLineWidth(2)
@@ -667,8 +668,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 #	 legForStack.AddEntry(myData2011, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
 	legForStack.AddEntry(MCErrHist, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
-	legForStack.AddEntry(iSig, "t#bar{t}H120 ("+str(round(ttHSum,1))+"x"+str(round(TotalMCsum/ttHSum,1))+")", "l")
-
+	if (ttHSum > 0):
+		legForStack.AddEntry(iSig, "t#bar{t}H120 ("+str(round(ttHSum,1))+"x"+str(round(TotalMCsum/ttHSum,1))+")", "l")
+	else:
+		legForStack.AddEntry(iSig, "t#bar{t}H120 (0.0x1.0)" , "l")
 	if year == "2011":
 		theDataHisto = myData2011.Clone()
 	elif year == "2012":
@@ -679,14 +682,16 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 
 	
-	plotMax = max(myStack.GetMaximum(),iSig.GetMaximum())  	
+	plotMax = max(myStack.GetMaximum(),iSig.GetMaximum())	
 	plotMax = max(myStack.GetMaximum(),theDataHisto.GetMaximum())  ##Comment out for blinding
+	if (dist == "weight" or dist == "prob"):
+		plotMax = max(myStack.GetMaximum(),iSig.GetMaximum())
 	
 	titleString = "%s;%s;%s" % ("", "", "Events")
 
 	myStack.SetTitle(titleString)
 	myStack.SetMinimum(0.001)
-	myStack.SetMaximum(plotMax*1.3)
+	myStack.SetMaximum(max(1.001,plotMax*1.3))
 	##Appropriate for log scale	 
 	##myStack.SetMaximum(plotMax*10) 
 
@@ -733,7 +738,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	
 	iSig.Draw('histsame')
 
-	theDataHisto.Draw("pesame")   	##Comment out for blinding
+	theDataHisto.Draw("pesame")		##Comment out for blinding
 	
 
 	legForStack.Draw()
@@ -765,10 +770,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #	if (dist == "CFMlpANN_e2je2t"):
 #		ratioHist.GetXaxis().SetNdivisions(504)
 	
-	ratioHist.SetLineColor(0)    
-	ratioHist.SetMarkerColor(0)  
+	ratioHist.SetLineColor(0)	 
+	ratioHist.SetMarkerColor(0)	 
 
-	ratioHist.SetLineColor(kBlack)     ##Comment out for blinding 
+	ratioHist.SetLineColor(kBlack)	   ##Comment out for blinding 
 	ratioHist.SetMarkerColor(kBlack)   ##Comment out for blinding 
 
 
@@ -804,7 +809,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			ratioErrHist.SetBinError(i,ratErrMC)
 
 	ratioHist.Draw()
-	ratioErrHist.Draw("e2same")  	##Comment out for blinding 
+	ratioErrHist.Draw("e2same")		##Comment out for blinding 
 	ratioHist.Draw("pe1same")
 	l = TLine()
 	l.SetLineStyle(2)
@@ -956,32 +961,40 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 	
 	# OK, let's go forward with this binning
 	hist.SetBins(nBins,xMin,xMax)
+	emptyStrikeOne = True
+	emptyStrikeTwo = True
+	emptyStrikeThree = True
 
 	# Handle the first bin (including underflow in original)
 	binCont = hist.GetBinContent(1)
+	if (binCont > 0):
+		emptyStrikeOne = False
 	binSumW2 = hist.GetBinError(1)**2
 	origStart = 0  #Include the underflow in the original
 	firstBinOrig = origHist.FindBin(xMin)
 	origEnd = firstBinOrig + int(binGroup)
 
-	# first loop
-	for origBin in range(origStart,origEnd):
-		binCont += origHist.GetBinContent(origBin)
-		binALL_err_squared = 0
-		if useSysErrors:
-			#print 'origBin = '+str(origBin)
-			#print 'binErrors = '+str(binErrors)
-			#print 'name = '+str(origHist.GetName())
-			#print 'sys_frac_err = '+str(sys_frac_err)
-			ii = 0
-			while (ii < len(sys_hist_array)):
-				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
-				#print 'Entries '+str(ii)+' , '+str(ii+1)+' = '+str(sys_hist_array[ii].GetBinContent(origBin))+' , '+str(sys_hist_array[ii+1].GetBinContent(origBin))
-				ii+=2
-		binSumW2 += (origHist.GetBinError(origBin)**2)
-		hist.SetBinContent(1,binCont)
-		hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
-	# end loop over origBin
+	binALL_err_squared = 0
+	if useSysErrors:
+		ii = 0
+		while (ii < len(sys_hist_array)):
+			binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(1) - sys_hist_array[ii+1].GetBinContent(1)),2)
+			ii+=2
+
+	if (origHist.GetName() != "avg_tagged_dijet_mass" and origHist.GetName() != "closest_tagged_dijet_mass" and origHist.GetName() != "min_dr_tagged_jets" and origHist.GetName() != "third_jet_pt" and origHist.GetName() != "fourth_jet_pt"):
+		# first loop
+		for origBin in range(origStart,origEnd):
+			binCont += origHist.GetBinContent(origBin)
+			if useSysErrors:
+				ii = 0
+				while (ii < len(sys_hist_array)):
+					binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+					#print 'Entries '+str(ii)+' , '+str(ii+1)+' = '+str(sys_hist_array[ii].GetBinContent(origBin))+' , '+str(sys_hist_array[ii+1].GetBinContent(origBin))
+					ii+=2
+			binSumW2 += (origHist.GetBinError(origBin)**2)
+		# end loop over origBin
+	hist.SetBinContent(1,binCont)
+	hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 
 	# Do the bulk of the distribution
 	for newBin in range(2,nBins):
@@ -989,19 +1002,27 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 		origEnd = origStart + int(binGroup)
 		
 		binCont = hist.GetBinContent(newBin)
+		binSumW2 = hist.GetBinError(newBin)**2
 		binALL_err_squared = 0
 		if useSysErrors:
 			ii = 0
 			while (ii < len(sys_hist_array)):
-				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(newBin) - sys_hist_array[ii+1].GetBinContent(newBin)),2)
 				ii+=2
-		binSumW2 = hist.GetBinError(newBin)**2
+
 		for origBin in range(origStart,origEnd):
 			binCont += origHist.GetBinContent(origBin)
 			binSumW2 += (origHist.GetBinError(origBin)**2)
+			if useSysErrors:
+				ii = 0
+				while (ii < len(sys_hist_array)):
+					binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+					ii+=2
 		# end loop over orig bin
 		hist.SetBinContent(newBin,binCont)
 		hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
+		if (emptyStrikeTwo == False or binCont > 0):
+			emptyStrikeTwo = False
 		##if (newBin == 2):
 			##print math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2))
 		
@@ -1012,22 +1033,35 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 	origEnd = 2+nBinsOrig #Include the overflow in the original
 	binCont = hist.GetBinContent(nBins)
 	binALL_err_squared = 0
-	if useSysErrors:
-			ii = 0
-			while (ii < len(sys_hist_array)):
-				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
-				ii+=2
 	binSumW2 = hist.GetBinError(nBins)**2
-	for origBin in range(origStart,origEnd):
-		binCont += origHist.GetBinContent(origBin)
-		binSumW2 += (origHist.GetBinError(origBin)**2)
-	# end loop over origBin
+	if (binCont > 0):
+		emptyStrikeThree = False
+
+	if useSysErrors:
+		ii = 0
+		while (ii < len(sys_hist_array)):
+			binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(nBins) - sys_hist_array[ii+1].GetBinContent(nBins)),2)
+			ii+=2
+				
+	if (origHist.GetName() != "third_jet_CHEF" and origHist.GetName() != "fourth_jet_CHEF"):
+		for origBin in range(origStart,origEnd):
+			binCont += origHist.GetBinContent(origBin)
+			binSumW2 += (origHist.GetBinError(origBin)**2)
+			if useSysErrors:
+				ii = 0
+				while (ii < len(sys_hist_array)):
+					binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+					ii+=2
+		# end loop over origBin
 
 	hist.SetBinContent(nBins,binCont)
 	hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 	
 	hist.SetEntries(totalEntries)
-				 
+
+	#if (EmptyStrikeOne and EmptyStrikeTwo and EmptyStrikeThree):
+		#return false
+			
 	return hist
 
 
