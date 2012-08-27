@@ -404,7 +404,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   # This rebinning also adds in overflow
 	   # It also adds in the errors
 	   # JMS: Someone should probably make this loop work better
-	   # 
+	   #
 	   resultHist = rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sys_frac_err, "all")
 	   resultHist_MCErrorsOnly = rebinHistManual (origHist, 0, nBins, xMin, xMax, scaleRatio, 1.0, "off")
 	   resultHist_MCErrorsOnly_JESUp = rebinHistManual (origHist_JESUp, 0,	nBins, xMin, xMax, scaleRatio, 1.0, "off")
@@ -961,38 +961,29 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 	
 	# OK, let's go forward with this binning
 	hist.SetBins(nBins,xMin,xMax)
-	emptyStrikeOne = True
-	emptyStrikeTwo = True
-	emptyStrikeThree = True
 
 	# Handle the first bin (including underflow in original)
-	binCont = hist.GetBinContent(1)
-	if (binCont > 0):
-		emptyStrikeOne = False
-	binSumW2 = hist.GetBinError(1)**2
-	origStart = 0  #Include the underflow in the original
+	binCont = 0
+	binSumW2 = 0
+	if (origHist.GetName() == "avg_tagged_dijet_mass" or origHist.GetName() == "closest_tagged_dijet_mass" or origHist.GetName() == "min_dr_tagged_jets" or origHist.GetName() == "third_jet_pt" or origHist.GetName() == "fourth_jet_pt"):
+		origStart = origHist.FindBin(xMin)
+	else:	
+		origStart = 0  #Include the underflow in the original
 	firstBinOrig = origHist.FindBin(xMin)
 	origEnd = firstBinOrig + int(binGroup)
-
 	binALL_err_squared = 0
-	if useSysErrors:
-		ii = 0
-		while (ii < len(sys_hist_array)):
-			binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(1) - sys_hist_array[ii+1].GetBinContent(1)),2)
-			ii+=2
 
-	if (origHist.GetName() != "avg_tagged_dijet_mass" and origHist.GetName() != "closest_tagged_dijet_mass" and origHist.GetName() != "min_dr_tagged_jets" and origHist.GetName() != "third_jet_pt" and origHist.GetName() != "fourth_jet_pt"):
-		# first loop
-		for origBin in range(origStart,origEnd):
-			binCont += origHist.GetBinContent(origBin)
-			if useSysErrors:
-				ii = 0
-				while (ii < len(sys_hist_array)):
-					binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
-					#print 'Entries '+str(ii)+' , '+str(ii+1)+' = '+str(sys_hist_array[ii].GetBinContent(origBin))+' , '+str(sys_hist_array[ii+1].GetBinContent(origBin))
-					ii+=2
-			binSumW2 += (origHist.GetBinError(origBin)**2)
-		# end loop over origBin
+	# first loop
+	for origBin in range(origStart,origEnd):
+		binCont += origHist.GetBinContent(origBin)
+		if useSysErrors:
+			ii = 0
+			while (ii < len(sys_hist_array)):
+				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+				#print 'Entries '+str(ii)+' , '+str(ii+1)+' = '+str(sys_hist_array[ii].GetBinContent(origBin))+' , '+str(sys_hist_array[ii+1].GetBinContent(origBin))
+				ii+=2
+		binSumW2 += (origHist.GetBinError(origBin)**2)
+	# end loop over origBin
 	hist.SetBinContent(1,binCont)
 	hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 
@@ -1001,14 +992,9 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 		origStart = origEnd
 		origEnd = origStart + int(binGroup)
 		
-		binCont = hist.GetBinContent(newBin)
-		binSumW2 = hist.GetBinError(newBin)**2
+		binCont = 0
+		binSumW2 = 0
 		binALL_err_squared = 0
-		if useSysErrors:
-			ii = 0
-			while (ii < len(sys_hist_array)):
-				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(newBin) - sys_hist_array[ii+1].GetBinContent(newBin)),2)
-				ii+=2
 
 		for origBin in range(origStart,origEnd):
 			binCont += origHist.GetBinContent(origBin)
@@ -1017,51 +1003,43 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 				ii = 0
 				while (ii < len(sys_hist_array)):
 					binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+					#if (binErrors == "all"):
+						#print "Bin "+str(origBin)+", value "+str(binCont)+", sys hist "+str(ii+1)+", binALL_err = "+str(math.sqrt(binALL_err_squared))
 					ii+=2
 		# end loop over orig bin
+		#if (binErrors == "all"):
+			#print "Setting bin "+str(newBin)+", value "+str(binCont)+", BinError = "+str(math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 		hist.SetBinContent(newBin,binCont)
 		hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
-		if (emptyStrikeTwo == False or binCont > 0):
-			emptyStrikeTwo = False
-		##if (newBin == 2):
-			##print math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2))
-		
 	# end loop over newBin
 				
 	# Do any remaining bins past the end of the new range (including overflow in original)
 	origStart = origEnd
-	origEnd = 2+nBinsOrig #Include the overflow in the original
-	binCont = hist.GetBinContent(nBins)
+	if (origHist.GetName() == "third_jet_CHEF" or origHist.GetName() == "fourth_jet_CHEF"):
+		origEnd = origStart + int(binGroup)
+	else:
+		origEnd = 2+nBinsOrig #Include the overflow in the original
+
+	binCont = 0
+	binSumW2 = 0
 	binALL_err_squared = 0
-	binSumW2 = hist.GetBinError(nBins)**2
-	if (binCont > 0):
-		emptyStrikeThree = False
-
-	if useSysErrors:
-		ii = 0
-		while (ii < len(sys_hist_array)):
-			binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(nBins) - sys_hist_array[ii+1].GetBinContent(nBins)),2)
-			ii+=2
 				
-	if (origHist.GetName() != "third_jet_CHEF" and origHist.GetName() != "fourth_jet_CHEF"):
-		for origBin in range(origStart,origEnd):
-			binCont += origHist.GetBinContent(origBin)
-			binSumW2 += (origHist.GetBinError(origBin)**2)
-			if useSysErrors:
-				ii = 0
-				while (ii < len(sys_hist_array)):
-					binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
-					ii+=2
-		# end loop over origBin
+	for origBin in range(origStart,origEnd):
+		binCont += origHist.GetBinContent(origBin)
+		binSumW2 += (origHist.GetBinError(origBin)**2)
+		if useSysErrors:
+			ii = 0
+			while (ii < len(sys_hist_array)):
+				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+				ii+=2
+	# end loop over origBin
 
-	hist.SetBinContent(nBins,binCont)
-	hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
+	if nBins > 1:
+		hist.SetBinContent(nBins,binCont)
+		hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 	
 	hist.SetEntries(totalEntries)
 
-	#if (EmptyStrikeOne and EmptyStrikeTwo and EmptyStrikeThree):
-		#return false
-			
 	return hist
 
 
