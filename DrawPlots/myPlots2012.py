@@ -29,7 +29,7 @@ from PlotEnv import *
 def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 
     dirStr = lepselection+"/"
-    #dirStr = "root"+lepselection+"/"
+    #dirStr = year+"/"+lepselection+"/"
     rootStr = "_" + year + "_" + Zmask + "_" + jetselection + "_" + lepselection +".root"
 
     defaultLumi = 5117.0
@@ -45,7 +45,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
     elif lepselection.startswith("ee_mm"):
         dataStr = dirStr+'SameLep'+rootStr
     else:
-        dataStr = dirStr+'AllLep'+rootStr
+        dataStr = dirStr+'TwoLep'+rootStr
 
   
     directoryName = "pdf_2012/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection 
@@ -118,7 +118,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'xsec': 0.225197,
          'xsec_err': 0.023,
          'sys_array': sys_arrays['tt'],
-         'ngen':  7619888,
+         'ngen':  7585346, #7619888,
          'fillColor': ROOT.kRed,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -135,7 +135,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'xsec': 0.225197,
          'xsec_err': 0.3*0.225197,
          'sys_array': sys_arrays['ttcc'],
-         'ngen':  7619888,
+         'ngen':  7585346, #7619888,
          'fillColor': ROOT.kGreen-3,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -152,7 +152,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'xsec': 0.225197,
          'xsec_err': 0.3*0.225197,
          'sys_array': sys_arrays['ttbb'],
-         'ngen':  7619888,
+         'ngen':  7585346, #7619888,
          'fillColor': ROOT.kMagenta+2,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
