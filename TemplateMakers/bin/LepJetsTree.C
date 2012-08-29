@@ -670,19 +670,24 @@ int main ( int argc, char ** argv )
   //pile up
   floatBranches["numPV"] = new float(0.0);
   floatBranches["weight"] = new float(0.0);
+  floatBranches["PUweight"] = new float(0.0);
   floatBranches["weight_PUup"] = new float(0.0);
   floatBranches["weight_PUdown"] = new float(0.0);
 
   //met
   floatBranches["met"] = new float(0.0);
+  floatBranches["metTruth"] = new float(0.0);
   floatBranches["unc_met"] = new float(0.0);
 
   //mT
   floatBranches["mT"] =  new float(0.0);
+  floatBranches["mTTruth"] =  new float(0.0);
 
   ///lepton variables
   floatBranches["leptonPt"] = new float(0.0);
+  floatBranches["lepPtTruth"] = new float(0.0);
   floatBranches["leptonEta"] = new float(0.0);
+  floatBranches["lepEtaTruth"] = new float(0.0);
   floatBranches["lep1Pt"] = new float(0.0);
   // floatBranches["lep2Pt"] = new float(0.0);
   floatBranches["lep1Eta"] = new float(0.0);
@@ -703,6 +708,11 @@ int main ( int argc, char ** argv )
   floatBranches["second_jet_pt"] = new float(0.0);
   floatBranches["third_jet_pt"] = new float(0.0);
   floatBranches["fourth_jet_pt"] = new float(0.0);
+  // floatBranches["first_jet_eta"] = new float(0.0);
+//   floatBranches["second_jet_eta"] = new float(0.0);
+//   floatBranches["third_jet_eta"] = new float(0.0);
+//   floatBranches["fourth_jet_eta"] = new float(0.0);
+
 
   floatBranches["min_dr_tagged_jets"] = new float(0.0);
   floatBranches["avg_dr_tagged_jets"] = new float(0.0);
@@ -722,10 +732,16 @@ int main ( int argc, char ** argv )
   floatBranches["lowest_btag"] = new float(0.0);
 
   /////entire system variables
+  floatBranches["m3"] = new float(0.0);
+  floatBranches["m3Truth"] = new float(0.0);
   floatBranches["Mttbar"] = new float(0.0);
+  floatBranches["MttbarTruth"] = new float(0.0);
   floatBranches["ttbarPt"] = new float(0.0);
+  floatBranches["ttbarPtTruth"] = new float(0.0);
   floatBranches["ttbarEta"] = new float(0.0);
+  floatBranches["ttbarEtaTruth"] = new float(0.0);
   floatBranches["ttbarY"] = new float(0.0);
+  floatBranches["ttbarYTruth"] = new float(0.0);
   floatBranches["sum_pt"] = new float(0.0); 
   floatBranches["all_sum_pt"] = new float(0.0);
   floatBranches["Ht"] = new float(0.0);
@@ -1009,7 +1025,50 @@ int main ( int argc, char ** argv )
 	//             << "Resetting sample to 2500 "  <<endl;
 	sample = 2500;
       }
-      
+      /////////////////////////////////////////
+      //   Loop Over the Gen Particles
+      /////////////////////////////////////////
+       int nTop = 0;
+        TLorentzVector ttbarTruthLV;
+        TLorentzVector muonTruthLV;
+        TLorentzVector neutrinoTruthLV;
+        TLorentzVector WTruthLV;
+        TLorentzVector WTransTruthLV;
+        float muonTruthEta;
+      for( unsigned i=0; i< mcparticles.size(); i++ ){
+        int id = mcparticles.at(i).id;
+        int motherID = mcparticles.at(i).motherId;
+        int status = mcparticles.at(i).status;
+        //tops
+        if(abs(id) ==6 && status ==3){
+           TLorentzVector topTruthLV;
+           topTruthLV.SetPxPyPzE(mcparticles.at(i).px,mcparticles.at(i).py,mcparticles.at(i).pz,mcparticles.at(i).energy);
+           ttbarTruthLV += topTruthLV;
+           ++nTop;
+        }//end tops
+
+        //muons
+        if(abs(id) ==13 && status ==3){
+          if(abs(mcparticles.at(i).motherId) == 24 && abs(mcparticles.at(i).grandMotherId)==6){
+            muonTruthLV.SetPxPyPzE(mcparticles.at(i).px,mcparticles.at(i).py,mcparticles.at(i).pz,mcparticles.at(i).energy);
+            WTruthLV += muonTruthLV;
+            muonTruthEta= mcparticles.at(i).eta;
+          }
+        }//end muons
+         
+        //muon neutrino
+        if(abs(id) ==14 && status ==3){
+          neutrinoTruthLV.SetPxPyPzE(mcparticles.at(i).px,mcparticles.at(i).py,mcparticles.at(i).pz,mcparticles.at(i).energy);
+          WTruthLV += neutrinoTruthLV;
+        }// end neutrinos
+         
+
+        }//end loop over mcparticles
+      WTransTruthLV = WTruthLV;
+      WTransTruthLV.SetPz(0.);
+      WTransTruthLV.SetE(WTruthLV.Pt());
+
+           
       if (sample==123){
 
         
@@ -1039,35 +1098,43 @@ int main ( int argc, char ** argv )
         if (debug_) cout << "Num MC particles = " << mcparticles.size() << std::endl
                          << "Num pfjets " <<  int(pfjets.size()) << std::endl
                          << "sample = " << sample;
-   
+
+        cout << "Loop Over the Gen Particles " << endl;
+       
+       
+       
         // check to see if the event has a c with a 
-        // parent W
+       //  // parent W
         for( unsigned i=0; i< mcparticles.size(); i++ ){
           int id = mcparticles.at(i).id;
           int motherID = mcparticles.at(i).motherId;
-
-          if (debug_) cout <<" Particle " << i << " has id " << id << endl;
-          if( abs(id)==4  && abs(motherID)==24 ){
-            isWtoCS = true;
-            break;
+          int status = mcparticles.at(i).status;
+          cout << "in Gen Partilce loop" << endl;
+          //tops
+          if(abs(id) ==6 && status ==3){
+            ttbarTruthLV.SetPxPyPzE(mcparticles.at(i).px,mcparticles.at(i).py,mcparticles.at(i).pz,mcparticles.at(i).energy);
+            cout << "Mttbar truth?: " << ttbarTruthLV.M() << endl;
+            double ttbarPTtruth = mcparticles.at(i).pt;
+            //double ttbarMtruth  = mcparticles.at(i).M;
           }
-        }
+
+        }//end loop over mcparticles
 
 
  
-        bool isBBbarEvent = false;
-        bool isCCbarEvent = false;
+//         bool isBBbarEvent = false;
+//         bool isCCbarEvent = false;
 
 
-        bool gotB = false;
-        bool gotC = false;
+//         bool gotB = false;
+//         bool gotC = false;
 
-        int numBmomB=0;
-        int numBmomT=0;
-        int numBbarmomBbar=0;
-        int numBbarmomTbar=0;
-        int numCmomC=0;
-        int numCbarmomCbar=0;
+//         int numBmomB=0;
+//         int numBmomT=0;
+//         int numBbarmomBbar=0;
+//         int numBbarmomTbar=0;
+//         int numCmomC=0;
+//         int numCbarmomCbar=0;
 
 
         for( int i=0; i<int(pfjets.size()); i++ ){
@@ -1077,73 +1144,73 @@ int main ( int argc, char ** argv )
 
           // check to see if pf jets is from a  b/c and mother is a gluon
           // or, if mother is some light quark
-          if( abs(id)==5 && ( motherID==21 || abs(motherID)<abs(id) ) ) gotB=true;
-          if( abs(id)==4 && ( motherID==21 || abs(motherID)<abs(id) ) ) gotC=true;
+          // if( abs(id)==5 && ( motherID==21 || abs(motherID)<abs(id) ) ) gotB=true;
+          //if( abs(id)==4 && ( motherID==21 || abs(motherID)<abs(id) ) ) gotC=true;
 
-          // if things are their own mother, 
-          // where are they from? Does this mean stable?
-          if( id==5  && motherID==id ) numBmomB++;
-          if( id==-5 && motherID==id ) numBbarmomBbar++;
+         //  // if things are their own mother, 
+//           // where are they from? Does this mean stable?
+//           if( id==5  && motherID==id ) numBmomB++;
+//           if( id==-5 && motherID==id ) numBbarmomBbar++;
 
-          if( id==4  && motherID==id ) numCmomC++;
-          if( id==-4 && motherID==id ) numCbarmomCbar++;
+//           if( id==4  && motherID==id ) numCmomC++;
+//           if( id==-4 && motherID==id ) numCbarmomCbar++;
 
-          if( id==5  && motherID==6  ) numBmomT++;
-          if( id==-5 && motherID==-6 ) numBbarmomTbar++;
-        }
+//           if( id==5  && motherID==6  ) numBmomT++;
+//           if( id==-5 && motherID==-6 ) numBbarmomTbar++;
+        }//loop over jets
         
-        // if at least one b from b & one b from t, or if CC, and your jet was not b
-        if( ((numBmomB>=1 && numBmomT>=1) || (numBbarmomBbar>=1 && numBbarmomTbar>=1)) && !gotB ){
-          // for each jet that is  b from b
-          for( int i=0; i<int(pfjets.size()); i++ ){
-            int id0 = pfjets.at(i).genPartonId;
-            int motherID0 = pfjets.at(i).genPartonMotherId;
-            if( !(abs(id0)==5 && motherID0==id0) ) continue;
+       //  // if at least one b from b & one b from t, or if CC, and your jet was not b
+//         if( ((numBmomB>=1 && numBmomT>=1) || (numBbarmomBbar>=1 && numBbarmomTbar>=1)) && !gotB ){
+//           // for each jet that is  b from b
+//           for( int i=0; i<int(pfjets.size()); i++ ){
+//             int id0 = pfjets.at(i).genPartonId;
+//             int motherID0 = pfjets.at(i).genPartonMotherId;
+//             if( !(abs(id0)==5 && motherID0==id0) ) continue;
 
-            // for each jet that is b from t
-            for( int j=0; j<int(pfjets.size()); j++ ){
-              int id1 = pfjets.at(j).genPartonId;
-              int motherID1 = pfjets.at(j).genPartonMotherId;
-              if( !(id1==id0 && abs(motherID1)==6) ) continue;
+//             // for each jet that is b from t
+//             for( int j=0; j<int(pfjets.size()); j++ ){
+//               int id1 = pfjets.at(j).genPartonId;
+//               int motherID1 = pfjets.at(j).genPartonMotherId;
+//               if( !(id1==id0 && abs(motherID1)==6) ) continue;
 
-              // if delta r between b from b and b from t is big enough, then b in final state is OK
-              double dR = kinem::delta_R(pfjets.at(i).genPartonEta,
-                                         pfjets.at(i).genPartonPhi,
-                                         pfjets.at(j).genPartonEta,
-                                         pfjets.at(j).genPartonPhi);
-              if( dR>0.3 ){
-                gotB = true;
-                break;
-              }
-            }
-            if( gotB ) break;
-          }
-        }
+//               // if delta r between b from b and b from t is big enough, then b in final state is OK
+//               double dR = kinem::delta_R(pfjets.at(i).genPartonEta,
+//                                          pfjets.at(i).genPartonPhi,
+//                                          pfjets.at(j).genPartonEta,
+//                                          pfjets.at(j).genPartonPhi);
+//               if( dR>0.3 ){
+//                 gotB = true;
+//                 break;
+//               }
+//             }
+//             if( gotB ) break;
+//           }
+//         }
 
-        if( (numCmomC>=1 || numCbarmomCbar>=1) && !isWtoCS ){
-          gotC = true;
-        }
+//         if( (numCmomC>=1 || numCbarmomCbar>=1) && !isWtoCS ){
+//           gotC = true;
+//         }
 
-        if( gotB ) isBBbarEvent = true;
-        else if( gotC ) isCCbarEvent = true;
+//         if( gotB ) isBBbarEvent = true;
+//         else if( gotC ) isCCbarEvent = true;
     
    
-        if( ttbarType_<0 || sample != 2500)       keepEvent = true;
-        else if( ttbarType_ ==0 && !isBBbarEvent && !isCCbarEvent ) keepEvent = true;
-        else if( ttbarType_ ==1 &&  isBBbarEvent && !isCCbarEvent ) keepEvent = true;
-        else if( ttbarType_ >1  && !isBBbarEvent && isCCbarEvent  ) keepEvent = true;
+//         if( ttbarType_<0 || sample != 2500)       keepEvent = true;
+//         else if( ttbarType_ ==0 && !isBBbarEvent && !isCCbarEvent ) keepEvent = true;
+//         else if( ttbarType_ ==1 &&  isBBbarEvent && !isCCbarEvent ) keepEvent = true;
+//         else if( ttbarType_ >1  && !isBBbarEvent && isCCbarEvent  ) keepEvent = true;
 
-        if (debug_) cout << "Filter result = " << keepEvent << endl
-                         << "isBBbarEvent = " << isBBbarEvent << endl
-                         << "isCCbarEvent = " << isCCbarEvent << endl
-                         << "... will we skip this? " << (!keepEvent) << endl;
+//         if (debug_) cout << "Filter result = " << keepEvent << endl
+//                          << "isBBbarEvent = " << isBBbarEvent << endl
+//                          << "isCCbarEvent = " << isCCbarEvent << endl
+//                          << "... will we skip this? " << (!keepEvent) << endl;
         
-        // if you don't pass the filter, skip this event
+//         // if you don't pass the filter, skip this event
 
-        if (debug_) cout << "Keep event no matter what" << endl;
-        //keepEvent = true;
+//         if (debug_) cout << "Keep event no matter what" << endl;
+//         //keepEvent = true;
         
-        if(!keepEvent) continue;
+//         if(!keepEvent) continue;
       }// end if you are a top sample
 
       //-------------------------------------
@@ -1338,14 +1405,14 @@ int main ( int argc, char ** argv )
             loose_ele_index.push_back(i);
           }
         }else{//end use exact electron selection
-          if( (elePt>20.) && tightIso){
-                tight_ele_index.push_back(i);
-                leptonPt = elePt;
-                leptonEta = eleEta;
-                isEleEvent = true;
-              }
+        if( (elePt>20.) && tightIso){
+             tight_ele_index.push_back(i);
+             leptonPt = elePt;
+             leptonEta = eleEta;
+             isEleEvent = true;
+           }
         }
-      }// end electron loop
+      }//end electron loop
 
       int numTightElectrons = int(tight_ele_index.size());
       int numLooseElectrons = int(loose_ele_index.size());
@@ -1398,7 +1465,7 @@ int main ( int argc, char ** argv )
           else {
             loose_mu_index.push_back(i);
           }
-        }else{
+        }else{ //end use exact Muon Selection
           if(muPt>26 && tightIso){
             tight_mu_index.push_back(i);
             leptonPt = muPt;
@@ -1407,12 +1474,13 @@ int main ( int argc, char ** argv )
           }
         }
       }// end muon loop
-
+      if(tight_ele_index.size()>0) continue;
+      if(tight_mu_index.size()>1) continue; //only ever look at mu+Jets
       if(useMuonSelection){
         if(loose_mu_index.size()>0) continue;
         if(loose_ele_index.size()>0) continue;
       }
-      if(isMuonEvent && isEleEvent){cout << "Both muon and electron in this event!" << endl;}
+      if(useMuonSelection && isMuonEvent && isEleEvent){cout << "Both muon and electron in this event!" << endl;}
 
 
       if (verbose) std::cout << "done with muons" <<std::endl;      
@@ -1612,7 +1680,9 @@ int main ( int argc, char ** argv )
       }
            
       *(floatBranches["leptonPt"]) = leptonPt ;
+      // *(floatBranches["leptonPtTruth"]) = muonTruthLV.Pt();
       *(floatBranches["leptonEta"]) = leptonEta ;
+      // *(floatBranches["leptonEtaTruth"]) = muonTruthEta;
      //  if(isMuonEvent == true){
 //            h_muPt->Fill(leptonPt,wgt);
 //            histName = "h_muPt_";
@@ -1822,7 +1892,7 @@ int main ( int argc, char ** argv )
            << "     metpt "    << metpt_new << endl;
 
 
-    
+   
       TLorentzVector metV(metx_new,mety_new,0.0,metpt_new);
       float met = metpt_new;
       float unc_met = pfmet->Upt;
@@ -2043,7 +2113,8 @@ int main ( int argc, char ** argv )
       TLorentzVector WTrans = metV + leptonTrans;
     
       *(floatBranches["mT"]) = WTrans.M();
-     //  if(isMuonEvent == true){
+      *(floatBranches["mTTruth"]) = WTransTruthLV.Et();
+      //  if(isMuonEvent == true){
 //         h_muMt->Fill(WTrans.M(),wgt);
 //         histName = "h_muMt_";
 //         histName += nJetsPlot;
@@ -2086,6 +2157,7 @@ int main ( int argc, char ** argv )
       //M3
       if(numGoodJets>=3){
         TLorentzVector top3Jets = jetV[0] +  jetV[1] +  jetV[2];
+        *(floatBranches["m3"]) = top3Jets.M();
        //  h_muM3->Fill(top3Jets.M(),wgt);
 //         histName = "h_muM3_";
 //         histName += nJetsPlot;
@@ -2107,7 +2179,7 @@ int main ( int argc, char ** argv )
 	    jet_vect.SetPxPyPzE(jet_px[iJet],jet_py[iJet],jet_pz[iJet],jet_energy[iJet]);
             
 	    if (i==0)  first_jet_pt = jet_pt[iJet];
-	    if (i==1)  second_jet_pt = jet_pt[iJet];
+        if (i==1)  second_jet_pt = jet_pt[iJet];
 	    if (i==2)  third_jet_pt = jet_pt[iJet];
 	    if (i==3)  fourth_jet_pt = jet_pt[iJet];
       
@@ -2180,9 +2252,11 @@ int main ( int argc, char ** argv )
       
 	  *(floatBranches["numPV"]) = numpv ;
 	  *(floatBranches["weight"]) = wgt ;
+      *(floatBranches["PUweight"]) = PUwgt;
 	  *(floatBranches["weight_PUup"]) = PUwgt_up ;
 	  *(floatBranches["weight_PUdown"]) = PUwgt_down ;
 	  *(floatBranches["met"]) = met;
+      *(floatBranches["metTruth"]) = neutrinoTruthLV.M();
 	  *(floatBranches["unc_met"]) = unc_met;
 
 	  *(floatBranches["sum_pt"]) = sum_pt; 
