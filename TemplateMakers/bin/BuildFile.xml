@@ -17,4 +17,6 @@
   </bin>
   <bin   file="LepJets.C">
   </bin>
+  <bin   file="test_beans_trileptonStudies.C">
+  </bin>
 </environment>
