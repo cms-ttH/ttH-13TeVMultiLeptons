@@ -88,9 +88,9 @@ typedef std::vector<int> vint;
 
 double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double recojetPT );
 
-std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );
+//std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );
 
-double getSingleMuEffSF(double muEta);
+double getSingleMuSF(double muEta, double muPt);
 
 // //TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");                                                                               
 
@@ -264,7 +264,7 @@ int main ( int argc, char ** argv )
   bool isData = false;
   if(sample==-1) isData = true;
 
-  if( TString(sampleName).Contains("TTJets")  )         sample = 2500;
+  if( TString(sampleName).Contains("TTbar")  )          sample = 2500;
   if( TString(sampleName).Contains("T_sChan")  )        sample = 2600;
   if( TString(sampleName).Contains("T_tChan")  )        sample = 2602;
   if( TString(sampleName).Contains("T_tWChan")  )       sample = 2604;
@@ -272,7 +272,9 @@ int main ( int argc, char ** argv )
   if( TString(sampleName).Contains("Tbar_tChan")  )     sample = 2503;
   if( TString(sampleName).Contains("Tbar_tWChan")  )    sample = 2505;
   if( TString(sampleName).Contains("DYJetsToLL")  )     sample = 2800;
+  if( TString(sampleName).Contains("ZJets")  )          sample = 2800;
   if( TString(sampleName).Contains("WJetsToLNu")  )     sample = 2400;
+  if( TString(sampleName).Contains("WJets")  )     sample = 2400;
   if( TString(sampleName).Contains("WW")  )             sample = 2700;
   if( TString(sampleName).Contains("WZ")  )             sample = 2701;
   if( TString(sampleName).Contains("ZZ")  )             sample = 2702;
@@ -391,7 +393,7 @@ int main ( int argc, char ** argv )
   }
   
   //Jet Variable Plots
-  TH1F* h_nJets      = new TH1F("h_nJets", "number of Jets", 6,-2.5, 8.5);
+  TH1F* h_nJets      = new TH1F("h_nJets", "number of Jets", 6, 2.5, 8.5);
   TH1F* h_muM3       = new TH1F("h_muM3", "M3", 2000, 0, 2000);
      for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
      TString histName = "h_muM3_"; histName += iJet; histName += "j";
@@ -495,7 +497,16 @@ int main ( int argc, char ** argv )
    }
   //Other Plots 
     TH1F* h_nPV         = new TH1F("h_nPV", "Number of Primary Verticies", 50,-0.5,49.5);
-    TH1F* h_numTrueMCPV = new TH1F("h_numTrueMCPV", "Number of Primary Verticies in MC", 50,-0.5,49.5);
+      for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+      TString histName = "h_nPV_"; histName += iJet; histName += "j";
+      TString histTitle = "Number of Primary Verticies";
+      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+      histTitle += iJet;
+      histTitle += ")";
+      histograms[histName] = fs.make<TH1F>(histName, histTitle, 50,-0.5,49.5);
+
+   }
+    TH1F* h_numTrueMCPV = new TH1F("h_numTrueMCPV", "Number of Primary Verticies in MC", 50,0,50);
     TH1F* h_weight      = new TH1F("h_weight", "weights", 10000,0,100);
     TH1F* h_PUweight    = new TH1F("h_PUweight", "Pile Up weights", 10000,0,100);
   
@@ -729,8 +740,9 @@ int main ( int argc, char ** argv )
   ////////////////////  
   histofile.cd();
 
-
+ 
   TTree * summaryTree = new TTree ("summaryTree", "Summary Event Values");
+  //summaryTree.cd();
 
   for (std::map<TString, int*>::iterator iBranchMap = intBranches.begin();
        iBranchMap != intBranches.end();
@@ -1406,7 +1418,7 @@ int main ( int argc, char ** argv )
         if(loose_mu_index.size()>0) continue;
         if(loose_ele_index.size()>0) continue;
       }
-      if(isMuonEvent && isEleEvent){cout << "Both muon and electron in this event!" << endl;}
+      if(isMuonEvent && isEleEvent && useMuonSelection){cout << "Both muon and electron in this event!" << endl;}
 
 
       if (verbose) std::cout << "done with muons" <<std::endl;      
@@ -1600,7 +1612,9 @@ int main ( int argc, char ** argv )
 //Calculate the Single Muon ID and Trigger Efficiency
       double IDandTrigSF =0;
       if(isMuonEvent){
-        IDandTrigSF = getSingleMuEffSF(leptonEta);
+        IDandTrigSF = getSingleMuSF(leptonEta, leptonPt);
+        //Tessa Change this back
+        // IDandTrigSF =1;
         // cout << "Scale Factor: " << IDandTrigSF << endl;
         wgt *= IDandTrigSF;
       }
@@ -1710,25 +1724,25 @@ int main ( int argc, char ** argv )
           for( int j=0; j<int(good_jet_pt.size()); j++ ){
             if (verbose) std::cout << "calling btag sf" <<std::endl;
             if (verbose) std::cout << "one" <<std::endl;
-            std::vector<double> myEffSF = getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);
+            std::vector<double> myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");
             // vdouble myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],);
             if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
             BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );
             myjetinfo.push_back(myjet);
             if (verbose) std::cout << "two" <<std::endl;
-            std::vector<double> myEffSF_hfSFup = getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);     
+            std::vector<double> myEffSF_hfSFup = BEANs::getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");     
             BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );
             myjetinfo_hfSFup.push_back(myjet_hfSFup);                            
             if (verbose) std::cout << "three" <<std::endl;
-            std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                     
+            std::vector<double> myEffSF_hfSFdown = BEANs::getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                     
             BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );                                                 
             myjetinfo_hfSFdown.push_back(myjet_hfSFdown);                                                                                   
             if (verbose) std::cout << "four" <<std::endl;
-            std::vector<double> myEffSF_lfSFup = getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                        
+            std::vector<double> myEffSF_lfSFup = BEANs::getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                        
             BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );                                                       
             myjetinfo_lfSFup.push_back(myjet_lfSFup);                                                                                       
             if (verbose) std::cout << "five" <<std::endl;
-            std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                     
+            std::vector<double> myEffSF_lfSFdown = BEANs::getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                     
             BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );                                                 
             myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
             if (verbose) std::cout << "done calling sf calc " <<std::endl;
@@ -2156,12 +2170,12 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["avg_btag_disc_non_btags"]) = avg_btag_disc_non_btags;
 	  *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
  
-	  /////
+	  //
 	  all_sum_pt = sum_pt + met;
 	  Ht += met;
 
       h_nPV->Fill(numpv,wgt);
-      h_nPV->Fill(numTruePV);
+      h_numTrueMCPV->Fill(numTruePV);
       //      cout << "weight for event: "<< wgt << endl;
       h_PUweight->Fill(PUwgt);
       h_weight->Fill(wgt);
@@ -2271,9 +2285,13 @@ int main ( int argc, char ** argv )
       //--------------------
 
       if (verbose) std::cout << "about to fill tree" <<std::endl;
-      
+      // summaryTree.cd();
       summaryTree->Fill();
-
+      // summaryTree->Write();
+      // summaryTree->Close();
+      //summaryTree.Fill();
+      //summaryTree.Write();
+      //summaryTree.Close();
 
 
 //       if( cleanEvent ){
@@ -2518,7 +2536,7 @@ int main ( int argc, char ** argv )
 //   }
 
 //   std::cout << "How many events had jets close to leptons? " << nEventsWhereJetRemoved << endl;
-
+  histofile.cd();
   histofile.Write();
   histofile.Close();
 
@@ -2572,46 +2590,50 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
   return factor;
 }
 
-double getSingleMuEffSF(double muEta){
+double getSingleMuSF(double muEta, double muPt){
   // cout << "get single muon efficiency for mu passing IsoMu24" << endl;
   double muonSF = 1;
   double muonTriggerSF;
 
-  //muon ID and Trigger Eff from AN2012 218 v3
-  //and are a function of eta for pt values of >26GeV Muon POG Tight Muons
-  double muonIDSF= 0.999;
+   muonSF = h_mu_SF_->GetBinContent( h_mu_SF_->FindBin(muPt, muEta) );
+  //cout << "new SF from Darren: " << newSF;
 
-  double etaMin[12] = {-2.1, -1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6};
-  double etaMax[12] = {-1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6, 2.1};
+ //  //muon ID and Trigger Eff from AN2012 218 v3
+//   //and are a function of eta for pt values of >26GeV Muon POG Tight Muons
+//   double muonIDSF= 0.999;
 
-  double TrigSF[13] ={
-    1.010,
-    1.001,
-    0.983,
-    0.998,
-    1.008,
-    0.965,
-    1.007,
-    0.985,
-    1.007,
-    0.984,
-    1.003,
-    0.980,
-    0.977};
+//   double etaMin[12] = {-2.1, -1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6};
+//   double etaMax[12] = {-1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6, 2.1};
+
+//   double TrigSF[13] ={
+//     1.010,
+//     1.001,
+//     0.983,
+//     0.998,
+//     1.008,
+//     0.965,
+//     1.007,
+//     0.985,
+//     1.007,
+//     0.984,
+//     1.003,
+//     0.980,
+//     0.977};
     
   
 
-  int use_bin=-1;                                                                                                                
-  for( int e=0; e<12; e++ ){                                                                                                     
-    if( muEta> etaMin[e] && muEta <etaMax[e] ){                                                                                            
-      use_bin = e; break;                                                                                                        
-    }                                                                                                                            
-  }
-  muonTriggerSF = TrigSF[use_bin];
+//   int use_bin=-1;                                                                                                                
+//   for( int e=0; e<12; e++ ){                                                                                                     
+//     if( muEta> etaMin[e] && muEta <etaMax[e] ){                                                                                            
+//       use_bin = e; break;                                                                                                        
+//     }                                                                                                                            
+//   }
+//   muonTriggerSF = TrigSF[use_bin];
 
   
-  muonSF *= muonIDSF;
-  muonSF *= muonTriggerSF;
+//   muonSF *= muonIDSF;
+//   muonSF *= muonTriggerSF;
+//   // cout << " Old SF: " << muonSF << endl;
    
   return muonSF;
 }
@@ -2619,125 +2641,125 @@ double getSingleMuEffSF(double muEta){
 
 
 /////////////////////
-std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
+// //std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
 
-  bool getEffVerbose = false;
-  //cout << "GetEffSF function in LepJets.C" << endl;
+//   bool getEffVerbose = false;
+//   //cout << "GetEffSF function in LepJets.C" << endl;
     
-  if (getEffVerbose) std::cout  << "getEffSF called with arguments:" << std::endl
-                                << "   returnType = " << returnType << std::endl
-                                << "   jetPt = " << jetPt << std::endl
-                                << "   jetEta = " << jetEta << std::endl
-                                << "   jetId = " << jetId << std::endl;
+//   if (getEffVerbose) std::cout  << "getEffSF called with arguments:" << std::endl
+//                                 << "   returnType = " << returnType << std::endl
+//                                 << "   jetPt = " << jetPt << std::endl
+//                                 << "   jetEta = " << jetEta << std::endl
+//                                 << "   jetId = " << jetId << std::endl;
 
   
     
-  double m_type = 0.;                                                                                                            
-  if( returnType==-1 )      m_type = -1.;                                                                                        
-  else if( returnType==1 )  m_type = 1.;                                                                                         
-  else                      m_type = 0.;                                                                                         
+//   double m_type = 0.;                                                                                                            
+//   if( returnType==-1 )      m_type = -1.;                                                                                        
+//   else if( returnType==1 )  m_type = 1.;                                                                                         
+//   else                      m_type = 0.;                                                                                         
                                                                                                                                  
-  float ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};                                              
-  float ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};                                              
+//   float ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};                                              
+//   float ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};                                              
                                                                                                                                  
-  double SFb_error[] = {                                                                                                         
-    0.0295675,                                                                                                                   
-    0.0295095,                                                                                                                   
-    0.0210867,                                                                                                                   
-    0.0219349,                                                                                                                   
-    0.0227033,                                                                                                                   
-    0.0204062,                                                                                                                   
-    0.0185857,                                                                                                                   
-    0.0256242,                                                                                                                   
-    0.0383341,                                                                                                                   
-    0.0409675,                                                                                                                   
-    0.0420284,                                                                                                                   
-    0.0541299,                                                                                                                   
-    0.0578761,                                                                                                                   
-    0.0655432 };                                                                                                                 
+//   double SFb_error[] = {                                                                                                         
+//     0.0295675,                                                                                                                   
+//     0.0295095,                                                                                                                   
+//     0.0210867,                                                                                                                   
+//     0.0219349,                                                                                                                   
+//     0.0227033,                                                                                                                   
+//     0.0204062,                                                                                                                   
+//     0.0185857,                                                                                                                   
+//     0.0256242,                                                                                                                   
+//     0.0383341,                                                                                                                   
+//     0.0409675,                                                                                                                   
+//     0.0420284,                                                                                                                   
+//     0.0541299,                                                                                                                   
+//     0.0578761,                                                                                                                   
+//     0.0655432 };                                                                                                                 
                                                                                                                                  
-  double pt  = jetPt;                                                                                                            
-  double eta = jetEta;                                                                                                           
-  int flavor = jetId;                                                                                                            
+//   double pt  = jetPt;                                                                                                            
+//   double eta = jetEta;                                                                                                           
+//   int flavor = jetId;                                                                                                            
                                                                                                                                  
-  double threshold = 670;                                                                                                        
-  pt = ( pt>threshold ) ? threshold-0.0000001 : pt;                                                                              
+//   double threshold = 670;                                                                                                        
+//   pt = ( pt>threshold ) ? threshold-0.0000001 : pt;                                                                              
                                                                                                                                  
-  double absEta = fabs(eta);                                                                                                     
+//   double absEta = fabs(eta);                                                                                                     
                                                                                                                                  
-  int use_bin=-1;                                                                                                                
-  for( int p=0; p<14; p++ ){                                                                                                     
-    if( pt>ptmin[p] && pt<ptmax[p] ){                                                                                            
-      use_bin = p; break;                                                                                                        
-    }                                                                                                                            
-  }
-  if (getEffVerbose) std::cout  << "Use bin = " << use_bin << std::endl;
+//   int use_bin=-1;                                                                                                                
+//   for( int p=0; p<14; p++ ){                                                                                                     
+//     if( pt>ptmin[p] && pt<ptmax[p] ){                                                                                            
+//       use_bin = p; break;                                                                                                        
+//     }                                                                                                                            
+//   }
+//   if (getEffVerbose) std::cout  << "Use bin = " << use_bin << std::endl;
   
-  if( use_bin<0 ) if (getEffVerbose) std::cout  << "   ERROR!! use_bin < 0 " << std::endl;                                                           
+//   if( use_bin<0 ) if (getEffVerbose) std::cout  << "   ERROR!! use_bin < 0 " << std::endl;                                                           
 
 
-  double SFb = 0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt)));                                                                              
+//   double SFb = 0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt)));                                                                              
                                                                                                                                             
-  double SFc = SFb;                                                                                                                         
+//   double SFc = SFb;                                                                                                                         
 
-  if (getEffVerbose) std::cout  << "Getting error" << use_bin << std::endl;
-  SFb = SFb + m_type * SFb_error[use_bin];                                                                                                  
-  SFc = SFc + m_type * 2* SFb_error[use_bin];                                                                                               
+//   if (getEffVerbose) std::cout  << "Getting error" << use_bin << std::endl;
+//   SFb = SFb + m_type * SFb_error[use_bin];                                                                                                  
+//   SFc = SFc + m_type * 2* SFb_error[use_bin];                                                                                               
 
-  if (getEffVerbose) std::cout  << "switch based on return type"  << std::endl;
-  double SFl = 1.;                                                                                                                          
-  if( returnType==-2 ){ // min                                                                                                              
-    if( absEta < 0.8 )                      SFl = ((0.972455+(7.51396e-06*pt))+(4.91857e-07*(pt*pt)))+(-1.47661e-09*(pt*(pt*pt)));          
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.02055+(-0.000378856*pt))+(1.49029e-06*(pt*pt)))+(-1.74966e-09*(pt*(pt*pt)));          
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((0.983476+(-0.000607242*pt))+(3.17997e-06*(pt*pt)))+(-4.01242e-09*(pt*(pt*pt)));         
-  }                                                                                                                                         
-  else if( returnType==2 ){ // max                                                                                                          
-    if( absEta < 0.8 )                      SFl = ((1.15116+(0.00122657*pt))+(-3.63826e-06*(pt*pt)))+(2.08242e-09*(pt*(pt*pt)));            
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.20146+(0.000359543*pt))+(-1.12866e-06*(pt*pt)))+(6.59918e-10*(pt*(pt*pt)));           
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.18654+(-0.000795808*pt))+(3.69226e-06*(pt*pt)))+(-4.22347e-09*(pt*(pt*pt)));          
-  }                                                                                                                                         
-  else { // mean                                                                                                                            
-    if( absEta < 0.8 )                      SFl = ((1.06182+(0.000617034*pt))+(-1.5732e-06*(pt*pt)))+(3.02909e-10*(pt*(pt*pt)));            
-    else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.111+(-9.64191e-06*pt))+(1.80811e-07*(pt*pt)))+(-5.44868e-10*(pt*(pt*pt)));            
-    else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.08498+(-0.000701422*pt))+(3.43612e-06*(pt*pt)))+(-4.11794e-09*(pt*(pt*pt)));          
-  }                                                                                                                                         
+//   if (getEffVerbose) std::cout  << "switch based on return type"  << std::endl;
+//   double SFl = 1.;                                                                                                                          
+//   if( returnType==-2 ){ // min                                                                                                              
+//     if( absEta < 0.8 )                      SFl = ((0.972455+(7.51396e-06*pt))+(4.91857e-07*(pt*pt)))+(-1.47661e-09*(pt*(pt*pt)));          
+//     else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.02055+(-0.000378856*pt))+(1.49029e-06*(pt*pt)))+(-1.74966e-09*(pt*(pt*pt)));          
+//     else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((0.983476+(-0.000607242*pt))+(3.17997e-06*(pt*pt)))+(-4.01242e-09*(pt*(pt*pt)));         
+//   }                                                                                                                                         
+//   else if( returnType==2 ){ // max                                                                                                          
+//     if( absEta < 0.8 )                      SFl = ((1.15116+(0.00122657*pt))+(-3.63826e-06*(pt*pt)))+(2.08242e-09*(pt*(pt*pt)));            
+//     else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.20146+(0.000359543*pt))+(-1.12866e-06*(pt*pt)))+(6.59918e-10*(pt*(pt*pt)));           
+//     else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.18654+(-0.000795808*pt))+(3.69226e-06*(pt*pt)))+(-4.22347e-09*(pt*(pt*pt)));          
+//   }                                                                                                                                         
+//   else { // mean                                                                                                                            
+//     if( absEta < 0.8 )                      SFl = ((1.06182+(0.000617034*pt))+(-1.5732e-06*(pt*pt)))+(3.02909e-10*(pt*(pt*pt)));            
+//     else if( absEta < 1.6 && absEta > 0.8 ) SFl = ((1.111+(-9.64191e-06*pt))+(1.80811e-07*(pt*pt)))+(-5.44868e-10*(pt*(pt*pt)));            
+//     else if( absEta < 2.4 && absEta > 1.6 ) SFl = ((1.08498+(-0.000701422*pt))+(3.43612e-06*(pt*pt)))+(-4.11794e-09*(pt*(pt*pt)));          
+//   }                                                                                                                                         
 
-  double SF=1;                                                                                                                              
+//   double SF=1;                                                                                                                              
                                                                                                                                             
-  double tagEff=0;
-  if (getEffVerbose) std::cout  << "Calling get bin content and find bin"  << std::endl;
+//   double tagEff=0;
+//   if (getEffVerbose) std::cout  << "Calling get bin content and find bin"  << std::endl;
 
   
-  if( abs(flavor)==5 ){                                                                                                                     
-    tagEff = h_jet_pt_eta_b_eff_->GetBinContent( h_jet_pt_eta_b_eff_->FindBin( pt, absEta ) );                                              
-    SF = SFb;                                                                                                                               
-  }                                                                                                                                         
-  else if( abs(flavor)==4 ){                                                                                                                
-    tagEff = h_jet_pt_eta_c_eff_->GetBinContent( h_jet_pt_eta_c_eff_->FindBin( pt, absEta ) );                                              
-    SF = SFc;                                                                                                                               
-  }                                                                                                                                         
-  else if( abs(flavor)==1 || abs(flavor)==2 || abs(flavor)==3 || abs(flavor)==21 ){                                                         
-    tagEff = h_jet_pt_eta_l_eff_->GetBinContent( h_jet_pt_eta_l_eff_->FindBin( pt, absEta ) );                                              
-    SF = SFl;                                                                                                                               
-  }                                                                                                                                         
-  else {
-    tagEff = h_jet_pt_eta_o_eff_->GetBinContent( h_jet_pt_eta_o_eff_->FindBin( pt, absEta ) );
-    SF = SFl;
+//   if( abs(flavor)==5 ){                                                                                                                     
+//     tagEff = h_jet_pt_eta_b_eff_->GetBinContent( h_jet_pt_eta_b_eff_->FindBin( pt, absEta ) );                                              
+//     SF = SFb;                                                                                                                               
+//   }                                                                                                                                         
+//   else if( abs(flavor)==4 ){                                                                                                                
+//     tagEff = h_jet_pt_eta_c_eff_->GetBinContent( h_jet_pt_eta_c_eff_->FindBin( pt, absEta ) );                                              
+//     SF = SFc;                                                                                                                               
+//   }                                                                                                                                         
+//   else if( abs(flavor)==1 || abs(flavor)==2 || abs(flavor)==3 || abs(flavor)==21 ){                                                         
+//     tagEff = h_jet_pt_eta_l_eff_->GetBinContent( h_jet_pt_eta_l_eff_->FindBin( pt, absEta ) );                                              
+//     SF = SFl;                                                                                                                               
+//   }                                                                                                                                         
+//   else {
+//     tagEff = h_jet_pt_eta_o_eff_->GetBinContent( h_jet_pt_eta_o_eff_->FindBin( pt, absEta ) );
+//     SF = SFl;
     
-  }
+//   }
  
 
-  if (getEffVerbose) std::cout  << "    Done with get bin, creating return vector" << std::endl;
+//   if (getEffVerbose) std::cout  << "    Done with get bin, creating return vector" << std::endl;
                                                                                                                                             
-  std::vector<double> result;                                                                                                               
-  result.clear();                                                                                                                           
-  result.push_back(tagEff);                                                                                                                 
-  result.push_back(SF);                                                                                                                     
+//   std::vector<double> result;                                                                                                               
+//   result.clear();                                                                                                                           
+//   result.push_back(tagEff);                                                                                                                 
+//   result.push_back(SF);                                                                                                                     
 
-  if (getEffVerbose) std::cout  << " returning " << std::endl;
-  return result;
+//   if (getEffVerbose) std::cout  << " returning " << std::endl;
+//   return result;
   
-}
+// }
 
 
 
