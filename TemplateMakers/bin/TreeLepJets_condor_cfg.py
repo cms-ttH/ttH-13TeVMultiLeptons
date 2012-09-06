@@ -7,8 +7,9 @@ import FWCore.ParameterSet.Config as cms
 sampleNameCL = str(sys.argv[2])
 iJob = int(sys.argv[3])
 iLabel = sys.argv[4]
-Selection = bool(sys.argv[5])
+UseSelection = int(sys.argv[5])
 
+print 
 
 searchPath = os.environ['CMSSW_SEARCH_PATH']
 thisDir = os.environ['PWD']
@@ -47,13 +48,17 @@ if iJob > len(readFiles):
 print "Adding file: ", readFiles[iJob]
 process.inputs.fileNames.append(readFiles[iJob])
 
-if Selection:
+Selection = True
+if UseSelection == 1:
+    #print "selection is on so make SelOn Dir"	
     outDir = "batchBEAN/%s_%s_SelOn/" % (sampleNameCL, iLabel)
     outFileName = "batchBEAN/%s_%s_SelOn/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
-else :
+if UseSelection == 0 :
+    #print "selection is off so make SelOff Dir"
     outDir = "batchBEAN/%s_%s_SelOff/" % (sampleNameCL, iLabel)
     outFileName = "batchBEAN/%s_%s_SelOff/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
-
+    Selection = False
+#print Selection
 
 if not os.path.exists(outDir):
 	os.mkdir(outDir)
