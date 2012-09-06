@@ -90,7 +90,7 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
 
 std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );
 
-double getSingleMuEffSF(double muEta);
+double getSingleMuEffSF(double muEta, double muPt);
 
 // //TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");                                                                               
 
@@ -552,7 +552,7 @@ int main ( int argc, char ** argv )
   //
   int nJets = -1;
   std::cout << "========  Starting Event Loop  ========" << std::endl;
-  try { cout << "try? "<< endl;
+  try {
     cout << "next" << endl;
     cout << "event begin?" << ev.toBegin()<< endl;
     for( ev.toBegin(); !ev.atEnd(); ++ev) {
@@ -682,7 +682,7 @@ int main ( int argc, char ** argv )
       // h_photons.getByLabel(ev,"BNproducer","selectedPatPhotons");
       // BNphotonCollection const &photons = *h_photons;
 
-
+     
       /////////
       ///
       /// Event / MET
@@ -1295,7 +1295,7 @@ int main ( int argc, char ** argv )
 //Calculate the Single Muon ID and Trigger Efficiency
       double IDandTrigSF =0;
       if(isMuonEvent){
-        IDandTrigSF = getSingleMuEffSF(leptonEta);
+        IDandTrigSF = getSingleMuEffSF(leptonEta, leptonPt);
         // cout << "Scale Factor: " << IDandTrigSF << endl;
         wgt *= IDandTrigSF;
       }
@@ -1306,6 +1306,8 @@ int main ( int argc, char ** argv )
       *(floatBranches["leptonEtaTruth"]) = muonTruthEta;
     
       //------------------------
+
+      
       int numJet = int(tight_pfjet_index.size());
       int numTag = int(tag_pfjet_index.size());
       int numNonTag = int(untag_pfjet_index.size());
@@ -1354,7 +1356,7 @@ int main ( int argc, char ** argv )
       *(uintBranches["runNumber"]) = event->run ;
       *(uintBranches["luminosityBlock"]) = event->lumi ;
       *(uintBranches["eventNumber"]) = unsigned(event->evt) ;
-
+ 
       //////////////////////////
       ////
       ////------------b-tag SF
@@ -1374,33 +1376,33 @@ int main ( int argc, char ** argv )
           for( int j=0; j<int(good_jet_pt.size()); j++ ){
             if (verbose) std::cout << "calling btag sf" <<std::endl;
             if (verbose) std::cout << "one" <<std::endl;
-            std::vector<double> myEffSF = getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);
+            std::vector<double> myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");
             // vdouble myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],);
             if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
             BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );
             myjetinfo.push_back(myjet);
             if (verbose) std::cout << "two" <<std::endl;
-            std::vector<double> myEffSF_hfSFup = getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);     
+            std::vector<double> myEffSF_hfSFup = BEANs::getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");     
             BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );
             myjetinfo_hfSFup.push_back(myjet_hfSFup);                            
             if (verbose) std::cout << "three" <<std::endl;
-            std::vector<double> myEffSF_hfSFdown = getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                     
+            std::vector<double> myEffSF_hfSFdown = BEANs::getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                     
             BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );                                                 
             myjetinfo_hfSFdown.push_back(myjet_hfSFdown);                                                                                   
             if (verbose) std::cout << "four" <<std::endl;
-            std::vector<double> myEffSF_lfSFup = getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                        
+            std::vector<double> myEffSF_lfSFup = BEANs::getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                        
             BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );                                                       
             myjetinfo_lfSFup.push_back(myjet_lfSFup);                                                                                       
             if (verbose) std::cout << "five" <<std::endl;
-            std::vector<double> myEffSF_lfSFdown = getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j]);                     
+            std::vector<double> myEffSF_lfSFdown = BEANs::getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                     
             BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );                                                 
             myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
             if (verbose) std::cout << "done calling sf calc " <<std::endl;
           }
-          
+
 
           if (verbose) std::cout << "Now using btag weight" <<std::endl;
-
+ 
           
           BTagWeight bweight(1,1);                                                                                                          
           if( numTag<4 ){                                                         
@@ -1651,7 +1653,7 @@ int main ( int argc, char ** argv )
        
 //          TString histName2 = histName + "Pt_"; histName2+= nJetsPlot; histName2 += "j";
 
-	    
+
 	    if (pfjets.at(iJet).btagCombinedSecVertex > 0.679){
 	      avg_btag_disc_btags += pfjets.at(iJet).btagCombinedSecVertex;
 	    }
@@ -1741,7 +1743,7 @@ int main ( int argc, char ** argv )
 	    
 	    min_dr_tagged_jets = min_tagged_jets_dR;
 	  }
-	  
+
 
 	  ////non_tagged jets
 	  
@@ -1763,7 +1765,7 @@ int main ( int argc, char ** argv )
 	 
 	    avg_untagged_dijet_mass /= denom_avg_cnt;
 	  }
-    
+
 	  ////	  	 
 	  if (numTag > 1){
 	    *(floatBranches["min_dr_tagged_jets"]) = min_dr_tagged_jets;
@@ -2097,46 +2099,46 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
   return factor;
 }
 
-double getSingleMuEffSF(double muEta){
+double getSingleMuEffSF(double muEta, double muPt){
   // cout << "get single muon efficiency for mu passing IsoMu24" << endl;
   double muonSF = 1;
   double muonTriggerSF;
+  muonSF = h_mu_SF_->GetBinContent( h_mu_SF_->FindBin(muPt, muEta) );
+  // //muon ID and Trigger Eff from AN2012 218 v3
+//   //and are a function of eta for pt values of >26GeV Muon POG Tight Muons
+//   double muonIDSF= 0.999;
 
-  //muon ID and Trigger Eff from AN2012 218 v3
-  //and are a function of eta for pt values of >26GeV Muon POG Tight Muons
-  double muonIDSF= 0.999;
+//   double etaMin[12] = {-2.1, -1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6};
+//   double etaMax[12] = {-1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6, 2.1};
 
-  double etaMin[12] = {-2.1, -1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6};
-  double etaMax[12] = {-1.6, -1.2, -0.6, -0.3, -0.2, 0.2, 0.3, 0.6, 0.9, 1.2, 1.6, 2.1};
-
-  double TrigSF[13] ={
-    1.010,
-    1.001,
-    0.983,
-    0.998,
-    1.008,
-    0.965,
-    1.007,
-    0.985,
-    1.007,
-    0.984,
-    1.003,
-    0.980,
-    0.977};
+//   double TrigSF[13] ={
+//     1.010,
+//     1.001,
+//     0.983,
+//     0.998,
+//     1.008,
+//     0.965,
+//     1.007,
+//     0.985,
+//     1.007,
+//     0.984,
+//     1.003,
+//     0.980,
+//     0.977};
     
   
 
-  int use_bin=-1;                                                                                                                
-  for( int e=0; e<12; e++ ){                                                                                                     
-    if( muEta> etaMin[e] && muEta <etaMax[e] ){                                                                                            
-      use_bin = e; break;                                                                                                        
-    }                                                                                                                            
-  }
-  muonTriggerSF = TrigSF[use_bin];
+//   int use_bin=-1;                                                                                                                
+//   for( int e=0; e<12; e++ ){                                                                                                     
+//     if( muEta> etaMin[e] && muEta <etaMax[e] ){                                                                                            
+//       use_bin = e; break;                                                                                                        
+//     }                                                                                                                            
+//   }
+//   muonTriggerSF = TrigSF[use_bin];
 
   
-  muonSF *= muonIDSF;
-  muonSF *= muonTriggerSF;
+//   muonSF *= muonIDSF;
+//   muonSF *= muonTriggerSF;
    
   return muonSF;
 }
