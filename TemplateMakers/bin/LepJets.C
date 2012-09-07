@@ -377,7 +377,7 @@ int main ( int argc, char ** argv )
   TH1F* h_muMt       = new TH1F("h_muMt", "Transverse mass #mu + #nu", 500, 0, 500);
   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
     TString histName = "h_muMET_"; histName += iJet; histName += "j";
-    TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+    TString histTitle = "MET";
     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
     histTitle += iJet;
     histTitle += ")";
@@ -385,7 +385,7 @@ int main ( int argc, char ** argv )
   }
    for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
      TString histName = "h_muMt_"; histName += iJet; histName += "j";
-     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+     TString histTitle = "Mt";
      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
      histTitle += iJet;
      histTitle += ")";
@@ -395,9 +395,18 @@ int main ( int argc, char ** argv )
   //Jet Variable Plots
   TH1F* h_nJets      = new TH1F("h_nJets", "number of Jets", 6, 2.5, 8.5);
   TH1F* h_muM3       = new TH1F("h_muM3", "M3", 2000, 0, 2000);
-     for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+    for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
      TString histName = "h_muM3_"; histName += iJet; histName += "j";
-     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+     TString histTitle = "M3";
+     histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
+     histTitle += iJet;
+     histTitle += ")";
+     histograms[histName] = fs.make<TH1F>(histName, histTitle, 2000, 0., 2000.);
+   }
+  TH1F* h_muMjj       = new TH1F("h_muMjj", "Mjj", 2000, 0, 2000);
+  for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
+     TString histName = "h_muMjj_"; histName += iJet; histName += "j";
+     TString histTitle = "Mjj";
      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
      histTitle += iJet;
      histTitle += ")";
@@ -465,7 +474,7 @@ int main ( int argc, char ** argv )
 
    for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
      TString histName = "h_muMttbar_"; histName += iJet; histName += "j";
-     TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+     TString histTitle = "Mttbar";
      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
      histTitle += iJet;
      histTitle += ")";
@@ -473,7 +482,7 @@ int main ( int argc, char ** argv )
    }
     for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
       TString histName = "h_muTTbarPt_"; histName += iJet; histName += "j";
-      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+      TString histTitle = "ttbar Pt";
       histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
       histTitle += iJet;
       histTitle += ")";
@@ -481,7 +490,7 @@ int main ( int argc, char ** argv )
    }
     for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
       TString histName = "h_muTTbarEta_"; histName += iJet; histName += "j";
-      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+      TString histTitle = "TTbar #eta";
       histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
       histTitle += iJet;
       histTitle += ")";
@@ -489,7 +498,7 @@ int main ( int argc, char ** argv )
    }
     for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
       TString histName = "h_muTTbarY_"; histName += iJet; histName += "j";
-      TString histTitle = "Muon #eta (GeV/c) (N_{jets}";
+      TString histTitle = "TTbar Rapidity";
       histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
       histTitle += iJet;
       histTitle += ")";
@@ -2096,7 +2105,30 @@ int main ( int argc, char ** argv )
         histograms[histName]->Fill(top3Jets.M(),wgt);
         
       }
-     
+
+      //Mjj
+      double MinMassDiffjj = 10000;
+      double tempMjj = 0;
+      double Mjj = 0;
+       for (int i=0; i < numGoodJets; i++){
+         int iJet = tight_pfjet_index[i];
+          for (int j=0; j < numGoodJets; j++){
+            int jJet = tight_pfjet_index[j];
+            if(i != j){
+              tempMjj = (jetV[iJet] + jetV[jJet]).M();
+              //cout << "tempMjj: " << (jetV[iJet] + jetV[jJet]).M() << endl;
+              if(abs(tempMjj - 80.385) < MinMassDiffjj){
+                MinMassDiffjj = abs(tempMjj - 80.385);
+                Mjj = tempMjj;
+              }
+            }
+          }//end loop over j jets
+       }//end loop over i jets
+       h_muMjj->Fill(Mjj,wgt);
+        histName = "h_muMjj_";
+        histName += nJetsPlot;
+        histName += "j";
+        histograms[histName]->Fill(Mjj,wgt);
       
 	  ///loop jet
       h_nJets->Fill(nJetsPlot,wgt);
