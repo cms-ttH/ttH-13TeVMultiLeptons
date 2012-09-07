@@ -87,5 +87,5 @@ process.dilAnalysis = cms.PSet(
 	muonSel  = cms.bool(Selection), #If no skim was applied TightMu and LooseLepVetos
 	jetSel = cms.bool(Selection),  #If skim was not applied to >=3jets
 	minJets= cms.int32(0), #minimum number of jets
-	btags = cms.double(-1), #-1: pretag, 0: 0tag, n: >=ntags
+	btags = cms.double(2), #-1: pretag, 0: 0tag, n: >=ntags
 )
