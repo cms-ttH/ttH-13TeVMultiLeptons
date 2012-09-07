@@ -435,6 +435,10 @@ int main ( int argc, char ** argv )
 
     histograms[histName + "Pt"] = fs.make<TH1F>( histName+"Pt",   histTitle + " p_{T}", 300, 0, 300);
     histograms[histName + "Eta"] = fs.make<TH1F>( histName+"Eta",  histTitle + " #eta", 50, -3.0,   3.0);
+
+    histograms[histName + "Pt_LowNPV"] = fs.make<TH1F>( histName+"Pt_LowNPV",   histTitle + " p_{T} Pt (nPV < 5)" , 300, 0, 300);
+    histograms[histName + "Pt_MedNPV"] = fs.make<TH1F>( histName+"Pt_MedNPV",   histTitle + " p_{T} (5<= nPV < 10)", 300, 0, 300);
+    histograms[histName + "Pt_HighNPV"] = fs.make<TH1F>( histName+"Pt_HighNPV",   histTitle + " p_{T} (10 <= nPV)", 300, 0, 300);
   
   //Now, get really crazy and separate the above histograms by jet bin (i.e. Jet1Pt_1j, Jet1Pt_2j, etc.)
   for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
@@ -454,6 +458,34 @@ int main ( int argc, char ** argv )
     histTitle2 += "-Jet Bin)";
     histograms[histName2] = fs.make<TH1F>(histName2, histTitle2, 600, -3, 3);
   }
+  //Get Supper Crazy and do Jet1Pt_3j_nPVRange!!!
+  for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
+    TString histName2 = histName + "Pt_";  histName2 += "LowNPV_";histName2 += jJet; histName2 += "j";
+    TString histTitle2 = histTitle + " p_{T} (";
+    histTitle2 += ((jJet == maxJetPlot) ? "#geq" : "=");
+    histTitle2 += jJet;
+    histTitle2 += "-Jet Bin) Pt (nPV < 5)";
+    histograms[histName2] = fs.make<TH1F>(histName2, histTitle2, 500, 0., 500.);
+  }
+
+   for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
+    TString histName2 = histName + "Pt_"; histName2 += "MedNPV_"; histName2 += jJet; histName2 += "j";
+    TString histTitle2 = histTitle + " p_{T} (";
+    histTitle2 += ((jJet == maxJetPlot) ? "#geq" : "=");
+    histTitle2 += jJet;
+    histTitle2 += "-Jet Bin) Pt (5<= nPV < 10)";
+    histograms[histName2] = fs.make<TH1F>(histName2, histTitle2, 500, 0., 500.);
+  }
+
+    for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
+    TString histName2 = histName + "Pt_"; histName2 += "HighNPV_"; histName2 += jJet; histName2 += "j";
+    TString histTitle2 = histTitle + " p_{T} (";
+    histTitle2 += ((jJet == maxJetPlot) ? "#geq" : "=");
+    histTitle2 += jJet;
+    histTitle2 += "-Jet Bin) Pt  (10 <= nPV)";
+    histograms[histName2] = fs.make<TH1F>(histName2, histTitle2, 500, 0., 500.);
+  }
+  
   }
       
 
@@ -2153,7 +2185,29 @@ int main ( int argc, char ** argv )
          if((i+1)<=maxJetPlot){
          histograms[histName + "Pt"]->Fill(jet_pt[iJet],wgt);
          histograms[histName + "Eta"]->Fill(jet_eta[iJet],wgt);
-       
+
+         if(numpv<5){
+           histograms[histName + "Pt_LowNPV"]->Fill(jet_pt[iJet],wgt);
+             for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
+               TString histName2 = histName + "Pt_";  histName2 += "LowNPV_"; histName2 += jJet; histName2 += "j";
+               histograms[histName2]->Fill(jet_pt[iJet],wgt); 
+             }
+         }
+         if(numpv>=5 && numpv<10){
+           histograms[histName + "Pt_MedNPV"]->Fill(jet_pt[iJet],wgt);
+            for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
+              TString histName2 = histName + "Pt_"; histName2 += "MedNPV_"; histName2 += jJet; histName2 += "j";
+              histograms[histName2]->Fill(jet_pt[iJet],wgt); 
+             }
+         }
+         if(numpv>=10){
+           histograms[histName + "Pt_HighNPV"]->Fill(jet_pt[iJet],wgt);
+           for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
+             TString histName2 = histName + "Pt_";  histName2 += "HighNPV_"; histName2 += jJet; histName2 += "j";
+             histograms[histName2]->Fill(jet_pt[iJet],wgt); 
+           }
+         }
+           
          TString histName2 = histName + "Pt_"; histName2+= nJetsPlot; histName2 += "j";
          histograms[histName2]->Fill(jet_pt[iJet],wgt);
          histName2 = histName + "Eta_"; histName2+= nJetsPlot; histName2 += "j";
