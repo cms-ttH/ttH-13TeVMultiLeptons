@@ -2161,8 +2161,8 @@ int main ( int argc, char ** argv )
         histName += nJetsPlot;
         histName += "j";
         histograms[histName]->Fill(Mjj,wgt);
-      
-	  ///loop jet
+
+       	  ///loop jet
       h_nJets->Fill(nJetsPlot,wgt);
       for (int i=0; i < numGoodJets; i++){
               
@@ -2181,32 +2181,36 @@ int main ( int argc, char ** argv )
         TString histName = "h_jet";
         histName += (i+1);
         TString ptHistName = "h_jetPt";
-             
+
+        // cout <<"maxJetPlot: " << maxJetPlot<< endl;
          if((i+1)<=maxJetPlot){
          histograms[histName + "Pt"]->Fill(jet_pt[iJet],wgt);
          histograms[histName + "Eta"]->Fill(jet_eta[iJet],wgt);
-
+         // cout << "This event has " << tight_pfjet_index.size() << " jets and "  << numpv << " PVs and is categorized as in the ";
+         int jetPlot = tight_pfjet_index.size();
          if(numpv<5){
+           // cout << "low nPV Range" ;
            histograms[histName + "Pt_LowNPV"]->Fill(jet_pt[iJet],wgt);
-             for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
-               TString histName2 = histName + "Pt_";  histName2 += "LowNPV_"; histName2 += jJet; histName2 += "j";
-               histograms[histName2]->Fill(jet_pt[iJet],wgt); 
-             }
+           TString histName2 = histName + "Pt_";  histName2 += "LowNPV_"; histName2 += nJetsPlot ; histName2 += "j";
+           // cout << " event in hist: " << histName2 ;
+           histograms[histName2]->Fill(jet_pt[iJet],wgt); 
          }
          if(numpv>=5 && numpv<10){
+           // cout << "med nPV Range" ;
            histograms[histName + "Pt_MedNPV"]->Fill(jet_pt[iJet],wgt);
-            for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
-              TString histName2 = histName + "Pt_"; histName2 += "MedNPV_"; histName2 += jJet; histName2 += "j";
-              histograms[histName2]->Fill(jet_pt[iJet],wgt); 
-             }
+           TString histName2 = histName + "Pt_"; histName2 += "MedNPV_"; histName2 += nJetsPlot ; histName2 += "j";
+           // cout << " event in hist: " << histName2 ;
+           histograms[histName2]->Fill(jet_pt[iJet],wgt); 
+           
          }
          if(numpv>=10){
+           //cout << "high nPV Range" ;
            histograms[histName + "Pt_HighNPV"]->Fill(jet_pt[iJet],wgt);
-           for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
-             TString histName2 = histName + "Pt_";  histName2 += "HighNPV_"; histName2 += jJet; histName2 += "j";
-             histograms[histName2]->Fill(jet_pt[iJet],wgt); 
-           }
+           TString histName2 = histName + "Pt_";  histName2 += "HighNPV_"; histName2 += nJetsPlot ; histName2 += "j";
+           // cout << " event in hist: " << histName2 ;
+           histograms[histName2]->Fill(jet_pt[iJet],wgt); 
          }
+         //cout << endl;
            
          TString histName2 = histName + "Pt_"; histName2+= nJetsPlot; histName2 += "j";
          histograms[histName2]->Fill(jet_pt[iJet],wgt);
