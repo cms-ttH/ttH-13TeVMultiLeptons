@@ -2265,6 +2265,10 @@ int main ( int argc, char ** argv )
 	  Ht += met;
 
       h_nPV->Fill(numpv,wgt);
+      histName = "h_nPV_";
+         histName += nJetsPlot;
+         histName += "j";
+         histograms[histName]->Fill(numpv,wgt);
       h_numTrueMCPV->Fill(numTruePV);
       //      cout << "weight for event: "<< wgt << endl;
       h_PUweight->Fill(PUwgt);
@@ -2283,7 +2287,7 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["Ht"]) = Ht;
 
        if(isMuonEvent == true){
-          h_muMET->Fill(met,wgt);
+         h_muMET->Fill(met,wgt);
          histName = "h_muMET_";
          histName += nJetsPlot;
          histName += "j";
