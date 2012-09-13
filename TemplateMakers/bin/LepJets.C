@@ -90,7 +90,7 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
 
 //std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );
 //std::vector<TH1F*> bookHistograms  (TString histName, TString histLable, int nBins, double xMin, double xMax);
-
+void  FillNPVHist(std::map<TString,TH1*> hists, TString myHistName, double myNPV, double myVal, double myWgt);
 double getSingleMuSF(double muEta, double muPt);
 
 // //TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");                                                                               
@@ -378,7 +378,7 @@ int main ( int argc, char ** argv )
     TString histName2 = histName; histName2 += nPVRange[r];
     TString histTitle2 = histTitle; histTitle2 +=  nPVTitle[r];
     //cout << "nPVRange : " << nPVRange[r] << endl;
-    histograms[histName2] = fs.make<TH1F>(histName2, histTitle, 628,-3.14, 3.14);
+    histograms[histName2] = fs.make<TH1F>(histName2, histTitle,500, 0, 500 );
   }
    
    for (int iJet = minJets; iJet <=maxJetPlot ; ++iJet) {
@@ -1747,18 +1747,8 @@ int main ( int argc, char ** argv )
         histName += "j";
         histograms[histName]->Fill(leptonEta,wgt);
         if(numGoodJets ==4){
-          TString histName = "h_muEta_4j_";
-          for( int r =0; r<3; r++){
-              TString histName2 = histName; histName2 += nPVRange[r];
-              histograms[histName2]->Fill(leptonEta,wgt);
-          }
-        }
-         if(numGoodJets ==4){
-          TString histName = "h_muPt_4j_";
-          for( int r =0; r<3; r++){
-              TString histName2 = histName; histName2 += nPVRange[r];
-              histograms[histName2]->Fill(leptonPt,wgt);
-          }
+          FillNPVHist(histograms, "h_muEta_4j_", numpv, leptonEta, wgt);
+          FillNPVHist(histograms, "h_muPt_4j_",  numpv, leptonPt , wgt);
         }
       }
       //if(isEleEvent == true){h_elePt->Fill(leptonPt);}
@@ -2178,14 +2168,9 @@ int main ( int argc, char ** argv )
         histName += nJetsPlot;
         histName += "j";
         histograms[histName]->Fill(WTrans.M(),wgt);
-         if(numGoodJets ==4){
-           TString histName = "h_muMt_4j_";
-           for( int r =0; r<3; r++){
-             TString histName2 = histName; histName2 += nPVRange[r];
-             histograms[histName2]->Fill(WTrans.M(),wgt);
-          }
+        if(numGoodJets ==4){FillNPVHist(histograms, "h_muMt_4j_", numpv, WTrans.M(), wgt);}
         }
-      }
+    
 
       TLorentzVector everything_vect = metV + lep_vect1 + sum_jet_vect; //Lept+Jets Mttbar
 	  float ttbar_mass = everything_vect.M();
@@ -2227,23 +2212,12 @@ int main ( int argc, char ** argv )
         histName += nJetsPlot;
         histName += "j";
         histograms[histName]->Fill(top3Jets.M(),wgt);
-        if(numGoodJets ==4){
-           TString histName = "h_muM3_4j_";
-           for( int r =0; r<3; r++){
-             TString histName2 = histName; histName2 += nPVRange[r];
-             histograms[histName2]->Fill(top3Jets.M(),wgt);
-          }
-        }
-        
+        if(numGoodJets ==4){FillNPVHist(histograms, "h_muM3_4j_", numpv,top3Jets.M() , wgt);}
       }
       if(numGoodJets==4){
         double sum4JetPt = jetV[0].Pt() +  jetV[1].Pt() +  jetV[2].Pt() + jetV[3].Pt();
         h_muJetPtSum_4j->Fill(sum4JetPt, wgt);
-        TString histName = "h_muM3_4j_";
-           for( int r =0; r<3; r++){
-             TString histName2 = histName; histName2 += nPVRange[r];
-             histograms[histName2]->Fill(sum4JetPt,wgt);
-          }
+        FillNPVHist(histograms, "h_muJetPtSum_4j_", numpv, sum4JetPt, wgt);
       }
 
       //Mjj
@@ -2414,13 +2388,8 @@ int main ( int argc, char ** argv )
          histName += nJetsPlot;
          histName += "j";
          histograms[histName]->Fill(met,wgt);
-          if(numGoodJets ==4){
-            TString METhistName = "h_muMET_4j_";
-            for( int r =0; r<3; r++){
-              TString METhistName2 = METhistName; METhistName2 += nPVRange[r];
-              histograms[METhistName2]->Fill(met,wgt);
-            }
-          }
+         if(numGoodJets ==4){FillNPVHist(histograms, "h_muMET_4j_", numpv, met, wgt);}
+         
          h_muHt->Fill(Ht,wgt);
          histName = "h_muHt_";
          histName += nJetsPlot;
@@ -2696,10 +2665,10 @@ int main ( int argc, char ** argv )
 //       dec.clear();
 
 
-    } // end loop over events
+  } // end loop over events
 
 
-  }// end try
+}// end try
   catch(std::exception& e) {
     std::cerr << " ==> caught exception " << e.what() << std::endl;
 
@@ -2860,24 +2829,25 @@ double getSingleMuSF(double muEta, double muPt){
    
   return muonSF;
 }
+//void  BookHistograms (std:::map<TString,TH1*> hists){}
 
-// std::vector<TH1F*> bookHistograms(TString histName, TString histLable, int nBins, double xMin, double xMax){
-//   int minJets =3;
-//   int maxJetPlot = 6;
-//   vector<TH1F*> myHists;
-//   //   TH1F* h_muM3       = new TH1F("h_muM3", "M3", 2000, 0, 2000);
-//   TH1F* h       = new TH1F(histName, histLable, nBins, xMin, xMax);
-//   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
-//      TString njHistName = histName; njHistName += iJet; njHistName += "j";
-//      histTitle = histLable;
-//      histTitle += ((iJet == maxJetPlot) ? "#geq" : "=");
-//      histTitle += iJet;
-//      histTitle += ")";
-//      histograms[histName] = fs.make<TH1F>(njHistName, histTitle, nBins, xMin, xMax);
-//    }
-//   myHists.push_back(h);
-//   return myHists;
-// }
+void  FillNPVHist(std::map<TString,TH1*> hists,TString myHistName, double myNPV, double myVal, double myWgt){
+  //  TString histName = myHistName;
+  double lowBoundnPV = 10;
+  double medBoundnPV = 15;
+  
+  if(myNPV<lowBoundnPV){
+    hists[myHistName + "LowNPV"]->Fill(myVal,myWgt);
+  }
+  if(myNPV>=lowBoundnPV && myNPV<medBoundnPV){
+    hists[myHistName + "MedNPV"]->Fill(myVal,myWgt);
+  }
+  if(myNPV>=lowBoundnPV){
+    hists[myHistName + "HighNPV"]->Fill(myVal,myWgt);
+  }
+}
+
+
 
 /////////////////////
 // //std::vector<double> getEffSF( int returnType, double jetPt, double jetEta, double jetId ){
