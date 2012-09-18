@@ -264,6 +264,7 @@ int main ( int argc, char ** argv )
   //data detection
   bool isData = false;
   if(sample==-1) isData = true;
+  cout << "is Data? "<< isData<< endl;
 
   if( TString(sampleName).Contains("TTbar")  )          sample = 2500;
   if( TString(sampleName).Contains("T_sChan")  )        sample = 2600;
@@ -1087,23 +1088,26 @@ int main ( int argc, char ** argv )
       float PUwgt_down = 1;
 
       float wgt = 1 ;
-      double PU = 0.0;
-      double PUup = 0.0;
-      double PUdown =0.0;
-      BEANs::getPUwgt(numTruePV,PU,PUup,PUdown);
-      PUwgt = PU;
-      PUwgt_up = PUup;
-      PUwgt_down = PUdown;
-      if(isData) {
+      double PU = 1;
+      double PUup = 1;
+      double PUdown =1;
+           
+      if(!isData){
+        cout << "before getting the PU weight PU:  " << PU << endl; 
+        BEANs::getPUwgt(numTruePV,PU,PUup,PUdown);
+        cout << "after getting the PU weight PU:  " << PU << endl; 
+        PUwgt = PU;
+        PUwgt_up = PUup;
+        PUwgt_down = PUdown;
+      }else{
         PUwgt = 1;
         PUwgt_up = 1;
         PUwgt_down = 1;
       }
 
       wgt *= PUwgt;
-      // cout << "PUwgt for this event: " << PUwgt  << " New weight: " << wgt << endl;
-
-
+      cout << "PUwgt for this event: " << PUwgt  << " New weight: " << wgt << endl;
+      
 
  
 
@@ -1731,26 +1735,7 @@ int main ( int argc, char ** argv )
         wgt *= IDandTrigSF;
       }
            
-      *(floatBranches["leptonPt"]) = leptonPt ;
-      *(floatBranches["leptonEta"]) = leptonEta ;
-      if(isMuonEvent == true){
-           h_muPt->Fill(leptonPt,wgt);
-           histName = "h_muPt_";
-           histName += nJetsPlot;
-           histName += "j";
-           //           cout << "muPt Njet Hist Name: " << histName << " njets: " << numGoodJets
-           //   << " muPt: " << leptonPt << endl;
-        histograms[histName]->Fill(leptonPt,wgt);
-        h_muEta->Fill(leptonEta,wgt);
-        histName = "h_muEta_";
-        histName += nJetsPlot;
-        histName += "j";
-        histograms[histName]->Fill(leptonEta,wgt);
-        if(numGoodJets ==4){
-          FillNPVHist(histograms, "h_muEta_4j_", numpv, leptonEta, wgt);
-          FillNPVHist(histograms, "h_muPt_4j_",  numpv, leptonPt , wgt);
-        }
-      }
+   
       //if(isEleEvent == true){h_elePt->Fill(leptonPt);}
 
       //------------------------
@@ -1912,8 +1897,37 @@ int main ( int argc, char ** argv )
         *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFup;                                                                       
         *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;                                                                           
 
+        //Multiply in the btag SF weight
+        wgt *= wgt_btag;
 
-       
+        if(numGoodJets ==4){
+          cout << "run: " <<ev.id().run() << " lumi: "<<ev.id().luminosityBlock()
+               << " evt: " << ev.id().event() << " tot wgt: "<< wgt 
+               << " JetPts: " << jetV[0].Pt() << ", " << jetV[2].Pt() << ", "
+               <<  jetV[2].Pt() << ", " <<  jetV[3].Pt() << endl;
+        }
+
+        *(floatBranches["leptonPt"]) = leptonPt ;
+      *(floatBranches["leptonEta"]) = leptonEta ;
+      if(isMuonEvent == true){
+           h_muPt->Fill(leptonPt,wgt);
+           histName = "h_muPt_";
+           histName += nJetsPlot;
+           histName += "j";
+           //           cout << "muPt Njet Hist Name: " << histName << " njets: " << numGoodJets
+           //   << " muPt: " << leptonPt << endl;
+        histograms[histName]->Fill(leptonPt,wgt);
+        h_muEta->Fill(leptonEta,wgt);
+        histName = "h_muEta_";
+        histName += nJetsPlot;
+        histName += "j";
+        histograms[histName]->Fill(leptonEta,wgt);
+        if(numGoodJets ==4){
+          FillNPVHist(histograms, "h_muEta_4j_", numpv, leptonEta, wgt);
+          FillNPVHist(histograms, "h_muPt_4j_",  numpv, leptonPt , wgt);
+        }
+      }
+
       /////////////////////////////////
       ///////
       /////// final selection for neural net training:
