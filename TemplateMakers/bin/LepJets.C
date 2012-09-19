@@ -1570,6 +1570,8 @@ int main ( int argc, char ** argv )
       int numUnTagJets=0;
       int nJetsPlot=0;
       TLorentzVector jetVbefJER[100];
+      double jetUnc [100];
+      double jetJER [100];
       TLorentzVector jetV[100];
       TLorentzVector unTagJetV[100];
       std::list<float> jet_desc;      
@@ -1589,10 +1591,17 @@ int main ( int argc, char ** argv )
 
       if (jerDebugPrint || verbose)
         cout << "\n--------------new event------------------" << endl;
-
+      bool verboseJetCut = false;
+      if(verboseJetCut == true){
+        cout << "run: " <<ev.id().run() << " lumi: "<<ev.id().luminosityBlock()
+             << " evt: " << ev.id().event()<< endl;
+        cout << "PF Jets: " << pfjets.size() << endl;
+      }
+     
       int passingJets = 0;
       for( int i=0; i<int(pfjets.size()); i++ ){
-        
+        if(verboseJetCut == true){cout << "jet " << i << ": ";}
+       
         jet_px.push_back(pfjets.at(i).px);
         jet_py.push_back(pfjets.at(i).py);
         jet_pz.push_back(pfjets.at(i).pz);
@@ -1600,11 +1609,11 @@ int main ( int argc, char ** argv )
         jet_eta.push_back(pfjets.at(i).eta);
         jet_energy.push_back(pfjets.at(i).energy);
 
-        double origPx = jet_px[i];
-        double origPy = jet_py[i];
-        double origPz = jet_pz[i];
-        double origE  = jet_energy[i];
-      
+        double origPx    = jet_px[i];
+        double origPy    = jet_py[i];
+        double origPz    = jet_pz[i];
+        double origJetPt = pfjets.at(i).pt;
+        double origE     = jet_energy[i];
 
         // Apply JES uncertainty to all jets
         double unc = pfjets.at(i).JESunc;
@@ -1629,12 +1638,12 @@ int main ( int argc, char ** argv )
         double myJER = getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
 
         if( isData){
-          myJER = 1.0;
-        }
+           myJER = 1.0;
+          }
 
-        double deltaPx = jet_px[i] * (myJER - 1.0);
-        double deltaPy = jet_py[i] * (myJER - 1.0);
-
+          double deltaPx = jet_px[i] * (myJER - 1.0);
+          double deltaPy = jet_py[i] * (myJER - 1.0);
+          
         if (jerDebugPrint || verbose)
           std::cout << "Jet num " << i << "  Old px " << jet_px[i] << " new px " << jet_px[i]*myJER
                     << " delta px " << deltaPx << std::endl
@@ -1647,10 +1656,11 @@ int main ( int argc, char ** argv )
         jet_pt[i] *= myJER;
         jet_energy[i] *= myJER;	
         jetPt *= myJER;
+
     
 
-        bool tightJetPt = ( jetPt>30. );
-        bool looseJetPt = ( jetPt>30. );//Tessa change this back to 20!!!
+        bool tightJetPt = ( origJetPt>30. );
+        bool looseJetPt = ( origJetPt>30. );//Tessa change this back to 20!!!
         bool eta = ( jetAbsEta<2.5 );
         //bool id  = ( pfjets.at(i).jetIDLoose==1 );
         bool id = (     (pfjets.at(i).nconstituents > 1)   &&
@@ -1661,10 +1671,18 @@ int main ( int argc, char ** argv )
                         (pfjets.at(i).chargedMultiplicity > 0 ||fabs(jetEta)<2.4)
                         );
 
-        // if( !(looseJetPt && eta && id) ) continue;
-        if( looseJetPt && eta && id){
+        if(verboseJetCut == true){ cout << "pt: " << origJetPt << " eta: " << jetAbsEta << " id: " << id << endl; }
+        if( !(looseJetPt && eta && id) ) {
+          if(verboseJetCut == true){cout << "jet is cut" << endl;}
+          continue;
+        }else{
+          if(verboseJetCut == true){cout << "jet passes" << endl;}
+        }
+        // if( looseJetPt && eta && id){
         jetV[numGoodJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
         jetVbefJER[numGoodJets].SetPxPyPzE(origPx,origPy,origPz,origE);
+        jetUnc[numGoodJets] = unc;
+        jetJER[numGoodJets] = myJER;
         numGoodJets++;
         tight_pfjet_index.push_back(i);
         
@@ -1700,9 +1718,9 @@ int main ( int argc, char ** argv )
         good_jet_eta.push_back(jetEta);
         good_jet_tag.push_back(csv);
         good_jet_flavor.push_back(flavor);
-        }//end good jet
+        //   }//end good jet
       }// end for each pf jet
-      
+      if(verboseJetCut == true){cout << "nJets in event: " << numGoodJets << endl << endl;}
       //cut on number of jets
       if(numGoodJets < minJets){continue;}
 
@@ -1905,15 +1923,17 @@ int main ( int argc, char ** argv )
         //Multiply in the btag SF weight
         wgt *= wgt_btag;
 
-        // if(numGoodJets ==4){
+       //  if(numGoodJets ==4){
 //           cout << "run: " <<ev.id().run() << " lumi: "<<ev.id().luminosityBlock()
 //                << " evt: " << ev.id().event()<< endl;
 //           cout << " tot wgt: "<< wgt << " is:  PUwgt: " << PUwgt << " * IDandTriggSF: "
 //                << IDandTrigSF << " * btagSF: " << wgt_btag  << endl;
-//           cout << " JetPts before JER: " << jetVbefJER[0].Pt()<< ", " << jetVbefJER[1].Pt() << ", "
-//                <<  jetVbefJER[2].Pt() << ", " <<  jetVbefJER[3].Pt() << endl;
-//           cout << " JetPts after JER : " << jetV[0].Pt() << ", " << jetV[1].Pt() << ", "
-//                <<  jetV[2].Pt() << ", " <<  jetV[3].Pt() << endl;
+
+//           for(int i=0; i<(numGoodJets); i++){
+//             cout << "jet " << i << " pt before: " <<  jetV[i].Pt() << " muliply by JES: "
+//                  << jetUnc[i]  << " muliply by JER: " << jetJER[i] << " get: " << jetVbefJER[i].Pt() << endl;
+//           }
+        
 //         }
 
         *(floatBranches["leptonPt"]) = leptonPt ;
