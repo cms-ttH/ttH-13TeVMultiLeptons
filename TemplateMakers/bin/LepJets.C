@@ -1427,14 +1427,15 @@ int main ( int argc, char ** argv )
         double neutralHadronIso = electrons.at(i).neutralHadronIso;
         double photonIso = electrons.at(i).photonIso;
         double rhoCorr = electrons.at(i).AEffDr03*electrons.at(i).rhoPrime;
-        
+        float relIso_deltaBeta = (electrons.at(i).chargedHadronIso + max(0.0, electrons.at(i).neutralHadronIso + electrons.at(i).photonIso - 0.5*electrons.at(i).puChargedHadronIso))/electrons.at(i).pt;
+        float relIso_rho = (electrons.at(i).chargedHadronIso + max(0.0, electrons.at(i).neutralHadronIso + electrons.at(i).photonIso - electrons.at(i).AEffDr03*electrons.at(i).rhoPrime))/electrons.at(i).pt;
         double relIso = ( chargedHadronIso + max(0.0, neutralHadronIso + photonIso - rhoCorr )) * 1./elePt;
-        bool looseIso = ( relIso < 0.2 );
+        bool looseIso = ( relIso_rho < 0.2 );
         // if( !looseIso ) continue; //check that ele passes loose pfIso cuts
 
         int eidBitTight = electrons.at(i).eidTight;
         bool eidTight = ( (eidBitTight & 1)==1 );
-        bool d0 = ( fabs(electrons.at(i).correctedD0) < 0.02 );
+        bool d0 = ( fabs(electrons.at(i).correctedD0) < 0.04 );
         bool dZ = ( fabs(electrons.at(i).correctedDZ) < 1. );
         bool dist  = ( fabs(electrons.at(i).dist)<0.02 );
         bool dcot  = ( fabs(electrons.at(i).dcot)<0.02 );
@@ -1442,7 +1443,9 @@ int main ( int argc, char ** argv )
         bool notConv = ( !(dist && dcot) && nlost );
         bool tightIso = ( relIso < 0.1 );
       	bool id = ( eidTight && d0 && dZ && notConv );
+        bool convVeto =  electrons.at(i).passConvVeto;
         if(kin && looseIso){ //is it even a loose electron?
+        // if(kin && looseIso){ //is it even a loose electron?
              if(useElectronSelection){
                if( (tightIso) ) {
                  tight_ele_index.push_back(i);
@@ -1498,7 +1501,7 @@ int main ( int argc, char ** argv )
                     validPixHits && numberOfMatches);
         bool kin = ( (muPt>10.) && (muAbsEta<2.5) );
         bool tightkin = ( (muPt>26.) && (muAbsEta<2.1) );
-        if(kin){ //is it even a loose muon?
+        if(kin && looseIso){ //is it even a loose muon?
           if(useMuonSelection){
             if( (tightkin && id && tightIso) ){
               tight_mu_index.push_back(i);
@@ -1507,7 +1510,9 @@ int main ( int argc, char ** argv )
               isMuonEvent = true;
           	} // end if tight muon
             else {
+              if(isGlobalMuon || isTrackerMuon){
               loose_mu_index.push_back(i);
+              }
             }
           }else{
             if(muPt>26 && tightIso){
@@ -1632,10 +1637,16 @@ int main ( int argc, char ** argv )
         // 0 for nominal, 1 for up, -1 for down
         double jetEta = pfjets.at(i).eta;
         double jetAbsEta = fabs(jetEta);
-        double genJetPT = pfjets.at(i).genPartonPT;
+        double genJetPT = pfjets.at(i).genJetPT;
         double jetPhi = pfjets.at(i).phi;
-        
-        double myJER = getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
+
+//          cout << "run: " <<ev.id().run() << " lumi: "<<ev.id().luminosityBlock()
+//              << " evt: " << ev.id().event()<< endl;
+
+//          cout <<"myJER (" << jer << ", " << jetAbsEta << ", "
+//               << genJetPT << ", " << jetPt << ") = ";
+        double myJER = BEANs::getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
+        //cout << myJER;
 
         if( isData){
            myJER = 1.0;
@@ -1659,17 +1670,27 @@ int main ( int argc, char ** argv )
 
     
 
-        bool tightJetPt = ( origJetPt>30. );
-        bool looseJetPt = ( origJetPt>30. );//Tessa change this back to 20!!!
+        bool tightJetPt = ( jetPt>30. );
+        bool looseJetPt = ( jetPt>30. );//Tessa change this back to 20!!!
         bool eta = ( jetAbsEta<2.5 );
         //bool id  = ( pfjets.at(i).jetIDLoose==1 );
         bool id = (     (pfjets.at(i).nconstituents > 1)   &&
                         (pfjets.at(i).neutralHadronEnergyFraction < 0.99) &&
                         (pfjets.at(i).neutralEmEnergyFraction < 0.99)  &&
-                        (pfjets.at(i).chargedEmEnergyFraction < 0.99 ||fabs(jetEta)<2.4 ) &&
-                        (pfjets.at(i).chargedHadronEnergyFraction > 0 ||fabs(jetEta)<2.4) &&
-                        (pfjets.at(i).chargedMultiplicity > 0 ||fabs(jetEta)<2.4)
+                        (pfjets.at(i).chargedEmEnergyFraction < 0.99) 
+                        //(pfjets.at(i).chargedEmEnergyFraction < 0.99 ||fabs(jetEta)<2.4 ) &&
+                        //if(fabs(jetEta)<2.4){
+                        // (pfjets.at(i).chargedHadronEnergyFraction > 0) &&
+                        //(pfjets.at(i).chargedMultiplicity > 0)
+                        //}
                         );
+
+        if(jetAbsEta<2.4){
+          id = ( id &&
+                 (pfjets.at(i).chargedHadronEnergyFraction > 0) &&
+                 (pfjets.at(i).chargedMultiplicity > 0)
+                 );
+            }
 
         if(verboseJetCut == true){ cout << "pt: " << origJetPt << " eta: " << jetAbsEta << " id: " << id << endl; }
         if( !(looseJetPt && eta && id) ) {
@@ -1678,10 +1699,12 @@ int main ( int argc, char ** argv )
         }else{
           if(verboseJetCut == true){cout << "jet passes" << endl;}
         }
+
+        // cout << " goodJet" << endl;
         // if( looseJetPt && eta && id){
         jetV[numGoodJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
         jetVbefJER[numGoodJets].SetPxPyPzE(origPx,origPy,origPz,origE);
-        jetUnc[numGoodJets] = unc;
+        jetUnc[numGoodJets] = jes*unc;
         jetJER[numGoodJets] = myJER;
         numGoodJets++;
         tight_pfjet_index.push_back(i);
@@ -1839,10 +1862,10 @@ int main ( int argc, char ** argv )
 
       if( (sample>=0 || sample==-2500) && !isData){
         std::vector<BTagWeight::JetInfo> myjetinfo;                                                                   
-          std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
-          std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
-          std::vector<BTagWeight::JetInfo> myjetinfo_lfSFup;                                                            
-          std::vector<BTagWeight::JetInfo> myjetinfo_lfSFdown;
+        std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
+        std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
+        std::vector<BTagWeight::JetInfo> myjetinfo_lfSFup;                                                            
+        std::vector<BTagWeight::JetInfo> myjetinfo_lfSFdown;
 
           if (verbose) std::cout << "Looping over  jets for btag uncert" <<std::endl;
           for( int j=0; j<int(good_jet_pt.size()); j++ ){
@@ -1923,18 +1946,18 @@ int main ( int argc, char ** argv )
         //Multiply in the btag SF weight
         wgt *= wgt_btag;
 
-       //  if(numGoodJets ==4){
+       //  //  if(numGoodJets ==4){
 //           cout << "run: " <<ev.id().run() << " lumi: "<<ev.id().luminosityBlock()
 //                << " evt: " << ev.id().event()<< endl;
-//           cout << " tot wgt: "<< wgt << " is:  PUwgt: " << PUwgt << " * IDandTriggSF: "
+         //  cout << " tot wgt: "<< wgt << " is:  PUwgt: " << PUwgt << " * IDandTriggSF: "
 //                << IDandTrigSF << " * btagSF: " << wgt_btag  << endl;
 
 //           for(int i=0; i<(numGoodJets); i++){
-//             cout << "jet " << i << " pt before: " <<  jetV[i].Pt() << " muliply by JES: "
-//                  << jetUnc[i]  << " muliply by JER: " << jetJER[i] << " get: " << jetVbefJER[i].Pt() << endl;
+//             cout << "jet " << i << " pt before: " <<  jetVbefJER[i].Pt() << " muliply by JES: "
+//                  << jetUnc[i]  << " muliply by JER: " << jetJER[i] << " get: " << jetV[i].Pt() << endl;
 //           }
         
-//         }
+          // }
 
         *(floatBranches["leptonPt"]) = leptonPt ;
       *(floatBranches["leptonEta"]) = leptonEta ;
@@ -2342,7 +2365,7 @@ int main ( int argc, char ** argv )
            histograms[histName2]->Fill(jet_pt[iJet],wgt); 
            
          }
-         if(numpv>=lowBoundnPV){
+         if(numpv>=medBoundnPV){
            //cout << "high nPV Range" ;
            histograms[histName + "Pt_HighNPV"]->Fill(jet_pt[iJet],wgt);
            TString histName2 = histName + "Pt_";  histName2 += "HighNPV_"; histName2 += nJetsPlot ; histName2 += "j";
@@ -2412,7 +2435,7 @@ int main ( int argc, char ** argv )
       //      cout << "weight for event: "<< wgt << endl;
       h_PUweight->Fill(PUwgt);
       h_weight->Fill(wgt);
-      //  cout << "nPV: " << numpv << endl;
+      // cout << "numpv: " << numpv  << " numPV event:" << event->numPV << endl; //tessa
       
 	  *(floatBranches["numPV"]) = numpv ;
 	  *(floatBranches["weight"]) = wgt ;
@@ -2875,17 +2898,21 @@ double getSingleMuSF(double muEta, double muPt){
 //void  BookHistograms (std:::map<TString,TH1*> hists){}
 
 void  FillNPVHist(std::map<TString,TH1*> hists,TString myHistName, double myNPV, double myVal, double myWgt){
+  // cout << "myNPV " << myNPV << " is ";
   //  TString histName = myHistName;
   double lowBoundnPV = 10;
   double medBoundnPV = 15;
   
   if(myNPV<lowBoundnPV){
+    //cout << "lower than " << lowBoundnPV << endl;
     hists[myHistName + "LowNPV"]->Fill(myVal,myWgt);
   }
   if(myNPV>=lowBoundnPV && myNPV<medBoundnPV){
+    //cout << "between " << lowBoundnPV << " and " << medBoundnPV-1 << endl;
     hists[myHistName + "MedNPV"]->Fill(myVal,myWgt);
   }
-  if(myNPV>=lowBoundnPV){
+  if(myNPV>=medBoundnPV){
+   // cout << medBoundnPV << " or higher" << endl;
     hists[myHistName + "HighNPV"]->Fill(myVal,myWgt);
   }
 }
