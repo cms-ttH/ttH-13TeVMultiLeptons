@@ -91,6 +91,7 @@ double getJERfactor( int returnType, double jetAbsETA, double genjetPT, double r
 //std::vector<double> getEffSF( int returnType, double jetPts, double jetEtas, double jetIds );
 //std::vector<TH1F*> bookHistograms  (TString histName, TString histLable, int nBins, double xMin, double xMax);
 void  FillNPVHist(std::map<TString,TH1*> hists, TString myHistName, double myNPV, double myVal, double myWgt);
+//std::map<TString,TH1*> BookHistograms(std::map<TString,TH1*> hists, fwlite::TFileService FS, TString var,  TString title, int nBins, double histMin, double histMax);
 double getSingleMuSF(double muEta, double muPt);
 
 // //TFile *f_tag_eff_ = new TFile("mc_btag_efficiency_v4_histo.root");                                                                               
@@ -100,6 +101,11 @@ TH2D* h_jet_pt_eta_c_eff_ ;
 TH2D* h_jet_pt_eta_l_eff_ ;
 TH2D* h_jet_pt_eta_o_eff_ ;
 
+//Global variables for Histograms
+
+int maxJetPlot = 6; // this determines how many jet plots you make
+int lowBoundnPV = 10;
+int medBoundnPV = 15;
                                                                                    
 //bool filterTTbarPlusJets(string selectEventType, std::vector<BNmcparticle> mcparticles);
 
@@ -362,17 +368,18 @@ int main ( int argc, char ** argv )
   //Muon Variable Plots
   TH1F* h_muPt       = new TH1F("h_muPt", "Muon p_{T}", 500, 0, 500);
   TH1F* h_muEta      = new TH1F("h_muEta", "Muon #eta}", 628,-3.14, 3.14);
- 
- 
+   
   for( int r =0; r<3; r++){
     TString histName = "h_muEta_4j_";
     TString histTitle = "Muon #eta (== 4jets) in ";
     TString histName2 = histName; histName2 += nPVRange[r];
     TString histTitle2 = histTitle; histTitle2 +=  nPVTitle[r];
     //cout << "nPVRange : " << nPVRange[r] << endl;
+
     histograms[histName2] = fs.make<TH1F>(histName2, histTitle, 628,-3.14, 3.14);
   }
 
+ 
    for( int r =0; r<3; r++){
     TString histName = "h_muPt_4j_";
     TString histTitle = "Muon Pt (== 4jets) in ";
@@ -503,6 +510,7 @@ int main ( int argc, char ** argv )
     histograms[histName + "Pt_MedNPV"] = fs.make<TH1F>( histName+"Pt_MedNPV",   histTitle + " p_{T} (5<= nPV < 10)", 300, 0, 300);
     histograms[histName + "Pt_HighNPV"] = fs.make<TH1F>( histName+"Pt_HighNPV",   histTitle + " p_{T} (10 <= nPV)", 300, 0, 300);
 
+
  
   //Now, get really crazy and separate the above histograms by jet bin (i.e. Jet1Pt_1j, Jet1Pt_2j, etc.)
   for (int jJet = minJets; jJet <= maxJetPlot; ++jJet) {
@@ -548,6 +556,15 @@ int main ( int argc, char ** argv )
     histTitle2 += jJet;
     histTitle2 += "-Jet Bin) Pt  (10 <= nPV)";
     histograms[histName2] = fs.make<TH1F>(histName2, histTitle2, 500, 0., 500.);
+
+    //Jet Mass Plots Only for the ==4 jets events
+    //h_jet1Mass_4j
+    histograms[histName+"Mass_4j"] = fs.make<TH1F>( histName+"Mass_4j", histTitle + " Mass", 500, 0, 500);
+    for( int r =0; r<3; r++){
+      TString histName2 = histName+"Mass_4j"+nPVRange[r];
+      TString histTitle2 = histTitle+ " Mass" +  nPVTitle[r];
+      histograms[histName2] = fs.make<TH1F>(histName2, histTitle2,500, 0, 500);
+  }
   }
    
 
@@ -613,12 +630,46 @@ int main ( int argc, char ** argv )
       histograms[histName] = fs.make<TH1F>(histName, histTitle, 50,-0.5,49.5);
 
    }
-    TH1F* h_numTrueMCPV = new TH1F("h_numTrueMCPV", "Number of Primary Verticies in MC", 50,0,50);
-    TH1F* h_weight      = new TH1F("h_weight", "weights", 10000,0,100);
-    TH1F* h_PUweight    = new TH1F("h_PUweight", "Pile Up weights", 10000,0,100);
-  
- 
+      TH1F* h_numTrueMCPV = new TH1F("h_numTrueMCPV", "Number of Primary Verticies in MC", 50,-0.5,49.5);
+      TH1F* h_weight      = new TH1F("h_weight", "weights", 10000,0,100);
+      TH1F* h_PUweight    = new TH1F("h_PUweight", "Pile Up weights", 10000,0,100);
 
+
+    //Energy Fraction Plots  //Tessa
+    histograms["h_chHadEnFr_4j"] = fs.make<TH1F>("h_chHadEnFr", "Charged Hadron Energy Fraction",100, 0, 1);
+    histograms["h_nHadEnFr_4j"] = fs.make<TH1F>("h_nHadEnFr",  "Neutral Hadron Energy Fraction",100, 0, 1);
+    histograms["h_chEmEnFr_4j"] = fs.make<TH1F>("h_chEmEnFr",  "Charged EM Energy Fraction",100, 0, 1);
+    histograms["h_nEmEnFr_4j"] = fs.make<TH1F>("h_nEnEnFr",   "Neutral EM Energy Fraction",100, 0, 1);
+    for( int r =0; r<3; r++){
+      TString EnFrName= "EnFr_4j"; 
+      TString EnFrTitle = "Energy Fraction";EnFrTitle += nPVTitle[r];
+      TString Neu = "Neutral"; TString CH = "Charged"; TString Had = "Hadron"; TString EM = "EM";
+      histograms["h_chHad"+EnFrName+ nPVRange[r]] = fs.make<TH1F>("h_chHad"+EnFrName+ nPVRange[r], CH+Had+EnFrTitle , 100, 0, 1);
+      histograms["h_nHad"+EnFrName+ nPVRange[r]]  = fs.make<TH1F>("h_nHad"+EnFrName+ nPVRange[r], Neu+Had+EnFrTitle , 100, 0, 1);
+      histograms["h_chEm"+EnFrName+ nPVRange[r]]  = fs.make<TH1F>("h_chEm"+EnFrName+ nPVRange[r], CH+EM+EnFrTitle , 100, 0, 1);
+      histograms["h_nEM"+EnFrName+ nPVRange[r]]   = fs.make<TH1F>("h_nEM"+EnFrName+ nPVRange[r], Neu+EM+EnFrTitle , 100, 0, 1);
+    }
+
+    //nConstituents Plots
+    histograms["h_nConst_4j"] = fs.make<TH1F>("h_nConst_4j", "Jet nConstituents",200, 0, 200);
+    histograms["h_chMult_4j"] = fs.make<TH1F>("h_chMult_4j", "Jet Charged Multiplicity",200, 0, 200);
+    histograms["h_nMult_4j"]  = fs.make<TH1F>("h_nMult_4j", "Jet Neutral Multiplicity",200, 0, 200);
+    histograms["h_chMultFr_4j"] = fs.make<TH1F>("h_chMultFr_4j", "Jet Charged Mult./ (Neutral Mult. + Charged Mult.)",100, 0, 1);
+    histograms["h_PtOnConst_4j"] = fs.make<TH1F>("h_PtOnConst_4j", "jetPt / nConstituents", 250, 0, 250);
+    histograms["h_PtOchMult_4j"] = fs.make<TH1F>("h_PtOchMult_4j", "jetPt / Charged Multiplicity", 250, 0, 250);
+    histograms["h_PtOnMult_4j"]  = fs.make<TH1F>("h_PtOnMult_4j", "Jet Neutral Multiplicity",250, 0, 250);
+    for( int r =0; r<3; r++){
+      histograms["h_nConst_4j"+ nPVRange[r]] = fs.make<TH1F>("h_nConst_4j"+ nPVRange[r], "Jet nConstituents"+ nPVTitle[r],200, 0, 200);
+      histograms["h_chMult_4j"+ nPVRange[r]] = fs.make<TH1F>("h_chMult_4j"+ nPVRange[r], "Jet Charged Multiplicity"+ nPVTitle[r],200, 0, 200);
+      histograms["h_nMult_4j"+ nPVRange[r]]  = fs.make<TH1F>("h_nMult_4j"+ nPVRange[r], "Jet Neutral Multiplicity"+ nPVTitle[r],200, 0, 200);
+      histograms["h_chMultFr_4j"+ nPVRange[r]] = fs.make<TH1F>("h_chMultFr_4j"+ nPVRange[r], "Jet Charged Mult./ (Neutral Mult. + Charged Mult.)"+ nPVTitle[r],100, 0, 1);
+      histograms["h_PtOnConst_4j"+ nPVRange[r]] = fs.make<TH1F>("h_PtOnConst_4j"+ nPVRange[r], "jetPt / nConstituents"+ nPVTitle[r], 250, 0, 250);
+      histograms["h_PtOchMult_4j"+ nPVRange[r]] = fs.make<TH1F>("h_PtOchMult_4j"+ nPVRange[r], "jetPt / Charged Multiplicity"+ nPVTitle[r], 250, 0, 250);
+      histograms["h_PtOnMult_4j"+ nPVRange[r]]  = fs.make<TH1F>("h_PtOnMult_4j"+ nPVRange[r], "Jet Neutral Multiplicity"+ nPVTitle[r],250, 0, 250);
+      
+    }
+    
+   
  
 //   //Electron Variable Plots
     // TH1F* h_elePt = new TH1F("h_elePt", "Electron p_{T}", 500, 0, 500);
@@ -1549,7 +1600,6 @@ int main ( int argc, char ** argv )
       //      if ( numLooseMuons != int(only_loose_mu_index.size()) ) std::cout << ".......failure, lalala............" << std::endl;     
       bool twoLeptons = (( numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons )== 2 && ( numTightMuons + numTightElectrons )> 0 );
       // if ( !twoLeptons ) continue ;
-    
       /////////
       ///
       /// Pfjets
@@ -1775,7 +1825,7 @@ int main ( int argc, char ** argv )
       double IDandTrigSF =0;
       if(isMuonEvent){
         IDandTrigSF = getSingleMuSF(leptonEta, leptonPt);
-        //Tessa Change this back
+       
         // IDandTrigSF =1;
         // cout << "Scale Factor: " << IDandTrigSF << endl;
         wgt *= IDandTrigSF;
@@ -1959,13 +2009,14 @@ int main ( int argc, char ** argv )
         
           // }
 
+
         *(floatBranches["leptonPt"]) = leptonPt ;
       *(floatBranches["leptonEta"]) = leptonEta ;
       if(isMuonEvent == true){
-           h_muPt->Fill(leptonPt,wgt);
-           histName = "h_muPt_";
-           histName += nJetsPlot;
-           histName += "j";
+        h_muPt->Fill(leptonPt,wgt);
+        histName = "h_muPt_";
+        histName += nJetsPlot;
+        histName += "j";
            //           cout << "muPt Njet Hist Name: " << histName << " njets: " << numGoodJets
            //   << " muPt: " << leptonPt << endl;
         histograms[histName]->Fill(leptonPt,wgt);
@@ -2324,7 +2375,8 @@ int main ( int argc, char ** argv )
         }
       }
 
-       	  ///loop jet
+      
+      //loop jet
       h_nJets->Fill(nJetsPlot,wgt);
       for (int i=0; i < numGoodJets; i++){
               
@@ -2339,7 +2391,45 @@ int main ( int argc, char ** argv )
 	    if (i==1)  second_jet_pt = jet_pt[iJet];
 	    if (i==2)  third_jet_pt = jet_pt[iJet];
 	    if (i==3)  fourth_jet_pt = jet_pt[iJet];
-      
+
+        if(numGoodJets ==4){//Tessa
+          //Energy Fraction plots
+          histograms["h_chHadEnFr_4j"]->Fill(pfjets.at(iJet).chargedHadronEnergyFraction,wgt);
+          histograms["h_nHadEnFr_4j"]->Fill(pfjets.at(iJet).neutralHadronEnergyFraction,wgt);
+          histograms["h_chEmEnFr_4j"]->Fill(pfjets.at(iJet).chargedEmEnergyFraction,wgt);
+          histograms["h_nEmEnFr_4j"]->Fill(pfjets.at(iJet).neutralEmEnergyFraction,wgt);
+
+          //nconstituents plots
+          histograms["h_nConst_4j"]->Fill(pfjets.at(iJet).nconstituents,wgt);
+          histograms["h_chMult_4j"]->Fill(pfjets.at(iJet).chargedMultiplicity,wgt);
+          histograms["h_nMult_4j"]->Fill(pfjets.at(iJet).neutralMultiplicity,wgt);
+          double chMultFr = pfjets.at(iJet).chargedMultiplicity/(pfjets.at(iJet).neutralMultiplicity +pfjets.at(iJet).chargedMultiplicity);
+          double ptPerConst = jet_pt[iJet]/pfjets.at(iJet).nconstituents;
+          double ptPerChMult = jet_pt[iJet]/pfjets.at(iJet).chargedMultiplicity;
+          double ptPerNMult =  jet_pt[iJet]/pfjets.at(iJet).neutralMultiplicity;
+          histograms["h_chMultFr_4j"]->Fill(chMultFr,wgt);
+          histograms["h_PtOnConst_4j"]->Fill(ptPerConst,wgt);
+          histograms["h_PtOchMult_4j"]->Fill(ptPerChMult,wgt);
+          histograms["h_PtOnMult_4j"]->Fill(ptPerNMult,wgt);
+
+          //Energy Fraction plots per nPV Region
+          TString EnFrName= "EnFr_4j";
+          FillNPVHist(histograms,"h_chHad"+EnFrName, numpv,pfjets.at(iJet).chargedHadronEnergyFraction,wgt);
+          FillNPVHist(histograms,"h_nHad"+EnFrName,numpv,pfjets.at(iJet).neutralHadronEnergyFraction,wgt);
+          FillNPVHist(histograms,"h_chEm"+EnFrName,numpv,pfjets.at(iJet).chargedEmEnergyFraction,wgt);
+          FillNPVHist(histograms,"h_nEM"+EnFrName,numpv,pfjets.at(iJet).neutralEmEnergyFraction,wgt);
+          
+          //nconstituents plot per nPV Region
+          FillNPVHist(histograms,"h_nConst_4j",numpv,pfjets.at(iJet).nconstituents,wgt);
+          FillNPVHist(histograms,"h_chMult_4j",numpv,pfjets.at(iJet).chargedMultiplicity,wgt);
+          FillNPVHist(histograms,"h_nMult_4j",numpv,pfjets.at(iJet).neutralMultiplicity,wgt);
+          FillNPVHist(histograms,"h_chMultFr_4j",numpv,chMultFr,wgt);
+          FillNPVHist(histograms,"h_PtOnConst_4j",numpv,ptPerConst,wgt);
+          FillNPVHist(histograms,"h_PtOchMult_4j",numpv,ptPerChMult,wgt);
+          FillNPVHist(histograms,"h_PtOnMult_4j",numpv,ptPerNMult,wgt);
+        }//end ==4good jets
+
+
         TString histName = "h_jet";
         histName += (i+1);
         TString ptHistName = "h_jetPt";
@@ -2379,15 +2469,15 @@ int main ( int argc, char ** argv )
          histName2 = histName + "Eta_"; histName2+= nJetsPlot; histName2 += "j";
          histograms[histName2]->Fill(jet_eta[iJet],wgt);
          }
-             //  cout << "lep1 pt: " << lep_vect1.Pt() << " eta: " <<  lep_vect1.Eta() << endl;
-// 	    if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
-// 	      min_jet_lep1_dR = lep_vect1.DeltaR(jet_vect); 
-// 	    }
-	  
-        //  if (min_jet_lep2_dR > lep_vect2.DeltaR(jet_vect)){
-        // min_jet_lep2_dR = lep_vect2.DeltaR(jet_vect); 
-        // }
-	    
+
+         if(numGoodJets ==4){
+           //Jet Mass Plots Only for the ==4 jets events   //h_jet1Mass_4j
+           histograms[histName+"Mass_4j"]->Fill(jetV[iJet].M(),wgt);
+           FillNPVHist(histograms,histName+"Mass_4j",numpv,jetV[iJet].M(),wgt);
+         }
+
+         
+         //Btag Info
 	    if (pfjets.at(iJet).btagCombinedSecVertex > 0.679){
 	      avg_btag_disc_btags += pfjets.at(iJet).btagCombinedSecVertex;
 	    }
@@ -2435,7 +2525,7 @@ int main ( int argc, char ** argv )
       //      cout << "weight for event: "<< wgt << endl;
       h_PUweight->Fill(PUwgt);
       h_weight->Fill(wgt);
-      // cout << "numpv: " << numpv  << " numPV event:" << event->numPV << endl; //tessa
+      // cout << "numpv: " << numpv  << " numPV event:" << event->numPV << endl; 
       
 	  *(floatBranches["numPV"]) = numpv ;
 	  *(floatBranches["weight"]) = wgt ;
@@ -2897,11 +2987,20 @@ double getSingleMuSF(double muEta, double muPt){
 }
 //void  BookHistograms (std:::map<TString,TH1*> hists){}
 
+// std::map<TString,TH1*> BookHistograms(std::map<TString,TH1*> hists, fwlite::TFileService FS, TString var, TString title, int nBins, double histMin, double histMax){
+
+//   TString histName = var;
+//   TString histTitle = title;
+//   hists[histName] = FS.make<TH1F>(histName, histTitle,nBins,histMin,histMax);
+//   return hists;
+
+// }
+
 void  FillNPVHist(std::map<TString,TH1*> hists,TString myHistName, double myNPV, double myVal, double myWgt){
   // cout << "myNPV " << myNPV << " is ";
   //  TString histName = myHistName;
-  double lowBoundnPV = 10;
-  double medBoundnPV = 15;
+  // double lowBoundnPV = 10;
+  //double medBoundnPV = 15;
   
   if(myNPV<lowBoundnPV){
     //cout << "lower than " << lowBoundnPV << endl;
@@ -2916,6 +3015,7 @@ void  FillNPVHist(std::map<TString,TH1*> hists,TString myHistName, double myNPV,
     hists[myHistName + "HighNPV"]->Fill(myVal,myWgt);
   }
 }
+
 
 
 
