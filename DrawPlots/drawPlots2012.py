@@ -100,7 +100,7 @@ def main ():
 
 	pival = 3.14
 
-	drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", numBins*7/5, 0.65, 1, lepselection,year, "draw")
+	drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", 10, 0.7, 1, lepselection,year, "draw")
 	drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", numBins, 30, 430, lepselection,year, "draw")
 	drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", numBins*4/5, 0.5, 4.5, lepselection, year, "draw")
 	drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", numBins*4/5, 0, 4, lepselection, year, "draw")
