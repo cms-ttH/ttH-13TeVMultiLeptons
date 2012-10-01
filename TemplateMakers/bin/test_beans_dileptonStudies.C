@@ -159,9 +159,10 @@ int main ( int argc, char ** argv )
    //JES
    int jes = anaParams.getParameter<int> ("jes");
    int jer = anaParams.getParameter<int> ("jer");
+   int btagCSVShape = anaParams.getParameter<int> ("btagCSVShape");
    std::string sampleName = anaParams.getParameter<string>("sampleName");
    TString tmpName = sampleName;
-   std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
+   std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << " btagShape = " << btagCSVShape << std::endl;
 
    //  Btag file
 
@@ -260,6 +261,11 @@ int main ( int argc, char ** argv )
 
     // bool argument isLJ is always false
     BEANs::setMCsample(sampleNumber,is8TeV, false, dset);
+  } else {
+    cout << "Calling setMCsample with sampleNumber = 2500, is8TeV = " << is8TeV
+         << " and dset = " << dset << endl;
+    // bool argument isLJ is always false
+    BEANs::setMCsample(2500,is8TeV, false, dset);
   }
 
 
@@ -679,6 +685,11 @@ int main ( int argc, char ** argv )
   floatBranches["lep2Phi"] = new float(0.0);
   floatBranches["lep1Iso"] = new float(0.0);
   floatBranches["lep2Iso"] = new float(0.0);
+  floatBranches["lep1CorrectedD0"]  = new float(0.0);
+  floatBranches["lep2CorrectedD0"]  = new float(0.0);
+  floatBranches["lep1CorrectedDZ"]  = new float(0.0);
+  floatBranches["lep2CorrectedDZ"]  = new float(0.0);
+  
   floatBranches["mass_leplep"] = new float(0.0);
   floatBranches["pt_leplep"] = new float(0.0);
   floatBranches["dPhi_leplep"] = new float(0.0);
@@ -1857,6 +1868,7 @@ int main ( int argc, char ** argv )
       ////////
       std::vector<int> tight_pfjet_index;
       std::vector<int> tag_pfjet_index;
+      std::vector<int> tag_pfjet_csvVal;
       std::vector<int> untag_pfjet_index;
 
       std::vector<double> good_jet_pt;
@@ -1933,8 +1945,8 @@ int main ( int argc, char ** argv )
     double genJetPT = pfjets.at(i).genPartonPT;
     //double jetPhi = pfjets.at(i).phi;
     double jetCHEF = pfjets.at(i).chargedHadronEnergyFraction;
-    
     double myJER = BEANs::getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
+    
 
     //don't scale data jets
     if ( isData) {      
@@ -2050,13 +2062,35 @@ int main ( int argc, char ** argv )
 	// Tight Cut is 0.898
 
 
-	float csv = pfjets.at(i).btagCombinedSecVertex;
+    //------------- update this now
+    
+	float csv_old = pfjets.at(i).btagCombinedSecVertex;
+    int iJetFlav = pfjets.at(i).flavour;
+    std::string sysType = "regular";
+    if (isData) {
+      sysType = "data";
+    } else if (btagCSVShape == 1) {
+      sysType = "hfSFUp";
+    } else if (btagCSVShape == -1) {
+      sysType = "hfSFDown";
+    } else if (btagCSVShape == 2) {
+      sysType = "lfSFUp";
+    } else if (btagCSVShape == -2) {
+      sysType = "lfSFDown";
+    }
+        
+    
+    float csv = BEANs::reshape_csv( jetEta, jetPt, csv_old, iJetFlav, sysType );
 	bool csvM = ( csv> btagThres );
-
-	
+    if (isData){
+      cout << "VOODOO: Jet pt " << jetPt << " jet eta " << jetEta
+           << " original csv " << csv_old << " new csv " << csv
+           << " flavor " << iJetFlav << " option "  << btagCSVShape << endl;
+	}
 	if( csvM ){
 	  tag_pfjet_index.push_back(i);
 	  jet_desc.push_back(csv);
+      tag_pfjet_csvVal.push_back(csv);
 	}
 	else        untag_pfjet_index.push_back(i);
 	
@@ -2199,6 +2233,10 @@ int main ( int argc, char ** argv )
           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
           std::vector<BTagWeight::JetInfo> myjetinfo_lfSFup;                                                            
           std::vector<BTagWeight::JetInfo> myjetinfo_lfSFdown;
+
+
+          
+          
           if (verbose) std::cout << "Looping over  jets for btag uncert" <<std::endl;
           for( int j=0; j<int(good_jet_pt.size()); j++ ){
             if (verbose) std::cout << "calling btag sf" <<std::endl;
@@ -2473,6 +2511,10 @@ int main ( int argc, char ** argv )
     float lep2_iso = 0 ;
     float lep1_correctedDZ = 0 ;
     float lep2_correctedDZ = 0 ;
+
+    float lep1_correctedD0 = 0 ;
+    float lep2_correctedD0 = 0 ;
+
     float lep1TkCharge = -10;
     float lep1GenCharge = -10;
     float lep2TkCharge = -10;
@@ -2523,6 +2565,10 @@ int main ( int argc, char ** argv )
 
         lep1_correctedDZ = muons.at(iMuon1).correctedDZ;
         lep2_correctedDZ = muons.at(iMuon2).correctedDZ;
+
+        lep1_correctedD0 = muons.at(iMuon1).correctedD0;
+        lep2_correctedD0 = muons.at(iMuon2).correctedD0;
+
 
         lep1TkCharge = muons.at(iMuon1).tkCharge;
         lep2TkCharge = muons.at(iMuon2).tkCharge;
@@ -2585,6 +2631,10 @@ int main ( int argc, char ** argv )
         lep1_correctedDZ = electrons.at(iEle1).correctedDZ;
         lep2_correctedDZ = electrons.at(iEle2).correctedDZ;
 
+        lep1_correctedD0 = electrons.at(iEle1).correctedD0;
+        lep2_correctedD0 = electrons.at(iEle2).correctedD0;
+
+
         lep1TkCharge = electrons.at(iEle1).tkCharge;
         lep2TkCharge = electrons.at(iEle2).tkCharge;
 
@@ -2645,6 +2695,10 @@ int main ( int argc, char ** argv )
 
         lep1_correctedDZ = muons.at(iMuon).correctedDZ;
         lep2_correctedDZ = electrons.at(iEle).correctedDZ;
+
+        lep1_correctedD0 = muons.at(iMuon).correctedD0;
+        lep2_correctedD0 = electrons.at(iEle).correctedD0;
+
 
         lep1TkCharge = muons.at(iMuon).tkCharge;
         lep2TkCharge = electrons.at(iEle).tkCharge;
@@ -2738,6 +2792,14 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["lep1Iso"]) = lep1_iso;
 	  *(floatBranches["lep2Iso"]) = lep2_iso;
 
+      *(floatBranches["lep1CorrectedD0"]) = lep1_correctedD0;
+	  *(floatBranches["lep2CorrectedD0"]) = lep2_correctedD0;
+
+      *(floatBranches["lep1CorrectedDZ"]) = lep1_correctedDZ;
+	  *(floatBranches["lep2CorrectedDZ"]) = lep2_correctedDZ;
+
+
+
       *(floatBranches["lep1SF"]) = lep1SF;
       *(floatBranches["lep2SF"]) = lep2SF;
       *(floatBranches["lepTotalSF"]) = lepTotalSF;
@@ -2810,6 +2872,8 @@ int main ( int argc, char ** argv )
 	    int iJet = tight_pfjet_index[i] ;
 	    sum_pt += jet_pt[iJet];
 	    Ht += jet_energy[iJet];
+        double iJet_csvVal = good_jet_tag[i];
+        //cout <<"VOODOO: Good jet number " << i << " index " << iJet  << " csv val " << iJet_csvVal << endl;
 	    
 	    jet_vect.SetPxPyPzE(jet_px[iJet],jet_py[iJet],jet_pz[iJet],jet_energy[iJet]);
 
@@ -2851,12 +2915,12 @@ int main ( int argc, char ** argv )
 	      min_jet_lep2_dR = lep_vect2.DeltaR(jet_vect); 
 	    }
 	    
-	    if (pfjets.at(iJet).btagCombinedSecVertex > 0.679){
-	      avg_btag_disc_btags += pfjets.at(iJet).btagCombinedSecVertex;
+	    if (iJet_csvVal > 0.679){
+	      avg_btag_disc_btags += iJet_csvVal;
 	    }
 	    
-	    if (pfjets.at(iJet).btagCombinedSecVertex <= 0.679){
-	      avg_btag_disc_non_btags += pfjets.at(iJet).btagCombinedSecVertex;   		  
+	    if (iJet_csvVal <= 0.679){
+	      avg_btag_disc_non_btags += iJet_csvVal;   		  
 	    }									
 	  }
 	  
@@ -2901,13 +2965,18 @@ int main ( int argc, char ** argv )
 	  }
 	  
 	  for (int l=0; l < numTag; l++){
-	    dev_from_avg_disc_btags += pow((pfjets.at(tag_pfjet_index[l]).btagCombinedSecVertex - avg_btag_disc_btags),2);
+	    dev_from_avg_disc_btags += pow((tag_pfjet_csvVal[l] - avg_btag_disc_btags),2);
 	  }
 	  if ( numTag > 0 ) dev_from_avg_disc_btags /= numTag;
 
 	  *(floatBranches["avg_btag_disc_btags"]) = avg_btag_disc_btags;
 	  *(floatBranches["avg_btag_disc_non_btags"]) = avg_btag_disc_non_btags;
 	  *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
+
+      //cout << "VOODOO: This event: avg_btag_disc_btags = " << avg_btag_disc_btags
+      //     << ", avg_btag_disc_non_btags = " << avg_btag_disc_non_btags
+      //      << "dev_from_avg_disc_btags" << dev_from_avg_disc_btags
+      //      << endl;
 
 	  /////
 	  all_sum_pt = sum_pt + MHT;

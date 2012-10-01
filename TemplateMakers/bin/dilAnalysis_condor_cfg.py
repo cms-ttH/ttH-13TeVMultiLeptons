@@ -20,6 +20,7 @@ iJob = int(sys.argv[4])
 iLabel = sys.argv[5]
 iJes = int (sys.argv[6])
 iJer = int (sys.argv[7])
+iBtag = int (sys.argv[8])
 
 # update serach path
 
@@ -81,6 +82,19 @@ if iJes == -1:
 if iJes == 1:
 	outDir = "batchBEAN/%s_%s_%s_JESUp/" % (sampleNameCL, iYear, iLabel)
 	outFileName = "batchBEAN/%s_%s_%s_JESUp/dilSummaryTrees_%s_%s_%s_JESUp_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
+if iBtag == -1:
+	outDir = "batchBEAN/%s_%s_%s_btagHFDown/" % (sampleNameCL, iYear, iLabel)
+	outFileName = "batchBEAN/%s_%s_%s_btagHFDown/dilSummaryTrees_%s_%s_%s_btagHFDown_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
+if iBtag == 1:
+	outDir = "batchBEAN/%s_%s_%s_btagHFUp/" % (sampleNameCL, iYear, iLabel)
+	outFileName = "batchBEAN/%s_%s_%s_btagHFUp/dilSummaryTrees_%s_%s_%s_btagHFUp_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
+if iBtag == -2:
+	outDir = "batchBEAN/%s_%s_%s_btagLFDown/" % (sampleNameCL, iYear, iLabel)
+	outFileName = "batchBEAN/%s_%s_%s_btagLFDown/dilSummaryTrees_%s_%s_%s_btagLFDown_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
+if iBtag == 2:
+	outDir = "batchBEAN/%s_%s_%s_btagLFUp/" % (sampleNameCL, iYear, iLabel)
+	outFileName = "batchBEAN/%s_%s_%s_btagLFUp/dilSummaryTrees_%s_%s_%s_btagLFUp_job%03d.root" % (sampleNameCL, iYear, iLabel, sampleNameCL, iYear, iLabel, iJob)
+
 
 if not os.path.exists(outDir):
 	os.mkdir(outDir)
@@ -108,6 +122,8 @@ process.dilAnalysis = cms.PSet(
 	#btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	#puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
 	sampleName = cms.string(sampleNameCL),
+    
+	selectionYear = cms.string(iYear),
 
-	selectionYear = cms.string(iYear)
+    btagCSVShape = cms.int32(iBtag)
 )

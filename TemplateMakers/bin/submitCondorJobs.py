@@ -9,7 +9,8 @@ def main ():
     yearChoice = int(sys.argv[1])
     jesChoice = int(sys.argv[2])
     jerChoice = int(sys.argv[3])
-    jobLabel = str(sys.argv[4])
+    btagChoice = int(sys.argv[4])
+    jobLabel = str(sys.argv[5])
     listOfSamples2011Data = ['DoubleElectron_Run2011A-05Aug2011-v1',
                              'DoubleElectron_Run2011A-May10ReReco-v1',
                              'DoubleElectron_Run2011A-PromptReco-v4',
@@ -36,58 +37,58 @@ def main ():
                              ]
 							 
     listOfSamples = [
-                     #'scaledown_ttbar',
-                     #'scaledown_ttbar_bb',
-                     #'scaledown_ttbar_cc',
-                     #'scaleup_ttbar',
-                     #'scaleup_ttbar_bb',
-                     #'scaleup_ttbar_cc',
-                    'singlet_s',
-                    'singlet_t',
-                    'singlet_tW',
-                    'singletbar_s',
-                    'singletbar_t',
-                    'singletbar_tW',
-                    'ttH110',
-                    'ttH115',
-                     'ttH120',
-                    'ttH125',
-                    'ttH130',
-                    'ttH135',
-                    'ttH140',
-                    'ttbarW',
-                    'ttbarZ',
-                    'ttbar_bb',
-                    'ttbar_cc',
-                    'wjets',
-                     'ww',
-                     'wz',
-                     'zz',
-                     'zjets_part1',
-                     'zjets_part2',
-                     'zjets_part3',
-                     'zjets_part4',
-                     'zjets_part5',
-                     'zjets_part6',
-                     'zjets_part7',
-                     'zjets_part8',
-                     'zjets_part9',
-                     'zjets_part10',
-                     'zjets_part11',
-                     'zjets_part12',
-                     'zjets_lowmass',                    
-                     'ttbar_part1',
-                     'ttbar_part2',
-                     'ttbar_part3',
-                     'ttbar_part4',
-                     'ttbar_part5',
-                     'ttbar_part6',
-                     'ttbar_part7',
-                     'ttbar_part8',
-                     'ttbar_part9',
-                     'ttbar_part10',
-                     'ttbar_part11',
-                     'ttbar_part12',                     
+                     #'scaledown_ttbar',    ALWAYS OUT
+                     #'scaledown_ttbar_bb', ALWAYS OUT
+                     #'scaledown_ttbar_cc', ALWAYS OUT
+                     #'scaleup_ttbar',      ALWAYS OUT
+                     #'scaleup_ttbar_bb',   ALWAYS OUT
+                     #'scaleup_ttbar_cc',   ALWAYS OUT
+#                     'singlet_s',
+#                     'singlet_t',
+#                     'singlet_tW',
+#                     'singletbar_s',
+#                     'singletbar_t',
+#                     'singletbar_tW',
+#                     'ttH110',
+#                     'ttH115',
+#                      'ttH120',
+#                     'ttH125',
+#                     'ttH130',
+#                     'ttH135',
+#                     'ttH140',
+#                     'ttbarW',
+#                     'ttbarZ',
+#                     'ttbar_bb',
+#                     'ttbar_cc',
+#                     'wjets',
+#                      'ww',
+#                      'wz',
+#                      'zz',
+#                      'zjets_part1',
+#                      'zjets_part2',
+#                      'zjets_part3',
+#                      'zjets_part4',
+#                      'zjets_part5',
+#                      'zjets_part6',
+#                      'zjets_part7',
+#                      'zjets_part8',
+#                      'zjets_part9',
+#                      'zjets_part10',
+#                      'zjets_part11',
+#                      'zjets_part12',
+#                      'zjets_lowmass',                    
+#                      'ttbar_part1',
+#                      'ttbar_part2',
+#                      'ttbar_part3',
+#                      'ttbar_part4',
+#                      'ttbar_part5',
+#                      'ttbar_part6',
+#                      'ttbar_part7',
+#                      'ttbar_part8',
+#                      'ttbar_part9',
+#                      'ttbar_part10',
+#                      'ttbar_part11',
+#                      'ttbar_part12',                     
                      ]
 
     if yearChoice == 2011:
@@ -128,7 +129,8 @@ def main ():
         condorJobFile.write( "NJobs = %s\n" % numJobs)
         condorJobFile.write( "JES = %s\n" % jesChoice)
         condorJobFile.write( "JER = %s\n" % jerChoice)
-        condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER)\n")
+        condorJobFile.write( "BTAG = %s\n" % btagChoice)
+        condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER) $(BTAG) \n")
 
         if (jesChoice == 0 and jerChoice == 0):
             JetStr = ""

@@ -7,6 +7,7 @@ set iJob = $3
 set iLabel = $4
 set iJes = $5
 set iJer = $6
+set iBtag = $7
 
 #echo "listFileName, iYear, iJob, iLabel, iJes, iJer = "${listFileName}" , "${iYear}" , "${iJob}" , "${iLabel}" , "${iJes}" , "${iJer}
 
@@ -33,6 +34,23 @@ if ($iJes == "1") then
     set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_JESUp/log
 endif
 
+if ($iBtag == "1") then
+    set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_btagHFUp/log
+endif
+
+if ($iBtag == "-1") then
+    set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_btagHFDown/log
+endif
+
+if ($iBtag == "2") then
+    set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_btagLFUp/log
+endif
+
+if ($iBtag == "-2") then
+    set outDirName = batchBEAN/${sample}_${iYear}_${iLabel}_btagLFDown/log
+endif
+
+
 if ($outDirName == "") then
 
   echo "Script called with bad arguments, can't make the output dir"
@@ -57,4 +75,4 @@ endif
 
 #root -b -q head.C 'test_beans_dileptonStudies.C+(-1,"'${sample}'", '$iJob', "'$iLabel'")' >&! $outDirName/test_beans_dileptonStudies_${sample}_${iLabel}_${iJob}.log
 
-test_beans_dileptonStudies dilAnalysis_condor_cfg.py ${sample} $iYear $iJob $iLabel $iJes $iJer > & ! $outDirName/dilAnalysis_${sample}_${iYear}_${iLabel}_${iJob}.log
+test_beans_dileptonStudies dilAnalysis_condor_cfg.py ${sample} $iYear $iJob $iLabel $iJes $iJer $iBtag > & ! $outDirName/dilAnalysis_${sample}_${iYear}_${iLabel}_${iJob}.log
