@@ -11,7 +11,7 @@ def main ():
     iZmask = "noZmask"
 #    iZmask = "Zmask"
     #iZmask = "Zpeak"
-    jobLabel = "V4"
+    jobLabel = "btagShapeStudy"
     jesChoice = 1
     jerChoice = 0
 
@@ -25,9 +25,9 @@ def main ():
         
 #    listOfSamples = ['DoubleElectron']
 
-    listOfSamples = [#'DoubleElectron',
-                     #'DoubleMu',
-                     #'MuEG',
+    listOfSamples = ['DoubleElectron',
+                     'DoubleMu',
+                     'MuEG',
 
                      #'scaledown_ttbar',
                      #'scaledown_ttbar_bb',
@@ -35,12 +35,12 @@ def main ():
                      #'scaleup_ttbar',
                      #'scaleup_ttbar_bb',
                      #'scaleup_ttbar_cc',
-#                     'singlet_s',
-#                     'singlet_t',
-#                     'singlet_tW',
-#                     'singletbar_s',
-#                     'singletbar_t',
-#                     'singletbar_tW',
+                     'singlet_s',
+                     'singlet_t',
+                     'singlet_tW',
+                     'singletbar_s',
+                     'singletbar_t',
+                     'singletbar_tW',
 
 
                      'ttH110',
@@ -51,41 +51,41 @@ def main ():
                      'ttH135',
                      'ttH140',
 
-#                     'ttbarW',
-#                     'ttbarZ',
-#                     'ttbar_bb',
-#                     'ttbar_cc',
-#                     'wjets',
-#                     'ww',
-#                     'wz',
-#                     'zz',                     
+                     'ttbarW',
+                     'ttbarZ',
+                     'ttbar_bb',
+                     'ttbar_cc',
+                     'wjets',
+                     'ww',
+                     'wz',
+                     'zz',                     
 
-#                     'zjets_part1',
-#                     'zjets_part2',
-#                     'zjets_part3',
-#                     'zjets_part4',
-#                     'zjets_part5',
-#                     'zjets_part6',
-#                     'zjets_part7',
-#                     'zjets_part8',
-#                     'zjets_part9',
-#                     'zjets_part10',
-#                     'zjets_part11',
-#                     'zjets_part12',
-#                     'zjets_lowmass',
+                     'zjets_part1',
+                     'zjets_part2',
+                     'zjets_part3',
+                     'zjets_part4',
+                     'zjets_part5',
+                     'zjets_part6',
+                     'zjets_part7',
+                     'zjets_part8',
+                     'zjets_part9',
+                     'zjets_part10',
+                     'zjets_part11',
+                     'zjets_part12',
+                     'zjets_lowmass',
                      
-#                     'ttbar_part1',
-#                     'ttbar_part2',
-#                     'ttbar_part3',
-#                     'ttbar_part4',
-#                     'ttbar_part5',
-#                     'ttbar_part6',
-#                     'ttbar_part7',
-#                     'ttbar_part8',
-#                     'ttbar_part9',
-#                     'ttbar_part10',
-#                     'ttbar_part11',
-#                     'ttbar_part12',                     
+                     'ttbar_part1',
+                     'ttbar_part2',
+                     'ttbar_part3',
+                     'ttbar_part4',
+                     'ttbar_part5',
+                     'ttbar_part6',
+                     'ttbar_part7',
+                     'ttbar_part8',
+                     'ttbar_part9',
+                     'ttbar_part10',
+                     'ttbar_part11',
+                     'ttbar_part12',                     
                      ]
 
     

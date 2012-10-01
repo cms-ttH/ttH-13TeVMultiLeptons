@@ -110,6 +110,13 @@ int main ( int argc, char ** argv )
    std::string treeFileNameJESDown = inputs.getParameter< std::string >("fileNameJESDown");
    std::string treeFileNameJERUp = inputs.getParameter< std::string >("fileNameJERUp");
    std::string treeFileNameJERDown = inputs.getParameter< std::string >("fileNameJERDown");
+
+   // grab input files  with btag up/down selections
+   std::string treeFileNamebtagHFUp = inputs.getParameter< std::string >("fileNamebtagHFUp");
+   std::string treeFileNamebtagHFDown = inputs.getParameter< std::string >("fileNamebtagHFDown");
+   std::string treeFileNamebtagLFUp = inputs.getParameter< std::string >("fileNamebtagLFUp");
+   std::string treeFileNamebtagLFDown = inputs.getParameter< std::string >("fileNamebtagLFDown");
+
    std::string inputYear = inputs.getParameter< std::string >("inputYear");
    std::string inputZmask = inputs.getParameter< std::string >("inputZmask");
    
@@ -169,35 +176,54 @@ int main ( int argc, char ** argv )
   
   ///////   systematics
   std::vector< TString > sysList ;
-  sysList.push_back("CMS_scale_jUp");
-  sysList.push_back("CMS_scale_jDown");
-  sysList.push_back("");
-  sysList.push_back("PUUp");
-  sysList.push_back("PUDown");
-  sysList.push_back("CMS_eff_bUp");
-  sysList.push_back("CMS_eff_bDown");
-  sysList.push_back("CMS_fake_bUp");
-  sysList.push_back("CMS_fake_bDown");
-  sysList.push_back("Q2scale_ttH");
-  sysList.push_back("Q2scale_ttH");
+  sysList.push_back("CMS_scale_jUp");  // 0
+  sysList.push_back("CMS_scale_jDown"); // 1
+  sysList.push_back(""); // 2
+  sysList.push_back("PUUp"); // 3
+  sysList.push_back("PUDown"); // 4
+  sysList.push_back("CMS_eff_bUp"); // 5
+  sysList.push_back("CMS_eff_bDown"); // 6
+  sysList.push_back("CMS_fake_bUp"); // 7 
+  sysList.push_back("CMS_fake_bDown"); //8
+  sysList.push_back("Q2scale_ttH"); //9 
+  sysList.push_back("Q2scale_ttH"); //10
   const unsigned int NumSys = sysList.size();
 
   ////////// prepare the weight
   vector<std::string> weight(NumSys, std::string(""));
-  weight[0] = "weight*prob*"  ;
-  weight[1] = "weight*prob*"  ;
-  weight[2] = "weight*prob*"  ;
-  
-  weight[3] = "weight_PUup*prob*"  ;
-  weight[4] = "weight_PUdown*prob*"  ;
-  
-  weight[5] = "weight*prob_hfSFup*";
-  weight[6] = "weight*prob_hfSFdown*";
-  weight[7] = "weight*prob_lfSFup*";
-  weight[8] = "weight*prob_lfSFdown*";
 
-  weight[9] = "weight*prob*Q2ScaleUpWgt*1.403*"  ;     
-  weight[10] = "weight*prob*Q2ScaleDownWgt*0.683*"  ;  
+
+  weight[0] = "weight*"  ;
+  weight[1] = "weight*"  ;
+  weight[2] = "weight*"  ;
+  
+  weight[3] = "weight_PUup*"  ;
+  weight[4] = "weight_PUdown*"  ;
+  
+  weight[5] = "weight*";
+  weight[6] = "weight*";
+  weight[7] = "weight*";
+  weight[8] = "weight*";
+
+  weight[9] = "weight*Q2ScaleUpWgt*1.403*"  ;     
+  weight[10] = "weight*Q2ScaleDownWgt*0.683*"  ;
+
+
+  /////////////////// Regular Defaults
+//   weight[0] = "weight*prob*"  ;
+//   weight[1] = "weight*prob*"  ;
+//   weight[2] = "weight*prob*"  ;
+  
+//   weight[3] = "weight_PUup*prob*"  ;
+//   weight[4] = "weight_PUdown*prob*"  ;
+  
+//   weight[5] = "weight*prob_hfSFup*";
+//   weight[6] = "weight*prob_hfSFdown*";
+//   weight[7] = "weight*prob_lfSFup*";
+//   weight[8] = "weight*prob_lfSFdown*";
+
+//   weight[9] = "weight*prob*Q2ScaleUpWgt*1.403*"  ;     
+//   weight[10] = "weight*prob*Q2ScaleDownWgt*0.683*"  ;  
   // for 2011
 //   weight[9] = "weight*prob*Q2ScaleUpWgt*1.406*"  ;     
 //   weight[10] = "weight*prob*Q2ScaleDownWgt*0.681*"  ;  
@@ -430,12 +456,14 @@ int main ( int argc, char ** argv )
 
   /////////////// Debuging root file
 
-  TFile * debugOutput = new TFile (std::string("batchBean/" + InputFileNames[0] + "_debugTimer.root").c_str());
+  TFile * debugOutput = new TFile (std::string("batchBean/" + InputFileNames[0] + "_debugTimer.root").c_str(), "RECREATE");
 
   debugOutput->cd();
   TH1F * drawTimesReal = new TH1F ("drawTimesReal", "drawTimesReal", 5000, 0, 1);
   TH1F * drawTimesCPU = new TH1F ("drawTimesCPU", "drawTimesCPU", 5000, 0, 1);
-  unsigned numDraws = 0;
+  TH1F * numDraws    = new TH1F ("numDraws", "numDraws", 1, 0.5, 1.5);
+  
+  //unsigned numDraws = 0;
    
 
   ////////// start sample loop
@@ -487,6 +515,14 @@ int main ( int argc, char ** argv )
       else if (ksys == 1 ) {
         //InputFileName += "_JESDown.root" ;
         InputFileName = treeFileNameJESDown;
+      } else if (ksys == 5) {
+        InputFileName = treeFileNamebtagHFUp;
+      } else if (ksys == 6) {
+        InputFileName = treeFileNamebtagHFDown;
+      } else if (ksys == 7) {
+        InputFileName = treeFileNamebtagLFUp;
+      } else if (ksys == 8) {
+        InputFileName = treeFileNamebtagLFDown;
       }
       //else  InputFileName += ".root" ;
       
@@ -494,7 +530,7 @@ int main ( int argc, char ** argv )
       TFile * DileptonFile = new TFile(InputFileName);
 
       if (DileptonFile->IsZombie()) {
-        std::cout << "ERROR: Can't find the file," << InputFileName <<  ", sorry... quitting" << std::endl;
+        std::cout << "ERROR: Can't find the file  " << InputFileName <<  ", sorry... quitting" << std::endl;
         return -22;
       }
     
@@ -651,6 +687,7 @@ int main ( int argc, char ** argv )
           myTime.Stop();
           drawTimesReal->Fill(myTime.RealTime());
           drawTimesCPU->Fill(myTime.CpuTime());
+          numDraws->Fill(1);
           //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
           //      	  std::cout << "Drawing histogram " << histName << std::endl;
           histTemp->SetDirectory(OutputFile);
@@ -682,4 +719,8 @@ int main ( int argc, char ** argv )
       
     }
   }
+
+  debugOutput->Write();
+  debugOutput->Close();
+  
 }// end main

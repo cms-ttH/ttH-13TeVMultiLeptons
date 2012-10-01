@@ -54,6 +54,10 @@ process.inputs = cms.PSet (
 	fileNameJESDown = cms.string("dummy_JESDown.root"),
 	fileNameJERUp = cms.string("dummy_JERUp.root"),
 	fileNameJERDown = cms.string("dummy_JERDown.root"),
+    fileNamebtagHFUp = cms.string("dummy_btagHFUp.root"),
+	fileNamebtagHFDown = cms.string("dummy_btagHFDown.root"),
+    fileNamebtagLFUp = cms.string("dummy_btagLFUp.root"),
+	fileNamebtagLFDown = cms.string("dummy_btagLFDown.root"),
 	maxEvents = cms.int32(-1),
 	inputYear = cms.string(iYear),
 	inputZmask = cms.string(iZmask)
@@ -83,6 +87,12 @@ else:
 	process.inputs.fileNameJERDown = process.inputs.fileName
 
 
+process.inputs.fileNamebtagHFUp = "treeFiles/dilSummaryTrees_%s_%s_%s_btagHFUp_all.root" % (sampleNameCL, iYear, iLabel)
+process.inputs.fileNamebtagHFDown = "treeFiles/dilSummaryTrees_%s_%s_%s_btagHFDown_all.root" % (sampleNameCL, iYear, iLabel)
+process.inputs.fileNamebtagLFUp = "treeFiles/dilSummaryTrees_%s_%s_%s_btagLFUp_all.root" % (sampleNameCL, iYear, iLabel)
+process.inputs.fileNamebtagLFDown = "treeFiles/dilSummaryTrees_%s_%s_%s_btagLFDown_all.root" % (sampleNameCL, iYear, iLabel)
+
+
 ## treeFileName = "treeFiles/%s.root" % (sampleNameCL)
 ## treeFileName = "treeFiles/%s" % (sampleNameCL)
 ## checkFiles = cms.FileInPath(treeFileName)
@@ -94,6 +104,10 @@ print "	 JESUp	   %s" % process.inputs.fileNameJESUp
 print "	 JESDown   %s" % process.inputs.fileNameJESDown
 print "	 JERUp	   %s" % process.inputs.fileNameJERUp
 print "	 JERDown   %s" % process.inputs.fileNameJERDown 
+print "	 btagHFUp	   %s" % process.inputs.fileNamebtagHFUp
+print "	 btagHFDown   %s" % process.inputs.fileNamebtagHFDown 
+print "	 btagLFUp	   %s" % process.inputs.fileNamebtagLFUp
+print "	 btagLFDown   %s" % process.inputs.fileNamebtagLFDown 
 
 
 
