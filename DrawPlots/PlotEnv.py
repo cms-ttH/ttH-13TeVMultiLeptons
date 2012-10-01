@@ -150,11 +150,11 @@ class PlotInfo:
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "Q2Up"):
 			namePlusCycle = "%s_Q2scale_ttH_%sUp;1" % (histName, tmpSysName)
-#			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "Q2Down"):
 			namePlusCycle = "%s_Q2scale_ttH_%sDown;1" % (histName, tmpSysName)
-#			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 
 		else:
@@ -739,10 +739,15 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	iSig.Draw('histsame')
 
 	theDataHisto.Draw("pesame")		##Comment out for blinding
-	
+
+
+	# calculate the KS test result, put it somewhere
+	ksResult = theDataHisto.KolmogorovTest(MCErrHist)
+
+	myLumiString = myLumiString + " (KS = %0.2f)" % (ksResult)
 
 	legForStack.Draw()
-	myLumiTex.DrawLatex(0.15, 0.98, myLumiString)
+	myLumiTex.DrawLatex(0.10, 0.98, myLumiString)
 #	 myLumiTex.DrawLatex(0.25, 0.98, myLumiString)
 
 	##Begin comment out for 2012
@@ -808,9 +813,24 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			ratioErrHist.SetBinContent(i,1)
 			ratioErrHist.SetBinError(i,ratErrMC)
 
-	ratioHist.Draw()
-	ratioErrHist.Draw("e2same")		##Comment out for blinding 
-	ratioHist.Draw("pe1same")
+	ratioHist.DrawCopy()
+	ratioErrHist.DrawCopy("e2same")		##Comment out for blinding 
+	ratioHist.DrawCopy("pe1same")
+
+	saveRatioHist = True
+	if saveRatioHist:
+		ratioHistFile = TFile("ratioHistFile.root","RECREATE")
+		ratioHistFile.cd()
+		cloneOfRatioHist = ratioHist.Clone("RatioPlotV1")
+		cloneOfRatioErrHist = ratioErrHist.Clone("RatioErrorPlotV1")
+		cloneOfRatioHist.SetDirectory(ratioHistFile)
+		cloneOfRatioErrHist.SetDirectory(ratioHistFile)
+		cloneOfRatioHist.Write()
+		cloneOfRatioErrHist.Write()
+		#ratioHistFile.Write()
+		ratioHistFile.Close()
+		
+	
 	l = TLine()
 	l.SetLineStyle(2)
 	l.DrawLine(xMin,1.,xMax,1.)
