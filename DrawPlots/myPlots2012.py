@@ -42,7 +42,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
     elif lepselection.startswith("MuonEle"):
         dataStr = dirStr+'MuEG_' + year + "_" + Zmask + "_" + jetselection +  "_MuonEle.root"
 
-    elif lepselection.startswith("ee_mm"):
+    elif lepselection.startswith("SameLep"):
         dataStr = dirStr+'SameLep'+rootStr
     else:
         dataStr = dirStr+'TwoLep'+rootStr
