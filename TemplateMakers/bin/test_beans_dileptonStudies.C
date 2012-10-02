@@ -177,6 +177,12 @@ int main ( int argc, char ** argv )
 
 //    TFile * btagFile = new TFile (btagFileName.fullPath().c_str());
 
+   //// Ht re-weighting
+   TFile *f_Ht_rwt = new TFile("sum_jet_pt_rwt.root");
+   TH1F* h_rwt_lowPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV0");
+   TH1F* h_rwt_medPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV1");
+   TH1F* h_rwt_highPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV2");
+
    int maxNentries = inputs.getParameter<int> ("maxEvents");
    //string sampleName = "doubleEle2012_week02_52Xonly";
 
@@ -655,12 +661,12 @@ int main ( int argc, char ** argv )
   //floatBranches["top1_pt"] = new float(0.0);
   //floatBranches["top1_pz"] = new float(0.0);
   
-  //b-tag reweight                                                                                                               
-  floatBranches["prob"] = new float(0.0);                                                                                        
-  floatBranches["prob_hfSFup"] = new float(0.0);                                                                                 
-  floatBranches["prob_hfSFdown"] = new float(0.0);                                                                               
-  floatBranches["prob_lfSFup"] = new float(0.0);                                                                                 
-  floatBranches["prob_lfSFdown"] = new float(0.0);                                                                               
+  //b-tag reweight  
+  floatBranches["prob"] = new float(0.0);
+  floatBranches["prob_hfSFup"] = new float(0.0);
+  floatBranches["prob_hfSFdown"] = new float(0.0); 
+  floatBranches["prob_lfSFup"] = new float(0.0);
+  floatBranches["prob_lfSFdown"] = new float(0.0);
 
   //pile up
   floatBranches["numPV"] = new float(0.0);
@@ -724,12 +730,12 @@ int main ( int argc, char ** argv )
   floatBranches["third_jet_CHEF"] = new float(0.0);
   floatBranches["fourth_jet_CHEF"] = new float(0.0);
 
-  floatBranches["dPhi_jet1jet2"] = new float(0.0);
-  floatBranches["dPhi_jet1jet3"] = new float(0.0);
-  floatBranches["dPhi_jet1jet4"] = new float(0.0);
-  floatBranches["dPhi_jet2jet3"] = new float(0.0);
-  floatBranches["dPhi_jet2jet4"] = new float(0.0);
-  floatBranches["dPhi_jet3jet4"] = new float(0.0);
+//   floatBranches["dPhi_jet1jet2"] = new float(0.0);
+//   floatBranches["dPhi_jet1jet3"] = new float(0.0);
+//   floatBranches["dPhi_jet1jet4"] = new float(0.0);
+//   floatBranches["dPhi_jet2jet3"] = new float(0.0);
+//   floatBranches["dPhi_jet2jet4"] = new float(0.0);
+//   floatBranches["dPhi_jet3jet4"] = new float(0.0);
 
   floatBranches["first_allJet_pt"] = new float(0.0);
   floatBranches["second_allJet_pt"] = new float(0.0);
@@ -778,12 +784,14 @@ int main ( int argc, char ** argv )
   floatBranches["lowest_btag"] = new float(0.0);
 
   /////entire system variables
-  //floatBranches["mass_of_everything"] = new float(0.0);
+  floatBranches["mass_of_everything"] = new float(0.0);
   floatBranches["mass_MHT"] = new float(0.0);
   floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
-  //floatBranches["pt_of_everything"] = new float(0.0);
+  floatBranches["pt_of_everything"] = new float(0.0);
+  floatBranches["pt_of_ttbar"] = new float(0.0);
   floatBranches["MHT"] = new float(0.0);
   floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
+  floatBranches["sum_jet_pt"] = new float(0.0); 
   floatBranches["sum_pt"] = new float(0.0); 
   floatBranches["all_sum_pt"] = new float(0.0);
   floatBranches["Ht"] = new float(0.0);
@@ -791,7 +799,8 @@ int main ( int argc, char ** argv )
   floatBranches["Q2ScaleDownWgt"] = new float(0.0);
   floatBranches["numTruePV"] = new float(0.0);
   floatBranches["numGenPV"] = new float(0.0);
-
+  floatBranches["HtWgt"] = new float(0.0);
+  floatBranches["HtWgtUp"] = new float(0.0);
 
   ////////////////////  
   histofile.cd();
@@ -1942,7 +1951,7 @@ int main ( int argc, char ** argv )
     // 0 for nominal, 1 for up, -1 for down
     double jetEta = pfjets.at(i).eta;	
     double jetAbsEta = fabs(jetEta);
-    double genJetPT = pfjets.at(i).genPartonPT;
+    double genJetPT = pfjets.at(i).genJetPT;
     //double jetPhi = pfjets.at(i).phi;
     double jetCHEF = pfjets.at(i).chargedHadronEnergyFraction;
     double myJER = BEANs::getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
@@ -2082,15 +2091,15 @@ int main ( int argc, char ** argv )
     
     float csv = BEANs::reshape_csv( jetEta, jetPt, csv_old, iJetFlav, sysType );
 	bool csvM = ( csv> btagThres );
-    if (isData){
-      cout << "VOODOO: Jet pt " << jetPt << " jet eta " << jetEta
-           << " original csv " << csv_old << " new csv " << csv
-           << " flavor " << iJetFlav << " option "  << btagCSVShape << endl;
-	}
+//     if (isData){
+//       cout << "VOODOO: Jet pt " << jetPt << " jet eta " << jetEta
+//            << " original csv " << csv_old << " new csv " << csv
+//            << " flavor " << iJetFlav << " option "  << btagCSVShape << endl;
+//     }
 	if( csvM ){
 	  tag_pfjet_index.push_back(i);
 	  jet_desc.push_back(csv);
-      tag_pfjet_csvVal.push_back(csv);
+	  tag_pfjet_csvVal.push_back(csv);
 	}
 	else        untag_pfjet_index.push_back(i);
 	
@@ -2437,12 +2446,12 @@ int main ( int argc, char ** argv )
       float third_jet_CHEF = 10000.;
       float fourth_jet_CHEF = 10000.;
 
-      float dPhi_jet1jet2 = 10000.;
-      float dPhi_jet1jet3 = 10000.;
-      float dPhi_jet1jet4 = 10000.;
-      float dPhi_jet2jet3 = 10000.;
-      float dPhi_jet2jet4 = 10000.;
-      float dPhi_jet3jet4 = 10000.;
+//       float dPhi_jet1jet2 = 10000.;
+//       float dPhi_jet1jet3 = 10000.;
+//       float dPhi_jet1jet4 = 10000.;
+//       float dPhi_jet2jet3 = 10000.;
+//       float dPhi_jet2jet4 = 10000.;
+//       float dPhi_jet3jet4 = 10000.;
 
       float first_allJet_pt = 0.0 ;
       float second_allJet_pt = 0.0 ;
@@ -2459,6 +2468,7 @@ int main ( int argc, char ** argv )
       float avg_btag_disc_non_btags = 0.;     
       float dev_from_avg_disc_btags = 0.;
 
+      float sum_jet_pt = 0.0 ;
       float sum_pt = 0.0 ;
       float all_sum_pt = 0.0 ;
       float Ht = 0.0 ;
@@ -2825,20 +2835,37 @@ int main ( int argc, char ** argv )
 	  TLorentzVector everything_vect = metV + lep_vect1 + lep_vect2 + sum_jet_vect;
       TLorentzVector leps_and_jets_vect = lep_vect1 + lep_vect2 + sum_jet_vect;
       TLorentzVector leps_and_allJets_vect = lep_vect1 + lep_vect2 + sum_allJet_vect;
-	  //float mass_of_everything = everything_vect.M();
+      float mass_of_everything = everything_vect.M();
       float mass_MHT = leps_and_jets_vect.M();
       float mass_of_leps_and_allJets = leps_and_allJets_vect.M();
-      //float pt_of_everything = everything_vect.Pt();
+      float pt_of_everything = everything_vect.Pt();
       float MHT = leps_and_jets_vect.Pt();
       float pt_of_leps_and_allJets = leps_and_allJets_vect.Pt();
-	  //*(floatBranches["mass_of_everything"]) = mass_of_everything;	  
+      *(floatBranches["mass_of_everything"]) = mass_of_everything;	  
       *(floatBranches["mass_MHT"]) = mass_MHT;
       *(floatBranches["mass_of_leps_and_allJets"]) = mass_of_leps_and_allJets;
-	  //*(floatBranches["pt_of_everything"]) = pt_of_everything;
+      *(floatBranches["pt_of_everything"]) = pt_of_everything;
       *(floatBranches["MHT"]) = MHT;
       *(floatBranches["pt_of_leps_and_allJets"]) = pt_of_leps_and_allJets;
 
+      /// pt of ttbar
+      if(numTag>1){
+	float pt_of_ttbar = 0. ;
 
+	int bjet1 = tag_pfjet_index[0] ;
+	int bjet2 = tag_pfjet_index[1] ;
+	
+	TLorentzVector bjet1_vect;
+	TLorentzVector bjet2_vect;
+	
+	bjet1_vect.SetPxPyPzE(jet_px[bjet1],jet_py[bjet1],jet_pz[bjet1],jet_energy[bjet1]);
+	bjet2_vect.SetPxPyPzE(jet_px[bjet2],jet_py[bjet2],jet_pz[bjet2],jet_energy[bjet2]);
+	
+	TLorentzVector ttbar_vect = metV + lep_vect1 + lep_vect2 + bjet1_vect + bjet2_vect;
+	pt_of_ttbar = ttbar_vect.Pt();
+	
+	*(floatBranches["pt_of_ttbar"]) = pt_of_ttbar;
+      }
 	  ///loop jet
 
       for (int i=0; i<numGoodAndBadJets; i++) {
@@ -2870,6 +2897,7 @@ int main ( int argc, char ** argv )
 
 	  for (int i=0; i < numGoodJets; i++) {
 	    int iJet = tight_pfjet_index[i] ;
+	    sum_jet_pt += jet_pt[iJet];
 	    sum_pt += jet_pt[iJet];
 	    Ht += jet_energy[iJet];
         double iJet_csvVal = good_jet_tag[i];
@@ -2939,12 +2967,12 @@ int main ( int argc, char ** argv )
       *(floatBranches["third_jet_CHEF"]) = third_jet_CHEF;
       *(floatBranches["fourth_jet_CHEF"]) = fourth_jet_CHEF;
 
-      *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
-      *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
-      *(floatBranches["dPhi_jet1jet4"]) = dPhi_jet1jet4;
-      *(floatBranches["dPhi_jet2jet3"]) = dPhi_jet2jet3;
-      *(floatBranches["dPhi_jet2jet4"]) = dPhi_jet2jet4;
-      *(floatBranches["dPhi_jet3jet4"]) = dPhi_jet3jet4;
+//       *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
+//       *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
+//       *(floatBranches["dPhi_jet1jet4"]) = dPhi_jet1jet4;
+//       *(floatBranches["dPhi_jet2jet3"]) = dPhi_jet2jet3;
+//       *(floatBranches["dPhi_jet2jet4"]) = dPhi_jet2jet4;
+//       *(floatBranches["dPhi_jet3jet4"]) = dPhi_jet3jet4;
       *(floatBranches["first_allJet_pt"]) = first_allJet_pt;
 	  *(floatBranches["second_allJet_pt"]) = second_allJet_pt;
 	  *(floatBranches["third_allJet_pt"]) = third_allJet_pt;
@@ -2989,9 +3017,26 @@ int main ( int argc, char ** argv )
 	  *(floatBranches["met"]) = met;
 	  *(floatBranches["unc_met"]) = unc_met;
 
+	  *(floatBranches["sum_jet_pt"]) = sum_jet_pt; 
 	  *(floatBranches["sum_pt"]) = sum_pt; 
 	  *(floatBranches["all_sum_pt"]) = all_sum_pt;
 	  *(floatBranches["Ht"]) = Ht;
+
+	  /// Ht re-weighting
+	  float HtWgt = 1.0 ;
+	  float HtWgtUp = 1.0 ;
+
+	  if (!isData){
+	    if (numpv<11)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
+	    else if (10<numpv && numpv<16)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
+	    else   HtWgt = h_rwt_highPV->GetBinContent(h_rwt_highPV->FindBin(sum_jet_pt));
+
+	    HtWgtUp = 1 + 2*(HtWgt - 1);
+	  }
+
+	  *(floatBranches["HtWgt"]) = HtWgt; 
+	  *(floatBranches["HtWgtUp"]) = HtWgtUp; 
+
 
       bool passBigDiamondZmask = (passMuonEle || (dilep_mass < (65.5 + 3*MHT/8)) || (dilep_mass > (108 - MHT/4)) || (dilep_mass < (79 - 3*MHT/4)) || (dilep_mass > (99 + MHT/2)) );
       *(intBranches["PassZmask"]) = passBigDiamondZmask ? 1 : 0;
