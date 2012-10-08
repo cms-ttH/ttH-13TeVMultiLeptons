@@ -991,6 +991,7 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 		origStart = 0  #Include the underflow in the original
 	firstBinOrig = origHist.FindBin(xMin)
 	origEnd = firstBinOrig + int(binGroup)
+	binALL_err_array = [0]*(len(sys_hist_array)/2)
 	binALL_err_squared = 0
 
 	# first loop
@@ -999,13 +1000,15 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 		if useSysErrors:
 			ii = 0
 			while (ii < len(sys_hist_array)):
-				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
-				#print 'Entries '+str(ii)+' , '+str(ii+1)+' = '+str(sys_hist_array[ii].GetBinContent(origBin))+' , '+str(sys_hist_array[ii+1].GetBinContent(origBin))
+				binALL_err_array[ii/2]+=0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin))
 				ii+=2
 		binSumW2 += (origHist.GetBinError(origBin)**2)
 	# end loop over origBin
 	hist.SetBinContent(1,binCont)
-	hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
+	ii = 0
+	while (ii < len(sys_hist_array)):
+		binALL_err_squared += math.pow(binALL_err_array[ii/2],2) 
+	hist.SetBinError(1, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2+binALL_err_squared))
 
 	# Do the bulk of the distribution
 	for newBin in range(2,nBins):
@@ -1014,6 +1017,7 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 		
 		binCont = 0
 		binSumW2 = 0
+		binALL_err_array = [0]*(len(sys_hist_array)/2)
 		binALL_err_squared = 0
 
 		for origBin in range(origStart,origEnd):
@@ -1022,15 +1026,14 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 			if useSysErrors:
 				ii = 0
 				while (ii < len(sys_hist_array)):
-					binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
-					#if (binErrors == "all"):
-						#print "Bin "+str(origBin)+", value "+str(binCont)+", sys hist "+str(ii+1)+", binALL_err = "+str(math.sqrt(binALL_err_squared))
+					binALL_err_array[ii/2]+=0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin))
 					ii+=2
 		# end loop over orig bin
-		#if (binErrors == "all"):
-			#print "Setting bin "+str(newBin)+", value "+str(binCont)+", BinError = "+str(math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
 		hist.SetBinContent(newBin,binCont)
-		hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
+		ii = 0
+		while (ii < len(sys_hist_array)):
+			binALL_err_squared += math.pow(binALL_err_array[ii/2],2) 
+		hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2+binALL_err_squared))
 	# end loop over newBin
 				
 	# Do any remaining bins past the end of the new range (including overflow in original)
@@ -1042,6 +1045,7 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 
 	binCont = 0
 	binSumW2 = 0
+	binALL_err_array = [0]*(len(sys_hist_array)/2)
 	binALL_err_squared = 0
 				
 	for origBin in range(origStart,origEnd):
@@ -1050,13 +1054,16 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 		if useSysErrors:
 			ii = 0
 			while (ii < len(sys_hist_array)):
-				binALL_err_squared += math.pow( 0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin)),2)
+				 binALL_err_array[ii/2]+=0.5*(sys_hist_array[ii].GetBinContent(origBin) - sys_hist_array[ii+1].GetBinContent(origBin))
 				ii+=2
 	# end loop over origBin
 
 	if nBins > 1:
+		ii = 0
+		while (ii < len(sys_hist_array)):
+			binALL_err_squared += math.pow(binALL_err_array[ii/2],2) 
 		hist.SetBinContent(nBins,binCont)
-		hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2*math.pow(scaleRatio,2)+binALL_err_squared))
+		hist.SetBinError(nBins, math.sqrt(math.pow(sys_frac_err*binCont,2)+binSumW2+binALL_err_squared))
 	
 	hist.SetEntries(totalEntries)
 
