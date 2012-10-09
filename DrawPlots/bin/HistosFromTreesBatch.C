@@ -622,7 +622,7 @@ int main ( int argc, char ** argv )
         if (inputYear == "2011") {
         if (OutputDirectory == "TwoMuon" ) {
           EffStr = "0.987 * 0.987 * ";
-          TrigStr = "0.9885 * 0.9885 * ";
+          TrigStr = "1.0035 * (1 + (abs(lep1Eta) > 1.31 && abs(lep1Eta) < 1.65)*0.061) * (1 + (abs(lep2Eta) > 1.31 && abs(lep2Eta) < 1.65)*0.061) * ";
         }
         else if (OutputDirectory ==  "TwoEle" ) {
           EffStr = "1.004 * 1.004 * ";
@@ -635,16 +635,13 @@ int main ( int argc, char ** argv )
         }
         else {
         if (OutputDirectory == "TwoMuon" ) {
-          TrigStr = "0.994 * (0.932 / 0.938) * ";
-	  //          EffStr = "0.993 * ";
+          TrigStr = "1.0035 * (1 + (abs(lep1Eta) > 1.31 && abs(lep1Eta) < 1.65)*0.061) * (1 + (abs(lep2Eta) > 1.31 && abs(lep2Eta) < 1.65)*0.061) * ";
         }
         else if (OutputDirectory ==  "TwoEle" ) {
-          TrigStr = "0.955 * (0.935 / 0.928) * ";
-	  //          EffStr = "0.979 * ";
+          TrigStr = "0.964 * ";
         }
         else if (OutputDirectory ==  "MuonEle"  ) {
-          TrigStr = "0.978 * (0.890 / 0.862) *  ";
-	  //          EffStr = "0.986 * ";
+          TrigStr = "0.983 * (1 + (abs(lep1Eta) > 1.31 && abs(lep1Eta) < 1.65)*0.072) * ";
         }
 	EffStr = "lepTotalSF * ";
         }
