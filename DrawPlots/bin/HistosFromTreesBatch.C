@@ -622,7 +622,7 @@ int main ( int argc, char ** argv )
         if (inputYear == "2011") {
         if (OutputDirectory == "TwoMuon" ) {
           EffStr = "0.987 * 0.987 * ";
-          TrigStr = "1.0035 * (1 + (abs(lep1Eta) > 1.31 && abs(lep1Eta) < 1.65)*0.061) * (1 + (abs(lep2Eta) > 1.31 && abs(lep2Eta) < 1.65)*0.061) * ";
+          TrigStr = "0.9885 * 0.9885 * ";
         }
         else if (OutputDirectory ==  "TwoEle" ) {
           EffStr = "1.004 * 1.004 * ";
