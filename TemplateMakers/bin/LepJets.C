@@ -115,9 +115,13 @@ int medBoundnPV = 15;
 
 
 // here is where you can change the btag threshold
+//Tight csv tag
+double btagThres = 0.898;
+
 
 // Medium combined tag threshold
-double btagThres = 0.679;
+//double btagThres = 0.679;
+
 
 // super loose combined tag threshold
 //double btagThres = 0.244;
@@ -269,6 +273,7 @@ int main ( int argc, char ** argv )
   
   //data detection
   bool isData = false;
+  std::string sysType = "MC";
   if(sample==-1) isData = true;
   cout << "is Data? "<< isData<< endl;
 
@@ -290,8 +295,9 @@ int main ( int argc, char ** argv )
   if( TString(sampleName).Contains("FullSim")  )        sample = 8500;
 
   cout << "Sample Name: " << sampleName<< "  Sample #:    " << sample << endl;
+  if(isData==true){sysType = "data";}
   BEANs::setMCsample(sample, true, true, "");
-      
+  
   
   //////////////////////////////////////////////////////////////////////////
   ///  Booking Histograms
@@ -358,6 +364,8 @@ int main ( int argc, char ** argv )
   TH1D* h_met_phi = new TH1D("h_met_phi",";MET #phi", 16, -3.2, 3.2 );
   TH1D* h_met_Upt = new TH1D("h_met_Upt",";MET raw p_{T}", NmetBins, 0, metmax );
   TH1D* h_met_Uphi = new TH1D("h_met_Uphi",";MET raw #phi", 16, -3.2, 3.2 );
+
+  TH1F* h_nLepTop      = new TH1F("h_nLepTop", "Leptonic Tops", 1, 0.5, 1.5);
 
   int maxJetPlot = 6; // this determines how many jet plots you make
   int lowBoundnPV = 10;
@@ -1607,6 +1615,8 @@ int main ( int argc, char ** argv )
       ////////
       std::vector<int> tight_pfjet_index;
       std::vector<int> tag_pfjet_index;
+      std::vector<int> tight_tag_pfjet_index;
+      std::vector<int> medium_tag_pfjet_index;
       std::vector<int> untag_pfjet_index;
 
       std::vector<double> good_jet_pt;
@@ -1654,6 +1664,7 @@ int main ( int argc, char ** argv )
       }
      
       int passingJets = 0;
+      
       for( int i=0; i<int(pfjets.size()); i++ ){
         if(verboseJetCut == true){cout << "jet " << i << ": ";}
        
@@ -1721,7 +1732,7 @@ int main ( int argc, char ** argv )
     
 
         bool tightJetPt = ( jetPt>30. );
-        bool looseJetPt = ( jetPt>30. );//Tessa change this back to 20!!!
+        bool looseJetPt = ( jetPt>40. );//Tessa change this back to 20!!!
         bool eta = ( jetAbsEta<2.5 );
         //bool id  = ( pfjets.at(i).jetIDLoose==1 );
         bool id = (     (pfjets.at(i).nconstituents > 1)   &&
@@ -1769,14 +1780,24 @@ int main ( int argc, char ** argv )
                     << "    deltaPx = " << deltaPx << " deltaPy = " << deltaPy 
                     << "    totalDeltaPx = " << totalDeltaPx
                     << " totalDeltaPy = " << totalDeltaPy << std::endl ;
-
+        
+        int flavor = pfjets.at(i).flavour;
+        double factor = 1;
+        if( sysType.compare("data")!=0 ){
+          double genJetPT = pfjets.at(i).genJetPT;
+          if( sysType.compare("JERUp")==0 )        factor = getJERfactor(1,jetAbsEta,genJetPT,jetPt);
+          else if( sysType.compare("JERDown")==0 ) factor = getJERfactor(-1,jetAbsEta,genJetPT,jetPt);
+          else                                     factor = getJERfactor(0,jetAbsEta,genJetPT,jetPt);
+        }
         // Use Combined tags
         // Loose Cut is 0.244
         // Medium Cut is 0.679
         // Tight Cut is 0.898
-        float csv = pfjets.at(i).btagCombinedSecVertex;
+        double csv_old = pfjets.at(i).btagCombinedSecVertex;
+        // double csv = csv_old;
+        double csv = BEANs::reshape_csv(jetEta, jetPt, csv_old, flavor, sysType);
         bool csvM (csv>btagThres);
-        
+        //cout << "csv: " << csv << endl;
         if( csvM ){
           tag_pfjet_index.push_back(i);
           jet_desc.push_back(csv);
@@ -1785,8 +1806,11 @@ int main ( int argc, char ** argv )
           unTagJetV[numUnTagJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
           numUnTagJets ++;
         }
+
+        if(csv>0.679&& csv<=0.898){medium_tag_pfjet_index.push_back(i);}
+        if(csv>0.898){tight_tag_pfjet_index.push_back(i);}
 	
-        int flavor = pfjets.at(i).flavour;
+        
         good_jet_pt.push_back(jetPt);
         good_jet_eta.push_back(jetEta);
         good_jet_tag.push_back(csv);
@@ -1801,13 +1825,27 @@ int main ( int argc, char ** argv )
       nJetsPlot = numGoodJets;
       if(nJetsPlot > maxJetPlot) { nJetsPlot = maxJetPlot;}
 
-      // Btag cut
-      if (nTags >= 1){
-        if(tag_pfjet_index.size()<nTags){continue;}
-       }
-      if(nTags == 0 ){
-        if(tag_pfjet_index.size()> 0){continue;}
-      }
+      //  // Btag cut - Regular
+      //  if (nTags >= 1){
+      //      if(tag_pfjet_index.size()<nTags){continue;}
+      //   }
+      //  if(nTags == 0 ){
+      //     if(tag_pfjet_index.size()> 0){continue;}
+      //   }
+
+      
+      // 1 Tight and 1 Medium Btag
+      if(tight_tag_pfjet_index.size()<1){continue;}
+      int numTags = tight_tag_pfjet_index.size() + medium_tag_pfjet_index.size();
+      if(numTags<2){continue;}
+
+
+ 
+     
+
+
+
+      
 
      //  //Information about each event that passes cuts
 //       cout << "This event has passed! "<< endl;
@@ -1994,7 +2032,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;                                                                           
 
         //Multiply in the btag SF weight
-        wgt *= wgt_btag;
+        // wgt *= wgt_btag; //dont need this if you use the csv reshaping
 
        //  //  if(numGoodJets ==4){
 //           cout << "run: " <<ev.id().run() << " lumi: "<<ev.id().luminosityBlock()
@@ -2064,6 +2102,9 @@ int main ( int argc, char ** argv )
       float unc_met = pfmet->Upt;
 
 
+
+
+      
       //sort btag descrminator
       jet_desc.sort();  
       std::vector<float> jet_sort_vect;			
@@ -2337,6 +2378,39 @@ int main ( int argc, char ** argv )
         FillNPVHist(histograms, "h_muJetPtSum_4j_", numpv, sum4JetPt, wgt);
       }
 
+     
+      //try requiring a hadronic or leptonic top
+      //leptontonic top
+      // if(numGoodJets==4){
+//         bool leptonicTop = false;
+//         int ttgs, mtgs = 0;
+//         // cout << "tight tags: "  << tight_tag_pfjet_index.size() <<  "  medium tags: "
+//         //<<medium_tag_pfjet_index.size() << endl;
+//         if(tight_tag_pfjet_index.size()>0){ttgs = tight_tag_pfjet_index.size();}
+//         for(int i=0; i<ttgs; i++){
+//           TLorentzVector lepTop = metV + lep_vect1 + jetV[tight_tag_pfjet_index.at(i)];
+//           // cout << "mass: " << lepTop.M();
+//           if(lepTop.M()<193 && lepTop.M()>153){leptonicTop =true;}
+//           // cout << " top? " << leptonicTop << endl;
+//         }
+//         if(medium_tag_pfjet_index.size()>0){mtgs = medium_tag_pfjet_index.size();}
+//         if(mtgs>0){
+//           for(int i=0; i<mtgs; i++){
+//             TLorentzVector lepTop = metV + lep_vect1 + jetV[medium_tag_pfjet_index.at(i)];
+//             // cout << "mass: " << lepTop.M();
+//             if(lepTop.M()<193 && lepTop.M()>153){leptonicTop =true;}
+//             // cout << " top? " << leptonicTop << endl;
+//          }
+//         }
+//          if(leptonicTop == true){
+//            h_nLepTop->Fill(1);
+//            // cout << "leptonicTop found!" << endl;
+//          }
+        
+//       }
+      
+     
+      
       //Mjj
       //double MinMassDiffjj = 10000;
       //double tempMjj = 0;
@@ -2429,6 +2503,7 @@ int main ( int argc, char ** argv )
           FillNPVHist(histograms,"h_PtOnMult_4j",numpv,ptPerNMult,wgt);
         }//end ==4good jets
 
+       
 
         TString histName = "h_jet";
         histName += (i+1);
@@ -2478,10 +2553,10 @@ int main ( int argc, char ** argv )
 
          
          //Btag Info
-	    if (pfjets.at(iJet).btagCombinedSecVertex > 0.679){
+	    if (pfjets.at(iJet).btagCombinedSecVertex > btagThres){
 	      avg_btag_disc_btags += pfjets.at(iJet).btagCombinedSecVertex;
 	    }
-	    if (pfjets.at(iJet).btagCombinedSecVertex <= 0.679){
+	    if (pfjets.at(iJet).btagCombinedSecVertex <= btagThres){
 	      avg_btag_disc_non_btags += pfjets.at(iJet).btagCombinedSecVertex;   		  
 	    }
 
