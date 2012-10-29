@@ -454,6 +454,8 @@ int main ( int argc, char ** argv )
   // vector<TH1F*> M3Hists =  bookHistograms("h_muM3", "M3", 2000, 0, 2000);
   //  TH1F* h_muM3 = M3Hists[0];
   TH1F* h_muM3       = new TH1F("h_muM3", "M3", 2000, 0, 2000);
+  TH1F* h_muM3_geq3j       = new TH1F("h_muM3_geq3j", "M3 #geq 3j", 2000, 0, 2000);
+  TH1F* h_muM3_geq4j       = new TH1F("h_muM3_geq4j", "M3 #geq 4j", 2000, 0, 2000);
   for(int iJet = minJets; iJet <=maxJetPlot ; ++iJet){
      TString histName = "h_muM3_"; histName += iJet; histName += "j";
      TString histTitle = "M3";
@@ -1037,17 +1039,18 @@ int main ( int argc, char ** argv )
       bool isMuonEvent = false;
       bool isEleEvent = false;
 
+      
       if (verbose) std::cout << "Getting collections... " <<std::endl;
       //std::cout << "========  Event! ========" << std::endl;
       // Get Handle for each collection used
       fwlite::Handle<BNeventCollection> h_event;
       h_event.getByLabel(ev,"BNproducer");
       BNeventCollection const &events = *h_event;
-
+      
       fwlite::Handle<BNmuonCollection> h_muons;
       h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsPFlow");
       BNmuonCollection const &muons = *h_muons;
-
+ 
       fwlite::Handle<BNmetCollection> h_pfmet;
       h_pfmet.getByLabel(ev,"BNproducer","patMETsPFlow");
       BNmetCollection const &pfmets = *h_pfmet;
@@ -1633,6 +1636,7 @@ int main ( int argc, char ** argv )
 
       int numGoodJets=0;
       int numUnTagJets=0;
+      int numTightJets=0;
       int nJetsPlot=0;
       TLorentzVector jetVbefJER[100];
       double jetUnc [100];
@@ -1731,8 +1735,8 @@ int main ( int argc, char ** argv )
 
     
 
-        bool tightJetPt = ( jetPt>30. );
-        bool looseJetPt = ( jetPt>40. );//Tessa change this back to 20!!!
+        bool tightJetPt = ( jetPt>40. );
+        bool looseJetPt = ( jetPt>30. );//Tessa change this back to 20?
         bool eta = ( jetAbsEta<2.5 );
         //bool id  = ( pfjets.at(i).jetIDLoose==1 );
         bool id = (     (pfjets.at(i).nconstituents > 1)   &&
@@ -1754,12 +1758,9 @@ int main ( int argc, char ** argv )
             }
 
         if(verboseJetCut == true){ cout << "pt: " << origJetPt << " eta: " << jetAbsEta << " id: " << id << endl; }
-        if( !(looseJetPt && eta && id) ) {
-          if(verboseJetCut == true){cout << "jet is cut" << endl;}
-          continue;
-        }else{
-          if(verboseJetCut == true){cout << "jet passes" << endl;}
-        }
+        if( !(looseJetPt && eta && id) ) {continue;}
+        if(tightJetPt && eta && id){numTightJets++;}
+        
 
         // cout << " goodJet" << endl;
         // if( looseJetPt && eta && id){
@@ -1796,7 +1797,7 @@ int main ( int argc, char ** argv )
         double csv_old = pfjets.at(i).btagCombinedSecVertex;
         // double csv = csv_old;
         double csv = BEANs::reshape_csv(jetEta, jetPt, csv_old, flavor, sysType);
-        bool csvM (csv>btagThres);
+        bool csvM (csv>0.679);
         //cout << "csv: " << csv << endl;
         if( csvM ){
           tag_pfjet_index.push_back(i);
@@ -1820,18 +1821,20 @@ int main ( int argc, char ** argv )
       if(verboseJetCut == true){cout << "nJets in event: " << numGoodJets << endl << endl;}
       //cut on number of jets
       if(numGoodJets < minJets){continue;}
+      //must be at least 3 jets with pt>40
+      if(numTightJets <3){continue;}
 
       //Set up Jet bin plots
       nJetsPlot = numGoodJets;
       if(nJetsPlot > maxJetPlot) { nJetsPlot = maxJetPlot;}
 
-      //  // Btag cut - Regular
-      //  if (nTags >= 1){
-      //      if(tag_pfjet_index.size()<nTags){continue;}
-      //   }
-      //  if(nTags == 0 ){
-      //     if(tag_pfjet_index.size()> 0){continue;}
-      //   }
+//        // Btag cut - Regular
+//        if (nTags >= 1){
+//            if(tag_pfjet_index.size()<nTags){continue;}
+//         }
+//        if(nTags == 0 ){
+//           if(tag_pfjet_index.size()> 0){continue;}
+//         }
 
       
       // 1 Tight and 1 Medium Btag
@@ -2366,6 +2369,8 @@ int main ( int argc, char ** argv )
       if(numGoodJets>=3){
         TLorentzVector top3Jets = jetV[0] +  jetV[1] +  jetV[2];
         h_muM3->Fill(top3Jets.M(),wgt);
+        h_muM3_geq3j->Fill(top3Jets.M(),wgt);
+        if(numGoodJets==4){h_muM3_geq4j->Fill(top3Jets.M(),wgt);}
         histName = "h_muM3_";
         histName += nJetsPlot;
         histName += "j";
