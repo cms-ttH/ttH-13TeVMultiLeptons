@@ -450,6 +450,7 @@ int main ( int argc, char ** argv )
   }
   
   //Jet Variable Plots
+  TH1F* h_mindr_lep1_jet = new TH1F("h_mindr_lep1_jet", "min dR(lep,jet)", 0 , 10, 1000);
   TH1F* h_nJets      = new TH1F("h_nJets", "number of Jets", 6, 2.5, 8.5);
   // vector<TH1F*> M3Hists =  bookHistograms("h_muM3", "M3", 2000, 0, 2000);
   //  TH1F* h_muM3 = M3Hists[0];
@@ -644,8 +645,16 @@ int main ( int argc, char ** argv )
       TH1F* h_weight      = new TH1F("h_weight", "weights", 10000,0,100);
       TH1F* h_PUweight    = new TH1F("h_PUweight", "Pile Up weights", 10000,0,100);
 
+      //Isolation Variable Plots
+      histograms["h_pfrelIso"] = fs.make<TH1F>("h_pfrelIso", "PF RelIso", 0, .25, 250);
+      histograms["h_chHIso"]   = fs.make<TH1F>("h_chHIso", "PF Charged Hadron Isolation", 0, 1, 1000);
+      histograms["h_nIHso"]    = fs.make<TH1F>("h_nHIso", "PF Neutral Hadron Isolation", 0, 1, 1000);
+      histograms["h_phIso"]    = fs.make<TH1F>("h_phIso", "PF Photon Isolation", 0, 1, 1000);
+      //histograms["h_mindRLepJet_vs_relIso"] = fs.make<TH2F>("h_mindRLepJet_vs_relIso", "",0, .25, 250,  0 , 10, 1000);
+      TH2F* h_mindRLepJet_vs_relIso = new TH2F("h_mindRLepJet_vs_relIso", "relIso vs min dR(l,j)",0, .25, 250,  0 , 10, 1000);
 
-    //Energy Fraction Plots  //Tessa
+      
+    //Energy Fraction Plots  
     histograms["h_chHadEnFr_4j"] = fs.make<TH1F>("h_chHadEnFr", "Charged Hadron Energy Fraction",100, 0, 1);
     histograms["h_nHadEnFr_4j"] = fs.make<TH1F>("h_nHadEnFr",  "Neutral Hadron Energy Fraction",100, 0, 1);
     histograms["h_chEmEnFr_4j"] = fs.make<TH1F>("h_chEmEnFr",  "Charged EM Energy Fraction",100, 0, 1);
@@ -2051,7 +2060,7 @@ int main ( int argc, char ** argv )
           // }
 
 
-        *(floatBranches["leptonPt"]) = leptonPt ;
+      *(floatBranches["leptonPt"]) = leptonPt ;
       *(floatBranches["leptonEta"]) = leptonEta ;
       if(isMuonEvent == true){
         h_muPt->Fill(leptonPt,wgt);
@@ -2175,6 +2184,8 @@ int main ( int argc, char ** argv )
 	//float lep2_eta = 0 ;
 	float lep1_phi = 0 ;
 	//float lep2_phi = 0 ;
+    double lepRelIso = 100;
+    double chargedHadronIso, neutralHadronIso, photonIso;
     if(oneTightMuon){
       iMuon1=tight_mu_index[0];
       lep1_pt = muons.at(iMuon1).pt;
@@ -2182,7 +2193,12 @@ int main ( int argc, char ** argv )
       lep1_eta = muons.at(iMuon1).eta;
       lep1_phi = muons.at(iMuon1).phi;
       lep_vect1.SetPxPyPzE(muons.at(iMuon1).px, muons.at(iMuon1).py, muons.at(iMuon1).pz, muons.at(iMuon1).energy);
-      //lep_vect1.SetEta(lep1_eta);
+      //Isolation Variables
+      chargedHadronIso = muons.at(iMuon1).pfIsoR04SumChargedHadronPt;
+      neutralHadronIso = muons.at(iMuon1).pfIsoR04SumNeutralHadronEt;
+      photonIso = muons.at(iMuon1).pfIsoR04SumPhotonEt;
+      double deltaBetaCorr = muons.at(iMuon1).pfIsoR04SumPUPt;
+      lepRelIso = ( chargedHadronIso + max(0.0, neutralHadronIso + photonIso - 0.5*deltaBetaCorr ) ) * 1./lep1_pt;
     }
     if(oneTightEle){
       iEle1=tight_ele_index[0];
@@ -2191,9 +2207,23 @@ int main ( int argc, char ** argv )
       lep1_eta = electrons.at(iEle1).eta;
       lep1_phi = electrons.at(iEle1).phi;
       lep_vect1.SetPxPyPzE(electrons.at(iEle1).px, electrons.at(iEle1).py, electrons.at(iEle1).pz, electrons.at(iEle1).energy);
-      // lep_vect1.SetEta(lep1_eta);
+      //Isolation Variables
+      chargedHadronIso = electrons.at(iEle1).chargedHadronIso;
+      neutralHadronIso = electrons.at(iEle1).neutralHadronIso;
+      photonIso = electrons.at(iEle1).photonIso;
+      double rhoCorr = electrons.at(iEle1).AEffDr03*electrons.at(iEle1).rhoPrime;
+      lepRelIso = ( chargedHadronIso + max(0.0, neutralHadronIso + photonIso - rhoCorr )) * 1./lep1_pt;
     }
 
+       
+    //Fill Isolation Histograms
+    histograms["h_pfrelIso"]->Fill(lepRelIso,wgt);
+    histograms["h_chHIso"]->Fill(chargedHadronIso,wgt);  
+    histograms["h_nIHso"]->Fill(neutralHadronIso,wgt);   
+    histograms["h_phIso"]->Fill(photonIso,wgt);
+   
+
+    
 // 	  if( twoTightMuon || TightMuonLooseMuon ){
 // 	    if( twoTightMuon ) {
 // 	      iMuon1 = tight_mu_index[0] ;
@@ -2455,8 +2485,9 @@ int main ( int argc, char ** argv )
       }
 
       
-      //loop jet
       h_nJets->Fill(nJetsPlot,wgt);
+
+      //loop jet
       for (int i=0; i < numGoodJets; i++){
               
 	    int iJet = tight_pfjet_index[i];
@@ -2565,18 +2596,24 @@ int main ( int argc, char ** argv )
 	      avg_btag_disc_non_btags += pfjets.at(iJet).btagCombinedSecVertex;   		  
 	    }
 
-	  }
+        //if dR(lep,jet) is smallest so far set the var
+        if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
+          min_jet_lep1_dR = lep_vect1.DeltaR(jet_vect);
+      }
+        
+	  }//end loop over good jets 
  
 	  *(floatBranches["first_jet_pt"]) = first_jet_pt;
 	  *(floatBranches["second_jet_pt"]) = second_jet_pt;
 	  *(floatBranches["third_jet_pt"]) = third_jet_pt;
 	  *(floatBranches["fourth_jet_pt"]) = fourth_jet_pt;
-	  
+
+
+      //fill min dR(lep,jet)
 	  float mindr_lep1_jet = min_jet_lep1_dR;
-	  //float mindr_lep2_jet = min_jet_lep2_dR;
-      //  *(floatBranches["mindr_lep1_jet"]) = mindr_lep1_jet;
-	  //*(floatBranches["mindr_lep2_jet"]) = mindr_lep2_jet;
-	 
+      h_mindr_lep1_jet->Fill(mindr_lep1_jet,wgt); //tessa
+      h_mindRLepJet_vs_relIso->Fill(lepRelIso,mindr_lep1_jet,wgt);
+      	 
 	  if ( numTag > 0 ) avg_btag_disc_btags /= numTag;
 	  
 	  if ((numGoodJets - numTag) != 0){
