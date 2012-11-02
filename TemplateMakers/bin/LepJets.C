@@ -646,12 +646,12 @@ int main ( int argc, char ** argv )
       TH1F* h_PUweight    = new TH1F("h_PUweight", "Pile Up weights", 10000,0,100);
 
       //Isolation Variable Plots
-      histograms["h_pfrelIso"] = fs.make<TH1F>("h_pfrelIso", "PF RelIso", 0, .25, 250);
-      histograms["h_chHIso"]   = fs.make<TH1F>("h_chHIso", "PF Charged Hadron Isolation", 0, 1, 1000);
-      histograms["h_nIHso"]    = fs.make<TH1F>("h_nHIso", "PF Neutral Hadron Isolation", 0, 1, 1000);
-      histograms["h_phIso"]    = fs.make<TH1F>("h_phIso", "PF Photon Isolation", 0, 1, 1000);
+      histograms["h_pfrelIso"] = fs.make<TH1F>("h_pfrelIso", "PF RelIso", 250, 0, .25);
+      histograms["h_chHIso"]   = fs.make<TH1F>("h_chHIso", "PF Charged Hadron Isolation", 1000, 0, 1);
+      histograms["h_nIHso"]    = fs.make<TH1F>("h_nHIso", "PF Neutral Hadron Isolation", 1000, 0, 1);
+      histograms["h_phIso"]    = fs.make<TH1F>("h_phIso", "PF Photon Isolation", 1000, 0, 1);
       //histograms["h_mindRLepJet_vs_relIso"] = fs.make<TH2F>("h_mindRLepJet_vs_relIso", "",0, .25, 250,  0 , 10, 1000);
-      TH2F* h_mindRLepJet_vs_relIso = new TH2F("h_mindRLepJet_vs_relIso", "relIso vs min dR(l,j)",0, .25, 250,  0 , 10, 1000);
+      TH2F* h_mindRLepJet_vs_relIso = new TH2F("h_mindRLepJet_vs_relIso", "relIso vs min dR(l,j)",250, 0, .25,  1000 , 0, 1);
 
       
     //Energy Fraction Plots  
@@ -1677,7 +1677,8 @@ int main ( int argc, char ** argv )
       }
      
       int passingJets = 0;
-      
+
+      cout << endl << "event: " << endl;
       for( int i=0; i<int(pfjets.size()); i++ ){
         if(verboseJetCut == true){cout << "jet " << i << ": ";}
        
@@ -1743,7 +1744,7 @@ int main ( int argc, char ** argv )
         jetPt *= myJER;
 
     
-
+       
         bool tightJetPt = ( jetPt>40. );
         bool looseJetPt = ( jetPt>30. );//Tessa change this back to 20?
         bool eta = ( jetAbsEta<2.5 );
@@ -1765,12 +1766,11 @@ int main ( int argc, char ** argv )
                  (pfjets.at(i).chargedMultiplicity > 0)
                  );
             }
-
+       
         if(verboseJetCut == true){ cout << "pt: " << origJetPt << " eta: " << jetAbsEta << " id: " << id << endl; }
-        if( !(looseJetPt && eta && id) ) {continue;}
+        if( !(looseJetPt && eta && id) ) {  continue;}
         if(tightJetPt && eta && id){numTightJets++;}
-        
-
+       
         // cout << " goodJet" << endl;
         // if( looseJetPt && eta && id){
         jetV[numGoodJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
@@ -1837,7 +1837,7 @@ int main ( int argc, char ** argv )
       nJetsPlot = numGoodJets;
       if(nJetsPlot > maxJetPlot) { nJetsPlot = maxJetPlot;}
 
-//        // Btag cut - Regular
+ //       // Btag cut - Regular
 //        if (nTags >= 1){
 //            if(tag_pfjet_index.size()<nTags){continue;}
 //         }
