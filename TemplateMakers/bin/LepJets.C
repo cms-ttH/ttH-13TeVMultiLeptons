@@ -307,6 +307,7 @@ int main ( int argc, char ** argv )
   fwlite::TFileService fs = fwlite::TFileService( outputs.getParameter<std::string>("outputName") );
 
   std::map<TString,TH1*> histograms;
+  std::map<TString,TH2*> histograms2D;
   
   // Variables used for histogram ranges and binning
   double metmax   = 500.;
@@ -376,6 +377,8 @@ int main ( int argc, char ** argv )
   //Muon Variable Plots
   TH1F* h_muPt       = new TH1F("h_muPt", "Muon p_{T}", 500, 0, 500);
   TH1F* h_muEta      = new TH1F("h_muEta", "Muon #eta}", 628,-3.14, 3.14);
+  TH2F* h_mu_Pt_v_Eta = new TH2F("h_mu_Pt_v_Eta", "muon Pt vs #eta", 500, 0, 500,  420, -2.1, 2.1);
+
    
   for( int r =0; r<3; r++){
     TString histName = "h_muEta_4j_";
@@ -413,6 +416,8 @@ int main ( int argc, char ** argv )
     histTitle += ")";
     histograms[histName] = fs.make<TH1F>(histName, histTitle,628,-3.14, 3.14);
  }
+
+  
   // W Variable Plots
   TH1F* h_muMET      = new TH1F("h_muMET", "MET", 500, 0, 500);
   TH1F* h_muMt       = new TH1F("h_muMt", "Transverse mass #mu + #nu", 500, 0, 500);
@@ -450,7 +455,7 @@ int main ( int argc, char ** argv )
   }
   
   //Jet Variable Plots
-  TH1F* h_mindr_lep1_jet = new TH1F("h_mindr_lep1_jet", "min dR(lep,jet)", 0 , 10, 1000);
+  TH1F* h_mindr_lep1_jet = new TH1F("h_mindr_lep1_jet", "min dR(lep,jet)", 1000 , 0, 10);
   TH1F* h_nJets      = new TH1F("h_nJets", "number of Jets", 6, 2.5, 8.5);
   // vector<TH1F*> M3Hists =  bookHistograms("h_muM3", "M3", 2000, 0, 2000);
   //  TH1F* h_muM3 = M3Hists[0];
@@ -516,6 +521,7 @@ int main ( int argc, char ** argv )
 
     histograms[histName + "Pt"] = fs.make<TH1F>( histName+"Pt",   histTitle + " p_{T}", 300, 0, 300);
     histograms[histName + "Eta"] = fs.make<TH1F>( histName+"Eta",  histTitle + " #eta", 50, -3.0,   3.0);
+    histograms2D[histName + "_Pt_v_Eta"] = fs.make<TH2F>(histName+"_Pt_v_Eta", histTitle + "p_{T} vs #eta",300, 0, 300, 500, -2.5, 2.5);
 
     histograms[histName + "Pt_LowNPV"] = fs.make<TH1F>( histName+"Pt_LowNPV",   histTitle + " p_{T} Pt (nPV < 5)" , 300, 0, 300);
     histograms[histName + "Pt_MedNPV"] = fs.make<TH1F>( histName+"Pt_MedNPV",   histTitle + " p_{T} (5<= nPV < 10)", 300, 0, 300);
@@ -651,7 +657,7 @@ int main ( int argc, char ** argv )
       histograms["h_nIHso"]    = fs.make<TH1F>("h_nHIso", "PF Neutral Hadron Isolation", 1000, 0, 1);
       histograms["h_phIso"]    = fs.make<TH1F>("h_phIso", "PF Photon Isolation", 1000, 0, 1);
       //histograms["h_mindRLepJet_vs_relIso"] = fs.make<TH2F>("h_mindRLepJet_vs_relIso", "",0, .25, 250,  0 , 10, 1000);
-      TH2F* h_mindRLepJet_vs_relIso = new TH2F("h_mindRLepJet_vs_relIso", "relIso vs min dR(l,j)",250, 0, .25,  1000 , 0, 1);
+      TH2F* h_mindRLepJet_vs_relIso = new TH2F("h_mindRLepJet_vs_relIso", "relIso vs min dR(l,j)",250, 0, .25,  1000 , 0, 10);
 
       
     //Energy Fraction Plots  
@@ -1678,7 +1684,7 @@ int main ( int argc, char ** argv )
      
       int passingJets = 0;
 
-      cout << endl << "event: " << endl;
+      //cout << endl << "event: " << endl;
       for( int i=0; i<int(pfjets.size()); i++ ){
         if(verboseJetCut == true){cout << "jet " << i << ": ";}
        
@@ -1743,9 +1749,9 @@ int main ( int argc, char ** argv )
         jet_energy[i] *= myJER;	
         jetPt *= myJER;
 
-    
+
        
-        bool tightJetPt = ( jetPt>40. );
+        bool tightJetPt = ( jetPt>30. );
         bool looseJetPt = ( jetPt>30. );//Tessa change this back to 20?
         bool eta = ( jetAbsEta<2.5 );
         //bool id  = ( pfjets.at(i).jetIDLoose==1 );
@@ -1768,7 +1774,9 @@ int main ( int argc, char ** argv )
             }
        
         if(verboseJetCut == true){ cout << "pt: " << origJetPt << " eta: " << jetAbsEta << " id: " << id << endl; }
-        if( !(looseJetPt && eta && id) ) {  continue;}
+        if(useJetSelection==true){
+          if( !(looseJetPt && eta && id) ) {  continue;}
+        }
         if(tightJetPt && eta && id){numTightJets++;}
        
         // cout << " goodJet" << endl;
@@ -1828,28 +1836,35 @@ int main ( int argc, char ** argv )
         //   }//end good jet
       }// end for each pf jet
       if(verboseJetCut == true){cout << "nJets in event: " << numGoodJets << endl << endl;}
-      //cut on number of jets
-      if(numGoodJets < minJets){continue;}
-      //must be at least 3 jets with pt>40
-      if(numTightJets <3){continue;}
 
-      //Set up Jet bin plots
-      nJetsPlot = numGoodJets;
-      if(nJetsPlot > maxJetPlot) { nJetsPlot = maxJetPlot;}
+     
+      if(useJetSelection==true){
+        //cut on number of jets
+        if(numGoodJets < minJets){continue;}
+        //must be at least 3 jets with pt>40
+        if(numTightJets <3){continue;}
 
- //       // Btag cut - Regular
-//        if (nTags >= 1){
-//            if(tag_pfjet_index.size()<nTags){continue;}
-//         }
-//        if(nTags == 0 ){
-//           if(tag_pfjet_index.size()> 0){continue;}
-//         }
+        //Set up Jet bin plots
+        nJetsPlot = numGoodJets;
+        if(nJetsPlot > maxJetPlot) { nJetsPlot = maxJetPlot;}
+
+        // Btag cut - Regular
+        if (nTags >= 1){
+          if(tag_pfjet_index.size()<nTags){continue;}
+        }
+        if(nTags == 0 ){
+          if(tag_pfjet_index.size()> 0){continue;}
+        }
+      }else{
+        nJetsPlot=pfjets.size();
+        nJetsPlot = minJets;
+      }
 
       
-      // 1 Tight and 1 Medium Btag
-      if(tight_tag_pfjet_index.size()<1){continue;}
-      int numTags = tight_tag_pfjet_index.size() + medium_tag_pfjet_index.size();
-      if(numTags<2){continue;}
+    //   // 1 Tight and 1 Medium Btag
+//       if(tight_tag_pfjet_index.size()<1){continue;}
+//       int numTags = tight_tag_pfjet_index.size() + medium_tag_pfjet_index.size();
+//       if(numTags<2){continue;}
 
 
  
@@ -1998,7 +2013,7 @@ int main ( int argc, char ** argv )
 
           if (verbose) std::cout << "Now using btag weight" <<std::endl;
 
-          
+       
           BTagWeight bweight(1,1);                                                                                                          
           if( numTag<4 ){                                                         
             wgt_prob = bweight.weight(myjetinfo,numTag,numTag);                   
@@ -2064,13 +2079,15 @@ int main ( int argc, char ** argv )
       *(floatBranches["leptonEta"]) = leptonEta ;
       if(isMuonEvent == true){
         h_muPt->Fill(leptonPt,wgt);
+
         histName = "h_muPt_";
-        histName += nJetsPlot;
+        histName += nJetsPlot; 
         histName += "j";
            //           cout << "muPt Njet Hist Name: " << histName << " njets: " << numGoodJets
            //   << " muPt: " << leptonPt << endl;
-        histograms[histName]->Fill(leptonPt,wgt);
+        histograms[histName]->Fill(leptonPt,wgt); 
         h_muEta->Fill(leptonEta,wgt);
+        h_mu_Pt_v_Eta->Fill(leptonPt,leptonEta,wgt);
         histName = "h_muEta_";
         histName += nJetsPlot;
         histName += "j";
@@ -2353,6 +2370,7 @@ int main ( int argc, char ** argv )
       TLorentzVector WTrans = metV + leptonTrans;
     
       *(floatBranches["mT"]) = WTrans.M();
+    
       if(isMuonEvent == true){
         h_muMt->Fill(WTrans.M(),wgt);
         histName = "h_muMt_";
@@ -2549,6 +2567,7 @@ int main ( int argc, char ** argv )
          if((i+1)<=maxJetPlot){
          histograms[histName + "Pt"]->Fill(jet_pt[iJet],wgt);
          histograms[histName + "Eta"]->Fill(jet_eta[iJet],wgt);
+         histograms2D[histName + "_Pt_v_Eta"]->Fill(jet_pt[iJet],jet_eta[iJet],wgt);
          // cout << "This event has " << tight_pfjet_index.size() << " jets and "  << numpv << " PVs and is categorized as in the ";
          int jetPlot = tight_pfjet_index.size();
          if(numpv<lowBoundnPV){
