@@ -16,10 +16,9 @@ print "Inside ttbar Lepton+Jets config"
 
 process.inputs = cms.PSet (
     fileNames = cms.vstring(
-	'file:/store/user/tpearson/SingleMu/NovaBeanSkim_TopSel_525_2012B_IsoMu24_v1/c64307331babd3090ac687e7b46c1890/NOVa_Skim_ttbar_7_1_kP3.root'
-	#'file:~/Data/BEANS/pat_52x_test_300_1_U6n.root' #data BEAN
-	#'file:~/Data/BEANS/pat_52x_test_94_1_roM.root' #wjets BEAN
-	  ###'file:SynchSkim_3jetCut.root'
+	#'file:/afs/crc.nd.edu/user/t/tpearso4/BEANS/CMSSW_5_3_2_patch4/src/NtupleMaker/SkimLepJet/skimsCondor/ttjets/skimLepJets_ttjets_job005.root'
+	#'file:/store/user/tpearson/SingleMu/NovaBeanSkim_TopSel_53Xon52X_2012_IsoMu24_v1//1831329f5ccf475b6bc89335d5007687/NOVa_Skim_ttbar_94_1_vqv.root'
+	'file:diffXsec_53XSynch_4j1mtag.root'  #53X so LepJets must be set up for 53X
     ),
 	maxEvents = cms.int32(100)
 )
@@ -35,10 +34,12 @@ process.dilAnalysis = cms.PSet(
 	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	#puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
 	puFile = cms.FileInPath("2012PileUpDists_LepJets.root"),
-	sampleName = cms.string("SingleMu"),
-	eleSel = cms.bool(True), #If no skim was applied 
-	muonSel  = cms.bool(True), #If no skim was applied TightMu and LooseLepVetos
-	jetSel = cms.bool(True),  #If skim was not applied to >=3jets
-	minJets= cms.int32(0), #minimum number of jets
+	#sampleName = cms.string("Data2012"),
+	#sampleName = cms.string("Wjets"),
+	sampleName = cms.string("TTbar"),
+	eleSel = cms.bool(False), #do you want to use electron selection (false if muons)
+	muonSel  = cms.bool(True), #do you want to use muon selection
+	jetSel = cms.bool(True),  #do you want to use jet and btag cuts
+	minJets= cms.int32(3), #minimum number of jets
 	btags = cms.double(-1), #-1: pretag, 0: 0tag, n: >=ntags
 )
