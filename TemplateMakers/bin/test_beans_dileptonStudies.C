@@ -177,8 +177,10 @@ int main ( int argc, char ** argv )
 
 //    TFile * btagFile = new TFile (btagFileName.fullPath().c_str());
 
-   //// Ht re-weighting
-   TFile *f_Ht_rwt = new TFile("sum_jet_pt_rwt.root");
+   //// Ht re-weighting 
+   TString rwtFileName = "sum_jet_pt_rwt.root";
+   if ( selectionYear_ == "2011") rwtFileName = "sum_jet_pt_rwt_2011.root"; 
+   TFile *f_Ht_rwt = new TFile(rwtFileName);
    TH1F* h_rwt_lowPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV0");
    TH1F* h_rwt_medPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV1");
    TH1F* h_rwt_highPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV2");
@@ -207,7 +209,7 @@ int main ( int argc, char ** argv )
   // data detection
   //
   bool isData = false;
-  std::string sysType = "MC";
+  std::string sysType_lep = "MC";
   if (TString(sampleName).Contains("DoubleElectron")
       || TString(sampleName).Contains("DoubleMu")
       || TString(sampleName).Contains("MuEG") ) {
@@ -215,7 +217,7 @@ int main ( int argc, char ** argv )
     std::cout << "CONFIG: DATA detected for sample " << sampleName << std::endl;
 
     isData = true;
-    sysType = "data";
+    sysType_lep = "data";
 
   }
 
@@ -223,7 +225,7 @@ int main ( int argc, char ** argv )
   std::string dset = "SingleMu" ;
   int sampleNumber = 999999;
   if (selectionYear_ == "2011") {
-    if (tmpName.Contains("zjets_part")) sampleNumber = 2300; 
+    if (sampleName == "zjets" || tmpName.Contains("zjets_part")) sampleNumber = 2300; 
     if (sampleName == "zjets_lowmass") sampleNumber = 2310; 
     if (sampleName == "wjets") sampleNumber = 2400; 
     if (sampleName == "ttbar" || tmpName.Contains("ttbar_part") || sampleName == "ttbar_bb" || sampleName == "ttbar_cc") sampleNumber = 2500; 
@@ -238,7 +240,7 @@ int main ( int argc, char ** argv )
     if (sampleName.find("ttH")!=std::string::npos) sampleNumber = 120;
   }
   else if (selectionYear_ == "2012") {
-    if (tmpName.Contains("zjets_part")) sampleNumber = 2800; 
+    if (sampleName == "zjets" || tmpName.Contains("zjets_part")) sampleNumber = 2800; 
     if (sampleName == "zjets_lowmass") sampleNumber = 2850; 
     if (sampleName == "wjets") sampleNumber = 2400; 
     if (sampleName == "ttbar" || tmpName.Contains("ttbar_part") || sampleName == "ttbar_bb" || sampleName == "ttbar_cc") sampleNumber = 2500;  //// 12 parts???
@@ -592,6 +594,8 @@ int main ( int argc, char ** argv )
   //
   ///////////////////////////////////////////////////////////////////
 
+  bool AndrewSwitch = false;
+
   std::map<TString, int *> intBranches;
   ///---- categories lable
   intBranches["PassTwoLepton"] = new int (0);
@@ -603,7 +607,7 @@ int main ( int argc, char ** argv )
 //   intBranches["numBadJets"] = new int(0);
   intBranches["numJets"] = new int (0);
   intBranches["numTaggedJets"] = new int (0);
-//   intBranches["numNonTaggedJets"] = new int (0);
+  intBranches["numNonTaggedJets"] = new int (0);
   //intBranches["numHiggsJets"] = new int (0);
   //intBranches["numHiggsAllJets"] = new int (0);
 
@@ -623,6 +627,8 @@ int main ( int argc, char ** argv )
 //   intBranches["isDoubleElectronTriggerPS0"] = new int (0);
 //   intBranches["isMuEGTriggerPS0"] = new int (0);
 //   intBranches["isMETTriggerPS0"] = new int (0);
+
+  if(AndrewSwitch){
   intBranches["isDoubleMu7Pass"] = new int (0);
   intBranches["isMu8Pass"] = new int (0);
   intBranches["isMu13_Mu8Pass"] = new int (0);
@@ -645,9 +651,11 @@ int main ( int argc, char ** argv )
 //   intBranches["lep2Mother"] = new int(0);
 //   intBranches["lep1Grandmother"] = new int(0);
 //   intBranches["lep2Grandmother"] = new int(0);
-  intBranches["PassZmask"] = new int (0);
   intBranches["PassZmask2"] = new int (0);
   intBranches["PassZmask3"] = new int (0);
+  }
+
+  intBranches["PassZmask"] = new int (0);
   intBranches["oppositeLepCharge"] = new int (0);
   intBranches["oppositeGenLepCharge"] = new int (0);
   
@@ -672,12 +680,12 @@ int main ( int argc, char ** argv )
   //floatBranches["top1_pt"] = new float(0.0);
   //floatBranches["top1_pz"] = new float(0.0);
   
-  //b-tag reweight                                                                                                               
-  floatBranches["prob"] = new float(0.0);                                                                                        
-  floatBranches["prob_hfSFup"] = new float(0.0);                                                                                 
-  floatBranches["prob_hfSFdown"] = new float(0.0);                                                                               
-  floatBranches["prob_lfSFup"] = new float(0.0);                                                                                 
-  floatBranches["prob_lfSFdown"] = new float(0.0);                                                                               
+  //b-tag reweight // no longer needed
+  floatBranches["prob"] = new float(0.0);
+  floatBranches["prob_hfSFup"] = new float(0.0);
+  floatBranches["prob_hfSFdown"] = new float(0.0);
+  floatBranches["prob_lfSFup"] = new float(0.0);
+  floatBranches["prob_lfSFdown"] = new float(0.0);
 
   //pile up
   floatBranches["numPV"] = new float(0.0);
@@ -715,8 +723,11 @@ int main ( int argc, char ** argv )
   floatBranches["lep1GenCharge"] = new float (0.0);
   floatBranches["lep2TkCharge"] = new float (0.0);
   floatBranches["lep2GenCharge"] = new float (0.0);
+
+  if(AndrewSwitch){
   intBranches["lep1GenMotherId"] = new int (0);
   intBranches["lep2GenMotherId"] = new int (0);
+  }
   floatBranches["lep1SF"] = new float (0.0);
   floatBranches["lep2SF"] = new float (0.0);
   floatBranches["lepTotalSF"] = new float (0.0);
@@ -743,6 +754,7 @@ int main ( int argc, char ** argv )
   floatBranches["third_jet_eta"] = new float(0.0);
   floatBranches["fourth_jet_eta"] = new float(0.0);
 
+  if(AndrewSwitch){
   floatBranches["first_jet_CHEF"] = new float(0.0);
   floatBranches["second_jet_CHEF"] = new float(0.0);
   floatBranches["third_jet_CHEF"] = new float(0.0);
@@ -754,7 +766,7 @@ int main ( int argc, char ** argv )
   floatBranches["third_jet_charge"] = new float(0.0);
   floatBranches["fourth_jet_charge"] = new float(0.0);
   floatBranches["sum_jet_charge"] = new float(0.0);
-
+  }
 //   floatBranches["dPhi_jet1jet2"] = new float(0.0);
 //   floatBranches["dPhi_jet1jet3"] = new float(0.0);
 //   floatBranches["dPhi_jet1jet4"] = new float(0.0);
@@ -818,19 +830,23 @@ int main ( int argc, char ** argv )
   /////entire system variables
   floatBranches["mass_of_everything"] = new float(0.0);
   floatBranches["mass_MHT"] = new float(0.0);
-//   floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
   floatBranches["pt_of_everything"] = new float(0.0);
   floatBranches["pt_of_ttbar"] = new float(0.0);
   floatBranches["MHT"] = new float(0.0);
-  floatBranches["MT_met_lep1"] = new float(0.0);
-  floatBranches["MT_met_lep2"] = new float(0.0);
-  floatBranches["dPhi_met_lep1"] = new float(0.0);
-  floatBranches["dPhi_met_lep2"] = new float(0.0);
-//   floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
+
+  if(AndrewSwitch){
+    floatBranches["MT_met_lep1"] = new float(0.0);
+    floatBranches["MT_met_lep2"] = new float(0.0);
+    floatBranches["dPhi_met_lep1"] = new float(0.0);
+    floatBranches["dPhi_met_lep2"] = new float(0.0);
+    //   floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
+    //   floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
+    //   floatBranches["pt_total"] = new float(0.0);
+  }
+
   floatBranches["sum_jet_pt"] = new float(0.0);
-//   floatBranches["pt_total"] = new float(0.0);
   floatBranches["sum_pt"] = new float(0.0); 
-//   floatBranches["all_sum_pt"] = new float(0.0);
+  floatBranches["all_sum_pt"] = new float(0.0);
   floatBranches["Ht"] = new float(0.0);
   floatBranches["Q2ScaleUpWgt"] = new float(0.0);
   floatBranches["Q2ScaleDownWgt"] = new float(0.0);
@@ -1090,6 +1106,7 @@ int main ( int argc, char ** argv )
       double Q2ScaleDownWgt = 1.0; 
 
       //if (selectionYear_ == "2012") {
+      //      if (sampleNumber == 2500 && selectionYear_ == "2012") {
       if (sampleNumber == 2500) {
         Q2ScaleUpWgt = event->Q2ScaleUpWgt;
         Q2ScaleDownWgt = event->Q2ScaleDownWgt;
@@ -1130,7 +1147,7 @@ int main ( int argc, char ** argv )
       //      cout << "Sample type is = " <<sample <<endl;
 
 
-
+      //// specific to ttH signal sample???
       int HtoBB = 0;
       int HtoCC = 0;
       int HtoTT = 0;
@@ -1777,7 +1794,7 @@ int main ( int argc, char ** argv )
       std::vector<int> side_loose_ele_index;
       std::vector<double> sideTightElectronSF;
       std::vector<double> sideLooseElectronSF;
-      BEANs::electronSelector( electrons, false, sysType, selectionYear_, tight_ele_index, loose_ele_index, side_tight_ele_index, side_loose_ele_index, tightElectronSF, looseElectronSF, sideTightElectronSF, sideLooseElectronSF );
+      BEANs::electronSelector( electrons, false, sysType_lep, selectionYear_, tight_ele_index, loose_ele_index, side_tight_ele_index, side_loose_ele_index, tightElectronSF, looseElectronSF, sideTightElectronSF, sideLooseElectronSF );
 
 //       tight_ele_index = loose_ele_index;
 //       side_tight_ele_index.insert(side_tight_ele_index.end(), side_loose_ele_index.begin(), side_loose_ele_index.end());
@@ -1871,7 +1888,7 @@ int main ( int argc, char ** argv )
       std::vector<int> side_loose_mu_index;
       std::vector<double> sideTightMuonSF;
       std::vector<double> sideLooseMuonSF;
-      BEANs::muonSelector( muons, false, sysType, selectionYear_, tight_mu_index, loose_mu_index, side_tight_mu_index, side_loose_mu_index, tightMuonSF, looseMuonSF, sideTightMuonSF, sideLooseMuonSF );
+      BEANs::muonSelector( muons, false, sysType_lep, selectionYear_, tight_mu_index, loose_mu_index, side_tight_mu_index, side_loose_mu_index, tightMuonSF, looseMuonSF, sideTightMuonSF, sideLooseMuonSF );
 
 //       tight_mu_index = loose_mu_index;
 //       side_tight_mu_index.insert(side_tight_mu_index.end(), side_loose_mu_index.begin(), side_loose_mu_index.end());
@@ -2308,6 +2325,8 @@ int main ( int argc, char ** argv )
 //       *(intBranches["isDoubleElectronTriggerPS0"]) = DoubleElectronTriggerPS0 ? 1 : 0;
 //       *(intBranches["isMuEGTriggerPS0"]) = MuEGTriggerPS0 ? 1 : 0;
 //       *(intBranches["isMETTriggerPS0"]) = METTriggerPS0 ? 1 : 0;
+
+      if(AndrewSwitch){
       *(intBranches["isMu8Pass"]) =  HLT_Mu8_v ? 1 : 0;
       *(intBranches["isDoubleMu7Pass"]) =  HLT_DoubleMu7_v ? 1 : 0;
       *(intBranches["isMu13_Mu8Pass"]) =  HLT_Mu13_Mu8_v ? 1 : 0;
@@ -2325,14 +2344,14 @@ int main ( int argc, char ** argv )
       *(intBranches["isMET200Pass"]) = HLT_MET200_v ? 1 : 0;
       *(intBranches["isPFMET150Pass"]) = HLT_PFMET150_v ? 1 : 0;
 
-      
       *(intBranches["HiggsDecayMode"]) = HtoCC*4 + HtoBB*5 + HtoTT*6 + HtoGG*21 + HtoZZ*23 + HtoWW*24;
+      }
 
       *(intBranches["numJets"]) = numJet ;
 //       *(intBranches["numAllJets"]) = numAllJet;
 //       *(intBranches["numBadJets"]) = numBadJet;
       *(intBranches["numTaggedJets"]) = numTag;
-//       *(intBranches["numNonTaggedJets"]) = numNonTag;
+      *(intBranches["numNonTaggedJets"]) = numNonTag;
       //*(intBranches["numHiggsJets"]) = numHiggsJets;
       //*(intBranches["numHiggsAllJets"]) = numHiggsAllJets;
       
@@ -2354,7 +2373,7 @@ int main ( int argc, char ** argv )
       
       //////////////////////////
       ////
-      ////------------b-tag SF
+      ////------------b-tag SF   ////not needed any more
       ////
       //////////////////////////
       double wgt_prob=0, wgt_prob_hfSFup=0, wgt_prob_hfSFdown=0, wgt_prob_lfSFup=0, wgt_prob_lfSFdown=0;
@@ -2996,11 +3015,12 @@ int main ( int argc, char ** argv )
       }
       else std::cout << "Lep1 has charge " << lep1GenCharge << " and Lep2 has charge " << lep2GenCharge << std::endl;
 
-          
+      if(AndrewSwitch){
 	  *(floatBranches["MT_met_lep1"]) = mass_met_lep1_transverse;
 	  *(floatBranches["MT_met_lep2"]) = mass_met_lep2_transverse;
 	  *(floatBranches["dPhi_met_lep1"]) = dPhi_met_lep1;
 	  *(floatBranches["dPhi_met_lep2"]) = dPhi_met_lep2;
+      }
 	  *(floatBranches["mass_leplep"]) = dilep_mass;
 	  *(floatBranches["pt_leplep"]) = dilep_pt;
 	  *(floatBranches["dPhi_leplep"]) = dPhi_dilep;
@@ -3032,8 +3052,10 @@ int main ( int argc, char ** argv )
       *(floatBranches["lep2TkCharge"]) = lep2TkCharge;
       *(floatBranches["lep1GenCharge"]) = lep1GenCharge;
       *(floatBranches["lep2GenCharge"]) = lep2GenCharge;
+      if(AndrewSwitch){
       *(intBranches["lep1GenMotherId"]) = lep1GenMotherId;
       *(intBranches["lep2GenMotherId"]) = lep2GenMotherId;
+      }
 //       *(intBranches["lep1Mother"]) = lep1Mother;
 //       *(intBranches["lep2Mother"]) = lep2Mother;
 //       *(intBranches["lep1Grandmother"]) = lep1Grandmother;
@@ -3236,6 +3258,7 @@ int main ( int argc, char ** argv )
       *(floatBranches["third_jet_eta"]) = third_jet_eta;
       *(floatBranches["fourth_jet_eta"]) = fourth_jet_eta;
 
+      if(AndrewSwitch){
       *(floatBranches["first_jet_CHEF"]) = first_jet_CHEF;
       *(floatBranches["second_jet_CHEF"]) = second_jet_CHEF;
       *(floatBranches["third_jet_CHEF"]) = third_jet_CHEF;
@@ -3247,7 +3270,7 @@ int main ( int argc, char ** argv )
       *(floatBranches["third_jet_charge"]) = third_jet_charge;
       *(floatBranches["fourth_jet_charge"]) = fourth_jet_charge;
       *(floatBranches["sum_jet_charge"]) = sum_jet_charge;
-
+      }
 //       *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
 //       *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
 //       *(floatBranches["dPhi_jet1jet4"]) = dPhi_jet1jet4;
@@ -3300,17 +3323,24 @@ int main ( int argc, char ** argv )
 
       *(floatBranches["sum_jet_pt"]) = sum_jet_pt;
 	  *(floatBranches["sum_pt"]) = sum_pt;
-// 	  *(floatBranches["all_sum_pt"]) = all_sum_pt;
+ 	  *(floatBranches["all_sum_pt"]) = all_sum_pt;
 	  *(floatBranches["Ht"]) = Ht;
 
       /// Ht re-weighting
       float HtWgt = 1.0 ;
       float HtWgtUp = 1.0 ;
-
+      ////////////// mistake  for 2011
       if (!isData){
-        if (numpv<11)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
-        else if (10<numpv && numpv<16)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
-        else   HtWgt = h_rwt_highPV->GetBinContent(h_rwt_highPV->FindBin(sum_jet_pt));
+	if(selectionYear_ == "2012"){
+	  if (numpv<11)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
+	  else if (10<numpv && numpv<16)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
+	  else   HtWgt = h_rwt_highPV->GetBinContent(h_rwt_highPV->FindBin(sum_jet_pt));
+	}
+	else{  /// 2011
+	  if (numpv<6)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
+	  else if (5<numpv && numpv<9)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
+	  else   HtWgt = h_rwt_highPV->GetBinContent(h_rwt_highPV->FindBin(sum_jet_pt));
+	}
 
         HtWgtUp = 1 + 2*(HtWgt - 1);
       }
@@ -3322,9 +3352,10 @@ int main ( int argc, char ** argv )
       bool passBigDiamondZmask2 = (dilep_mass < (65.5 + 3*met/8)) || (dilep_mass > (108 - met/4)) || (dilep_mass < (79 - 3*met/4)) || (dilep_mass > (99 + met/2));
       bool passBigDiamondZmask3 = (dilep_mass < (65.5 + 3*pt_of_leps_and_allJets/8)) || (dilep_mass > (108 - pt_of_leps_and_allJets/4)) || (pt_of_leps_and_allJets < (79 - 3*pt_of_leps_and_allJets/4)) || (dilep_mass > (99 + pt_of_leps_and_allJets/2));
       *(intBranches["PassZmask"]) = passBigDiamondZmask ? 1 : 0;
+      if(AndrewSwitch){
       *(intBranches["PassZmask2"]) = passBigDiamondZmask2 ? 1 : 0;
       *(intBranches["PassZmask3"]) = passBigDiamondZmask3 ? 1 : 0;
-
+      }
 	  //// tagged jets
 	  float deltaHMass = 9999. ;
 	  float deltaHMass2 = 9999. ;
