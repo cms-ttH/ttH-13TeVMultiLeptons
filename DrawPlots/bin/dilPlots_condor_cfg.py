@@ -20,6 +20,7 @@ iZmask = sys.argv[4]
 iLabel = sys.argv[5]
 iJes = int (sys.argv[6])
 iJer = int (sys.argv[7])
+iPV = sys.argv[8]
 
 ## if (iJes == 1):
 ##	   iLabel = iLabel+"_JesUp"
@@ -60,7 +61,8 @@ process.inputs = cms.PSet (
 	fileNamebtagLFDown = cms.string("dummy_btagLFDown.root"),
 	maxEvents = cms.int32(-1),
 	inputYear = cms.string(iYear),
-	inputZmask = cms.string(iZmask)
+	inputZmask = cms.string(iZmask),
+	inputPV = cms.string(iPV)	
 )
 
 

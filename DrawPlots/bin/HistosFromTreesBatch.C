@@ -119,7 +119,7 @@ int main ( int argc, char ** argv )
 
    std::string inputYear = inputs.getParameter< std::string >("inputYear");
    std::string inputZmask = inputs.getParameter< std::string >("inputZmask");
-//    std::string inputPV = inputs.getParameter< std::string >("inputPV");
+   std::string inputPV = inputs.getParameter< std::string >("inputPV");
    
 
    
@@ -166,7 +166,7 @@ int main ( int argc, char ** argv )
   JetTagReqs.push_back("eq3jeq2t");
   JetTagReqs.push_back("ge4jeq2t");
   JetTagReqs.push_back("ge3t");
-//   JetTagReqs.push_back("ge2t");
+  JetTagReqs.push_back("ge2t");
 
   const unsigned int nJetTagReqs = JetTagReqs.size();
 
@@ -187,8 +187,8 @@ int main ( int argc, char ** argv )
   sysList.push_back("CMS_eff_bDown"); // 6
   sysList.push_back("CMS_fake_bUp"); // 7 
   sysList.push_back("CMS_fake_bDown"); //8
-  sysList.push_back("rwtUp");  //rwt //9
-  sysList.push_back("rwtDown"); //10
+  sysList.push_back("CMS_ttH_PUcorrUp");  //rwt //9
+  sysList.push_back("CMS_ttH_PUcorrDown"); //10
   sysList.push_back("Q2scale_ttH"); //11 
   sysList.push_back("Q2scale_ttH"); //12
   const unsigned int NumSys = sysList.size();
@@ -210,12 +210,17 @@ int main ( int argc, char ** argv )
   weight[9] = "weight*"  ;  ///rwt
   weight[10] = "weight*"  ;
 
-  weight[11] = "weight*Q2ScaleUpWgt*1.403*"  ;     
-  weight[12] = "weight*Q2ScaleDownWgt*0.683*"  ;  
+  if (inputYear == "2012") {
+    weight[11] = "weight*Q2ScaleUpWgt*1.403*"  ;     
+    weight[12] = "weight*Q2ScaleDownWgt*0.683*"  ;  
+  }
+  else { ///no Q2scale wgt for ttbar for now
+//     weight[11] = "weight*"  ;     
+//     weight[12] = "weight*"  ;  
   // for 2011
-//   weight[9] = "weight*prob*Q2ScaleUpWgt*1.406*"  ;     
-//   weight[10] = "weight*prob*Q2ScaleDownWgt*0.681*"  ;  
-
+    weight[11] = "weight*Q2ScaleUpWgt*1.4065*"  ;     
+    weight[12] = "weight*Q2ScaleDownWgt*0.6808*"  ;  
+  }
 
 //   weight[0] = "weight*prob*"  ;
 //   weight[1] = "weight*prob*"  ;
@@ -306,8 +311,8 @@ int main ( int argc, char ** argv )
   varList.push_back(first_jet_eta);
   varInfo *first_jet_pt = new varInfo("first_jet_pt", "first_jet_pt", "first_jet_pt", 1000, 0, 1000);
   varList.push_back(first_jet_pt);
-  varInfo *fourth_allJet_pt = new varInfo("fourth_allJet_pt", "fourth_allJet_pt", "fourth_allJet_pt", 1000, 0, 1000);
-  varList.push_back(fourth_allJet_pt);
+//   varInfo *fourth_allJet_pt = new varInfo("fourth_allJet_pt", "fourth_allJet_pt", "fourth_allJet_pt", 1000, 0, 1000);
+//   varList.push_back(fourth_allJet_pt);
   //   varInfo *fourth_jet_CHEF = new varInfo("fourth_jet_CHEF", "fourth_jet_CHEF", "fourth_jet_CHEF", 1000, 0, 1);
   //   varList.push_back(fourth_jet_CHEF);
   varInfo *fourth_jet_eta = new varInfo("fourth_jet_eta", "fourth_jet_eta", "fourth_jet_eta", 1000, -5, 5);
@@ -366,7 +371,7 @@ int main ( int argc, char ** argv )
 //   varList.push_back(numAllJets);
 //   varInfo *numBadJets = new varInfo("numBadJets", "numBadJets", "numBadJets", 20, 0, 20);
 //   varList.push_back(numBadJets);
-  varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 10, 0, 10);
+  varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, 0, 20);
   varList.push_back(numJets);
   //   varInfo *numLooseElectrons = new varInfo("numLooseElectrons", "numLooseElectrons", "numLooseElectrons", 10, 0, 10);
   //   varList.push_back(numLooseElectrons);
@@ -443,21 +448,24 @@ int main ( int argc, char ** argv )
   }
   
   ////////  numPV division
-//   if (inputPV == "lowPV") {
-//     OutputParams = OutputParams+"_lowPV";
-//     PVStr = "numPV<11 &&";
-//   }
-//   else if (inputPV == "medPV") {
-//     OutputParams = OutputParams+"_medPV";
-//     PVStr = "10<numPV && numPV<16 &&";
-//   }
-//   else if (inputPV == "highPV") {
-//     OutputParams = OutputParams+"_highPV";
-//     PVStr = "15<numPV &&";
-//   }
-//   else {
-//     PVStr = "";
-//   }
+  if (inputPV == "lowPV") {
+    OutputParams = OutputParams+"_lowPV";
+    if (inputYear == "2012")  PVStr = "numPV<11 &&";
+    else  PVStr = "numPV<6 &&";
+  }
+  else if (inputPV == "medPV") {
+    OutputParams = OutputParams+"_medPV";
+    if (inputYear == "2012")  PVStr = "10<numPV && numPV<16 &&";
+    else  PVStr = "5<numPV && numPV<9 &&";
+  }
+  else if (inputPV == "highPV") {
+    OutputParams = OutputParams+"_highPV";
+    if (inputYear == "2012")  PVStr = "15<numPV &&";
+    else  PVStr = "8<numPV &&";
+  }
+  else {
+    PVStr = "";
+  }
 
   if (OppositeLepStr == "(oppositeLepCharge == 0) && ") OutputParams = OutputParams+"SameCharge";
   if (OppositeLepStr == "(oppositeGenLepCharge == 0) && ") OutputParams = OutputParams+"SameGenCharge";
@@ -598,10 +606,10 @@ int main ( int argc, char ** argv )
         JetReq = "numJets >= 3";
         TagReq = "numTaggedJets >= 3";
       }
-//       else if (JetTagReq == "ge2t") {
-//         JetReq = "numJets >= 2";
-//         TagReq = "numTaggedJets >= 2";
-//       }
+      else if (JetTagReq == "ge2t") {
+        JetReq = "numJets >= 2";
+        TagReq = "numTaggedJets >= 2";
+      }
       
       if (JetReq == "holder" || TagReq == "holder" || ZmaskStr == "holder") {
         std::cout << "JetReq or TagReq or ZmaskStr == holder" << std::endl;
@@ -613,6 +621,7 @@ int main ( int argc, char ** argv )
       if (ksys == 9) WeightStr = weight[ksys] + "HtWgtUp*" ;
       else if (ksys == 10) WeightStr = weight[ksys] ;
       else WeightStr = weight[ksys] + "HtWgt*" ;
+//       WeightStr = weight[ksys] ;
 
       /////// start sub-lepton category loop    
       const unsigned int nlepCatList = lepCatList.size();
@@ -667,15 +676,15 @@ int main ( int argc, char ** argv )
           if (OutputDirectory == "TwoEle") CleanTrig =  "(isCleanEvent == 1) && (isDoubleElectronTriggerPass == 1) && ";
           if (OutputDirectory == "MuonEle") CleanTrig = "(isCleanEvent == 1) && (isMuEGTriggerPass == 1) && ";
 
-          if (inputYear == "2011") {
-            CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
-          }
+//           if (inputYear == "2011") {
+//             CleanTrig = "(isCleanEvent == 1) && (isTriggerPass == 1) && ";
+//           }
           ZmaskStrSaver = ZmaskStr;
           if (OutputDirectory == "MuonEle") {
             ZmaskStr = "";
           }
           SelectionStr = WeightStr+EffStr+TrigStr +"(" + OppositeLepStr + ZmaskStr + PVStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
-
+	  //	  std::cout << "<--> cut is " << SelectionStr << std::endl;
 
           
           if (SelectionStr == "holder") {
@@ -688,10 +697,10 @@ int main ( int argc, char ** argv )
 
 	  //// get the correct normalization
 	  TString nameTmp = "njets_" + TString(JetTagReq + "_" + OutputDirectory) + syst;
-          TH1F *normTemp = new TH1F(nameTmp, "number of jets", 10,0,10);
+          TH1F *normTemp = new TH1F(nameTmp, "number of jets", 20,0,20);
 	  DileptonSummaryTree->Draw("numJets>>"+nameTmp, SelectionOrig.c_str(), "goff");
 	  double totNorm = normTemp->Integral();
-    
+	  //	  std::cout<< " --> original norm is " << totNorm << std::endl;
           ZmaskStr = ZmaskStrSaver; 
 
         ////////  book only a few histogram folders
@@ -731,6 +740,7 @@ int main ( int argc, char ** argv )
           drawTimesReal->Fill(myTime.RealTime());
           drawTimesCPU->Fill(myTime.CpuTime());
           numDraws->Fill(1);
+	  //	  if ( variableName == "Ht" )std::cout << " --> draw norm is " << histTemp->Integral() <<  std::endl;
           //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
           //      	  std::cout << "Drawing histogram " << histName << std::endl;
 	  if(!isData && histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());

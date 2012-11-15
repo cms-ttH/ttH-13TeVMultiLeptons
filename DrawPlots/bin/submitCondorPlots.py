@@ -7,13 +7,17 @@ import time
 
 def main ():
 
-    iYear = "2012"
-    iZmask = "noZmask"
+    iYear = str(sys.argv[1])
+    iZmask = str(sys.argv[2])
 #    iZmask = "Zmask"
     #iZmask = "Zpeak"
-    jobLabel = "btagShapeStudy"
+    jobLabel = str(sys.argv[3])
     jesChoice = 1
     jerChoice = 0
+    iPV = "none"
+#    iPV = "lowPV"
+#    iPV = "medPV"
+#    iPV = "highPV"
 
     if not os.path.exists("../TwoMuon"):
         os.mkdir("../TwoMuon")
@@ -23,9 +27,10 @@ def main ():
         os.mkdir("../MuonEle")
 
         
-#    listOfSamples = ['DoubleElectron']
 
-    listOfSamples = ['DoubleElectron',
+
+    listOfSamples = [
+                     'DoubleElectron',
                      'DoubleMu',
                      'MuEG',
 
@@ -88,8 +93,18 @@ def main ():
                      'ttbar_part12',                     
                      ]
 
-    
+    extraTTbarSample = [
+                     'ttbar_part13',
+                     'ttbar_part14',
+                     'ttbar_part15',
+                     'ttbar_part16',
+                     'ttbar_part17',
+                     'ttbar_part18',  
+                     ]
 
+    if iYear == "2011":  ### more ttbar parts for 2011
+        listOfSamples = listOfSamples + extraTTbarSample
+        
     for iList in listOfSamples:
         condorHeader = "universe = vanilla\n"+"executable = runPlotsCondor.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
         
@@ -106,7 +121,8 @@ def main ():
                     
         condorJobFile.write( "JES = %s\n" % jesChoice)
         condorJobFile.write( "JER = %s\n" % jerChoice)
-        condorJobFile.write( "arguments = $(List) $(Year) $(Zmask) $(Label) $(JES) $(JER)\n")
+        condorJobFile.write( "PV = %s\n" % iPV)
+        condorJobFile.write( "arguments = $(List) $(Year) $(Zmask) $(Label) $(JES) $(JER) $(PV)\n")
         condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")
         condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n") 
         condorJobFile.write( "queue 1\n")
