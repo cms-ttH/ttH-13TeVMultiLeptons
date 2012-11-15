@@ -157,11 +157,11 @@ class PlotInfo:
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "rwtUp"):
-			namePlusCycle = "%s_rwtUp;1" % (histName)
+			namePlusCycle = "%s_CMS_ttH_PUcorrUp;1" % (histName)
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "rwtDown"):
-			namePlusCycle = "%s_rwtDown;1" % (histName)
+			namePlusCycle = "%s_CMS_ttH_PUcorrDown;1" % (histName)
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		else:
@@ -312,12 +312,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e ')
 	TexTitle5 = TexTitle4.replace('pdf_2012/','')
 	TexTitle6 = TexTitle5.replace('2012_noZmask_','')
-	TexTitle =	TexTitle6.replace('SameLep_',' #mu#mu/ee ')
+	TexTitle7 = TexTitle6.replace('ge1t',' + #geq 2 jets + #geq 1 tag')	
+	TexTitle = TexTitle7.replace('SameLep_',' #mu#mu/ee ')
+	
 	
 	if year == "2011" :
-		myLumiString = TexTitle+"	CMS Preliminary,  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
+		myLumiString = TexTitle+"  CMS Preliminary,  #sqrt{s} = 7 TeV,  L = 5.0 fb^{-1}"
 	else :
-		myLumiString = TexTitle+"	CMS Preliminary,  #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
+		myLumiString = TexTitle+"  CMS Preliminary,  #sqrt{s} = 8 TeV,  L = 5.1 fb^{-1}"
 #	 myLumiString = TexTitle+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV"
 #	 myLumiString = directoryName.replace('pdf/','')+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV" 
 	myLumiTex = TLatex()
@@ -448,8 +450,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   storeName_fake_bDown = "%s_CFMlpANN_%s_CMS_fake_bDown" % (limitPlotName, printedJetSelection)
 	   storeName_PUUp = "%s_CFMlpANN_%s_PUUp" % (limitPlotName, printedJetSelection)
 	   storeName_PUDown = "%s_CFMlpANN_%s_PUDown" % (limitPlotName, printedJetSelection)
-	   storeName_rwtUp = "%s_CFMlpANN_%s_rwtUp" % (limitPlotName, printedJetSelection)
-	   storeName_rwtDown = "%s_CFMlpANN_%s_rwtDown" % (limitPlotName, printedJetSelection)
+	   storeName_rwtUp = "%s_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (limitPlotName, printedJetSelection)
+	   storeName_rwtDown = "%s_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (limitPlotName, printedJetSelection)
 	   
 	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
 		   storeName_Q2Up = "%s_CFMlpANN_%s_Q2scale_ttH_%sUp" % (limitPlotName, printedJetSelection, sysStr)
@@ -487,7 +489,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   legForStack.AddEntry(myData2012, "Data ("+str(round(Data2012Sum,0))+")", "lpe") ##Comment out for blinding
 		   histoStorageList["data_obs"] = myData2012.Clone("data_obs_CFMlpANN_%s" % (printedJetSelection)  )
 		   
-	   elif (iplot.name == "ttH_120"):
+	   elif (iplot.name == "ttH_125"):
 		   iSig = resultHist.Clone("signal")
 		   ttHSum = iSig.Integral()
 		   #print "adding ttH_120 to output list"
@@ -561,8 +563,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 				   histoStorageList["singlet_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("singlet_CFMlpANN_%s_CMS_fake_bDown" % (printedJetSelection))
 				   histoStorageList["singlet_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("singlet_CFMlpANN_%s_PUUp" % (printedJetSelection))
 				   histoStorageList["singlet_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("singlet_CFMlpANN_%s_PUDown" % (printedJetSelection))
-				   histoStorageList["singlet_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("singlet_CFMlpANN_%s_rwtUp" % (printedJetSelection))
-				   histoStorageList["singlet_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("singlet_CFMlpANN_%s_rwtDown" % (printedJetSelection))
+				   histoStorageList["singlet_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("singlet_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+				   histoStorageList["singlet_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("singlet_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
 				   foundFirstSingleTop = true
 			   else:
 				   histoStorageList["singlet"].Add(resultHist_MCErrorsOnly)
@@ -593,8 +595,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 				   histoStorageList["diboson_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("diboson_CFMlpANN_%s_CMS_fake_bDown" % (printedJetSelection))
 				   histoStorageList["diboson_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("diboson_CFMlpANN_%s_PUUp" % (printedJetSelection))
 				   histoStorageList["diboson_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("diboson_CFMlpANN_%s_PUDown" % (printedJetSelection))
-				   histoStorageList["diboson_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("diboson_CFMlpANN_%s_rwtUp" % (printedJetSelection))
-				   histoStorageList["diboson_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("diboson_CFMlpANN_%s_rwtDown" % (printedJetSelection))
+				   histoStorageList["diboson_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("diboson_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+				   histoStorageList["diboson_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("diboson_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
 				   foundFirstDiboson = true
 			   else:
 				   histoStorageList["diboson"].Add(resultHist_MCErrorsOnly)
@@ -628,8 +630,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 				   histoStorageList["zjets_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("zjets_CFMlpANN_%s_CMS_fake_bDown" % (printedJetSelection))
 				   histoStorageList["zjets_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("zjets_CFMlpANN_%s_PUUp" % (printedJetSelection))
 				   histoStorageList["zjets_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("zjets_CFMlpANN_%s_PUDown" % (printedJetSelection))
-				   histoStorageList["zjets_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("zjets_CFMlpANN_%s_rwtUp" % (printedJetSelection))
-				   histoStorageList["zjets_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("zjets_CFMlpANN_%s_rwtDown" % (printedJetSelection))
+				   histoStorageList["zjets_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("zjets_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+				   histoStorageList["zjets_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("zjets_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
 				   foundFirstZjets = true
 			   else:
 				   histoStorageList["zjets"].Add(resultHist_MCErrorsOnly)
@@ -707,9 +709,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #	 legForStack.AddEntry(myData2011, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
 	legForStack.AddEntry(MCErrHist, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
 	if (ttHSum > 0):
-		legForStack.AddEntry(iSig, "t#bar{t}H120 ("+str(round(ttHSum,1))+"x"+str(round(TotalMCsum/ttHSum,1))+")", "l")
+		legForStack.AddEntry(iSig, "t#bar{t}H125 ("+str(round(ttHSum,1))+"x"+str(round(TotalMCsum/ttHSum,1))+")", "l")
 	else:
-		legForStack.AddEntry(iSig, "t#bar{t}H120 (0.0x1.0)" , "l")
+		legForStack.AddEntry(iSig, "t#bar{t}H125 (0.0x1.0)" , "l")
 	if year == "2011":
 		theDataHisto = myData2011.Clone()
 	elif year == "2012":
@@ -780,9 +782,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 
 	# calculate the KS test result, put it somewhere
-	ksResult = theDataHisto.KolmogorovTest(MCErrHist)
+#	ksResult = theDataHisto.KolmogorovTest(MCErrHist)
 
-	myLumiString = myLumiString + " (KS = %0.2f)" % (ksResult)
+#	myLumiString = myLumiString + " (KS = %0.2f)" % (ksResult)
 
 	legForStack.Draw()
 	myLumiTex.DrawLatex(0.10, 0.98, myLumiString)

@@ -42,10 +42,14 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
     elif lepselection.startswith("MuonEle"):
         dataStr = dirStr+'MuEG_' + year + "_" + Zmask + "_" + jetselection +  "_MuonEle.root"
 
-    else:
+    elif lepselection.startswith("SameLep"):
         dataStr = dirStr+'SameLep'+rootStr
+    else:
+        dataStr = dirStr+'TwoLep'+rootStr
 
-    directoryName = "pdf/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection   
+
+    directoryName = "pdf/"+ Zmask + "/" +lepselection+"_"+year + "_" + Zmask + "_" + jetselection
+#    directoryName = "pdf/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection   
     
     groupName = lepselection+"_"+year + "_" + Zmask + "_" + jetselection
 
@@ -115,7 +119,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'xsec': 0.1577,
          'xsec_err': 0.023,
          'sys_array': sys_arrays['tt'],
-         'ngen': 52135272,
+         'ngen': 52641551, ##52135272,
          'fillColor': ROOT.kRed,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -132,7 +136,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'xsec': 0.1577,
          'xsec_err': 0.3*0.1577,
          'sys_array': sys_arrays['ttcc'],
-         'ngen': 52135272,
+         'ngen': 52641551, ##52135272,
          'fillColor': ROOT.kGreen-3,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -149,7 +153,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'xsec': 0.1577,
          'xsec_err': 0.3*0.1577,
          'sys_array': sys_arrays['ttbb'],
-         'ngen': 52135272,
+         'ngen': 52641551, ##52135272,
          'fillColor': ROOT.kMagenta+2,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -389,7 +393,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'xsec': 12.7826,
          'xsec_err': 0.132*12.7826/3.048,
          'sys_array': sys_arrays['ZJets'],
-         'ngen': 31480628,
+         'ngen': 31480628, ## 31479522
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
@@ -400,11 +404,45 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 
     plotList.append(
         PlotInfo(
+        {'name': 'ttH_110',
+         'file': dirStr+'ttH110' +rootStr,
+         'file_JESUp': dirStr+'ttH110'+rootStr,
+         'file_JESDown': dirStr+'ttH110'+rootStr,
+         'xsec': 0.0001257,
+         'xsec_err': 0.0,
+         'sys_array': sys_arrays['ttH_120'],
+         'ngen':  99880,
+         'fillColor': ROOT.kMagenta,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttH110'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttH_115',
+         'file': dirStr+'ttH115' +rootStr,
+         'file_JESUp': dirStr+'ttH115'+rootStr,
+         'file_JESDown': dirStr+'ttH115'+rootStr,
+         'xsec': 0.0001106,
+         'xsec_err': 0.0,
+         'sys_array': sys_arrays['ttH_120'],
+         'ngen': 99915,
+         'fillColor': ROOT.kMagenta,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttH115'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
         {'name': 'ttH_120',
          'file': dirStr+'ttH120' +rootStr,
          'file_JESUp': dirStr+'ttH120'+rootStr,
          'file_JESDown': dirStr+'ttH120'+rootStr,
-         'xsec': 0.000098,
+         'xsec': 0.00009756,
          'xsec_err': 0.0,
          'sys_array': sys_arrays['ttH_120'],
          'ngen': 998833,
@@ -415,37 +453,73 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
         )
         )
 
-##    plotList.append(
-##        PlotInfo(
-##        {'name': 'ttH_125',
-##         'file': dirStr+'ttH125' +rootStr,
-##         'file_JESUp': dirStr+'ttH125'+rootStr,
-##         'file_JESDown': dirStr+'ttH125'+rootStr,
-##         'xsec': 0.00008634, 
-##         'xsec_err': 0.0,
-##         'sys_array': sys_arrays['ttH_120'],
-##         'ngen': 99896,
-##         'fillColor': ROOT.kMagenta,
-##         'fillPattern': 1001,
-##         'isNormPerJetBin': 0,}
-##        )
-##        )
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttH_125',
+         'file': dirStr+'ttH125' +rootStr,
+         'file_JESUp': dirStr+'ttH125'+rootStr,
+         'file_JESDown': dirStr+'ttH125'+rootStr,
+         'xsec': 0.00008634, 
+         'xsec_err': 0.0,
+         'sys_array': sys_arrays['ttH_120'],
+         'ngen': 99896,
+         'fillColor': ROOT.kMagenta,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttH125'}
+        )
+        )
 
-##    plotList.append(
-##    PlotInfo(
-##    {'name': 'ttH_130',
-##     'file': dirStr+'ttH130' +rootStr,
-##     'file_JESUp': dirStr+'ttH130'+rootStr,
-##     'file_JESDown': dirStr+'ttH130'+rootStr,
-##     'xsec': 0.00007658,
-##     'xsec_err': 0.0,
-##     'sys_array': sys_arrays['ttH_120'],
-##     'ngen': 99915,
-##     'fillColor': ROOT.kMagenta,
-##     'fillPattern': 1001,
-##     'isNormPerJetBin': 0,}
-##    )
-##    )
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttH_130',
+         'file': dirStr+'ttH130' +rootStr,
+         'file_JESUp': dirStr+'ttH130'+rootStr,
+         'file_JESDown': dirStr+'ttH130'+rootStr,
+         'xsec': 0.00007658,
+         'xsec_err': 0.0,
+         'sys_array': sys_arrays['ttH_120'],
+         'ngen': 99915,
+         'fillColor': ROOT.kMagenta,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttH130'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttH_135',
+         'file': dirStr+'ttH135' +rootStr,
+         'file_JESUp': dirStr+'ttH135'+rootStr,
+         'file_JESDown': dirStr+'ttH135'+rootStr,
+         'xsec': 0.00006810,
+         'xsec_err': 0.0,
+         'sys_array': sys_arrays['ttH_120'],
+         'ngen':  99898,
+         'fillColor': ROOT.kMagenta,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttH135'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttH_140',
+         'file': dirStr+'ttH140' +rootStr,
+         'file_JESUp': dirStr+'ttH140'+rootStr,
+         'file_JESDown': dirStr+'ttH140'+rootStr,
+         'xsec': 0.00006072,
+         'xsec_err': 0.0,
+         'sys_array': sys_arrays['ttH_120'],
+         'ngen': 99909,
+         'fillColor': ROOT.kMagenta,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttH140'}
+        )
+        )
     
     plotList.append(
         PlotInfo(
