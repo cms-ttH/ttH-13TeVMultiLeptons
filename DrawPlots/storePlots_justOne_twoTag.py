@@ -4,7 +4,7 @@
 from PlotEnv import *
 
 # import the plots you want
-from myPlots2012 import *
+from myPlots import *
 
 # import the root libraries
 # with this kind of import
@@ -26,7 +26,7 @@ def main ():
         index+=1
 
     lepselection = str(sys.argv[index])
-    year = "2012"
+    year = "2011"
     Zmask = "noZmask"	
     try:
         if (str(sys.argv[index+1]) == "2011" or str(sys.argv[index+1]) == "2012"):

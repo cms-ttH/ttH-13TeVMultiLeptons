@@ -4,7 +4,7 @@
 from PlotEnv import *
 
 # import the plots you want
-from myPlots2012 import *
+from myPlots import *
 
 # import the root libraries
 # with this kind of import
@@ -26,7 +26,7 @@ def main ():
         index+=1
 
     lepselection = str(sys.argv[index])
-    year = "2012"
+    year = "2011"
     Zmask = "noZmask"	
     try:
         if (str(sys.argv[index+1]) == "2011" or str(sys.argv[index+1]) == "2012"):
@@ -100,7 +100,8 @@ def main ():
 
     pival = 3.14
 
-    drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection, year, "root")
+#    drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 15, 0.05, 0.80, lepselection, year, "root")
+    drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection, year, "root")    
 
 
 
