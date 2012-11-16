@@ -47,7 +47,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
     else:
         dataStr = dirStr+'TwoLep'+rootStr
 
-  
+
+#    directoryName = "pdf_2012/"+ Zmask + "/" +lepselection+"_"+year + "_" + Zmask + "_" + jetselection
     directoryName = "pdf_2012/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection 
     
     groupName = lepselection+"_"+year + "_" + Zmask + "_" + jetselection
