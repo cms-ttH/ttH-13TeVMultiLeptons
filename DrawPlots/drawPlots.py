@@ -101,10 +101,10 @@ def main ():
 
 	pival = 3.14
 	
-	if (jetselection != "ge1t"):
-		drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", 20, 0.5, 4.5, lepselection, year, "draw")
-		drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", 20, 0, 4, lepselection, year, "draw")
-		drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", 20, 0.7, 1, lepselection,year, "draw")
+#	if (jetselection != "ge1t"):
+#		drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", 10, 0.5, 4.5, lepselection, year, "draw")
+#		drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", 10, 0, 4, lepselection, year, "draw")
+#		drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", 10, 0.7, 1, lepselection,year, "draw")
 #		drawStackPlot("second_jet_pt", pg, "2nd jet p_{T}", 20, 30, 230, lepselection,year, "draw")
 #		drawStackPlot("pt_of_ttbar", pg, "p_{T} (lep,met,2bjets)", 20, 0, 240, lepselection,year, "draw")
 #		drawStackPlot("pt_of_everything", pg, "p_{T} vector sum", 20, 0, 140, lepselection,year, "draw")		
@@ -114,10 +114,13 @@ def main ():
 		drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 330, lepselection,year, "draw")
 		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 60, 660, lepselection,year, "draw")
 	if (jetselection == "eq2jeq2t"):
-		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 20, 0.4975, 0.5035, lepselection,year, "draw")
-		drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MHT)",20, 200, 1100, lepselection,year, "draw")
-		drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 330, lepselection,year, "draw")
-		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 60, 460, lepselection,year, "draw")
+		drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 4.5, lepselection, year, "draw")
+		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0, 4, lepselection, year, "draw")
+		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")
+		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.4975, 0.5035, lepselection,year, "draw")
+		drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)",10, 200, 1000, lepselection,year, "draw")
+		drawStackPlot("first_jet_pt", pg, "jet 1 p_{T}", 10, 30, 270, lepselection,year, "draw")
+#		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 60, 460, lepselection,year, "draw")
 #		drawStackPlot("pt_of_everything", pg, "p_{T} vector sum", 20, 0, 140, lepselection,year, "draw")
 #		drawStackPlot("pt_of_ttbar", pg, "p_{T} (lep,met,2bjets)", 20, 0, 140, lepselection,year, "draw")		
 	if (jetselection == "e3je2t"):
@@ -131,10 +134,13 @@ def main ():
 		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 120, 840, lepselection,year, "draw")
 		drawStackPlot("second_jet_pt", pg, "2nd jet p_{T}", 20, 30, 230, lepselection,year, "draw")
 	if (jetselection == "ge3t"):
+		drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 3.5, lepselection, year, "draw")
+		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0.2, 3.2, lepselection, year, "draw")
+		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
 		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection,year, "draw")
-		drawStackPlot("numJets", pg, "Number of jets", 5, 3, 8, lepselection,year, "draw")
-		drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MHT)", 10, 200, 1600, lepselection,year, "draw")
-		drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 10, 30, 430, lepselection,year, "draw")
+		drawStackPlot("numJets", pg, "N_{jets}", 5, 3, 8, lepselection,year, "draw")
+		drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)", 10, 200, 1600, lepselection,year, "draw")
+		drawStackPlot("first_jet_pt", pg, "jet 1 p_{T}", 10, 30, 400, lepselection,year, "draw")
 	if (jetselection == "ge1t"):
 		drawStackPlot("numJets", pg,  "number of jets", 5, 2, 7, lepselection, year, "draw")
 		drawStackPlot("numTaggedJets", pg,  "number of b-tagged jets", 4, 1, 5, lepselection, year, "draw")

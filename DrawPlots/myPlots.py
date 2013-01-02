@@ -48,8 +48,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
         dataStr = dirStr+'TwoLep'+rootStr
 
 
-    directoryName = "pdf/"+ Zmask + "/" +lepselection+"_"+year + "_" + Zmask + "_" + jetselection
-#    directoryName = "pdf/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection   
+#    directoryName = "pdf/"+ Zmask + "/" +lepselection+"_"+year + "_" + Zmask + "_" + jetselection
+    directoryName = "pdf/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection   
     
     groupName = lepselection+"_"+year + "_" + Zmask + "_" + jetselection
 
@@ -109,193 +109,6 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 ##         )
 ##         )
 
-    
-    plotList.append(
-        PlotInfo(
-        {'name': 'tt',
-         'file': dirStr+'ttbar' +rootStr,
-         'file_JESUp': dirStr+'ttbar'+rootStr,
-         'file_JESDown': dirStr+'ttbar'+rootStr,
-         'xsec': 0.1577,
-         'xsec_err': 0.023,
-         'sys_array': sys_arrays['tt'],
-         'ngen': 52641551, ##52135272,
-         'fillColor': ROOT.kRed,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'ttbar'}
-        )
-        )
-
-    plotList.append(
-        PlotInfo(
-        {'name': 'ttcc',
-         'file': dirStr+'ttbar_cc' +rootStr,
-         'file_JESUp': dirStr+'ttbar_cc'+rootStr,
-         'file_JESDown': dirStr+'ttbar_cc'+rootStr,
-         'xsec': 0.1577,
-         'xsec_err': 0.3*0.1577,
-         'sys_array': sys_arrays['ttcc'],
-         'ngen': 52641551, ##52135272,
-         'fillColor': ROOT.kGreen-3,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'ttbarPlusCCbar'}
-        )
-        )
-
-    plotList.append(
-        PlotInfo(
-        {'name': 'ttbb',
-         'file': dirStr+'ttbar_bb' +rootStr,
-         'file_JESUp': dirStr+'ttbar_bb'+rootStr,
-         'file_JESDown': dirStr+'ttbar_bb'+rootStr,
-         'xsec': 0.1577,
-         'xsec_err': 0.3*0.1577,
-         'sys_array': sys_arrays['ttbb'],
-         'ngen': 52641551, ##52135272,
-         'fillColor': ROOT.kMagenta+2,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'ttbarPlusBBbar'}
-        )
-        )
-
-    plotList.append(
-        PlotInfo(
-        {'name': 't_s',
-         'file': dirStr+'singlet_s' +rootStr,
-         'file_JESUp': dirStr+'singlet_s'+rootStr,
-         'file_JESDown': dirStr+'singlet_s'+rootStr,
-         'xsec': 0.00317,
-         'xsec_err': 0.00006*0.00317/(0.00317+0.00144),
-         'sys_array': sys_arrays['t'],
-         'ngen': 259595,
-         'fillColor': ROOT.kOrange+1,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'singlet_s'}
-        )
-        )
-    
-    plotList.append(
-        PlotInfo(
-        {'name': 'tbar_s',
-         'file': dirStr+'singletbar_s' +rootStr,
-         'file_JESUp': dirStr+'singletbar_s'+rootStr,
-         'file_JESDown': dirStr+'singletbar_s'+rootStr,
-         'xsec': 0.00144,
-         'xsec_err': 0.00006*0.00144/(0.00317+0.00144),
-         'sys_array': sys_arrays['t'],
-         'ngen': 137662,
-         'fillColor': ROOT.kOrange+1,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'singletbar_s'}
-        )
-        )
-
-    plotList.append(
-        PlotInfo(
-        {'name': 't_t',
-         'file': dirStr+'singlet_t' +rootStr,
-         'file_JESUp': dirStr+'singlet_t'+rootStr,
-         'file_JESDown': dirStr+'singlet_t'+rootStr,
-         'xsec': 0.04192,
-         'xsec_err': 0.0032*0.04192/(0.04192+0.02265),
-         'sys_array': sys_arrays['t'],
-         'ngen': 3891841 ,
-         'fillColor': ROOT.kOrange+1,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'singlet_t'}
-        )
-        )
-
-    plotList.append(
-        PlotInfo(
-        {'name': 'tbar_t',
-         'file': dirStr+'singletbar_t' +rootStr,
-         'file_JESUp': dirStr+'singletbar_t'+rootStr,
-         'file_JESDown': dirStr+'singletbar_t'+rootStr,
-         'xsec': 0.02265,
-         'xsec_err': 0.0032*0.02265/(0.04192+0.02265),
-         'sys_array': sys_arrays['t'],
-         'ngen': 1939703,
-         'fillColor': ROOT.kOrange+1,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'singletbar_t',}
-        )
-        )
-
-    plotList.append(
-        PlotInfo(
-        {'name': 't_tW',
-         'file': dirStr+'singlet_tW' +rootStr,
-         'file_JESUp': dirStr+'singlet_tW'+rootStr,
-         'file_JESDown': dirStr+'singlet_tW'+rootStr,
-         'xsec': 0.00787,
-         'xsec_err': 0.0008*0.00787/0.00106,
-         'sys_array': sys_arrays['t'],
-         'ngen': 812600,
-         'fillColor': ROOT.kOrange+1,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'singlet_tW'}
-        )
-        )
-
-    plotList.append(
-        PlotInfo(
-        {'name': 'tbar_tW',
-         'file': dirStr+'singletbar_tW' +rootStr,
-         'file_JESUp': dirStr+'singletbar_tW'+rootStr,
-         'file_JESDown': dirStr+'singletbar_tW'+rootStr,
-         'xsec': 0.00787,
-         'xsec_err': 0.0008*0.00787/0.00106,
-         'sys_array': sys_arrays['t'],
-         'ngen': 808200,
-         'fillColor': ROOT.kOrange+1,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'singletbar_tW'}
-        )
-        )
-
-    plotList.append(
-        PlotInfo(
-        {'name': 'ttW',
-         'file': dirStr+'ttbarW' +rootStr,
-         'file_JESUp': dirStr+'ttbarW'+rootStr,
-         'file_JESDown': dirStr+'ttbarW'+rootStr,
-         'xsec': 0.000163,
-         'xsec_err': 0.2*0.000163,
-         'sys_array': sys_arrays['ttV'],
-         'ngen': 1085456,
-         'fillColor': ROOT.kBlue-9,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'ttbarW'}
-        )
-        )
-    plotList.append(
-        PlotInfo(
-        {'name': 'ttZ',
-         'file': dirStr+'ttbarZ' +rootStr,
-         'file_JESUp': dirStr+'ttbarZ'+rootStr,
-         'file_JESDown': dirStr+'ttbarZ'+rootStr,
-         'xsec': 0.000136,
-         'xsec_err': 0.2*0.000136,
-         'sys_array': sys_arrays['ttV'],
-         'ngen': 1458573,
-         'fillColor': ROOT.kBlue-9,
-         'fillPattern': 1001,
-         'isNormPerJetBin': 0,
-         'limitPlotName':'ttbarZ'}
-        )
-        )
-
     plotList.append(
         PlotInfo(
         {'name': 'WW',
@@ -330,7 +143,6 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
         )
         )
     
-
     plotList.append(
         PlotInfo(
         {'name': 'ZZ',
@@ -366,7 +178,6 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
         )
         )
     
-
     plotList.append(
         PlotInfo(
         {'name': 'ZJets',
@@ -401,6 +212,193 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
         )
         )
     
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttW',
+         'file': dirStr+'ttbarW' +rootStr,
+         'file_JESUp': dirStr+'ttbarW'+rootStr,
+         'file_JESDown': dirStr+'ttbarW'+rootStr,
+         'xsec': 0.000163,
+         'xsec_err': 0.2*0.000163,
+         'sys_array': sys_arrays['ttV'],
+         'ngen': 1085456,
+         'fillColor': ROOT.kBlue-9,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbarW'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttZ',
+         'file': dirStr+'ttbarZ' +rootStr,
+         'file_JESUp': dirStr+'ttbarZ'+rootStr,
+         'file_JESDown': dirStr+'ttbarZ'+rootStr,
+         'xsec': 0.000136,
+         'xsec_err': 0.2*0.000136,
+         'sys_array': sys_arrays['ttV'],
+         'ngen': 1458573,
+         'fillColor': ROOT.kBlue-9,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbarZ'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 't_s',
+         'file': dirStr+'singlet_s' +rootStr,
+         'file_JESUp': dirStr+'singlet_s'+rootStr,
+         'file_JESDown': dirStr+'singlet_s'+rootStr,
+         'xsec': 0.00317,
+         'xsec_err': 0.00006*0.00317/(0.00317+0.00144),
+         'sys_array': sys_arrays['t'],
+         'ngen': 259595,
+         'fillColor': ROOT.kOrange+7,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singlet_s'}
+        )
+        )
+    
+    plotList.append(
+        PlotInfo(
+        {'name': 'tbar_s',
+         'file': dirStr+'singletbar_s' +rootStr,
+         'file_JESUp': dirStr+'singletbar_s'+rootStr,
+         'file_JESDown': dirStr+'singletbar_s'+rootStr,
+         'xsec': 0.00144,
+         'xsec_err': 0.00006*0.00144/(0.00317+0.00144),
+         'sys_array': sys_arrays['t'],
+         'ngen': 137662,
+         'fillColor': ROOT.kOrange+7,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singletbar_s'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 't_t',
+         'file': dirStr+'singlet_t' +rootStr,
+         'file_JESUp': dirStr+'singlet_t'+rootStr,
+         'file_JESDown': dirStr+'singlet_t'+rootStr,
+         'xsec': 0.04192,
+         'xsec_err': 0.0032*0.04192/(0.04192+0.02265),
+         'sys_array': sys_arrays['t'],
+         'ngen': 3891841 ,
+         'fillColor': ROOT.kOrange+7,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singlet_t'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'tbar_t',
+         'file': dirStr+'singletbar_t' +rootStr,
+         'file_JESUp': dirStr+'singletbar_t'+rootStr,
+         'file_JESDown': dirStr+'singletbar_t'+rootStr,
+         'xsec': 0.02265,
+         'xsec_err': 0.0032*0.02265/(0.04192+0.02265),
+         'sys_array': sys_arrays['t'],
+         'ngen': 1939703,
+         'fillColor': ROOT.kOrange+7,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singletbar_t',}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 't_tW',
+         'file': dirStr+'singlet_tW' +rootStr,
+         'file_JESUp': dirStr+'singlet_tW'+rootStr,
+         'file_JESDown': dirStr+'singlet_tW'+rootStr,
+         'xsec': 0.00787,
+         'xsec_err': 0.0008*0.00787/0.00106,
+         'sys_array': sys_arrays['t'],
+         'ngen': 812600,
+         'fillColor': ROOT.kOrange+7,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singlet_tW'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'tbar_tW',
+         'file': dirStr+'singletbar_tW' +rootStr,
+         'file_JESUp': dirStr+'singletbar_tW'+rootStr,
+         'file_JESDown': dirStr+'singletbar_tW'+rootStr,
+         'xsec': 0.00787,
+         'xsec_err': 0.0008*0.00787/0.00106,
+         'sys_array': sys_arrays['t'],
+         'ngen': 808200,
+         'fillColor': ROOT.kOrange+7,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'singletbar_tW'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttbb',
+         'file': dirStr+'ttbar_bb' +rootStr,
+         'file_JESUp': dirStr+'ttbar_bb'+rootStr,
+         'file_JESDown': dirStr+'ttbar_bb'+rootStr,
+         'xsec': 0.1577,
+         'xsec_err': 0.5*0.1577, ##0.3*0.1577,
+         'sys_array': sys_arrays['ttbb'],
+         'ngen': 52641551, ##52135272,
+         'fillColor': ROOT.kMagenta+2,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbarPlusBBbar'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'ttcc',
+         'file': dirStr+'ttbar_cc' +rootStr,
+         'file_JESUp': dirStr+'ttbar_cc'+rootStr,
+         'file_JESDown': dirStr+'ttbar_cc'+rootStr,
+         'xsec': 0.1577,
+         'xsec_err': 0.3*0.1577,
+         'sys_array': sys_arrays['ttcc'],
+         'ngen': 52641551, ##52135272,
+         'fillColor': ROOT.kOrange-7,  ##color
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbarPlusCCbar'}
+        )
+        )
+
+    plotList.append(
+        PlotInfo(
+        {'name': 'tt',
+         'file': dirStr+'ttbar' +rootStr,
+         'file_JESUp': dirStr+'ttbar'+rootStr,
+         'file_JESDown': dirStr+'ttbar'+rootStr,
+         'xsec': 0.1577,
+         'xsec_err': 0.023,
+         'sys_array': sys_arrays['tt'],
+         'ngen': 52641551, ##52135272,
+         'fillColor': ROOT.kRed,
+         'fillPattern': 1001,
+         'isNormPerJetBin': 0,
+         'limitPlotName':'ttbar'}
+        )
+        )
+
 
     plotList.append(
         PlotInfo(

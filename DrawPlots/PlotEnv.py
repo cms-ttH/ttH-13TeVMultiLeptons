@@ -307,26 +307,30 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	legForStack.SetNColumns(3)
 
 	TexTitle1 = directoryName.replace('pdf/','')
-	TexTitle2 = TexTitle1.replace('eq2jeq2t',' + 2 jets + 2 tags')
-	TexTitle3 = TexTitle2.replace('ge3t',' + #geq 3 tags')
+	TexTitle2 = TexTitle1.replace('eq2jeq2t',' + 2 jets + 2 b-tags')
+	TexTitle3 = TexTitle2.replace('ge3t',' + #geq 3 b-tags')
 	TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e ')
 	TexTitle5 = TexTitle4.replace('pdf_2012/','')
 	TexTitle6 = TexTitle5.replace('2012_noZmask_','')
-	TexTitle7 = TexTitle6.replace('ge1t',' + #geq 2 jets + #geq 1 tag')	
-	TexTitle = TexTitle7.replace('SameLep_',' #mu#mu/ee ')
+	TexTitle7 = TexTitle6.replace('ge1t',' + #geq 2 jets + #geq 1 b-tag')
+	TexTitle8 = TexTitle7.replace('2011_noZmask_','')
+	TexTitle9 = TexTitle8.replace('SameLep_',' #mu#mu/ee ')
+	TexTitle = TexTitle9.replace('TwoLep_',' Dilepton ')
 	
 	
 	if year == "2011" :
-		myLumiString = TexTitle+"  CMS Preliminary,  #sqrt{s} = 7 TeV,  L = 5.0 fb^{-1}"
+		myLumiString = TexTitle
+#		myLumiString = TexTitle+"  CMS Preliminary,  #sqrt{s} = 7 TeV,  L = 5.0 fb^{-1}"
 	else :
-		myLumiString = TexTitle+"  CMS Preliminary,  #sqrt{s} = 8 TeV,  L = 5.1 fb^{-1}"
+		myLumiString = TexTitle
+#		myLumiString = TexTitle+"  CMS Preliminary,  #sqrt{s} = 8 TeV,  L = 5.1 fb^{-1}"
 #	 myLumiString = TexTitle+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV"
 #	 myLumiString = directoryName.replace('pdf/','')+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV" 
 	myLumiTex = TLatex()
 	myLumiTex.SetNDC()
 	myLumiTex.SetTextFont(42)
 	myLumiTex.SetTextAlign(13)
-	myLumiTex.SetTextSize(0.035)
+	myLumiTex.SetTextSize(0.05)  ##0.035
 
 	# loop over the list of plots
 	# save the data plot for later
@@ -345,6 +349,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	ttBosonSum = 0
 	ttBosonCounter = 0
 
+	SingleTopErr = 0
+	DiBosonErr = 0
+	ZJetsErr = 0
+	WJetsErr = 0
+	ttBosonErr = 0
+	
 	histoStorageList = {}
 	foundFirstDiboson = False
 	foundFirstSingleTop = False
@@ -492,6 +502,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   elif (iplot.name == "ttH_125"):
 		   iSig = resultHist.Clone("signal")
 		   ttHSum = iSig.Integral()
+		   ttHErr = math.pow(iSig.GetBinError(1),2)
 		   #print "adding ttH_120 to output list"
 		   histoStorageList[keyName] = resultHist_MCErrorsOnly.Clone(storeName)
 		   histoStorageList[keyNameJESUp] = resultHist_MCErrorsOnly_JESUp.Clone(storeNameJESUp)
@@ -524,7 +535,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   
 	   else :
 		   iHist = resultHist.Clone("stack")
-		   
+
 		   #print "adding %s to storage list with clone name %s" % (iplot.name, storeName)
 		   
 		   histoStorageList[keyName] = resultHist_MCErrorsOnly.Clone(storeName)
@@ -548,6 +559,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   myStack.Add(iHist, "hist")
 		   if (iplot.name.startswith("t_") or iplot.name.startswith("tbar_")):
 			   SingleTopSum += iHist.Integral()
+			   SingleTopErr += math.pow(iHist.GetBinError(1),2)
 			   SingleTopCounter += 1
 			   if (SingleTopCounter == 6):
 				   legForStack.AddEntry(iHist, "single t ("+str(round(SingleTopSum,1))+")", "f")
@@ -581,6 +593,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   elif (iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):				
 			   ZJetsSum += iHist.Integral()
 			   DiBosonSum += iHist.Integral()
+			   DiBosonErr += math.pow(iHist.GetBinError(1),2)
 			   ZJetsCounter += 1
 #				print "Found zjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
 			   #print "DIBOSON: recognized name %s" % iplot.name
@@ -613,6 +626,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 		   elif (iplot.name.startswith("ZJet")):
 			   ZJetsSum += iHist.Integral()
+			   ZJetsErr += math.pow(iHist.GetBinError(1),2)
 			   ZJetsCounter += 1
 #				print "Found zjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
 			   #print "ZJETS: recognized name %s" % iplot.name
@@ -651,22 +665,27 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #					legForStack.AddEntry(iHist, "ZJets ("+str(round(ZJetsSum,1))+")", "f")
 		   elif (iplot.name == "ttW" or iplot.name == "ttZ"):
 			   ttBosonSum += iHist.Integral()
+			   ttBosonErr += math.pow(iHist.GetBinError(1),2)
 			   ttBosonCounter += 1
 			   if (ttBosonCounter == 2):
-				   legForStack.AddEntry(iHist, "t#bar{t} + W,Z ("+str(round(ttBosonSum,1))+")", "f")
+				   legForStack.AddEntry(iHist, "t#bar{t} + V ("+str(round(ttBosonSum,1))+")", "f")
 			   
 		   elif (iplot.name == "tt"):
 			   ttSum = iHist.Integral()
+			   ttErr = math.pow(iHist.GetBinError(1),2)
 			   legForStack.AddEntry(iHist, "t#bar{t}"+" ("+str(round(MCsum,1))+")", "f")
 		   elif (iplot.name == "ttbb"):
 			   ttbbSum = iHist.Integral()
+			   ttbbErr = math.pow(iHist.GetBinError(1),2)
 			   legForStack.AddEntry(iHist, "t#bar{t} + b#bar{b}"+" ("+str(round(MCsum,1))+")", "f")
 		   elif (iplot.name == "ttcc"):
 			   ttccSum = iHist.Integral()
+			   ttccErr = math.pow(iHist.GetBinError(1),2)
 			   legForStack.AddEntry(iHist, "t#bar{t} + c#bar{c}"+" ("+str(round(MCsum,1))+")", "f")
 		   elif (iplot.name == "WJets"):
 			   ZJetsSum += iHist.Integral()
 			   WJetsSum += iHist.Integral()
+			   WJetsErr += math.pow(iHist.GetBinError(1),2)
 			   ZJetsCounter += 1
 #				print "Found wjets, plotname %s,  ZjetsCounter = %d" % (iplot.name, ZJetsCounter)
 			   #legForStack.AddEntry(iHist, iplot.name+" ("+str(round(MCsum,1))+")", "f")
@@ -678,7 +697,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	if (ttHSum > 0):
 		iSig.Scale(TotalMCsum/ttHSum)
-	iSig.SetLineColor(kBlue)
+	iSig.SetLineColor(kMagenta)  ## was kBlue
 	iSig.SetFillColor(0)
 	iSig.SetLineWidth(2)
 	
@@ -704,7 +723,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #	 MCErrHist.SetFillStyle(3354)
 	MCErrHist.SetFillStyle(3654)
 	MCErrHist.SetFillColor(kBlack)
-	TotalMCErr = MCErrHist.GetBinError(1)
+	TotalMCErr = math.pow(MCErrHist.GetBinError(1),2)
 
 #	 legForStack.AddEntry(myData2011, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
 	legForStack.AddEntry(MCErrHist, "Sum MC ("+str(round(TotalMCsum,1))+")", "f")
@@ -731,7 +750,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	myStack.SetTitle(titleString)
 	myStack.SetMinimum(0.001)
-	myStack.SetMaximum(max(1.001,plotMax*1.3))
+	myStack.SetMaximum(max(1.001,plotMax*1.2))  #### was 1.3
 	##Appropriate for log scale	 
 	##myStack.SetMaximum(plotMax*10) 
 
@@ -764,7 +783,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	if ((dist == "numJets" and (jetSelection.startswith("ge") or jetSelection == "eq1t")) or (dist == "numTaggedJets" and jetSelection=="ge1t")):
 		myStack.SetMinimum(0.1)
-		myStack.SetMaximum(plotMax*13)
+		myStack.SetMaximum(plotMax*3)  ##was 13
 		upLin.cd()
 		gPad.SetLogy()
 
@@ -786,9 +805,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 #	myLumiString = myLumiString + " (KS = %0.2f)" % (ksResult)
 
-	legForStack.Draw()
-	myLumiTex.DrawLatex(0.10, 0.98, myLumiString)
-#	 myLumiTex.DrawLatex(0.25, 0.98, myLumiString)
+#	legForStack.Draw()
+#	myLumiTex.DrawLatex(0.10, 0.98, myLumiString)
+	myLumiTex.DrawLatex(0.30, 0.98, myLumiString)  ### cmt out 0.25
 
 	##Begin comment out for 2012
 	downLin.cd()
@@ -896,9 +915,13 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		myStack.Delete()
 		myCanvasLin.Close()
 		if (year == "2011"):
-			return [ttSum,ttbbSum,ttccSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum,WJetsSum,DiBosonSum,ttHSum,100*ttHSum*998833/(4982*0.098*105138),TotalMCsum,TotalMCErr,Data2011Sum]
+			return [[ttSum,ttccSum,ttbbSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum+WJetsSum,DiBosonSum,TotalMCsum,ttHSum,Data2011Sum],[ttErr,ttccErr,ttbbErr,ttBosonErr,SingleTopErr,ZJetsErr+WJetsErr,DiBosonErr,TotalMCErr,ttHErr,0]]
+#		return [[ttSum,ttccSum,ttbbSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum,WJetsSum,DiBosonSum,TotalMCsum,ttHSum,Data2011Sum],[ttErr,ttccErr,ttbbErr,ttBosonErr,SingleTopErr,ZJetsErr,WJetsErr,DiBosonErr,TotalMCErr,ttHErr,0]]
+#  ,100*ttHSum*998833/(4982*0.098*105138),TotalMCErr   \\\  ,Data2011Sum,TotalMCsum
 		else:
-			return [ttSum,ttbbSum,ttccSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum,WJetsSum,DiBosonSum,ttHSum,100*ttHSum*972496/(5117*0.147*105138.0*(40018.0/43150.0)),TotalMCsum,TotalMCErr,Data2012Sum]
+			return [[ttSum,ttccSum,ttbbSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum+WJetsSum,DiBosonSum,TotalMCsum,ttHSum,Data2012Sum],[ttErr,ttccErr,ttbbErr,ttBosonErr,SingleTopErr,ZJetsErr+WJetsErr,DiBosonErr,TotalMCErr,ttHErr,0]]
+#		return [[ttSum,ttccSum,ttbbSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum,WJetsSum,DiBosonSum,TotalMCsum,ttHSum,Data2012Sum],[ttErr,ttccErr,ttbbErr,ttBosonErr,SingleTopErr,ZJetsErr,WJetsErr,DiBosonErr,TotalMCErr,ttHErr,0]]
+# ,100*ttHSum*972496/(5117*0.147*105138.0*(40018.0/43150.0)),TotalMCErr  \\\   ,Data2012Sum,TotalMCsum		
 	elif output == "root":
 		print "Root output selected"
 		rootFileName = "histosForLimits_%s_%s_%s.root" % (lepselection, year, printedJetSelection)
@@ -1026,13 +1049,14 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 	# Handle the first bin (including underflow in original)
 	binCont = 0
 	binSumW2 = 0
-	if (origHist.GetName() == "avg_tagged_dijet_mass" or origHist.GetName() == "closest_tagged_dijet_mass" or origHist.GetName() == "min_dr_tagged_jets" or origHist.GetName() == "third_jet_pt" or origHist.GetName() == "fourth_jet_pt"):
-		origStart = origHist.FindBin(xMin)
-	else:	
-		origStart = 0  #Include the underflow in the original
+#	if (origHist.GetName() == "avg_tagged_dijet_mass" or origHist.GetName() == "closest_tagged_dijet_mass" or origHist.GetName() == "min_dr_tagged_jets" or origHist.GetName() == "third_jet_pt" or origHist.GetName() == "fourth_jet_pt"):
+#		origStart = origHist.FindBin(xMin)
+#	else:	
+#		origStart = 0  #Include the underflow in the original
+	origStart = 0  #Include the underflow in the original
 	firstBinOrig = origHist.FindBin(xMin)
 	origEnd = firstBinOrig + int(binGroup)
-	if useSysErrors:	
+	if useSysErrors:
 		binALL_err_array = [0]*(len(sys_hist_array)/2)	
 	binALL_err_squared = 0
 
@@ -1097,11 +1121,11 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 				
 	# Do any remaining bins past the end of the new range (including overflow in original)
 	origStart = origEnd
-	if (origHist.GetName() == "third_jet_CHEF" or origHist.GetName() == "fourth_jet_CHEF"):
-		origEnd = origStart + int(binGroup)
-	else:
-		origEnd = 2+nBinsOrig #Include the overflow in the original
-
+#	if (origHist.GetName() == "third_jet_CHEF" or origHist.GetName() == "fourth_jet_CHEF"):
+#		origEnd = origStart + int(binGroup)
+#	else:
+#		origEnd = 2+nBinsOrig #Include the overflow in the original
+        origEnd = 2+nBinsOrig #Include the overflow in the original
 	binCont = 0
 	binSumW2 = 0
 	if useSysErrors:	
