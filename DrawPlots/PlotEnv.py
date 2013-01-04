@@ -319,19 +319,27 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	
 	
 	if year == "2011" :
-		myLumiString = TexTitle
-#		myLumiString = TexTitle+"  CMS Preliminary,  #sqrt{s} = 7 TeV,  L = 5.0 fb^{-1}"
+#		myLumiString = TexTitle
+		myLumiString = "CMS                              #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
 	else :
-		myLumiString = TexTitle
-#		myLumiString = TexTitle+"  CMS Preliminary,  #sqrt{s} = 8 TeV,  L = 5.1 fb^{-1}"
+#		myLumiString = TexTitle
+		myLumiString = "CMS                              #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 #	 myLumiString = TexTitle+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV"
 #	 myLumiString = directoryName.replace('pdf/','')+": CMS Preliminary "+str(lumi/1000000)+" fb^{-1} at #sqrt{s} = 7 TeV" 
 	myLumiTex = TLatex()
 	myLumiTex.SetNDC()
 	myLumiTex.SetTextFont(42)
-	myLumiTex.SetTextAlign(13)
-	myLumiTex.SetTextSize(0.05)  ##0.035
+	myLumiTex.SetTextAlign(13) ##
+	myLumiTex.SetTextSize(0.055)  ##0.035
 
+
+	catinfo = TexTitle
+	SELECTIONInfoLatex = TLatex()
+	SELECTIONInfoLatex.SetNDC()
+	SELECTIONInfoLatex.SetTextFont(42)
+	SELECTIONInfoLatex.SetTextSize(0.05)
+
+	
 	# loop over the list of plots
 	# save the data plot for later
 	# put all other plots into the stack
@@ -697,9 +705,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	if (ttHSum > 0):
 		iSig.Scale(TotalMCsum/ttHSum)
-	iSig.SetLineColor(kMagenta)  ## was kBlue
+#		iSig.Scale(300)
+#		iSig.Scale(30)
+	iSig.SetLineColor(kBlue)  ## was kBlue
 	iSig.SetFillColor(0)
-	iSig.SetLineWidth(2)
+	iSig.SetLineWidth(4)
 	
 
 	if year == "2011":
@@ -750,7 +760,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	myStack.SetTitle(titleString)
 	myStack.SetMinimum(0.001)
-	myStack.SetMaximum(max(1.001,plotMax*1.2))  #### was 1.3
+	myStack.SetMaximum(max(1.001,plotMax*1.3))  #### was 1.3
 	##Appropriate for log scale	 
 	##myStack.SetMaximum(plotMax*10) 
 
@@ -797,7 +807,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	
 	iSig.Draw('histsame')
 
-	theDataHisto.Draw("pesame")		##Comment out for blinding
+	theDataHisto.Draw("pe1same")		##Comment out for blinding
 
 
 	# calculate the KS test result, put it somewhere
@@ -807,8 +817,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 #	legForStack.Draw()
 #	myLumiTex.DrawLatex(0.10, 0.98, myLumiString)
-	myLumiTex.DrawLatex(0.30, 0.98, myLumiString)  ### cmt out 0.25
-
+	myLumiTex.DrawLatex(0.14, 0.99, myLumiString)  ### cmt out 0.25
+	SELECTIONInfoLatex.DrawLatex(0.48, 0.87, catinfo)
+	
 	##Begin comment out for 2012
 	downLin.cd()
 	gPad.SetTopMargin(1e-5)
@@ -892,7 +903,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		
 	
 	l = TLine()
-	l.SetLineStyle(2)
+#	l.SetLineStyle(2)
 	l.DrawLine(xMin,1.,xMax,1.)
 	##End comment for 2012
 
