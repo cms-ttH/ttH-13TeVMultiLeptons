@@ -157,7 +157,7 @@ int main ( int argc, char ** argv )
      exit(22);
    }   
    
-   bool debug_ = true;
+   bool debug_ = false;
 
    //// Ht re-weighting 
    TString rwtFileName = "sum_jet_pt_rwt.root";
@@ -297,7 +297,7 @@ int main ( int argc, char ** argv )
     else if (sampleName == "singlet_tW_lj") sampleNumber = 2654; 
     else if (sampleName == "singlet_tW_jl") sampleNumber = 2664; 
     else if (sampleName == "singlet_tW_ll") sampleNumber = 2634; 
-    else if (sampleName == "singletbar_tW") sampleNumber = 2505; 
+    else if (sampleName == "singletbar_tW") sampleNumber = 2605; 
     else if (sampleName == "singletbar_tW_lj") sampleNumber = 2555; 
     else if (sampleName == "singletbar_tW_jl") sampleNumber = 2565; 
     else if (sampleName == "singletbar_tW_ll") sampleNumber = 2535; 
@@ -668,6 +668,11 @@ int main ( int argc, char ** argv )
     floatBranches["fourth_jet_charge"] = new float(0.0);
     floatBranches["sum_jet_charge"] = new float(0.0);
   
+    floatBranches["first_jet_charge"] = new float(0.0);
+    floatBranches["second_jet_charge"] = new float(0.0);
+    floatBranches["third_jet_charge"] = new float(0.0);
+    floatBranches["fourth_jet_charge"] = new float(0.0);
+
     floatBranches["dPhi_jet1jet2"] = new float(0.0);
     floatBranches["dPhi_jet1jet3"] = new float(0.0);
     floatBranches["dPhi_jet1jet4"] = new float(0.0);
@@ -1422,11 +1427,15 @@ int main ( int argc, char ** argv )
       assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
     }
 
-    //electronsLoose = beanHelper.GetSymmetricDifference(electronsInclusivelyLoose,electronsTight);
-    electronsTL = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(electronsTight),beanHelper.GetSortedByPt(electronsInclusivelyLoose));
+    try { electronsLoose = beanHelper.GetSymmetricDifference(electronsInclusivelyLoose,electronsTight); }
+    catch(...) { std::cerr << " exception in GetSymmetricDifference" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
+    try { electronsTL = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(electronsTight),beanHelper.GetSortedByPt(electronsInclusivelyLoose)); }
+    catch(...) { std::cerr << " exception in GetUnionUnsorted" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
     if (selectionYearStr == "2011" || selectionYearStr == "2012_53x") {
-      electronsSide = beanHelper.GetSymmetricDifference(electronsInclusivelySide,electronsInclusivelyLoose);
-      electronsTS = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(electronsTight),beanHelper.GetSortedByPt(electronsSide));
+      try { electronsSide = beanHelper.GetSymmetricDifference(electronsInclusivelySide,electronsInclusivelyLoose); }
+      catch(...) { std::cerr << " exception in GetUnionUnsorted" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
+      try { electronsTS = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(electronsTight),beanHelper.GetSortedByPt(electronsSide)); }
+      catch(...) { std::cerr << " exception in GetUnionUnsorted" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
       numSideElectrons = electronsSide.size();
     }
     electronsSelected = electronsTL;
@@ -1473,11 +1482,15 @@ int main ( int argc, char ** argv )
       assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
     }
 
-    //muonsLoose = beanHelper.GetSymmetricDifference(muonsInclusivelyLoose,muonsTight);
-    muonsTL = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(muonsTight),beanHelper.GetSortedByPt(muonsInclusivelyLoose));
+    try { muonsLoose = beanHelper.GetSymmetricDifference(muonsInclusivelyLoose,muonsTight); }
+    catch(...) { std::cerr << " exception in GetSymmetricDifference" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
+    try { muonsTL = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(muonsTight),beanHelper.GetSortedByPt(muonsInclusivelyLoose)); }
+    catch(...) { std::cerr << " exception in GetUnionUnsorted" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
     if (selectionYearStr == "2011" || selectionYearStr == "2012_53x") {    
-      muonsSide = beanHelper.GetSymmetricDifference(muonsInclusivelySide,muonsInclusivelyLoose);
-      muonsTS = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(muonsTight),beanHelper.GetSortedByPt(muonsSide));
+      try { muonsSide = beanHelper.GetSymmetricDifference(muonsInclusivelySide,muonsInclusivelyLoose); }
+      catch(...) { std::cerr << " exception in GetSymmetricDifference" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
+      try { muonsTS = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(muonsTight),beanHelper.GetSortedByPt(muonsSide)); }
+      catch(...) { std::cerr << " exception in GetUnionUnsorted" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
       numSideMuons = muonsSide.size();
     }
     muonsSelected = muonsTL;
@@ -1721,6 +1734,8 @@ int main ( int argc, char ** argv )
       //------------------------
       int numAllJet = numGoodAndBadJets;
       int numJets = int(tight_pfjet_index.size());
+      // Only select events with at least two jets
+      if (numJets < 2) continue;
       int numTaggedJets = int(tag_pfjet_index.size());
 
       ///////
@@ -1917,6 +1932,11 @@ int main ( int argc, char ** argv )
       float fourth_jet_CHEF = 10000.;
       float sum_jet_CHEF = 0.0;
       
+      float first_jet_CSV = -10.0 ;
+      float second_jet_CSV = -10.0 ;
+      float third_jet_CSV = -10.0 ;
+      float fourth_jet_CSV = -10.0 ;
+
       float first_jet_charge = 10000.;
       float second_jet_charge = 10000.;
       float third_jet_charge = 10000.;
@@ -2390,7 +2410,7 @@ int main ( int argc, char ** argv )
 	    if (min_allJet_lep1_dR > lep_vect1.DeltaR(allJet_vect)){
 	      min_allJet_lep1_dR = lep_vect1.DeltaR(allJet_vect); 
 	    }
-	    
+
 	    if (min_allJet_lep2_dR > lep_vect2.DeltaR(allJet_vect)){
 	      min_allJet_lep2_dR = lep_vect2.DeltaR(allJet_vect); 
 	    }
@@ -2410,7 +2430,9 @@ int main ( int argc, char ** argv )
           for (int k=j+1; k < numGoodAndBadJets; k++) {
             sum_topLike_allTrijet_vect = allJetV[i] + allJetV[j] + allJetV[k];
             topLike_allTrijet_mass2 = sum_topLike_allTrijet_vect.M();
-            if ((pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679) || (pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex <= 0.679) || (pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex <= 0.679)) {
+            if ((pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679)
+                || (pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex <= 0.679)
+                || (pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex <= 0.679)) {
               if (fabs(160 - topLike_allTrijet_mass1) > fabs(160 - topLike_allTrijet_mass2) || topLike_allTrijet_mass1 == -10.0) {
                 topLike_allTrijet_mass1 = topLike_allTrijet_mass2;
               }
@@ -2436,12 +2458,14 @@ int main ( int argc, char ** argv )
         for (int j=i+1; j < numGoodJets; j++) {
           sum_higgsLike_dijet_vect = jetV[i] + jetV[j];
           higgsLike_dijet_mass2 = sum_higgsLike_dijet_vect.M();
-          if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679 || pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex > 0.679) {
+          if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679
+              || pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex > 0.679) {
             if (fabs(110 - higgsLike_dijet_mass1) > fabs(110 - higgsLike_dijet_mass2) || higgsLike_dijet_mass1 == -10.0) {
               higgsLike_dijet_mass1 = higgsLike_dijet_mass2;
             }
           }
-          if (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679) {
+          if (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679
+              && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679) {
             if (fabs(75 - wLike_dijet_mass1) > fabs(75 - higgsLike_dijet_mass2) || wLike_dijet_mass1 == -10.0) {
               wLike_dijet_mass1 = higgsLike_dijet_mass2;
             }
@@ -2449,7 +2473,9 @@ int main ( int argc, char ** argv )
           for (int k=j+1; k < numGoodJets; k++) {
             sum_topLike_trijet_vect = jetV[i] + jetV[j] + jetV[k];
             topLike_trijet_mass2 = sum_topLike_trijet_vect.M();
-            if ((pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679) || (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex <= 0.679) || (pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex <= 0.679)) {
+            if ((pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679)
+                || (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex <= 0.679)
+                || (pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex <= 0.679)) {
               if (fabs(160 - topLike_trijet_mass1) > fabs(160 - topLike_trijet_mass2) || topLike_trijet_mass1 == -10.0) {
                 topLike_trijet_mass1 = topLike_trijet_mass2;
               }
@@ -2461,25 +2487,29 @@ int main ( int argc, char ** argv )
           first_jet_pt = jet_pt[iJet];
           first_jet_eta = jet_vect.Eta();
           first_jet_CHEF = jet_CHEF[iJet];
-          first_jet_charge = jet_charge[iJet];          
+          first_jet_charge = jet_charge[iJet];
+          first_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
         }
 	    if (i==1)  {
           second_jet_pt = jet_pt[iJet];
           second_jet_eta = jet_vect.Eta();
           second_jet_CHEF = jet_CHEF[iJet];
           second_jet_charge = jet_charge[iJet];
+          second_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
         }
 	    if (i==2)  {
           third_jet_pt = jet_pt[iJet];
           third_jet_eta = jet_vect.Eta();
           third_jet_CHEF = jet_CHEF[iJet];
           third_jet_charge = jet_charge[iJet];
+          third_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
         }
 	    if (i==3)  {
           fourth_jet_pt = jet_pt[iJet];
           fourth_jet_eta = jet_vect.Eta();
           fourth_jet_CHEF = jet_CHEF[iJet];
           fourth_jet_charge = jet_charge[iJet];
+          fourth_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
         }
 	    
 	    if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
@@ -2902,6 +2932,11 @@ int main ( int argc, char ** argv )
         *(floatBranches["fourth_jet_charge"]) = fourth_jet_charge;
         *(floatBranches["sum_jet_charge"]) = sum_jet_charge;
 
+        *(floatBranches["first_jet_CSV"]) = first_jet_CSV;
+        *(floatBranches["second_jet_CSV"]) = second_jet_CSV;
+        *(floatBranches["third_jet_CSV"]) = third_jet_CSV;
+        *(floatBranches["fourth_jet_CSV"]) = fourth_jet_CSV;
+
         *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
         *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
         *(floatBranches["dPhi_jet1jet4"]) = dPhi_jet1jet4;
@@ -3056,6 +3091,8 @@ int main ( int argc, char ** argv )
         "second_jet_eta : " << setprecision(3) << second_jet_eta << " , " << 
         "avg_btag_disc_btags : " << setprecision(3) << avg_btag_disc_btags << " , " <<
         "highest_btag_disc_non_btags : " << setprecision(3) << highest_btag_disc_non_btags << " , " <<
+        "first_jet_CSV : " << setprecision(3) << first_jet_CSV << " , " << 
+        "second_jet_CSV : " << setprecision(3) << second_jet_CSV << " , " << 
         "weight : " << setprecision(3) << weight << " , " << 
         "weight_PUup : " << setprecision(3) << weight_PUup << " , " << 
         "weight_PUdown : " << setprecision(3) << weight_PUdown << " , " << 
