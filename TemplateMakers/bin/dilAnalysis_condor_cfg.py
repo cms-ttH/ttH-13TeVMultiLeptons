@@ -43,7 +43,7 @@ process.inputs = cms.PSet (
 )
 if iYear == '2011':
     listFileName = "../../listsForSkims/" + sampleNameCL + ".list"  ###2011
-elif iYear == '2012':
+elif iYear == '2012_52x':
     listFileName = "../../listsForSkims2012_v3/" + sampleNameCL + ".list"
 #listFileName = "listsForSkims/" + sampleNameCL + ".list"         ###2012
 
