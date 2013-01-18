@@ -6,7 +6,7 @@ import time
 
 
 def main ():
-    yearChoice = int(sys.argv[1])
+    yearChoice = str(sys.argv[1])
     jesChoice = int(sys.argv[2])
     jerChoice = int(sys.argv[3])
     btagChoice = int(sys.argv[4])
@@ -61,48 +61,48 @@ def main ():
                      'ttbar_bb',
                      'ttbar_cc',
                      'wjets',
-                      'ww',
-                      'wz',
-                      'zz',
-                      'zjets_part1',
-                      'zjets_part2',
-                      'zjets_part3',
-                      'zjets_part4',
-                      'zjets_part5',
-                      'zjets_part6',
-                      'zjets_part7',
-                      'zjets_part8',
-                      'zjets_part9',
-                      'zjets_part10',
-                      'zjets_part11',
-                      'zjets_part12',
-                      'zjets_lowmass',                    
-                      'ttbar_part1',
-                      'ttbar_part2',
-                      'ttbar_part3',
-                      'ttbar_part4',
-                      'ttbar_part5',
-                      'ttbar_part6',
-                      'ttbar_part7',
-                      'ttbar_part8',
-                      'ttbar_part9',
-                      'ttbar_part10',
-                      'ttbar_part11',
-                      'ttbar_part12',
+                     'ww',
+                     'wz',
+                     'zz',
+                     'zjets_part1',
+                     'zjets_part2',
+                     'zjets_part3',
+                     'zjets_part4',
+                     'zjets_part5',
+                     'zjets_part6',
+                     'zjets_part7',
+                     'zjets_part8',
+                     'zjets_part9',
+                     'zjets_part10',
+                     'zjets_part11',
+                     'zjets_part12',
+                     'zjets_lowmass',                    
+                     'ttbar_part1',
+                     'ttbar_part2',
+                     'ttbar_part3',
+                     'ttbar_part4',
+                     'ttbar_part5',
+                     'ttbar_part6',
+                     'ttbar_part7',
+                     'ttbar_part8',
+                     'ttbar_part9',
+                     'ttbar_part10',
+                     'ttbar_part11',
+                     'ttbar_part12',
                      ]
     extrattbar = [
-                      'ttbar_part13',
-                      'ttbar_part14',
-                      'ttbar_part15',
-                      'ttbar_part16',
-                      'ttbar_part17',
-                      'ttbar_part18',        
+                     'ttbar_part13',
+                     'ttbar_part14',
+                     'ttbar_part15',
+                     'ttbar_part16',
+                     'ttbar_part17',
+                     'ttbar_part18',        
         ]
-    if yearChoice == 2011:
+    if yearChoice == "2011":
         listOfSamples = listOfSamples + extrattbar
         if btagChoice == 0 and jesChoice == 0 and jerChoice == 0:
             listOfSamples = listOfSamples2011Data + listOfSamples
-    elif yearChoice == 2012:
+    elif yearChoice == "2012_52x":
         if btagChoice == 0 and jesChoice == 0 and jerChoice == 0:        
             listOfSamples = listOfSamples2012Data + listOfSamples
 
@@ -119,9 +119,9 @@ def main ():
         numJobs = 0
         foundJobs = False
 #        for iLine in os.popen("wc -l listsForSkims/%s.list" % iList).readlines():
-        if yearChoice == 2011:
+        if yearChoice == "2011":
             listStr = "wc -l ../../listsForSkims/"
-        elif yearChoice == 2012:
+        elif yearChoice == "2012_52x":
 #            listStr = "wc -l listsForSkims/"
             listStr = "wc -l ../../listsForSkims2012_v3/"
         for iLine in os.popen(listStr+"%s.list" % iList).readlines():
