@@ -105,6 +105,8 @@ def main ():
     elif yearChoice == "2012_52x":
         if btagChoice == 0 and jesChoice == 0 and jerChoice == 0:        
             listOfSamples = listOfSamples2012Data + listOfSamples
+        #listOfSamples = ['ttbar_part1','ttbarW','ttbarZ','ttbar_bb','ttbar_cc','ttH125'] ##For small studies
+        listOfSamples = ['ttbar_part1','ttbar_part2','ttbar_part3','ttbar_part4','ttbar_part5','ttbar_part6','ttbar_part7','ttbar_part8','ttbar_part9'] ##2012_53x as of Jan 19
 
     for iList in listOfSamples:
         condorHeader = "universe = vanilla\n"+"executable = runTemplatesCondor_modDilep.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
@@ -124,6 +126,8 @@ def main ():
         elif yearChoice == "2012_52x":
 #            listStr = "wc -l listsForSkims/"
             listStr = "wc -l ../../listsForSkims2012_v3/"
+        elif yearChoice == "2012_53x":
+            listStr = "wc -l /afs/crc.nd.edu/user/a/abrinke1/BEANsHelper/CMSSW_5_3_2_patch5/src/BEAN/listsForSkims2012_53x_v1/"
         for iLine in os.popen(listStr+"%s.list" % iList).readlines():
             words = iLine.split()
             print "Line is ="

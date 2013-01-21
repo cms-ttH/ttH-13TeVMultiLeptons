@@ -45,7 +45,8 @@ if iYear == '2011':
     listFileName = "../../listsForSkims/" + sampleNameCL + ".list"  ###2011
 elif iYear == '2012_52x':
     listFileName = "../../listsForSkims2012_v3/" + sampleNameCL + ".list"
-#listFileName = "listsForSkims/" + sampleNameCL + ".list"         ###2012
+elif iYear == '2012_53x':
+	listFileName = "/afs/crc.nd.edu/user/a/abrinke1/BEANsHelper/CMSSW_5_3_2_patch5/src/BEAN/listsForSkims2012_53x_v1/" + sampleNameCL + ".list"
 
 # read in all files in the list
 print "Reading file names from list: %s" % listFileName
