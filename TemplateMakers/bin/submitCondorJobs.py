@@ -106,6 +106,9 @@ def main ():
         if btagChoice == 0 and jesChoice == 0 and jerChoice == 0:        
             listOfSamples = listOfSamples2012Data + listOfSamples
         #listOfSamples = ['ttbar_part1','ttbarW','ttbarZ','ttbar_bb','ttbar_cc','ttH125'] ##For small studies
+    elif yearChoice == "2012_53x":
+        if btagChoice == 0 and jesChoice == 0 and jerChoice == 0:        
+            listOfSamples = listOfSamples2012Data + listOfSamples
         listOfSamples = ['ttbar_part1','ttbar_part2','ttbar_part3','ttbar_part4','ttbar_part5','ttbar_part6','ttbar_part7','ttbar_part8','ttbar_part9'] ##2012_53x as of Jan 19
 
     for iList in listOfSamples:
