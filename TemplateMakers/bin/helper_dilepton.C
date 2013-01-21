@@ -17,7 +17,8 @@
 #include <algorithm>
 #include <vector>
 #include <exception>
-#include <cmath> 
+#include <cmath>
+#include <random>
 #include <iomanip>
 #include <fstream>
 #include <string>
@@ -79,8 +80,8 @@ using std::cout;
 using std::endl;
 
 //******************************************************************************
-typedef std::vector<double> vdouble;
-typedef std::vector<std::vector<double> > vvdouble;
+typedef std::vector<float> vfloat;
+typedef std::vector<std::vector<float> > vvfloat;
 typedef std::vector<std::vector<std::string> > vvstring;
 typedef std::vector<string> vstring;
 typedef std::vector<bool> vbool;
@@ -89,10 +90,10 @@ typedef std::vector<int> vint;
 
 // here is where you can change the btag threshold
 // Medium combined tag threshold
-double btagThres = 0.679;
+float btagThres = 0.679;
 
 // super loose combined tag threshold
-//double btagThres = 0.244;
+//float btagThres = 0.244;
 
 using namespace std;
 
@@ -485,7 +486,8 @@ int main ( int argc, char ** argv )
   bool ExtraTriggerVariables = false;
   bool ExtraGenVariables = false;
   bool ExtraHiggsVariables = false;
-
+  bool ArtificialJetPt = false;
+  
   std::map<TString, int *> intBranches;
   std::map<TString, unsigned int *> uintBranches;  
   std::map<TString, float *> floatBranches;
@@ -615,6 +617,23 @@ int main ( int argc, char ** argv )
     floatBranches["higgs_pz"] = new float(0.0);
     floatBranches["higgs_genJet_mass"] = new float(0.0);
     floatBranches["higgs_genParton_mass"] = new float(0.0);
+    floatBranches["higgsLike_dijet_mass"] = new float(0.0);
+    floatBranches["higgsLike_diBjet_mass"] = new float(0.0);
+    floatBranches["higgsLike_allDijet_mass"] = new float(0.0);
+    floatBranches["higgsLike_dijet_dR"] = new float(0.0);
+    floatBranches["higgsLike_dijet_pt"] = new float(0.0);
+    floatBranches["higgsLike_dijet_eta"] = new float(0.0);
+    floatBranches["higgsLike_dijet_jet1_pt"] = new float(0.0);
+    floatBranches["higgsLike_dijet_jet2_pt"] = new float(0.0);
+    intBranches["numHiggsLike_dijet_10"] = new int (0);
+    intBranches["numHiggsLike_dijet_15"] = new int (0);
+    intBranches["numHiggsLike_dijet_20"] = new int (0);
+    intBranches["numHiggsLike_dijet_25"] = new int (0);
+    intBranches["numHiggsLike_diBjet_10"] = new int (0);
+    intBranches["numHiggsLike_diBjet_15"] = new int (0);
+    intBranches["numHiggsLike_diBjet_20"] = new int (0);
+    intBranches["numHiggsLike_diBjet_25"] = new int (0);
+    
 
     floatBranches["higgs_dijet_mass"] = new float(0.0);
     floatBranches["higgs_dijet_pt"] = new float(0.0);
@@ -743,8 +762,6 @@ int main ( int argc, char ** argv )
     ////objects
     floatBranches["wLike_dijet_mass"] = new float(0.0);
     floatBranches["topLke_trijet_mass"] = new float(0.0);
-    floatBranches["higgsLike_dijet_mass"] = new float(0.0);
-    floatBranches["higgsLike_allDijet_mass"] = new float(0.0);
     floatBranches["m2H_btag"] = new float(0.0);
     floatBranches["wLike_allDijet_mass"] = new float(0.0);
     floatBranches["topLike_allTrijet_mass"] = new float(0.0);
@@ -801,6 +818,8 @@ int main ( int argc, char ** argv )
 
   } //End if (ExtraLeptonVariables)
 
+  int dInt = -9*pow(10,20);
+  float dFloat = -9.0*pow(10,20);
 
   ////////////////////  
   histofile.cd();
@@ -882,12 +901,12 @@ int main ( int argc, char ** argv )
   } 
 
   ///
-  double minNDOF = 4;
-  double maxAbsZ = 24;
-  double maxd0   = 2.;
+  float minNDOF = 4;
+  float maxAbsZ = 24;
+  float maxd0   = 2.;
 
   int nevents=0;
-  double nevents_wgt=0;
+  float nevents_wgt=0;
 
   int nentries = ev.size();
   std::cout << "\n\t Number of entries = " << nentries << std::endl;
@@ -909,7 +928,7 @@ int main ( int argc, char ** argv )
 
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
       if( cnt%100==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
-					      << int(double(cnt)/double(nentries)*100) << "% done" << std::endl;
+					      << int(float(cnt)/float(nentries)*100) << "% done" << std::endl;
 
       if( cnt==(maxNentries+1) ) break;
 
@@ -1046,18 +1065,18 @@ int main ( int argc, char ** argv )
 
       int eventSampleNumber = event->sample;
 
-      double numTruePV = event->numTruePV;
+      float numTruePV = event->numTruePV;
       double numGenPV = event->numGenPV;
 
-      double Q2ScaleUpWgt = 1.0;
-      double Q2ScaleDownWgt = 1.0; 
+      float Q2ScaleUpWgt = 1.0;
+      float Q2ScaleDownWgt = 1.0; 
 
       if (sampleNumber == 2500 || sampleNumber == 2544 || sampleNumber == 2555) {
         Q2ScaleUpWgt = event->Q2ScaleUpWgt;
         Q2ScaleDownWgt = event->Q2ScaleDownWgt;
       }
 
-      float weight = 1 ;
+      float weight = 1.0 ;
 
       if(cnt<5)  std::cout << "CONFIG: Sample number from ntuple is: " << eventSampleNumber << std::endl;
 
@@ -1068,22 +1087,22 @@ int main ( int argc, char ** argv )
       int HtoGG = 0;
       int HtoWW = 0;
       int HtoZZ = 0;
-      int lep1Mother = 0;
-      int lep2Mother = 0;
-      int lep1Grandmother = 0;
-      int lep2Grandmother = 0;
+      int lep1Mother = dInt;
+      int lep2Mother = dInt;
+      int lep1Grandmother = dInt;
+      int lep2Grandmother = dInt;
       
-      float higgs_pt = -10.0;
-      float higgs_pz = -10.0;
-      float top1_pt = -10.0;
-      float top1_pz = -10.0;
+      float higgs_pt = dFloat;
+      float higgs_pz = dFloat;
+      float top1_pt = dFloat;
+      float top1_pz = dFloat;
 
-      vdouble muon_px;
-      vdouble ele_px;
-      vdouble muon_py;
-      vdouble ele_py;
-      vdouble muon_pz;
-      vdouble ele_pz;
+      vfloat muon_px;
+      vfloat ele_px;
+      vfloat muon_py;
+      vfloat ele_py;
+      vfloat muon_pz;
+      vfloat ele_pz;
       vint muon_mother;
       vint ele_mother;
       vint muon_grandmother;
@@ -1149,16 +1168,6 @@ int main ( int argc, char ** argv )
       
       MetIter pfmet = pfmets.begin();
       BNmet pfmetSelected = beanHelper.GetCorrectedMET(pfmets.at(0),pfjets,iSysType);
-      // MetIter calomet = calomets.begin();
-      // MetIter tcmet = tcmets.begin();
-
-      // Type I corrected MET
-      //h_met_pt->Fill(pfmet->pt,weight);
-      //h_met_phi->Fill(pfmet->phi,weight);
-      // Uncorrected / raw MET
-      //h_met_Upt->Fill(pfmet->Upt,weight);
-      //h_met_Uphi->Fill(pfmet->Uphi,weight);
-
       
       // Loop over and count the number of primary vertices
       int numPV = 0;
@@ -1173,9 +1182,9 @@ int main ( int argc, char ** argv )
       if (verbose) std::cout << "about to do pu reweight " <<std::endl;
       ///--------------------------------
       // Pile-up reweighting  ////Robin
-      double weight_PUnominal = 1;
-      double weight_PUup = 1;
-      double weight_PUdown = 1;
+      double weight_PUnominal = 1.0;
+      double weight_PUup = 1.0;
+      double weight_PUdown = 1.0;
 
       if(!isData){
         if(selectionYearStr == "2011") {
@@ -1405,9 +1414,9 @@ int main ( int argc, char ** argv )
     BNelectronCollection electronsTS;
     BNelectronCollection electronsSelected;
 
-    int numTightElectrons = 0;
-    int numLooseElectrons = 0;
-    int numSideElectrons = 0;
+    int numTightElectrons = dInt;
+    int numLooseElectrons = dInt;
+    int numSideElectrons = dInt;
 
     if (selectionYearStr == "2011") {
       electronsTight = beanHelper.GetSelectedElectrons(looseElectrons,electronID::electronTight);
@@ -1460,9 +1469,9 @@ int main ( int argc, char ** argv )
     BNmuonCollection muonsTS;
     BNmuonCollection muonsSelected;
 
-    int numTightMuons = 0;
-    int numLooseMuons = 0;
-    int numSideMuons = 0;
+    int numTightMuons = dInt;
+    int numLooseMuons = dInt;
+    int numSideMuons = dInt;
     
     if (selectionYearStr == "2011") {
       muonsTight = beanHelper.GetSelectedMuons(looseMuons,muonID::muonTight);
@@ -1525,22 +1534,22 @@ int main ( int argc, char ** argv )
       std::vector<int> tag_pfjet_csvVal;
       std::vector<int> untag_pfjet_index;
 
-      std::vector<double> good_jet_pt;
-      std::vector<double> good_jet_eta;
-      std::vector<double> good_jet_CHEF;
-      std::vector<double> good_jet_charge;
-      std::vector<double> good_jet_tag;
+      std::vector<float> good_jet_pt;
+      std::vector<float> good_jet_eta;
+      std::vector<float> good_jet_CHEF;
+      std::vector<float> good_jet_charge;
+      std::vector<float> good_jet_tag;
       std::vector<int>    good_jet_flavor;
 
       std::vector<int>    jet_motherID;
       
-      vdouble jet_px;
-      vdouble jet_py;
-      vdouble jet_pz;
-      vdouble jet_pt;
-      vdouble jet_energy;
-      vdouble jet_CHEF;
-      vdouble jet_charge;
+      vfloat jet_px;
+      vfloat jet_py;
+      vfloat jet_pz;
+      vfloat jet_pt;
+      vfloat jet_energy;
+      vfloat jet_CHEF;
+      vfloat jet_charge;
 
       int numGoodJets=0;
       int numHiggsJets=0;
@@ -1558,28 +1567,28 @@ int main ( int argc, char ** argv )
       TLorentzVector higgsClosestElectronV[100];
       TLorentzVector higgsClosestTrackV[100];
 
-      float higgs_dijet_jet1_csv = -10.0;
-      float higgs_dijet_jet2_csv = -10.0;
-      float higgs_dijet_jet1_btagSoftMuon = -10.0;
-      float higgs_dijet_jet2_btagSoftMuon = -10.0;
-      float higgs_dijet_jet1_btagSoftEle = -10.0;
-      float higgs_dijet_jet2_btagSoftEle = -10.0;
-      float higgs_dijet_jet1_Nconst = -10.0;
-      float higgs_dijet_jet2_Nconst = -10.0;
-      //float higgs_dijet_jet1_mass = -10.0;
-      //float higgs_dijet_jet2_mass = -10.0;
-      //float higgs_dijet_jet1_area = -10.0;
-      //float higgs_dijet_jet2_area = -10.0;
-      //float higgs_dijet_jet1_charge = -10.0;
-      //float higgs_dijet_jet2_charge = -10.0;
-      float higgs_dijet_jet1_leadCandPt = -10.0;
-      float higgs_dijet_jet2_leadCandPt = -10.0;
-      float higgs_dijet_jet1_leadCandDistFromPV= -10.0;
-      float higgs_dijet_jet2_leadCandDistFromPV = -10.0;
+      float higgs_dijet_jet1_csv = dFloat;
+      float higgs_dijet_jet2_csv = dFloat;
+      float higgs_dijet_jet1_btagSoftMuon = dFloat;
+      float higgs_dijet_jet2_btagSoftMuon = dFloat;
+      float higgs_dijet_jet1_btagSoftEle = dFloat;
+      float higgs_dijet_jet2_btagSoftEle = dFloat;
+      float higgs_dijet_jet1_Nconst = dFloat;
+      float higgs_dijet_jet2_Nconst = dFloat;
+      //float higgs_dijet_jet1_mass = dFloat;
+      //float higgs_dijet_jet2_mass = dFloat;
+      //float higgs_dijet_jet1_area = dFloat;
+      //float higgs_dijet_jet2_area = dFloat;
+      //float higgs_dijet_jet1_charge = dFloat;
+      //float higgs_dijet_jet2_charge = dFloat;
+      float higgs_dijet_jet1_leadCandPt = dFloat;
+      float higgs_dijet_jet2_leadCandPt = dFloat;
+      float higgs_dijet_jet1_leadCandDistFromPV= dFloat;
+      float higgs_dijet_jet2_leadCandDistFromPV = dFloat;
       
 
       
-      std::list<float> jet_desc;      
+      std::list<float> jet_CSV;      
 
       bool jerDebugPrint = false;
 
@@ -1597,24 +1606,39 @@ int main ( int argc, char ** argv )
 
       for( int i=0; i<int(pfjetsSelected.size()); i++ ){
 
+	float jetPt = pfjetsSelected.at(i).pt;
+    float jetEta = pfjetsSelected.at(i).eta;	
+    float jetAbsEta = fabs(jetEta);
+    float genJetPT = pfjetsSelected.at(i).genJetPT;
+    float jetPhi = pfjetsSelected.at(i).phi;
+    float jetCHEF = pfjetsSelected.at(i).chargedHadronEnergyFraction;
+    float jetcharge = pfjetsSelected.at(i).charge;
+    //float myJER = beanHelper.getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
 
-	jet_px.push_back(pfjetsSelected.at(i).px);
-	jet_py.push_back(pfjetsSelected.at(i).py);
-	jet_pz.push_back(pfjetsSelected.at(i).pz);
-	jet_pt.push_back(pfjetsSelected.at(i).pt);
-	jet_energy.push_back(pfjetsSelected.at(i).energy);
+    if (ArtificialJetPt) {
+      std::random_device rd;
+      std::mt19937 generator(rd());
+      double mean = 1.0;
+      double std  = 0.15*sqrt(50.0)/sqrt(max(pfjetsSelected.at(i).genPartonPT,20.0));
+      std::normal_distribution<double> normal(mean, std);
+      double jet_scale = normal(generator)*pfjetsSelected.at(i).genPartonPT/pfjetsSelected.at(i).pt;
+      jetPt *= jet_scale;
+      jet_px.push_back(pfjetsSelected.at(i).px*jet_scale);
+      jet_py.push_back(pfjetsSelected.at(i).py*jet_scale);
+      jet_pz.push_back(pfjetsSelected.at(i).pz*jet_scale);
+      jet_pt.push_back(pfjetsSelected.at(i).pt*jet_scale);
+      jet_energy.push_back(pfjetsSelected.at(i).energy*jet_scale);
+    }
+    else {
+      jet_px.push_back(pfjetsSelected.at(i).px);
+      jet_py.push_back(pfjetsSelected.at(i).py);
+      jet_pz.push_back(pfjetsSelected.at(i).pz);
+      jet_pt.push_back(pfjetsSelected.at(i).pt);
+      jet_energy.push_back(pfjetsSelected.at(i).energy);
+    }
     jet_CHEF.push_back(pfjetsSelected.at(i).chargedHadronEnergyFraction);
     jet_charge.push_back(pfjetsSelected.at(i).charge);    
-
-	double jetPt = pfjetsSelected.at(i).pt;
-    double jetEta = pfjetsSelected.at(i).eta;	
-    double jetAbsEta = fabs(jetEta);
-    double genJetPT = pfjetsSelected.at(i).genJetPT;
-    double jetPhi = pfjetsSelected.at(i).phi;
-    double jetCHEF = pfjetsSelected.at(i).chargedHadronEnergyFraction;
-    double jetcharge = pfjetsSelected.at(i).charge;
-    //double myJER = beanHelper.getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
-
+      
     if ( (tmpName.Contains("ttH") && pfjetsSelected.at(i).genPartonMotherId == 25) ||
          (sampleName == "ttbar_bb" && abs(pfjetsSelected.at(i).genPartonId) == 5 && abs(pfjetsSelected.at(i).genPartonMotherId) != 6) ||
          (sampleName == "ttbarW" && abs(pfjetsSelected.at(i).genPartonId) != 5 && abs(pfjetsSelected.at(i).genPartonMotherId) == 24) ||
@@ -1715,7 +1739,7 @@ int main ( int argc, char ** argv )
 	
 	if( csvM ){
 	  tag_pfjet_index.push_back(i);
-	  jet_desc.push_back(csv);
+	  jet_CSV.push_back(csv);
       tag_pfjet_csvVal.push_back(csv);
 	}
 	else        untag_pfjet_index.push_back(i);
@@ -1768,12 +1792,12 @@ int main ( int argc, char ** argv )
 
       //met
 
-    double metx = pfmet->px;
-    double mety = pfmet->py;
-    double metpt = pfmet->pt;
-    double metx_new = pfmetSelected.px;
-    double mety_new = pfmetSelected.py;
-    double metpt_new = pfmetSelected.pt;
+    float metx = pfmet->px;
+    float mety = pfmet->py;
+    float metpt = pfmet->pt;
+    float metx_new = pfmetSelected.px;
+    float mety_new = pfmetSelected.py;
+    float metpt_new = pfmetSelected.pt;
     
     if (jerDebugPrint || verbose)
       cout << "---> MET " << endl
@@ -1791,20 +1815,20 @@ int main ( int argc, char ** argv )
       float unc_met = pfmet->Upt;
 
 
-      //sort btag descrminator
-      jet_desc.sort();  
-      std::vector<float> jet_sort_vect;			
+      //sort btag discriminator
+      jet_CSV.sort();  
+      std::vector<float> jet_CSV_sorted_vect;			
       std::list<float>::iterator listint;			
-      for (listint = jet_desc.begin(); listint != jet_desc.end(); listint++){
-	jet_sort_vect.push_back(*listint);  //accessible form
+      for (listint = jet_CSV.begin(); listint != jet_CSV.end(); listint++){
+	jet_CSV_sorted_vect.push_back(*listint);  //accessible form
       }
 
       //////  ttbb bkg -- dibjet mass combinations
       std::list<float> dibjet_mass_combinations;
-      float m2H_btag = -10.0 ;
+      float m2H_btag = dFloat ;
 
       std::list<float> dijet_mass_combinations;
-      float dijet_mass_m2H = -10.0 ;
+      float dijet_mass_m2H = dFloat ;
 
       //sum of all jets
       TLorentzVector sum_jet_vect(0.0,0.0,0.0,0.0);
@@ -1827,43 +1851,57 @@ int main ( int argc, char ** argv )
       TLorentzVector sum_higgs_genJet_vect(0.0,0.0,0.0,0.0);
       TLorentzVector sum_higgs_genParton_vect(0.0,0.0,0.0,0.0);
       
-      float higgs_dijet_mass = -10.0;
-      float higgs_dijet_pt = -10.0;
-      float higgs_dijet_pz = -10.0;
-      float higgs_dijet_dR = -10.0;
-      float higgs_dijet_dPhi = -10.0;
-      float higgs_dijet_jet1_pt= -10.0;
-      float higgs_dijet_jet2_pt = -10.0;
-      float higgs_dijet_jet1_eta = -10.0;
-      float higgs_dijet_jet2_eta = -10.0;
-      float higgs_dijet_jet1_muon_dR= -10.0;
-      float higgs_dijet_jet2_muon_dR = -10.0;
-      //float higgs_dijet_jet1_muon_pt= -10.0;
-      //float higgs_dijet_jet2_muon_pt = -10.0;
-      float higgs_dijet_jet1_electron_dR= -10.0;
-      float higgs_dijet_jet2_electron_dR = -10.0;
-      //float higgs_dijet_jet1_electron_pt= -10.0;
-      //float higgs_dijet_jet2_electron_pt = -10.0;
-      float higgs_dijet_jet1_track_dR= -10.0;
-      float higgs_dijet_jet2_track_dR = -10.0;
-      float higgs_dijet_jet1_track_pt= -10.0;
-      float higgs_dijet_jet2_track_pt = -10.0;
-      float higgsLike_dijet_mass1 = -10.0;
-      float higgsLike_dijet_mass2 = -10.0;
-      float higgs_dijet_genJet1_pt= -10.0;
-      float higgs_dijet_genJet2_pt = -10.0;
-      float higgs_dijet_genParton1_pt= -10.0;
-      float higgs_dijet_genParton2_pt = -10.0;
-      float wLike_dijet_mass1 = -10.0;
-      float topLike_trijet_mass1 = -10.0;
-      float topLike_trijet_mass2 = -10.0;
-      float higgsLike_allDijet_mass1 = -10.0;
-      float higgsLike_allDijet_mass2 = -10.0;
-      float wLike_allDijet_mass1 = -10.0;
-      float topLike_allTrijet_mass1 = -10.0;
-      float topLike_allTrijet_mass2 = -10.0;
-      float higgs_genJet_mass = -10.0;
-      float higgs_genParton_mass = -10.0;
+      float higgs_dijet_mass = dFloat;
+      float higgs_dijet_pt = dFloat;
+      float higgs_dijet_pz = dFloat;
+      float higgs_dijet_dR = dFloat;
+      float higgs_dijet_dPhi = dFloat;
+      float higgs_dijet_jet1_pt= dFloat;
+      float higgs_dijet_jet2_pt = dFloat;
+      float higgs_dijet_jet1_eta = dFloat;
+      float higgs_dijet_jet2_eta = dFloat;
+      float higgs_dijet_jet1_muon_dR= dFloat;
+      float higgs_dijet_jet2_muon_dR = dFloat;
+      //float higgs_dijet_jet1_muon_pt= dFloat;
+      //float higgs_dijet_jet2_muon_pt = dFloat;
+      float higgs_dijet_jet1_electron_dR= dFloat;
+      float higgs_dijet_jet2_electron_dR = dFloat;
+      //float higgs_dijet_jet1_electron_pt= dFloat;
+      //float higgs_dijet_jet2_electron_pt = dFloat;
+      float higgs_dijet_jet1_track_dR= dFloat;
+      float higgs_dijet_jet2_track_dR = dFloat;
+      float higgs_dijet_jet1_track_pt= dFloat;
+      float higgs_dijet_jet2_track_pt = dFloat;
+      float higgsLike_dijet_mass1 = dFloat;
+      float higgsLike_dijet_mass2 = dFloat;
+      float higgsLike_diBjet_mass1 = dFloat;
+      float higgsLike_dijet_dR = dFloat;
+      float higgsLike_dijet_pt = dFloat;
+      float higgsLike_dijet_eta = dFloat;
+      float higgsLike_dijet_jet1_pt = dFloat;
+      float higgsLike_dijet_jet2_pt = dFloat;
+      int numHiggsLike_dijet_10 = 0;
+      int numHiggsLike_dijet_15 = 0;
+      int numHiggsLike_dijet_20 = 0;
+      int numHiggsLike_dijet_25 = 0;
+      int numHiggsLike_diBjet_10 = 0;
+      int numHiggsLike_diBjet_15 = 0;
+      int numHiggsLike_diBjet_20 = 0;
+      int numHiggsLike_diBjet_25 = 0;
+      float higgs_dijet_genJet1_pt= dFloat;
+      float higgs_dijet_genJet2_pt = dFloat;
+      float higgs_dijet_genParton1_pt= dFloat;
+      float higgs_dijet_genParton2_pt = dFloat;
+      float wLike_dijet_mass1 = dFloat;
+      float topLike_trijet_mass1 = dFloat;
+      float topLike_trijet_mass2 = dFloat;
+      float higgsLike_allDijet_mass1 = dFloat;
+      float higgsLike_allDijet_mass2 = dFloat;
+      float wLike_allDijet_mass1 = dFloat;
+      float topLike_allTrijet_mass1 = dFloat;
+      float topLike_allTrijet_mass2 = dFloat;
+      float higgs_genJet_mass = dFloat;
+      float higgs_genParton_mass = dFloat;
       
       if (numHiggsAllJets == 2) {
         sum_higgs_dijet_vect = higgsJetV[0] + higgsJetV[1];
@@ -1916,128 +1954,125 @@ int main ( int argc, char ** argv )
       TLorentzVector jet_vect1;
       TLorentzVector jet_vect2;
       
-      float first_jet_pt = -10.0 ;
-      float second_jet_pt = -10.0 ;
-      float third_jet_pt = -10.0 ;
-      float fourth_jet_pt = -10.0 ;
+      float first_jet_pt = dFloat ;
+      float second_jet_pt = dFloat ;
+      float third_jet_pt = dFloat ;
+      float fourth_jet_pt = dFloat ;
       
-      float first_jet_eta = 10000.;
-      float second_jet_eta = 10000.;
-      float third_jet_eta = 10000.;
-      float fourth_jet_eta = 10000.;
+      float first_jet_eta = dFloat;
+      float second_jet_eta = dFloat;
+      float third_jet_eta = dFloat;
+      float fourth_jet_eta = dFloat;
 
-      float first_jet_CHEF = 10000.;
-      float second_jet_CHEF = 10000.;
-      float third_jet_CHEF = 10000.;
-      float fourth_jet_CHEF = 10000.;
-      float sum_jet_CHEF = 0.0;
+      float first_jet_CHEF = dFloat;
+      float second_jet_CHEF = dFloat;
+      float third_jet_CHEF = dFloat;
+      float fourth_jet_CHEF = dFloat;
+      float sum_jet_CHEF = dFloat;
       
-      float first_jet_CSV = -10.0 ;
-      float second_jet_CSV = -10.0 ;
-      float third_jet_CSV = -10.0 ;
-      float fourth_jet_CSV = -10.0 ;
+      float first_jet_CSV = dFloat ;
+      float second_jet_CSV = dFloat ;
+      float third_jet_CSV = dFloat ;
+      float fourth_jet_CSV = dFloat ;
 
-      float first_jet_charge = 10000.;
-      float second_jet_charge = 10000.;
-      float third_jet_charge = 10000.;
-      float fourth_jet_charge = 10000.;
-      float sum_jet_charge = 0.0;
+      float first_jet_charge = dFloat;
+      float second_jet_charge = dFloat;
+      float third_jet_charge = dFloat;
+      float fourth_jet_charge = dFloat;
+      float sum_jet_charge = dFloat;
       
-      float dPhi_jet1jet2 = 10000.;
-      float dPhi_jet1jet3 = 10000.;
-      float dPhi_jet1jet4 = 10000.;
-      float dPhi_jet2jet3 = 10000.;
-      float dPhi_jet2jet4 = 10000.;
-      float dPhi_jet3jet4 = 10000.;
+      float dPhi_jet1jet2 = dFloat;
+      float dPhi_jet1jet3 = dFloat;
+      float dPhi_jet1jet4 = dFloat;
+      float dPhi_jet2jet3 = dFloat;
+      float dPhi_jet2jet4 = dFloat;
+      float dPhi_jet3jet4 = dFloat;
 
-      float first_allJet_pt = -10.0 ;
-      float second_allJet_pt = -10.0 ;
-      float third_allJet_pt = -10.0 ;
-      float fourth_allJet_pt = -10.0 ;
+      float first_allJet_pt = dFloat ;
+      float second_allJet_pt = dFloat ;
+      float third_allJet_pt = dFloat ;
+      float fourth_allJet_pt = dFloat ;
       
-      float min_jet_lep1_dR = 10000.;
-      float min_jet_lep2_dR = 10000.;
-      float min_allJet_lep1_dR = 10000.;
-      float min_allJet_lep2_dR = 10000.;
-      float min_tagged_jets_dR = 10000.;
-      float min_jets_dR = 10000.;   //ttbb
+      float mindr_lep1_jet = dFloat;
+      float mindr_lep2_jet = dFloat;
+      float mindr_lep1_allJet = dFloat;
+      float mindr_lep2_allJet = dFloat;
+      float min_dr_tagged_jets = dFloat;
+      float min_dr_jets = dFloat;
       
-      float denom_avg_cnt = 0.;
-      float avg_btag_disc_btags = 0.;     
-      float avg_btag_disc_non_btags = 0.;
-      double highest_btag_disc_non_btags = -10.0;
-      float dev_from_avg_disc_btags = 0.;
-      float first_highest_btag = -10.0;
-      float second_highest_btag = -10.0;
-      float lowest_btag = -10.0;
+      float denom_avg_cnt = dFloat;
+      float avg_btag_disc_btags = dFloat;     
+      float avg_btag_disc_non_btags = dFloat;
+      float highest_btag_disc_non_btags = dFloat;
+      float dev_from_avg_disc_btags = dFloat;
+      float first_highest_btag = dFloat;
+      float second_highest_btag = dFloat;
+      float lowest_btag = dFloat;
 
-      float sum_pt = 0.0 ;
-      float sum_jet_pt = 0.0;
-      float all_sum_pt = 0.0 ;
-      float Ht = 0.0 ;
-      //      float mass_of_everything = 0.0 ;
+      float sum_pt = dFloat;
+      float sum_jet_pt = dFloat;
+      float all_sum_pt = dFloat;
+      float Ht = dFloat;
+
       //ttbb
+      float dijet_mass_first  = dFloat;
+      float dijet_mass_second = dFloat;
+      float dijet_mass_third  = dFloat;
 
-      float dijet_mass_first  = -10.0;
-      float dijet_mass_second = -10.0;
-      float dijet_mass_third  = -10.0;
+      float first_dibjet_mass  = dFloat;
+      float second_dibjet_mass = dFloat;
+      float third_dibjet_mass  = dFloat;
 
-      float first_dibjet_mass  = -10.0;
-      float second_dibjet_mass = -10.0;
-      float third_dibjet_mass  = -10.0;
-
-      float min_dr_jets = 10000. ;
-      float avg_dr_jets = 0.0 ;
-      float avg_dijet_mass = 0.0 ;
-      float closest_dijet_mass = -10.0 ;
-      float M2_of_closest_jets = -10.0 ;
+      float avg_dr_jets = dFloat;
+      float avg_dijet_mass = dFloat;
+      float closest_dijet_mass = dFloat;
+      float M2_of_closest_jets = dFloat;
      
-      float min_dr_tagged_jets = 10000. ;
-      float avg_dr_tagged_jets = 0.0 ;
-      float avg_tagged_dijet_mass = 0.0 ;
-      float closest_tagged_dijet_mass = -10.0 ;
-      float M2_of_closest_tagged_jets = -10.0 ;
-      float min_dr_genB1_allJet = 10000.;
-      float min_dr_genB2_allJet = 10000.;
+      float avg_dr_tagged_jets = dFloat;
+      float avg_tagged_dijet_mass = dFloat;
+      float closest_tagged_dijet_mass = dFloat;
+      float M2_of_closest_tagged_jets = dFloat;
+      float min_dr_genB1_allJet = dFloat;
+      float min_dr_genB2_allJet = dFloat;
       
       TLorentzVector non_btag_vect1;
       TLorentzVector non_btag_vect2;
-      float avg_untagged_dijet_mass = 0.0 ;
+      float avg_untagged_dijet_mass = dFloat;
 
       if ( PassTwoLepton ){  //////// number of jets and number of tags
 	
-	float lep1Pt = -10.0 ;
-	float lep2Pt = -10.0 ;
-	float lep1_et = -10.0 ;
-	float lep2_et = -10.0 ;
-	float lep1Eta = -10.0 ;
-	float lep2Eta = -10.0 ;
-	float lep1Phi = -10.0 ;
-	float lep2Phi = -10.0 ;
-    float lep1_tkDZ = -10.0 ;
-    float lep2_tkDZ = -10.0 ;
-    float lep1Iso = -10.0 ;
-    float lep2Iso = -10.0 ;
-    float lep1_correctedDZ = -10.0 ;
-    float lep2_correctedDZ = -10.0 ;
-    float lep1_correctedD0 = -10.0 ;
-    float lep2_correctedD0 = -10.0 ;
-    float lep1TkCharge = -10.0 ;
-    float lep1GenCharge = -10.0 ;
-    float lep2TkCharge = -10.0 ;
-    float lep2GenCharge = -10.0 ;
-    int lep1GenMotherId = 0;
-    int lep2GenMotherId = 0;
-    float lep1SF = 1.0;
-    float lep2SF = 1.0;
-    int lep2IsGlobalMuon = 0;
-    int lep2IsTrackerMuon = 0;
-    int lep2IsGlobalMuonPromptTight = 0;
-    int lep2NumTrackHits = 0;
-    int lep2NumPixelHits = 0;
-    int lep2NumberOfMatches = 0;
-    float lep2Chi2 = 0;
-    int lep2NumExpectedHits = 0;
+	float lep1Pt = dFloat;
+	float lep2Pt = dFloat;
+	float lep1_et = dFloat;
+	float lep2_et = dFloat;
+	float lep1Eta = dFloat;
+	float lep2Eta = dFloat;
+	float lep1Phi = dFloat;
+	float lep2Phi = dFloat;
+    float lep1_tkDZ = dFloat;
+    float lep2_tkDZ = dFloat;
+    float lep1Iso = dFloat;
+    float lep2Iso = dFloat;
+    float lep1_correctedDZ = dFloat;
+    float lep2_correctedDZ = dFloat;
+    float lep1_correctedD0 = dFloat;
+    float lep2_correctedD0 = dFloat;
+    float lep1TkCharge = dFloat;
+    float lep1GenCharge = dFloat;
+    float lep2TkCharge = dFloat;
+    float lep2GenCharge = dFloat;
+    int lep1GenMotherId = dInt;
+    int lep2GenMotherId = dInt;
+    float lep1SF = dFloat;
+    float lep2SF = dFloat;
+    int lep2IsGlobalMuon = dInt;
+    int lep2IsTrackerMuon = dInt;
+    int lep2IsGlobalMuonPromptTight = dInt;
+    int lep2NumTrackHits = dInt;
+    int lep2NumPixelHits = dInt;
+    int lep2NumberOfMatches = dInt;
+    float lep2Chi2 = dFloat;
+    int lep2NumExpectedHits = dInt;
     
 	  if( twoTightMuon || TightMuonLooseMuon ) {
         
@@ -2106,11 +2141,11 @@ int main ( int argc, char ** argv )
         }
         else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
           lep1Iso = (muonsSelected.at(0).pfIsoR04SumChargedHadronPt
-                      + std::max(0.0, muonsSelected.at(0).pfIsoR04SumNeutralHadronEt
+                      + max(0.0, muonsSelected.at(0).pfIsoR04SumNeutralHadronEt
                                  + muonsSelected.at(0).pfIsoR04SumPhotonEt
                                  - 0.5*muonsSelected.at(0).pfIsoR04SumPUPt)) * 1.0 /lep1Pt;
           lep2Iso = (muonsSelected.at(1).pfIsoR04SumChargedHadronPt
-                      + std::max(0.0, muonsSelected.at(1).pfIsoR04SumNeutralHadronEt
+                      + max(0.0, muonsSelected.at(1).pfIsoR04SumNeutralHadronEt
                                  + muonsSelected.at(1).pfIsoR04SumPhotonEt
                                  - 0.5*muonsSelected.at(1).pfIsoR04SumPUPt)) * 1.0 /lep2Pt;
         }
@@ -2183,11 +2218,11 @@ int main ( int argc, char ** argv )
         }
         else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
           lep1Iso = ( electronsSelected.at(0).chargedHadronIso
-                       + std::max(0.0, electronsSelected.at(0).neutralHadronIso
+                       + max(0.0, electronsSelected.at(0).neutralHadronIso
                                   + electronsSelected.at(0).photonIso
                                   - electronsSelected.at(0).AEffDr03*electronsSelected.at(0).rhoPrime) ) * 1.0 /lep1Pt;
           lep2Iso = ( electronsSelected.at(1).chargedHadronIso
-                       + std::max(0.0, electronsSelected.at(1).neutralHadronIso
+                       + max(0.0, electronsSelected.at(1).neutralHadronIso
                                   + electronsSelected.at(1).photonIso
                                   - electronsSelected.at(1).AEffDr03*electronsSelected.at(1).rhoPrime) ) * 1.0 /lep2Pt;
         }
@@ -2269,11 +2304,11 @@ int main ( int argc, char ** argv )
         }
         else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
           lep1Iso = (muonsSelected.at(0).pfIsoR04SumChargedHadronPt
-                      + std::max(0.0, muonsSelected.at(0).pfIsoR04SumNeutralHadronEt
+                      + max(0.0, muonsSelected.at(0).pfIsoR04SumNeutralHadronEt
                                  + muonsSelected.at(0).pfIsoR04SumPhotonEt
                                  - 0.5*muonsSelected.at(0).pfIsoR04SumPUPt)) * 1.0 /lep1Pt;
           lep2Iso = ( electronsSelected.at(0).chargedHadronIso
-                       + std::max(0.0, electronsSelected.at(0).neutralHadronIso
+                       + max(0.0, electronsSelected.at(0).neutralHadronIso
                                   + electronsSelected.at(0).photonIso
                                   - electronsSelected.at(0).AEffDr03*electronsSelected.at(0).rhoPrime) ) * 1.0 /lep2Pt;
         }
@@ -2324,8 +2359,8 @@ int main ( int argc, char ** argv )
       float correctedD0_leplep = lep1_correctedD0 - lep2_correctedD0;
       float tkDZ_leplep = lep1_tkDZ - lep2_tkDZ;
 
-      int oppositeLepCharge = -1;
-      int oppositeGenLepCharge = -1;
+      int oppositeLepCharge = dInt;
+      int oppositeGenLepCharge = dInt;
       // check to see if the product is negative
       // it can only be negative if the charges
       // have opposite signs
@@ -2351,7 +2386,8 @@ int main ( int argc, char ** argv )
       }
       else std::cout << "Lep1 has charge " << lep1GenCharge << " and Lep2 has charge " << lep2GenCharge << std::endl;
 
-      
+      if (sum_pt == dFloat) sum_pt = 0.0;
+      if (Ht == dFloat) Ht = 0.0;
 	  sum_pt += lep1Pt;
 	  Ht += lep1_et ;
 
@@ -2372,7 +2408,7 @@ int main ( int argc, char ** argv )
       float pt_of_allEverything = allEverything_vect.Pt();
 
       /// pt of ttbar
-      float pt_of_ttbar = -10.0 ;
+      float pt_of_ttbar = dFloat;
       if(numTaggedJets>1){
 
         int bjet1 = tag_pfjet_index[0] ;
@@ -2394,10 +2430,10 @@ int main ( int argc, char ** argv )
       for (int i=0; i<numGoodAndBadJets; i++) {
         allJet_vect.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
         if (HtoBB == 1) {
-          if (min_dr_genB1_allJet != -10.0 && higgsGenBV[0].DeltaR(allJet_vect) < min_dr_genB1_allJet) {
+          if (higgsGenBV[0].DeltaR(allJet_vect) < min_dr_genB1_allJet || min_dr_genB1_allJet == dFloat) {
             min_dr_genB1_allJet = higgsGenBV[0].DeltaR(allJet_vect);
           }
-          if (min_dr_genB2_allJet != -10.0 && higgsGenBV[1].DeltaR(allJet_vect) < min_dr_genB2_allJet) {
+          if (higgsGenBV[1].DeltaR(allJet_vect) < min_dr_genB2_allJet || min_dr_genB2_allJet == dFloat) {
             min_dr_genB2_allJet = higgsGenBV[1].DeltaR(allJet_vect);
           }
         }
@@ -2407,23 +2443,23 @@ int main ( int argc, char ** argv )
 	    if (i==2)  third_allJet_pt = jet_pt[i];
 	    if (i==3)  fourth_allJet_pt = jet_pt[i];
         
-	    if (min_allJet_lep1_dR > lep_vect1.DeltaR(allJet_vect)){
-	      min_allJet_lep1_dR = lep_vect1.DeltaR(allJet_vect); 
+	    if (mindr_lep1_allJet > lep_vect1.DeltaR(allJet_vect) || mindr_lep1_allJet == dFloat){
+	      mindr_lep1_allJet = lep_vect1.DeltaR(allJet_vect); 
 	    }
 
-	    if (min_allJet_lep2_dR > lep_vect2.DeltaR(allJet_vect)){
-	      min_allJet_lep2_dR = lep_vect2.DeltaR(allJet_vect); 
+	    if (mindr_lep2_allJet > lep_vect2.DeltaR(allJet_vect) || mindr_lep2_allJet == dFloat){
+	      mindr_lep2_allJet = lep_vect2.DeltaR(allJet_vect); 
 	    }
         for (int j=i+1; j < numGoodAndBadJets; j++) {
           sum_higgsLike_allDijet_vect = allJetV[i] + allJetV[j];
           higgsLike_allDijet_mass2 = sum_higgsLike_allDijet_vect.M();
           if (pfjetsSelected.at(i).btagCombinedSecVertex > 0.679 || pfjetsSelected.at(j).btagCombinedSecVertex > 0.679) {
-            if (fabs(110 - higgsLike_allDijet_mass1) > fabs(110 - higgsLike_allDijet_mass2) || higgsLike_allDijet_mass1 == -10.0) {
+            if (fabs(125 - higgsLike_allDijet_mass1) > fabs(125 - higgsLike_allDijet_mass2) || higgsLike_allDijet_mass1 == dFloat) {
               higgsLike_allDijet_mass1 = higgsLike_allDijet_mass2;
             }
           }
           if (pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679) {
-            if (fabs(75 - wLike_allDijet_mass1) > fabs(75 - higgsLike_allDijet_mass2) || wLike_allDijet_mass1 == -10.0) {
+            if (fabs(81 - wLike_allDijet_mass1) > fabs(81 - higgsLike_allDijet_mass2) || wLike_allDijet_mass1 == dFloat) {
               wLike_allDijet_mass1 = higgsLike_allDijet_mass2;
             }
           }
@@ -2433,7 +2469,7 @@ int main ( int argc, char ** argv )
             if ((pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679)
                 || (pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex <= 0.679)
                 || (pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex <= 0.679)) {
-              if (fabs(160 - topLike_allTrijet_mass1) > fabs(160 - topLike_allTrijet_mass2) || topLike_allTrijet_mass1 == -10.0) {
+              if (fabs(160 - topLike_allTrijet_mass1) > fabs(160 - topLike_allTrijet_mass2) || topLike_allTrijet_mass1 == dFloat) {
                 topLike_allTrijet_mass1 = topLike_allTrijet_mass2;
               }
             }
@@ -2446,10 +2482,14 @@ int main ( int argc, char ** argv )
 
 	  for (int i=0; i < numGoodJets; i++) {
 	    int iJet = tight_pfjet_index[i] ;
+        if (sum_jet_pt == dFloat) sum_jet_pt = 0.0;
+        if (sum_jet_CHEF == dFloat) sum_jet_CHEF = 0.0;
+        if (sum_jet_charge == dFloat) sum_jet_charge = 0.0;
+
 	    sum_pt += jet_pt[iJet];
         sum_jet_pt += jet_pt[iJet];
 	    Ht += jet_energy[iJet];
-        double iJet_csvVal = good_jet_tag[i];
+        float iJet_csvVal = good_jet_tag[i];
         sum_jet_CHEF += jet_CHEF[iJet];
         sum_jet_charge += jet_charge[iJet];
 	    
@@ -2460,13 +2500,32 @@ int main ( int argc, char ** argv )
           higgsLike_dijet_mass2 = sum_higgsLike_dijet_vect.M();
           if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679
               || pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex > 0.679) {
-            if (fabs(110 - higgsLike_dijet_mass1) > fabs(110 - higgsLike_dijet_mass2) || higgsLike_dijet_mass1 == -10.0) {
+            if (fabs(125 - higgsLike_dijet_mass1) > fabs(125 - higgsLike_dijet_mass2)
+                || higgsLike_dijet_mass1 == dFloat) {
               higgsLike_dijet_mass1 = higgsLike_dijet_mass2;
+              higgsLike_dijet_dR = jetV[i].DeltaR(jetV[j]);
+              higgsLike_dijet_pt = sum_higgsLike_dijet_vect.Pt();
+              higgsLike_dijet_eta = sum_higgsLike_dijet_vect.Eta();
+              higgsLike_dijet_jet1_pt = max(jetV[i].Pt(),jetV[j].Pt());
+              higgsLike_dijet_jet2_pt = min(jetV[i].Pt(),jetV[j].Pt());
+            }
+            if (fabs(125 - higgsLike_dijet_mass2) < 10) numHiggsLike_dijet_10++;
+            if (fabs(125 - higgsLike_dijet_mass2) < 15) numHiggsLike_dijet_15++;
+            if (fabs(125 - higgsLike_dijet_mass2) < 20) numHiggsLike_dijet_20++;
+            if (fabs(125 - higgsLike_dijet_mass2) < 25) numHiggsLike_dijet_25++;
+            if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679
+                && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex > 0.679) {
+              if (fabs(125 - higgsLike_diBjet_mass1) > fabs(125 - higgsLike_dijet_mass2)
+                  || higgsLike_diBjet_mass1 == dFloat)  higgsLike_diBjet_mass1 = higgsLike_dijet_mass2;
+              if (fabs(125 - higgsLike_dijet_mass2) < 10) numHiggsLike_diBjet_10++;
+              if (fabs(125 - higgsLike_dijet_mass2) < 15) numHiggsLike_diBjet_15++;
+              if (fabs(125 - higgsLike_dijet_mass2) < 20) numHiggsLike_diBjet_20++;
+              if (fabs(125 - higgsLike_dijet_mass2) < 25) numHiggsLike_diBjet_25++;
             }
           }
           if (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679
               && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679) {
-            if (fabs(75 - wLike_dijet_mass1) > fabs(75 - higgsLike_dijet_mass2) || wLike_dijet_mass1 == -10.0) {
+            if (fabs(81 - wLike_dijet_mass1) > fabs(81 - higgsLike_dijet_mass2) || wLike_dijet_mass1 == dFloat) {
               wLike_dijet_mass1 = higgsLike_dijet_mass2;
             }
           }
@@ -2476,7 +2535,7 @@ int main ( int argc, char ** argv )
             if ((pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679)
                 || (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex <= 0.679)
                 || (pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex <= 0.679)) {
-              if (fabs(160 - topLike_trijet_mass1) > fabs(160 - topLike_trijet_mass2) || topLike_trijet_mass1 == -10.0) {
+              if (fabs(160 - topLike_trijet_mass1) > fabs(160 - topLike_trijet_mass2) || topLike_trijet_mass1 == dFloat) {
                 topLike_trijet_mass1 = topLike_trijet_mass2;
               }
             }
@@ -2512,29 +2571,25 @@ int main ( int argc, char ** argv )
           fourth_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
         }
 	    
-	    if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
-	      min_jet_lep1_dR = lep_vect1.DeltaR(jet_vect); 
+	    if (mindr_lep1_jet > lep_vect1.DeltaR(jet_vect) || mindr_lep1_jet == dFloat){
+	      mindr_lep1_jet = lep_vect1.DeltaR(jet_vect); 
 	    }
 	    
-	    if (min_jet_lep2_dR > lep_vect2.DeltaR(jet_vect)){
-	      min_jet_lep2_dR = lep_vect2.DeltaR(jet_vect); 
+	    if (mindr_lep2_jet > lep_vect2.DeltaR(jet_vect) || mindr_lep2_jet == dFloat){
+	      mindr_lep2_jet = lep_vect2.DeltaR(jet_vect); 
 	    }
 	    
 	    if (iJet_csvVal > 0.679){
+          if (avg_btag_disc_btags == dFloat) avg_btag_disc_btags = 0.0;
 	      avg_btag_disc_btags += iJet_csvVal;
 	    }
 	    
 	    if (iJet_csvVal <= 0.679){
+          if (avg_btag_disc_non_btags == dFloat) avg_btag_disc_non_btags = 0.0;
 	      avg_btag_disc_non_btags += iJet_csvVal;
-          highest_btag_disc_non_btags = std::max(highest_btag_disc_non_btags,iJet_csvVal);
+          highest_btag_disc_non_btags = max(highest_btag_disc_non_btags,iJet_csvVal);
 	    }									
-	  }
-	  
-      
-	  float mindr_lep1_jet = min_jet_lep1_dR;
-	  float mindr_lep2_jet = min_jet_lep2_dR;
-	  float mindr_lep1_allJet = min_allJet_lep1_dR;
-	  float mindr_lep2_allJet = min_allJet_lep2_dR;
+	  } // End of loop over numGoodJets
 	  
 	  if ( numTaggedJets > 0 ) avg_btag_disc_btags /= numTaggedJets;
 	  
@@ -2543,6 +2598,7 @@ int main ( int argc, char ** argv )
 	  }
 	  
 	  for (int l=0; l < numTaggedJets; l++){
+        if (dev_from_avg_disc_btags == dFloat) dev_from_avg_disc_btags = 0.0;
         dev_from_avg_disc_btags += pow((tag_pfjet_csvVal[l] - avg_btag_disc_btags),2);
 	  }
 	  if ( numTaggedJets > 0 ) dev_from_avg_disc_btags /= numTaggedJets;
@@ -2552,10 +2608,11 @@ int main ( int argc, char ** argv )
 	  Ht += MHT;
 
       /// Ht re-weighting
-      float HtWgt = 1.0 ;
-      float HtWgtUp = 1.0 ;
+      float HtWgt = dFloat;
+      float HtWgtUp = dFloat;
       ////////////// mistake  for 2011
       if (!isData){
+        if (sum_jet_pt == dFloat) sum_jet_pt = 0.0;
         if(selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x"){
           if (numPV<11)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
           else if (10<numPV && numPV<16)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
@@ -2571,6 +2628,7 @@ int main ( int argc, char ** argv )
         }
         
         HtWgtUp = 1 + 2*(HtWgt - 1);
+        if (sum_jet_pt == 0.0) sum_jet_pt = dFloat;
       }
 
       bool passBigDiamondZmask = (MuonEle || (mass_leplep < (65.5 + 3*MHT/8)) || (mass_leplep > (108 - MHT/4)) || (mass_leplep < (79 - 3*MHT/4)) || (mass_leplep > (99 + MHT/2)) );
@@ -2580,6 +2638,7 @@ int main ( int argc, char ** argv )
 	  //// tagged jets
 	  float deltaHMass = 9999. ;
 	  float deltaHMass2 = 9999. ;
+      denom_avg_cnt = 0.0;
 	  if (numTaggedJets > 1) {
 	    for (int j=0; j < (numTaggedJets - 1); j++) {
 	      int jbtag = tag_pfjet_index[j] ;
@@ -2590,12 +2649,14 @@ int main ( int argc, char ** argv )
 		btag_vect2.SetPxPyPzE(jet_px[kbtag],jet_py[kbtag],jet_pz[kbtag],jet_energy[kbtag]);
 		
 		dijet_vect = btag_vect1 + btag_vect2;
+        if (avg_tagged_dijet_mass == dFloat) avg_tagged_dijet_mass = 0.0;
 		avg_tagged_dijet_mass += dijet_vect.M();
+        if (avg_dr_tagged_jets == dFloat) avg_dr_tagged_jets = 0.0;
 		avg_dr_tagged_jets += btag_vect1.DeltaR(btag_vect2);
 		++denom_avg_cnt;		      
 		
-		if (min_tagged_jets_dR > btag_vect1.DeltaR(btag_vect2)){
-		  min_tagged_jets_dR = btag_vect1.DeltaR(btag_vect2);
+		if (min_dr_tagged_jets > btag_vect1.DeltaR(btag_vect2) || min_dr_tagged_jets == dFloat){
+		  min_dr_tagged_jets = btag_vect1.DeltaR(btag_vect2);
 		  M2_of_closest_tagged_jets = dijet_vect.M2();	
 		  closest_tagged_dijet_mass = dijet_vect.M();			
 		}
@@ -2608,15 +2669,12 @@ int main ( int argc, char ** argv )
 		  m2H_btag = dijet_vect.M() ;
 		}
 		
-	      }
-	    }
+	      } // End loop for k < numTaggedJets
+	    } // End loop for j < numTaggedJets
 	    
 	    avg_tagged_dijet_mass /= denom_avg_cnt; 
 	    avg_dr_tagged_jets /= denom_avg_cnt;
 	    
-	    min_dr_tagged_jets = min_tagged_jets_dR;
-
-
 	    ///// ttbb bkg
 
 	    dibjet_mass_combinations.sort();
@@ -2626,18 +2684,16 @@ int main ( int argc, char ** argv )
 	      dibjet_mass_sort_vect.push_back(*listintaa);  //accessible form
 	    }
 	    int numCom = dibjet_mass_sort_vect.size();
-	    if (numCom > 2) {
-	      first_dibjet_mass  = dibjet_mass_sort_vect[numCom - 1];
-	      second_dibjet_mass = dibjet_mass_sort_vect[numCom - 2];
-	      third_dibjet_mass  = dibjet_mass_sort_vect[numCom - 3];
-	    }
+        if (numCom > 0) first_dibjet_mass  = dibjet_mass_sort_vect[numCom - 1];
+        if (numCom > 1) second_dibjet_mass = dibjet_mass_sort_vect[numCom - 2];
+        if (numCom > 2) third_dibjet_mass  = dibjet_mass_sort_vect[numCom - 3];
 
-	  }
+	  } // End if numTaggedJets > 1
 
 	  
 	  ////non_tagged jets
 	  
-	  denom_avg_cnt = 0.;
+	  denom_avg_cnt = 0.0;
 	  int nonTags = untag_pfjet_index.size();
 	  if (nonTags > 1){
 	    for (int m=0; m < (nonTags - 1); m++){
@@ -2648,17 +2704,18 @@ int main ( int argc, char ** argv )
 		non_btag_vect2.SetPxPyPzE(jet_px[untag2],jet_py[untag2],jet_pz[untag2],jet_energy[untag2]);
 		
 		dijet_vect = non_btag_vect1 + non_btag_vect2;
+        if (avg_untagged_dijet_mass == dFloat) avg_untagged_dijet_mass = 0.0;
 		avg_untagged_dijet_mass += dijet_vect.M();
 		++denom_avg_cnt;
 	      }
 	    }
 	  
 	    avg_untagged_dijet_mass /= denom_avg_cnt;
-	  }
+	  } // End if nonTags > 1
 
 	  
 	  ///// ttbb dijet_mass
-	  denom_avg_cnt = 0.;
+	  denom_avg_cnt = 0.0;
 	  if(numJets > 1 ){
 	    for (int j=0; j < (numJets - 1); j++) {
 	      int jJet = tight_pfjet_index[j] ;
@@ -2669,12 +2726,14 @@ int main ( int argc, char ** argv )
 		jet_vect2.SetPxPyPzE(jet_px[kJet],jet_py[kJet],jet_pz[kJet],jet_energy[kJet]);
 		
 		dijet_vect = jet_vect1 + jet_vect2;
+        if (avg_dijet_mass == dFloat) avg_dijet_mass = 0.0;
 		avg_dijet_mass += dijet_vect.M();
+        if (avg_dr_jets == dFloat) avg_dr_jets = 0.0;
 		avg_dr_jets += jet_vect1.DeltaR(jet_vect2);
 		++denom_avg_cnt;		      
 		
-		if (min_jets_dR > jet_vect1.DeltaR(jet_vect2)){
-		  min_jets_dR = jet_vect1.DeltaR(jet_vect2);
+		if (min_dr_jets > jet_vect1.DeltaR(jet_vect2) || min_dr_jets == dFloat){
+		  min_dr_jets = jet_vect1.DeltaR(jet_vect2);
 		  M2_of_closest_jets = dijet_vect.M2();	
 		  closest_dijet_mass = dijet_vect.M();			
 		}
@@ -2693,9 +2752,6 @@ int main ( int argc, char ** argv )
 	    avg_dijet_mass /= denom_avg_cnt; 
 	    avg_dr_jets /= denom_avg_cnt;
 	    
-	    min_dr_jets = min_jets_dR;
-
-
 	    dijet_mass_combinations.sort();
 	    std::vector<float> dijet_mass_sort_vect; 
 	    std::list<float>::iterator listintbb;
@@ -2715,9 +2771,9 @@ int main ( int argc, char ** argv )
       
 	  
 	  if (numTaggedJets > 0 ){
-	    first_highest_btag = jet_sort_vect[numTaggedJets - 1];
-	    if (numTaggedJets > 1) second_highest_btag = jet_sort_vect[numTaggedJets - 2];
-	    lowest_btag = jet_sort_vect[0];	    
+	    first_highest_btag = jet_CSV_sorted_vect[numTaggedJets - 1];
+	    if (numTaggedJets > 1) second_highest_btag = jet_CSV_sorted_vect[numTaggedJets - 2];
+	    lowest_btag = jet_CSV_sorted_vect[0];	    
 	  }
 
       //------------------------------------------
@@ -2874,12 +2930,28 @@ int main ( int argc, char ** argv )
 
         *(intBranches["numHiggsJets"]) = numHiggsJets;
         *(intBranches["numHiggsAllJets"]) = numHiggsAllJets;
-        *(intBranches["HiggsDecayMode"]) = HtoCC*4 + HtoBB*5 + HtoTT*6 + HtoGG*21 + HtoZZ*23 + HtoWW*24;
+        *(intBranches["HiggsDecayMode"]) = HtoCC*4 + HtoBB*5 + HtoTT*15 + HtoGG*21 + HtoZZ*23 + HtoWW*24;
         *(floatBranches["higgs_pt"]) = higgs_pt;
         *(floatBranches["higgs_pz"]) = higgs_pz;
         *(floatBranches["higgs_genJet_mass"]) = higgs_genJet_mass;
         *(floatBranches["higgs_genParton_mass"]) = higgs_genParton_mass;
-
+        *(floatBranches["higgsLike_dijet_mass"]) = higgsLike_dijet_mass1;
+        *(floatBranches["higgsLike_diBjet_mass"]) = higgsLike_diBjet_mass1;
+        *(floatBranches["higgsLike_allDijet_mass"]) = higgsLike_allDijet_mass1;
+        *(floatBranches["higgsLike_dijet_dR"]) = higgsLike_dijet_dR;
+        *(floatBranches["higgsLike_dijet_pt"]) = higgsLike_dijet_pt;
+        *(floatBranches["higgsLike_dijet_eta"]) = higgsLike_dijet_eta;
+        *(floatBranches["higgsLike_dijet_jet1_pt"]) = higgsLike_dijet_jet1_pt;
+        *(floatBranches["higgsLike_dijet_jet2_pt"]) = higgsLike_dijet_jet2_pt;
+        *(intBranches["numHiggsLike_dijet_10"]) = numHiggsLike_dijet_10;
+        *(intBranches["numHiggsLike_dijet_15"]) = numHiggsLike_dijet_15;
+        *(intBranches["numHiggsLike_dijet_20"]) = numHiggsLike_dijet_20;
+        *(intBranches["numHiggsLike_dijet_25"]) = numHiggsLike_dijet_25;
+        *(intBranches["numHiggsLike_diBjet_10"]) = numHiggsLike_diBjet_10;
+        *(intBranches["numHiggsLike_diBjet_15"]) = numHiggsLike_diBjet_15;
+        *(intBranches["numHiggsLike_diBjet_20"]) = numHiggsLike_diBjet_20;
+        *(intBranches["numHiggsLike_diBjet_25"]) = numHiggsLike_diBjet_25;
+        
         *(floatBranches["higgs_dijet_mass"]) = higgs_dijet_mass;
         *(floatBranches["higgs_dijet_pt"]) = higgs_dijet_pt;
         *(floatBranches["higgs_dijet_pz"]) = higgs_dijet_pz;
@@ -3008,8 +3080,6 @@ int main ( int argc, char ** argv )
         ////objects
         *(floatBranches["wLike_dijet_mass"]) = wLike_dijet_mass1;
         *(floatBranches["topLike_trijet_mass"]) = topLike_trijet_mass1;
-        *(floatBranches["higgsLike_dijet_mass"]) = higgsLike_dijet_mass1;
-        *(floatBranches["higgsLike_allDijet_mass"]) = higgsLike_allDijet_mass1;
 	    *(floatBranches["m2H_btag"]) = m2H_btag;        
         *(floatBranches["wLike_allDijet_mass"]) = wLike_allDijet_mass1;
         *(floatBranches["topLike_allTrijet_mass"]) = topLike_allTrijet_mass1;
