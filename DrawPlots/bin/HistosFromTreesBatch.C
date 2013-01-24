@@ -564,7 +564,7 @@ int main ( int argc, char ** argv )
       TFile * DileptonFile = new TFile(InputFileName);
 
       if (DileptonFile->IsZombie()) {
-        std::cout << "ERROR: Can't find the file," << InputFileName <<  ", sorry... quitting" << std::endl;
+        std::cout << "GREP_STATUS: Can't find the file," << InputFileName <<  ", sorry... quitting" << std::endl;
         return -22;
       }
     
@@ -774,7 +774,10 @@ int main ( int argc, char ** argv )
     }
   }
 
+
   debugOutput->Write();
   debugOutput->Close();
+
+  std::cout << "GREP_STATUS OK" << std::endl;
 
 }// end main
