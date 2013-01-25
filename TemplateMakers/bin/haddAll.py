@@ -6,20 +6,26 @@ from optparse import OptionParser
 
 def main ():
 
-	parser = OptionParser()
-	parser.add_option('-s', '--sumData', dest='sumData', action='store_true', default=False)
-	parser.add_option('-c', '--copyFiles', dest='copyFiles', action='store_true', default=False)
-	parser.add_option('-m', '--moveFiles', dest='moveFiles', action='store_true', default=False)
-	parser.add_option('-n', '--skipHadd', dest='skipHadd', action='store_true', default=False)
+	parser = OptionParser(usage="./haddAll.py --sumData --moveFiles --year=2012_52x tryNewStuff_v1")
+	parser.add_option('-s', '--sumData', dest='sumData', action='store_true', default=False, help="sum the data files together")
+	parser.add_option('-c', '--copyFiles', dest='copyFiles', action='store_true', default=False, help="copy files to treeFile directory")
+	parser.add_option('-m', '--moveFiles', dest='moveFiles', action='store_true', default=False, help="move files to treeFile directory")
+	parser.add_option('-n', '--skipHadd', dest='skipHadd', action='store_true', default=False, help ="don't hadd stuff, just move/copy it")
+	parser.add_option('-y', '--year', dest='year', default = 'NONE', help="specify a year string")
 
 	(options, args) = parser.parse_args()
 
-	if len(args) < 1:
-		print "Must supply a directory label"
+	if len(args) < 1 or options.year=='NONE':
+		parser.print_help()
 		exit (2)
-	
+
+	if options.year != "2011" and options.year != "2012_52x" and options.year != "2012_53x":
+		print "Error: Year must be 2011, 2012_52x, or 2012_53x"
+		exit (5)
+
 		
-	dirLabel = args[0]
+	dirLabel = "%s_%s" % (options.year, args[0])
+	
 	print "Directory label %s" % dirLabel
 
 	print "Running with sumData = %s" % options.sumData
@@ -31,8 +37,8 @@ def main ():
 			print "Directory name is %s" % dirStrip
 			lsCommand = "ls %s/*.root | grep -v '_all'" % dirStrip
 			listOfFiles = os.popen (lsCommand).readlines()
-			print "List of files is "
-			print listOfFiles
+			#print "List of files is "
+			#print listOfFiles
 			if len(listOfFiles) < 1:
 				print "No root files... skipping %s" % dirStrip
 			elif len(listOfFiles) == 1:				
@@ -40,14 +46,14 @@ def main ():
 				newName = oldName.replace('job000', 'all')
 				haddCommand = "cp %s %s" % ( oldName,  newName)
 				for feedback in os.popen(haddCommand).readlines():
-					print feedback
-					print "Created %s" % newName
+					newName= newName
+				print "Created %s" % newName
 				
 			else:
 			
 				oldName = listOfFiles[0].strip()
 				newName = oldName.replace('job000', 'all')
-				haddCommand = "hadd -f %s " % (newName)
+				haddCommand = "hadd -v 0 -f %s " % (newName)
 				for iFile in listOfFiles[0:]:
 					haddCommand = haddCommand + " " + iFile.strip()
 				for feedback in os.popen(haddCommand).readlines():
@@ -89,11 +95,11 @@ def main ():
 			print "WARNING: Didn't understand the year based on the name... assuming 2011 (is that ok?)"
 			dataNames = dataNames2011
 
-		print "Data names are..."
-		print dataNames
+		#print "Data names are..."
+		#print dataNames
 
 		for (dataCat, listOfNames) in dataNames.iteritems():
-			print "=========Data category is %s=============" % dataCat
+			#print "=========Data category is %s=============" % dataCat
 			# get a whole list of file names
 			matchedDirs = []
 			for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (dirLabel)	 ).readlines():
@@ -103,11 +109,11 @@ def main ():
 						matchedDirs.append(iDir.strip())
 					#end if match
 				#end for each match
-			print "Matching directories are..."
-			print matchedDirs
-			haddCommand = "hadd -f dilSummaryTrees_%s_%s_all.root " % (dataCat,dirLabel)
+			#print "Matching directories are..."
+			#print matchedDirs
+			haddCommand = "hadd -v 0 -f dilSummaryTrees_%s_%s_all.root " % (dataCat,dirLabel)
 			for iDir in matchedDirs:
-				print "Looking at directory %s" % iDir
+				#print "Looking at directory %s" % iDir
 				rootFiles = os.popen('ls %s/*_all.root' % iDir).readlines()
 				if len(rootFiles) > 1:
 					print "---Too many root files found"

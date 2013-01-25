@@ -1,8 +1,12 @@
-./haddAll.py --moveFiles --sumData 2012_btagShapeStudy
-./haddAll.py --moveFiles --sumData 2012_btagShapeStudy_JESUp
-# ./haddAll.py --moveFiles --sumData 2012_btagShapeStudy_JESDown
-# ./haddAll.py --moveFiles --sumData 2012_btagShapeStudy_btagHFUp
-# ./haddAll.py --moveFiles --sumData 2012_btagShapeStudy_btagHFDown
-# ./haddAll.py --moveFiles --sumData 2012_btagShapeStudy_btagLFUp
-# ./haddAll.py --moveFiles --sumData 2012_btagShapeStudy_btagLFDown
+
+set thisYear = "2012_52x"
+set thisLabel = testSubmit_v1
+
+./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}
+./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}_JESUp
+./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}_JESDown
+./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}_btagHFUp
+./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}_btagHFDown
+./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}_btagLFUp
+./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}_btagLFDown
 

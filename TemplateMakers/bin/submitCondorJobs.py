@@ -3,14 +3,67 @@
 import os
 import sys
 import time
+from optparse import OptionParser
 
 
 def main ():
-    yearChoice = str(sys.argv[1])
-    jesChoice = int(sys.argv[2])
-    jerChoice = int(sys.argv[3])
-    btagChoice = int(sys.argv[4])
-    jobLabel = str(sys.argv[5])
+
+    parser = OptionParser(usage="./submitCondorJobs.py --year=2012_52x --jes=0 --btagHF=-1 --btagLF=0 LABEL")
+    parser.add_option('-o', '--oneSample', dest='oneSample', default='NONE', help="Run on only this sample")
+    #parser.add_option('-a', '--argHelp', dest='argHelp', action='store_true', default=False)
+    parser.add_option('-y', '--year', dest='year', default='NONE', help="2011, 2012_52x, 2012_53x, no default")
+    parser.add_option('-j', '--jes', dest='jes', default='0', help="JES -1/0/1 for down,off,up", type='int')
+    parser.add_option('-r', '--resoJet', dest='jer', default='0', help="JER -1/0/1 for down,off,up", type='int')
+    parser.add_option('-b', '--btagHF', dest='btagHF', default='0', help="btagHF -1/0/1 for down,off,up", type='int')
+    parser.add_option('-l', '--btagLF', dest='btagLF', default='0', help="btagLF -1/0/1 for down,off,up", type='int')
+    
+    (options, args) = parser.parse_args()
+    
+    if len (args) < 1 :
+        parser.print_help()
+        exit(3)
+        
+    #print "Args = "
+    #print args
+
+    #print "Options"
+    #print options
+    
+    yearChoice = str(options.year)
+
+    if yearChoice != "2011" and yearChoice != "2012_52x" and yearChoice != "2012_53x":
+        print "Error: Year must be 2011, 2012_52x, or 2012_53x"
+        exit (5)
+    
+    jesChoice = int(options.jes)
+    jerChoice = int(options.jer)
+    
+    if options.btagHF != 0 and options.btagLF !=0:
+        print "Error! Can't run btagHF and btagLF at the same time."
+        exit(4)
+    
+    btagChoice = 0
+    if int(options.btagHF) == 1:
+        btagChoice = 1
+    elif int(options.btagHF) == -1:
+        btagChoice = -1
+    elif options.btagLF == 1:
+        btagChoice = 2
+    elif options.btagLF == -1:
+        btagChoice = -2
+    
+    
+    jobLabel = str(args[0])
+
+
+    print " Year = ", yearChoice
+    print " jes = " , jesChoice
+    print " jer = " , jerChoice
+    print " btag = ", btagChoice
+    print " label = ", jobLabel
+    
+    
+    
     listOfSamples2011Data = ['DoubleElectron_Run2011A-05Aug2011-v1',
                              'DoubleElectron_Run2011A-May10ReReco-v1',
                              'DoubleElectron_Run2011A-PromptReco-v4',
@@ -43,6 +96,7 @@ def main ():
                      #'scaleup_ttbar',      ALWAYS OUT
                      #'scaleup_ttbar_bb',   ALWAYS OUT
                      #'scaleup_ttbar_cc',   ALWAYS OUT
+       
                      'singlet_s',
                      'singlet_t',
                      'singlet_tW',
@@ -98,6 +152,13 @@ def main ():
                      'ttbar_part17',
                      'ttbar_part18',        
         ]
+
+
+
+    ##### make a list out of the one sample
+
+    oneSampleList = [options.oneSample]
+    
     if yearChoice == "2011":
         listOfSamples = listOfSamples + extrattbar
         if btagChoice == 0 and jesChoice == 0 and jerChoice == 0:
@@ -110,6 +171,16 @@ def main ():
         if btagChoice == 0 and jesChoice == 0 and jerChoice == 0:        
             listOfSamples = listOfSamples2012Data + listOfSamples
         listOfSamples = ['ttbar_part1','ttbar_part2','ttbar_part3','ttbar_part4','ttbar_part5','ttbar_part6','ttbar_part7','ttbar_part8','ttbar_part9'] ##2012_53x as of Jan 19
+
+    if options.oneSample != 'NONE':
+        listOfSamples = oneSampleList
+
+
+
+    print "Running on samples ..."
+    print listOfSamples
+
+    #exit()
 
     for iList in listOfSamples:
         condorHeader = "universe = vanilla\n"+"executable = runTemplatesCondor_modDilep.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
