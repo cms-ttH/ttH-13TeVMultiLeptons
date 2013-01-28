@@ -770,15 +770,19 @@ int main ( int argc, char ** argv )
           int status = mcparticles.at(i).status;
           int mother0Status = mcparticles.at(i).mother0Status;
           int mother1Status = mcparticles.at(i).mother1Status;
+          int aid = abs(id);
           // cout << "particle ID: " << id << endl << endl;
-          if(nList >6 && status == 3){
-             if(abs(id)>0 && abs(id)<6){
+          // if(nList >6 && status == 3){
+          if(status == 3){//only status 3 particles (which are listed first)
+            if(nList>6){//dont look at first 6 (incomming event)
+             if(aid>0 && aid<6 || aid ==21 || aid ==9){//udscb
                if(abs(motherID) !=23 || abs(motherID) !=24 || abs(motherID)!=6 ){
                  //  cout << "mother status: " << mother0Status << ", " << mother1Status << " ";
                  //cout << "particle ID: " << id << endl << endl;
                  nPartons++;
                }
              }
+            }
           }else{
             continue;
           }
