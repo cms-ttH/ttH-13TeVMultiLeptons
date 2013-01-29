@@ -235,6 +235,7 @@ int main ( int argc, char ** argv )
   //Sample numbers may not match event->sample; used for setMCsample() only
   std::string dset = "SingleMu" ;
   int sampleNumber = 999999;
+  float weight_Xsec = 1.0;
 
   if (selectionYearStr == "2011") {
     if (isData) sampleNumber = -1;
@@ -264,28 +265,47 @@ int main ( int argc, char ** argv )
     else if (sampleName == "ttbar_scaledown") sampleNumber = 2510; 
     else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
     else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
-    else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) sampleNumber = 2500;
-    else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) sampleNumber = 2500;
-    else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) sampleNumber = 2500;
-    else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) sampleNumber = 2576;
-    else if (sampleName == "ttbar_cc_lj" || tmpName.Contains("ttbar_cc_lj_part")) sampleNumber = 2573;
-    else if (sampleName == "ttbar_cc_ll" || tmpName.Contains("ttbar_cc_ll_part")) sampleNumber = 2543;
-    else if (sampleName == "ttbar_bb_jj" || tmpName.Contains("ttbar_bb_jj_part")) sampleNumber = 2586;
-    else if (sampleName == "ttbar_bb_lj" || tmpName.Contains("ttbar_bb_lj_part")) sampleNumber = 2583;
-    else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) sampleNumber = 2553;
+    else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2500;
+      weight_Xsec = ( 53.4 / 30997580 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+    else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2500;
+      weight_Xsec = ( 53.2 / 25165429 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+    else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2500;
+      weight_Xsec = ( 13.43 / 12063533 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+    else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
+      weight_Xsec = ( 53.4 / 30997580 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+    else if (sampleName == "ttbar_cc_lj" || tmpName.Contains("ttbar_cc_lj_part")) { sampleNumber = 2573;
+      weight_Xsec = ( 53.2 / 25165429 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+    else if (sampleName == "ttbar_cc_ll" || tmpName.Contains("ttbar_cc_ll_part")) { sampleNumber = 2543;
+      weight_Xsec = ( 13.43 / 12063533 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+    else if (sampleName == "ttbar_bb_jj" || tmpName.Contains("ttbar_bb_jj_part")) { sampleNumber = 2586;
+      weight_Xsec = ( 53.4 / 30997580 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+    else if (sampleName == "ttbar_bb_lj" || tmpName.Contains("ttbar_bb_lj_part")) { sampleNumber = 2583;
+      weight_Xsec = ( 53.2 / 25165429 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+    else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) { sampleNumber = 2553;
+      weight_Xsec = ( 13.43 / 12063533 ) / ( 136.3 / ( 6889624 + 1362471 )); }
     else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) sampleNumber = 2400; 
-    else if (sampleName == "wjets_1p" || tmpName.Contains("wjets_1p_part")) sampleNumber = 2400; 
-    else if (sampleName == "wjets_2p" || tmpName.Contains("wjets_2p_part")) sampleNumber = 2400; 
-    else if (sampleName == "wjets_3p" || tmpName.Contains("wjets_3p_part")) sampleNumber = 2400; 
-    else if (sampleName == "wjets_4p" || tmpName.Contains("wjets_4p_part")) sampleNumber = 2400; 
+    else if (sampleName == "wjets_1p" || tmpName.Contains("wjets_1p_part")) { sampleNumber = 2400;
+      weight_Xsec = ( 5400.0 / 23136036 ) / ( 30400.0 / 57108525 ); }
+    else if (sampleName == "wjets_2p" || tmpName.Contains("wjets_2p_part")) { sampleNumber = 2400;
+      weight_Xsec = ( 1750.0 / 34030565 ) / ( 30400.0 / 57108525 ); }
+    else if (sampleName == "wjets_3p" || tmpName.Contains("wjets_3p_part")) { sampleNumber = 2400;
+      weight_Xsec = ( 519.0 / 15472440 ) / ( 30400.0 / 57108525 ); }
+    else if (sampleName == "wjets_4p" || tmpName.Contains("wjets_4p_part")) { sampleNumber = 2400;
+      weight_Xsec = ( 214.0 / 13360967 ) / ( 30400.0 / 57108525 ); } 
     else if (sampleName == "zjets_lowmass" || tmpName.Contains("zjets_lowmass_part")) sampleNumber = 2850;
-    else if (sampleName == "zjets_lowmass_1p" || tmpName.Contains("zjets_lowmass_1p_part")) sampleNumber = 2851;
-    else if (sampleName == "zjets_lowmass_2p" || tmpName.Contains("zjets_lowmass_2p_part")) sampleNumber = 2852;
+    else if (sampleName == "zjets_lowmass_1p" || tmpName.Contains("zjets_lowmass_1p_part")) { sampleNumber = 2851;
+      weight_Xsec = ( 716.0 / 8039604 ) / ( 11050.0 / 32600176 ); }
+    else if (sampleName == "zjets_lowmass_2p" || tmpName.Contains("zjets_lowmass_2p_part")) { sampleNumber = 2852;
+      weight_Xsec = ( 309.7 / 30684442 ) / ( 11050.0 / 32600176 ); }
     else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) sampleNumber = 2800; 
-    else if (sampleName == "zjets_1p" || tmpName.Contains("zjets_1p_part")) sampleNumber = 2801;
-    else if (sampleName == "zjets_2p" || tmpName.Contains("zjets_2p_part")) sampleNumber = 2802;
-    else if (sampleName == "zjets_3p" || tmpName.Contains("zjets_3p_part")) sampleNumber = 2803;
-    else if (sampleName == "zjets_4p" || tmpName.Contains("zjets_4p_part")) sampleNumber = 2804;
+    else if (sampleName == "zjets_1p" || tmpName.Contains("zjets_1p_part")) { sampleNumber = 2801;
+      weight_Xsec = ( 561.0 / 23698301 ) / ( 2950.0 / 30452141 ); }
+    else if (sampleName == "zjets_2p" || tmpName.Contains("zjets_2p_part")) { sampleNumber = 2802;
+      weight_Xsec = ( 181.0 / 2350806 ) / ( 2950.0 / 30452141 ); }
+    else if (sampleName == "zjets_3p" || tmpName.Contains("zjets_3p_part")) { sampleNumber = 2803;
+      weight_Xsec = ( 51.1 / 11004806 ) / ( 2950.0 / 30452141 ); }
+    else if (sampleName == "zjets_4p" || tmpName.Contains("zjets_4p_part")) { sampleNumber = 2804;
+      weight_Xsec = ( 23.04 /6387161 ) / ( 2950.0 / 30452141 ); }
     else if (sampleName == "singlet_s") sampleNumber = 2600; 
     else if (sampleName == "singlet_s_ll") sampleNumber = 2630; 
     else if (sampleName == "singletbar_s") sampleNumber = 2601; 
@@ -486,7 +506,9 @@ int main ( int argc, char ** argv )
   bool ExtraTriggerVariables = false;
   bool ExtraGenVariables = false;
   bool ExtraHiggsVariables = false;
+  
   bool ArtificialJetPt = false;
+  float higgs_mass = 110.0;
   
   std::map<TString, int *> intBranches;
   std::map<TString, unsigned int *> uintBranches;  
@@ -540,7 +562,8 @@ int main ( int argc, char ** argv )
     floatBranches["numPV"] = new float(0.0);
     floatBranches["numTruePV"] = new float(0.0);
     floatBranches["numGenPV"] = new float(0.0);
-
+    intBranches["numPartons"] = new int(0);
+    
     //weights
     floatBranches["weight"] = new float(0.0);
     floatBranches["weight_PUup"] = new float(0.0);
@@ -552,6 +575,7 @@ int main ( int argc, char ** argv )
     floatBranches["lep1SF"] = new float (0.0);
     floatBranches["lep2SF"] = new float (0.0);
     floatBranches["lepTotalSF"] = new float (0.0);
+    floatBranches["weight_Xsec"] = new float(0.0);
     
     //met
     floatBranches["met"] = new float(0.0);
@@ -618,6 +642,7 @@ int main ( int argc, char ** argv )
     floatBranches["higgs_genJet_mass"] = new float(0.0);
     floatBranches["higgs_genParton_mass"] = new float(0.0);
     floatBranches["higgsLike_dijet_mass"] = new float(0.0);
+    floatBranches["higgsLike_dijet_mass2"] = new float(0.0);
     floatBranches["higgsLike_diBjet_mass"] = new float(0.0);
     floatBranches["higgsLike_allDijet_mass"] = new float(0.0);
     floatBranches["higgsLike_dijet_dR"] = new float(0.0);
@@ -633,6 +658,14 @@ int main ( int argc, char ** argv )
     intBranches["numHiggsLike_diBjet_15"] = new int (0);
     intBranches["numHiggsLike_diBjet_20"] = new int (0);
     intBranches["numHiggsLike_diBjet_25"] = new int (0);
+    floatBranches["numHiggsLike_dijet_10_float"] = new float (0.0);
+    floatBranches["numHiggsLike_dijet_15_float"] = new float (0.0);
+    floatBranches["numHiggsLike_dijet_20_float"] = new float (0.0);
+    floatBranches["numHiggsLike_dijet_25_float"] = new float (0.0);
+    floatBranches["numHiggsLike_diBjet_10_float"] = new float (0.0);
+    floatBranches["numHiggsLike_diBjet_15_float"] = new float (0.0);
+    floatBranches["numHiggsLike_diBjet_20_float"] = new float (0.0);
+    floatBranches["numHiggsLike_diBjet_25_float"] = new float (0.0);
     
 
     floatBranches["higgs_dijet_mass"] = new float(0.0);
@@ -687,10 +720,20 @@ int main ( int argc, char ** argv )
     floatBranches["fourth_jet_charge"] = new float(0.0);
     floatBranches["sum_jet_charge"] = new float(0.0);
   
-    floatBranches["first_jet_charge"] = new float(0.0);
-    floatBranches["second_jet_charge"] = new float(0.0);
-    floatBranches["third_jet_charge"] = new float(0.0);
-    floatBranches["fourth_jet_charge"] = new float(0.0);
+    floatBranches["first_jet_CSV"] = new float(0.0);
+    floatBranches["second_jet_CSV"] = new float(0.0);
+    floatBranches["third_jet_CSV"] = new float(0.0);
+    floatBranches["fourth_jet_CSV"] = new float(0.0);
+
+    floatBranches["first_lf_jet_pt"] = new float(0.0);
+    floatBranches["first_lf_jet_eta"] = new float(0.0);
+    floatBranches["first_lf_jet_CSV_unshaped"] = new float(0.0);
+    floatBranches["first_lf_jet_CSV_reshaped"] = new float(0.0);
+
+    floatBranches["first_hf_jet_pt"] = new float(0.0);
+    floatBranches["first_hf_jet_eta"] = new float(0.0);
+    floatBranches["first_hf_jet_CSV_unshaped"] = new float(0.0);
+    floatBranches["first_hf_jet_CSV_reshaped"] = new float(0.0);
 
     floatBranches["dPhi_jet1jet2"] = new float(0.0);
     floatBranches["dPhi_jet1jet3"] = new float(0.0);
@@ -915,7 +958,7 @@ int main ( int argc, char ** argv )
 
   int cnt = 0;
 
-  bool verbose = false; //false;
+  bool verbose = false;
   
   //
   // Loop over events
@@ -1065,7 +1108,7 @@ int main ( int argc, char ** argv )
 
       int eventSampleNumber = event->sample;
 
-      float numTruePV = event->numTruePV;
+      double numTruePV = event->numTruePV;
       double numGenPV = event->numGenPV;
 
       float Q2ScaleUpWgt = 1.0;
@@ -1189,14 +1232,20 @@ int main ( int argc, char ** argv )
       if(!isData){
         if(selectionYearStr == "2011") {
           if ((TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ")) {
-            beanHelper.getPUwgt(numGenPV,weight_PUnominal,weight_PUup,weight_PUdown);
+            weight_PUnominal = beanHelper.GetPUweight(numGenPV);
+            weight_PUup = beanHelper.GetPUweightUp(numGenPV);
+            weight_PUdown = beanHelper.GetPUweightDown(numGenPV);
           }
           else {
-            beanHelper.getPUwgt(numTruePV,weight_PUnominal,weight_PUup,weight_PUdown);
+            weight_PUnominal = beanHelper.GetPUweight(numTruePV);
+            weight_PUup = beanHelper.GetPUweightUp(numTruePV);
+            weight_PUdown = beanHelper.GetPUweightDown(numTruePV);
           }
         }
         else if(selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
-          beanHelper.getPUwgt(numTruePV,weight_PUnominal,weight_PUup,weight_PUdown);
+          weight_PUnominal = beanHelper.GetPUweight(numTruePV);
+          weight_PUup = beanHelper.GetPUweightUp(numTruePV);
+          weight_PUdown = beanHelper.GetPUweightDown(numTruePV);
         }
         else {
           assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
@@ -1340,8 +1389,9 @@ int main ( int argc, char ** argv )
     
     bool isCleanEvent = ( passGoodVertex && passFilterOutScraping && passHBHENoiseFilter );
     isCleanEvent = (isData) ?  isCleanEvent : true;
-    
 
+    int numPartons = beanHelper.GetNumExtraPartons(mcparticles);
+    
     //////////split nGen
     if( (eventSampleNumber>=100 && eventSampleNumber<=300)
         || (eventSampleNumber>=7100 && eventSampleNumber<=7300)
@@ -1603,6 +1653,7 @@ int main ( int argc, char ** argv )
         cout << "\n--------------new event------------------" << endl;
 
       BNjetCollection const &pfjetsSelected = beanHelper.GetCorrectedJets(pfjets,iSysType);
+      BNjetCollection const &pfjetsSelected_Uncorrected = beanHelper.GetUncorrectedJets(pfjetsSelected,pfjets);
 
       for( int i=0; i<int(pfjetsSelected.size()); i++ ){
 
@@ -1756,7 +1807,7 @@ int main ( int argc, char ** argv )
       }// end for each pf jet
       
       //------------------------
-      int numAllJet = numGoodAndBadJets;
+      int numAllJets = numGoodAndBadJets;
       int numJets = int(tight_pfjet_index.size());
       // Only select events with at least two jets
       if (numJets < 2) continue;
@@ -1837,7 +1888,7 @@ int main ( int argc, char ** argv )
       for (int sumv=0; sumv < numJets; sumv++) {
 	sum_jet_vect += jetV[sumv];
       }
-      for (int sumv=0; sumv < numAllJet; sumv++) {
+      for (int sumv=0; sumv < numAllJets; sumv++) {
 	sum_allJet_vect += allJetV[sumv];
       }
 
@@ -1874,6 +1925,7 @@ int main ( int argc, char ** argv )
       float higgs_dijet_jet2_track_pt = dFloat;
       float higgsLike_dijet_mass1 = dFloat;
       float higgsLike_dijet_mass2 = dFloat;
+      float higgsLike_dijet_massX = dFloat;
       float higgsLike_diBjet_mass1 = dFloat;
       float higgsLike_dijet_dR = dFloat;
       float higgsLike_dijet_pt = dFloat;
@@ -1981,6 +2033,16 @@ int main ( int argc, char ** argv )
       float fourth_jet_charge = dFloat;
       float sum_jet_charge = dFloat;
       
+      float first_lf_jet_pt = dFloat;
+      float first_lf_jet_eta = dFloat;
+      float first_lf_jet_CSV_unshaped = dFloat;
+      float first_lf_jet_CSV_reshaped = dFloat;
+
+      float first_hf_jet_pt = dFloat;
+      float first_hf_jet_eta = dFloat;
+      float first_hf_jet_CSV_unshaped = dFloat;
+      float first_hf_jet_CSV_reshaped = dFloat;
+
       float dPhi_jet1jet2 = dFloat;
       float dPhi_jet1jet3 = dFloat;
       float dPhi_jet1jet4 = dFloat;
@@ -2454,7 +2516,7 @@ int main ( int argc, char ** argv )
           sum_higgsLike_allDijet_vect = allJetV[i] + allJetV[j];
           higgsLike_allDijet_mass2 = sum_higgsLike_allDijet_vect.M();
           if (pfjetsSelected.at(i).btagCombinedSecVertex > 0.679 || pfjetsSelected.at(j).btagCombinedSecVertex > 0.679) {
-            if (fabs(125 - higgsLike_allDijet_mass1) > fabs(125 - higgsLike_allDijet_mass2) || higgsLike_allDijet_mass1 == dFloat) {
+            if (fabs(higgs_mass - higgsLike_allDijet_mass1) > fabs(higgs_mass - higgsLike_allDijet_mass2) || higgsLike_allDijet_mass1 == dFloat) {
               higgsLike_allDijet_mass1 = higgsLike_allDijet_mass2;
             }
           }
@@ -2497,36 +2559,42 @@ int main ( int argc, char ** argv )
 
         for (int j=i+1; j < numGoodJets; j++) {
           sum_higgsLike_dijet_vect = jetV[i] + jetV[j];
-          higgsLike_dijet_mass2 = sum_higgsLike_dijet_vect.M();
+          higgsLike_dijet_massX = sum_higgsLike_dijet_vect.M();
           if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679
               || pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex > 0.679) {
-            if (fabs(125 - higgsLike_dijet_mass1) > fabs(125 - higgsLike_dijet_mass2)
+            if (fabs(higgs_mass - higgsLike_dijet_mass2) > fabs(higgs_mass - higgsLike_dijet_massX)
+                || higgsLike_dijet_mass2 == dFloat) {
+              if (fabs(higgs_mass - higgsLike_dijet_mass1) > fabs(higgs_mass - higgsLike_dijet_massX)
+                  || higgsLike_dijet_mass1 == dFloat) higgsLike_dijet_mass2 = higgsLike_dijet_mass1;
+              else higgsLike_dijet_mass2 = higgsLike_dijet_massX;
+            }
+            if (fabs(higgs_mass - higgsLike_dijet_mass1) > fabs(higgs_mass - higgsLike_dijet_massX)
                 || higgsLike_dijet_mass1 == dFloat) {
-              higgsLike_dijet_mass1 = higgsLike_dijet_mass2;
+              higgsLike_dijet_mass1 = higgsLike_dijet_massX;
               higgsLike_dijet_dR = jetV[i].DeltaR(jetV[j]);
               higgsLike_dijet_pt = sum_higgsLike_dijet_vect.Pt();
               higgsLike_dijet_eta = sum_higgsLike_dijet_vect.Eta();
               higgsLike_dijet_jet1_pt = max(jetV[i].Pt(),jetV[j].Pt());
               higgsLike_dijet_jet2_pt = min(jetV[i].Pt(),jetV[j].Pt());
             }
-            if (fabs(125 - higgsLike_dijet_mass2) < 10) numHiggsLike_dijet_10++;
-            if (fabs(125 - higgsLike_dijet_mass2) < 15) numHiggsLike_dijet_15++;
-            if (fabs(125 - higgsLike_dijet_mass2) < 20) numHiggsLike_dijet_20++;
-            if (fabs(125 - higgsLike_dijet_mass2) < 25) numHiggsLike_dijet_25++;
+            if (fabs(higgs_mass - higgsLike_dijet_massX) < 10) numHiggsLike_dijet_10++;
+            if (fabs(higgs_mass - higgsLike_dijet_massX) < 15) numHiggsLike_dijet_15++;
+            if (fabs(higgs_mass - higgsLike_dijet_massX) < 20) numHiggsLike_dijet_20++;
+            if (fabs(higgs_mass - higgsLike_dijet_massX) < 25) numHiggsLike_dijet_25++;
             if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679
                 && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex > 0.679) {
-              if (fabs(125 - higgsLike_diBjet_mass1) > fabs(125 - higgsLike_dijet_mass2)
-                  || higgsLike_diBjet_mass1 == dFloat)  higgsLike_diBjet_mass1 = higgsLike_dijet_mass2;
-              if (fabs(125 - higgsLike_dijet_mass2) < 10) numHiggsLike_diBjet_10++;
-              if (fabs(125 - higgsLike_dijet_mass2) < 15) numHiggsLike_diBjet_15++;
-              if (fabs(125 - higgsLike_dijet_mass2) < 20) numHiggsLike_diBjet_20++;
-              if (fabs(125 - higgsLike_dijet_mass2) < 25) numHiggsLike_diBjet_25++;
+              if (fabs(higgs_mass - higgsLike_diBjet_mass1) > fabs(higgs_mass - higgsLike_dijet_massX)
+                  || higgsLike_diBjet_mass1 == dFloat)  higgsLike_diBjet_mass1 = higgsLike_dijet_massX;
+              if (fabs(higgs_mass - higgsLike_dijet_massX) < 10) numHiggsLike_diBjet_10++;
+              if (fabs(higgs_mass - higgsLike_dijet_massX) < 15) numHiggsLike_diBjet_15++;
+              if (fabs(higgs_mass - higgsLike_dijet_massX) < 20) numHiggsLike_diBjet_20++;
+              if (fabs(higgs_mass - higgsLike_dijet_massX) < 25) numHiggsLike_diBjet_25++;
             }
           }
           if (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679
               && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679) {
-            if (fabs(81 - wLike_dijet_mass1) > fabs(81 - higgsLike_dijet_mass2) || wLike_dijet_mass1 == dFloat) {
-              wLike_dijet_mass1 = higgsLike_dijet_mass2;
+            if (fabs(81 - wLike_dijet_mass1) > fabs(81 - higgsLike_dijet_massX) || wLike_dijet_mass1 == dFloat) {
+              wLike_dijet_mass1 = higgsLike_dijet_massX;
             }
           }
           for (int k=j+1; k < numGoodJets; k++) {
@@ -2540,6 +2608,19 @@ int main ( int argc, char ** argv )
               }
             }
           }
+        }
+
+        if (first_lf_jet_pt == dFloat && pfjetsSelected.at(iJet).flavour > 0 && pfjetsSelected.at(iJet).flavour < 4) {
+          first_lf_jet_pt = jet_pt[iJet];
+          first_lf_jet_eta = jet_vect.Eta();
+          first_lf_jet_CSV_unshaped = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
+          first_lf_jet_CSV_reshaped = pfjetsSelected.at(iJet).btagCombinedSecVertex;
+        }
+        if (first_hf_jet_pt == dFloat && pfjetsSelected.at(iJet).flavour > 3 && pfjetsSelected.at(iJet).flavour < 6) {
+          first_hf_jet_pt = jet_pt[iJet];
+          first_hf_jet_eta = jet_vect.Eta();
+          first_hf_jet_CSV_unshaped = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
+          first_hf_jet_CSV_reshaped = pfjetsSelected.at(iJet).btagCombinedSecVertex;
         }
         
 	    if (i==0)  {        
@@ -2858,7 +2939,8 @@ int main ( int argc, char ** argv )
         *(floatBranches["numPV"]) = numPV ;
         *(floatBranches["numTruePV"]) = numTruePV;
         *(floatBranches["numGenPV"]) = numGenPV;
-
+        *(intBranches["numPartons"]) = numPartons;
+        
         //weights
         *(floatBranches["weight"]) = weight ;
         *(floatBranches["weight_PUup"]) = weight_PUup ;
@@ -2870,6 +2952,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep1SF"]) = lep1SF;
         *(floatBranches["lep2SF"]) = lep2SF;
         *(floatBranches["lepTotalSF"]) = lepTotalSF;
+        *(floatBranches["weight_Xsec"]) = weight_Xsec ;
 
         //met
         *(floatBranches["met"]) = met;
@@ -2936,6 +3019,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["higgs_genJet_mass"]) = higgs_genJet_mass;
         *(floatBranches["higgs_genParton_mass"]) = higgs_genParton_mass;
         *(floatBranches["higgsLike_dijet_mass"]) = higgsLike_dijet_mass1;
+        *(floatBranches["higgsLike_dijet_mass2"]) = higgsLike_dijet_mass2;
         *(floatBranches["higgsLike_diBjet_mass"]) = higgsLike_diBjet_mass1;
         *(floatBranches["higgsLike_allDijet_mass"]) = higgsLike_allDijet_mass1;
         *(floatBranches["higgsLike_dijet_dR"]) = higgsLike_dijet_dR;
@@ -2951,6 +3035,14 @@ int main ( int argc, char ** argv )
         *(intBranches["numHiggsLike_diBjet_15"]) = numHiggsLike_diBjet_15;
         *(intBranches["numHiggsLike_diBjet_20"]) = numHiggsLike_diBjet_20;
         *(intBranches["numHiggsLike_diBjet_25"]) = numHiggsLike_diBjet_25;
+        *(floatBranches["numHiggsLike_dijet_10_float"]) = float(numHiggsLike_dijet_10);
+        *(floatBranches["numHiggsLike_dijet_15_float"]) = float(numHiggsLike_dijet_15);
+        *(floatBranches["numHiggsLike_dijet_20_float"]) = float(numHiggsLike_dijet_20);
+        *(floatBranches["numHiggsLike_dijet_25_float"]) = float(numHiggsLike_dijet_25);
+        *(floatBranches["numHiggsLike_diBjet_10_float"]) = float(numHiggsLike_diBjet_10);
+        *(floatBranches["numHiggsLike_diBjet_15_float"]) = float(numHiggsLike_diBjet_15);
+        *(floatBranches["numHiggsLike_diBjet_20_float"]) = float(numHiggsLike_diBjet_20);
+        *(floatBranches["numHiggsLike_diBjet_25_float"]) = float(numHiggsLike_diBjet_25);
         
         *(floatBranches["higgs_dijet_mass"]) = higgs_dijet_mass;
         *(floatBranches["higgs_dijet_pt"]) = higgs_dijet_pt;
@@ -2990,7 +3082,7 @@ int main ( int argc, char ** argv )
 
       if (ExtraJetVariables) {
 
-        *(intBranches["numAllJets"]) = numAllJet;
+        *(intBranches["numAllJets"]) = numAllJets;
 
         *(floatBranches["first_jet_CHEF"]) = first_jet_CHEF;
         *(floatBranches["second_jet_CHEF"]) = second_jet_CHEF;
@@ -3008,6 +3100,16 @@ int main ( int argc, char ** argv )
         *(floatBranches["second_jet_CSV"]) = second_jet_CSV;
         *(floatBranches["third_jet_CSV"]) = third_jet_CSV;
         *(floatBranches["fourth_jet_CSV"]) = fourth_jet_CSV;
+
+        *(floatBranches["first_lf_jet_pt"]) = first_lf_jet_pt;
+        *(floatBranches["first_lf_jet_eta"]) = first_lf_jet_eta;
+        *(floatBranches["first_lf_jet_CSV_unshaped"]) = first_lf_jet_CSV_unshaped;
+        *(floatBranches["first_lf_jet_CSV_reshaped"]) = first_lf_jet_CSV_reshaped;
+
+        *(floatBranches["first_hf_jet_pt"]) = first_hf_jet_pt;
+        *(floatBranches["first_hf_jet_eta"]) = first_hf_jet_eta;
+        *(floatBranches["first_hf_jet_CSV_unshaped"]) = first_hf_jet_CSV_unshaped;
+        *(floatBranches["first_hf_jet_CSV_reshaped"]) = first_hf_jet_CSV_reshaped;
 
         *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
         *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
