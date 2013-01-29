@@ -18,9 +18,13 @@ sampleNameCL = sys.argv[2]
 iYear = sys.argv[3]
 iZmask = sys.argv[4]
 iLabel = sys.argv[5]
-iJes = int (sys.argv[6])
-iJer = int (sys.argv[7])
-iPV = sys.argv[8]
+iSkipSyst = bool(sys.argv[6])
+iPV = sys.argv[7]
+
+
+# iJes = int (sys.argv[6])
+# iJer = int (sys.argv[7])
+# iPV = sys.argv[8]
 
 ## if (iJes == 1):
 ##	   iLabel = iLabel+"_JesUp"
@@ -74,21 +78,23 @@ process.inputs.fileName = treeFileName
 # But sometimes you will hand it the nominal file instead of
 # something with an actual shift
 
-if iJes != 0:
-	process.inputs.fileNameJESUp = "treeFiles/dilSummaryTrees_%s_%s_%s_JESUp_all.root" % (sampleNameCL, iYear, iLabel)
-	process.inputs.fileNameJESDown = "treeFiles/dilSummaryTrees_%s_%s_%s_JESDown_all.root" % (sampleNameCL, iYear, iLabel)
-else:
-	process.inputs.fileNameJESUp = process.inputs.fileName
-	process.inputs.fileNameJESDown = process.inputs.fileName
+# if iJes != 0:
+# 	process.inputs.fileNameJESUp = "treeFiles/dilSummaryTrees_%s_%s_%s_JESUp_all.root" % (sampleNameCL, iYear, iLabel)
+# 	process.inputs.fileNameJESDown = "treeFiles/dilSummaryTrees_%s_%s_%s_JESDown_all.root" % (sampleNameCL, iYear, iLabel)
+# else:
+# 	process.inputs.fileNameJESUp = process.inputs.fileName
+# 	process.inputs.fileNameJESDown = process.inputs.fileName
 
-if iJer != 0:
-	process.inputs.fileNameJERUp = "treeFiles/dilSummaryTrees_%s_%s_%s_JERUp_all.root" % (sampleNameCL, iYear, iLabel)
-	process.inputs.fileNameJERDown = "treeFiles/dilSummaryTrees_%s_%s_%s_JERDown_all.root" % (sampleNameCL, iYear, iLabel)
-else:
-	process.inputs.fileNameJERUp = process.inputs.fileName
-	process.inputs.fileNameJERDown = process.inputs.fileName
+# if iJer != 0:
+# 	process.inputs.fileNameJERUp = "treeFiles/dilSummaryTrees_%s_%s_%s_JERUp_all.root" % (sampleNameCL, iYear, iLabel)
+# 	process.inputs.fileNameJERDown = "treeFiles/dilSummaryTrees_%s_%s_%s_JERDown_all.root" % (sampleNameCL, iYear, iLabel)
+# else:
+# 	process.inputs.fileNameJERUp = process.inputs.fileName
+# 	process.inputs.fileNameJERDown = process.inputs.fileName
 
 
+process.inputs.fileNameJESUp = "treeFiles/dilSummaryTrees_%s_%s_%s_JESUp_all.root" % (sampleNameCL, iYear, iLabel)
+process.inputs.fileNameJESDown = "treeFiles/dilSummaryTrees_%s_%s_%s_JESDown_all.root" % (sampleNameCL, iYear, iLabel)
 process.inputs.fileNamebtagHFUp = "treeFiles/dilSummaryTrees_%s_%s_%s_btagHFUp_all.root" % (sampleNameCL, iYear, iLabel)
 process.inputs.fileNamebtagHFDown = "treeFiles/dilSummaryTrees_%s_%s_%s_btagHFDown_all.root" % (sampleNameCL, iYear, iLabel)
 process.inputs.fileNamebtagLFUp = "treeFiles/dilSummaryTrees_%s_%s_%s_btagLFUp_all.root" % (sampleNameCL, iYear, iLabel)
@@ -139,5 +145,6 @@ print "	 btagLFDown   %s" % process.inputs.fileNamebtagLFDown
 process.dilAnalysis = cms.PSet(
 	#jes = cms.int32(iJes),
 	#jer = cms.int32(iJer),	
-	sampleName = cms.string(sampleNameCL)
+	sampleName = cms.string(sampleNameCL),
+    skipSystematics = cms.bool(iSkipSyst)
 )

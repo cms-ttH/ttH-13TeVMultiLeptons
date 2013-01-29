@@ -3,17 +3,32 @@
 import os
 import sys
 import time
-
+from optparse import OptionParser
 
 def main ():
 
-    iYear = str(sys.argv[1])
-    iZmask = str(sys.argv[2])
+    parser = OptionParser(usage="./submitCondorPlots.py --year=2012_52x  LABEL")
+    parser.add_option('-o', '--oneSample', dest='oneSample', default='NONE', help="Run on only this sample")
+    #parser.add_option('-a', '--argHelp', dest='argHelp', action='store_true', default=False)
+    parser.add_option('-y', '--year', dest='year', default='NONE', help="2011, 2012_52x, 2012_53x, no default")
+    parser.add_option('-z', '--zmask', dest='zmask', default='noZmask', help="noZmask is default")
+    parser.add_option('-s', '--skipSystematics', dest='skipSyst', action='store_true', default=False, help="Skip systematics")
+    
+    (options, args) = parser.parse_args()
+
+    if len(args) < 1 or options.year == 'NONE':
+        parser.print_help()
+        exit(3)
+
+    iYear = str(options.year)
+    iZmask = str(options.zmask)
 #    iZmask = "Zmask"
     #iZmask = "Zpeak"
-    jobLabel = str(sys.argv[3])
-    jesChoice = 1
-    jerChoice = 0
+    jobLabel = str(args[0])
+
+    iSkipSyst = options.skipSyst
+    #jesChoice = 0
+    #jerChoice = 0
     iPV = "none"
 #    iPV = "lowPV"
 #    iPV = "medPV"
@@ -102,8 +117,16 @@ def main ():
                      'ttbar_part18',  
                      ]
 
+
+    oneSampleList = [options.oneSample]
+
+    
+
     if iYear == "2011":  ### more ttbar parts for 2011
         listOfSamples = listOfSamples + extraTTbarSample
+
+    if options.oneSample != 'NONE':
+        listOfSamples = oneSampleList
         
     for iList in listOfSamples:
         condorHeader = "universe = vanilla\n"+"executable = runPlotsCondor.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
@@ -119,10 +142,11 @@ def main ():
         condorJobFile.write( "List = %s\n" % iList)
 
                     
-        condorJobFile.write( "JES = %s\n" % jesChoice)
-        condorJobFile.write( "JER = %s\n" % jerChoice)
+        #condorJobFile.write( "JES = %s\n" % jesChoice)
+        #condorJobFile.write( "JER = %s\n" % jerChoice)
+        condorJobFile.write( "skipSyst = %s\n" % int(iSkipSyst))
         condorJobFile.write( "PV = %s\n" % iPV)
-        condorJobFile.write( "arguments = $(List) $(Year) $(Zmask) $(Label) $(JES) $(JER) $(PV)\n")
+        condorJobFile.write( "arguments = $(List) $(Year) $(Zmask) $(Label) $(skipSyst) $(PV)\n")
         condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")
         condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n") 
         condorJobFile.write( "queue 1\n")

@@ -117,7 +117,16 @@ int main ( int argc, char ** argv )
    std::string treeFileNamebtagLFUp = inputs.getParameter< std::string >("fileNamebtagLFUp");
    std::string treeFileNamebtagLFDown = inputs.getParameter< std::string >("fileNamebtagLFDown");
 
-   std::string inputYear = inputs.getParameter< std::string >("inputYear");
+   std::string inputYearTemp = inputs.getParameter< std::string >("inputYear");
+   std::string inputYear;
+
+   if(inputYearTemp == "2012_52x")
+     inputYear = "2012";
+   else if (inputYearTemp == "2012_53x")
+     inputYear = "2012";
+   else
+     inputYear = "2011";
+   
    std::string inputZmask = inputs.getParameter< std::string >("inputZmask");
    std::string inputPV = inputs.getParameter< std::string >("inputPV");
    
@@ -128,7 +137,17 @@ int main ( int argc, char ** argv )
    //int jes = anaParams.getParameter<int> ("jes");
    //int jer = anaParams.getParameter<int> ("jer");
    std::string sampleName = anaParams.getParameter<string>("sampleName");
+   bool skipSystematics = anaParams.getParameter<bool>("skipSystematics");
 
+   if (skipSystematics) {
+
+     std::cout << "==================================\n\n" 
+               << "CONFIG: Skipping systematics\n"
+               << "==================================\n\n"
+               << endl;
+     
+   }
+                                                  
    //std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
 
    // std::string JesJerStr = "";
@@ -251,7 +270,7 @@ int main ( int argc, char ** argv )
 
   ////////////////////
   std::vector<varInfo*> varList;
-  double pival = 3.14;
+  //double pival = 3.14;
   
 //   varInfo *all_sum_pt = new varInfo("all_sum_pt", "all_sum_pt", "all_sum_pt", 10000, 0, 10000);
 //   varList.push_back(all_sum_pt);
@@ -519,7 +538,7 @@ int main ( int argc, char ** argv )
     }
 
     for (unsigned int ksys = 0 ; ksys < NumSys ; ++ksys ){
-      if (isData && ksys!=2) continue;
+      if ( (isData || skipSystematics) && ksys!=2) continue;
 
       if (!tmpName.Contains("ttbar_") && ksys > 10) continue; /// rwt
 
