@@ -308,7 +308,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	TexTitle1 = directoryName.replace('pdf/','')
 	TexTitle2 = TexTitle1.replace('eq2jeq2t',' + 2 jets + 2 b-tags')
-	TexTitle3 = TexTitle2.replace('ge3t',' + #geq 3 b-tags')
+	TexTitle3 = TexTitle2.replace('ge3t',' + #geq3 jets + #geq3 b-tags')
 	TexTitle4 = TexTitle3.replace('MuonEle_',' #mu e ')
 	TexTitle5 = TexTitle4.replace('pdf_2012/','')
 	TexTitle6 = TexTitle5.replace('2012_noZmask_','')
@@ -329,7 +329,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	myLumiTex = TLatex()
 	myLumiTex.SetNDC()
 	myLumiTex.SetTextFont(42)
-	myLumiTex.SetTextAlign(13) ##
+#	myLumiTex.SetTextAlign(13) ##
 	myLumiTex.SetTextSize(0.055)  ##0.035
 
 
@@ -338,6 +338,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	SELECTIONInfoLatex.SetNDC()
 	SELECTIONInfoLatex.SetTextFont(42)
 	SELECTIONInfoLatex.SetTextSize(0.05)
+
+	SFinfo = "t#bar{t}H(125) x 30"
+	if jetSelection == "eq2jeq2t":
+		SFinfo = "t#bar{t}H(125) x 300"
+	SFInfoLatex = TLatex()
+	SFInfoLatex.SetNDC()
+	SFInfoLatex.SetTextFont(42)
+	SFInfoLatex.SetTextSize(0.05)
 
 	
 	# loop over the list of plots
@@ -704,9 +712,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #		 legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
 
 	if (ttHSum > 0):
-		iSig.Scale(TotalMCsum/ttHSum)
-#		iSig.Scale(300)
-#		iSig.Scale(30)
+		if (dist.find("CFMlpANN") != -1):
+			if jetSelection == "eq2jeq2t": iSig.Scale(300)
+			else: 	iSig.Scale(30)
+		else:
+			iSig.Scale(TotalMCsum/ttHSum)
+
 	iSig.SetLineColor(kBlue)  ## was kBlue
 	iSig.SetFillColor(0)
 	iSig.SetLineWidth(4)
@@ -726,6 +737,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		MCErrHist.SetBinContent(i,myStack.GetStack().Last().GetBinContent(i))
 		MCErrHist.SetBinError(i,math.sqrt(math.pow(myStack.GetStack().Last().GetBinError(i),2)+math.pow(lumi_trigSF_err*myStack.GetStack().Last().GetBinContent(i),2)))
 
+#        gROOT.SetStyle("Plain")
+#	gROOT.ForceStyle()
 #	 gStyle.SetHatchesSpacing(0.4)
 #	 gStyle.SetHatchesSpacing(0.8)
 	##gStyle.SetHatchesLineWidth(1)
@@ -760,7 +773,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	myStack.SetTitle(titleString)
 	myStack.SetMinimum(0.001)
-	myStack.SetMaximum(max(1.001,plotMax*1.3))  #### was 1.3
+	myStack.SetMaximum(max(1.001,plotMax*1.2))  #### was 1.3
 	##Appropriate for log scale	 
 	##myStack.SetMaximum(plotMax*10) 
 
@@ -781,7 +794,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	upLin.SetRightMargin(.05)
 	downLin.SetRightMargin(.05)
-	upLin.SetBottomMargin(.05)
+#	upLin.SetBottomMargin(.3)  ## .05
+	upLin.SetTopMargin(.1)  ## 
 	downLin.SetBottomMargin(.3)
 	upLin.Modified()
 	downLin.Modified()
@@ -802,14 +816,37 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	gPad.Modified()
 
 	myStack.Draw()
+	myStack.GetYaxis().SetTitleSize(0.05) ##
+	myStack.GetYaxis().SetTitleOffset(1.1) ## 1.0
 
 	MCErrHist.Draw('e2same')
 	
 	iSig.Draw('histsame')
 
-	theDataHisto.Draw("pe1same")		##Comment out for blinding
+##	theDataHisto.Draw("pe1same")		##Comment out for blinding
 
+#######
+### asymmetrical poisson errors for data
+#######	
 
+	alpha = 1 - 0.6827
+	ggg = TGraphAsymmErrors(theDataHisto);
+	NBin = ggg.GetN()
+	for iBin in range(0, NBin):
+		NN = ggg.GetY()[iBin]
+		if (NN==0):
+			LOW = 0
+		else: 
+			LOW =  Math.gamma_quantile(alpha/2,NN,1.)
+		UP =  Math.gamma_quantile_c(alpha/2,NN+1,1)
+		ggg.SetPointEYlow(iBin, NN-LOW)
+		ggg.SetPointEYhigh(iBin, UP-NN)
+
+	ggg.SetLineColor(kBlack)
+	ggg.SetMarkerStyle(20)
+	ggg.SetLineWidth(2)
+
+	ggg.Draw("psame")
 	# calculate the KS test result, put it somewhere
 #	ksResult = theDataHisto.KolmogorovTest(MCErrHist)
 
@@ -817,8 +854,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 #	legForStack.Draw()
 #	myLumiTex.DrawLatex(0.10, 0.98, myLumiString)
-	myLumiTex.DrawLatex(0.14, 0.99, myLumiString)  ### cmt out 0.25
-	SELECTIONInfoLatex.DrawLatex(0.48, 0.87, catinfo)
+	myLumiTex.DrawLatex(0.14, 0.91, myLumiString)  ### cmt out 0.25
+	SELECTIONInfoLatex.DrawLatex(0.45, 0.84, catinfo)
+	if (dist.find("CFMlpANN") != -1):
+		SFInfoLatex.DrawLatex(0.64, 0.77, SFinfo)
 	
 	##Begin comment out for 2012
 	downLin.cd()
@@ -833,23 +872,23 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	ratioHist.SetTitle(ratiotitleString)  ###
 #	 ratioHist.SetTitle(";;Data/MC")
 	ratioHist.GetYaxis().SetTitleSize(0.1)
-	ratioHist.GetYaxis().SetTitleOffset(0.5)
+	ratioHist.GetYaxis().SetTitleOffset(0.45) ## 0.5
 	ratioHist.GetYaxis().CenterTitle()
 	ratioHist.GetYaxis().SetLabelSize(0.1)
 	ratioHist.GetYaxis().SetNdivisions(50000+404)
 	
-	ratioHist.GetXaxis().SetLabelSize(0.1)	###
-	ratioHist.GetXaxis().SetLabelOffset(0.04)
-	ratioHist.GetXaxis().SetTitleOffset(1.1)
-	ratioHist.GetXaxis().SetTitleSize(0.12)
+	ratioHist.GetXaxis().SetLabelSize(0.12)	### 0.1
+	ratioHist.GetXaxis().SetLabelOffset(0.02) ### 0.04
+	ratioHist.GetXaxis().SetTitleOffset(0.90) ### 1.1
+	ratioHist.GetXaxis().SetTitleSize(0.14) ### 0.12
 #	if (dist == "CFMlpANN_e2je2t"):
 #		ratioHist.GetXaxis().SetNdivisions(504)
 	
 	ratioHist.SetLineColor(0)	 
 	ratioHist.SetMarkerColor(0)	 
 
-	ratioHist.SetLineColor(kBlack)	   ##Comment out for blinding 
-	ratioHist.SetMarkerColor(kBlack)   ##Comment out for blinding 
+##	ratioHist.SetLineColor(kBlack)	   ##Comment out for blinding 
+##	ratioHist.SetMarkerColor(kBlack)   ##Comment out for blinding 
 
 
 		
@@ -886,8 +925,54 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	ratioHist.DrawCopy()
 	ratioErrHist.DrawCopy("e2same")		##Comment out for blinding 
-	ratioHist.DrawCopy("pe1same")
+##	ratioHist.DrawCopy("pe1same") ###
+	ratioHist.Draw("sameaxis")
+#######
+### asymmetrical poisson errors for data
+#######
+	ratioMax = 2.3
+	gRatio = TGraphAsymmErrors(ggg.GetN())
+	for  jBin in range(0, gRatio.GetN()):
+		xPoint = theDataHisto.GetBinCenter(jBin+1);
+		xWidth = 0.5*theDataHisto.GetBinWidth(jBin+1);
+		
+		yG = ggg.GetY()[jBin];
+		yG_low  = ggg.GetEYlow()[jBin];
+		yG_high = ggg.GetEYhigh()[jBin];
+		yData = theDataHisto.GetBinContent(jBin+1);
+		
+		yBkg = myStack.GetStack().Last().GetBinContent(jBin+1);
+		
+		if (yBkg>0.) :
+			
+			yG_ratio = yG/yBkg
+			yG_ratio_low = yG_low/yBkg
+			yG_ratio_high = yG_high/yBkg
+		else:
+			yG_ratio = 0.
+			yG_ratio_low = 0.
+			yG_ratio_high = 0.
+			
+		if (yData>0) :
+			gRatio.SetPoint(jBin, xPoint, yG_ratio )
+		        gRatio.SetPointEYlow(jBin, yG_ratio_low)
+		        gRatio.SetPointEYhigh(jBin, yG_ratio_high)
+			
+		        gRatio.SetPointEXlow(jBin, xWidth)
+		        gRatio.SetPointEXhigh(jBin, xWidth)
 
+			if ( yG_ratio>ratioMax and (yG_ratio - yG_ratio_low)<ratioMax ):
+				minner = yG_ratio_low - (yG_ratio - ratioMax-0.0001)
+				gRatio.SetPoint(jBin, xPoint, ratioMax-0.0001 )
+				gRatio.SetPointEYlow(jBin, minner)
+			    
+	  
+
+	  
+	gRatio.SetLineColor(kBlack)
+	gRatio.SetLineWidth(2)
+	gRatio.Draw("psame")
+##############
 	saveRatioHist = True
 	if saveRatioHist:
 		ratioHistFile = TFile("ratioHistFile.root","RECREATE")
@@ -1121,13 +1206,13 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 			while (ii < len(sys_hist_array)):
 				binALL_err_squared += math.pow(binALL_err_array[ii/2],2)
 #				if (binErrors == "all" and newBin == 3):
-#					print "   -> sys " + str(ii/2) + " err is " +str(math.pow(binALL_err_array[ii/2],2))
+#					print "   - > sys " + str(ii/2) + " err is " +str(math.pow(binALL_err_array[ii/2],2))
 				ii+=2
 		hist.SetBinError(newBin, math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2+binALL_err_squared))
 
 #		if (binErrors == "all" and newBin == 3):
 #			print " Setting bin "+str(newBin)+", value "+str(binCont)+", BinError = "+str(math.sqrt(math.pow(sys_frac_err*float(binCont),2)+binSumW2+binALL_err_squared))
-#			print "  -->err components : xs_frac_err = " + str(math.pow(sys_frac_err*float(binCont),2))+ "; SumW2 =" + str(binSumW2)+ "[" + str(binSumW2*math.pow(scaleRatio,2)) +"]" + "; sysAll = " +str(binALL_err_squared)		
+#			print "  -- >err components : xs_frac_err = " + str(math.pow(sys_frac_err*float(binCont),2))+ "; SumW2 =" + str(binSumW2)+ "[" + str(binSumW2*math.pow(scaleRatio,2)) +"]" + "; sysAll = " +str(binALL_err_squared)		
 	# end loop over newBin
 				
 	# Do any remaining bins past the end of the new range (including overflow in original)
