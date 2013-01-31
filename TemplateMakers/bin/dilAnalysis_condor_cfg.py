@@ -32,6 +32,15 @@ print "Using Search path %s" % searchPath
 os.environ['CMSSW_SEARCH_PATH'] = searchPath
 
 
+# print out some information about the node
+# you are using
+
+host = os.environ['HOST']
+
+print "CONDOR: Running on node ", host
+print "CONDOR: Running in directory ", thisDir
+
+
 process = cms.Process("ttHDIL")
 
 print "Inside dil config"
@@ -44,9 +53,11 @@ process.inputs = cms.PSet (
 if iYear == '2011':
     listFileName = "../../listsForSkims/" + sampleNameCL + ".list"  ###2011
 elif iYear == '2012_52x':
-    listFileName = "../../listsForSkims2012_v3/" + sampleNameCL + ".list"
+    #listFileName = "../../listsForSkims2012_v3/" + sampleNameCL + ".list"
+    listFileName = "../../listsForSkims2012_v3_hadoop/" + sampleNameCL + ".list"
 elif iYear == '2012_53x':
-	listFileName = "/afs/crc.nd.edu/user/a/abrinke1/BEANsHelper/CMSSW_5_3_2_patch5/src/BEAN/listsForSkims2012_53x_v1/" + sampleNameCL + ".list"
+	#listFileName = "/afs/crc.nd.edu/user/a/abrinke1/BEANsHelper/CMSSW_5_3_2_patch5/src/BEAN/listsForSkims2012_53x_v1/" + sampleNameCL + ".list"
+    listFileName = "../../listsForSkims2012_53x_v1_hadoop/" + sampleNameCL + ".list"
 
 # read in all files in the list
 print "Reading file names from list: %s" % listFileName
