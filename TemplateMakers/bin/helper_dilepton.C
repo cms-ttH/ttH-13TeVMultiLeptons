@@ -132,6 +132,8 @@ int main ( int argc, char ** argv )
    std::string outputFileName = outputs.getParameter<std::string >("outputName");
    //// switch between 2011 and 2012
    std::string selectionYearStr = anaParams.getParameter<std::string>("selectionYear");
+
+   std::cout << "CONFIG: selectionYear = " << selectionYearStr << std::endl;
 //    int selectionYearInt = -99;
 //    if (selectionYearStr == "2011") {
 //      selectionYearInt = 2011;
@@ -347,6 +349,11 @@ int main ( int argc, char ** argv )
   else {
     assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
   }
+
+
+  std::cout << "CONFIG: Sample Name = " << sampleName
+            << ", sample Number = " << sampleNumber << endl;
+
   
   BEANhelper beanHelper;
   //BEANhelper::SetUp(string iEra, int iSampleNumber, bool iIsLJ, bool iIsData, string iDataset, bool iReshapeCSV, bool iPfLeptons = true)
