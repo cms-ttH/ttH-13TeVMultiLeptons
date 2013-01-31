@@ -147,6 +147,20 @@ int main ( int argc, char ** argv )
                << endl;
      
    }
+
+
+   bool makeCorePlots = anaParams.getParameter<bool>("corePlots");
+   bool makeLepPlots = anaParams.getParameter<bool>("lepPlots");
+   bool makeJetPlots = anaParams.getParameter<bool>("jetPlots");
+
+   std::cout << "CONFIG: corePlots = " << makeCorePlots << std::endl
+             << "CONFIG: lepPlots = " << makeLepPlots << std::endl
+             << "CONFIG: jetPlots = " << makeJetPlots << std::endl
+             << std::endl;
+     
+
+   
+   
                                                   
    //std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
 
@@ -271,11 +285,50 @@ int main ( int argc, char ** argv )
   ////////////////////
   std::vector<varInfo*> varList;
   //double pival = 3.14;
-  
+
+
+  if (makeCorePlots) {
+
+    varInfo *avg_btag_disc_btags = new varInfo("avg_btag_disc_btags", "avg_btag_disc_btags", "avg_btag_disc_btags", 1000, 0, 1);
+    varList.push_back(avg_btag_disc_btags);
+    
+    varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.45, 0.55);
+    varList.push_back(CFMlpANN_e2je2t);
+    varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge3t);    
+
+    varInfo *CFMlpANN_e3je2t = new varInfo("CFMlpANN_e3je2t", "CFMlpANN_e3je2t", "CFMlpANN_e3je2t", 1000, 0, 1);
+    varList.push_back(CFMlpANN_e3je2t);
+    
+    varInfo *CFMlpANN_ge4je2t = new varInfo("CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge4je2t);
+
+    varInfo *first_jet_pt = new varInfo("first_jet_pt", "first_jet_pt", "first_jet_pt", 1000, 0, 1000);
+    varList.push_back(first_jet_pt);
+
+    varInfo *Ht = new varInfo("Ht", "Ht", "Ht", 5000, 0, 5000);
+    varList.push_back(Ht);
+
+    varInfo *met = new varInfo("met", "met", "met", 1000, 0, 1000);
+    varList.push_back(met);
+    varInfo *MHT = new varInfo("MHT", "MHT", "MHT", 1000, 0, 1000);
+    varList.push_back(MHT);
+    varInfo *min_dr_tagged_jets = new varInfo("min_dr_tagged_jets", "min_dr_tagged_jets", "min_dr_tagged_jets", 1000, 0, 10);
+    varList.push_back(min_dr_tagged_jets);
+    varInfo *mindr_lep1_jet = new varInfo("mindr_lep1_jet", "mindr_lep1_jet", "mindr_lep1_jet", 1000, 0, 10);
+    varList.push_back(mindr_lep1_jet);
+
+    varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, 0, 20);
+    varList.push_back(numJets);
+
+    varInfo *numTaggedJets = new varInfo("numTaggedJets", "numTaggedJets", "numTaggedJets", 10, 0, 10);
+    varList.push_back(numTaggedJets);
+
+  }
+    
 //   varInfo *all_sum_pt = new varInfo("all_sum_pt", "all_sum_pt", "all_sum_pt", 10000, 0, 10000);
 //   varList.push_back(all_sum_pt);
-  varInfo *avg_btag_disc_btags = new varInfo("avg_btag_disc_btags", "avg_btag_disc_btags", "avg_btag_disc_btags", 1000, 0, 1);
-  varList.push_back(avg_btag_disc_btags);
+
 //   varInfo *avg_dr_tagged_jets = new varInfo("avg_dr_tagged_jets", "avg_dr_tagged_jets", "avg_dr_tagged_jets", 1000, 0, 10);
 //   varList.push_back(avg_dr_tagged_jets);
 //   varInfo *avg_tagged_dijet_mass = new varInfo("avg_tagged_dijet_mass", "avg_tagged_dijet_mass", "avg_tagged_dijet_mass", 1000, 0, 1000);
@@ -284,16 +337,10 @@ int main ( int argc, char ** argv )
 //  varList.push_back(avg_tagged_dijet_mass);
   //  varInfo *avg_untagged_dijet_mass = new varInfo("avg_untagged_dijet_mass", "avg_untagged_dijet_mass", "avg_untagged_dijet_mass", 1000, 0, 1000);
   //  varList.push_back(avg_untagged_dijet_mass);
-  varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 1000, 0.45, 0.55);
-  varList.push_back(CFMlpANN_e2je2t);
-  varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
-  varList.push_back(CFMlpANN_ge3t);
+
 //   varInfo *CFMlpANN_ge3t_new = new varInfo("CFMlpANN_ge3t_new", "CFMlpANN_ge3t_new", "CFMlpANN_ge3t_new", 1000, 0, 1);
 //   varList.push_back(CFMlpANN_ge3t_new);
-  varInfo *CFMlpANN_e3je2t = new varInfo("CFMlpANN_e3je2t", "CFMlpANN_e3je2t", "CFMlpANN_e3je2t", 1000, 0, 1);
-  varList.push_back(CFMlpANN_e3je2t);
-  varInfo *CFMlpANN_ge4je2t = new varInfo("CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", 1000, 0, 1);
-  varList.push_back(CFMlpANN_ge4je2t);
+
 //   varInfo *CFMlpANN_var_best8 = new varInfo("CFMlpANN_var_best8", "CFMlpANN_var_best8", "CFMlpANN_var_best8", 1000, 0, 1);
 //   varList.push_back(CFMlpANN_var_best8);
 //   varInfo *closest_tagged_dijet_mass = new varInfo("closest_tagged_dijet_mass", "closest_tagged_dijet_mass", "closest_tagged_dijet_mass", 1000, 0, 1000);
@@ -328,8 +375,7 @@ int main ( int argc, char ** argv )
   //   varList.push_back(first_jet_CHEF);
   //  varInfo *first_jet_eta = new varInfo("first_jet_eta", "first_jet_eta", "first_jet_eta", 1000, -5, 5);
   //  varList.push_back(first_jet_eta);
-  varInfo *first_jet_pt = new varInfo("first_jet_pt", "first_jet_pt", "first_jet_pt", 1000, 0, 1000);
-  varList.push_back(first_jet_pt);
+
 //   varInfo *fourth_allJet_pt = new varInfo("fourth_allJet_pt", "fourth_allJet_pt", "fourth_allJet_pt", 1000, 0, 1000);
 //   varList.push_back(fourth_allJet_pt);
 //   varInfo *fourth_jet_eta = new varInfo("fourth_jet_eta", "fourth_jet_eta", "fourth_jet_eta", 1000, -5, 5);
@@ -342,8 +388,7 @@ int main ( int argc, char ** argv )
 //   varList.push_back(higgsLike_dijet_mass);
 //   varInfo *higgsLike_allDijet_mass = new varInfo("higgsLike_allDijet_mass", "higgsLike_allDijet_mass", "higgsLike_allDijet_mass", 1000, 0, 1000);
 //   varList.push_back(higgsLike_allDijet_mass);
-  varInfo *Ht = new varInfo("Ht", "Ht", "Ht", 5000, 0, 5000);
-  varList.push_back(Ht);
+
 //   varInfo *lep1Eta = new varInfo("lep1Eta", "lep1Eta", "lep1Eta", 1000, -5, 5);
 //   varList.push_back(lep1Eta);
 //   varInfo *lep1Phi = new varInfo("lep1Phi", "lep1Phi", "lep1Phi", 1000, -1*pival, pival);
@@ -376,22 +421,14 @@ int main ( int argc, char ** argv )
 //  varList.push_back(mass_of_everything);
 //  varInfo *mass_of_leps_and_allJets = new varInfo("mass_of_leps_and_allJets", "mass_of_leps_and_allJets", "mass_of_leps_and_allJets", 6000, 0, 6000);
 //   varList.push_back(mass_of_leps_and_allJets);
-  varInfo *met = new varInfo("met", "met", "met", 1000, 0, 1000);
-  varList.push_back(met);
-  varInfo *MHT = new varInfo("MHT", "MHT", "MHT", 1000, 0, 1000);
-  varList.push_back(MHT);
-  varInfo *min_dr_tagged_jets = new varInfo("min_dr_tagged_jets", "min_dr_tagged_jets", "min_dr_tagged_jets", 1000, 0, 10);
-  varList.push_back(min_dr_tagged_jets);
-  varInfo *mindr_lep1_jet = new varInfo("mindr_lep1_jet", "mindr_lep1_jet", "mindr_lep1_jet", 1000, 0, 10);
-  varList.push_back(mindr_lep1_jet);
+
 //   varInfo *mindr_lep2_jet = new varInfo("mindr_lep2_jet", "mindr_lep2_jet", "mindr_lep2_jet", 1000, 0, 10);
 //   varList.push_back(mindr_lep2_jet);
 //   varInfo *numAllJets = new varInfo("numAllJets", "numAllJets", "numAllJets", 20, 0, 20);
 //   varList.push_back(numAllJets);
 //   varInfo *numBadJets = new varInfo("numBadJets", "numBadJets", "numBadJets", 20, 0, 20);
 //   varList.push_back(numBadJets);
-  varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, 0, 20);
-  varList.push_back(numJets);
+
   //   varInfo *numLooseElectrons = new varInfo("numLooseElectrons", "numLooseElectrons", "numLooseElectrons", 10, 0, 10);
   //   varList.push_back(numLooseElectrons);
   //   varInfo *numLooseMuons = new varInfo("numLooseMuons", "numLooseMuons", "numLooseMuons", 10, 0, 10);
@@ -400,8 +437,7 @@ int main ( int argc, char ** argv )
   //   varList.push_back(numNonTaggedJets);
   //   varInfo *numPV = new varInfo("numPV", "numPV", "numPV", 50, 0, 50);
   //   varList.push_back(numPV);
-  varInfo *numTaggedJets = new varInfo("numTaggedJets", "numTaggedJets", "numTaggedJets", 10, 0, 10);
-  varList.push_back(numTaggedJets);
+
   //   varInfo *numTightElectrons = new varInfo("numTightElectrons", "numTightElectrons", "numTightElectrons", 10, 0, 10);
   //   varList.push_back(numTightElectrons);
   //   varInfo *numTightMuons = new varInfo("numTightMuons", "numTightMuons", "numTightMuons", 10, 0, 10);

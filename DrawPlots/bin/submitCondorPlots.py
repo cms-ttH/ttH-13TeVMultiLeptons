@@ -44,7 +44,7 @@ def main ():
         
 
 
-    listOfSamples = [
+    listOfSamples2012_52x = [
                      'DoubleElectron',
                      'DoubleMu',
                      'MuEG',
@@ -118,12 +118,115 @@ def main ():
                      ]
 
 
+    listOfSamples2012_53x =  [
+        			 'singlet_s',
+					 'singlet_t',
+					 'singlet_tW',
+					 'singletbar_s',
+					 'singletbar_t',
+					 'singletbar_tW',
+					 'ttH110',
+					 'ttH115',
+					 'ttH120',
+					 'ttH125',
+					 'ttH130',
+					 'ttH135',
+					 'ttH140',
+					 'ttbarW',
+					 'ttbarZ',
+					 'ww',
+					 'wz',
+					 'zz',
+					 'ttbar_jj',
+					 'ttbar_lj',
+					 'ttbar_ll_part1',
+					 'ttbar_ll_part2',
+					 'ttbar_ll_part3',
+					 'ttbar_ll_part4',
+					 'ttbar_ll_part5',
+					 'ttbar_ll_part6',
+					 'ttbar_ll_part7',
+					 'ttbar_ll_part8',
+					 'ttbar_ll_part9',
+					 'ttbar_ll_part10',
+					 'ttbar_ll_part11',
+					 'ttbar_ll_part12',
+					 'ttbar_ll_part13',
+					 'ttbar_bb_jj',
+					 'ttbar_bb_lj',
+					 'ttbar_bb_ll_part1',
+                     'ttbar_bb_ll_part2',
+                     'ttbar_bb_ll_part3',
+                     'ttbar_bb_ll_part4',
+                     'ttbar_bb_ll_part5',
+                     'ttbar_bb_ll_part6',
+                     'ttbar_bb_ll_part7',
+                     'ttbar_bb_ll_part8',
+                     'ttbar_bb_ll_part9',
+                     'ttbar_bb_ll_part10',
+                     'ttbar_bb_ll_part11',
+                     'ttbar_bb_ll_part12',
+                     'ttbar_bb_ll_part13',
+                     'ttbar_cc_ll_part1',
+                     'ttbar_cc_ll_part2',
+                     'ttbar_cc_ll_part3',
+                     'ttbar_cc_ll_part4',
+                     'ttbar_cc_ll_part5',
+                     'ttbar_cc_ll_part6',
+                     'ttbar_cc_ll_part7',
+                     'ttbar_cc_ll_part8',
+                     'ttbar_cc_ll_part9',
+                     'ttbar_cc_ll_part10',
+                     'ttbar_cc_ll_part11',
+                     'ttbar_cc_ll_part12',
+                     'ttbar_cc_ll_part13',					 
+					 'ttbar_cc_lj',
+					 'ttbar_cc_ll',
+					 'wjets_1p',
+					 'wjets_2p',
+					 'wjets_3p',
+					 'wjets_4p',
+					 'zjets_1p',
+					 'zjets_2p',
+					 'zjets_3p',
+					 'zjets_4p',
+					 'zjets_lowmass_1p_part1',                     
+                     'zjets_lowmass_1p_part2',
+                     'zjets_lowmass_1p_part3',
+                     'zjets_lowmass_1p_part4',
+                     'zjets_lowmass_1p_part5',
+                     'zjets_lowmass_1p_part6',
+                     'zjets_lowmass_1p_part7',
+                     'zjets_lowmass_1p_part8',
+                     'zjets_lowmass_1p_part9',                     
+					 'zjets_lowmass_2p_part1',
+                     'zjets_lowmass_2p_part2',
+                     'zjets_lowmass_2p_part3',
+                     'zjets_lowmass_2p_part4',
+                     'zjets_lowmass_2p_part5',
+                     'zjets_lowmass_2p_part6',
+                     'zjets_lowmass_2p_part7',
+                     'zjets_lowmass_2p_part8',
+                     'zjets_lowmass_2p_part9',
+                     'zjets_lowmass_2p_part10',
+                     'zjets_lowmass_2p_part11'
+		]
+
+
+
     oneSampleList = [options.oneSample]
 
     
 
     if iYear == "2011":  ### more ttbar parts for 2011
-        listOfSamples = listOfSamples + extraTTbarSample
+        listOfSamples = listOfSamples2012_52x + extraTTbarSample
+    elif iYear == "2012_52x":
+        listOfSamples = listOfSamples2012_52x
+    elif iYear == "2012_53x":
+        listOfSamples = listOfSamples2012_53x
+    else :
+        print "Oops! Could not associate a list of files with  year=", iYear
+        exit (6)
 
     if options.oneSample != 'NONE':
         listOfSamples = oneSampleList

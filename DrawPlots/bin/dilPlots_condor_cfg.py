@@ -146,5 +146,13 @@ process.dilAnalysis = cms.PSet(
 	#jes = cms.int32(iJes),
 	#jer = cms.int32(iJer),	
 	sampleName = cms.string(sampleNameCL),
-    skipSystematics = cms.bool(iSkipSyst)
+    skipSystematics = cms.bool(iSkipSyst),
+
+    # choose which plots to turn on
+
+    # Core plots are nn out, nn input, njets, ntags
+    corePlots = cms.bool(True),
+    lepPlots = cms.bool(False),
+    jetPlots = cms.bool(False)
+    
 )
