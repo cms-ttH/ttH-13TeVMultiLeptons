@@ -188,8 +188,32 @@ def main ():
 					 'ttbar_ll_part13',
 					 'ttbar_bb_jj',
 					 'ttbar_bb_lj',
-					 'ttbar_bb_ll',
-					 'ttbar_cc_jj',
+					 'ttbar_bb_ll_part1',
+                     'ttbar_bb_ll_part2',
+                     'ttbar_bb_ll_part3',
+                     'ttbar_bb_ll_part4',
+                     'ttbar_bb_ll_part5',
+                     'ttbar_bb_ll_part6',
+                     'ttbar_bb_ll_part7',
+                     'ttbar_bb_ll_part8',
+                     'ttbar_bb_ll_part9',
+                     'ttbar_bb_ll_part10',
+                     'ttbar_bb_ll_part11',
+                     'ttbar_bb_ll_part12',
+                     'ttbar_bb_ll_part13',
+                     'ttbar_cc_ll_part1',
+                     'ttbar_cc_ll_part2',
+                     'ttbar_cc_ll_part3',
+                     'ttbar_cc_ll_part4',
+                     'ttbar_cc_ll_part5',
+                     'ttbar_cc_ll_part6',
+                     'ttbar_cc_ll_part7',
+                     'ttbar_cc_ll_part8',
+                     'ttbar_cc_ll_part9',
+                     'ttbar_cc_ll_part10',
+                     'ttbar_cc_ll_part11',
+                     'ttbar_cc_ll_part12',
+                     'ttbar_cc_ll_part13',					 
 					 'ttbar_cc_lj',
 					 'ttbar_cc_ll',
 					 'wjets_1p',
@@ -200,8 +224,26 @@ def main ():
 					 'zjets_2p',
 					 'zjets_3p',
 					 'zjets_4p',
-					 'zjets_lowmass_1p',
-					 'zjets_lowmass_2p',
+					 'zjets_lowmass_1p_part1',                     
+                     'zjets_lowmass_1p_part2',
+                     'zjets_lowmass_1p_part3',
+                     'zjets_lowmass_1p_part4',
+                     'zjets_lowmass_1p_part5',
+                     'zjets_lowmass_1p_part6',
+                     'zjets_lowmass_1p_part7',
+                     'zjets_lowmass_1p_part8',
+                     'zjets_lowmass_1p_part9',                     
+					 'zjets_lowmass_2p_part1',
+                     'zjets_lowmass_2p_part2',
+                     'zjets_lowmass_2p_part3',
+                     'zjets_lowmass_2p_part4',
+                     'zjets_lowmass_2p_part5',
+                     'zjets_lowmass_2p_part6',
+                     'zjets_lowmass_2p_part7',
+                     'zjets_lowmass_2p_part8',
+                     'zjets_lowmass_2p_part9',
+                     'zjets_lowmass_2p_part10',
+                     'zjets_lowmass_2p_part11'
 		]
 
 
@@ -252,7 +294,7 @@ def main ():
 #			 listStr = "wc -l listsForSkims/"
 			listStr = "wc -l ../../listsForSkims2012_v3/"
 		elif yearChoice == "2012_53x":
-			listStr = "wc -l /afs/crc.nd.edu/user/a/abrinke1/BEANsHelper/CMSSW_5_3_2_patch5/src/BEAN/listsForSkims2012_53x_v1/"
+			listStr = "wc -l /afs/crc.nd.edu/user/a/abrinke1/BEANsHelper/CMSSW_5_3_2_patch5/src/BEAN/listsForSkims2012_53x_v1_hadoop/"
 		for iLine in os.popen(listStr+"%s.list" % iList).readlines():
 			words = iLine.split()
 			print "Line is ="
