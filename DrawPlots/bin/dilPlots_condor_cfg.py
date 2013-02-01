@@ -152,7 +152,8 @@ process.dilAnalysis = cms.PSet(
 
     # Core plots are nn out, nn input, njets, ntags
     corePlots = cms.bool(True),
-    lepPlots = cms.bool(False),
-    jetPlots = cms.bool(False)
+    lepPlots = cms.bool(True),
+    jetPlots = cms.bool(True),
+    kinPlots = cms.bool(True)
     
 )
