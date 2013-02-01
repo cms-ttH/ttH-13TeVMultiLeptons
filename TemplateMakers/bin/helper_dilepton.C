@@ -268,23 +268,23 @@ int main ( int argc, char ** argv )
     else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
     else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
     else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2500;
-      weight_Xsec = ( 53.4 / 30997580 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2500;
-      weight_Xsec = ( 53.2 / 25165429 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2500;
-      weight_Xsec = ( 13.43 / 12063533 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
-      weight_Xsec = ( 53.4 / 30997580 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_lj" || tmpName.Contains("ttbar_cc_lj_part")) { sampleNumber = 2573;
-      weight_Xsec = ( 53.2 / 25165429 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_ll" || tmpName.Contains("ttbar_cc_ll_part")) { sampleNumber = 2543;
-      weight_Xsec = ( 13.43 / 12063533 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_jj" || tmpName.Contains("ttbar_bb_jj_part")) { sampleNumber = 2586;
-      weight_Xsec = ( 53.4 / 30997580 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_lj" || tmpName.Contains("ttbar_bb_lj_part")) { sampleNumber = 2583;
-      weight_Xsec = ( 53.2 / 25165429 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) { sampleNumber = 2553;
-      weight_Xsec = ( 13.43 / 12063533 ) / ( 136.3 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) sampleNumber = 2400; 
     else if (sampleName == "wjets_1p" || tmpName.Contains("wjets_1p_part")) { sampleNumber = 2400;
       weight_Xsec = ( 5400.0 / 23136036 ) / ( 30400.0 / 57108525 ); }
@@ -305,7 +305,7 @@ int main ( int argc, char ** argv )
     else if (sampleName == "zjets_2p" || tmpName.Contains("zjets_2p_part")) { sampleNumber = 2802;
       weight_Xsec = ( 181.0 / 2350806 ) / ( 2950.0 / 30452141 ); }
     else if (sampleName == "zjets_3p" || tmpName.Contains("zjets_3p_part")) { sampleNumber = 2803;
-      weight_Xsec = ( 51.1 / 11004806 ) / ( 2950.0 / 30452141 ); }
+      weight_Xsec = ( 55.6 / 11004806 ) / ( 2950.0 / 30452141 ); }
     else if (sampleName == "zjets_4p" || tmpName.Contains("zjets_4p_part")) { sampleNumber = 2804;
       weight_Xsec = ( 23.04 /6387161 ) / ( 2950.0 / 30452141 ); }
     else if (sampleName == "singlet_s") sampleNumber = 2600; 
@@ -686,28 +686,28 @@ int main ( int argc, char ** argv )
     floatBranches["higgs_dijet_jet2_eta"] = new float(0.0);
     floatBranches["higgs_dijet_jet1_csv"] = new float(0.0);   
     floatBranches["higgs_dijet_jet2_csv"] = new float(0.0);   
-    floatBranches["higgs_dijet_jet1_Nconst"] = new float(0.0);
-    floatBranches["higgs_dijet_jet2_Nconst"] = new float(0.0);
-    floatBranches["higgs_dijet_jet1_btagSoftMuon"] = new float(0.0); 
-    floatBranches["higgs_dijet_jet2_btagSoftMuon"] = new float(0.0); 
-    floatBranches["higgs_dijet_jet1_btagSoftEle"] = new float(0.0); 
-    floatBranches["higgs_dijet_jet2_btagSoftEle"] = new float(0.0); 
-    floatBranches["higgs_dijet_jet1_leadCandPt"] = new float(0.0);  
-    floatBranches["higgs_dijet_jet2_leadCandPt"] = new float(0.0);  
-    floatBranches["higgs_dijet_jet1_leadCandDistFromPV"] = new float(0.0);   
-    floatBranches["higgs_dijet_jet2_leadCandDistFromPV"] = new float(0.0);
-    floatBranches["higgs_dijet_genJet1_pt"] = new float(0.0);
-    floatBranches["higgs_dijet_genJet2_pt"] = new float(0.0);
-    floatBranches["higgs_dijet_genParton1_pt"] = new float(0.0);
-    floatBranches["higgs_dijet_genParton2_pt"] = new float(0.0);
-    floatBranches["higgs_dijet_jet1_muon_dR"] = new float(0.0);
-    floatBranches["higgs_dijet_jet2_muon_dR"] = new float(0.0);
-    floatBranches["higgs_dijet_jet1_electron_dR"] = new float(0.0);
-    floatBranches["higgs_dijet_jet2_electron_dR"] = new float(0.0);
-    floatBranches["higgs_dijet_jet1_track_pt"] = new float(0.0);
-    floatBranches["higgs_dijet_jet2_track_pt"] = new float(0.0);
-    floatBranches["higgs_dijet_jet1_track_dR"] = new float(0.0);
-    floatBranches["higgs_dijet_jet2_track_dR"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet1_Nconst"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet2_Nconst"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet1_btagSoftMuon"] = new float(0.0); 
+//     floatBranches["higgs_dijet_jet2_btagSoftMuon"] = new float(0.0); 
+//     floatBranches["higgs_dijet_jet1_btagSoftEle"] = new float(0.0); 
+//     floatBranches["higgs_dijet_jet2_btagSoftEle"] = new float(0.0); 
+//     floatBranches["higgs_dijet_jet1_leadCandPt"] = new float(0.0);  
+//     floatBranches["higgs_dijet_jet2_leadCandPt"] = new float(0.0);  
+//     floatBranches["higgs_dijet_jet1_leadCandDistFromPV"] = new float(0.0);   
+//     floatBranches["higgs_dijet_jet2_leadCandDistFromPV"] = new float(0.0);
+//     floatBranches["higgs_dijet_genJet1_pt"] = new float(0.0);
+//     floatBranches["higgs_dijet_genJet2_pt"] = new float(0.0);
+//     floatBranches["higgs_dijet_genParton1_pt"] = new float(0.0);
+//     floatBranches["higgs_dijet_genParton2_pt"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet1_muon_dR"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet2_muon_dR"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet1_electron_dR"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet2_electron_dR"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet1_track_pt"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet2_track_pt"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet1_track_dR"] = new float(0.0);
+//     floatBranches["higgs_dijet_jet2_track_dR"] = new float(0.0);
     
   } //End if (ExtraHiggsVariables)
 
@@ -2719,9 +2719,9 @@ int main ( int argc, char ** argv )
         if (sum_jet_pt == 0.0) sum_jet_pt = dFloat;
       }
 
-      bool passBigDiamondZmask = (MuonEle || (mass_leplep < (65.5 + 3*MHT/8)) || (mass_leplep > (108 - MHT/4)) || (mass_leplep < (79 - 3*MHT/4)) || (mass_leplep > (99 + MHT/2)) );
-      bool passBigDiamondZmask2 = (mass_leplep < (65.5 + 3*met/8)) || (mass_leplep > (108 - met/4)) || (mass_leplep < (79 - 3*met/4)) || (mass_leplep > (99 + met/2));
-      bool passBigDiamondZmask3 = (mass_leplep < (65.5 + 3*pt_of_leps_and_allJets/8)) || (mass_leplep > (108 - pt_of_leps_and_allJets/4)) || (pt_of_leps_and_allJets < (79 - 3*pt_of_leps_and_allJets/4)) || (mass_leplep > (99 + pt_of_leps_and_allJets/2));
+      bool PassBigDiamondZmask = (MuonEle || (mass_leplep < (65.5 + 3*MHT/8)) || (mass_leplep > (108 - MHT/4)) || (mass_leplep < (79 - 3*MHT/4)) || (mass_leplep > (99 + MHT/2)) );
+      bool PassBigDiamondZmask2 = (mass_leplep < (65.5 + 3*met/8)) || (mass_leplep > (108 - met/4)) || (mass_leplep < (79 - 3*met/4)) || (mass_leplep > (99 + met/2));
+      bool PassBigDiamondZmask3 = (mass_leplep < (65.5 + 3*pt_of_leps_and_allJets/8)) || (mass_leplep > (108 - pt_of_leps_and_allJets/4)) || (pt_of_leps_and_allJets < (79 - 3*pt_of_leps_and_allJets/4)) || (mass_leplep > (99 + pt_of_leps_and_allJets/2));
 
 	  //// tagged jets
 	  float deltaHMass = 9999. ;
@@ -2932,8 +2932,8 @@ int main ( int argc, char ** argv )
         *(intBranches["isMuEGTriggerPass"]) = isMuEGTriggerPass ? 1 : 0;
         *(intBranches["isMETTriggerPass"]) = isMETTriggerPass ? 1 : 0;
 
-        *(intBranches["PassZmask"]) = passBigDiamondZmask ? 1 : 0;
-        *(intBranches["PassZmask2"]) = passBigDiamondZmask2 ? 1 : 0;
+        *(intBranches["PassZmask"]) = PassBigDiamondZmask ? 1 : 0;
+        *(intBranches["PassZmask2"]) = PassBigDiamondZmask2 ? 1 : 0;
 
         *(intBranches["oppositeLepCharge"]) = oppositeLepCharge;
         *(intBranches["oppositeGenLepCharge"]) = oppositeGenLepCharge;
@@ -3062,28 +3062,28 @@ int main ( int argc, char ** argv )
         *(floatBranches["higgs_dijet_jet2_eta"]) = higgs_dijet_jet2_eta;
         *(floatBranches["higgs_dijet_jet1_csv"]) = higgs_dijet_jet1_csv;
         *(floatBranches["higgs_dijet_jet2_csv"]) = higgs_dijet_jet2_csv;
-        *(floatBranches["higgs_dijet_jet1_Nconst"]) = higgs_dijet_jet1_Nconst;
-        *(floatBranches["higgs_dijet_jet2_Nconst"]) = higgs_dijet_jet2_Nconst;
-        *(floatBranches["higgs_dijet_jet1_btagSoftMuon"]) = higgs_dijet_jet1_btagSoftMuon;
-        *(floatBranches["higgs_dijet_jet2_btagSoftMuon"]) = higgs_dijet_jet2_btagSoftMuon;
-        *(floatBranches["higgs_dijet_jet1_btagSoftEle"]) = higgs_dijet_jet1_btagSoftEle;
-        *(floatBranches["higgs_dijet_jet2_btagSoftEle"]) = higgs_dijet_jet2_btagSoftEle;
-        *(floatBranches["higgs_dijet_jet1_leadCandPt"]) = higgs_dijet_jet1_leadCandPt;
-        *(floatBranches["higgs_dijet_jet2_leadCandPt"]) = higgs_dijet_jet2_leadCandPt;
-        *(floatBranches["higgs_dijet_jet1_leadCandDistFromPV"]) = higgs_dijet_jet1_leadCandDistFromPV;
-        *(floatBranches["higgs_dijet_jet2_leadCandDistFromPV"]) = higgs_dijet_jet2_leadCandDistFromPV;
-        *(floatBranches["higgs_dijet_genJet1_pt"]) = higgs_dijet_genJet1_pt;
-        *(floatBranches["higgs_dijet_genJet2_pt"]) = higgs_dijet_genJet2_pt;
-        *(floatBranches["higgs_dijet_genParton1_pt"]) = higgs_dijet_genParton1_pt;
-        *(floatBranches["higgs_dijet_genParton2_pt"]) = higgs_dijet_genParton2_pt;
-        *(floatBranches["higgs_dijet_jet1_muon_dR"]) = higgs_dijet_jet1_muon_dR;
-        *(floatBranches["higgs_dijet_jet2_muon_dR"]) = higgs_dijet_jet2_muon_dR;
-        *(floatBranches["higgs_dijet_jet1_electron_dR"]) = higgs_dijet_jet1_electron_dR;
-        *(floatBranches["higgs_dijet_jet2_electron_dR"]) = higgs_dijet_jet2_electron_dR;
-        *(floatBranches["higgs_dijet_jet1_track_dR"]) = higgs_dijet_jet1_track_dR;
-        *(floatBranches["higgs_dijet_jet2_track_dR"]) = higgs_dijet_jet2_track_dR;
-        *(floatBranches["higgs_dijet_jet1_track_pt"]) = higgs_dijet_jet1_track_pt;
-        *(floatBranches["higgs_dijet_jet2_track_pt"]) = higgs_dijet_jet2_track_pt;
+//         *(floatBranches["higgs_dijet_jet1_Nconst"]) = higgs_dijet_jet1_Nconst;
+//         *(floatBranches["higgs_dijet_jet2_Nconst"]) = higgs_dijet_jet2_Nconst;
+//         *(floatBranches["higgs_dijet_jet1_btagSoftMuon"]) = higgs_dijet_jet1_btagSoftMuon;
+//         *(floatBranches["higgs_dijet_jet2_btagSoftMuon"]) = higgs_dijet_jet2_btagSoftMuon;
+//         *(floatBranches["higgs_dijet_jet1_btagSoftEle"]) = higgs_dijet_jet1_btagSoftEle;
+//         *(floatBranches["higgs_dijet_jet2_btagSoftEle"]) = higgs_dijet_jet2_btagSoftEle;
+//         *(floatBranches["higgs_dijet_jet1_leadCandPt"]) = higgs_dijet_jet1_leadCandPt;
+//         *(floatBranches["higgs_dijet_jet2_leadCandPt"]) = higgs_dijet_jet2_leadCandPt;
+//         *(floatBranches["higgs_dijet_jet1_leadCandDistFromPV"]) = higgs_dijet_jet1_leadCandDistFromPV;
+//         *(floatBranches["higgs_dijet_jet2_leadCandDistFromPV"]) = higgs_dijet_jet2_leadCandDistFromPV;
+//         *(floatBranches["higgs_dijet_genJet1_pt"]) = higgs_dijet_genJet1_pt;
+//         *(floatBranches["higgs_dijet_genJet2_pt"]) = higgs_dijet_genJet2_pt;
+//         *(floatBranches["higgs_dijet_genParton1_pt"]) = higgs_dijet_genParton1_pt;
+//         *(floatBranches["higgs_dijet_genParton2_pt"]) = higgs_dijet_genParton2_pt;
+//         *(floatBranches["higgs_dijet_jet1_muon_dR"]) = higgs_dijet_jet1_muon_dR;
+//         *(floatBranches["higgs_dijet_jet2_muon_dR"]) = higgs_dijet_jet2_muon_dR;
+//         *(floatBranches["higgs_dijet_jet1_electron_dR"]) = higgs_dijet_jet1_electron_dR;
+//         *(floatBranches["higgs_dijet_jet2_electron_dR"]) = higgs_dijet_jet2_electron_dR;
+//         *(floatBranches["higgs_dijet_jet1_track_dR"]) = higgs_dijet_jet1_track_dR;
+//         *(floatBranches["higgs_dijet_jet2_track_dR"]) = higgs_dijet_jet2_track_dR;
+//         *(floatBranches["higgs_dijet_jet1_track_pt"]) = higgs_dijet_jet1_track_pt;
+//         *(floatBranches["higgs_dijet_jet2_track_pt"]) = higgs_dijet_jet2_track_pt;
         
       } //End if (ExtraHiggsVariables)
 
@@ -3203,7 +3203,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["dPhi_met_lep1"]) = dPhi_met_lep1;
         *(floatBranches["dPhi_met_lep2"]) = dPhi_met_lep2;
         ////everything
-        *(intBranches["PassZmask3"]) = passBigDiamondZmask3 ? 1 : 0;
+        *(intBranches["PassZmask3"]) = PassBigDiamondZmask3 ? 1 : 0;
 
         *(floatBranches["min_dr_jets"]) = min_dr_jets;
 	    *(floatBranches["avg_dr_jets"]) = avg_dr_jets;
