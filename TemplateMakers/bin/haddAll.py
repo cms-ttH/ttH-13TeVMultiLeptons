@@ -47,7 +47,7 @@ def main ():
 				haddCommand = "cp %s %s" % ( oldName,  newName)
 				for feedback in os.popen(haddCommand).readlines():
 					newName= newName
-				print "Created %s" % newName
+				print "Copied to create %s" % newName
 				
 			else:
 			
