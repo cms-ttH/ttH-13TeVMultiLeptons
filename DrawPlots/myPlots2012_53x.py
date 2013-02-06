@@ -29,7 +29,7 @@ from PlotEnv import *
 def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 
 
-    skipSystematics = True
+    skipSystematics = False
 
     dirStr = lepselection+"/"
     #dirStr = year+"/"+lepselection+"/"

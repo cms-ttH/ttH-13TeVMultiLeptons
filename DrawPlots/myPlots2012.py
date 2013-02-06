@@ -28,6 +28,8 @@ from PlotEnv import *
 
 def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 
+    skipSystematics = False
+
     dirStr = lepselection+"/"
     #dirStr = year+"/"+lepselection+"/"
     rootStr = "_" + year + "_" + Zmask + "_" + jetselection + "_" + lepselection +".root"
@@ -122,7 +124,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 #         'fillColor': ROOT.kCyan+2,
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -139,7 +143,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 #         'fillColor': ROOT.kCyan-2,
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -156,7 +162,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 #         'fillColor': ROOT.kCyan,
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
-         'isNormPerJetBin': 0,}
+         'isNormPerJetBin': 0,
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -174,7 +182,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'wjets'}
+         'limitPlotName':'wjets',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -191,7 +201,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'zjets_h'}
+         'limitPlotName':'zjets_h',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -208,7 +220,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kAzure+1,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'zjets_lowmass'}
+         'limitPlotName':'zjets_lowmass',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -225,7 +239,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kBlue-9,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttbarW'}
+         'limitPlotName':'ttbarW',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -242,7 +258,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kBlue-9,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttbarZ'}
+         'limitPlotName':'ttbarZ',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -259,7 +277,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kOrange+7,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'singlet_s'}
+         'limitPlotName':'singlet_s',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -276,7 +296,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kOrange+7,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'singletbar_s'}
+         'limitPlotName':'singletbar_s',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -293,7 +315,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kOrange+7,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'singlet_t'}
+         'limitPlotName':'singlet_t',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -310,7 +334,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kOrange+7,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'singletbar_t',}
+         'limitPlotName':'singletbar_t',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -327,7 +353,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kOrange+7,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'singlet_tW'}
+         'limitPlotName':'singlet_tW',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -344,7 +372,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kOrange+7,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'singletbar_tW'}
+         'limitPlotName':'singletbar_tW',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -361,7 +391,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kMagenta+2,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttbarPlusBBbar'}
+         'limitPlotName':'ttbarPlusBBbar',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -378,7 +410,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kOrange-7,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttbarPlusCCbar'}
+         'limitPlotName':'ttbarPlusCCbar',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -395,7 +429,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kRed,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttbar'}
+         'limitPlotName':'ttbar',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -413,7 +449,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttH110'}
+         'limitPlotName':'ttH110',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -431,7 +469,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttH115'}
+         'limitPlotName':'ttH115',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -449,7 +489,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttH120'}
+         'limitPlotName':'ttH120',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -466,7 +508,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttH125'}
+         'limitPlotName':'ttH125',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -483,7 +527,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttH130'}
+         'limitPlotName':'ttH130',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
     plotList.append(
@@ -499,7 +545,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttH135'}
+         'limitPlotName':'ttH135',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -516,7 +564,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kMagenta,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'ttH140'}
+         'limitPlotName':'ttH140',
+         'skipSystematics':skipSystematics,
+         }
         )
         )
 
@@ -534,7 +584,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'fillColor': ROOT.kBlack,
          'fillPattern': 1001,
          'isNormPerJetBin': 0,
-         'limitPlotName':'data_obs'
+         'limitPlotName':'data_obs',
+         'skipSystematics':skipSystematics,
          }
         )
         )
@@ -553,7 +604,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 ##             )
 ##         )
 
-    myPlotGroup = PlotGroup (plotList, defaultLumi, groupName, directoryName)
+    myPlotGroup = PlotGroup (plotList, defaultLumi, groupName, directoryName, skipSystematics)
     myPlotGroup.jetSelection = jetselection
 
     return myPlotGroup

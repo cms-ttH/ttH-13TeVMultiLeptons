@@ -116,7 +116,8 @@ def main ():
 	if (jetselection == "eq2jeq2t"):
 		drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 4.5, lepselection, year, "draw")
 		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0, 4, lepselection, year, "draw")
-		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
+		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")
+		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.4975, 0.5035, lepselection, year, "draw")
 ##		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 9, 0.4981, 0.5035, lepselection,year, "draw")
 #		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.4975, 0.5035, lepselection,year, "draw")
 		drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)",10, 200, 1100, lepselection,year, "draw")
@@ -135,6 +136,7 @@ def main ():
 		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 120, 840, lepselection,year, "draw")
 		drawStackPlot("second_jet_pt", pg, "2nd jet p_{T}", 20, 30, 230, lepselection,year, "draw")
 	if (jetselection == "ge3t"):
+		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection, year, "draw")
 		drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 3.5, lepselection, year, "draw")
 		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0.2, 3.2, lepselection, year, "draw")
 		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
