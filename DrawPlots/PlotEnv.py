@@ -153,8 +153,9 @@ class PlotInfo:
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "Q2Up"):
+            
 			namePlusCycle = "%s_Q2scale_ttH_%sUp;1" % (histName, tmpSysName)
-			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "Q2Down"):
 			namePlusCycle = "%s_Q2scale_ttH_%sDown;1" % (histName, tmpSysName)
