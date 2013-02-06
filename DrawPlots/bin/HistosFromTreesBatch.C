@@ -530,17 +530,21 @@ int main ( int argc, char ** argv )
 
       TString syst = sysList[ksys];
       //////// rwt
-      if (tmpName.Contains("ttbar_part")){
-	if (ksys == 11) syst += "_ttbarUp";
-	if (ksys == 12) syst += "_ttbarDown";
+      if (tmpName.Contains("ttbar_part")
+          || tmpName.Contains("ttbar_ll_part")
+          || tmpName.Contains("ttbar_lj_part")
+          || tmpName.Contains("ttbar_jj_part")
+          ){
+        if (ksys == 11) syst += "_ttbarUp";
+        if (ksys == 12) syst += "_ttbarDown";
       }
       if (tmpName.Contains("ttbar_bb")){
-	if (ksys == 11) syst += "_ttbar_bbUp";
-	if (ksys == 12) syst += "_ttbar_bbDown";
+        if (ksys == 11) syst += "_ttbar_bbUp";
+        if (ksys == 12) syst += "_ttbar_bbDown";
       }
       if (tmpName.Contains("ttbar_cc")){
-	if (ksys == 11) syst += "_ttbar_ccUp";
-	if (ksys == 12) syst += "_ttbar_ccDown";
+        if (ksys == 11) syst += "_ttbar_ccUp";
+        if (ksys == 12) syst += "_ttbar_ccDown";
       }
 
       std::cout << "  == start systematic " << syst << " ==  " << std::endl;

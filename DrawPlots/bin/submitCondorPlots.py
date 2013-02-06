@@ -42,7 +42,8 @@ def main ():
         os.mkdir("../MuonEle")
 
         
-
+    print "skipSyst = %d" % int(iSkipSyst)
+    #exit(3)
 
     listOfSamples2012_52x = [
                      'DoubleElectron',
@@ -301,7 +302,7 @@ def main ():
                     
         #condorJobFile.write( "JES = %s\n" % jesChoice)
         #condorJobFile.write( "JER = %s\n" % jerChoice)
-        condorJobFile.write( "skipSyst = %s\n" % int(iSkipSyst))
+        condorJobFile.write( "skipSyst = %d\n" % int(iSkipSyst))
         condorJobFile.write( "PV = %s\n" % iPV)
         condorJobFile.write( "arguments = $(List) $(Year) $(Zmask) $(Label) $(skipSyst) $(PV)\n")
         condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")

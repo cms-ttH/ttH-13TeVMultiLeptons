@@ -18,9 +18,14 @@ sampleNameCL = sys.argv[2]
 iYear = sys.argv[3]
 iZmask = sys.argv[4]
 iLabel = sys.argv[5]
-iSkipSyst = bool(sys.argv[6])
+iSkipSyst = bool(int(sys.argv[6]))
 iPV = sys.argv[7]
 
+
+print "ppppppppppppppppppppppppppppppppppppp"
+print " Inside pyhton config "
+print " argv[6] = ", sys.argv[6]
+print "iSkipSyst = ", iSkipSyst
 
 # iJes = int (sys.argv[6])
 # iJer = int (sys.argv[7])
