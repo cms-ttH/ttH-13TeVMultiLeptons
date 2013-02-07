@@ -235,9 +235,14 @@ int main ( int argc, char ** argv )
   
 
   //Sample numbers may not match event->sample; used for setMCsample() only
+  int dInt = -9*pow(10,20);
+  float dFloat = -9.0*pow(10,20);
+
   std::string dset = "SingleMu" ;
   int sampleNumber = 999999;
   float weight_Xsec = 1.0;
+  int nGen = 1;
+  float Xsec = 1.0;
 
   if (selectionYearStr == "2011") {
     if (isData) sampleNumber = -1;
@@ -260,80 +265,114 @@ int main ( int argc, char ** argv )
   }
   else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
     if (isData) sampleNumber = -1;
-    else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) sampleNumber = 2500;
-    else if (sampleName == "ttbar_bb" || tmpName.Contains("ttbar_bb_part")) sampleNumber = 2555;
-    else if (sampleName == "ttbar_cc" || tmpName.Contains("ttbar_cc_part")) sampleNumber = 2544;
+    else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) { sampleNumber = 2500;
+      nGen = 6889624+1362471; Xsec = 225.197; }
+    else if (sampleName == "ttbar_bb" || tmpName.Contains("ttbar_bb_part")) { sampleNumber = 2555;
+      nGen = 6889624+1362471; Xsec = 225.197; }
+    else if (sampleName == "ttbar_cc" || tmpName.Contains("ttbar_cc_part")) { sampleNumber = 2544;
+      nGen = 6889624+1362471; Xsec = 225.197; }
     else if (sampleName == "ttbar_scaleup") sampleNumber = 2511; 
     else if (sampleName == "ttbar_scaledown") sampleNumber = 2510; 
     else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
     else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
     else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2500;
+      nGen = 30997580; Xsec = 102.91; 
       weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2500;
+      nGen = 25165429; Xsec = 98.65;
       weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2500;
+      nGen = 12063533; Xsec = 23.64;
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
+      nGen = 30997580; Xsec = 102.91;
       weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_lj" || tmpName.Contains("ttbar_cc_lj_part")) { sampleNumber = 2573;
+      nGen = 25165429; Xsec = 98.65;
       weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_ll" || tmpName.Contains("ttbar_cc_ll_part")) { sampleNumber = 2543;
+      nGen = 12063533; Xsec = 23.64;
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_jj" || tmpName.Contains("ttbar_bb_jj_part")) { sampleNumber = 2586;
+      nGen = 30997580; Xsec = 102.91;
       weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_lj" || tmpName.Contains("ttbar_bb_lj_part")) { sampleNumber = 2583;
+      nGen = 25165429; Xsec = 98.65;
       weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) { sampleNumber = 2553;
+      nGen = 12063533; Xsec = 23.64; 
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
-    else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) sampleNumber = 2400; 
+    else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) { sampleNumber = 2400;
+      nGen = 57108525; Xsec = 36257; }
     else if (sampleName == "wjets_1p" || tmpName.Contains("wjets_1p_part")) { sampleNumber = 2400;
+      nGen = 23136036; Xsec = 6440.4;
       weight_Xsec = ( 5400.0 / 23136036 ) / ( 30400.0 / 57108525 ); }
     else if (sampleName == "wjets_2p" || tmpName.Contains("wjets_2p_part")) { sampleNumber = 2400;
+      nGen =3403056; Xsec = 2087.2;
       weight_Xsec = ( 1750.0 / 34030565 ) / ( 30400.0 / 57108525 ); }
     else if (sampleName == "wjets_3p" || tmpName.Contains("wjets_3p_part")) { sampleNumber = 2400;
+      nGen = 15472440; Xsec = 619.0;
       weight_Xsec = ( 519.0 / 15472440 ) / ( 30400.0 / 57108525 ); }
     else if (sampleName == "wjets_4p" || tmpName.Contains("wjets_4p_part")) { sampleNumber = 2400;
+      nGen = 13360967; Xsec = 255.2;
       weight_Xsec = ( 214.0 / 13360967 ) / ( 30400.0 / 57108525 ); } 
-    else if (sampleName == "zjets_lowmass" || tmpName.Contains("zjets_lowmass_part")) sampleNumber = 2850;
+    else if (sampleName == "zjets_lowmass" || tmpName.Contains("zjets_lowmass_part")) { sampleNumber = 2850;
+      nGen = 32600176; Xsec = 14702; }
     else if (sampleName == "zjets_lowmass_1p" || tmpName.Contains("zjets_lowmass_1p_part")) { sampleNumber = 2851;
       weight_Xsec = ( 716.0 / 8039604 ) / ( 11050.0 / 32600176 ); }
     else if (sampleName == "zjets_lowmass_2p" || tmpName.Contains("zjets_lowmass_2p_part")) { sampleNumber = 2852;
       weight_Xsec = ( 309.7 / 30684442 ) / ( 11050.0 / 32600176 ); }
-    else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) sampleNumber = 2800; 
+    else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) { sampleNumber = 2800;
+      nGen = 30452141; Xsec = 3505.7; }
     else if (sampleName == "zjets_1p" || tmpName.Contains("zjets_1p_part")) { sampleNumber = 2801;
+      nGen = 23698301; Xsec = 666.7;
       weight_Xsec = ( 561.0 / 23698301 ) / ( 2950.0 / 30452141 ); }
     else if (sampleName == "zjets_2p" || tmpName.Contains("zjets_2p_part")) { sampleNumber = 2802;
+      nGen = 2350806; Xsec = 215.1;
       weight_Xsec = ( 181.0 / 2350806 ) / ( 2950.0 / 30452141 ); }
     else if (sampleName == "zjets_3p" || tmpName.Contains("zjets_3p_part")) { sampleNumber = 2803;
+      nGen = 11004806; Xsec = 66.07;
       weight_Xsec = ( 55.6 / 11004806 ) / ( 2950.0 / 30452141 ); }
     else if (sampleName == "zjets_4p" || tmpName.Contains("zjets_4p_part")) { sampleNumber = 2804;
+      nGen = 6387161; Xsec = 27.38;
       weight_Xsec = ( 23.04 /6387161 ) / ( 2950.0 / 30452141 ); }
-    else if (sampleName == "singlet_s") sampleNumber = 2600; 
-    else if (sampleName == "singlet_s_ll") sampleNumber = 2630; 
-    else if (sampleName == "singletbar_s") sampleNumber = 2601; 
+    else if (sampleName == "singlet_s") { sampleNumber = 2600;
+      nGen = 259657; Xsec = 3.79; }
+    else if (sampleName == "singlet_s_ll") sampleNumber = 2630;
+    else if (sampleName == "singletbar_s") { sampleNumber = 2601;
+      nGen = 139835; Xsec = 1.76; }
     else if (sampleName == "singletbar_s_ll") sampleNumber = 2631; 
-    else if (sampleName == "singlet_t") sampleNumber = 2602; 
+    else if (sampleName == "singlet_t") { sampleNumber = 2602;
+      nGen = 3754544; Xsec = 56.4; }
     else if (sampleName == "singlet_t_ll") sampleNumber = 2632; 
-    else if (sampleName == "singletbar_t") sampleNumber = 2603; 
+    else if (sampleName == "singletbar_t") { sampleNumber = 2603;
+      nGen = 1932776; Xsec = 30.7; }
     else if (sampleName == "singletbar_t_ll") sampleNumber = 2633; 
-    else if (sampleName == "singlet_tW") sampleNumber = 2604; 
+    else if (sampleName == "singlet_tW") { sampleNumber = 2604;
+      nGen = 496918; Xsec = 11.1; }
     else if (sampleName == "singlet_tW_lj") sampleNumber = 2654; 
     else if (sampleName == "singlet_tW_jl") sampleNumber = 2664; 
     else if (sampleName == "singlet_tW_ll") sampleNumber = 2634; 
-    else if (sampleName == "singletbar_tW") sampleNumber = 2605; 
+    else if (sampleName == "singletbar_tW") { sampleNumber = 2605;
+      nGen = 492779; Xsec = 11.1; }
     else if (sampleName == "singletbar_tW_lj") sampleNumber = 2555; 
     else if (sampleName == "singletbar_tW_jl") sampleNumber = 2565; 
     else if (sampleName == "singletbar_tW_ll") sampleNumber = 2535; 
-    else if (sampleName == "ww") sampleNumber = 2700; 
+    else if (sampleName == "ww") { sampleNumber = 2700;
+      nGen = 8965049; Xsec = 54.8; }
     else if (sampleName == "www") sampleNumber = 2710; 
     else if (sampleName == "wwz") sampleNumber = 2720; 
-    else if (sampleName == "wz") sampleNumber = 2701; 
+    else if (sampleName == "wz") { sampleNumber = 2701;
+      nGen = 9821291; Xsec = 32.3; }
     else if (sampleName == "wzz") sampleNumber = 2721; 
-    else if (sampleName == "zz") sampleNumber = 2702;
+    else if (sampleName == "zz") { sampleNumber = 2702;
+      nGen = 9568511; Xsec = 7.7; }
     else if (sampleName == "zzz") sampleNumber = 2722; 
-    else if (sampleName == "ttbarW") sampleNumber = 2524; 
+    else if (sampleName == "ttbarW") { sampleNumber = 2524;
+      nGen = 195396; Xsec = 0.249; }
     else if (sampleName == "ttbarWW") sampleNumber = 2534; 
-    else if (sampleName == "ttbarZ") sampleNumber = 2523; 
+    else if (sampleName == "ttbarZ") { sampleNumber = 2523;
+      nGen = 209512; Xsec = 0.208; }
     else if (sampleName == "ttbartbar") sampleNumber = 2525;
     else if (tmpName.Contains("ttH") && selectionYearStr == "2012_52x") {
       if (tmpName.Contains("FullSim")) sampleNumber = 8120;
@@ -583,6 +622,8 @@ int main ( int argc, char ** argv )
     floatBranches["lep2SF"] = new float (0.0);
     floatBranches["lepTotalSF"] = new float (0.0);
     floatBranches["weight_Xsec"] = new float(0.0);
+    intBranches["nGen"] = new int(0);
+    floatBranches["Xsec"] = new float(0.0);
     
     //met
     floatBranches["met"] = new float(0.0);
@@ -713,58 +754,84 @@ int main ( int argc, char ** argv )
 
   if (ExtraJetVariables) {
     
-    intBranches["numAllJets"] = new int(0);
+//     intBranches["numAllJets"] = new int(0);
 
-    floatBranches["first_jet_CHEF"] = new float(0.0);
-    floatBranches["second_jet_CHEF"] = new float(0.0);
-    floatBranches["third_jet_CHEF"] = new float(0.0);
-    floatBranches["fourth_jet_CHEF"] = new float(0.0);
-    floatBranches["sum_jet_CHEF"] = new float(0.0);
+//     floatBranches["first_jet_CHEF"] = new float(0.0);
+//     floatBranches["second_jet_CHEF"] = new float(0.0);
+//     floatBranches["third_jet_CHEF"] = new float(0.0);
+//     floatBranches["fourth_jet_CHEF"] = new float(0.0);
+//     floatBranches["sum_jet_CHEF"] = new float(0.0);
 
-    floatBranches["first_jet_charge"] = new float(0.0);
-    floatBranches["second_jet_charge"] = new float(0.0);
-    floatBranches["third_jet_charge"] = new float(0.0);
-    floatBranches["fourth_jet_charge"] = new float(0.0);
-    floatBranches["sum_jet_charge"] = new float(0.0);
+//     floatBranches["first_jet_charge"] = new float(0.0);
+//     floatBranches["second_jet_charge"] = new float(0.0);
+//     floatBranches["third_jet_charge"] = new float(0.0);
+//     floatBranches["fourth_jet_charge"] = new float(0.0);
+//     floatBranches["sum_jet_charge"] = new float(0.0);
   
     floatBranches["first_jet_CSV"] = new float(0.0);
     floatBranches["second_jet_CSV"] = new float(0.0);
     floatBranches["third_jet_CSV"] = new float(0.0);
     floatBranches["fourth_jet_CSV"] = new float(0.0);
 
-    floatBranches["first_lf_jet_pt"] = new float(0.0);
-    floatBranches["first_lf_jet_eta"] = new float(0.0);
-    floatBranches["first_lf_jet_CSV_unshaped"] = new float(0.0);
-    floatBranches["first_lf_jet_CSV_reshaped"] = new float(0.0);
+//     floatBranches["first_lf_jet_pt"] = new float(0.0);
+//     floatBranches["first_lf_jet_eta"] = new float(0.0);
+//     floatBranches["first_lf_jet_CSV_unshaped"] = new float(0.0);
+//     floatBranches["first_lf_jet_CSV_reshaped"] = new float(0.0);
 
-    floatBranches["first_hf_jet_pt"] = new float(0.0);
-    floatBranches["first_hf_jet_eta"] = new float(0.0);
-    floatBranches["first_hf_jet_CSV_unshaped"] = new float(0.0);
-    floatBranches["first_hf_jet_CSV_reshaped"] = new float(0.0);
+//     floatBranches["first_hf_jet_pt"] = new float(0.0);
+//     floatBranches["first_hf_jet_eta"] = new float(0.0);
+//     floatBranches["first_hf_jet_CSV_unshaped"] = new float(0.0);
+//     floatBranches["first_hf_jet_CSV_reshaped"] = new float(0.0);
 
-    floatBranches["dPhi_jet1jet2"] = new float(0.0);
-    floatBranches["dPhi_jet1jet3"] = new float(0.0);
-    floatBranches["dPhi_jet1jet4"] = new float(0.0);
-    floatBranches["dPhi_jet2jet3"] = new float(0.0);
-    floatBranches["dPhi_jet2jet4"] = new float(0.0);
-    floatBranches["dPhi_jet3jet4"] = new float(0.0);
+//     floatBranches["dPhi_jet1jet2"] = new float(0.0);
+//     floatBranches["dPhi_jet1jet3"] = new float(0.0);
+//     floatBranches["dPhi_jet1jet4"] = new float(0.0);
+//     floatBranches["dPhi_jet2jet3"] = new float(0.0);
+//     floatBranches["dPhi_jet2jet4"] = new float(0.0);
+//     floatBranches["dPhi_jet3jet4"] = new float(0.0);
   
-    floatBranches["first_allJet_pt"] = new float(0.0);
-    floatBranches["second_allJet_pt"] = new float(0.0);
-    floatBranches["third_allJet_pt"] = new float(0.0);
-    floatBranches["fourth_allJet_pt"] = new float(0.0);
+//     floatBranches["first_allJet_pt"] = new float(0.0);
+//     floatBranches["second_allJet_pt"] = new float(0.0);
+//     floatBranches["third_allJet_pt"] = new float(0.0);
+//     floatBranches["fourth_allJet_pt"] = new float(0.0);
 
-    floatBranches["first_dibjet_mass"] = new float(0.0);
-    floatBranches["second_dibjet_mass"] = new float(0.0);
-    floatBranches["third_dibjet_mass"] = new float(0.0);
+//     floatBranches["first_dibjet_mass"] = new float(0.0);
+//     floatBranches["second_dibjet_mass"] = new float(0.0);
+//     floatBranches["third_dibjet_mass"] = new float(0.0);
     
-    floatBranches["dijet_mass_m2H"] = new float(0.0);
-    floatBranches["dijet_mass_first"] = new float(0.0);
-    floatBranches["dijet_mass_second"] = new float(0.0);
-    floatBranches["dijet_mass_third"] = new float(0.0);
+//     floatBranches["dijet_mass_m2H"] = new float(0.0);
+//     floatBranches["dijet_mass_first"] = new float(0.0);
+//     floatBranches["dijet_mass_second"] = new float(0.0);
+//     floatBranches["dijet_mass_third"] = new float(0.0);
 
-    floatBranches["min_dr_genB1_allJet"] = new float (0.0);
-    floatBranches["min_dr_genB2_allJet"] = new float (0.0);
+//     floatBranches["min_dr_genB1_allJet"] = new float (0.0);
+//     floatBranches["min_dr_genB2_allJet"] = new float (0.0);
+
+    floatBranches["CSV_30to45_0p0to1p2_1"] = new float(0.0);
+    floatBranches["CSV_45to75_0p0to1p2_1"] = new float(0.0);
+    floatBranches["CSV_75to150_0p0to1p2_1"] = new float(0.0);
+    floatBranches["CSV_150toInf_0p0to1p2_1"] = new float(0.0);
+    floatBranches["CSV_30to45_1p2to2p1_1"] = new float(0.0);
+    floatBranches["CSV_45to75_1p2to2p1_1"] = new float(0.0);
+    floatBranches["CSV_75to150_1p2to2p1_1"] = new float(0.0);
+    floatBranches["CSV_150toInf_1p2to2p1_1"] = new float(0.0);
+    floatBranches["CSV_30to45_2p1to2p4_1"] = new float(0.0);
+    floatBranches["CSV_45to75_2p1to2p4_1"] = new float(0.0);
+    floatBranches["CSV_75to150_2p1to2p4_1"] = new float(0.0);
+    floatBranches["CSV_150toInf_2p1to2p4_1"] = new float(0.0);
+
+    floatBranches["CSV_30to45_0p0to1p2_2"] = new float(0.0);
+    floatBranches["CSV_45to75_0p0to1p2_2"] = new float(0.0);
+    floatBranches["CSV_75to150_0p0to1p2_2"] = new float(0.0);
+    floatBranches["CSV_150toInf_0p0to1p2_2"] = new float(0.0);
+    floatBranches["CSV_30to45_1p2to2p1_2"] = new float(0.0);
+    floatBranches["CSV_45to75_1p2to2p1_2"] = new float(0.0);
+    floatBranches["CSV_75to150_1p2to2p1_2"] = new float(0.0);
+    floatBranches["CSV_150toInf_1p2to2p1_2"] = new float(0.0);
+    floatBranches["CSV_30to45_2p1to2p4_2"] = new float(0.0);
+    floatBranches["CSV_45to75_2p1to2p4_2"] = new float(0.0);
+    floatBranches["CSV_75to150_2p1to2p4_2"] = new float(0.0);
+    floatBranches["CSV_150toInf_2p1to2p4_2"] = new float(0.0);
 
   } //End if (ExtraJetVariables)
 
@@ -867,9 +934,6 @@ int main ( int argc, char ** argv )
   intBranches["lep2NumExpectedHits"] = new int (0);
 
   } //End if (ExtraLeptonVariables)
-
-  int dInt = -9*pow(10,20);
-  float dFloat = -9.0*pow(10,20);
 
   ////////////////////  
   histofile.cd();
@@ -2057,6 +2121,32 @@ int main ( int argc, char ** argv )
       float dPhi_jet2jet4 = dFloat;
       float dPhi_jet3jet4 = dFloat;
 
+      float CSV_30to45_0p0to1p2_1 = dFloat ;
+      float CSV_45to75_0p0to1p2_1 = dFloat ;
+      float CSV_75to150_0p0to1p2_1 = dFloat ;
+      float CSV_150toInf_0p0to1p2_1 = dFloat ;
+      float CSV_30to45_1p2to2p1_1 = dFloat ;
+      float CSV_45to75_1p2to2p1_1 = dFloat ;
+      float CSV_75to150_1p2to2p1_1 = dFloat ;
+      float CSV_150toInf_1p2to2p1_1 = dFloat ;
+      float CSV_30to45_2p1to2p4_1 = dFloat ;
+      float CSV_45to75_2p1to2p4_1 = dFloat ;
+      float CSV_75to150_2p1to2p4_1 = dFloat ;
+      float CSV_150toInf_2p1to2p4_1 = dFloat ;
+
+      float CSV_30to45_0p0to1p2_2 = dFloat ;
+      float CSV_45to75_0p0to1p2_2 = dFloat ;
+      float CSV_75to150_0p0to1p2_2 = dFloat ;
+      float CSV_150toInf_0p0to1p2_2 = dFloat ;
+      float CSV_30to45_1p2to2p1_2 = dFloat ;
+      float CSV_45to75_1p2to2p1_2 = dFloat ;
+      float CSV_75to150_1p2to2p1_2 = dFloat ;
+      float CSV_150toInf_1p2to2p1_2 = dFloat ;
+      float CSV_30to45_2p1to2p4_2 = dFloat ;
+      float CSV_45to75_2p1to2p4_2 = dFloat ;
+      float CSV_75to150_2p1to2p4_2 = dFloat ;
+      float CSV_150toInf_2p1to2p4_2 = dFloat ;
+
       float first_allJet_pt = dFloat ;
       float second_allJet_pt = dFloat ;
       float third_allJet_pt = dFloat ;
@@ -2636,6 +2726,26 @@ int main ( int argc, char ** argv )
           first_jet_CHEF = jet_CHEF[iJet];
           first_jet_charge = jet_charge[iJet];
           first_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
+          if (first_jet_pt > 30 && first_jet_pt < 45) {
+            if (fabs(first_jet_eta) > 0 && fabs(first_jet_eta) < 1.2 ) CSV_30to45_0p0to1p2_1 = first_jet_CSV;
+            if (fabs(first_jet_eta) > 1.2 && fabs(first_jet_eta) < 2.1 ) CSV_30to45_1p2to2p1_1 = first_jet_CSV;
+            if (fabs(first_jet_eta) > 2.1 && fabs(first_jet_eta) < 2.4 ) CSV_30to45_2p1to2p4_1 = first_jet_CSV;
+          }
+          if (first_jet_pt > 45 && first_jet_pt < 75) {
+            if (fabs(first_jet_eta) > 0 && fabs(first_jet_eta) < 1.2 ) CSV_45to75_0p0to1p2_1 = first_jet_CSV;
+            if (fabs(first_jet_eta) > 1.2 && fabs(first_jet_eta) < 2.1 ) CSV_45to75_1p2to2p1_1 = first_jet_CSV;
+            if (fabs(first_jet_eta) > 2.1 && fabs(first_jet_eta) < 2.4 ) CSV_45to75_2p1to2p4_1 = first_jet_CSV;
+          }
+          if (first_jet_pt > 75 && first_jet_pt < 150) {
+            if (fabs(first_jet_eta) > 0 && fabs(first_jet_eta) < 1.2 ) CSV_75to150_0p0to1p2_1 = first_jet_CSV;
+            if (fabs(first_jet_eta) > 1.2 && fabs(first_jet_eta) < 2.1 ) CSV_75to150_1p2to2p1_1 = first_jet_CSV;
+            if (fabs(first_jet_eta) > 2.1 && fabs(first_jet_eta) < 2.4 ) CSV_75to150_2p1to2p4_1 = first_jet_CSV;
+          }
+          if (first_jet_pt > 150) {
+            if (fabs(first_jet_eta) > 0 && fabs(first_jet_eta) < 1.2 ) CSV_150toInf_0p0to1p2_1 = first_jet_CSV;
+            if (fabs(first_jet_eta) > 1.2 && fabs(first_jet_eta) < 2.1 ) CSV_150toInf_1p2to2p1_1 = first_jet_CSV;
+            if (fabs(first_jet_eta) > 2.1 && fabs(first_jet_eta) < 2.4 ) CSV_150toInf_2p1to2p4_1 = first_jet_CSV;
+          }
         }
 	    if (i==1)  {
           second_jet_pt = jet_pt[iJet];
@@ -2643,6 +2753,26 @@ int main ( int argc, char ** argv )
           second_jet_CHEF = jet_CHEF[iJet];
           second_jet_charge = jet_charge[iJet];
           second_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
+          if (second_jet_pt > 30 && second_jet_pt < 45) {
+            if (fabs(second_jet_eta) > 0 && fabs(second_jet_eta) < 1.2 ) CSV_30to45_0p0to1p2_2 = second_jet_CSV;
+            if (fabs(second_jet_eta) > 1.2 && fabs(second_jet_eta) < 2.1 ) CSV_30to45_1p2to2p1_2 = second_jet_CSV;
+            if (fabs(second_jet_eta) > 2.1 && fabs(second_jet_eta) < 2.4 ) CSV_30to45_2p1to2p4_2 = second_jet_CSV;
+          }
+          if (second_jet_pt > 45 && second_jet_pt < 75) {
+            if (fabs(second_jet_eta) > 0 && fabs(second_jet_eta) < 1.2 ) CSV_45to75_0p0to1p2_2 = second_jet_CSV;
+            if (fabs(second_jet_eta) > 1.2 && fabs(second_jet_eta) < 2.1 ) CSV_45to75_1p2to2p1_2 = second_jet_CSV;
+            if (fabs(second_jet_eta) > 2.1 && fabs(second_jet_eta) < 2.4 ) CSV_45to75_2p1to2p4_2 = second_jet_CSV;
+          }
+          if (second_jet_pt > 75 && second_jet_pt < 150) {
+            if (fabs(second_jet_eta) > 0 && fabs(second_jet_eta) < 1.2 ) CSV_75to150_0p0to1p2_2 = second_jet_CSV;
+            if (fabs(second_jet_eta) > 1.2 && fabs(second_jet_eta) < 2.1 ) CSV_75to150_1p2to2p1_2 = second_jet_CSV;
+            if (fabs(second_jet_eta) > 2.1 && fabs(second_jet_eta) < 2.4 ) CSV_75to150_2p1to2p4_2 = second_jet_CSV;
+          }
+          if (second_jet_pt > 150) {
+            if (fabs(second_jet_eta) > 0 && fabs(second_jet_eta) < 1.2 ) CSV_150toInf_0p0to1p2_2 = second_jet_CSV;
+            if (fabs(second_jet_eta) > 1.2 && fabs(second_jet_eta) < 2.1 ) CSV_150toInf_1p2to2p1_2 = second_jet_CSV;
+            if (fabs(second_jet_eta) > 2.1 && fabs(second_jet_eta) < 2.4 ) CSV_150toInf_2p1to2p4_2 = second_jet_CSV;
+          }
         }
 	    if (i==2)  {
           third_jet_pt = jet_pt[iJet];
@@ -2960,6 +3090,8 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep2SF"]) = lep2SF;
         *(floatBranches["lepTotalSF"]) = lepTotalSF;
         *(floatBranches["weight_Xsec"]) = weight_Xsec ;
+        *(intBranches["nGen"]) = nGen ;
+        *(floatBranches["Xsec"]) = Xsec ;
 
         //met
         *(floatBranches["met"]) = met;
@@ -3089,59 +3221,85 @@ int main ( int argc, char ** argv )
 
       if (ExtraJetVariables) {
 
-        *(intBranches["numAllJets"]) = numAllJets;
+//         *(intBranches["numAllJets"]) = numAllJets;
 
-        *(floatBranches["first_jet_CHEF"]) = first_jet_CHEF;
-        *(floatBranches["second_jet_CHEF"]) = second_jet_CHEF;
-        *(floatBranches["third_jet_CHEF"]) = third_jet_CHEF;
-        *(floatBranches["fourth_jet_CHEF"]) = fourth_jet_CHEF;
-        *(floatBranches["sum_jet_CHEF"]) = sum_jet_CHEF;
+//         *(floatBranches["first_jet_CHEF"]) = first_jet_CHEF;
+//         *(floatBranches["second_jet_CHEF"]) = second_jet_CHEF;
+//         *(floatBranches["third_jet_CHEF"]) = third_jet_CHEF;
+//         *(floatBranches["fourth_jet_CHEF"]) = fourth_jet_CHEF;
+//         *(floatBranches["sum_jet_CHEF"]) = sum_jet_CHEF;
         
-        *(floatBranches["first_jet_charge"]) = first_jet_charge;
-        *(floatBranches["second_jet_charge"]) = second_jet_charge;
-        *(floatBranches["third_jet_charge"]) = third_jet_charge;
-        *(floatBranches["fourth_jet_charge"]) = fourth_jet_charge;
-        *(floatBranches["sum_jet_charge"]) = sum_jet_charge;
+//         *(floatBranches["first_jet_charge"]) = first_jet_charge;
+//         *(floatBranches["second_jet_charge"]) = second_jet_charge;
+//         *(floatBranches["third_jet_charge"]) = third_jet_charge;
+//         *(floatBranches["fourth_jet_charge"]) = fourth_jet_charge;
+//         *(floatBranches["sum_jet_charge"]) = sum_jet_charge;
 
         *(floatBranches["first_jet_CSV"]) = first_jet_CSV;
         *(floatBranches["second_jet_CSV"]) = second_jet_CSV;
         *(floatBranches["third_jet_CSV"]) = third_jet_CSV;
         *(floatBranches["fourth_jet_CSV"]) = fourth_jet_CSV;
 
-        *(floatBranches["first_lf_jet_pt"]) = first_lf_jet_pt;
-        *(floatBranches["first_lf_jet_eta"]) = first_lf_jet_eta;
-        *(floatBranches["first_lf_jet_CSV_unshaped"]) = first_lf_jet_CSV_unshaped;
-        *(floatBranches["first_lf_jet_CSV_reshaped"]) = first_lf_jet_CSV_reshaped;
+//         *(floatBranches["first_lf_jet_pt"]) = first_lf_jet_pt;
+//         *(floatBranches["first_lf_jet_eta"]) = first_lf_jet_eta;
+//         *(floatBranches["first_lf_jet_CSV_unshaped"]) = first_lf_jet_CSV_unshaped;
+//         *(floatBranches["first_lf_jet_CSV_reshaped"]) = first_lf_jet_CSV_reshaped;
 
-        *(floatBranches["first_hf_jet_pt"]) = first_hf_jet_pt;
-        *(floatBranches["first_hf_jet_eta"]) = first_hf_jet_eta;
-        *(floatBranches["first_hf_jet_CSV_unshaped"]) = first_hf_jet_CSV_unshaped;
-        *(floatBranches["first_hf_jet_CSV_reshaped"]) = first_hf_jet_CSV_reshaped;
+//         *(floatBranches["first_hf_jet_pt"]) = first_hf_jet_pt;
+//         *(floatBranches["first_hf_jet_eta"]) = first_hf_jet_eta;
+//         *(floatBranches["first_hf_jet_CSV_unshaped"]) = first_hf_jet_CSV_unshaped;
+//         *(floatBranches["first_hf_jet_CSV_reshaped"]) = first_hf_jet_CSV_reshaped;
 
-        *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
-        *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
-        *(floatBranches["dPhi_jet1jet4"]) = dPhi_jet1jet4;
-        *(floatBranches["dPhi_jet2jet3"]) = dPhi_jet2jet3;
-        *(floatBranches["dPhi_jet2jet4"]) = dPhi_jet2jet4;
-        *(floatBranches["dPhi_jet3jet4"]) = dPhi_jet3jet4;
+//         *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
+//         *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
+//         *(floatBranches["dPhi_jet1jet4"]) = dPhi_jet1jet4;
+//         *(floatBranches["dPhi_jet2jet3"]) = dPhi_jet2jet3;
+//         *(floatBranches["dPhi_jet2jet4"]) = dPhi_jet2jet4;
+//         *(floatBranches["dPhi_jet3jet4"]) = dPhi_jet3jet4;
 
-        *(floatBranches["first_allJet_pt"]) = first_allJet_pt;
-        *(floatBranches["second_allJet_pt"]) = second_allJet_pt;
-        *(floatBranches["third_allJet_pt"]) = third_allJet_pt;
-        *(floatBranches["fourth_allJet_pt"]) = fourth_allJet_pt;
+//         *(floatBranches["first_allJet_pt"]) = first_allJet_pt;
+//         *(floatBranches["second_allJet_pt"]) = second_allJet_pt;
+//         *(floatBranches["third_allJet_pt"]) = third_allJet_pt;
+//         *(floatBranches["fourth_allJet_pt"]) = fourth_allJet_pt;
 
-        *(floatBranches["first_dibjet_mass"]) =  first_dibjet_mass;
-        *(floatBranches["second_dibjet_mass"]) = second_dibjet_mass;
-        *(floatBranches["third_dibjet_mass"]) =  third_dibjet_mass;
+//         *(floatBranches["first_dibjet_mass"]) =  first_dibjet_mass;
+//         *(floatBranches["second_dibjet_mass"]) = second_dibjet_mass;
+//         *(floatBranches["third_dibjet_mass"]) =  third_dibjet_mass;
 
-	    *(floatBranches["dijet_mass_m2H"]) = dijet_mass_m2H;
-        *(floatBranches["dijet_mass_first"]) =  dijet_mass_first;
-        *(floatBranches["dijet_mass_second"]) = dijet_mass_second;
-        *(floatBranches["dijet_mass_third"]) =  dijet_mass_third;
+// 	    *(floatBranches["dijet_mass_m2H"]) = dijet_mass_m2H;
+//         *(floatBranches["dijet_mass_first"]) =  dijet_mass_first;
+//         *(floatBranches["dijet_mass_second"]) = dijet_mass_second;
+//         *(floatBranches["dijet_mass_third"]) =  dijet_mass_third;
 
-        *(floatBranches["min_dr_genB1_allJet"]) = min_dr_genB1_allJet;
-        *(floatBranches["min_dr_genB2_allJet"]) = min_dr_genB2_allJet;
+//         *(floatBranches["min_dr_genB1_allJet"]) = min_dr_genB1_allJet;
+//         *(floatBranches["min_dr_genB2_allJet"]) = min_dr_genB2_allJet;
 
+        *(floatBranches["CSV_30to45_0p0to1p2_1"]) = CSV_30to45_0p0to1p2_1;
+        *(floatBranches["CSV_45to75_0p0to1p2_1"]) = CSV_45to75_0p0to1p2_1;
+        *(floatBranches["CSV_75to150_0p0to1p2_1"]) = CSV_75to150_0p0to1p2_1;
+        *(floatBranches["CSV_150toInf_0p0to1p2_1"]) = CSV_150toInf_0p0to1p2_1;
+        *(floatBranches["CSV_30to45_1p2to2p1_1"]) = CSV_30to45_1p2to2p1_1;
+        *(floatBranches["CSV_45to75_1p2to2p1_1"]) = CSV_45to75_1p2to2p1_1;
+        *(floatBranches["CSV_75to150_1p2to2p1_1"]) = CSV_75to150_1p2to2p1_1;
+        *(floatBranches["CSV_150toInf_1p2to2p1_1"]) = CSV_150toInf_1p2to2p1_1;
+        *(floatBranches["CSV_30to45_2p1to2p4_1"]) = CSV_30to45_2p1to2p4_1;
+        *(floatBranches["CSV_45to75_2p1to2p4_1"]) = CSV_45to75_2p1to2p4_1;
+        *(floatBranches["CSV_75to150_2p1to2p4_1"]) = CSV_75to150_2p1to2p4_1;
+        *(floatBranches["CSV_150toInf_2p1to2p4_1"]) = CSV_150toInf_2p1to2p4_1;
+        
+        *(floatBranches["CSV_30to45_0p0to1p2_2"]) = CSV_30to45_0p0to1p2_2;
+        *(floatBranches["CSV_45to75_0p0to1p2_2"]) = CSV_45to75_0p0to1p2_2;
+        *(floatBranches["CSV_75to150_0p0to1p2_2"]) = CSV_75to150_0p0to1p2_2;
+        *(floatBranches["CSV_150toInf_0p0to1p2_2"]) = CSV_150toInf_0p0to1p2_2;
+        *(floatBranches["CSV_30to45_1p2to2p1_2"]) = CSV_30to45_1p2to2p1_2;
+        *(floatBranches["CSV_45to75_1p2to2p1_2"]) = CSV_45to75_1p2to2p1_2;
+        *(floatBranches["CSV_75to150_1p2to2p1_2"]) = CSV_75to150_1p2to2p1_2;
+        *(floatBranches["CSV_150toInf_1p2to2p1_2"]) = CSV_150toInf_1p2to2p1_2;
+        *(floatBranches["CSV_30to45_2p1to2p4_2"]) = CSV_30to45_2p1to2p4_2;
+        *(floatBranches["CSV_45to75_2p1to2p4_2"]) = CSV_45to75_2p1to2p4_2;
+        *(floatBranches["CSV_75to150_2p1to2p4_2"]) = CSV_75to150_2p1to2p4_2;
+        *(floatBranches["CSV_150toInf_2p1to2p4_2"]) = CSV_150toInf_2p1to2p4_2;
+        
       } //End if (ExtraJetVariables)
         
       if (ExtraTriggerVariables) {
