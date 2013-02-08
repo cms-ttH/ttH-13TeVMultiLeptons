@@ -132,8 +132,9 @@ int main ( int argc, char ** argv )
    std::string outputFileName = outputs.getParameter<std::string >("outputName");
    //// switch between 2011 and 2012
    std::string selectionYearStr = anaParams.getParameter<std::string>("selectionYear");
-
+   std::string PUPeriodStr = anaParams.getParameter<std::string>("PUPeriod");
    std::cout << "CONFIG: selectionYear = " << selectionYearStr << std::endl;
+   std::cout << "CONFIG: 2012PUPeriod = " << PUPeriodStr << std::endl;
 //    int selectionYearInt = -99;
 //    if (selectionYearStr == "2011") {
 //      selectionYearInt = 2011;
@@ -400,7 +401,7 @@ int main ( int argc, char ** argv )
   if (debug_) std::cout << "beanHelper.SetUp(" << selectionYearStr << " , "
                         << sampleNumber << " , false  " << isData << " , "
                         << dset << " , true, true );" << std::endl;
-  beanHelper.SetUp(selectionYearStr,sampleNumber,false,isData,dset,true,true);
+  beanHelper.SetUp(selectionYearStr,sampleNumber,false,isData,dset,true,true,PUPeriodStr);
   if (debug_) std::cout << "beanHelper.SetUp successful" << std::endl;
   
   // Load the files

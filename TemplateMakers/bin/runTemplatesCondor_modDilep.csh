@@ -8,7 +8,7 @@ set iLabel = $4
 set iJes = $5
 set iJer = $6
 set iBtag = $7
-
+set iPUPeriod = $8
 #echo "listFileName, iYear, iJob, iLabel, iJes, iJer = "${listFileName}" , "${iYear}" , "${iJob}" , "${iLabel}" , "${iJes}" , "${iJer}
 
 #set sample = ${listFileName:r}
@@ -75,4 +75,4 @@ endif
 
 #root -b -q head.C 'test_beans_dileptonStudies.C+(-1,"'${sample}'", '$iJob', "'$iLabel'")' >&! $outDirName/test_beans_dileptonStudies_${sample}_${iLabel}_${iJob}.log
 
-helper_dilepton dilAnalysis_condor_cfg.py ${sample} $iYear $iJob $iLabel $iJes $iJer $iBtag > & ! $outDirName/dilAnalysis_${sample}_${iYear}_${iLabel}_${iJob}.log
+helper_dilepton dilAnalysis_condor_cfg.py ${sample} $iYear $iJob $iLabel $iJes $iJer $iBtag &iPUPeriod > & ! $outDirName/dilAnalysis_${sample}_${iYear}_${iLabel}_${iJob}.log

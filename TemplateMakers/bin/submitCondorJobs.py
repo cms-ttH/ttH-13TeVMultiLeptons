@@ -54,14 +54,14 @@ def main ():
 	
 	
 	jobLabel = str(args[0])
-
+	iPUPeriod = "2012A_13July, 2012A_06Aug, 2012B_13July"
 
 	print " Year = ", yearChoice
 	print " jes = " , jesChoice
 	print " jer = " , jerChoice
 	print " btag = ", btagChoice
 	print " label = ", jobLabel
-	
+	print " PUPeriod = ", iPUPeriod
 	
 	
 	listOfSamples2011Data = ['DoubleElectron_Run2011A-05Aug2011-v1',
@@ -92,18 +92,18 @@ def main ():
 	listOfSamples2012Data_53x = ['DoubleElectron_Run2012A-13Jul2012-v1',
 							 'DoubleElectron_Run2012A-recover-06Aug2012-v1',
 							 'DoubleElectron_Run2012B-13Jul2012-v1',
-							 'DoubleElectron_Run2012C-24Aug2012-v1',
-							 'DoubleElectron_Run2012C-PromptReco-v2',
+#							 'DoubleElectron_Run2012C-24Aug2012-v1',
+#							 'DoubleElectron_Run2012C-PromptReco-v2',
 							 'DoubleMu_Run2012A-13Jul2012-v1',
 							 'DoubleMu_Run2012A-recover-06Aug2012-v1',
 							 'DoubleMu_Run2012B-13Jul2012-v4',
-							 'DoubleMu_Run2012C-24Aug2012-v1',
-							 'DoubleMu_Run2012C-PromptReco-v2',
+#							 'DoubleMu_Run2012C-24Aug2012-v1',
+#							 'DoubleMu_Run2012C-PromptReco-v2',
 							 'MuEG_Run2012A-13Jul2012-v1',
 							 'MuEG_Run2012A-recover-06Aug2012-v1',
 							 'MuEG_Run2012B-13Jul2012-v1',
-							 'MuEG_Run2012C-24Aug2012-v1',
-							 'MuEG_Run2012C-PromptReco-v2',
+#							 'MuEG_Run2012C-24Aug2012-v1',
+#							 'MuEG_Run2012C-PromptReco-v2',
 							 ]
 	listOfSamples = [
 					 #'scaledown_ttbar',	ALWAYS OUT
@@ -333,6 +333,7 @@ def main ():
 		print condorHeader
 		condorJobFile.write(condorHeader)
 
+		condorJobFile.write( "PUPeriod = %s\n" % iPUPeriod)
 		condorJobFile.write( "Label = %s\n" % jobLabel)
 		condorJobFile.write( "List = %s\n" % iList)
 		numJobs = 0
@@ -361,7 +362,7 @@ def main ():
 		condorJobFile.write( "JES = %s\n" % jesChoice)
 		condorJobFile.write( "JER = %s\n" % jerChoice)
 		condorJobFile.write( "BTAG = %s\n" % btagChoice)
-		condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER) $(BTAG) \n")
+		condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER) $(BTAG) $(PUPeriod)\n")
 
 		if (jesChoice == 0 and jerChoice == 0):
 			JetStr = ""
