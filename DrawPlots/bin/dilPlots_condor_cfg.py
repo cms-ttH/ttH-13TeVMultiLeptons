@@ -153,6 +153,10 @@ process.dilAnalysis = cms.PSet(
 	sampleName = cms.string(sampleNameCL),
     skipSystematics = cms.bool(iSkipSyst),
 
+    # print out useful debug info
+    printDrawString = cms.bool(True),
+    printAccTables = cms.bool(True),
+
     # choose which plots to turn on
 
     # Core plots are nn out, nn input, njets, ntags

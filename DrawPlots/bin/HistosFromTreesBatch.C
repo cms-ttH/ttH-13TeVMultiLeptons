@@ -84,6 +84,54 @@ public:
 
 };
 
+class accInfo {
+
+public:
+  
+  TString categoryName;
+  TString cutString;
+  TString weightString;
+  double numPassUnweighted;
+  double  numPassWeighted;
+
+  //////////////////////////////////////////////////////////////////////////
+  
+  accInfo() : categoryName (""), cutString (""), weightString (""),
+            numPassUnweighted (0), numPassWeighted (0)
+  {};
+
+  ///////////////////////////////////////////////////////////////////////////
+  
+  accInfo (TString cat, TString cut, TString w,  double npu = 0, double npw = 0):
+    categoryName(cat),
+    cutString (cut),
+    weightString(w),
+    numPassUnweighted(npu),
+    numPassWeighted(npw)
+  {};
+  
+  ////////////////////////////////////////////////////////////////
+
+};
+
+
+TString removeLogicalAnd (TString inputString){
+
+  //  remove whitespace
+  //  if there is no whitespace at the end,
+  //  this does nothing
+  inputString.Remove(TString::EStripType::kTrailing, ' ');
+
+  // now get rid of the &&
+  // it will remove all copies
+  inputString.Remove(TString::EStripType::kTrailing, '&');
+  
+  
+  return inputString;
+  
+}
+
+
 int main ( int argc, char ** argv )
 {
 
@@ -123,6 +171,8 @@ int main ( int argc, char ** argv )
    
    std::string sampleName = anaParams.getParameter<string>("sampleName");
    bool skipSystematics = anaParams.getParameter<bool>("skipSystematics");
+   bool printDrawString = anaParams.getParameter<bool>("printDrawString");
+   bool printAccTables = anaParams.getParameter<bool>("printAccTables");
 
    if (skipSystematics) {
 
@@ -493,6 +543,8 @@ int main ( int argc, char ** argv )
   }
 
 
+  vector<accInfo> categoryAcceptances;
+  
   /////////////// Debuging root file
 
   TFile * debugOutput = new TFile (std::string("batchBEAN/timer/" + InputFileNames[0] + "_debugTimer.root").c_str(), "RECREATE");
@@ -594,6 +646,11 @@ int main ( int argc, char ** argv )
 
       std::string EffStr = "holder";
       std::string TrigStr = "holder";
+
+      // Convention: selections end with a logical AND and a space
+      std::string cutDrLepLep = " (dR_leplep > 0.2) && ";
+      std::string cutMassLepLep = " (mass_leplep > 12) && ";
+      
       
       if (JetTagReq == "eq1t") {
         JetReq = "numJets >= 2";
@@ -694,9 +751,89 @@ int main ( int argc, char ** argv )
           if (OutputDirectory == "MuonEle") {
             ZmaskStr = "";
           }
-          SelectionStr = WeightStr+EffStr+TrigStr+XsecStr+"(" + OppositeLepStr + ZmaskStr + PVStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
-	  //	  std::cout << "<--> cut is " << SelectionStr << std::endl;
+          
+          //SelectionStr = WeightStr+EffStr+TrigStr+XsecStr+"(" + OppositeLepStr + ZmaskStr + PVStr + TightLepStr
+          //  + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "
+          //  +CleanTrig+"("+JetReq+") && ("+TagReq+") )";
 
+          SelectionStr = WeightStr+EffStr+TrigStr+XsecStr+"(" + OppositeLepStr + ZmaskStr + PVStr + TightLepStr
+            + " ("+ OutputDirectory +") && " + cutDrLepLep + cutMassLepLep
+            +CleanTrig+"("+JetReq+") && ("+TagReq+") )";
+          
+
+          if (printAccTables){
+
+            TH1F * tempHistForIntegral = new TH1F ("tempHistForIntegral", "tempHistForIntegral", 20, 0, 20);            
+
+            TString CleanTrigAsEnd = removeLogicalAnd(CleanTrig);
+
+            ////////////////////////////////////////////////////////////////////////
+
+            accInfo lepSelectionInfo;            
+            lepSelectionInfo.categoryName = OutputDirectory;
+            lepSelectionInfo.weightString = WeightStr + EffStr + TrigStr+XsecStr;
+            lepSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
+              + TightLepStr + "(" +OutputDirectory +") && " + cutDrLepLep + cutMassLepLep
+              + CleanTrigAsEnd + ")";
+
+            lepSelectionInfo.numPassUnweighted = DileptonSummaryTree->Draw("numJets >> tempHistForIntegral",
+                                                                           lepSelectionInfo.weightString
+                                                                           + lepSelectionInfo.cutString,
+                                                                           "goff");
+            
+            lepSelectionInfo.numPassWeighted = tempHistForIntegral->Integral();
+
+            categoryAcceptances.push_back(lepSelectionInfo);
+
+            ///////////////////////////////////////////////////////////////////////
+            
+
+            accInfo jetSelectionInfo;
+
+            TString JetReqAsEnd  = removeLogicalAnd(JetReq);
+            jetSelectionInfo.categoryName = OutputDirectory + " " + JetReq;
+            jetSelectionInfo.weightString = WeightStr + EffStr + TrigStr+XsecStr;
+            
+
+            jetSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
+              + TightLepStr + "(" +OutputDirectory + ") && "  + cutDrLepLep + cutMassLepLep
+              + CleanTrig + "("+JetReqAsEnd+")" +")";
+
+            jetSelectionInfo.numPassUnweighted = DileptonSummaryTree->Draw("numJets >> tempHistForIntegral",
+                                                                           jetSelectionInfo.weightString
+                                                                           + jetSelectionInfo.cutString,
+                                                                           "goff");
+
+            jetSelectionInfo.numPassWeighted = tempHistForIntegral->Integral();
+
+            categoryAcceptances.push_back(jetSelectionInfo);
+
+            
+            //////////////////////////////////////////////////////////////////////////
+
+            
+            accInfo tagJetLepSelectionInfo;
+            tagJetLepSelectionInfo.categoryName = OutputDirectory + " " + JetReq + " " + TagReq;
+            tagJetLepSelectionInfo.weightString = WeightStr + EffStr + TrigStr+XsecStr;
+
+            tagJetLepSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
+              + TightLepStr + "(" +OutputDirectory + ") && "  + cutDrLepLep + cutMassLepLep
+              + CleanTrig + "("+JetReq+") && ("+TagReq+")"+")";
+
+
+
+            tagJetLepSelectionInfo.numPassUnweighted = DileptonSummaryTree->Draw("numJets >> tempHistForIntegral",
+                                                                           tagJetLepSelectionInfo.weightString
+                                                                              + tagJetLepSelectionInfo.cutString,
+                                                                           "goff");
+            
+            tagJetLepSelectionInfo.numPassWeighted = tempHistForIntegral->Integral();
+
+            categoryAcceptances.push_back(tagJetLepSelectionInfo);
+            
+              
+          }
+          
           
           if (SelectionStr == "holder") {
             std::cout << "SelectionStr == holder" << std::endl;
@@ -725,6 +862,13 @@ int main ( int argc, char ** argv )
         cout << "Switching to output file" << OutputFile->GetName() << std::endl;
         OutputFile->cd();
 
+        
+        if (printDrawString) {
+            cout << "DEBUG: Draw command was made like this selection string" << endl 
+                 << "DEBUG: " << SelectionStr 
+                 << endl;
+            
+        }
 
         ///// start variables loop
         for(std::vector<varInfo*>::iterator tIter1 = varList.begin(); tIter1 != varList.end(); tIter1++) {
@@ -751,6 +895,7 @@ int main ( int argc, char ** argv )
           drawTimesReal->Fill(myTime.RealTime());
           drawTimesCPU->Fill(myTime.CpuTime());
           numDraws->Fill(1);
+
 	  //	  if ( variableName == "Ht" )std::cout << " --> draw norm is " << histTemp->Integral() <<  std::endl;
           //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
           //      	  std::cout << "Drawing histogram " << histName << std::endl;
@@ -788,6 +933,35 @@ int main ( int argc, char ** argv )
 
   debugOutput->Write();
   debugOutput->Close();
+
+  ///////////////////////////////////////////////////////
+  //
+  //
+  //  Just print your tables
+  //
+  //
+  ////////////////////////////////////////////////////////  
+
+  if (printAccTables) {
+
+
+
+    for (vector<accInfo>::const_iterator iTable = categoryAcceptances.begin();
+         iTable != categoryAcceptances.end();
+         iTable++){
+
+      cout << "=================================" << endl
+           << "Table = " << iTable->categoryName << endl
+           << "Cuts = " << iTable->cutString << endl
+           << "Weights = "  << iTable->weightString << endl
+           << "numPassWeighted = " << iTable->numPassWeighted << endl
+           << "numPassUnweighted = " << iTable->numPassUnweighted << endl
+           << endl;
+    }
+
+  }
+
+  
 
   std::cout << "GREP_STATUS OK" << std::endl;
 
