@@ -31,7 +31,7 @@ if ($iJes == -1) then
 	set outDirName = batchBEAN/${sample}_${iLabel}_JesDown/log
 endif
 if ($iJes == 1) then
-    set outDirName = batchBEAN/${sample}_${iLabel}_JerUp/log
+    set outDirName = batchBEAN/${sample}_${iLabel}_JesUp/log
 endif
 
 if (! -e $outDirName) then
