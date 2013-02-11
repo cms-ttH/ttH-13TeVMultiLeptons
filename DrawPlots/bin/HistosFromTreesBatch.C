@@ -550,7 +550,7 @@ int main ( int argc, char ** argv )
   }
 
 
-  vector<accInfo> categoryAcceptances;
+  std::map<TString,accInfo> categoryAcceptances;
   
   /////////////// Debuging root file
 
@@ -790,7 +790,8 @@ int main ( int argc, char ** argv )
             
             lepSelectionInfo.numPassWeighted = tempHistForIntegral->Integral();
 
-            categoryAcceptances.push_back(lepSelectionInfo);
+            if (categoryAcceptances.find(lepSelectionInfo.categoryName) == categoryAcceptances.end())
+              categoryAcceptances[lepSelectionInfo.categoryName] = lepSelectionInfo;
 
             ///////////////////////////////////////////////////////////////////////
             
@@ -813,7 +814,8 @@ int main ( int argc, char ** argv )
 
             jetSelectionInfo.numPassWeighted = tempHistForIntegral->Integral();
 
-            categoryAcceptances.push_back(jetSelectionInfo);
+            if (categoryAcceptances.find(jetSelectionInfo.categoryName) == categoryAcceptances.end())
+              categoryAcceptances[jetSelectionInfo.categoryName] = jetSelectionInfo;            
 
             
             //////////////////////////////////////////////////////////////////////////
@@ -836,7 +838,8 @@ int main ( int argc, char ** argv )
             
             tagJetLepSelectionInfo.numPassWeighted = tempHistForIntegral->Integral();
 
-            categoryAcceptances.push_back(tagJetLepSelectionInfo);
+            if (categoryAcceptances.find(tagJetLepSelectionInfo.categoryName) == categoryAcceptances.end())
+              categoryAcceptances[tagJetLepSelectionInfo.categoryName] = tagJetLepSelectionInfo;
             
               
           }
@@ -951,19 +954,34 @@ int main ( int argc, char ** argv )
 
   if (printAccTables) {
 
+    std::map<TString, bool> printedCategories;
 
-
-    for (vector<accInfo>::const_iterator iTable = categoryAcceptances.begin();
+    for (std::map<TString, accInfo>::iterator iTable = categoryAcceptances.begin();
          iTable != categoryAcceptances.end();
          iTable++){
 
-      cout << "=================================" << endl
-           << "Table = " << iTable->categoryName << endl
-           << "Cuts = " << iTable->cutString << endl
-           << "Weights = "  << iTable->weightString << endl
-           << "numPassWeighted = " << iTable->numPassWeighted << endl
-           << "numPassUnweighted = " << iTable->numPassUnweighted << endl
-           << endl;
+//       cout << "=================================" << endl
+//            << "Table = " << iTable->categoryName << endl
+//            << "Cuts = " << iTable->cutString << endl
+//            << "Weights = "  << iTable->weightString << endl
+//            << "numPassWeighted = " << iTable->numPassWeighted << endl
+//            << "numPassUnweighted = " << iTable->numPassUnweighted << endl
+//            << endl;
+
+      TString tempLabel = iTable->second.categoryName;
+      
+      if (printedCategories.find(tempLabel) == printedCategories.end()){      
+        cout << "GREP_ACC, " << tempLabel << " W, " << iTable->second.numPassWeighted << endl
+             << "GREP_ACC, " << tempLabel << " U, " << iTable->second.numPassUnweighted << endl;
+        
+        printedCategories[tempLabel] = true;
+      } else {
+        cout << "Skipped category " << tempLabel
+             << " because we already saw that one" << endl;
+        
+      }
+      
+      
     }
 
   }
