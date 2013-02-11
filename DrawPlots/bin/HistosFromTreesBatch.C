@@ -187,6 +187,7 @@ int main ( int argc, char ** argv )
    bool makeLepPlots = anaParams.getParameter<bool>("lepPlots");
    bool makeJetPlots = anaParams.getParameter<bool>("jetPlots");
    bool makeKinPlots = anaParams.getParameter<bool>("kinPlots");
+   bool makeOnePlot = anaParams.getParameter<bool>("onePlot");
 
    std::cout << "CONFIG: corePlots = " << makeCorePlots << std::endl
              << "CONFIG: lepPlots = " << makeLepPlots << std::endl
@@ -373,6 +374,12 @@ int main ( int argc, char ** argv )
     varList.push_back(sum_jet_pt);
 
   } // end if makeKinPlots
+
+  if (makeOnePlot) {
+    //event variables
+    varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, 0, 20);
+    varList.push_back(numJets);
+  }
 
 //   varInfo *all_sum_pt = new varInfo("all_sum_pt", "all_sum_pt", "all_sum_pt", 10000, 0, 10000);
 //   varList.push_back(all_sum_pt);
