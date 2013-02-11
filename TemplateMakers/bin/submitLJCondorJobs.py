@@ -10,18 +10,54 @@ def main ():
     jesChoice = int(sys.argv[1])
     jerChoice = int(sys.argv[2])
     btagChoice = int(sys.argv[3])
-    jobLabel = str(sys.argv[4])            
-    listOfSamples = ['TTbar_skims_8TeV',
-					 'Wjets_skims_8TeV',
-					 'Zjets_skims_8TeV',
-					 'SingleTop_tbar-sChan_skims_8TeV',
-					 'SingleTop_tbar-tChan_skims_8TeV',
-					 'SingleTop_tbar-tWChan_skims_8TeV',
-					 'SingleTop_top-sChan_skims_8TeV',
-					 'SingleTop_top-tChan_skims_8TeV',
-					 'SingleTop_top-tWChan_skims_8TeV',
-					 'Data2012'
+    jobLabel = str(sys.argv[4])
+    listDir = "53XHadoopSkims"
+	#listDir = "53XHadoopBeans"
+    listOfSamples = [##'TTbar_53X_MassBD-v1-2',
+ 					 'TTbar_Hadronic_53X',
+ 					 #'TTbar_Semilep_53X',
+ 					 #'TTbar_Dilep_53X',
+					 #'W1_53X',
+  					 #'W2_53X',
+ 					 #'W3_53X',
+ 					 #'W4_53X',
+					 ##'Wjets_53X_Z2St-v2',
+					 #'Zjets-M50_53X',
+					 #'ST_tbar_sChan_53X',
+					 #'ST_tbar_tChan_53X',
+					 #'ST_tbar_tWChan_53X',
+					 #'ST_t_sChan_53X',
+					 # 'ST_t_tChan_53X',
+					 #'ST_t_tWChan_53X',
+  					 #'Data2012_53X'
+					 ##'Data2012A52XLoose'
+		             ##'Data2012A53XLoose'
 					 ]
+   ##  listOfSamples = ['TTbar_skims_8TeV',
+## 					 'Wjets_skims_8TeV',
+## 					 'Wjets2_skims_8TeV',
+## 					 'Zjets_skims_8TeV',
+## 					 'SingleTop_tbar-sChan_skims_8TeV',
+## 					 'SingleTop_tbar-tChan_skims_8TeV',
+## 					 'SingleTop_tbar-tWChan_skims_8TeV',
+## 					 'SingleTop_top-sChan_skims_8TeV',
+## 					 'SingleTop_top-tChan_skims_8TeV',
+## 					 'SingleTop_top-tWChan_skims_8TeV',
+##  					 'Data2012'
+## 					 #'Data2012A52XLoose'
+## 		             #'Data2012A53XLoose'
+## 					 ]
+##     listOfSamples = ['TTbar_Loose_skims_8TeV',
+## 					 'Wjets_Loose_skims_8TeV',
+## 					 'Zjets_Loose_skims_8TeV',
+## 					 'SingleTop_tbar-sChan_Loose_skims_8TeV',
+## 					 'SingleTop_tbar-tChan_Loose_skims_8TeV',
+## 					 'SingleTop_tbar-tWChan_Loose_skims_8TeV',
+## 					 'SingleTop_top-sChan_Loose_skims_8TeV',
+## 					 'SingleTop_top-tChan_Loose_skims_8TeV',
+## 					 'SingleTop_top-tWChan_Loose_skims_8TeV',
+## 					 'Data2012_Loose_skims'
+## 					 ]
 
         
     for iList in listOfSamples:
@@ -36,7 +72,7 @@ def main ():
         condorJobFile.write( "List = %s\n" % iList)
         numJobs = 0
         foundJobs = False
-        for iLine in os.popen("wc -l LepJetsSkims/%s.list" % iList).readlines():
+        for iLine in os.popen("wc -l LepJetsSkims/%s/%s.list" % (listDir, iList)).readlines():
             words = iLine.split()
             print "Line is ="
             print words
