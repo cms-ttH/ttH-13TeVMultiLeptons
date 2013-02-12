@@ -770,6 +770,9 @@ int main ( int argc, char ** argv )
 
           if (printAccTables){
 
+
+            TString weightNoHtReweight = weight[ksys];
+            
             TH1F * tempHistForIntegral = new TH1F ("tempHistForIntegral", "tempHistForIntegral", 20, 0, 20);            
 
             TString CleanTrigAsEnd = removeLogicalAnd(CleanTrig);
@@ -778,7 +781,7 @@ int main ( int argc, char ** argv )
 
             accInfo lepSelectionInfo;            
             lepSelectionInfo.categoryName = OutputDirectory;
-            lepSelectionInfo.weightString = WeightStr + EffStr + TrigStr+XsecStr;
+            lepSelectionInfo.weightString = weightNoHtReweight + EffStr + TrigStr+XsecStr;
             lepSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
               + TightLepStr + "(" +OutputDirectory +") && " + cutDrLepLep + cutMassLepLep
               + CleanTrigAsEnd + ")";
@@ -800,7 +803,7 @@ int main ( int argc, char ** argv )
 
             TString JetReqAsEnd  = removeLogicalAnd(JetReq);
             jetSelectionInfo.categoryName = OutputDirectory + " " + JetReq;
-            jetSelectionInfo.weightString = WeightStr + EffStr + TrigStr+XsecStr;
+            jetSelectionInfo.weightString = weightNoHtReweight + EffStr + TrigStr+XsecStr;
             
 
             jetSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
@@ -823,7 +826,7 @@ int main ( int argc, char ** argv )
             
             accInfo tagJetLepSelectionInfo;
             tagJetLepSelectionInfo.categoryName = OutputDirectory + " " + JetReq + " " + TagReq;
-            tagJetLepSelectionInfo.weightString = WeightStr + EffStr + TrigStr+XsecStr;
+            tagJetLepSelectionInfo.weightString = weightNoHtReweight + EffStr + TrigStr+XsecStr;
 
             tagJetLepSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
               + TightLepStr + "(" +OutputDirectory + ") && "  + cutDrLepLep + cutMassLepLep
@@ -909,8 +912,19 @@ int main ( int argc, char ** argv )
 	  //	  if ( variableName == "Ht" )std::cout << " --> draw norm is " << histTemp->Integral() <<  std::endl;
           //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
           //      	  std::cout << "Drawing histogram " << histName << std::endl;
-	  if(!isData && histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());
+
+
+          ///////////////////////////////////////////////////////
+          //
+          //  Critical - renormalize histogram for HT reweight
+          //
+          ////////////////////////////////////////////////////////
+
+          
+          if(!isData && histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());
           histTemp->SetDirectory(OutputFile);
+
+          
         } // end var loop
       } // end sub-lep cat loop
       std::cout << '\n' ;
