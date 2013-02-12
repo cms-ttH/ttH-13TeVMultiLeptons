@@ -54,7 +54,10 @@ def main ():
 	
 	
 	jobLabel = str(args[0])
-	iPUPeriod = "2012A_13July, 2012A_06Aug, 2012B_13July"
+	#iPUPeriod = "2012A_13July, 2012A_06Aug, 2012B_13July"
+    # We can't submit a list to the scripts
+	# instead just make an alias
+	iPUPeriod = "2012AB"
 
 	print " Year = ", yearChoice
 	print " jes = " , jesChoice

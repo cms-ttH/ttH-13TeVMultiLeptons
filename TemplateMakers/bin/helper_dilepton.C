@@ -132,9 +132,23 @@ int main ( int argc, char ** argv )
    std::string outputFileName = outputs.getParameter<std::string >("outputName");
    //// switch between 2011 and 2012
    std::string selectionYearStr = anaParams.getParameter<std::string>("selectionYear");
-   std::string PUPeriodStr = anaParams.getParameter<std::string>("PUPeriod");
+   std::string tempPUPeriodStr = anaParams.getParameter<std::string>("PUPeriod");
    std::cout << "CONFIG: selectionYear = " << selectionYearStr << std::endl;
-   std::cout << "CONFIG: 2012PUPeriod = " << PUPeriodStr << std::endl;
+   std::cout << "CONFIG: 2012PUPeriod input from command line = " << tempPUPeriodStr << std::endl;
+
+
+   // Translate PUPeriod into something more relevant
+   std::string PUPeriodStr = "";
+   if (tempPUPeriodStr == "2012AB"){
+     PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July";
+   } else {
+     std::cout << "Couldn't understand PUPeriodStr = " << tempPUPeriodStr << endl;
+     exit (12);
+   }
+
+
+      std::cout << "CONFIG: 2012PUPeriod string to be used at setup = " << PUPeriodStr << std::endl;
+   
 //    int selectionYearInt = -99;
 //    if (selectionYearStr == "2011") {
 //      selectionYearInt = 2011;
@@ -159,7 +173,9 @@ int main ( int argc, char ** argv )
    if (jes != 0 && jer != 0) {
      cout << "JES and JER are both non-0 ... exiting" << endl;
      exit(22);
-   }   
+   }
+
+   bool applySelection = anaParams.getParameter<bool>("applySelection");
    
    bool debug_ = false;
 
@@ -1882,7 +1898,12 @@ int main ( int argc, char ** argv )
       int numAllJets = numGoodAndBadJets;
       int numJets = int(tight_pfjet_index.size());
       // Only select events with at least two jets
-      if (numJets < 2) continue;
+      // JMS Feb 9 2013
+      // Moved this cut to the end
+      // just before filling the tree
+      // this clarifies how the code works
+      // 
+      //if (numJets < 2) continue;
       int numTaggedJets = int(tag_pfjet_index.size());
 
       ///////
@@ -3444,7 +3465,18 @@ int main ( int argc, char ** argv )
 
       } // end neural net selection
 
-      //--------------------
+      //---------------------------------------------------
+      //
+      //   Apply selection before filling tree.
+      //
+      // 
+      //--------------------------------------------------
+
+      if (applySelection){
+        
+        if (numJets < 2) continue;
+        
+      }
 
       if (verbose) std::cout << "about to fill tree" <<std::endl;
       
