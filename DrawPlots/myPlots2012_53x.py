@@ -26,24 +26,25 @@
 from ROOT import *
 from PlotEnv import *
 
-def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
+def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 
 
-    skipSystematics = False
+    skipSystematics = True
 
     dirStr = lepselection+"/"
     #dirStr = year+"/"+lepselection+"/"
-    rootStr = "_" + year + "_" + Zmask + "_" + jetselection + "_" + lepselection +".root"
+    rootStr = "_" + year + "_" + Zmask + "_" + charge + "_" + jetselection + "_" + lepselection +".root"
 
-    defaultLumi = 5288.0
+    #defaultLumi = 5288.0
+    defaultLumi = 12187.0
     if lepselection.startswith("TwoMuon"):
-        dataStr = dirStr+'DoubleMu_'+ year + "_" + Zmask + "_" + jetselection + "_TwoMuon.root"
+        dataStr = dirStr+'DoubleMu_'+ year + "_" + Zmask + "_" + charge + "_" + jetselection + "_TwoMuon.root"
 
     elif lepselection.startswith("TwoEle"):
-        dataStr = dirStr+'DoubleElectron_'+  year + "_" + Zmask + "_" + jetselection +  "_TwoEle.root"
+        dataStr = dirStr+'DoubleElectron_'+  year + "_" + Zmask + "_" + charge + "_" + jetselection +  "_TwoEle.root"
 
     elif lepselection.startswith("MuonEle"):
-        dataStr = dirStr+'MuEG_' + year + "_" + Zmask + "_" + jetselection +  "_MuonEle.root"
+        dataStr = dirStr+'MuEG_' + year + "_" + Zmask + "_" + charge + "_" + jetselection +  "_MuonEle.root"
 
     elif lepselection.startswith("SameLep"):
         dataStr = dirStr+'SameLep'+rootStr
@@ -52,9 +53,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
 
 
 #    directoryName = "pdf_2012/"+ Zmask + "/" +lepselection+"_"+year + "_" + Zmask + "_" + jetselection
-    directoryName = "pdf_2012_53x/"+lepselection+"_"+year + "_" + Zmask + "_" + jetselection 
+    directoryName = "pdf_2012_53x/"+lepselection+"_"+year + "_" + Zmask + "_" + charge + "_" + jetselection 
     
-    groupName = lepselection+"_"+year + "_" + Zmask + "_" + jetselection
+    groupName = lepselection+"_"+year + "_" + Zmask + "_" + charge + "_" + jetselection
 
     sys_arrays = {}
     ##sys_array['sample'] = [PU, hfSF, lfSF]
@@ -215,7 +216,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, jetselection) :
          'file': dirStr+'zjets_lowmass' +rootStr,
          'file_JESUp': dirStr+'zjets_lowmass'+rootStr,
          'file_JESDown': dirStr+'zjets_lowmass'+rootStr,
-         'xsec': 0.860,                     ######
+         'xsec': 14.7, #0.860,
          'xsec_err': 0.132*0.86/3.5057,
          'sys_array': sys_arrays['ZJets'],
          'ngen': 32600176,

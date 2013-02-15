@@ -27,7 +27,8 @@ def main ():
 
 	lepselection = str(sys.argv[index])
 	year = "2012_53x"
-	Zmask = "noZmask"	
+	Zmask = "noZmask"
+	charge = "OS"
 	try:
 		if (str(sys.argv[index+1]) == "2011" or str(sys.argv[index+1]) == "2012_52x" or str(sys.argv[index+1]) == "2012_53x" or str(sys.argv[index+1])=="2012"):
 			year = str(sys.argv[index+1])
@@ -35,9 +36,15 @@ def main ():
 	except:
 		index +=0
 	try:
-#		if (str(sys.argv[index+1]) == "Zmask" or str(sys.argv[index+1]) == "noZmask" or str(sys.argv[index+1]) == "Zpeak"):
-		if (str(sys.argv[index+1]) == "noZmask" or str(sys.argv[index+1]) == "noZmask_lowPV" or str(sys.argv[index+1]) == "noZmask_medPV" or str(sys.argv[index+1]) == "noZmask_highPV"):
+		if (str(sys.argv[index+1]) == "Zmask" or str(sys.argv[index+1]) == "noZmask" or str(sys.argv[index+1]) == "Zpeak"):
+# 		if (str(sys.argv[index+1]) == "noZmask" or str(sys.argv[index+1]) == "noZmask_lowPV" or str(sys.argv[index+1]) == "noZmask_medPV" or str(sys.argv[index+1]) == "noZmask_highPV"):
 			Zmask = str(sys.argv[index+1])
+			index += 1
+	except:
+		index +=0
+	try:
+		if (str(sys.argv[index+1]) == "SS" or str(sys.argv[index+1]) == "OS"):
+			charge = str(sys.argv[index+1])
 			index += 1
 	except:
 		index +=0
@@ -54,7 +61,7 @@ def main ():
 			numBins = 50
 		
 	parser = OptionParser()
-	parser.add_option('-L', '--Lumi', dest='lumi', default=5.288, help='integrated lumi')
+	parser.add_option('-L', '--Lumi', dest='lumi', default=12.187, help='integrated lumi')
 	parser.add_option('-b', dest="batch", action='store_true', default=false)
 	
 	(options, args) = parser.parse_args()
@@ -63,7 +70,7 @@ def main ():
 	# myPlots.py
 	# it returns the plots you want
 ##	  defaultPlotGroup = getMyPlotsDefaultNorm()
-	AndrewPlotGroup = getMyPlotsAndrewNorm(lepselection,year,Zmask,jetselection)
+	AndrewPlotGroup = getMyPlotsAndrewNorm(lepselection,year,Zmask,charge,jetselection)
 	#AndrewPlotGroup = getMyPlotsAndrewNorm(lepselection,jetselection)
 
 ##	  defaultPlotGroup.lumi = myLumi*1e6
@@ -113,11 +120,10 @@ def main ():
 #		drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MHT)",20, 200, 1100, lepselection,year, "draw")
 #		drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 330, lepselection,year, "draw")
 		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 60, 660, lepselection,year, "draw")
-	if (jetselection == "eq2jeq2t"):
+	if (jetselection == "eq2jeq2t" or jetselection == "eq2jge0t" or jetselection == "eq2jeq0t" or jetselection == "eq2jeq1t"):
 		drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 4.5, lepselection, year, "draw")
 		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0, 4, lepselection, year, "draw")
-		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")
-		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.4975, 0.5035, lepselection, year, "draw")
+		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
 ##		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 9, 0.4981, 0.5035, lepselection,year, "draw")
 #		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.4975, 0.5035, lepselection,year, "draw")
 		drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)",10, 200, 1100, lepselection,year, "draw")
@@ -138,8 +144,7 @@ def main ():
 	if (jetselection == "ge3t"):
 		drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 3.5, lepselection, year, "draw")
 		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0.2, 3.2, lepselection, year, "draw")
-		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")
-		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection, year, "draw")
+		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
 ##		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 9, 0.12, 0.84, lepselection,year, "draw")
 #		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection,year, "draw")
 		drawStackPlot("numJets", pg, "N_{jets}", 5, 3, 8, lepselection,year, "draw")
@@ -149,6 +154,7 @@ def main ():
 		drawStackPlot("numJets", pg,  "number of jets", 5, 2, 7, lepselection, year, "draw")
 		drawStackPlot("numTaggedJets", pg,  "number of b-tagged jets", 4, 1, 5, lepselection, year, "draw")
 		
+	drawStackPlot("numTaggedJets", pg, "numTaggedJets", 3, 0, 3, lepselection, year, "draw")
 	drawStackPlot("numPV", pg, "numPV", 30, 0, 30, lepselection, year, "draw")
 	drawStackPlot("met", pg, "met", numBins, 0, 300, lepselection, year, "draw")
 	drawStackPlot("MHT", pg, "MHT", numBins, 0, 300, lepselection, year, "draw")
@@ -167,6 +173,42 @@ def main ():
 	drawStackPlot("mass_leplep", pg, "mass_leplep", numBins, 0, 400, lepselection, year, "draw")
 	drawStackPlot("sum_pt", pg, "sum_pt", numBins*6/5, 100, 700, lepselection, year, "draw")
 	drawStackPlot("sum_jet_pt", pg, "sum_jet_pt", numBins*4/5, 60, 460, lepselection, year, "draw")
+
+	##Same-sign variables
+# 	drawStackPlot("numTightMuons", pg, "numTightMuons", 3, 0, 3, lepselection, year, "draw")
+# 	drawStackPlot("numTightElectrons", pg, "numElectrons", 3, 0, 3, lepselection, year, "draw")
+# 	drawStackPlot("lep1TkCharge", pg, "lep1TkCharge", 2, -1, 1, lepselection, year, "draw")
+# 	drawStackPlot("lep1NeutralIso", pg, "lep1NeutralIso", numBins, 0, 0.2, lepselection, year, "draw")
+# 	drawStackPlot("lep2NeutralIso", pg, "lep2NeutralIso", numBins, 0, 0.2, lepselection, year, "draw")
+# 	drawStackPlot("lep1IP", pg, "lep1IP", numBins, 0, 0.025, lepselection, year, "draw")
+# 	drawStackPlot("lep2IP", pg, "lep2IP", numBins, 0, 0.025, lepselection, year, "draw")
+# 	drawStackPlot("lep1IPError", pg, "lep1IPError", numBins, 0, 0.05, lepselection, year, "draw")
+# 	drawStackPlot("lep2IPError", pg, "lep2IPError", numBins, 0, 0.05, lepselection, year, "draw")
+# 	drawStackPlot("mindr_lep1_allJet", pg, "mindr_lep1_allJet", numBins, 0, 5, lepselection, year, "draw")
+# 	drawStackPlot("mindr_lep2_allJet", pg, "mindr_lep2_allJet", numBins, 0, 5, lepselection, year, "draw")
+# 	drawStackPlot("mindr_lep1_jet", pg, "mindr_lep1_jet", numBins, 0, 5, lepselection, year, "draw")
+# 	drawStackPlot("mindr_lep2_jet", pg, "mindr_lep2_jet", numBins, 0, 5, lepselection, year, "draw")
+# 	drawStackPlot("ptRel_lep1_allJet", pg, "ptRel_lep1_allJet", numBins, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("ptRel_lep2_allJet", pg, "ptRel_lep2_allJet", numBins, 0, 1, lepselection, year, "draw")
+
+    ##CSV study variables
+# 	drawStackPlot("first_jet_CSV", pg, "first_jet_CSV", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("second_jet_CSV", pg, "second_jet_CSV", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("first_jet_CSV_unc", pg, "first_jet_CSV_unc", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("second_jet_CSV_unc", pg, "second_jet_CSV_unc", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_30to45_0p0to1p2", pg, "CSV_30to45_0p0to1p2", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_45to75_0p0to1p2", pg, "CSV_45to75_0p0to1p2", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_75to150_0p0to1p2", pg, "CSV_75to150_0p0to1p2", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_150toInf_0p0to1p2", pg, "CSV_150toInf_0p0to1p2", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_30to45_1p2to2p1", pg, "CSV_30to45_1p2to2p1", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_45to75_1p2to2p1", pg, "CSV_45to75_1p2to2p1", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_75to150_1p2to2p1", pg, "CSV_75to150_1p2to2p1", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_150toInf_1p2to2p1", pg, "CSV_150toInf_1p2to2p1", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_30to45_2p1to2p4", pg, "CSV_30to45_2p1to2p4", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_45to75_2p1to2p4", pg, "CSV_45to75_2p1to2p4", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_75to150_2p1to2p4", pg, "CSV_75to150_2p1to2p4", 50, 0, 1, lepselection, year, "draw")
+# 	drawStackPlot("CSV_150toInf_2p1to2p4", pg, "CSV_150toInf_2p1to2p4", 50, 0, 1, lepselection, year, "draw")
+
 
 #	drawStackPlot("all_sum_pt", pg, "p_{T} (leptons, jets, MHT)", numBins*6/5, 100, 1300, lepselection, year, "draw")
 #	drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", numBins*40/50, 0.6, 1, lepselection, year, "draw")
@@ -199,7 +241,7 @@ def main ():
 #	drawStackPlot("pt_leplep", pg, "pt_leplep", numBins, 0, 200, lepselection, year, "draw")
 #	#	 drawStackPlot("pt_of_leps_and_allJets", pg, "pt_of_leps_and_allJets", numBins, 0, 300, lepselection, year, "draw")
 #	#	 drawStackPlot("tkDZ_leplep", pg, "tkDZ_leplep", numBins, -2.5, 2.5, lepselection, year, "draw")
-#	#	 drawStackPlot("weight", pg, "weight", numBins, 0, 10, lepselection, year, "draw")
+# 	drawStackPlot("weight", pg, "weight", numBins, 0, 2.5, lepselection, year, "draw")
 														
 	print "Done"
 
