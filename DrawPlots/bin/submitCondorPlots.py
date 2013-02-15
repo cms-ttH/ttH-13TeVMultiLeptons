@@ -12,6 +12,7 @@ def main ():
     #parser.add_option('-a', '--argHelp', dest='argHelp', action='store_true', default=False)
     parser.add_option('-y', '--year', dest='year', default='NONE', help="2011, 2012_52x, 2012_53x, no default")
     parser.add_option('-z', '--zmask', dest='zmask', default='noZmask', help="noZmask is default")
+    parser.add_option('-c', '--charge', dest='charge', default='OS', help="OS is default")
     parser.add_option('-s', '--skipSystematics', dest='skipSyst', action='store_true', default=False, help="Skip systematics")
     
     (options, args) = parser.parse_args()
@@ -20,19 +21,13 @@ def main ():
         parser.print_help()
         exit(3)
 
-    iYear = str(options.year)
-    iZmask = str(options.zmask)
-#    iZmask = "Zmask"
-    #iZmask = "Zpeak"
+    iYear = str(options.year) #2011, 2012_52x, 2012_53x
+    iZmask = str(options.zmask) #noZmask, Zmask, Zpeak
+    iCharge = str(options.charge) #OS, SS
+    iPV = "none" #lowPV, medPV, highPV
     jobLabel = str(args[0])
 
     iSkipSyst = options.skipSyst
-    #jesChoice = 0
-    #jerChoice = 0
-    iPV = "none"
-#    iPV = "lowPV"
-#    iPV = "medPV"
-#    iPV = "highPV"
 
     if not os.path.exists("../TwoMuon"):
         os.mkdir("../TwoMuon")
@@ -43,7 +38,6 @@ def main ():
 
         
     print "skipSyst = %d" % int(iSkipSyst)
-    #exit(3)
 
     listOfSamples2012_52x = [
                      'DoubleElectron',
@@ -304,7 +298,8 @@ def main ():
         #condorJobFile.write( "JER = %s\n" % jerChoice)
         condorJobFile.write( "skipSyst = %d\n" % int(iSkipSyst))
         condorJobFile.write( "PV = %s\n" % iPV)
-        condorJobFile.write( "arguments = $(List) $(Year) $(Zmask) $(Label) $(skipSyst) $(PV)\n")
+        condorJobFile.write( "Charge = %s\n" % iCharge)
+        condorJobFile.write( "arguments = $(List) $(Year) $(Zmask) $(Label) $(skipSyst) $(PV) $(Charge)\n")
         condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")
         condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n") 
         condorJobFile.write( "queue 1\n")

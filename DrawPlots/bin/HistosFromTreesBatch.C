@@ -168,6 +168,7 @@ int main ( int argc, char ** argv )
    std::string inputYear = inputs.getParameter< std::string >("inputYear");
    std::string inputZmask = inputs.getParameter< std::string >("inputZmask");
    std::string inputPV = inputs.getParameter< std::string >("inputPV");
+   std::string inputCharge = inputs.getParameter< std::string >("inputCharge");
    
    std::string sampleName = anaParams.getParameter<string>("sampleName");
    bool skipSystematics = anaParams.getParameter<bool>("skipSystematics");
@@ -187,12 +188,17 @@ int main ( int argc, char ** argv )
    bool makeLepPlots = anaParams.getParameter<bool>("lepPlots");
    bool makeJetPlots = anaParams.getParameter<bool>("jetPlots");
    bool makeKinPlots = anaParams.getParameter<bool>("kinPlots");
+   bool makeSameSignPlots = anaParams.getParameter<bool>("sameSignPlots");
    bool makeOnePlot = anaParams.getParameter<bool>("onePlot");
+   bool makeCSVPlots = anaParams.getParameter<bool>("csvPlots");
+   bool doHtReweight = anaParams.getParameter<bool>("htReweight");
 
    std::cout << "CONFIG: corePlots = " << makeCorePlots << std::endl
              << "CONFIG: lepPlots = " << makeLepPlots << std::endl
              << "CONFIG: jetPlots = " << makeJetPlots << std::endl
              << "CONFIG: kinPlots = " << makeKinPlots << std::endl
+             << "CONFIG: makeSameSignPlots = " << makeSameSignPlots << std::endl
+             << "CONFIG: inputCharge = " << inputCharge << std::endl
              << std::endl;
         
    //int maxNentries = inputs.getParameter<int> ("maxEvents");
@@ -207,13 +213,38 @@ int main ( int argc, char ** argv )
 
   //////////
   std::vector<string> JetTagReqs;
-  //JetTagReqs.push_back("eq1t");
-  JetTagReqs.push_back("eq2jeq2t");
+
+  //DIL analysis categories
+  //JetTagReqs.push_back("ge2t");
+  //JetTagReqs.push_back("eq2jeq2t");
   //JetTagReqs.push_back("eq3jeq2t");
   //JetTagReqs.push_back("ge4jeq2t");
-  JetTagReqs.push_back("ge3t");
-  //JetTagReqs.push_back("ge2t");
+  //JetTagReqs.push_back("ge3t");
+  //JetTagReqs.push_back("eq3jeq3t"):
+  //JetTagReqs.push_back("ge4jeq3t");
+  //JetTagReqs.push_back("ge4jge3t");
+  //JetTagReqs.push_back("ge4jge4t");
 
+  //Same sign analysis categories
+  JetTagReqs.push_back("eq0j");
+//   JetTagReqs.push_back("eq2jge0t");
+  JetTagReqs.push_back("eq2jeq0t");
+  JetTagReqs.push_back("eq2jeq1t");
+//   JetTagReqs.push_back("eq2jeq2t"):
+//   JetTagReqs.push_back("eq3jge1t");
+  JetTagReqs.push_back("eq3jeq1t");
+  //JetTagReqs.push_back("eq3jge2t");
+  //JetTagReqs.push_back("ge4jeq1t");
+  //JetTagReqs.push_back("ge4jge2t");
+
+  //CSV study categories
+//   JetTagReqs.push_back("eq2jge0t");
+//   JetTagReqs.push_back("eq2jeq0t");
+//   JetTagReqs.push_back("eq2jge1t");
+//   JetTagReqs.push_back("eq2jeq1t");
+//   JetTagReqs.push_back("eq2jeq2t");
+
+  
   const unsigned int nJetTagReqs = JetTagReqs.size();
 
   ////////  sub lepton category
@@ -289,15 +320,15 @@ int main ( int argc, char ** argv )
     varList.push_back(CFMlpANN_ge3t);
     
     //ANN neural net inputs
-    varInfo *avg_btag_disc_btags = new varInfo("avg_btag_disc_btags", "avg_btag_disc_btags", "avg_btag_disc_btags", 1000, 0, 1);
+    varInfo *avg_btag_disc_btags = new varInfo("avg_btag_disc_btags", "avg_btag_disc_btags", "avg_btag_disc_btags", 200, 0, 1);
     varList.push_back(avg_btag_disc_btags);
-    varInfo *Ht = new varInfo("Ht", "Ht", "Ht", 5000, 0, 5000);
+    varInfo *Ht = new varInfo("Ht", "Ht", "Ht", 1000, 0, 5000);
     varList.push_back(Ht);
-    varInfo *mass_of_everything = new varInfo("mass_of_everything", "mass_of_everything", "mass_of_everything", 5000, 0, 5000);
+    varInfo *mass_of_everything = new varInfo("mass_of_everything", "mass_of_everything", "mass_of_everything", 1000, 0, 5000);
     varList.push_back(mass_of_everything);
-    varInfo *min_dr_tagged_jets = new varInfo("min_dr_tagged_jets", "min_dr_tagged_jets", "min_dr_tagged_jets", 1000, 0, 10);
+    varInfo *min_dr_tagged_jets = new varInfo("min_dr_tagged_jets", "min_dr_tagged_jets", "min_dr_tagged_jets", 600, 0, 6);
     varList.push_back(min_dr_tagged_jets);
-    varInfo *mindr_lep1_jet = new varInfo("mindr_lep1_jet", "mindr_lep1_jet", "mindr_lep1_jet", 1000, 0, 10);
+    varInfo *mindr_lep1_jet = new varInfo("mindr_lep1_jet", "mindr_lep1_jet", "mindr_lep1_jet", 600, 0, 6);
     varList.push_back(mindr_lep1_jet);
     
     //met
@@ -316,6 +347,42 @@ int main ( int argc, char ** argv )
 
   } //end if makeCorePlots
 
+  if (makeSameSignPlots) {
+
+    varInfo *lep1TkCharge = new varInfo("lep1TkCharge", "lep1TkCharge", "lep1TkCharge", 2, -1, 1);
+    varList.push_back(lep1TkCharge);
+    varInfo *lep1ChargedIso = new varInfo("lep1ChargedIso", "lep1ChargedIso", "lep1ChargedIso", 200, 0, 0.2);
+    varList.push_back(lep1ChargedIso);
+    varInfo *lep2ChargedIso = new varInfo("lep2ChargedIso", "lep2ChargedIso", "lep2ChargedIso", 200, 0, 0.2); 
+    varList.push_back(lep2ChargedIso);
+    varInfo *lep1NeutralIso = new varInfo("lep1NeutralIso", "lep1NeutralIso", "lep1NeutralIso", 200, 0, 0.2); 
+    varList.push_back(lep1NeutralIso);
+    varInfo *lep2NeutralIso = new varInfo("lep2NeutralIso", "lep2NeutralIso", "lep2NeutralIso", 200, 0, 0.2); 
+    varList.push_back(lep2NeutralIso);
+    varInfo *lep1IP = new varInfo("lep1IP", "lep1IP", "lep1IP", 200, -0.1, 0.1); 
+    varList.push_back(lep1IP);
+    varInfo *lep2IP = new varInfo("lep2IP", "lep2IP", "lep2IP", 200, -0.1, 0.1); 
+    varList.push_back(lep2IP);
+    varInfo *lep1IPError = new varInfo("lep1IPError", "lep1IPError", "lep1IPError", 100, 0, 0.1); 
+    varList.push_back(lep1IPError);
+    varInfo *lep2IPError = new varInfo("lep2IPError", "lep2IPError", "lep2IPError", 100, 0, 0.1); 
+    varList.push_back(lep2IPError);
+
+    varInfo *mindr_lep1_allJet = new varInfo("mindr_lep1_allJet", "mindr_lep1_allJet", "mindr_lep1_allJet", 600, 0, 6); 
+    varList.push_back(mindr_lep1_allJet);
+    varInfo *mindr_lep2_allJet = new varInfo("mindr_lep2_allJet", "mindr_lep2_allJet", "mindr_lep2_allJet", 600, 0, 6); 
+    varList.push_back(mindr_lep2_allJet);
+    varInfo *ptRel_lep1_allJet = new varInfo("ptRel_lep1_allJet", "ptRel_lep1_allJet", "ptRel_lep1_allJet", 100, 0, 1); 
+    varList.push_back(ptRel_lep1_allJet);
+    varInfo *ptRel_lep2_allJet = new varInfo("ptRel_lep2_allJet", "ptRel_lep2_allJet", "ptRel_lep2_allJet", 100, 0, 1); 
+    varList.push_back(ptRel_lep2_allJet);
+    varInfo *ptRel_lep1_jet = new varInfo("ptRel_lep1_jet", "ptRel_lep1_jet", "ptRel_lep1_jet", 100, 0, 1); 
+    varList.push_back(ptRel_lep1_jet);
+    varInfo *ptRel_lep2_jet = new varInfo("ptRel_lep2_jet", "ptRel_lep2_jet", "ptRel_lep2_jet", 100, 0, 1); 
+    varList.push_back(ptRel_lep2_jet);
+
+  } //end makeSameSignPlots    
+
 
   if (makeLepPlots) {
     
@@ -333,13 +400,13 @@ int main ( int argc, char ** argv )
     varList.push_back(lep1Pt);
     varInfo *lep2Pt = new varInfo("lep2Pt", "lep2Pt", "lep2Pt", 1000, 0, 1000);
     varList.push_back(lep2Pt);
-    varInfo *lep1Eta = new varInfo("lep1Eta", "lep1Eta", "lep1Eta", 1000, -5, 5);
+    varInfo *lep1Eta = new varInfo("lep1Eta", "lep1Eta", "lep1Eta", 500, -2.5, 2.5);
     varList.push_back(lep1Eta);
-    varInfo *lep2Eta = new varInfo("lep2Eta", "lep2Eta", "lep2Eta", 1000, -5, 5);
+    varInfo *lep2Eta = new varInfo("lep2Eta", "lep2Eta", "lep2Eta", 500, -2.5, 2.5);
     varList.push_back(lep2Eta);
-    varInfo *lep1Iso = new varInfo("lep1Iso", "lep1Iso", "lep1Iso", 2000, 0, 0.2);
+    varInfo *lep1Iso = new varInfo("lep1Iso", "lep1Iso", "lep1Iso", 200, 0, 0.2);
     varList.push_back(lep1Iso);
-    varInfo *lep2Iso = new varInfo("lep2Iso", "lep2Iso", "lep2Iso", 2000, 0, 0.2);
+    varInfo *lep2Iso = new varInfo("lep2Iso", "lep2Iso", "lep2Iso", 200, 0, 0.2);
     varList.push_back(lep2Iso);
 
   } // end if makeLepPlots
@@ -353,12 +420,24 @@ int main ( int argc, char ** argv )
     varList.push_back(second_jet_pt);
     varInfo *third_jet_pt = new varInfo("third_jet_pt", "third_jet_pt", "third_jet_pt", 1000, 0, 1000);
     varList.push_back(third_jet_pt);
-    varInfo *first_jet_eta = new varInfo("first_jet_eta", "first_jet_eta", "first_jet_eta", 1000, -5, 5);
+    varInfo *first_jet_eta = new varInfo("first_jet_eta", "first_jet_eta", "first_jet_eta", 500, -2.5, 2.5);
     varList.push_back(first_jet_eta);
-    varInfo *second_jet_eta = new varInfo("second_jet_eta", "second_jet_eta", "second_jet_eta", 1000, -5, 5);
+    varInfo *second_jet_eta = new varInfo("second_jet_eta", "second_jet_eta", "second_jet_eta", 500, -2.5, 2.5);
     varList.push_back(second_jet_eta);
-    varInfo *third_jet_eta = new varInfo("third_jet_eta", "third_jet_eta", "third_jet_eta", 1000, -5, 5);
+    varInfo *third_jet_eta = new varInfo("third_jet_eta", "third_jet_eta", "third_jet_eta", 500, -2.5, 2.5);
     varList.push_back(third_jet_eta);
+    varInfo *first_jet_CSV = new varInfo("first_jet_CSV", "first_jet_CSV", "first_jet_CSV", 100, 0, 1);
+    varList.push_back(first_jet_CSV);
+    varInfo *second_jet_CSV = new varInfo("second_jet_CSV", "second_jet_CSV", "second_jet_CSV", 100, 0, 1);
+    varList.push_back(second_jet_CSV);
+    varInfo *third_jet_CSV = new varInfo("third_jet_CSV", "third_jet_CSV", "third_jet_CSV", 100, 0, 1);
+    varList.push_back(third_jet_CSV);
+    varInfo *first_jet_CSV_unc = new varInfo("first_jet_CSV_unc", "first_jet_CSV_unc", "first_jet_CSV_unc", 100, 0, 1);
+    varList.push_back(first_jet_CSV_unc);
+    varInfo *second_jet_CSV_unc = new varInfo("second_jet_CSV_unc", "second_jet_CSV_unc", "second_jet_CSV_unc", 100, 0, 1);
+    varList.push_back(second_jet_CSV_unc);
+    varInfo *third_jet_CSV_unc = new varInfo("third_jet_CSV_unc", "third_jet_CSV_unc", "third_jet_CSV_unc", 100, 0, 1);
+    varList.push_back(third_jet_CSV_unc); 
 
   } // end if makeJetPlots
 
@@ -368,13 +447,46 @@ int main ( int argc, char ** argv )
 
     varInfo *mass_leplep = new varInfo("mass_leplep", "mass_leplep", "mass_leplep", 1000, 0, 1000);
     varList.push_back(mass_leplep);
-    varInfo *sum_pt = new varInfo("sum_pt", "sum_pt", "sum_pt", 3000, 0, 3000);
+    varInfo *mindr_lep2_jet = new varInfo("mindr_lep2_jet", "mindr_lep2_jet", "mindr_lep2_jet", 600, 0, 6);
+    varList.push_back(mindr_lep2_jet);
+    varInfo *sum_pt = new varInfo("sum_pt", "sum_pt", "sum_pt", 1000, 0, 5000);
     varList.push_back(sum_pt);
-    varInfo *sum_jet_pt = new varInfo("sum_jet_pt", "sum_jet_pt", "sum_jet_pt", 3000, 0, 3000);
+    varInfo *sum_jet_pt = new varInfo("sum_jet_pt", "sum_jet_pt", "sum_jet_pt", 1000, 0, 5000);
     varList.push_back(sum_jet_pt);
 
   } // end if makeKinPlots
 
+  if (makeCSVPlots) {
+
+    varInfo *CSV_30to45_0p0to1p2 = new varInfo("CSV_30to45_0p0to1p2", "CSV_30to45_0p0to1p2", "CSV_30to45_0p0to1p2", 100, 0, 1);
+    varList.push_back(CSV_30to45_0p0to1p2);
+    varInfo *CSV_45to75_0p0to1p2 = new varInfo("CSV_45to75_0p0to1p2", "CSV_45to75_0p0to1p2", "CSV_45to75_0p0to1p2", 100, 0, 1);
+    varList.push_back(CSV_45to75_0p0to1p2);
+    varInfo *CSV_75to150_0p0to1p2 = new varInfo("CSV_75to150_0p0to1p2", "CSV_75to150_0p0to1p2", "CSV_75to150_0p0to1p2", 100, 0, 1);
+    varList.push_back(CSV_75to150_0p0to1p2);
+    varInfo *CSV_150toInf_0p0to1p2 = new varInfo("CSV_150toInf_0p0to1p2", "CSV_150toInf_0p0to1p2", "CSV_150toInf_0p0to1p2", 100, 0, 1);
+    varList.push_back(CSV_150toInf_0p0to1p2);
+
+    varInfo *CSV_30to45_1p2to2p1 = new varInfo("CSV_30to45_1p2to2p1", "CSV_30to45_1p2to2p1", "CSV_30to45_1p2to2p1", 100, 0, 1);
+    varList.push_back(CSV_30to45_1p2to2p1);
+    varInfo *CSV_45to75_1p2to2p1 = new varInfo("CSV_45to75_1p2to2p1", "CSV_45to75_1p2to2p1", "CSV_45to75_1p2to2p1", 100, 0, 1);
+    varList.push_back(CSV_45to75_1p2to2p1);
+    varInfo *CSV_75to150_1p2to2p1 = new varInfo("CSV_75to150_1p2to2p1", "CSV_75to150_1p2to2p1", "CSV_75to150_1p2to2p1", 100, 0, 1);
+    varList.push_back(CSV_75to150_1p2to2p1);
+    varInfo *CSV_150toInf_1p2to2p1 = new varInfo("CSV_150toInf_1p2to2p1", "CSV_150toInf_1p2to2p1", "CSV_150toInf_1p2to2p1", 100, 0, 1);
+    varList.push_back(CSV_150toInf_1p2to2p1);
+    
+    varInfo *CSV_30to45_2p1to2p4 = new varInfo("CSV_30to45_2p1to2p4", "CSV_30to45_2p1to2p4", "CSV_30to45_2p1to2p4", 100, 0, 1);
+    varList.push_back(CSV_30to45_2p1to2p4);
+    varInfo *CSV_45to75_2p1to2p4 = new varInfo("CSV_45to75_2p1to2p4", "CSV_45to75_2p1to2p4", "CSV_45to75_2p1to2p4", 100, 0, 1);
+    varList.push_back(CSV_45to75_2p1to2p4);
+    varInfo *CSV_75to150_2p1to2p4 = new varInfo("CSV_75to150_2p1to2p4", "CSV_75to150_2p1to2p4", "CSV_75to150_2p1to2p4", 100, 0, 1);
+    varList.push_back(CSV_75to150_2p1to2p4);
+    varInfo *CSV_150toInf_2p1to2p4 = new varInfo("CSV_150toInf_2p1to2p4", "CSV_150toInf_2p1to2p4", "CSV_150toInf_2p1to2p4", 100, 0, 1);
+    varList.push_back(CSV_150toInf_2p1to2p4);
+    
+  } // end if makeCSVPlots
+  
   if (makeOnePlot) {
     //event variables
     varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, 0, 20);
@@ -383,7 +495,7 @@ int main ( int argc, char ** argv )
 
 //   varInfo *all_sum_pt = new varInfo("all_sum_pt", "all_sum_pt", "all_sum_pt", 10000, 0, 10000);
 //   varList.push_back(all_sum_pt);
-//   varInfo *avg_dr_tagged_jets = new varInfo("avg_dr_tagged_jets", "avg_dr_tagged_jets", "avg_dr_tagged_jets", 1000, 0, 10);
+//   varInfo *avg_dr_tagged_jets = new varInfo("avg_dr_tagged_jets", "avg_dr_tagged_jets", "avg_dr_tagged_jets", 600, 0, 6);
 //   varList.push_back(avg_dr_tagged_jets);
 //   varInfo *avg_tagged_dijet_mass = new varInfo("avg_tagged_dijet_mass", "avg_tagged_dijet_mass", "avg_tagged_dijet_mass", 1000, 0, 1000);
 //   varList.push_back(avg_tagged_dijet_mass);
@@ -399,7 +511,7 @@ int main ( int argc, char ** argv )
 //   varList.push_back(closest_tagged_dijet_mass);
 //   varInfo *correctedDZ_leplep = new varInfo("correctedDZ_leplep", "correctedDZ_leplep", "correctedDZ_leplep", 1000, -0.5, 0.5);
 //   varList.push_back(correctedDZ_leplep);
-//   varInfo *dEta_leplep = new varInfo("dEta_leplep", "dEta_leplep", "dEta_leplep", 1000, -5, 5);
+//   varInfo *dEta_leplep = new varInfo("dEta_leplep", "dEta_leplep", "dEta_leplep", 500, -2.5, 2.5);
 //   varList.push_back(dEta_leplep);
 //   varInfo *dPhi_leplep = new varInfo("dPhi_leplep", "dPhi_leplep", "dPhi_leplep", 1000, -1*pival, pival);
 //   varList.push_back(dPhi_leplep);
@@ -411,7 +523,7 @@ int main ( int argc, char ** argv )
 //   varList.push_back(dijet_mass_second);
 //   varInfo *dijet_mass_third = new varInfo("dijet_mass_third", "dijet_mass_third", "dijet_mass_third", 1000, 0, 1000);
 //   varList.push_back(dijet_mass_third);
-//   varInfo *dR_leplep = new varInfo("dR_leplep", "dR_leplep", "dR_leplep", 1000, 0, 10);
+//   varInfo *dR_leplep = new varInfo("dR_leplep", "dR_leplep", "dR_leplep", 600, 0, 6);
 //   varList.push_back(dR_leplep);
 //   varInfo *dev_from_avg_disc_btags = new varInfo("dev_from_avg_disc_btags", "dev_from_avg_disc_btags", "dev_from_avg_disc_btags", 1000, 0, 1);
 //   varList.push_back(dev_from_avg_disc_btags);
@@ -427,7 +539,7 @@ int main ( int argc, char ** argv )
 //   varList.push_back(first_jet_CHEF);
 //   varInfo *fourth_allJet_pt = new varInfo("fourth_allJet_pt", "fourth_allJet_pt", "fourth_allJet_pt", 1000, 0, 1000);
 //   varList.push_back(fourth_allJet_pt);
-//   varInfo *fourth_jet_eta = new varInfo("fourth_jet_eta", "fourth_jet_eta", "fourth_jet_eta", 1000, -5, 5);
+//   varInfo *fourth_jet_eta = new varInfo("fourth_jet_eta", "fourth_jet_eta", "fourth_jet_eta", 500, -2.5, 2.5);
 //   varList.push_back(fourth_jet_eta);
 //   varInfo *fourth_jet_pt = new varInfo("fourth_jet_pt", "fourth_jet_pt", "fourth_jet_pt", 1000, 0, 1000);
 //   varList.push_back(fourth_jet_pt);
@@ -453,8 +565,6 @@ int main ( int argc, char ** argv )
 //   varList.push_back(mass_MHT);
 //   varInfo *mass_of_leps_and_allJets = new varInfo("mass_of_leps_and_allJets", "mass_of_leps_and_allJets", "mass_of_leps_and_allJets", 6000, 0, 6000);
 //   varList.push_back(mass_of_leps_and_allJets);
-//   varInfo *mindr_lep2_jet = new varInfo("mindr_lep2_jet", "mindr_lep2_jet", "mindr_lep2_jet", 1000, 0, 10);
-//   varList.push_back(mindr_lep2_jet);
 //   varInfo *numAllJets = new varInfo("numAllJets", "numAllJets", "numAllJets", 20, 0, 20);
 //   varList.push_back(numAllJets);
 //   varInfo *numBadJets = new varInfo("numBadJets", "numBadJets", "numBadJets", 20, 0, 20);
@@ -484,12 +594,11 @@ int main ( int argc, char ** argv )
 
 
   std::string OutputParams = "";
+  std::string ChargeStr = "holder";
   //std::string TightLepStr = "(numTightMuons + numTightElectrons == 2) && "; //Only tight leptons
   //std::string TightLepStr = "(numTightMuons + numTightElectrons != 2) && "; //Only tight+loose events
-  std::string OppositeLepStr = "(oppositeLepCharge == 1) && "; //Leptons have opposite charge
-  //std::string OppositeLepStr = "(oppositeLepCharge == 0) && "; //Leptons have same charge
-  //std::string OppositeLepStr = "(oppositeGenLepCharge == 0) && "; //GenLeptons have same charge
-  //std::string OppositeLepStr = "(lep1TkCharge != lep1GenCharge) && "; //Lep1 wrong charge
+  if (inputCharge == "OS") ChargeStr = "(oppositeLepCharge == 1) && "; //Leptons have opposite charge
+  if (inputCharge == "SS") ChargeStr = "(oppositeLepCharge == 0 && lepTotalPassSSCut == 1) && "; //Leptons have same charge
   
   std::string ZmaskStr = "holder";
   std::string ZmaskStrSaver = "holder";
@@ -529,10 +638,8 @@ int main ( int argc, char ** argv )
     PVStr = "";
   }
 
-  if (OppositeLepStr == "(oppositeLepCharge == 0) && ") OutputParams = OutputParams+"SameCharge";
-  if (OppositeLepStr == "(oppositeGenLepCharge == 0) && ") OutputParams = OutputParams+"SameGenCharge";
-  if (OppositeLepStr == "(lep1TkCharge != lep1GenCharge) && ") OutputParams = OutputParams+"WrongCharge";
-
+  if (inputCharge == "OS") OutputParams = OutputParams+"_OS";
+  if (inputCharge == "SS") OutputParams = OutputParams+"_SS";
 
   std::map<TString, TFile*> outputRootFiles;
   for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
@@ -659,9 +766,9 @@ int main ( int argc, char ** argv )
       std::string cutMassLepLep = " (mass_leplep > 12) && ";
       
       
-      if (JetTagReq == "eq1t") {
+      if (JetTagReq == "ge2t") {
         JetReq = "numJets >= 2";
-        TagReq = "numTaggedJets == 1";
+        TagReq = "numTaggedJets >= 2";
       }
       else if (JetTagReq == "eq2jeq2t") {
         JetReq = "numJets == 2";
@@ -679,10 +786,63 @@ int main ( int argc, char ** argv )
         JetReq = "numJets >= 3";
         TagReq = "numTaggedJets >= 3";
       }
-      else if (JetTagReq == "ge2t") {
-        JetReq = "numJets >= 2";
+      else if (JetTagReq == "eq3jeq3t") {
+        JetReq = "numJets == 3";
+        TagReq = "numTaggedJets == 3";
+      }
+      else if (JetTagReq == "ge4jeq3t") {
+        JetReq = "numJets >= 4";
+        TagReq = "numTaggedJets == 3";
+      }
+      else if (JetTagReq == "ge4jge3t") {
+        JetReq = "numJets >= 4";
+        TagReq = "numTaggedJets >= 3";
+      }
+      else if (JetTagReq == "ge4t") {
+        JetReq = "numJets >= 4";
+        TagReq = "numTaggedJets >= 4";
+      }
+      else if (JetTagReq == "eq0j") {
+        JetReq = "numJets == 0";
+        TagReq = "numTaggedJets == 0";
+      }
+      else if (JetTagReq == "eq2jge0t") {
+        JetReq = "numJets == 2";
+        TagReq = "numTaggedJets >= 0";
+      }
+      else if (JetTagReq == "eq2jeq0t") {
+        JetReq = "numJets == 2";
+        TagReq = "numTaggedJets == 0";
+      }
+      else if (JetTagReq == "eq2jge1t") {
+        JetReq = "numJets == 2";
+        TagReq = "numTaggedJets >= 1";
+      }
+      else if (JetTagReq == "eq2jeq1t") {
+        JetReq = "numJets == 2";
+        TagReq = "numTaggedJets == 1";
+      }
+      else if (JetTagReq == "eq3jge1t") {
+        JetReq = "numJets == 3";
+        TagReq = "numTaggedJets >= 1";
+      }
+      else if (JetTagReq == "eq3jeq1t") {
+        JetReq = "numJets == 3";
+        TagReq = "numTaggedJets == 1";
+      }
+      else if (JetTagReq == "eq3jge2t") {
+        JetReq = "numJets == 3";
         TagReq = "numTaggedJets >= 2";
       }
+      else if (JetTagReq == "ge4jeq1t") {
+        JetReq = "numJets >= 4";
+        TagReq = "numTaggedJets == 1";
+      }
+      else if (JetTagReq == "ge4jge2t") {
+        JetReq = "numJets >= 4";
+        TagReq = "numTaggedJets >= 2";
+      }
+      
       
       if (JetReq == "holder" || TagReq == "holder" || ZmaskStr == "holder") {
         std::cout << "JetReq or TagReq or ZmaskStr == holder" << std::endl;
@@ -691,10 +851,16 @@ int main ( int argc, char ** argv )
 
       //      ProbStr = "prob * ";
       //// rwt
-      if (ksys == 9) WeightStr = weight[ksys] + "HtWgtUp*" ;
-      else if (ksys == 10) WeightStr = weight[ksys] ;
-      else WeightStr = weight[ksys] + "HtWgt*" ;
-//       else WeightStr = weight[ksys] ;
+      if (doHtReweight) {
+        if (ksys == 9) WeightStr = weight[ksys] + "HtWgtUp*" ;
+        else if (ksys == 10) WeightStr = weight[ksys] ;
+        else WeightStr = weight[ksys] + "HtWgt*" ;
+      }
+      else {
+        if (ksys == 9) WeightStr = weight[ksys] ;
+        else if (ksys == 10) WeightStr = weight[ksys] ;
+        else WeightStr = weight[ksys] ;
+      }
 
       /////// start sub-lepton category loop    
       const unsigned int nlepCatList = lepCatList.size();
@@ -725,7 +891,8 @@ int main ( int argc, char ** argv )
         else if (OutputDirectory ==  "MuonEle"  ) {
           TrigStr = "0.983 * (1 + (abs(lep1Eta) > 1.31 && abs(lep1Eta) < 1.65)*0.072) * ";
         }
-	EffStr = "lepTotalSF * ";
+        if (inputCharge == "SS") EffStr = "lepTotalSF * lepTotalFlipSF * lepTotalPromptSF * ";
+        else EffStr = "lepTotalSF * ";
         }
           
 	
@@ -759,11 +926,11 @@ int main ( int argc, char ** argv )
             ZmaskStr = "";
           }
           
-          //SelectionStr = WeightStr+EffStr+TrigStr+XsecStr+"(" + OppositeLepStr + ZmaskStr + PVStr + TightLepStr
+          //SelectionStr = WeightStr+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr
           //  + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "
           //  +CleanTrig+"("+JetReq+") && ("+TagReq+") )";
 
-          SelectionStr = WeightStr+EffStr+TrigStr+XsecStr+"(" + OppositeLepStr + ZmaskStr + PVStr + TightLepStr
+          SelectionStr = WeightStr+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr
             + " ("+ OutputDirectory +") && " + cutDrLepLep + cutMassLepLep
             +CleanTrig+"("+JetReq+") && ("+TagReq+") )";
           
@@ -782,7 +949,7 @@ int main ( int argc, char ** argv )
             accInfo lepSelectionInfo;            
             lepSelectionInfo.categoryName = OutputDirectory;
             lepSelectionInfo.weightString = weightNoHtReweight + EffStr + TrigStr+XsecStr;
-            lepSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
+            lepSelectionInfo.cutString = "("+ChargeStr + ZmaskStr + PVStr
               + TightLepStr + "(" +OutputDirectory +") && " + cutDrLepLep + cutMassLepLep
               + CleanTrigAsEnd + ")";
 
@@ -806,7 +973,7 @@ int main ( int argc, char ** argv )
             jetSelectionInfo.weightString = weightNoHtReweight + EffStr + TrigStr+XsecStr;
             
 
-            jetSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
+            jetSelectionInfo.cutString = "("+ChargeStr + ZmaskStr + PVStr
               + TightLepStr + "(" +OutputDirectory + ") && "  + cutDrLepLep + cutMassLepLep
               + CleanTrig + "("+JetReqAsEnd+")" +")";
 
@@ -828,7 +995,7 @@ int main ( int argc, char ** argv )
             tagJetLepSelectionInfo.categoryName = OutputDirectory + " " + JetReq + " " + TagReq;
             tagJetLepSelectionInfo.weightString = weightNoHtReweight + EffStr + TrigStr+XsecStr;
 
-            tagJetLepSelectionInfo.cutString = "("+OppositeLepStr + ZmaskStr + PVStr
+            tagJetLepSelectionInfo.cutString = "("+ChargeStr + ZmaskStr + PVStr
               + TightLepStr + "(" +OutputDirectory + ") && "  + cutDrLepLep + cutMassLepLep
               + CleanTrig + "("+JetReq+") && ("+TagReq+")"+")";
 
@@ -853,8 +1020,8 @@ int main ( int argc, char ** argv )
             continue;
           }
 
-	  std::string SelectionOrig = weight[ksys]+EffStr+TrigStr+XsecStr+"(" + OppositeLepStr + ZmaskStr + PVStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
-	  if (isData) SelectionOrig = SelectionStr ;
+	  std::string SelectionOrig = weight[ksys]+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
+	  if (isData || !doHtReweight) SelectionOrig = SelectionStr ;
 
 	  //// get the correct normalization
 	  TString nameTmp = "njets_" + TString(JetTagReq + "_" + OutputDirectory) + syst;
@@ -903,6 +1070,12 @@ int main ( int argc, char ** argv )
 	  histTemp->Sumw2();  //// sumw2
           TString varSig =  variableName + ">>" + histName;
           TStopwatch myTime; // this starts the timer
+//           if (varSig.Contains("CSV_") && !varSig.Contains("CSV_unc")) {
+//             TString varSig1 =  variableName + "_1>>" + histName;
+//             TString varSig2 =  variableName + "_2>>+" + histName;
+//             DileptonSummaryTree->Draw(varSig1, SelectionStr.c_str(), "goff");
+//             DileptonSummaryTree->Draw(varSig2, SelectionStr.c_str(), "goff");
+//           }
           DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
           myTime.Stop();
           drawTimesReal->Fill(myTime.RealTime());
@@ -921,7 +1094,7 @@ int main ( int argc, char ** argv )
           ////////////////////////////////////////////////////////
 
           
-          if(!isData && histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());
+          if(!isData && doHtReweight &&  histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());
           histTemp->SetDirectory(OutputFile);
 
           
