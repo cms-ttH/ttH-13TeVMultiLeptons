@@ -307,6 +307,8 @@ int main ( int argc, char ** argv )
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) { sampleNumber = 2400;
       nGen = 57108525; Xsec = 36257; }
+    else if (sampleName == "wjets_0p" || tmpName.Contains("wjets_0p_part")) { sampleNumber = 2400;
+      nGen = 57108525; Xsec = 36257; }
     else if (sampleName == "wjets_1p" || tmpName.Contains("wjets_1p_part")) { sampleNumber = 2400;
       nGen = 23136036; Xsec = 6440.4;
       weight_Xsec = ( 5400.0 / 23136036 ) / ( 30400.0 / 57108525 ); }
@@ -326,6 +328,8 @@ int main ( int argc, char ** argv )
     else if (sampleName == "zjets_lowmass_2p" || tmpName.Contains("zjets_lowmass_2p_part")) { sampleNumber = 2852;
       weight_Xsec = ( 309.7 / 30684442 ) / ( 11050.0 / 32600176 ); }
     else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) { sampleNumber = 2800;
+      nGen = 30452141; Xsec = 3505.7; }
+    else if (sampleName == "zjets_0p" || tmpName.Contains("zjets_0p_part")) { sampleNumber = 2800;
       nGen = 30452141; Xsec = 3505.7; }
     else if (sampleName == "zjets_1p" || tmpName.Contains("zjets_1p_part")) { sampleNumber = 2801;
       nGen = 23698301; Xsec = 666.7;
@@ -555,7 +559,7 @@ int main ( int argc, char ** argv )
   bool ExtraTriggerVariables = false;
   bool ExtraGenVariables = false;
   bool ExtraHiggsVariables = false;
-  bool ExtraSameSignVariables = true;
+  bool ExtraSameSignVariables = false;
   
   bool ArtificialJetPt = false;
   float higgs_mass = 115.0;
@@ -905,12 +909,14 @@ int main ( int argc, char ** argv )
 
   if (ExtraGenVariables) {
     
-    intBranches["lep1Mother"] = new int(0);
-    intBranches["lep2Mother"] = new int(0);
-    intBranches["lep1Grandmother"] = new int(0);
-    intBranches["lep2Grandmother"] = new int(0);
-    intBranches["lep1GenMotherId"] = new int (0);
-    intBranches["lep2GenMotherId"] = new int (0);
+    intBranches["lep1GenID"] = new int(0);
+    intBranches["lep2GenID"] = new int(0);
+    intBranches["lep1GenMotherID"] = new int(0);
+    intBranches["lep2GenMotherID"] = new int(0);
+    intBranches["first_jet_genID"] = new int(0);
+    intBranches["second_jet_genID"] = new int(0);
+    intBranches["third_jet_genID"] = new int(0);
+    intBranches["fourth_jet_genID"] = new int(0);
     floatBranches["top1_pt"] = new float(0.0);
     floatBranches["top1_pz"] = new float(0.0);
 
@@ -1242,10 +1248,6 @@ int main ( int argc, char ** argv )
       int HtoGG = 0;
       int HtoWW = 0;
       int HtoZZ = 0;
-      int lep1Mother = dInt;
-      int lep2Mother = dInt;
-      int lep1Grandmother = dInt;
-      int lep2Grandmother = dInt;
       
       float higgs_pt = dFloat;
       float higgs_pz = dFloat;
@@ -1503,6 +1505,9 @@ int main ( int argc, char ** argv )
     isCleanEvent = (isData) ?  isCleanEvent : true;
 
     int numPartons = beanHelper.GetNumExtraPartons(mcparticles);
+    if ( tmpName.Contains("wjets_0p") || tmpName.Contains("zjets_0p") ) {
+      if (numPartons > 0) continue;
+    }
     
     //////////split nGen
     if( (eventSampleNumber>=100 && eventSampleNumber<=300)
@@ -2155,6 +2160,11 @@ int main ( int argc, char ** argv )
       float fourth_jet_charge = dFloat;
       float sum_jet_charge = dFloat;
       
+      float first_jet_genID = dInt ;
+      float second_jet_genID = dInt ;
+      float third_jet_genID = dInt ;
+      float fourth_jet_genID = dInt ;
+
       float first_lf_jet_pt = dFloat;
       float first_lf_jet_eta = dFloat;
       float first_lf_jet_CSV_unshaped = dFloat;
@@ -2287,8 +2297,10 @@ int main ( int argc, char ** argv )
     float lep2GenCharge = dFloat;
     float lep1GsfCharge = dFloat;
     float lep2GsfCharge = dFloat;
-    int lep1GenMotherId = dInt;
-    int lep2GenMotherId = dInt;
+    int lep1GenID = dInt;
+    int lep2GenID = dInt;
+    int lep1GenMotherID = dInt;
+    int lep2GenMotherID = dInt;
     float lep1SF = dFloat;
     float lep2SF = dFloat;
     float lep1FlipSF = dInt;
@@ -2305,6 +2317,9 @@ int main ( int argc, char ** argv )
     int lep2NumberOfMatches = dInt;
     float lep2Chi2 = dFloat;
     int lep2NumExpectedHits = dInt;
+    
+    BNmcparticle MCLep1;
+    BNmcparticle MCLep2;
     
 	  if( twoTightMuon || TightMuonLooseMuon ) {
         
@@ -2341,11 +2356,31 @@ int main ( int argc, char ** argv )
         lep1TkCharge = muonsSelected.at(0).tkCharge;
         lep2TkCharge = muonsSelected.at(1).tkCharge;
 
+        lep1GenID = muonsSelected.at(0).genId;
+        lep2GenID = muonsSelected.at(1).genId;
+
+        lep1GenMotherID = muonsSelected.at(0).genMotherId;
+        lep2GenMotherID = muonsSelected.at(1).genMotherId;
+
         lep1GenCharge = muonsSelected.at(0).genCharge;
         lep2GenCharge = muonsSelected.at(1).genCharge;
 
-        lep1GenMotherId = muonsSelected.at(0).genMotherId;
-        lep2GenMotherId = muonsSelected.at(1).genMotherId;
+        if (lep1GenID == -99) {
+          MCLep1 = beanHelper.GetMatchedMCparticle(mcparticles,muonsSelected.at(0),0.1);
+          if (MCLep1.id != -99 && abs(MCLep1.id) != 6 && abs(MCLep1.id) != 23 && abs(MCLep1.id) != 24 && abs(MCLep1.id) != 25) {
+            lep1GenID = MCLep1.id;
+            lep1GenMotherID = MCLep1.motherId;
+            lep1GenCharge = MCLep1.charge;
+          }
+        }
+        if (lep2GenID == -99) {
+          MCLep2 = beanHelper.GetMatchedMCparticle(mcparticles,muonsSelected.at(1),0.1);
+          if (MCLep2.id != -99 && abs(MCLep2.id) != 6 && abs(MCLep2.id) != 23 && abs(MCLep2.id) != 24 && abs(MCLep2.id) != 25) {
+            lep2GenID = MCLep2.id;
+            lep2GenMotherID = MCLep2.motherId;
+            lep2GenCharge = MCLep2.charge;
+          }
+        }
 
         lep2IsGlobalMuon = muonsSelected.at(1).isGlobalMuon;
         lep2IsTrackerMuon = muonsSelected.at(1).isTrackerMuon;
@@ -2353,21 +2388,6 @@ int main ( int argc, char ** argv )
         lep2NumTrackHits = muonsSelected.at(1).numberOfValidTrackerHitsInnerTrack;
         lep2NumPixelHits = muonsSelected.at(1).pixelLayersWithMeasurement;
         lep2NumberOfMatches = muonsSelected.at(1).numberOfMatchedStations;
-
-        for (int ii=0; ii<int(muon_px.size()); ii++) {
-          if (abs(muonsSelected.at(0).px-muon_px[ii])/max(abs(muonsSelected.at(0).px),10.0) < 0.3
-              && abs(muonsSelected.at(0).py-muon_py[ii])/max(abs(muonsSelected.at(0).py),10.0) < 0.3
-              && abs(muonsSelected.at(0).pz-muon_pz[ii])/max(abs(muonsSelected.at(0).pz),10.0) < 0.3) {
-            lep1Mother = muon_mother[ii];
-            lep1Grandmother = muon_grandmother[ii];
-          }
-          if (abs(muonsSelected.at(1).px-muon_px[ii])/max(abs(muonsSelected.at(1).px),10.0) < 0.3
-              && abs(muonsSelected.at(1).py-muon_py[ii])/max(abs(muonsSelected.at(1).py),10.0) < 0.3
-              && abs(muonsSelected.at(1).pz-muon_pz[ii])/max(abs(muonsSelected.at(1).pz),10.0) < 0.3) {
-            lep2Mother = muon_mother[ii];
-            lep2Grandmother = muon_grandmother[ii];
-          }
-        }
 
         if (selectionYearStr == "2011") {
           lep1Iso = (muonsSelected.at(0).chargedHadronIso
@@ -2461,24 +2481,32 @@ int main ( int argc, char ** argv )
         lep1GsfCharge = electronsSelected.at(0).gsfCharge;
         lep2GsfCharge = electronsSelected.at(1).gsfCharge;
 
+        lep1GenID = electronsSelected.at(0).genId;
+        lep2GenID = electronsSelected.at(1).genId;
+
+        lep1GenMotherID = electronsSelected.at(0).genMotherId;
+        lep2GenMotherID = electronsSelected.at(1).genMotherId;
+
         lep1GenCharge = electronsSelected.at(0).genCharge;
         lep2GenCharge = electronsSelected.at(1).genCharge;
-        
-        for (int ii=0; ii<int(ele_px.size()); ii++) {
-          if (abs(electronsSelected.at(0).px-ele_px[ii])/max(abs(electronsSelected.at(0).px),10.0) < 0.3
-              && abs(electronsSelected.at(0).py-ele_py[ii])/max(abs(electronsSelected.at(0).py),10.0) < 0.3
-              && abs(electronsSelected.at(0).pz-ele_pz[ii])/max(abs(electronsSelected.at(0).pz),10.0) < 0.3) {
-            lep1Mother = ele_mother[ii];
-            lep1Grandmother = ele_grandmother[ii];
-          }
-          if (abs(electronsSelected.at(1).px-ele_px[ii])/max(abs(electronsSelected.at(1).px),10.0) < 0.3
-              && abs(electronsSelected.at(1).py-ele_py[ii])/max(abs(electronsSelected.at(1).py),10.0) < 0.3
-              && abs(electronsSelected.at(1).pz-ele_pz[ii])/max(abs(electronsSelected.at(1).pz),10.0) < 0.3) {
-            lep2Mother = ele_mother[ii];
-            lep2Grandmother = ele_grandmother[ii];
+
+        if (lep1GenID == -99) {
+          MCLep1 = beanHelper.GetMatchedMCparticle(mcparticles,electronsSelected.at(0),0.1);
+          if (MCLep1.id != -99 && abs(MCLep1.id) != 6 && abs(MCLep1.id) != 23 && abs(MCLep1.id) != 24 && abs(MCLep1.id) != 25) {
+            lep1GenID = MCLep1.id;
+            lep1GenMotherID = MCLep1.motherId;
+            lep1GenCharge = MCLep1.charge;
           }
         }
-
+        if (lep2GenID == -99) {
+          MCLep2 = beanHelper.GetMatchedMCparticle(mcparticles,electronsSelected.at(1),0.1);
+          if (MCLep2.id != -99 && abs(MCLep2.id) != 6 && abs(MCLep2.id) != 23 && abs(MCLep2.id) != 24 && abs(MCLep2.id) != 25) {
+            lep2GenID = MCLep2.id;
+            lep2GenMotherID = MCLep2.motherId;
+            lep2GenCharge = MCLep2.charge;
+          }
+        }
+        
         if (selectionYearStr == "2011") {
           lep1Iso = (electronsSelected.at(0).chargedHadronIso
                       + electronsSelected.at(0).neutralHadronIso
@@ -2521,17 +2549,6 @@ int main ( int argc, char ** argv )
         lep2Chi2 = electronsSelected.at(1).tkNormChi2;
         lep2NumExpectedHits = electronsSelected.at(1).numberOfExpectedInnerHits;
 
-        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
-        else {
-        lep1FlipSF = 1.0 + (lep1GsfCharge != lep1GenCharge || lep1TkCharge != lep1GenCharge
-                            || lep1GenCharge == -99) * ((0.979 - 1.0) + 316.0*pow(lep1Pt,-2));
-        lep2FlipSF = 1.0 + (lep2GsfCharge != lep2GenCharge || lep2TkCharge != lep2GenCharge
-                            || lep2GenCharge == -99) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
-
-        lep1PromptSF = 1.0; //Some function
-        lep2PromptSF = 1.0; //Some function
-        }
-        
         lep1PassSSCut = ( (lep1TkCharge == lep1GsfCharge) && (lep1IP < 0.02) &&
                           (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep1dFracScEtTkPt < 1) );
@@ -2539,6 +2556,15 @@ int main ( int argc, char ** argv )
                           (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep2dFracScEtTkPt < 1) );
 
+        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
+        else {
+          lep1FlipSF = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep1Pt,-2));
+          lep2FlipSF = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
+
+          lep1PromptSF = 1.0; //Some function
+          lep2PromptSF = 1.0; //Some function
+        }
+        
 	  }
 	  
 	  if( oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle){
@@ -2580,28 +2606,31 @@ int main ( int argc, char ** argv )
 
         lep2GsfCharge = electronsSelected.at(0).gsfCharge;
 
-        for (int ii=0; ii<int(muon_px.size()); ii++) {
-          if (abs(muonsSelected.at(0).px-muon_px[ii])/max(abs(muonsSelected.at(0).px),10.0) < 0.3
-              && abs(muonsSelected.at(0).py-muon_py[ii])/max(abs(muonsSelected.at(0).py),10.0) < 0.3
-              && abs(muonsSelected.at(0).pz-muon_pz[ii])/max(abs(muonsSelected.at(0).pz),10.0) < 0.3) {
-            lep1Mother = muon_mother[ii];
-            lep1Grandmother = muon_grandmother[ii];
-          }
-        }
-        for (int jj=0; jj<int(ele_px.size()); jj++) {
-          if (abs(electronsSelected.at(0).px-ele_px[jj])/max(abs(electronsSelected.at(0).px),10.0) < 0.3
-              && abs(electronsSelected.at(0).py-ele_py[jj])/max(abs(electronsSelected.at(0).py),10.0) < 0.3
-              && abs(electronsSelected.at(0).pz-ele_pz[jj])/max(abs(electronsSelected.at(0).pz),10.0) < 0.3) {
-            lep2Mother = ele_mother[jj];
-            lep2Grandmother = ele_grandmother[jj];
-          }
-        }
+        lep1GenID = muonsSelected.at(0).genId;
+        lep2GenID = electronsSelected.at(0).genId;
+
+        lep1GenMotherID = muonsSelected.at(0).genMotherId;
+        lep2GenMotherID = electronsSelected.at(0).genMotherId;
 
         lep1GenCharge = muonsSelected.at(0).genCharge;
         lep2GenCharge = electronsSelected.at(0).genCharge;
 
-        lep1GenMotherId = muonsSelected.at(0).genMotherId;
-        lep2GenMotherId = electronsSelected.at(0).genMotherId;
+        if (lep1GenID == -99) {
+          MCLep1 = beanHelper.GetMatchedMCparticle(mcparticles,muonsSelected.at(0),0.1);
+          if (MCLep1.id != -99 && abs(MCLep1.id) != 6 && abs(MCLep1.id) != 23 && abs(MCLep1.id) != 24 && abs(MCLep1.id) != 25) {
+            lep1GenID = MCLep1.id;
+            lep1GenMotherID = MCLep1.motherId;
+            lep1GenCharge = MCLep1.charge;
+          }
+        }
+        if (lep2GenID == -99) {
+          MCLep2 = beanHelper.GetMatchedMCparticle(mcparticles,electronsSelected.at(0),0.1);
+          if (MCLep2.id != -99 && abs(MCLep2.id) != 6 && abs(MCLep2.id) != 23 && abs(MCLep2.id) != 24 && abs(MCLep2.id) != 25) {
+            lep2GenID = MCLep2.id;
+            lep2GenMotherID = MCLep2.motherId;
+            lep2GenCharge = MCLep2.charge;
+          }
+        }
 
         if (selectionYearStr == "2011") {
           lep1Iso = (muonsSelected.at(0).chargedHadronIso
@@ -2637,25 +2666,47 @@ int main ( int argc, char ** argv )
 	    lep_vect2_transverse.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py,
                                         0.0, sqrt(pow(electronsSelected.at(0).energy,2) - pow(electronsSelected.at(0).pz,2)));
 
-        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
-        else {
-          lep1FlipSF = 1.0;
-          lep2FlipSF = 1.0 + (lep2GsfCharge != lep2GenCharge || lep2TkCharge != lep2GenCharge
-                            || lep2GenCharge == -99) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
-
-          lep1PromptSF = 1.0; //Some function
-          lep2PromptSF = 1.0; //Some function
-        }
-
         lep1PassSSCut = muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7;
         lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (lep2IP < 0.02) &&
                           (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep2dFracScEtTkPt < 1) );
         
 
+        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
+        else {
+          lep1FlipSF = 1.0;
+          lep2FlipSF = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
+
+          lep1PromptSF = 1.0; //Some function
+          lep2PromptSF = 1.0; //Some function
+        }
+
 	  }
 
+      if ( (abs(lep1GenID/100)%10 == 5) || (abs(lep1GenID/1000)%10 == 5))      lep1GenID = 5*lep1GenID/abs(lep1GenID);
+      else if ( (abs(lep1GenID/100)%10 == 4) || (abs(lep1GenID/1000)%10 == 4)) lep1GenID = 4*lep1GenID/abs(lep1GenID);
+      else if ( (abs(lep1GenID/100)%10 == 3) || (abs(lep1GenID/1000)%10 == 3)) lep1GenID = 3*lep1GenID/abs(lep1GenID);
+      else if ( (abs(lep1GenID/100)%10 == 2) || (abs(lep1GenID/1000)%10 == 2)) lep1GenID = 2*lep1GenID/abs(lep1GenID);
+      else if ( (abs(lep1GenID/100)%10 == 1) || (abs(lep1GenID/1000)%10 == 1)) lep1GenID = 1*lep1GenID/abs(lep1GenID);
+      
+      if ( (abs(lep2GenID/100)%10 == 5) || (abs(lep2GenID/1000)%10 == 5))      lep2GenID = 5*lep2GenID/abs(lep2GenID);
+      else if ( (abs(lep2GenID/100)%10 == 4) || (abs(lep2GenID/1000)%10 == 4)) lep2GenID = 4*lep2GenID/abs(lep2GenID);
+      else if ( (abs(lep2GenID/100)%10 == 3) || (abs(lep2GenID/1000)%10 == 3)) lep2GenID = 3*lep2GenID/abs(lep2GenID);
+      else if ( (abs(lep2GenID/100)%10 == 2) || (abs(lep2GenID/1000)%10 == 2)) lep2GenID = 2*lep2GenID/abs(lep2GenID);
+      else if ( (abs(lep2GenID/100)%10 == 1) || (abs(lep2GenID/1000)%10 == 1)) lep2GenID = 1*lep2GenID/abs(lep2GenID);
 
+      if ( (abs(lep1GenMotherID/100)%10 == 5) || (abs(lep1GenMotherID/1000)%10 == 5))      lep1GenMotherID = 5*lep1GenMotherID/abs(lep1GenMotherID);
+      else if ( (abs(lep1GenMotherID/100)%10 == 4) || (abs(lep1GenMotherID/1000)%10 == 4)) lep1GenMotherID = 4*lep1GenMotherID/abs(lep1GenMotherID);
+      else if ( (abs(lep1GenMotherID/100)%10 == 3) || (abs(lep1GenMotherID/1000)%10 == 3)) lep1GenMotherID = 3*lep1GenMotherID/abs(lep1GenMotherID);
+      else if ( (abs(lep1GenMotherID/100)%10 == 2) || (abs(lep1GenMotherID/1000)%10 == 2)) lep1GenMotherID = 2*lep1GenMotherID/abs(lep1GenMotherID);
+      else if ( (abs(lep1GenMotherID/100)%10 == 1) || (abs(lep1GenMotherID/1000)%10 == 1)) lep1GenMotherID = 1*lep1GenMotherID/abs(lep1GenMotherID);
+
+      if ( (abs(lep2GenMotherID/100)%10 == 5) || (abs(lep2GenMotherID/1000)%10 == 5))      lep2GenMotherID = 5*lep2GenMotherID/abs(lep2GenMotherID);
+      else if ( (abs(lep2GenMotherID/100)%10 == 4) || (abs(lep2GenMotherID/1000)%10 == 4)) lep2GenMotherID = 4*lep2GenMotherID/abs(lep2GenMotherID);
+      else if ( (abs(lep2GenMotherID/100)%10 == 3) || (abs(lep2GenMotherID/1000)%10 == 3)) lep2GenMotherID = 3*lep2GenMotherID/abs(lep2GenMotherID);
+      else if ( (abs(lep2GenMotherID/100)%10 == 2) || (abs(lep2GenMotherID/1000)%10 == 2)) lep2GenMotherID = 2*lep2GenMotherID/abs(lep2GenMotherID);
+      else if ( (abs(lep2GenMotherID/100)%10 == 1) || (abs(lep2GenMotherID/1000)%10 == 1)) lep2GenMotherID = 1*lep2GenMotherID/abs(lep2GenMotherID);
+      
       float lepTotalSF = lep1SF * lep2SF;
       float lepTotalFlipSF = lep1FlipSF*lep2FlipSF;
       float lepTotalPromptSF = lep1PromptSF*lep2PromptSF;
@@ -2902,6 +2953,7 @@ int main ( int argc, char ** argv )
           first_jet_charge = jet_charge[iJet];
           first_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
           first_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
+          first_jet_genID = pfjetsSelected.at(iJet).genPartonId;
           if (first_jet_pt > 30 && first_jet_pt < 45) {
             if (fabs(first_jet_eta) > 0 && fabs(first_jet_eta) < 1.2 ) CSV_30to45_0p0to1p2_1 = first_jet_CSV;
             if (fabs(first_jet_eta) > 1.2 && fabs(first_jet_eta) < 2.1 ) CSV_30to45_1p2to2p1_1 = first_jet_CSV;
@@ -2930,6 +2982,7 @@ int main ( int argc, char ** argv )
           second_jet_charge = jet_charge[iJet];
           second_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
           second_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
+          second_jet_genID = pfjetsSelected.at(iJet).genPartonId;
           if (second_jet_pt > 30 && second_jet_pt < 45) {
             if (fabs(second_jet_eta) > 0 && fabs(second_jet_eta) < 1.2 ) CSV_30to45_0p0to1p2_2 = second_jet_CSV;
             if (fabs(second_jet_eta) > 1.2 && fabs(second_jet_eta) < 2.1 ) CSV_30to45_1p2to2p1_2 = second_jet_CSV;
@@ -2958,6 +3011,7 @@ int main ( int argc, char ** argv )
           third_jet_charge = jet_charge[iJet];
           third_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
           third_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
+          third_jet_genID = pfjetsSelected.at(iJet).genPartonId;
         }
 	    if (i==3)  {
           fourth_jet_pt = jet_pt[iJet];
@@ -2965,6 +3019,7 @@ int main ( int argc, char ** argv )
           fourth_jet_CHEF = jet_CHEF[iJet];
           fourth_jet_charge = jet_charge[iJet];
           fourth_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
+          fourth_jet_genID = pfjetsSelected.at(iJet).genPartonId;
         }
 	    
 	    if (mindr_lep1_jet > lep_vect1.DeltaR(jet_vect) || mindr_lep1_jet == dFloat){
@@ -3551,12 +3606,14 @@ int main ( int argc, char ** argv )
 
       if (ExtraGenVariables) {
 
-        *(intBranches["lep1Mother"]) = lep1Mother;
-        *(intBranches["lep2Mother"]) = lep2Mother;
-        *(intBranches["lep1Grandmother"]) = lep1Grandmother;
-        *(intBranches["lep2Grandmother"]) = lep2Grandmother;
-        *(intBranches["lep1GenMotherId"]) = lep1GenMotherId;
-        *(intBranches["lep2GenMotherId"]) = lep2GenMotherId;
+        *(intBranches["lep1GenID"]) = lep1GenID;
+        *(intBranches["lep2GenID"]) = lep2GenID;
+        *(intBranches["lep1GenMotherID"]) = lep1GenMotherID;
+        *(intBranches["lep2GenMotherID"]) = lep2GenMotherID;
+        *(intBranches["first_jet_genID"]) = first_jet_genID;
+        *(intBranches["second_jet_genID"]) = second_jet_genID;
+        *(intBranches["third_jet_genID"]) = third_jet_genID;
+        *(intBranches["fourth_jet_genID"]) = fourth_jet_genID;
         *(floatBranches["top1_pt"]) = top1_pt;
         *(floatBranches["top1_pz"]) = top1_pz;
 
