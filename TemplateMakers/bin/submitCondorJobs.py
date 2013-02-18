@@ -54,10 +54,9 @@ def main ():
 	
 	
 	jobLabel = str(args[0])
-	#iPUPeriod = "2012A_13July, 2012A_06Aug, 2012B_13July"
-    # We can't submit a list to the scripts
-	# instead just make an alias
-	iPUPeriod = "2012AB"
+	#iPUPeriod = "2012AB"
+	iPUPeriod = "2012ABC"
+
 
 	print " Year = ", yearChoice
 	print " jes = " , jesChoice
@@ -65,6 +64,7 @@ def main ():
 	print " btag = ", btagChoice
 	print " label = ", jobLabel
 	print " PUPeriod = ", iPUPeriod
+	
 	
 	
 	listOfSamples2011Data = ['DoubleElectron_Run2011A-05Aug2011-v1',
@@ -95,18 +95,18 @@ def main ():
 	listOfSamples2012Data_53x = ['DoubleElectron_Run2012A-13Jul2012-v1',
 							 'DoubleElectron_Run2012A-recover-06Aug2012-v1',
 							 'DoubleElectron_Run2012B-13Jul2012-v1',
-#							 'DoubleElectron_Run2012C-24Aug2012-v1',
-#							 'DoubleElectron_Run2012C-PromptReco-v2',
+							 'DoubleElectron_Run2012C-24Aug2012-v1',
+							 'DoubleElectron_Run2012C-PromptReco-v2',
 							 'DoubleMu_Run2012A-13Jul2012-v1',
 							 'DoubleMu_Run2012A-recover-06Aug2012-v1',
 							 'DoubleMu_Run2012B-13Jul2012-v4',
-#							 'DoubleMu_Run2012C-24Aug2012-v1',
-#							 'DoubleMu_Run2012C-PromptReco-v2',
+							 'DoubleMu_Run2012C-24Aug2012-v1',
+							 'DoubleMu_Run2012C-PromptReco-v2',
 							 'MuEG_Run2012A-13Jul2012-v1',
 							 'MuEG_Run2012A-recover-06Aug2012-v1',
 							 'MuEG_Run2012B-13Jul2012-v1',
-#							 'MuEG_Run2012C-24Aug2012-v1',
-#							 'MuEG_Run2012C-PromptReco-v2',
+							 'MuEG_Run2012C-24Aug2012-v1',
+							 'MuEG_Run2012C-PromptReco-v2',
 							 ]
 	listOfSamples = [
 					 #'scaledown_ttbar',	ALWAYS OUT
@@ -223,15 +223,28 @@ def main ():
                      'ttbar_cc_ll_part12',
                      'ttbar_cc_ll_part13',					 
 # 					 'wjets',
+					 'wjets_0p',
 					 'wjets_1p',
 					 'wjets_2p',
 					 'wjets_3p',
 					 'wjets_4p',
 # 					 'zjets',
+# 					 'zjets_0p',
 # 					 'zjets_1p',
 # 					 'zjets_2p',
 # 					 'zjets_3p',
 # 					 'zjets_4p',
+					 'zjets_0p_part1',
+					 'zjets_0p_part2',
+					 'zjets_0p_part3',
+					 'zjets_0p_part4',
+					 'zjets_0p_part5',
+					 'zjets_0p_part6',
+					 'zjets_0p_part7',
+					 'zjets_0p_part8',
+					 'zjets_0p_part9',
+					 'zjets_0p_part10',
+					 'zjets_0p_part11',
 					 'zjets_1p_part1',
 					 'zjets_1p_part2',
 					 'zjets_1p_part3',
@@ -301,7 +314,7 @@ def main ():
 
 
 
-	##### make a list out of the one sample
+	##### Make a list out of the one sample
 
 	oneSampleList = [options.oneSample]
 	
@@ -317,6 +330,7 @@ def main ():
 		listOfSamples = listOfSamples + list2012_53x
 		if btagChoice == 0 and jesChoice == 0 and jerChoice == 0:
 			listOfSamples = listOfSamples2012Data_53x + listOfSamples
+# 		listOfSamples = list2012_53x
 
 	if options.oneSample != 'NONE':
 		listOfSamples = oneSampleList
@@ -365,7 +379,7 @@ def main ():
 		condorJobFile.write( "JES = %s\n" % jesChoice)
 		condorJobFile.write( "JER = %s\n" % jerChoice)
 		condorJobFile.write( "BTAG = %s\n" % btagChoice)
-		condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER) $(BTAG) $(PUPeriod)\n")
+		condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER) $(BTAG) $(PUPeriod) \n")
 
 		if (jesChoice == 0 and jerChoice == 0):
 			JetStr = ""
