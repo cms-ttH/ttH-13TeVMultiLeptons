@@ -136,33 +136,19 @@ int main ( int argc, char ** argv )
    std::cout << "CONFIG: selectionYear = " << selectionYearStr << std::endl;
    std::cout << "CONFIG: 2012PUPeriod input from command line = " << tempPUPeriodStr << std::endl;
 
-
    // Translate PUPeriod into something more relevant
    std::string PUPeriodStr = "";
    if (tempPUPeriodStr == "2012AB"){
      PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July";
+   } else if (tempPUPeriodStr == "2012ABC") {
+     PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July, 2012C_PR, 2012C_24Aug";
    } else {
      std::cout << "Couldn't understand PUPeriodStr = " << tempPUPeriodStr << endl;
      exit (12);
    }
 
-
-      std::cout << "CONFIG: 2012PUPeriod string to be used at setup = " << PUPeriodStr << std::endl;
+   std::cout << "CONFIG: 2012PUPeriod string to be used at setup = " << PUPeriodStr << std::endl;
    
-//    int selectionYearInt = -99;
-//    if (selectionYearStr == "2011") {
-//      selectionYearInt = 2011;
-//    }
-//    else if (selectionYearStr == "2012_52x") {
-//      selectionYearInt = 2012;
-//    }
-//    else if (selectionYearStr == "2012_53x") {
-//      selectionYearInt = 2012;
-//    }
-//    else {
-//      assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
-//    } 
-       
    //JES
    int jes = anaParams.getParameter<int> ("jes");
    int jer = anaParams.getParameter<int> ("jer");
@@ -258,7 +244,7 @@ int main ( int argc, char ** argv )
   std::string dset = "SingleMu" ;
   int sampleNumber = 999999;
   float weight_Xsec = 1.0;
-  int nGen = 1;
+  float nGen = 1.0;
   float Xsec = 1.0;
 
   if (selectionYearStr == "2011") {
@@ -569,9 +555,10 @@ int main ( int argc, char ** argv )
   bool ExtraTriggerVariables = false;
   bool ExtraGenVariables = false;
   bool ExtraHiggsVariables = false;
+  bool ExtraSameSignVariables = true;
   
   bool ArtificialJetPt = false;
-  float higgs_mass = 110.0;
+  float higgs_mass = 115.0;
   
   std::map<TString, int *> intBranches;
   std::map<TString, unsigned int *> uintBranches;  
@@ -639,7 +626,7 @@ int main ( int argc, char ** argv )
     floatBranches["lep2SF"] = new float (0.0);
     floatBranches["lepTotalSF"] = new float (0.0);
     floatBranches["weight_Xsec"] = new float(0.0);
-    intBranches["nGen"] = new int(0);
+    floatBranches["nGen"] = new float(0.0);
     floatBranches["Xsec"] = new float(0.0);
     
     //met
@@ -657,8 +644,8 @@ int main ( int argc, char ** argv )
     floatBranches["lep1Iso"] = new float(0.0);
     floatBranches["lep2Iso"] = new float(0.0);
     floatBranches["lep1TkCharge"] = new float (0.0);
-    floatBranches["lep1GenCharge"] = new float (0.0);
     floatBranches["lep2TkCharge"] = new float (0.0);
+    floatBranches["lep1GenCharge"] = new float (0.0);
     floatBranches["lep2GenCharge"] = new float (0.0);
 
     // jet variables
@@ -696,6 +683,38 @@ int main ( int argc, char ** argv )
 
   } //End if (CoreVariables)
 
+  if (ExtraSameSignVariables) {
+
+    floatBranches["lep1FlipSF"] = new float (0.0);
+    floatBranches["lep2FlipSF"] = new float (0.0);
+    floatBranches["lepTotalFlipSF"] = new float (0.0);
+    floatBranches["lep1PromptSF"] = new float (0.0);
+    floatBranches["lep2PromptSF"] = new float (0.0);
+    floatBranches["lepTotalPromptSF"] = new float (0.0);
+    intBranches["lep1PassSSCut"] = new int (0);
+    intBranches["lep2PassSSCut"] = new int (0);
+    intBranches["lepTotalPassSSCut"] = new int (0);
+
+    floatBranches["lep1GsfCharge"] = new float(0.0);
+    floatBranches["lep2GsfCharge"] = new float(0.0);
+    floatBranches["lep1ChargedIso"] = new float(0.0);
+    floatBranches["lep2ChargedIso"] = new float(0.0);
+    floatBranches["lep1NeutralIso"] = new float(0.0);
+    floatBranches["lep2NeutralIso"] = new float(0.0);
+    floatBranches["lep1IP"] = new float(0.0);
+    floatBranches["lep2IP"] = new float(0.0);
+    floatBranches["lep1IPError"] = new float(0.0);
+    floatBranches["lep2IPError"] = new float(0.0);
+    floatBranches["lep1dFracScEtTkPt"] = new float(0.0);
+    floatBranches["lep2dFracScEtTkPt"] = new float(0.0);
+
+    floatBranches["mindr_lep1_allJet"] = new float(0.0);
+    floatBranches["mindr_lep2_allJet"] = new float(0.0);
+    floatBranches["ptRel_lep1_jet"] = new float(0.0);
+    floatBranches["ptRel_lep2_jet"] = new float(0.0);
+    floatBranches["ptRel_lep1_allJet"] = new float(0.0);
+    floatBranches["ptRel_lep2_allJet"] = new float(0.0);
+  }
 
   if (ExtraHiggsVariables) {
     
@@ -789,6 +808,11 @@ int main ( int argc, char ** argv )
     floatBranches["second_jet_CSV"] = new float(0.0);
     floatBranches["third_jet_CSV"] = new float(0.0);
     floatBranches["fourth_jet_CSV"] = new float(0.0);
+
+    floatBranches["first_jet_CSV_unc"] = new float(0.0);
+    floatBranches["second_jet_CSV_unc"] = new float(0.0);
+    floatBranches["third_jet_CSV_unc"] = new float(0.0);
+    floatBranches["fourth_jet_CSV_unc"] = new float(0.0);
 
 //     floatBranches["first_lf_jet_pt"] = new float(0.0);
 //     floatBranches["first_lf_jet_eta"] = new float(0.0);
@@ -902,8 +926,8 @@ int main ( int argc, char ** argv )
     floatBranches["pt_of_ttbar"] = new float(0.0);
     ////leptons
     floatBranches["dEta_leplep"] = new float(0.0);
-    floatBranches["mindr_lep1_allJet"] = new float(0.0);
-    floatBranches["mindr_lep2_allJet"] = new float(0.0);
+    //floatBranches["mindr_lep1_allJet"] = new float(0.0);
+    //floatBranches["mindr_lep2_allJet"] = new float(0.0);
     floatBranches["MT_met_lep1"] = new float(0.0);
     floatBranches["MT_met_lep2"] = new float(0.0);
     floatBranches["dPhi_met_lep1"] = new float(0.0);
@@ -1898,12 +1922,12 @@ int main ( int argc, char ** argv )
       int numAllJets = numGoodAndBadJets;
       int numJets = int(tight_pfjet_index.size());
       // Only select events with at least two jets
-      // JMS Feb 9 2013
-      // Moved this cut to the end
-      // just before filling the tree
-      // this clarifies how the code works
-      // 
-      //if (numJets < 2) continue;
+      // AWB Feb 14 2013
+      // Moved this cut to the middle to avoid wasting time on calculations
+      if (applySelection){
+        if (numJets < 2) continue;
+      }
+
       int numTaggedJets = int(tag_pfjet_index.size());
 
       ///////
@@ -2120,6 +2144,11 @@ int main ( int argc, char ** argv )
       float third_jet_CSV = dFloat ;
       float fourth_jet_CSV = dFloat ;
 
+      float first_jet_CSV_unc = dFloat ;
+      float second_jet_CSV_unc = dFloat ;
+      float third_jet_CSV_unc = dFloat ;
+      float fourth_jet_CSV_unc = dFloat ;
+
       float first_jet_charge = dFloat;
       float second_jet_charge = dFloat;
       float third_jet_charge = dFloat;
@@ -2180,6 +2209,10 @@ int main ( int argc, char ** argv )
       float mindr_lep2_allJet = dFloat;
       float min_dr_tagged_jets = dFloat;
       float min_dr_jets = dFloat;
+      float ptRel_lep1_jet = dFloat;
+      float ptRel_lep2_jet = dFloat;
+      float ptRel_lep1_allJet = dFloat;
+      float ptRel_lep2_allJet = dFloat;
       
       float denom_avg_cnt = dFloat;
       float avg_btag_disc_btags = dFloat;     
@@ -2234,18 +2267,36 @@ int main ( int argc, char ** argv )
     float lep2_tkDZ = dFloat;
     float lep1Iso = dFloat;
     float lep2Iso = dFloat;
+    float lep1ChargedIso = dFloat;
+    float lep2ChargedIso = dFloat;
+    float lep1NeutralIso = dFloat;
+    float lep2NeutralIso = dFloat;
+    float lep1IP = dFloat;
+    float lep2IP = dFloat;
+    float lep1IPError = dFloat;
+    float lep2IPError = dFloat;
+    float lep1dFracScEtTkPt = dFloat;
+    float lep2dFracScEtTkPt = dFloat;
     float lep1_correctedDZ = dFloat;
     float lep2_correctedDZ = dFloat;
     float lep1_correctedD0 = dFloat;
     float lep2_correctedD0 = dFloat;
     float lep1TkCharge = dFloat;
-    float lep1GenCharge = dFloat;
     float lep2TkCharge = dFloat;
+    float lep1GenCharge = dFloat;
     float lep2GenCharge = dFloat;
+    float lep1GsfCharge = dFloat;
+    float lep2GsfCharge = dFloat;
     int lep1GenMotherId = dInt;
     int lep2GenMotherId = dInt;
     float lep1SF = dFloat;
     float lep2SF = dFloat;
+    float lep1FlipSF = dInt;
+    float lep2FlipSF = dInt;
+    float lep1PromptSF = dInt;
+    float lep2PromptSF = dInt;
+    int lep1PassSSCut = dInt;
+    int lep2PassSSCut = dInt;
     int lep2IsGlobalMuon = dInt;
     int lep2IsTrackerMuon = dInt;
     int lep2IsGlobalMuonPromptTight = dInt;
@@ -2280,6 +2331,12 @@ int main ( int argc, char ** argv )
 
         lep1_correctedD0 = muonsSelected.at(0).correctedD0;
         lep2_correctedD0 = muonsSelected.at(1).correctedD0;
+        
+        lep1IP = muonsSelected.at(0).IP;
+        lep2IP = muonsSelected.at(1).IP;
+        
+        lep1IPError = muonsSelected.at(0).IPError;
+        lep2IPError = muonsSelected.at(1).IPError;
         
         lep1TkCharge = muonsSelected.at(0).tkCharge;
         lep2TkCharge = muonsSelected.at(1).tkCharge;
@@ -2319,6 +2376,9 @@ int main ( int argc, char ** argv )
           lep2Iso = (muonsSelected.at(1).chargedHadronIso
                       + muonsSelected.at(1).neutralHadronIso
                       + muonsSelected.at(1).photonIso) * 1.0 / lep2Pt;
+
+          lep1ChargedIso = muonsSelected.at(0).chargedHadronIso / lep1Pt;
+          lep2ChargedIso = muonsSelected.at(1).chargedHadronIso / lep2Pt;
         }
         else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
           lep1Iso = (muonsSelected.at(0).pfIsoR04SumChargedHadronPt
@@ -2329,17 +2389,35 @@ int main ( int argc, char ** argv )
                       + max(0.0, muonsSelected.at(1).pfIsoR04SumNeutralHadronEt
                                  + muonsSelected.at(1).pfIsoR04SumPhotonEt
                                  - 0.5*muonsSelected.at(1).pfIsoR04SumPUPt)) * 1.0 /lep2Pt;
+
+          lep1ChargedIso = muonsSelected.at(0).pfIsoR04SumChargedHadronPt /lep1Pt;
+          lep2ChargedIso = muonsSelected.at(1).pfIsoR04SumChargedHadronPt /lep2Pt;
         }
         else {
           assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
         }
-        
+        lep1NeutralIso = lep1Iso - lep1ChargedIso;
+        lep2NeutralIso = lep2Iso - lep2ChargedIso;
+
         lep_vect1.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py, muonsSelected.at(0).pz, muonsSelected.at(0).energy);
 	    lep_vect2.SetPxPyPzE(muonsSelected.at(1).px, muonsSelected.at(1).py, muonsSelected.at(1).pz, muonsSelected.at(1).energy);
         lep_vect1_transverse.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py,
                                         0.0, sqrt(pow(muonsSelected.at(0).energy,2) - pow(muonsSelected.at(0).pz,2)));
         lep_vect2_transverse.SetPxPyPzE(muonsSelected.at(1).px, muonsSelected.at(1).py,
                                         0.0, sqrt(pow(muonsSelected.at(1).energy,2) - pow(muonsSelected.at(1).pz,2)));
+
+        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
+        else {
+          lep1FlipSF = 1.0;
+          lep2FlipSF = 1.0;
+          
+          lep1PromptSF = 1.0; //Some function
+          lep2PromptSF = 1.0; //Some function
+        }
+        
+        lep1PassSSCut = (muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7);
+        lep2PassSSCut = (muonsSelected.at(1).numberOfValidTrackerHitsInnerTrack > 7);
+
 	  }
 
 	  if( twoTightEle || TightEleLooseEle ) {
@@ -2368,8 +2446,20 @@ int main ( int argc, char ** argv )
         lep1_correctedD0 = electronsSelected.at(0).correctedD0;
         lep2_correctedD0 = electronsSelected.at(1).correctedD0;
         
+        lep1IP = electronsSelected.at(0).IP;
+        lep2IP = electronsSelected.at(1).IP;
+        
+        lep1IPError = electronsSelected.at(0).IPError;
+        lep2IPError = electronsSelected.at(1).IPError;
+        
+        lep1dFracScEtTkPt = fabs(electronsSelected.at(0).scEt - electronsSelected.at(0).tkPT)/electronsSelected.at(0).scEt;
+        lep2dFracScEtTkPt = fabs(electronsSelected.at(1).scEt - electronsSelected.at(1).tkPT)/electronsSelected.at(1).scEt;
+        
         lep1TkCharge = electronsSelected.at(0).tkCharge;
         lep2TkCharge = electronsSelected.at(1).tkCharge;
+
+        lep1GsfCharge = electronsSelected.at(0).gsfCharge;
+        lep2GsfCharge = electronsSelected.at(1).gsfCharge;
 
         lep1GenCharge = electronsSelected.at(0).genCharge;
         lep2GenCharge = electronsSelected.at(1).genCharge;
@@ -2406,10 +2496,17 @@ int main ( int argc, char ** argv )
                        + max(0.0, electronsSelected.at(1).neutralHadronIso
                                   + electronsSelected.at(1).photonIso
                                   - electronsSelected.at(1).AEffDr03*electronsSelected.at(1).rhoPrime) ) * 1.0 /lep2Pt;
+
         }
         else {
           assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
         }
+        lep1ChargedIso = electronsSelected.at(0).chargedHadronIso /lep1Pt;
+        lep2ChargedIso = electronsSelected.at(1).chargedHadronIso /lep2Pt;
+
+        lep1NeutralIso = lep1Iso - lep1ChargedIso;
+        lep2NeutralIso = lep2Iso - lep2ChargedIso;
+
 
 	    lep_vect1.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py, electronsSelected.at(0).pz, electronsSelected.at(0).energy);
 	    lep_vect2.SetPxPyPzE(electronsSelected.at(1).px, electronsSelected.at(1).py, electronsSelected.at(1).pz, electronsSelected.at(1).energy);
@@ -2423,6 +2520,25 @@ int main ( int argc, char ** argv )
         lep2NumberOfMatches = electronsSelected.at(1).numClusters;
         lep2Chi2 = electronsSelected.at(1).tkNormChi2;
         lep2NumExpectedHits = electronsSelected.at(1).numberOfExpectedInnerHits;
+
+        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
+        else {
+        lep1FlipSF = 1.0 + (lep1GsfCharge != lep1GenCharge || lep1TkCharge != lep1GenCharge
+                            || lep1GenCharge == -99) * ((0.979 - 1.0) + 316.0*pow(lep1Pt,-2));
+        lep2FlipSF = 1.0 + (lep2GsfCharge != lep2GenCharge || lep2TkCharge != lep2GenCharge
+                            || lep2GenCharge == -99) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
+
+        lep1PromptSF = 1.0; //Some function
+        lep2PromptSF = 1.0; //Some function
+        }
+        
+        lep1PassSSCut = ( (lep1TkCharge == lep1GsfCharge) && (lep1IP < 0.02) &&
+                          (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
+                          (lep1dFracScEtTkPt < 1) );
+        lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (lep2IP < 0.02) &&
+                          (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
+                          (lep2dFracScEtTkPt < 1) );
+
 	  }
 	  
 	  if( oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle){
@@ -2451,8 +2567,18 @@ int main ( int argc, char ** argv )
         lep1_correctedD0 = muonsSelected.at(0).correctedD0;
         lep2_correctedD0 = electronsSelected.at(0).correctedD0;
         
+        lep1IP = muonsSelected.at(0).IP;
+        lep2IP = electronsSelected.at(0).IP;
+
+        lep1IPError = muonsSelected.at(0).IPError;
+        lep2IPError = electronsSelected.at(0).IPError;
+
+        lep2dFracScEtTkPt = fabs(electronsSelected.at(0).scEt - electronsSelected.at(0).tkPT)/electronsSelected.at(0).scEt;
+        
         lep1TkCharge = muonsSelected.at(0).tkCharge;
         lep2TkCharge = electronsSelected.at(0).tkCharge;
+
+        lep2GsfCharge = electronsSelected.at(0).gsfCharge;
 
         for (int ii=0; ii<int(muon_px.size()); ii++) {
           if (abs(muonsSelected.at(0).px-muon_px[ii])/max(abs(muonsSelected.at(0).px),10.0) < 0.3
@@ -2482,6 +2608,9 @@ int main ( int argc, char ** argv )
                       + muonsSelected.at(0).neutralHadronIso
                       + muonsSelected.at(0).photonIso) * 1.0 / lep1Pt;
           lep2Iso = (electronsSelected.at(0).chargedHadronIso + electronsSelected.at(0).neutralHadronIso + electronsSelected.at(0).photonIso) * 1.0 / lep2Pt;
+
+          lep1ChargedIso = muonsSelected.at(0).chargedHadronIso / lep1Pt;
+          lep2ChargedIso = electronsSelected.at(0).chargedHadronIso / lep2Pt;
         }
         else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
           lep1Iso = (muonsSelected.at(0).pfIsoR04SumChargedHadronPt
@@ -2492,10 +2621,14 @@ int main ( int argc, char ** argv )
                        + max(0.0, electronsSelected.at(0).neutralHadronIso
                                   + electronsSelected.at(0).photonIso
                                   - electronsSelected.at(0).AEffDr03*electronsSelected.at(0).rhoPrime) ) * 1.0 /lep2Pt;
+          lep1ChargedIso = muonsSelected.at(0).pfIsoR04SumChargedHadronPt /lep1Pt;
+          lep2ChargedIso = electronsSelected.at(0).chargedHadronIso / lep2Pt;
         }
         else {
           assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
         }
+        lep1NeutralIso = lep1Iso - lep1ChargedIso;
+        lep2NeutralIso = lep2Iso - lep2ChargedIso;
         
 	    lep_vect1.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py, muonsSelected.at(0).pz, muonsSelected.at(0).energy);
 	    lep_vect2.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py, electronsSelected.at(0).pz, electronsSelected.at(0).energy);
@@ -2504,11 +2637,29 @@ int main ( int argc, char ** argv )
 	    lep_vect2_transverse.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py,
                                         0.0, sqrt(pow(electronsSelected.at(0).energy,2) - pow(electronsSelected.at(0).pz,2)));
 
+        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
+        else {
+          lep1FlipSF = 1.0;
+          lep2FlipSF = 1.0 + (lep2GsfCharge != lep2GenCharge || lep2TkCharge != lep2GenCharge
+                            || lep2GenCharge == -99) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
+
+          lep1PromptSF = 1.0; //Some function
+          lep2PromptSF = 1.0; //Some function
+        }
+
+        lep1PassSSCut = muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7;
+        lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (lep2IP < 0.02) &&
+                          (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
+                          (lep2dFracScEtTkPt < 1) );
+        
+
 	  }
 
 
       float lepTotalSF = lep1SF * lep2SF;
-      
+      float lepTotalFlipSF = lep1FlipSF*lep2FlipSF;
+      float lepTotalPromptSF = lep1PromptSF*lep2PromptSF;
+      int lepTotalPassSSCut = lep1PassSSCut*lep2PassSSCut;
       
       if (verbose) std::cout << "about to fill two lep vars " <<std::endl
                              << "TwoMuon = " << TwoMuon << " twoTightMuon = " << twoTightMuon << " TightMuonLooseMuon = " << TightMuonLooseMuon   << endl
@@ -2625,11 +2776,13 @@ int main ( int argc, char ** argv )
 	    if (i==3)  fourth_allJet_pt = jet_pt[i];
         
 	    if (mindr_lep1_allJet > lep_vect1.DeltaR(allJet_vect) || mindr_lep1_allJet == dFloat){
-	      mindr_lep1_allJet = lep_vect1.DeltaR(allJet_vect); 
+	      mindr_lep1_allJet = lep_vect1.DeltaR(allJet_vect);
+          ptRel_lep1_allJet = lep_vect1.Pt() / (lep_vect1.Pt() + allJet_vect.Pt());
 	    }
 
 	    if (mindr_lep2_allJet > lep_vect2.DeltaR(allJet_vect) || mindr_lep2_allJet == dFloat){
 	      mindr_lep2_allJet = lep_vect2.DeltaR(allJet_vect); 
+          ptRel_lep2_allJet = lep_vect2.Pt() / (lep_vect2.Pt() + allJet_vect.Pt());
 	    }
         for (int j=i+1; j < numGoodAndBadJets; j++) {
           sum_higgsLike_allDijet_vect = allJetV[i] + allJetV[j];
@@ -2748,6 +2901,7 @@ int main ( int argc, char ** argv )
           first_jet_CHEF = jet_CHEF[iJet];
           first_jet_charge = jet_charge[iJet];
           first_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
+          first_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
           if (first_jet_pt > 30 && first_jet_pt < 45) {
             if (fabs(first_jet_eta) > 0 && fabs(first_jet_eta) < 1.2 ) CSV_30to45_0p0to1p2_1 = first_jet_CSV;
             if (fabs(first_jet_eta) > 1.2 && fabs(first_jet_eta) < 2.1 ) CSV_30to45_1p2to2p1_1 = first_jet_CSV;
@@ -2775,6 +2929,7 @@ int main ( int argc, char ** argv )
           second_jet_CHEF = jet_CHEF[iJet];
           second_jet_charge = jet_charge[iJet];
           second_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
+          second_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
           if (second_jet_pt > 30 && second_jet_pt < 45) {
             if (fabs(second_jet_eta) > 0 && fabs(second_jet_eta) < 1.2 ) CSV_30to45_0p0to1p2_2 = second_jet_CSV;
             if (fabs(second_jet_eta) > 1.2 && fabs(second_jet_eta) < 2.1 ) CSV_30to45_1p2to2p1_2 = second_jet_CSV;
@@ -2802,21 +2957,24 @@ int main ( int argc, char ** argv )
           third_jet_CHEF = jet_CHEF[iJet];
           third_jet_charge = jet_charge[iJet];
           third_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
+          third_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
         }
 	    if (i==3)  {
           fourth_jet_pt = jet_pt[iJet];
           fourth_jet_eta = jet_vect.Eta();
           fourth_jet_CHEF = jet_CHEF[iJet];
           fourth_jet_charge = jet_charge[iJet];
-          fourth_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
+          fourth_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
         }
 	    
 	    if (mindr_lep1_jet > lep_vect1.DeltaR(jet_vect) || mindr_lep1_jet == dFloat){
-	      mindr_lep1_jet = lep_vect1.DeltaR(jet_vect); 
+	      mindr_lep1_jet = lep_vect1.DeltaR(jet_vect);
+          ptRel_lep1_jet = lep_vect1.Pt() / (lep_vect1.Pt() + jet_vect.Pt());
 	    }
 	    
 	    if (mindr_lep2_jet > lep_vect2.DeltaR(jet_vect) || mindr_lep2_jet == dFloat){
 	      mindr_lep2_jet = lep_vect2.DeltaR(jet_vect); 
+          ptRel_lep2_jet = lep_vect2.Pt() / (lep_vect2.Pt() + jet_vect.Pt());
 	    }
 	    
 	    if (iJet_csvVal > 0.679){
@@ -3112,7 +3270,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep2SF"]) = lep2SF;
         *(floatBranches["lepTotalSF"]) = lepTotalSF;
         *(floatBranches["weight_Xsec"]) = weight_Xsec ;
-        *(intBranches["nGen"]) = nGen ;
+        *(floatBranches["nGen"]) = nGen ;
         *(floatBranches["Xsec"]) = Xsec ;
 
         //met
@@ -3168,6 +3326,41 @@ int main ( int argc, char ** argv )
         *(floatBranches["pz_of_everything"]) = pz_of_everything;
 
       } //End if (CoreVariables)
+
+      if (ExtraSameSignVariables) {
+
+        *(floatBranches["lep1FlipSF"]) = lep1FlipSF;
+        *(floatBranches["lep2FlipSF"]) = lep2FlipSF;
+        *(floatBranches["lepTotalFlipSF"]) = lepTotalFlipSF;
+        *(floatBranches["lep1PromptSF"]) = lep1PromptSF;
+        *(floatBranches["lep2PromptSF"]) = lep2PromptSF;
+        *(floatBranches["lepTotalPromptSF"]) = lepTotalPromptSF;
+        *(intBranches["lep1PassSSCut"]) = lep1PassSSCut;
+        *(intBranches["lep2PassSSCut"]) = lep2PassSSCut;
+        *(intBranches["lepTotalPassSSCut"]) = lepTotalPassSSCut;
+        
+        *(floatBranches["lep1GsfCharge"]) = lep1GsfCharge;
+        *(floatBranches["lep2GsfCharge"]) = lep2GsfCharge;
+        *(floatBranches["lep1ChargedIso"]) = lep1ChargedIso;
+        *(floatBranches["lep2ChargedIso"]) = lep2ChargedIso;
+        *(floatBranches["lep1NeutralIso"]) = lep1NeutralIso;
+        *(floatBranches["lep2NeutralIso"]) = lep2NeutralIso;
+        *(floatBranches["lep1IP"]) = lep1IP;
+        *(floatBranches["lep2IP"]) = lep2IP;
+        *(floatBranches["lep1IPError"]) = lep1IPError;
+        *(floatBranches["lep2IPError"]) = lep2IPError;
+        *(floatBranches["lep1dFracScEtTkPt"]) = lep1dFracScEtTkPt;
+        *(floatBranches["lep2dFracScEtTkPt"]) = lep2dFracScEtTkPt;
+
+        *(floatBranches["mindr_lep1_allJet"]) = mindr_lep1_allJet;
+        *(floatBranches["mindr_lep2_allJet"]) = mindr_lep2_allJet;
+        *(floatBranches["ptRel_lep1_jet"]) = ptRel_lep1_jet;
+        *(floatBranches["ptRel_lep2_jet"]) = ptRel_lep2_jet;
+        *(floatBranches["ptRel_lep1_allJet"]) = ptRel_lep1_allJet;
+        *(floatBranches["ptRel_lep2_allJet"]) = ptRel_lep2_allJet;
+        
+      }
+
         
         
       if (ExtraHiggsVariables) {
@@ -3261,6 +3454,11 @@ int main ( int argc, char ** argv )
         *(floatBranches["second_jet_CSV"]) = second_jet_CSV;
         *(floatBranches["third_jet_CSV"]) = third_jet_CSV;
         *(floatBranches["fourth_jet_CSV"]) = fourth_jet_CSV;
+
+        *(floatBranches["first_jet_CSV_unc"]) = first_jet_CSV_unc;
+        *(floatBranches["second_jet_CSV_unc"]) = second_jet_CSV_unc;
+        *(floatBranches["third_jet_CSV_unc"]) = third_jet_CSV_unc;
+        *(floatBranches["fourth_jet_CSV_unc"]) = fourth_jet_CSV_unc;
 
 //         *(floatBranches["first_lf_jet_pt"]) = first_lf_jet_pt;
 //         *(floatBranches["first_lf_jet_eta"]) = first_lf_jet_eta;
@@ -3376,8 +3574,8 @@ int main ( int argc, char ** argv )
 
         ////leptons
         *(floatBranches["dEta_leplep"]) = dEta_leplep;
-        *(floatBranches["mindr_lep1_allJet"]) = mindr_lep1_allJet;
-        *(floatBranches["mindr_lep2_allJet"]) = mindr_lep2_allJet;
+        //*(floatBranches["mindr_lep1_allJet"]) = mindr_lep1_allJet;
+        //*(floatBranches["mindr_lep2_allJet"]) = mindr_lep2_allJet;
         *(floatBranches["MT_met_lep1"]) = mass_met_lep1_transverse;
         *(floatBranches["MT_met_lep2"]) = mass_met_lep2_transverse;
         *(floatBranches["dPhi_met_lep1"]) = dPhi_met_lep1;
@@ -3465,18 +3663,6 @@ int main ( int argc, char ** argv )
 
       } // end neural net selection
 
-      //---------------------------------------------------
-      //
-      //   Apply selection before filling tree.
-      //
-      // 
-      //--------------------------------------------------
-
-      if (applySelection){
-        
-        if (numJets < 2) continue;
-        
-      }
 
       if (verbose) std::cout << "about to fill tree" <<std::endl;
       
