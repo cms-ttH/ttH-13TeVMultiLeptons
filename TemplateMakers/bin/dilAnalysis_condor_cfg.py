@@ -22,6 +22,7 @@ iJes = int (sys.argv[6])
 iJer = int (sys.argv[7])
 iBtag = int (sys.argv[8])
 iPUPeriod = str(sys.argv[9])
+
 # update serach path
 
 searchPath = os.environ['CMSSW_SEARCH_PATH']
@@ -131,12 +132,13 @@ process.dilAnalysis = cms.PSet(
 
 	jes = cms.int32(iJes),
 	jer = cms.int32(iJer),
-    applySelection = cms.bool(False),
+	applySelection = cms.bool(False),
 	#btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	#puFile = cms.FileInPath("collect_pileup_histos_v1_histo.root"),
 	sampleName = cms.string(sampleNameCL),
     
 	selectionYear = cms.string(iYear),
+
 	PUPeriod = cms.string(iPUPeriod),
 
     btagCSVShape = cms.int32(iBtag)
