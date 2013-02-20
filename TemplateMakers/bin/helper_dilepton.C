@@ -1675,6 +1675,7 @@ int main ( int argc, char ** argv )
     numLooseMuons = muonsTL.size() - muonsTight.size();
     //numLooseMuons = muonsLoose.size();
 
+
     bool PassTwoLepton = (( numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons )== 2 && ( numTightMuons + numTightElectrons )> 0 );
     //if ( !PassTwoLepton ) continue ;
     if ( debug_ && muons.size() + electrons.size() < 2 ) cout << "Event " << cnt << ", input collection of leptons less than 2" << endl;
@@ -1685,7 +1686,7 @@ int main ( int argc, char ** argv )
       if (debug_) cout << "Electrons: " << electrons.size() << ", tight: " << numTightElectrons << ", loose: " << numLooseElectrons << endl;
       continue;
     }
-      
+
     /////////
     ///
     /// Pfjets
@@ -2549,11 +2550,11 @@ int main ( int argc, char ** argv )
         lep2Chi2 = electronsSelected.at(1).tkNormChi2;
         lep2NumExpectedHits = electronsSelected.at(1).numberOfExpectedInnerHits;
 
-        lep1PassSSCut = ( (lep1TkCharge == lep1GsfCharge) && (lep1IP < 0.02) &&
-                          (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
+        lep1PassSSCut = ( (lep1TkCharge == lep1GsfCharge) && (fabs(lep1IP) < 0.02) &&
+                          (fabs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep1dFracScEtTkPt < 1) );
-        lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (lep2IP < 0.02) &&
-                          (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
+        lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (fabs(lep2IP) < 0.02) &&
+                          (fabs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep2dFracScEtTkPt < 1) );
 
         if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
@@ -2667,8 +2668,8 @@ int main ( int argc, char ** argv )
                                         0.0, sqrt(pow(electronsSelected.at(0).energy,2) - pow(electronsSelected.at(0).pz,2)));
 
         lep1PassSSCut = muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7;
-        lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (lep2IP < 0.02) &&
-                          (abs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
+        lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (fabs(lep2IP) < 0.02) &&
+                          (fabs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep2dFracScEtTkPt < 1) );
         
 
