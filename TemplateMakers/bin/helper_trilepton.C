@@ -142,6 +142,8 @@ int main ( int argc, char ** argv )
      PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July";
    } else if (tempPUPeriodStr == "2012ABC") {
      PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July, 2012C_PR, 2012C_24Aug";
+   } else if (tempPUPeriodStr == "2012ABCD") {
+     PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July, 2012C_PR, 2012C_24Aug, 2012D_PR";
    } else {
      std::cout << "Couldn't understand PUPeriodStr = " << tempPUPeriodStr << endl;
      exit (12);
@@ -161,7 +163,11 @@ int main ( int argc, char ** argv )
      exit(22);
    }
 
-   bool applySelection = anaParams.getParameter<bool>("applySelection");
+//    bool applySelectionJets = anaParams.getParameter<bool>("applySelectionJets");
+//    bool applySelectionSameSign = anaParams.getParameter<bool>("applySelectionSameSign");
+   // No need to apply selection for trilepton events
+   bool applySelectionJets = false;
+   bool applySeleectionSameSign = false;
    
    bool debug_ = false;
 
@@ -560,6 +566,7 @@ int main ( int argc, char ** argv )
   bool ExtraGenVariables = true;
   bool ExtraHiggsVariables = false;
   bool ExtraSameSignVariables = true;
+  bool ExtraThreeMuVars = false;
   
   bool ArtificialJetPt = false;
   float higgs_mass = 115.0;
@@ -932,7 +939,6 @@ int main ( int argc, char ** argv )
     intBranches["isMu30_Ele30_CaloIdLPass"] = new int (0);
     intBranches["isEle8_CaloIdL_CaloIsoVLPass"] = new int (0);
     intBranches["isDiCentralPFJet30_PFMET80_BTagCSV07Pass"] = new int(0);
-    intBranches["isDiCentralPFJet50_PFMET80Pass"] = new int(0);
     intBranches["isMET120_HBHENoiseCleanedPass"] = new int(0);
     intBranches["isMET200Pass"] = new int(0);
     intBranches["isPFMET150Pass"] = new int(0);
@@ -1015,6 +1021,40 @@ int main ( int argc, char ** argv )
 
   } //End if (ExtraLeptonVariables)
 
+  if (ExtraThreeMuVars){
+
+    floatBranches["lep1correctedD0Vertex"] = new float(0.0);
+    floatBranches["lep2correctedD0Vertex"] = new float(0.0);
+    floatBranches["lep3correctedD0Vertex"] = new float(0.0);
+    
+    floatBranches["lep1dVzPVz"] = new float(0.0);
+    floatBranches["lep2dVzPVz"] = new float(0.0);
+    floatBranches["lep3dVzPVz"] = new float(0.0);
+
+    intBranches["lep1numberOfMatchedStations"] = new int(0);
+    intBranches["lep2numberOfMatchedStations"] = new int(0);
+    intBranches["lep3numberOfMatchedStations"] = new int(0);
+    
+    floatBranches["lep1normalizedChi2"] = new float(0.0);
+    floatBranches["lep2normalizedChi2"] = new float(0.0);
+    floatBranches["lep3normalizedChi2"] = new float(0.0);
+    
+    intBranches["lep1numberOfLayersWithMeasurement"] = new int(0);
+    intBranches["lep2numberOfLayersWithMeasurement"] = new int(0); 
+    intBranches["lep3numberOfLayersWithMeasurement"] = new int(0);
+  
+    intBranches["lep1numberOfValidPixelHits"] = new int(0);
+    intBranches["lep2numberOfValidPixelHits"] = new int(0);
+    intBranches["lep3numberOfValidPixelHits"] = new int(0); 
+  
+    intBranches["lep1numberOfValidMuonHits"] = new int(0);
+    intBranches["lep2numberOfValidMuonHits"] = new int(0);
+    intBranches["lep3numberOfValidMuonHits"] = new int(0);
+
+
+  }
+  
+
   ////////////////////  
   histofile.cd();
 
@@ -1085,7 +1125,6 @@ int main ( int argc, char ** argv )
     mc_hlt_MuEG_trigger_collection.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     mc_hlt_MuEG_trigger_collection.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     mc_hlt_MET_trigger_collection.push_back("HLT_DiCentralPFJet30_PFMET80_BTagCSV07_v");
-    mc_hlt_MET_trigger_collection.push_back("HLT_DiCentralPFJet50_PFMET80_v");
     mc_hlt_MET_trigger_collection.push_back("HLT_MET120_HBHENoiseCleaned_v");
     mc_hlt_MET_trigger_collection.push_back("HLT_MET200_v");
     mc_hlt_MET_trigger_collection.push_back("HLT_PFMET150_v");
@@ -1121,7 +1160,7 @@ int main ( int argc, char ** argv )
       cnt++;
 
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
-      if( cnt%100==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
+      if( cnt%10000==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
 					      << int(float(cnt)/float(nentries)*100) << "% done" << std::endl;
 
       if( cnt==(maxNentries+1) ) break;
@@ -1265,7 +1304,7 @@ int main ( int argc, char ** argv )
       float Q2ScaleUpWgt = 1.0;
       float Q2ScaleDownWgt = 1.0; 
 
-      if (sampleNumber == 2500 || sampleNumber == 2544 || sampleNumber == 2555) {
+      if ( sampleName == "ttbar" || tmpName.Contains("ttbar_") ) {
         Q2ScaleUpWgt = event->Q2ScaleUpWgt;
         Q2ScaleDownWgt = event->Q2ScaleDownWgt;
       }
@@ -1430,7 +1469,6 @@ int main ( int argc, char ** argv )
       bool HLT_Mu22_Photon22_CaloIdL_v = false;
       bool HLT_Mu30_Ele30_CaloIdL_v = false;
       bool HLT_DiCentralPFJet30_PFMET80_BTagCSV07_v = false;
-      bool HLT_DiCentralPFJet50_PFMET80_v = false;
       bool HLT_MET120_HBHENoiseCleaned_v = false;
       bool HLT_MET200_v = false;
       bool HLT_PFMET150_v = false;
@@ -1452,7 +1490,6 @@ int main ( int argc, char ** argv )
       if(hlt_name.find("HLT_Mu22_Photon22_CaloIdL_v")!=std::string::npos) HLT_Mu22_Photon22_CaloIdL_v = ( hltbit->pass==1 );
       if(hlt_name.find("HLT_Mu30_Ele30_CaloIdL_v")!=std::string::npos) HLT_Mu30_Ele30_CaloIdL_v = ( hltbit->pass==1 );
       if(hlt_name.find("HLT_DiCentralPFJet30_PFMET80_BTagCSV07_v")!=std::string::npos) HLT_DiCentralPFJet30_PFMET80_BTagCSV07_v = ( hltbit->pass==1 );
-      if(hlt_name.find("HLT_DiCentralPFJet50_PFMET80_v")!=std::string::npos) HLT_DiCentralPFJet50_PFMET80_v = ( hltbit->pass==1 );
       if(hlt_name.find("HLT_MET120_HBHENoiseCleaned_v")!=std::string::npos) HLT_MET120_HBHENoiseCleaned_v = ( hltbit->pass==1 );
       if(hlt_name.find("HLT_MET200_v")!=std::string::npos) HLT_MET200_v = ( hltbit->pass==1 );
       if(hlt_name.find("HLT_PFMET150_v")!=std::string::npos) HLT_PFMET150_v = ( hltbit->pass==1 );
@@ -1732,13 +1769,13 @@ int main ( int argc, char ** argv )
       lep_vect2.SetPxPyPzE(muonsSelected.at(1).px, muonsSelected.at(1).py, muonsSelected.at(1).pz, muonsSelected.at(1).energy);
       lep_vect3.SetPxPyPzE(muonsSelected.at(2).px, muonsSelected.at(2).py, muonsSelected.at(2).pz, muonsSelected.at(2).energy);
 
-      if (muonsSelected.at(0).tkCharge == -muonsSelected.at(1).tkCharge) {
+      if (muonsSelected.at(0).tkCharge * muonsSelected.at(1).tkCharge != 1) {
         lep_vect_1_2 = lep_vect1 + lep_vect2;
         mass_1_2 = lep_vect_1_2.M(); }
-      if (muonsSelected.at(0).tkCharge == -muonsSelected.at(2).tkCharge) {
+      if (muonsSelected.at(0).tkCharge * muonsSelected.at(2).tkCharge != 1) {
         lep_vect_1_3 = lep_vect1 + lep_vect3;
         mass_1_3 = lep_vect_1_3.M(); }
-      if (muonsSelected.at(1).tkCharge == -muonsSelected.at(2).tkCharge) {
+      if (muonsSelected.at(1).tkCharge * muonsSelected.at(2).tkCharge != 1) {
         lep_vect_2_3 = lep_vect2 + lep_vect3;
         mass_2_3 = lep_vect_2_3.M(); }
 
@@ -1759,13 +1796,13 @@ int main ( int argc, char ** argv )
       lep_vect2.SetPxPyPzE(electronsSelected.at(1).px, electronsSelected.at(1).py, electronsSelected.at(1).pz, electronsSelected.at(1).energy);
       lep_vect3.SetPxPyPzE(electronsSelected.at(2).px, electronsSelected.at(2).py, electronsSelected.at(2).pz, electronsSelected.at(2).energy);
 
-      if (electronsSelected.at(0).gsfCharge == -electronsSelected.at(1).gsfCharge) {
+      if (electronsSelected.at(0).tkCharge * electronsSelected.at(1).tkCharge != 1) {
         lep_vect_1_2 = lep_vect1 + lep_vect2;
         mass_1_2 = lep_vect_1_2.M(); }
-      if (electronsSelected.at(0).gsfCharge == -electronsSelected.at(2).gsfCharge) {
+      if (electronsSelected.at(0).tkCharge * electronsSelected.at(2).tkCharge != 1) {
         lep_vect_1_3 = lep_vect1 + lep_vect3;
         mass_1_3 = lep_vect_1_3.M(); }
-      if (electronsSelected.at(1).gsfCharge == -electronsSelected.at(2).gsfCharge) {
+      if (electronsSelected.at(1).tkCharge * electronsSelected.at(2).tkCharge != 1) {
         lep_vect_2_3 = lep_vect2 + lep_vect3;
         mass_2_3 = lep_vect_2_3.M(); }
 
@@ -2047,7 +2084,7 @@ int main ( int argc, char ** argv )
       // Only select events with at least two jets
       // AWB Feb 14 2013
       // Moved this cut to the middle to avoid wasting time on calculations
-      if (applySelection){
+      if (applySelectionJets){
         if (numJets < 2) continue;
       }
 
@@ -2454,6 +2491,36 @@ int main ( int argc, char ** argv )
     float lep3Chi2 = dFloat;
     int lep3NumExpectedHits = dInt;
     
+   float lep1correctedD0Vertex = dFloat;
+   float lep2correctedD0Vertex = dFloat;
+   float lep3correctedD0Vertex = dFloat;
+
+   float lep1dVzPVz = dFloat;
+   float lep2dVzPVz = dFloat;
+   float lep3dVzPVz = dFloat;
+
+   int lep1numberOfMatchedStations = dInt;
+   int lep2numberOfMatchedStations = dInt;
+   int lep3numberOfMatchedStations = dInt;
+
+   float lep1normalizedChi2 = dFloat;
+   float lep2normalizedChi2 = dFloat;
+   float lep3normalizedChi2 = dFloat;
+
+   int lep1numberOfLayersWithMeasurement = dInt;
+   int lep2numberOfLayersWithMeasurement = dInt; 
+   int lep3numberOfLayersWithMeasurement = dInt;
+  
+   int lep1numberOfValidPixelHits = dInt;
+   int lep2numberOfValidPixelHits = dInt;
+   int lep3numberOfValidPixelHits = dInt; 
+  
+   int lep1numberOfValidMuonHits = dInt;
+   int lep2numberOfValidMuonHits = dInt;
+   int lep3numberOfValidMuonHits = dInt;
+
+
+
     BNmcparticle MCLep1;
     BNmcparticle MCLep2;
     BNmcparticle MCLep3;
@@ -2516,6 +2583,34 @@ int main ( int argc, char ** argv )
         lep1GenCharge = muonsSelected.at(0).genCharge;
         lep2GenCharge = muonsSelected.at(1).genCharge;
         lep3GenCharge = muonsSelected.at(2).genCharge;
+
+	lep1correctedD0Vertex = muonsSelected.at(0).correctedD0Vertex;
+	lep2correctedD0Vertex = muonsSelected.at(1).correctedD0Vertex;
+	lep3correctedD0Vertex = muonsSelected.at(2).correctedD0Vertex;
+
+	lep1dVzPVz = muonsSelected.at(0).dVzPVz;
+	lep2dVzPVz = muonsSelected.at(1).dVzPVz;
+	lep3dVzPVz = muonsSelected.at(2).dVzPVz;
+
+	lep1numberOfMatchedStations = muonsSelected.at(0).numberOfMatchedStations;
+	lep2numberOfMatchedStations = muonsSelected.at(1).numberOfMatchedStations;
+	lep3numberOfMatchedStations = muonsSelected.at(2).numberOfMatchedStations;
+
+	lep1normalizedChi2 = muonsSelected.at(0).normalizedChi2;
+	lep2normalizedChi2 = muonsSelected.at(1).normalizedChi2;
+	lep3normalizedChi2 = muonsSelected.at(2).normalizedChi2;
+
+	lep1numberOfLayersWithMeasurement = muonsSelected.at(0).numberOfLayersWithMeasurement;
+	lep2numberOfLayersWithMeasurement = muonsSelected.at(1).numberOfLayersWithMeasurement;
+	lep3numberOfLayersWithMeasurement = muonsSelected.at(2).numberOfLayersWithMeasurement;
+
+	lep1numberOfValidPixelHits = muonsSelected.at(0).numberOfValidPixelHits;
+	lep2numberOfValidPixelHits = muonsSelected.at(1).numberOfValidPixelHits;
+	lep3numberOfValidPixelHits = muonsSelected.at(2).numberOfValidPixelHits;
+
+	lep1numberOfValidMuonHits = muonsSelected.at(0).numberOfValidMuonHits;
+	lep2numberOfValidMuonHits = muonsSelected.at(1).numberOfValidMuonHits;
+	lep3numberOfValidMuonHits = muonsSelected.at(2).numberOfValidMuonHits;
 
         if (lep1GenID == -99) {
           MCLep1 = beanHelper.GetMatchedMCparticle(mcparticles,muonsSelected.at(0),0.1);
@@ -4049,7 +4144,6 @@ int main ( int argc, char ** argv )
         *(intBranches["isMu22_Photon22_CaloIdLPass"]) = HLT_Mu22_Photon22_CaloIdL_v ? 1 : 0;
         *(intBranches["isMu30_Ele30_CaloIdLPass"]) = HLT_Mu30_Ele30_CaloIdL_v ? 1 : 0;
         *(intBranches["isDiCentralPFJet30_PFMET80_BTagCSV07Pass"]) = HLT_DiCentralPFJet30_PFMET80_BTagCSV07_v ? 1 : 0;
-        *(intBranches["isDiCentralPFJet50_PFMET80Pass"]) = HLT_DiCentralPFJet50_PFMET80_v ? 1 : 0;
         *(intBranches["isMET120_HBHENoiseCleanedPass"]) = HLT_MET120_HBHENoiseCleaned_v ? 1 : 0;
         *(intBranches["isMET200Pass"]) = HLT_MET200_v ? 1 : 0;
         *(intBranches["isPFMET150Pass"]) = HLT_PFMET150_v ? 1 : 0;
@@ -4133,6 +4227,41 @@ int main ( int argc, char ** argv )
 
       } //End if (ExtraLeptonVariables)
         
+      if (ExtraThreeMuVars) {
+
+        *(floatBranches["lep1correctedD0Vertex"]) = lep1correctedD0Vertex;
+        *(floatBranches["lep2correctedD0Vertex"]) = lep2correctedD0Vertex;
+        *(floatBranches["lep3correctedD0Vertex"]) = lep3correctedD0Vertex;
+        
+        *(floatBranches["lep1dVzPVz"]) = lep1dVzPVz;
+        *(floatBranches["lep2dVzPVz"]) = lep2dVzPVz;
+        *(floatBranches["lep3dVzPVz"]) = lep3dVzPVz;
+        
+        *(intBranches["lep1numberOfMatchedStations"]) = lep1numberOfMatchedStations;
+        *(intBranches["lep2numberOfMatchedStations"]) = lep2numberOfMatchedStations;
+        *(intBranches["lep3numberOfMatchedStations"]) = lep3numberOfMatchedStations;
+        
+        *(floatBranches["lep1normalizedChi2"]) = lep1normalizedChi2;
+        *(floatBranches["lep2normalizedChi2"]) = lep2normalizedChi2;
+        *(floatBranches["lep3normalizedChi2"]) = lep3normalizedChi2;
+        
+        *(intBranches["lep1numberOfLayersWithMeasurement"]) = lep1numberOfLayersWithMeasurement;
+        *(intBranches["lep2numberOfLayersWithMeasurement"]) = lep2numberOfLayersWithMeasurement; 
+        *(intBranches["lep3numberOfLayersWithMeasurement"]) = lep3numberOfLayersWithMeasurement;
+        
+        *(intBranches["lep1numberOfValidPixelHits"]) = lep1numberOfValidPixelHits;
+        *(intBranches["lep2numberOfValidPixelHits"]) = lep2numberOfValidPixelHits;
+        *(intBranches["lep3numberOfValidPixelHits"]) = lep3numberOfValidPixelHits; 
+        
+        *(intBranches["lep1numberOfValidMuonHits"]) = lep1numberOfValidMuonHits;
+        *(intBranches["lep2numberOfValidMuonHits"]) = lep2numberOfValidMuonHits;
+        *(intBranches["lep3numberOfValidMuonHits"]) = lep3numberOfValidMuonHits;
+
+      }
+
+
+
+
       if (debug_) std::cout << "OUTPUT VARIABLES: " <<
         "runNumber : " << event->run << " , " <<  
         "eventNumber : " << event->lumi << " , " << 
