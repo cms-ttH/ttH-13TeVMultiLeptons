@@ -189,6 +189,7 @@ int main ( int argc, char ** argv )
    bool makeJetPlots = anaParams.getParameter<bool>("jetPlots");
    bool makeKinPlots = anaParams.getParameter<bool>("kinPlots");
    bool makeSameSignPlots = anaParams.getParameter<bool>("sameSignPlots");
+   bool makeTrileptonPlots = anaParams.getParameter<bool>("trileptonPlots");
    bool makeOnePlot = anaParams.getParameter<bool>("onePlot");
    bool makeCSVPlots = anaParams.getParameter<bool>("csvPlots");
    bool doHtReweight = anaParams.getParameter<bool>("htReweight");
@@ -215,27 +216,29 @@ int main ( int argc, char ** argv )
   std::vector<string> JetTagReqs;
 
   //DIL analysis categories
-  //JetTagReqs.push_back("ge2t");
-  //JetTagReqs.push_back("eq2jeq2t");
-  //JetTagReqs.push_back("eq3jeq2t");
-  //JetTagReqs.push_back("ge4jeq2t");
-  //JetTagReqs.push_back("ge3t");
+  JetTagReqs.push_back("ge2t");
+  JetTagReqs.push_back("eq2jeq2t");
+  JetTagReqs.push_back("eq3jeq2t");
+  JetTagReqs.push_back("ge4jeq2t");
+  JetTagReqs.push_back("ge3t");
   //JetTagReqs.push_back("eq3jeq3t"):
   //JetTagReqs.push_back("ge4jeq3t");
   //JetTagReqs.push_back("ge4jge3t");
   //JetTagReqs.push_back("ge4jge4t");
 
-  //Same sign analysis categories
-  JetTagReqs.push_back("eq0j");
-//   JetTagReqs.push_back("eq2jge0t");
-  JetTagReqs.push_back("eq2jeq0t");
-  JetTagReqs.push_back("eq2jeq1t");
-//   JetTagReqs.push_back("eq2jeq2t"):
-//   JetTagReqs.push_back("eq3jge1t");
-  JetTagReqs.push_back("eq3jeq1t");
-  //JetTagReqs.push_back("eq3jge2t");
-  //JetTagReqs.push_back("ge4jeq1t");
-  //JetTagReqs.push_back("ge4jge2t");
+//   //Same sign analysis categories
+//   JetTagReqs.push_back("eq0j");
+//   JetTagReqs.push_back("eq1jeq0t");
+//   JetTagReqs.push_back("eq1jeq1t");
+// //   JetTagReqs.push_back("eq2jge0t");
+//   JetTagReqs.push_back("eq2jeq0t");
+//   JetTagReqs.push_back("eq2jeq1t");
+// //   JetTagReqs.push_back("eq2jeq2t"):
+// //   JetTagReqs.push_back("eq3jge1t");
+//   JetTagReqs.push_back("eq3jeq1t");
+//   //JetTagReqs.push_back("eq3jge2t");
+//   //JetTagReqs.push_back("ge4jeq1t");
+//   //JetTagReqs.push_back("ge4jge2t");
 
   //CSV study categories
 //   JetTagReqs.push_back("eq2jge0t");
@@ -252,6 +255,10 @@ int main ( int argc, char ** argv )
   lepCatList.push_back("TwoMuon"); 
   lepCatList.push_back("TwoEle");
   lepCatList.push_back("MuonEle");
+//   lepCatList.push_back("ThreeMuon"); 
+//   lepCatList.push_back("TwoMuonEle");
+//   lepCatList.push_back("TwoEleMuon");
+//   lepCatList.push_back("ThreeEle"); 
   
   ///////   systematics
   std::vector< TString > sysList ;
@@ -367,6 +374,15 @@ int main ( int argc, char ** argv )
     varList.push_back(lep1IPError);
     varInfo *lep2IPError = new varInfo("lep2IPError", "lep2IPError", "lep2IPError", 100, 0, 0.1); 
     varList.push_back(lep2IPError);
+    varInfo *lep1GenID = new varInfo("lep1GenID", "lep1GenID", "lep1GenID", 50, -25, 25);
+    varList.push_back(lep1GenID);
+    varInfo *lep1GenMotherID = new varInfo("lep1GenMotherID", "lep1GenMotherID", "lep1GenMotherID", 50, -25, 25);
+    varList.push_back(lep1GenMotherID);
+    varInfo *lep2GenID = new varInfo("lep2GenID", "lep2GenID", "lep2GenID", 50, -25, 25);
+    varList.push_back(lep2GenID);
+    varInfo *lep2GenMotherID = new varInfo("lep2GenMotherID", "lep2GenMotherID", "lep2GenMotherID", 50, -25, 25);
+    varList.push_back(lep2GenMotherID);
+    
 
     varInfo *mindr_lep1_allJet = new varInfo("mindr_lep1_allJet", "mindr_lep1_allJet", "mindr_lep1_allJet", 600, 0, 6); 
     varList.push_back(mindr_lep1_allJet);
@@ -381,8 +397,92 @@ int main ( int argc, char ** argv )
     varInfo *ptRel_lep2_jet = new varInfo("ptRel_lep2_jet", "ptRel_lep2_jet", "ptRel_lep2_jet", 100, 0, 1); 
     varList.push_back(ptRel_lep2_jet);
 
+    varInfo *wLike_dijet_mass = new varInfo("wLike_dijet_mass", "wLike_dijet_mass", "wLike_dijet_mass", 1000, 0, 1000);
+    varList.push_back(wLike_dijet_mass);
+    varInfo *topLike_trijet_mass = new varInfo("topLike_trijet_mass", "topLike_trijet_mass", "topLike_trijet_mass", 1000, 0, 1000);
+    varList.push_back(topLike_trijet_mass);
+    varInfo *topLike_dijet_lep2_mass = new varInfo("topLike_dijet_lep2_mass", "topLike_dijet_lep2_mass", "topLike_dijet_lep2_mass", 1000, 0, 1000);
+    varList.push_back(topLike_dijet_lep2_mass);
+    varInfo *MT_MHT_lep1 = new varInfo("MT_MHT_lep1", "MT_MHT_lep1", "MT_MHT_lep1", 1000, 0, 1000);
+    varList.push_back(MT_MHT_lep1);
+    varInfo *MT_MHT_lep1_b = new varInfo("MT_MHT_lep1_b", "MT_MHT_lep1_b", "MT_MHT_lep1_b", 1000, 0, 1000);
+    varList.push_back(MT_MHT_lep1_b);
+    varInfo *MT_MHT_lep2_b = new varInfo("MT_MHT_lep2_b", "MT_MHT_lep2_b", "MT_MHT_lep2_b", 1000, 0, 1000);
+    varList.push_back(MT_MHT_lep2_b);
+    
+
   } //end makeSameSignPlots    
 
+  if (makeTrileptonPlots) {
+
+    //lepton variables
+    varInfo *lep3Pt = new varInfo("lep3Pt", "lep3Pt", "lep3Pt", 1000, 0, 1000);
+    varList.push_back(lep3Pt);
+    varInfo *lep3Eta = new varInfo("lep3Eta", "lep3Eta", "lep3Eta", 500, -2.5, 2.5);
+    varList.push_back(lep3Eta);
+    varInfo *lep3Iso = new varInfo("lep3Iso", "lep3Iso", "lep3Iso", 200, 0, 0.2);
+    varList.push_back(lep3Iso);
+
+    varInfo *lep3TkCharge = new varInfo("lep3TkCharge", "lep3TkCharge", "lep3TkCharge", 2, -1, 1);
+    varList.push_back(lep3TkCharge);
+    varInfo *lep3ChargedIso = new varInfo("lep3ChargedIso", "lep3ChargedIso", "lep3ChargedIso", 200, 0, 0.2);
+    varList.push_back(lep3ChargedIso);
+    varInfo *lep3NeutralIso = new varInfo("lep3NeutralIso", "lep3NeutralIso", "lep3NeutralIso", 200, 0, 0.2); 
+    varList.push_back(lep3NeutralIso);
+    varInfo *lep3IP = new varInfo("lep3IP", "lep3IP", "lep3IP", 200, -0.1, 0.1); 
+    varList.push_back(lep3IP);
+    varInfo *lep3IPError = new varInfo("lep3IPError", "lep3IPError", "lep3IPError", 100, 0, 0.1); 
+    varList.push_back(lep3IPError);
+    varInfo *lep3GenID = new varInfo("lep3GenID", "lep3GenID", "lep3GenID", 50, -25, 25);
+    varList.push_back(lep3GenID);
+    varInfo *lep3GenMotherID = new varInfo("lep3GenMotherID", "lep3GenMotherID", "lep3GenMotherID", 50, -25, 25);
+    varList.push_back(lep3GenMotherID);
+
+    varInfo *mindr_lep3_allJet = new varInfo("mindr_lep3_allJet", "mindr_lep3_allJet", "mindr_lep3_allJet", 600, 0, 6); 
+    varList.push_back(mindr_lep3_allJet);
+    varInfo *ptRel_lep3_allJet = new varInfo("ptRel_lep3_allJet", "ptRel_lep3_allJet", "ptRel_lep3_allJet", 100, 0, 1); 
+    varList.push_back(ptRel_lep3_allJet);
+    varInfo *mindr_lep3_jet = new varInfo("mindr_lep3_jet", "mindr_lep3_jet", "mindr_lep3_jet", 600, 0, 6); 
+    varList.push_back(mindr_lep3_jet);
+    varInfo *ptRel_lep3_jet = new varInfo("ptRel_lep3_jet", "ptRel_lep3_jet", "ptRel_lep3_jet", 100, 0, 1); 
+    varList.push_back(ptRel_lep3_jet);
+
+    varInfo *mass_leplep_1 = new varInfo("mass_leplep_1", "mass_leplep_1", "mass_leplep_1", 1000, 0, 1000);
+    varList.push_back(mass_leplep_1);
+    varInfo *mass_leplep_2 = new varInfo("mass_leplep_2", "mass_leplep_2", "mass_leplep_2", 1000, 0, 1000);
+    varList.push_back(mass_leplep_2);
+   
+    varInfo *pt_leplep = new varInfo("pt_leplep", "pt_leplep", "pt_leplep", 1000, 0, 1000);
+    varList.push_back(pt_leplep);
+    varInfo *pt_leplep_1 = new varInfo("pt_leplep_1", "pt_leplep_1", "pt_leplep_1", 1000, 0, 1000);
+    varList.push_back(pt_leplep_1);
+    varInfo *pt_leplep_2 = new varInfo("pt_leplep_2", "pt_leplep_2", "pt_leplep_2", 1000, 0, 1000);
+    varList.push_back(pt_leplep_2);
+
+    varInfo *dR_leplep = new varInfo("dR_leplep", "dR_leplep", "dR_leplep", 600, 0, 6);
+    varList.push_back(dR_leplep);
+    varInfo *dR_leplep_1 = new varInfo("dR_leplep_1", "dR_leplep_1", "dR_leplep_1", 600, 0, 6);
+    varList.push_back(dR_leplep_1);
+    varInfo *dR_leplep_2 = new varInfo("dR_leplep_2", "dR_leplep_2", "dR_leplep_2", 600, 0, 6);
+    varList.push_back(dR_leplep_2);
+
+    varInfo *correctedDZ_leplep = new varInfo("correctedDZ_leplep", "correctedDZ_leplep", "correctedDZ_leplep", 200, -0.1, 0.1);
+    varList.push_back(correctedDZ_leplep);
+    varInfo *correctedDZ_leplep_1 = new varInfo("correctedDZ_leplep_1", "correctedDZ_leplep_1", "correctedDZ_leplep_1", 200, -0.1, 0.1);
+    varList.push_back(correctedDZ_leplep_1);
+    varInfo *correctedDZ_leplep_2 = new varInfo("correctedDZ_leplep_2", "correctedDZ_leplep_2", "correctedDZ_leplep_2", 200, -0.1, 0.1);
+    varList.push_back(correctedDZ_leplep_2);
+    
+    varInfo *correctedD0_leplep = new varInfo("correctedD0_leplep", "correctedD0_leplep", "correctedD0_leplep", 200, -0.1, 0.1);
+    varList.push_back(correctedD0_leplep);
+    varInfo *correctedD0_leplep_1 = new varInfo("correctedD0_leplep_1", "correctedD0_leplep_1", "correctedD0_leplep_1", 200, -0.1, 0.1);
+    varList.push_back(correctedD0_leplep_1);
+    varInfo *correctedD0_leplep_2 = new varInfo("correctedD0_leplep_2", "correctedD0_leplep_2", "correctedD0_leplep_2", 200, -0.1, 0.1);
+    varList.push_back(correctedD0_leplep_2);
+    
+
+  } //end makeTrileptonPlots    
+  
 
   if (makeLepPlots) {
     
@@ -598,7 +698,8 @@ int main ( int argc, char ** argv )
   //std::string TightLepStr = "(numTightMuons + numTightElectrons == 2) && "; //Only tight leptons
   //std::string TightLepStr = "(numTightMuons + numTightElectrons != 2) && "; //Only tight+loose events
   if (inputCharge == "OS") ChargeStr = "(oppositeLepCharge == 1) && "; //Leptons have opposite charge
-  if (inputCharge == "SS") ChargeStr = "(oppositeLepCharge == 0 && lepTotalPassSSCut == 1) && "; //Leptons have same charge
+  if (inputCharge == "SS") ChargeStr = "(oppositeLepCharge == 0 && lepTotalPassSSCut == 1 && lep1Pt+lep2Pt+MHT > 85) && "; //Leptons have same charge
+  if (makeTrileptonPlots)  ChargeStr = "(lepTotalPassSSCut == 1 && lep1Pt+lep2Pt+MHT > 85) && ";
   
   std::string ZmaskStr = "holder";
   std::string ZmaskStrSaver = "holder";
@@ -612,10 +713,12 @@ int main ( int argc, char ** argv )
   if (inputZmask == "Zmask") {
     OutputParams = OutputParams+"Zmask";
     ZmaskStr = "PassZmask == 1 && "; //Events outside the mask (reduced Zjets)
+    if (makeTrileptonPlots) ZmaskStr = "abs(mass_leplep - 91) > 10 && ";
   }
   if (inputZmask == "Zpeak") {
     OutputParams = OutputParams+"Zpeak";
     ZmaskStr = "PassZmask == 0 && "; //Events inside the mask (mostly Zjets)
+    if (makeTrileptonPlots) ZmaskStr = "abs(mass_leplep - 91) < 10 && ";
   }
   
   ////////  numPV division
@@ -764,6 +867,11 @@ int main ( int argc, char ** argv )
       // Convention: selections end with a logical AND and a space
       std::string cutDrLepLep = " (dR_leplep > 0.2) && ";
       std::string cutMassLepLep = " (mass_leplep > 12) && ";
+
+      if (makeTrileptonPlots) {
+        cutDrLepLep = " (dR_leplep > 0.2 || lep1TkCharge == lep2TkCharge) && (dR_leplep_1 > 0.2 || lep1TkCharge == lep3TkCharge) && (dR_leplep_2 > 0.2 || lep2TkCharge == lep3TkCharge) && ";
+        cutMassLepLep = " (mass_leplep > 12 || lep1TkCharge == lep2TkCharge) && (mass_leplep_1 > 12 || lep1TkCharge == lep3TkCharge) && (mass_leplep_2 > 0.2 || lep2TkCharge == lep3TkCharge) && ";
+      }
       
       
       if (JetTagReq == "ge2t") {
@@ -805,6 +913,14 @@ int main ( int argc, char ** argv )
       else if (JetTagReq == "eq0j") {
         JetReq = "numJets == 0";
         TagReq = "numTaggedJets == 0";
+      }
+      else if (JetTagReq == "eq1jeq0t") {
+        JetReq = "numJets == 1";
+        TagReq = "numTaggedJets == 0";
+      }
+      else if (JetTagReq == "eq1jeq1t") {
+        JetReq = "numJets == 1";
+        TagReq = "numTaggedJets == 1";
       }
       else if (JetTagReq == "eq2jge0t") {
         JetReq = "numJets == 2";
@@ -868,30 +984,43 @@ int main ( int argc, char ** argv )
         OutputDirectory = lepCatList[j];
         std::cout << "    ==>start sub-lep category " << OutputDirectory.c_str() << std::endl;
         if (inputYear == "2011") {
-        if (OutputDirectory == "TwoMuon" ) {
+        if (OutputDirectory == "TwoMuon" || OutputDirectory == "ThreeMuon" || OutputDirectory == "TwoMuonEle" ) {
           EffStr = "0.987 * 0.987 * ";
           TrigStr = "0.9885 * 0.9885 * ";
         }
-        else if (OutputDirectory ==  "TwoEle" ) {
+        else if (OutputDirectory == "TwoEle" || OutputDirectory == "ThreeEle" || OutputDirectory == "TwoEleMuon" ) {
           EffStr = "1.004 * 1.004 * ";
           TrigStr = "";
         }
-        else if (OutputDirectory ==  "MuonEle"  ) {
+        else if (OutputDirectory == "MuonEle"  ) {
           EffStr = "0.987 * 1.004 * ";
           TrigStr = "0.9885 * ";
         }
         }
-        else {
-        if (OutputDirectory == "TwoMuon" ) {
+        else if (inputYear == "2012_52x") {
+        if (OutputDirectory == "TwoMuon" || OutputDirectory == "ThreeMuon" || OutputDirectory == "TwoMuonEle" ) {
           TrigStr = "1.0035 * (1 + (abs(lep1Eta) > 1.31 && abs(lep1Eta) < 1.65)*0.061) * (1 + (abs(lep2Eta) > 1.31 && abs(lep2Eta) < 1.65)*0.061) * ";
         }
-        else if (OutputDirectory ==  "TwoEle" ) {
+        else if (OutputDirectory == "TwoEle" || OutputDirectory == "ThreeEle" || OutputDirectory == "TwoEleMuon" ) {
           TrigStr = "0.964 * ";
         }
-        else if (OutputDirectory ==  "MuonEle"  ) {
+        else if (OutputDirectory == "MuonEle"  ) {
           TrigStr = "0.983 * (1 + (abs(lep1Eta) > 1.31 && abs(lep1Eta) < 1.65)*0.072) * ";
         }
-        if (inputCharge == "SS") EffStr = "lepTotalSF * lepTotalFlipSF * lepTotalPromptSF * ";
+        if (inputCharge == "SS" || makeTrileptonPlots) EffStr = "lepTotalSF * lepTotalFlipSF * lepTotalPromptSF * ";
+        else EffStr = "lepTotalSF * ";
+        }
+        else {
+        if (OutputDirectory == "TwoMuon" || OutputDirectory == "ThreeMuon" || OutputDirectory == "TwoMuonEle" ) {
+          TrigStr = "0.978 * ";
+        }
+        else if (OutputDirectory == "TwoEle" || OutputDirectory == "ThreeEle" || OutputDirectory == "TwoEleMuon" ) {
+          TrigStr = "0.979 * ";
+        }
+        else if (OutputDirectory == "MuonEle"  ) {
+          TrigStr = "0.972 * ";
+        }
+        if (inputCharge == "SS" || makeTrileptonPlots) EffStr = "lepTotalSF * lepTotalFlipSF * lepTotalPromptSF * ";
         else EffStr = "lepTotalSF * ";
         }
           
@@ -914,8 +1043,8 @@ int main ( int argc, char ** argv )
           std::string SelectionStr = "holder";
           std::string CleanTrig = "holder";
 
-          if (OutputDirectory == "TwoMuon") CleanTrig = "(isCleanEvent == 1) && (isDoubleMuTriggerPass == 1) && ";
-          if (OutputDirectory == "TwoEle") CleanTrig =  "(isCleanEvent == 1) && (isDoubleElectronTriggerPass == 1) && ";
+          if (OutputDirectory == "TwoMuon" || OutputDirectory == "ThreeMuon" || OutputDirectory == "TwoMuonEle") CleanTrig = "(isCleanEvent == 1) && (isDoubleMuTriggerPass == 1) && ";
+          if (OutputDirectory == "TwoEle" || OutputDirectory == "ThreeEle" || OutputDirectory == "TwoEleMuon") CleanTrig =  "(isCleanEvent == 1) && (isDoubleElectronTriggerPass == 1) && ";
           if (OutputDirectory == "MuonEle") CleanTrig = "(isCleanEvent == 1) && (isMuEGTriggerPass == 1) && ";
 
 //           if (inputYear == "2011") {
@@ -1020,95 +1149,98 @@ int main ( int argc, char ** argv )
             continue;
           }
 
-	  std::string SelectionOrig = weight[ksys]+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "+CleanTrig+"("+JetReq+") && ("+TagReq+") )";
-	  if (isData || !doHtReweight) SelectionOrig = SelectionStr ;
+          std::string SelectionOrig = weight[ksys]+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr
+            + " ("+ OutputDirectory +") && " + cutDrLepLep + cutMassLepLep
+            +CleanTrig+"("+JetReq+") && ("+TagReq+") )";
+          
+          if (isData || !doHtReweight) SelectionOrig = SelectionStr ;
 
-	  //// get the correct normalization
-	  TString nameTmp = "njets_" + TString(JetTagReq + "_" + OutputDirectory) + syst;
+          //// get the correct normalization
+          TString nameTmp = "njets_" + TString(JetTagReq + "_" + OutputDirectory) + syst;
           TH1F *normTemp = new TH1F(nameTmp, "number of jets", 20,0,20);
-	  DileptonSummaryTree->Draw("numJets>>"+nameTmp, SelectionOrig.c_str(), "goff");
-	  double totNorm = normTemp->Integral();
-	  //	  std::cout<< " --> original norm is " << totNorm << std::endl;
+          DileptonSummaryTree->Draw("numJets>>"+nameTmp, SelectionOrig.c_str(), "goff");
+          double totNorm = normTemp->Integral();
+          //	  std::cout<< " --> original norm is " << totNorm << std::endl;
           ZmaskStr = ZmaskStrSaver; 
 
-        ////////  book only a few histogram folders
-        //TString OutputFileName = "holder";
-        //OutputFileName = "../" + OutputParams + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + JetTagReq + "_" + OutputDirectory + ".root";
-        //TFile * OutputFile = new TFile(OutputFileName, "UPDATE");
-        //TString OutputFileName = "../" + inputYear + "/" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
-        TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
-        TFile * OutputFile = outputRootFiles[OutputFileName];
-
-        cout << "Switching to output file" << OutputFile->GetName() << std::endl;
-        OutputFile->cd();
-
+          ////////  book only a few histogram folders
+          //TString OutputFileName = "holder";
+          //OutputFileName = "../" + OutputParams + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+          //TFile * OutputFile = new TFile(OutputFileName, "UPDATE");
+          //TString OutputFileName = "../" + inputYear + "/" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+          TString OutputFileName = "../" + OutputDirectory + "/" + InputFileLabel + "_" + inputYear + "_" + OutputParams + "_" + JetTagReq + "_" + OutputDirectory + ".root";
+          TFile * OutputFile = outputRootFiles[OutputFileName];
+          
+          cout << "Switching to output file" << OutputFile->GetName() << std::endl;
+          OutputFile->cd();
+          
         
-        if (printDrawString) {
+          if (printDrawString) {
             cout << "DEBUG: Draw command was made like this selection string" << endl 
                  << "DEBUG: " << SelectionStr 
                  << endl;
             
-        }
-
-        ///// start variables loop
-        for(std::vector<varInfo*>::iterator tIter1 = varList.begin(); tIter1 != varList.end(); tIter1++) {
-
-          varInfo *u = *tIter1;
-          int nBins = u->nBins;
-          double Xmin = u->min;
-          double Xmax = u->max;
-          TString histName = u->hName ;
-          TString variableName = u->hName ;
-
-          //update the histogram name based on systematic
-          if (ksys != 2){
-            histName = histName + TString("_") + syst;
           }
-
-
-          TH1F *histTemp = new TH1F(histName, histName , nBins, Xmin, Xmax);
-	  histTemp->Sumw2();  //// sumw2
-          TString varSig =  variableName + ">>" + histName;
-          TStopwatch myTime; // this starts the timer
-//           if (varSig.Contains("CSV_") && !varSig.Contains("CSV_unc")) {
-//             TString varSig1 =  variableName + "_1>>" + histName;
-//             TString varSig2 =  variableName + "_2>>+" + histName;
-//             DileptonSummaryTree->Draw(varSig1, SelectionStr.c_str(), "goff");
-//             DileptonSummaryTree->Draw(varSig2, SelectionStr.c_str(), "goff");
-//           }
-          DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
-          myTime.Stop();
-          drawTimesReal->Fill(myTime.RealTime());
-          drawTimesCPU->Fill(myTime.CpuTime());
-          numDraws->Fill(1);
-
-	  //	  if ( variableName == "Ht" )std::cout << " --> draw norm is " << histTemp->Integral() <<  std::endl;
-          //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
-          //      	  std::cout << "Drawing histogram " << histName << std::endl;
-
-
-          ///////////////////////////////////////////////////////
-          //
-          //  Critical - renormalize histogram for HT reweight
-          //
-          ////////////////////////////////////////////////////////
-
           
-          if(!isData && doHtReweight &&  histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());
-          histTemp->SetDirectory(OutputFile);
+          ///// start variables loop
+          for(std::vector<varInfo*>::iterator tIter1 = varList.begin(); tIter1 != varList.end(); tIter1++) {
+            
+            varInfo *u = *tIter1;
+            int nBins = u->nBins;
+            double Xmin = u->min;
+            double Xmax = u->max;
+            TString histName = u->hName ;
+            TString variableName = u->hName ;
+            
+            //update the histogram name based on systematic
+            if (ksys != 2){
+            histName = histName + TString("_") + syst;
+            }
 
+
+            TH1F *histTemp = new TH1F(histName, histName , nBins, Xmin, Xmax);
+            histTemp->Sumw2();  //// sumw2
+            TString varSig =  variableName + ">>" + histName;
+            TStopwatch myTime; // this starts the timer
+            //           if (varSig.Contains("CSV_") && !varSig.Contains("CSV_unc")) {
+            //             TString varSig1 =  variableName + "_1>>" + histName;
+            //             TString varSig2 =  variableName + "_2>>+" + histName;
+            //             DileptonSummaryTree->Draw(varSig1, SelectionStr.c_str(), "goff");
+            //             DileptonSummaryTree->Draw(varSig2, SelectionStr.c_str(), "goff");
+            //           }
+            DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
+            myTime.Stop();
+            drawTimesReal->Fill(myTime.RealTime());
+            drawTimesCPU->Fill(myTime.CpuTime());
+            numDraws->Fill(1);
+            
+            //	  if ( variableName == "Ht" )std::cout << " --> draw norm is " << histTemp->Integral() <<  std::endl;
+            //	  DileptonSummaryTree->Draw(u->hName+">>"+u->hName+"("+n3+","+n4+","+n5+")",SelectionStr.c_str(),"goff");
+            //      	  std::cout << "Drawing histogram " << histName << std::endl;
+            
+            
+            ///////////////////////////////////////////////////////
+            //
+            //  Critical - renormalize histogram for HT reweight
+            //
+            ////////////////////////////////////////////////////////
+            
+            
+            if(!isData && doHtReweight &&  histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());
+            histTemp->SetDirectory(OutputFile);
+            
           
-        } // end var loop
+          } // end var loop
       } // end sub-lep cat loop
       std::cout << '\n' ;
     }// end Cat loop
-
+    
     DileptonFile->Close();
     
     std::cout << "  == End systematic " << syst << " ==  " << std::endl;
     } // end sys
   } // end sample loop
-
+  
   //Close all the files
   for (unsigned iTag = 0; iTag < JetTagReqs.size(); iTag++){
     for (unsigned iLep = 0; iLep < lepCatList.size(); iLep++){
