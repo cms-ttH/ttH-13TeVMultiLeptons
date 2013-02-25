@@ -12,7 +12,9 @@ def main ():
     #jerChoice = int(sys.argv[2])
     #btagChoice = int(sys.argv[3])
     jobLabel = str(sys.argv[1])
-    selection = str(sys.argv[2])
+    jesChoice = int(sys.argv[2])
+    jerChoice = int(sys.argv[3])
+    selection = str(sys.argv[4])
 	#listDir = "53XHadoopSkims"
     print "selection is turned %s" % (selection)
     listOfSamples = []
@@ -20,7 +22,8 @@ def main ():
 		print "the selection is On!"
 		listDir = "53XHadoopSkims"
 		#listOfSamples.append('TTbar_53X_MassBF-v1-2')
-#		listOfSamples.append('TTbar_Semilep_53X')
+		listOfSamples.append('TTbar_Hadronic_53X')
+		#listOfSamples.append('TTbar_Semilep_53X')
 		#listOfSamples.append('TTbar_Dilep_53X')
 ##		listOfSamples.append('TTbar_skims_8TeV')
 ## 		listOfSamples.append('Wjets_skims_8TeV')
@@ -37,8 +40,8 @@ def main ():
 	   listDir = "53XHadoopBeans"
 	   #listOfSamples.append('WJets_Z2Str_noCuts')
 	   #listOfSamples.append('TTbar_Semilep_53X_noCuts')
-	   #listOfSamples.append('TTbar_Dilep_53X_noCuts')
-	   listOfSamples.append('TTbar_Hadronic_53X_noCuts')
+	   listOfSamples.append('TTbar_Dilep_53X_noCuts')
+	   #listOfSamples.append('TTbar_Hadronic_53X_noCuts')
 	   #listOfSamples.append('TTbar_Semilep_53X_noCuts_p1')
  	   #listOfSamples.append('TTbar_Semilep_53X_noCuts_p2')
  	   #listOfSamples.append('TTbar_Semilep_53X_noCuts_p3')
@@ -77,8 +80,23 @@ def main ():
                 foundJobs = True
 
         condorJobFile.write( "NJobs = %s\n" % numJobs)
-        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(Selection) \n")
-        condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")
+        condorJobFile.write( "JES = %s\n" % jesChoice)
+        print "JES %s", jesChoice 
+        condorJobFile.write( "JER = %s\n" % jerChoice)
+        print "JER %s", jerChoice 
+        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER) $(Selection) \n")
+
+        if (jesChoice == 0 and jerChoice == 0):
+            JetStr = ""
+        if (jesChoice == 1):
+            JetStr = "_JesUp"
+        if (jesChoice == -1):
+            JetStr = "_JesDown"
+        if (jerChoice == 1):
+            JetStr = "_JerUp"
+        if (jerChoice == -1):
+            JetStr = "_JerDown"
+        condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process)"+JetStr+".stdout\n")
         condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n") 
         condorJobFile.write( "queue $(NJobs)\n")
 

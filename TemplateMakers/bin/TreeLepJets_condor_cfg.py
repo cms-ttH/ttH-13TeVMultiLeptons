@@ -7,7 +7,9 @@ import FWCore.ParameterSet.Config as cms
 sampleNameCL = str(sys.argv[2])
 iJob = int(sys.argv[3])
 iLabel = sys.argv[4]
-UseSelection = int(sys.argv[5])
+iJes = int (sys.argv[5])
+iJer = int (sys.argv[6])
+UseSelection = int(sys.argv[7])
 
 print 
 
@@ -78,14 +80,16 @@ process.outputs = cms.PSet (
 ##     exit (-3)
 
 process.dilAnalysis = cms.PSet(
-	jes = cms.int32(0),
-	jer = cms.int32(0),
+	jes = cms.int32(iJes),
+	jer = cms.int32(iJer),
 	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	puFile = cms.FileInPath("2012PileUpDists_LepJets.root"),
 	sampleName = cms.string(sampleNameCL),
+	#eleSel = cms.bool(Selection), #If no skim was applied 
+	#muonSel  = cms.bool(Selection), #If no skim was applied TightMu and LooseLepVetos
 	eleSel = cms.bool(Selection), #If no skim was applied 
 	muonSel  = cms.bool(Selection), #If no skim was applied TightMu and LooseLepVetos
 	jetSel = cms.bool(Selection),  #If skim was not applied to >=3jets
-	minJets= cms.int32(0), #minimum number of jets
+	minJets= cms.int32(3), #minimum number of jets
 	btags = cms.double(2), #-1: pretag, 0: 0tag, n: >=ntags
 )
