@@ -1,0 +1,57 @@
+
+# DO NOT DELETE
+
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TH1F.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TH1.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TAxis.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TNamed.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TObject.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/Rtypes.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/RConfig.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/RVersion.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/DllImport.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/Rtypeinfo.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/snprintf.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/strlcpy.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TGenericClassInfo.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TSchemaHelper.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TStorage.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TVersionCheck.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/Riosfwd.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TBuffer.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TString.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TMathBase.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TAttAxis.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TArrayD.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TArray.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TAttLine.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TAttFill.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TAttMarker.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TArrayC.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TArrayS.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TArrayI.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TArrayF.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/Foption.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TVectorFfwd.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TVectorDfwd.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TFitResultPtr.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TGraphAsymmErrors.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TGraph.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TFile.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TDirectoryFile.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TDirectory.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TList.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TSeqCollection.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TCollection.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TIterator.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TDatime.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TUUID.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TUrl.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TMap.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/THashTable.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TH2F.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TH2.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TMatrixFBasefwd.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/TMatrixDBasefwd.h
+./reformatEfficiencies_C.so: /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/cintdictversion.h /pscratch/osg/app/cmssoft/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms9/include/RVersion.h
+reformatEfficiencies_C__ROOTBUILDVERSION= 5.32/00
