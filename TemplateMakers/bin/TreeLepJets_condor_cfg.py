@@ -52,14 +52,31 @@ process.inputs.fileNames.append(readFiles[iJob])
 
 Selection = True
 if UseSelection == 1:
+	SelName = 'SelOn'
+if UseSelection == 0:
+	SelName = 'SelOff'
+if iJes == 0:
+	JesName = ''
+if iJes == 1:
+	JesName = '_JesUp'
+if iJes == -1:
+	JesName = '_JesDown'
+if iJer == 0:
+	JerName = ''
+if iJer == 1:
+	JerName = '_JerUp'
+if iJer == -1:
+	JerName = '_JerDown'
+
+#if UseSelection == 1:
     #print "selection is on so make SelOn Dir"	
-    outDir = "batchBEAN/%s_%s_SelOn/" % (sampleNameCL, iLabel)
-    outFileName = "batchBEAN/%s_%s_SelOn/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
-if UseSelection == 0 :
+outDir = "batchBEAN/%s_%s_%s%s%s/" % (sampleNameCL, iLabel, SelName, JesName, JerName)
+outFileName = "batchBEAN/%s_%s_%s%s%s/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, SelName,JesName, JerName, sampleNameCL, iLabel, iJob)
+#if UseSelection == 0 :
     #print "selection is off so make SelOff Dir"
-    outDir = "batchBEAN/%s_%s_SelOff/" % (sampleNameCL, iLabel)
-    outFileName = "batchBEAN/%s_%s_SelOff/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
-    Selection = False
+    #outDir = "batchBEAN/%s_%s_SelOff/" % (sampleNameCL, iLabel)
+    #outFileName = "batchBEAN/%s_%s_SelOff/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+    #Selection = False
 #print Selection
 
 if not os.path.exists(outDir):
