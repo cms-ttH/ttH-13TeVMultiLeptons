@@ -255,7 +255,27 @@ int main ( int argc, char ** argv )
 
   histofile.cd();
 
+  //TTbar weights
+  double fakeLumi = 1000000;
+  double ttbarWeight = 0;
+  double ttXSec = 234;
+  double hadBR = 0.457;
+  double semBR = 0.438;
+  double dilBR = 0.105;
+  double NGenHad = 30997580;
+  double NGenSem = 25165429;
+  double NGenDil = 12063533;
+
+  double hadWeight = (fakeLumi *ttXSec * hadBR )/NGenHad;
+  double semWeight = (fakeLumi *ttXSec * semBR )/NGenSem;
+  double dilWeight = (fakeLumi *ttXSec * dilBR )/NGenDil;
+
+  cout << "hadronic Weight: " << hadWeight << endl
+       << "semileptonic Weight: " << semWeight << endl
+       << "dilep Weight: " << dilWeight << endl;
+
   int sample = 0;
+  
   //TString(sampleName).Contains("Wjets")
   if( TString(sampleName).Contains("SingleMu")  )       sample = -1;
   if( TString(sampleName).Contains("SingleElectron")  ) sample = -1;
@@ -268,7 +288,17 @@ int main ( int argc, char ** argv )
   if(sample==-1) isData = true;
    cout << "is Data? "<< isData<< endl;
 
-  if( TString(sampleName).Contains("TTbar")  )          sample = 2500;
+   if( TString(sampleName).Contains("TTbar")  ){
+     sample = 2500;
+     if( TString(sampleName).Contains("SemiLep") ||
+         TString(sampleName).Contains("Semi") ||
+         TString(sampleName).Contains("semi")){      ttbarWeight = semWeight;}
+     else if (TString(sampleName).Contains("Had") ||
+              TString(sampleName).Contains("had")){  ttbarWeight = hadWeight;}
+     else if (TString(sampleName).Contains("Di") ||
+              TString(sampleName).Contains("di")){   ttbarWeight = dilWeight;}
+     else{ ttbarWeight = 1;}
+   }
   if( TString(sampleName).Contains("T_sChan")  )        sample = 2600;
   if( TString(sampleName).Contains("T_tChan")  )        sample = 2602;
   if( TString(sampleName).Contains("T_tWChan")  )       sample = 2604;
@@ -348,12 +378,14 @@ int main ( int argc, char ** argv )
   //intBranches["TwoMuon"] = new int (0);
   //intBranches["TwoEle"] = new int (0);
   //intBranches["MuonEle"] = new int (0);
+  
   intBranches["nPartons"] = new int(0.0);
 
   intBranches["ExactOneTightMu"] = new int (0);
   intBranches["ExactOneTightEle"] = new int (0);
   
   intBranches["numJets"] = new int (0);
+  intBranches["numLooseJets"] = new int (0);
   intBranches["numTaggedJets"] = new int (0);
   intBranches["numNonTaggedJets"] = new int (0);
   intBranches["numMedTag"] = new int (0);
@@ -380,6 +412,8 @@ int main ( int argc, char ** argv )
 
   ////Robin ///------------variables--------------------
   std::map<TString, float *> floatBranches;
+
+  
   //b-tag reweight                                                                                                               
   floatBranches["prob"] = new float(0.0);                                                                                        
   floatBranches["prob_hfSFup"] = new float(0.0);                                                                                 
@@ -393,6 +427,7 @@ int main ( int argc, char ** argv )
   floatBranches["PUweight"] = new float(0.0);
   floatBranches["weight_PUup"] = new float(0.0);
   floatBranches["weight_PUdown"] = new float(0.0);
+  floatBranches["ttbarWeight"] = new float(0.0);
   //  floatBranches["nPartons"] = new float(0.0);
 
   //met
@@ -771,22 +806,21 @@ int main ( int argc, char ** argv )
           int mother0Status = mcparticles.at(i).mother0Status;
           int mother1Status = mcparticles.at(i).mother1Status;
           int aid = abs(id);
-          // cout << "particle ID: " << id << endl << endl;
-          // if(nList >6 && status == 3){
+          //cout << "particle ID: " << id << endl << endl;
           if(status == 3){//only status 3 particles (which are listed first)
             if(nList>6){//dont look at first 6 (incomming event)
-             if(aid>0 && aid<6 || aid ==21 || aid ==9){//udscb
-               if(abs(motherID) !=23 || abs(motherID) !=24 || abs(motherID)!=6 ){
-                 //  cout << "mother status: " << mother0Status << ", " << mother1Status << " ";
-                 //cout << "particle ID: " << id << endl << endl;
-                 nPartons++;
-               }
-             }
+              if(aid>0 && aid<6 || aid ==21 || aid ==9){//udscb
+                if(abs(motherID) !=23 && abs(motherID) !=24 && abs(motherID)!=6 ){
+                  //cout << "mother status: " << mother0Status << ", " << mother1Status << " ";
+                  //cout << "particle ID: " << id << endl << endl;
+                  nPartons++;
+                }
+              }
             }
           }else{
             continue;
           }
-        }
+         }
         // cout << "   nPartons: "<<nPartons << endl;
         
 
@@ -1201,6 +1235,7 @@ int main ( int argc, char ** argv )
 
       int numGoodJets=0;
       int numTightJets =0;
+      int numLooseJets =0;
       int numUnTagJets=0;
       int nJetsPlot=0;
       TLorentzVector jetVbefJER[100];
@@ -1233,7 +1268,8 @@ int main ( int argc, char ** argv )
       }
      
       int passingJets = 0;
-      
+
+      //cout << "event: " << cnt ;
       for( int i=0; i<int(pfjets.size()); i++ ){
         if(verboseJetCut == true){cout << "jet " << i << ": ";}
        
@@ -1324,8 +1360,10 @@ int main ( int argc, char ** argv )
 
         if(verboseJetCut == true){ cout << "pt: " << origJetPt << " eta: " << jetAbsEta << " id: " << id << endl; }
         if(useJetSelection==true){
-          if( !(looseJetPt && eta && id) ) {  continue;}
+          if( !(looseJetPt && eta && id) ) { //  cout << "jet cut bc: " << "pt: "  << origJetPt << " eta: " << jetAbsEta << " id: " << id << endl;
+            continue;}
         }
+        if(looseJetPt && eta && id){numLooseJets++;}
         if(tightJetPt && eta && id){numTightJets++;}
        
 
@@ -1387,15 +1425,22 @@ int main ( int argc, char ** argv )
       }// end for each pf jet
       if(verboseJetCut == true){cout << "nJets in event: " << numGoodJets << endl << endl;}
       //cut on number of jets
-      if(numGoodJets < minJets){continue;}
+      if(useJetSelection==true){
       
-      //must be at least 3 jets with pt>40
-      if(numTightJets <3){continue;}
+        if(numGoodJets < minJets){continue;}
+           
+        //must be at least 3 jets with pt>40
+        if(numTightJets <3){continue;}
         
       //Set up Jet bin plots
       nJetsPlot = numGoodJets;
       if(nJetsPlot > maxJetPlot) { nJetsPlot = maxJetPlot;}
-
+      }else{
+        nJetsPlot = numLooseJets;
+        if(nJetsPlot > maxJetPlot) { nJetsPlot = maxJetPlot;}
+        if(numLooseJets < minJets){continue;} 
+      }
+      
      //  // Btag cut - Regular
 //       if (nTags >= 1){
 //         if(tag_pfjet_index.size()<nTags){continue;}
@@ -1403,15 +1448,15 @@ int main ( int argc, char ** argv )
 //       if(nTags == 0 ){
 //         if(tag_pfjet_index.size()> 0){continue;}
 //       }
-      
-      // 1 Tight and 1 Medium Btag
-      if(tight_tag_pfjet_index.size()<1){continue;}
-      int numTags = tight_tag_pfjet_index.size() + medium_tag_pfjet_index.size();
-      if(numTags<2){continue;}
      
+      if(useJetSelection==true && nTags == 2){
+        // 1 Tight and 1 Medium Btag
+        if(tight_tag_pfjet_index.size()<1){continue;}
+        int numTags = tight_tag_pfjet_index.size() + medium_tag_pfjet_index.size();
+        if(numTags<2){continue;}
+      }
 
-
-
+     
       
 
      //  //Information about each event that passes cuts
@@ -1436,7 +1481,8 @@ int main ( int argc, char ** argv )
         // cout << "Scale Factor: " << IDandTrigSF << endl;
         wgt *= IDandTrigSF;
       }
-     
+
+      *(floatBranches["ttbarWeight"]) = ttbarWeight;
       *(intBranches["nPartons"]) = nPartons;
       *(floatBranches["leptonPt"]) = leptonPt ;
       *(floatBranches["leptonPtTruth"]) = muonTruthLV.Pt();
@@ -1473,7 +1519,8 @@ int main ( int argc, char ** argv )
       *(intBranches["isCleanEvent"]) = cleanEvent ? 1 : 0;
       *(intBranches["isTriggerPass"]) = triggerPass ? 1 : 0;
   
-      *(intBranches["numJets"]) = numJet ; 
+      *(intBranches["numJets"]) = numJet ;
+      *(intBranches["numLooseJets"]) = numLooseJets ;
       *(intBranches["numTaggedJets"]) = numTag;
       *(intBranches["numNonTaggedJets"]) = numNonTag; 
       *(intBranches["numMedTag"]) = numMedTag; 
