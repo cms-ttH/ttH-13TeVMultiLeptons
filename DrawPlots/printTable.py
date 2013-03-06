@@ -2,7 +2,8 @@
 import math
 # import the environment 
 from PlotEnv import *
-from myPlots import *
+#from myPlots2012_53x import *
+from myPlots2012 import *
 # import the plots you want
 #from myPlots2012 import *
 
@@ -26,7 +27,7 @@ def main ():
 	year = "2012"
 	Zmask = "noZmask"
 	try:
-		if (str(sys.argv[index]) == "2011" or str(sys.argv[index]) == "2012"):
+		if (str(sys.argv[index]) == "2011" or str(sys.argv[index]) == "2012_52x" or str(sys.argv[index]) == "2012_53x"):
 			year = str(sys.argv[index])
 			index += 1
 	except:
@@ -125,10 +126,11 @@ def main ():
 			err = round(errTemp,2)
 			if (nEventTemp>50): nEvent = int(nEventTemp)
 			if (errTemp>50): err = int(errTemp)
-			if (iSam == 9):    ####
-				print ' &  %s ' % (str(nEvent)) ,
-			else:				
-				print ' &  %s $\pm$ %s ' % (str(nEvent), str(err)) ,
+			print ' &  %s | %s | %s' % (str(round(Outputs[ijet]["TwoMuon"][0][iSam],1)),str(round(Outputs[ijet]["TwoEle"][0][iSam],1)),str(round(Outputs[ijet]["MuonEle"][0][iSam],1) )) ,
+#			if (iSam == 9):    ####
+#				print ' &  %s ' % (str(nEvent)) ,
+#			else:				
+#				print ' &  %s $\pm$ %s ' % (str(nEvent), str(err)) ,
 		print	'	\\'+'\\'
 	#print '& Categories & ttbar & ttbarbb & ttbarcc & ttbarWorZ & zjets & singleTop & wjets & DiBoson & ttH120 & some ttH number & MC total & Data '+'	 \\'+'\\' 
 #	print "\\"+'multirow{4}{*}{$\geq$2 jets + 1 tag} & $\mu\mu $ & '+str(round(Outputs["eq1t"]["TwoMuon"][0],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][1],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][2],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][3],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][4],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][5],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][6],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][7],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][8],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][9],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][10],2))+' $\pm$ '+str(round(Outputs["eq1t"]["TwoMuon"][11],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][12],0))+'	\\'+'\\'	 
