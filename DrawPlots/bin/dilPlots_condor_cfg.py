@@ -85,7 +85,7 @@ process.dilAnalysis = cms.PSet(
 
     # print out useful debug info
     printDrawString = cms.bool(True),
-    printAccTables = cms.bool(True),
+    printAccTables = cms.bool(False),
 
     # choose which plots to turn on
 
@@ -93,11 +93,11 @@ process.dilAnalysis = cms.PSet(
     corePlots = cms.bool(True),
     lepPlots = cms.bool(True),
     jetPlots = cms.bool(True),
-    kinPlots = cms.bool(True),
-    sameSignPlots = cms.bool(True),
+    kinPlots = cms.bool(False),
+    sameSignPlots = cms.bool(False),
     trileptonPlots = cms.bool(False),
     onePlot = cms.bool(False),
-	csvPlots = cms.bool(True),
-	htReweight = cms.bool(False)
+	csvPlots = cms.bool(False),
+	topPtReweight = cms.bool(False)
     
 )

@@ -11,7 +11,7 @@ def main ():
     parser.add_option('-o', '--oneSample', dest='oneSample', default='NONE', help="Run on only this sample")
     #parser.add_option('-a', '--argHelp', dest='argHelp', action='store_true', default=False)
     parser.add_option('-y', '--year', dest='year', default='NONE', help="2011, 2012_52x, 2012_53x, no default")
-    parser.add_option('-z', '--zmask', dest='zmask', default='noZmask', help="noZmask is default")
+    parser.add_option('-z', '--zmask', dest='zmask', default='Zmask', help="Zmask is default")
     parser.add_option('-c', '--charge', dest='charge', default='OS', help="OS is default")
     parser.add_option('-s', '--skipSystematics', dest='skipSyst', action='store_true', default=False, help="Skip systematics")
     
