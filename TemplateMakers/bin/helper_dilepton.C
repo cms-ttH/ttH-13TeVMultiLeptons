@@ -281,13 +281,13 @@ int main ( int argc, char ** argv )
     else if (sampleName == "ttbar_scaledown") sampleNumber = 2510; 
     else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
     else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
-    else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2500;
+    else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2566;
       nGen = 30997580; Xsec = 102.91; 
       weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
-    else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2500;
+    else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2563;
       nGen = 25165429; Xsec = 98.65;
       weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
-    else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2500;
+    else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2533;
       nGen = 12063533; Xsec = 23.64;
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
@@ -434,11 +434,17 @@ int main ( int argc, char ** argv )
   
   std::vector< TString >catList ;
   catList.push_back("ge3t");
+  catList.push_back("ge3t_oldvar");
   catList.push_back("e2je2t");   /////
-  catList.push_back("e3je2t");   /////
-  catList.push_back("ge4je2t");   /////
+  catList.push_back("e2je2t_oldvar");   /////
+
+  catList.push_back("e3je2t_53x");   /////
+  catList.push_back("ge4je2t_53x");   /////
+  catList.push_back("ge3t_53x");   /////
+
   catList.push_back("var_best8");
   catList.push_back("ge3t_new");
+
   const unsigned int nCat = catList.size();
 
   //Float_t fCFMlpANN[nCat];
@@ -459,8 +465,11 @@ int main ( int argc, char ** argv )
   Float_t                 varavg_dr_jets;
   Float_t                 varavg_dijet_mass;
   Float_t                 vardijet_mass_second;
+  Float_t                 vardijet_mass_first;
 
   Float_t                 varCFMlpANN_var_best8;
+  Float_t                 varavg_btag_disc_non_btags;
+  Float_t                 vardijet_mass_m2H;
 
   vector<TMVA::Reader *> reader;
 
@@ -470,12 +479,36 @@ int main ( int argc, char ** argv )
       if(j < 4) {
 	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
 	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
-	if (j==0)   reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+	if (j < 2)   reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
 	reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
 	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
 	reader[j]->AddVariable( "Ht",         &varHt   );
       }
-      else if (j==4){
+      else if (j==4){ //e3je2t_53x
+	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
+	reader[j]->AddVariable( "dijet_mass_m2H",         &vardijet_mass_m2H   ); 
+
+      }
+      else if (j==5){ //ge4je2t_53x
+	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+	reader[j]->AddVariable( "avg_dijet_mass",         &varavg_dijet_mass   ); ///
+	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+	reader[j]->AddVariable( "dijet_mass_first",         &vardijet_mass_first   ); 
+	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
+	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+      }
+      else if (j==6){ //ge3t_53x
+	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
+	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
+	reader[j]->AddVariable( "Ht",         &varHt   );
+      }
+      else if (j==7){
 	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
 	reader[j]->AddVariable( "avg_dr_tagged_jets",         &varavg_dr_tagged_jets   ); ///
 	reader[j]->AddVariable( "avg_tagged_dijet_mass",         &varavg_tagged_dijet_mass   ); ///
@@ -495,6 +528,7 @@ int main ( int argc, char ** argv )
 	reader[j]->AddVariable( "CFMlpANN_var_best8",         &varCFMlpANN_var_best8   );
 	reader[j]->AddVariable( "Ht",         &varHt   );
       }
+
 
       TString dir    = "../../simpleweights/" + label + "/";
       TString prefix = "TMVAClassification";
@@ -556,13 +590,13 @@ int main ( int argc, char ** argv )
 
   bool CoreVariables = true;
   bool ExtraLeptonVariables = false;
-  bool ExtraJetVariables = true;
+  bool ExtraJetVariables = false;
   bool ExtraKinematicVariables = false;
   //bool ExtraEventVariables = false;
   bool ExtraTriggerVariables = false;
-  bool ExtraGenVariables = true;
-  bool ExtraHiggsVariables = true;
-  bool ExtraSameSignVariables = true;
+  bool ExtraGenVariables = false;
+  bool ExtraHiggsVariables = false;
+  bool ExtraSameSignVariables = false;
   
   bool ArtificialJetPt = false;
   float higgs_mass = 115.0;
@@ -610,10 +644,15 @@ int main ( int argc, char ** argv )
     /// MVA output variables
     floatBranches["CFMlpANN_ge3t"] = new float(0.0);
     floatBranches["CFMlpANN_e2je2t"] = new float(0.0);
-    floatBranches["CFMlpANN_e3je2t"] = new float(0.0);
-    floatBranches["CFMlpANN_ge4je2t"] = new float(0.0);
+    floatBranches["CFMlpANN_ge3t_oldvar"] = new float(0.0);
+    floatBranches["CFMlpANN_e2je2t_oldvar"] = new float(0.0);
+
     floatBranches["CFMlpANN_var_best8"] = new float(0.0);
     floatBranches["CFMlpANN_ge3t_new"] = new float(0.0);
+
+    floatBranches["CFMlpANN_e3je2t_53x"] = new float(0.0);
+    floatBranches["CFMlpANN_ge4je2t_53x"] = new float(0.0);
+    floatBranches["CFMlpANN_ge3t_53x"] = new float(0.0);
 
     //pile up
     floatBranches["numPV"] = new float(0.0);
@@ -635,6 +674,8 @@ int main ( int argc, char ** argv )
     floatBranches["weight_Xsec"] = new float(0.0);
     floatBranches["nGen"] = new float(0.0);
     floatBranches["Xsec"] = new float(0.0);
+    floatBranches["topPtWgt"] = new float(0.0);
+    floatBranches["topPtWgtUp"] = new float(0.0);
     
     //met
     floatBranches["met"] = new float(0.0);
@@ -656,6 +697,7 @@ int main ( int argc, char ** argv )
     floatBranches["lep2GenCharge"] = new float (0.0);
 
     // jet variables
+    floatBranches["first_bjet_pt"] = new float(0.0);
     floatBranches["first_jet_pt"] = new float(0.0);
     floatBranches["second_jet_pt"] = new float(0.0);
     floatBranches["third_jet_pt"] = new float(0.0);
@@ -673,6 +715,37 @@ int main ( int argc, char ** argv )
     floatBranches["mindr_lep1_jet"] = new float(0.0);
     floatBranches["avg_btag_disc_btags"] = new float(0.0);
     floatBranches["Ht"] = new float(0.0);
+
+    //---------- new variables for ANN
+    floatBranches["m2H_btag"] = new float(0.0);
+    floatBranches["first_dibjet_mass"] = new float(0.0);
+    floatBranches["second_dibjet_mass"] = new float(0.0);
+    floatBranches["third_dibjet_mass"] = new float(0.0);
+    
+    floatBranches["dijet_mass_m2H"] = new float(0.0);
+    floatBranches["dijet_mass_first"] = new float(0.0);
+    floatBranches["dijet_mass_second"] = new float(0.0);
+    floatBranches["dijet_mass_third"] = new float(0.0);
+
+    floatBranches["min_dr_jets"] = new float(0.0);
+    floatBranches["avg_dr_jets"] = new float(0.0);    
+    floatBranches["avg_dr_tagged_jets"] = new float(0.0);
+    floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
+    floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
+    
+    floatBranches["avg_dijet_mass"] = new float(0.0);
+    floatBranches["M2_of_closest_jets"] = new float(0.0);
+    floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
+    floatBranches["closest_dijet_mass"] = new float(0.0);
+    floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
+    
+    floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
+    floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
+    floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
+    floatBranches["first_highest_btag"] = new float(0.0);
+    floatBranches["second_highest_btag"] = new float(0.0);
+    floatBranches["lowest_btag"] = new float(0.0);
+
     ////leptons
     floatBranches["mass_leplep"] = new float(0.0);
     floatBranches["pt_leplep"] = new float(0.0);
@@ -683,11 +756,12 @@ int main ( int argc, char ** argv )
     floatBranches["tkDZ_leplep"] = new float(0.0);
     floatBranches["mindr_lep2_jet"] = new float(0.0);
     ////everything
+    floatBranches["all_sum_pt"] = new float(0.0);
     floatBranches["sum_pt"] = new float(0.0); 
     floatBranches["sum_jet_pt"] = new float(0.0);
     floatBranches["pt_of_everything"] = new float(0.0);
     floatBranches["pz_of_everything"] = new float(0.0);
-
+    floatBranches["pt_of_ttbar"] = new float(0.0);
   } //End if (CoreVariables)
 
   if (ExtraSameSignVariables) {
@@ -937,10 +1011,9 @@ int main ( int argc, char ** argv )
   if (ExtraKinematicVariables) {
     ////objects
     floatBranches["topLke_trijet_mass"] = new float(0.0);
-    floatBranches["m2H_btag"] = new float(0.0);
     floatBranches["wLike_allDijet_mass"] = new float(0.0);
     floatBranches["topLike_allTrijet_mass"] = new float(0.0);
-    floatBranches["pt_of_ttbar"] = new float(0.0);
+
     ////leptons
     floatBranches["dEta_leplep"] = new float(0.0);
     //floatBranches["mindr_lep1_allJet"] = new float(0.0);
@@ -952,27 +1025,26 @@ int main ( int argc, char ** argv )
     ////everything
     intBranches["PassZmask3"] = new int (0);
     
-    floatBranches["min_dr_jets"] = new float(0.0);
-    floatBranches["avg_dr_jets"] = new float(0.0);    
-    floatBranches["avg_dr_tagged_jets"] = new float(0.0);
+//     floatBranches["min_dr_jets"] = new float(0.0);
+//     floatBranches["avg_dr_jets"] = new float(0.0);    
+//     floatBranches["avg_dr_tagged_jets"] = new float(0.0);
     
-    floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
-    floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
-    floatBranches["avg_dijet_mass"] = new float(0.0);
-    floatBranches["M2_of_closest_jets"] = new float(0.0);
-    floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
-    floatBranches["closest_dijet_mass"] = new float(0.0);
-    floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
+//     floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
+//     floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
+//     floatBranches["avg_dijet_mass"] = new float(0.0);
+//     floatBranches["M2_of_closest_jets"] = new float(0.0);
+//     floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
+//     floatBranches["closest_dijet_mass"] = new float(0.0);
+//     floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
     
-    floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
-    floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
-    floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
-    floatBranches["first_highest_btag"] = new float(0.0);
-    floatBranches["second_highest_btag"] = new float(0.0);
-    floatBranches["lowest_btag"] = new float(0.0);
+//     floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
+//     floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
+//     floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
+//     floatBranches["first_highest_btag"] = new float(0.0);
+//     floatBranches["second_highest_btag"] = new float(0.0);
+//     floatBranches["lowest_btag"] = new float(0.0);
 
     floatBranches["mass_MHT"] = new float(0.0);
-    floatBranches["all_sum_pt"] = new float(0.0);
     floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
     floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
     floatBranches["pt_total"] = new float(0.0);
@@ -1098,7 +1170,7 @@ int main ( int argc, char ** argv )
       cnt++;
 
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
-      if( cnt%1000==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
+      if( cnt%10000==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
 					      << int(float(cnt)/float(nentries)*100) << "% done" << std::endl;
 
       if( cnt==(maxNentries+1) ) break;
@@ -1239,6 +1311,7 @@ int main ( int argc, char ** argv )
       double numTruePV = event->numTruePV;
       double numGenPV = event->numGenPV;
 
+      //// Q2scale weights
       float Q2ScaleUpWgt = 1.0;
       float Q2ScaleDownWgt = 1.0; 
 
@@ -1247,6 +1320,13 @@ int main ( int argc, char ** argv )
         Q2ScaleDownWgt = event->Q2ScaleDownWgt;
       }
 
+      /// top pt reweighting 
+      double topPtWgt = 1.;
+      double topPtWgtUp = 1.;
+      topPtWgt = beanHelper.GetTopPtweight(mcparticles);
+      topPtWgtUp = 2*(topPtWgt-1) + 1;
+      if(cnt<5)  std::cout << "CONFIG: topPt rwt is: " << topPtWgt << std::endl;
+      /////
       float weight = 1.0 ;
 
       if(cnt<5)  std::cout << "CONFIG: Sample number from ntuple is: " << eventSampleNumber << std::endl;
@@ -2140,7 +2220,7 @@ int main ( int argc, char ** argv )
       // ttbb
       TLorentzVector jet_vect1;
       TLorentzVector jet_vect2;
-      
+      float first_bjet_pt = dFloat ;      
       float first_jet_pt = dFloat ;
       float second_jet_pt = dFloat ;
       float third_jet_pt = dFloat ;
@@ -2188,12 +2268,12 @@ int main ( int argc, char ** argv )
       float first_hf_jet_CSV_unshaped = dFloat;
       float first_hf_jet_CSV_reshaped = dFloat;
 
-      float dPhi_jet1jet2 = dFloat;
-      float dPhi_jet1jet3 = dFloat;
-      float dPhi_jet1jet4 = dFloat;
-      float dPhi_jet2jet3 = dFloat;
-      float dPhi_jet2jet4 = dFloat;
-      float dPhi_jet3jet4 = dFloat;
+//       float dPhi_jet1jet2 = dFloat;
+//       float dPhi_jet1jet3 = dFloat;
+//       float dPhi_jet1jet4 = dFloat;
+//       float dPhi_jet2jet3 = dFloat;
+//       float dPhi_jet2jet4 = dFloat;
+//       float dPhi_jet3jet4 = dFloat;
 
       float CSV_30to45_0p0to1p2_1 = dFloat ;
       float CSV_45to75_0p0to1p2_1 = dFloat ;
@@ -2904,7 +2984,7 @@ int main ( int argc, char ** argv )
 
       TLorentzVector topLike_dijet_lep1_vect;
       TLorentzVector topLike_dijet_lep2_vect;
-
+      bool first_bjet_found = false;
 	  for (int i=0; i < numGoodJets; i++) {
 	    int iJet = tight_pfjet_index[i] ;
         if (sum_jet_pt == dFloat) sum_jet_pt = 0.0;
@@ -2990,6 +3070,12 @@ int main ( int argc, char ** argv )
           first_hf_jet_CSV_reshaped = pfjetsSelected.at(iJet).btagCombinedSecVertex;
         }
         
+	////
+	if (iJet_csvVal > 0.679 && ! first_bjet_found){
+	  first_bjet_pt = jet_pt[iJet];	
+	  first_bjet_found = true;
+	}
+
 	    if (i==0)  {        
           first_jet_pt = jet_pt[iJet];
           first_jet_eta = jet_vect.Eta();
@@ -3284,6 +3370,7 @@ int main ( int argc, char ** argv )
       varnumJets_float 		  = float(numJets);       
       varmindr_lep1_jet		  = mindr_lep1_jet;      
       varavg_btag_disc_btags		  = avg_btag_disc_btags; 
+      varavg_btag_disc_non_btags	  = avg_btag_disc_non_btags; 
       varHt                              = Ht;
       
       varavg_dr_tagged_jets	         =  avg_dr_tagged_jets;
@@ -3292,6 +3379,8 @@ int main ( int argc, char ** argv )
 
       varavg_dijet_mass =       avg_dijet_mass;	   
       vardijet_mass_second =    dijet_mass_second; 
+      vardijet_mass_first =    dijet_mass_first; 
+      vardijet_mass_m2H =    dijet_mass_m2H; 
       varmin_dr_jets = 	      min_dr_jets; 	   
       varavg_dr_jets =          avg_dr_jets;       
       
@@ -3303,10 +3392,10 @@ int main ( int argc, char ** argv )
 	TMVA::Reader  *tmpReader = reader[j];  
         TString branchName = TString("CFMlpANN_") + catList[j];
 	//        cout << "This is NN category " << catList[j] << " saving into branch " << branchName << endl;
-	if( j < 5){
+	if( j < 8){
 	  Float_t annOut  = tmpReader->EvaluateMVA( "CFMlpANN method" );
 	  *(floatBranches[branchName]) = annOut;  
-	  if ( j==4 ) ttbbANN = annOut ;
+	  if ( j==7 ) ttbbANN = annOut ;
 	}
 	else {
 	  varCFMlpANN_var_best8 = ttbbANN ;
@@ -3371,6 +3460,8 @@ int main ( int argc, char ** argv )
         *(floatBranches["weight_Xsec"]) = weight_Xsec ;
         *(floatBranches["nGen"]) = nGen ;
         *(floatBranches["Xsec"]) = Xsec ;
+        *(floatBranches["topPtWgt"]) = topPtWgt;
+        *(floatBranches["topPtWgtUp"]) = topPtWgtUp;
 
         //met
         *(floatBranches["met"]) = met;
@@ -3392,6 +3483,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep2GenCharge"]) = lep2GenCharge;
 
         // jet variables
+        *(floatBranches["first_bjet_pt"]) = first_bjet_pt;
         *(floatBranches["first_jet_pt"]) = first_jet_pt;
         *(floatBranches["second_jet_pt"]) = second_jet_pt;
         *(floatBranches["third_jet_pt"]) = third_jet_pt;
@@ -3405,10 +3497,41 @@ int main ( int argc, char ** argv )
         //kinematic variables
         ////ANN neural net inputs
         *(floatBranches["mass_of_everything"]) = mass_of_everything;
-	    *(floatBranches["min_dr_tagged_jets"]) = min_dr_tagged_jets;
+	*(floatBranches["min_dr_tagged_jets"]) = min_dr_tagged_jets;
         *(floatBranches["mindr_lep1_jet"]) = mindr_lep1_jet;
         *(floatBranches["avg_btag_disc_btags"]) = avg_btag_disc_btags;
         *(floatBranches["Ht"]) = Ht;
+
+	////----- new variables for ANN
+	*(floatBranches["m2H_btag"]) = m2H_btag;
+        *(floatBranches["first_dibjet_mass"]) =  first_dibjet_mass;
+        *(floatBranches["second_dibjet_mass"]) = second_dibjet_mass;
+        *(floatBranches["third_dibjet_mass"]) =  third_dibjet_mass;
+
+	*(floatBranches["dijet_mass_m2H"]) = dijet_mass_m2H;
+        *(floatBranches["dijet_mass_first"]) =  dijet_mass_first;
+        *(floatBranches["dijet_mass_second"]) = dijet_mass_second;
+        *(floatBranches["dijet_mass_third"]) =  dijet_mass_third;
+
+        *(floatBranches["min_dr_jets"]) = min_dr_jets;
+	*(floatBranches["avg_dr_jets"]) = avg_dr_jets;
+	*(floatBranches["avg_dr_tagged_jets"]) = avg_dr_tagged_jets;
+	*(floatBranches["avg_tagged_dijet_mass"]) = avg_tagged_dijet_mass;
+        *(floatBranches["avg_untagged_dijet_mass"]) = avg_untagged_dijet_mass;
+
+	*(floatBranches["avg_dijet_mass"]) = avg_dijet_mass;
+	*(floatBranches["M2_of_closest_jets"]) = M2_of_closest_jets;
+	*(floatBranches["M2_of_closest_tagged_jets"]) = M2_of_closest_tagged_jets;
+	*(floatBranches["closest_dijet_mass"]) = closest_dijet_mass;
+        *(floatBranches["closest_tagged_dijet_mass"]) = closest_tagged_dijet_mass;
+
+        *(floatBranches["avg_btag_disc_non_btags"]) = avg_btag_disc_non_btags;
+        *(floatBranches["highest_btag_disc_non_btags"]) = highest_btag_disc_non_btags;
+        *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
+	*(floatBranches["first_highest_btag"]) = first_highest_btag;
+	*(floatBranches["second_highest_btag"]) = second_highest_btag;
+	*(floatBranches["lowest_btag"]) = lowest_btag;
+
         ////leptons
         *(floatBranches["mass_leplep"]) = mass_leplep;
         *(floatBranches["pt_leplep"]) = pt_leplep;
@@ -3419,11 +3542,12 @@ int main ( int argc, char ** argv )
         *(floatBranches["tkDZ_leplep"]) = tkDZ_leplep;
         *(floatBranches["mindr_lep2_jet"]) = mindr_lep2_jet;
         ////everything
+        *(floatBranches["all_sum_pt"]) = all_sum_pt;
         *(floatBranches["sum_pt"]) = sum_pt;
         *(floatBranches["sum_jet_pt"]) = sum_jet_pt;
         *(floatBranches["pt_of_everything"]) = pt_of_everything;
         *(floatBranches["pz_of_everything"]) = pz_of_everything;
-
+        *(floatBranches["pt_of_ttbar"]) = pt_of_ttbar;
       } //End if (CoreVariables)
 
       if (ExtraSameSignVariables) {
@@ -3674,10 +3798,9 @@ int main ( int argc, char ** argv )
 
       if (ExtraKinematicVariables) {
         ////objects
-	    *(floatBranches["m2H_btag"]) = m2H_btag;        
         *(floatBranches["wLike_allDijet_mass"]) = wLike_allDijet_mass1;
         *(floatBranches["topLike_allTrijet_mass"]) = topLike_allTrijet_mass1;
-        *(floatBranches["pt_of_ttbar"]) = pt_of_ttbar;
+
 
         ////leptons
         *(floatBranches["dEta_leplep"]) = dEta_leplep;
@@ -3690,27 +3813,7 @@ int main ( int argc, char ** argv )
         ////everything
         *(intBranches["PassZmask3"]) = PassBigDiamondZmask3 ? 1 : 0;
 
-        *(floatBranches["min_dr_jets"]) = min_dr_jets;
-	    *(floatBranches["avg_dr_jets"]) = avg_dr_jets;
-	    *(floatBranches["avg_dr_tagged_jets"]) = avg_dr_tagged_jets;
-	    *(floatBranches["avg_tagged_dijet_mass"]) = avg_tagged_dijet_mass;
-        *(floatBranches["avg_untagged_dijet_mass"]) = avg_untagged_dijet_mass;
-
-	    *(floatBranches["avg_dijet_mass"]) = avg_dijet_mass;
-	    *(floatBranches["M2_of_closest_jets"]) = M2_of_closest_jets;
-	    *(floatBranches["M2_of_closest_tagged_jets"]) = M2_of_closest_tagged_jets;
-	    *(floatBranches["closest_dijet_mass"]) = closest_dijet_mass;
-        *(floatBranches["closest_tagged_dijet_mass"]) = closest_tagged_dijet_mass;
-
-        *(floatBranches["avg_btag_disc_non_btags"]) = avg_btag_disc_non_btags;
-        *(floatBranches["highest_btag_disc_non_btags"]) = highest_btag_disc_non_btags;
-        *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
-	    *(floatBranches["first_highest_btag"]) = first_highest_btag;
-	    *(floatBranches["second_highest_btag"]) = second_highest_btag;
-	    *(floatBranches["lowest_btag"]) = lowest_btag;
-
         *(floatBranches["mass_MHT"]) = mass_MHT;
-        *(floatBranches["all_sum_pt"]) = all_sum_pt;
         *(floatBranches["mass_of_leps_and_allJets"]) = mass_of_leps_and_allJets;
         *(floatBranches["pt_of_leps_and_allJets"]) = pt_of_leps_and_allJets;
         *(floatBranches["pt_of_allEverything"]) = pt_of_allEverything;
