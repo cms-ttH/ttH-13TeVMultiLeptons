@@ -158,7 +158,7 @@ class PlotInfo:
 		elif (JES == "Q2Up"):
 			
 			namePlusCycle = "%s_Q2scale_ttH_%sUp;1" % (histName, tmpSysName)
-			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "Q2Down"):
 			namePlusCycle = "%s_Q2scale_ttH_%sDown;1" % (histName, tmpSysName)
@@ -308,6 +308,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	if jetSelection == "eq2jeq2t":
 		print "Detected 2jet 2tag selection... changing saved histo names"
 		printedJetSelection = "e2je2t"
+
+	if jetSelection == "eq3jeq2t":
+		print "Detected 3jet 2tag selection... changing saved histo names"
+		printedJetSelection = "e3je2t"
+
+	if jetSelection == "ge4jeq2t":
+		print "Detected >=4jet 2tag selection... changing saved histo names"
+		printedJetSelection = "ge4je2t"		
 		
 	print "drawing distribution %s with jet selection printing name %s" % (dist, printedJetSelection)
 	myStack = THStack("theStack", "")
@@ -463,7 +471,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   sys.exit()
 		   
 
-	   if ((iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG and not year == "2012_53x"):
+	   if ((iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG ):
 		   origHist_Q2Up = iplot.getHist(dist,lumi, lepselection, year,	 "Q2Up")[0]
 		   origHist_Q2Down = iplot.getHist(dist,lumi, lepselection, year, "Q2Down")[0]
 		   sys_hist_array.append(origHist_Q2Up)
@@ -506,7 +514,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_rwtUp = rebinHistManual (origHist_rwtUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_rwtDown = rebinHistManual (origHist_rwtDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
-		   if ((iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") and not year == "2012_53x" ):	   
+		   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") :	   
 			   resultHist_MCErrorsOnly_Q2Up = rebinHistManual (origHist_Q2Up, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
 			   resultHist_MCErrorsOnly_Q2Down = rebinHistManual (origHist_Q2Down, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
 
@@ -623,7 +631,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_rwtUp] = resultHist_MCErrorsOnly_rwtUp.Clone(storeName_rwtUp)
 			   histoStorageList[keyName_rwtDown] = resultHist_MCErrorsOnly_rwtDown.Clone(storeName_rwtDown)
 
-		   if ((iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG and not year == "2012_53x"):
+		   if ((iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG ):
 			   histoStorageList[keyName_Q2Up] = resultHist_MCErrorsOnly_Q2Up.Clone(storeName_Q2Up)
 			   histoStorageList[keyName_Q2Down] = resultHist_MCErrorsOnly_Q2Down.Clone(storeName_Q2Down)
 		   
@@ -1166,7 +1174,7 @@ def rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, scaleRatio, sy
 	# binary vs decimal matching
 	# etc
 
-	tolerance = 0.00001
+	tolerance = 0.000001
 	
 	firstBinOrigHi = origHist.FindBin(xMin+tolerance)
 	firstBinOrigLo = origHist.FindBin(xMin-tolerance)
