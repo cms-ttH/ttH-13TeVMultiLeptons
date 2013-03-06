@@ -96,7 +96,7 @@ class PlotInfo:
 
 	def getHist(self, histName, lumi, lepselection, year, JES):
 		# add a namecycle to histName
-		#		print histName
+# 		print histName
 		namePlusCycle = "%s;1" % (histName)
 		isData = False
 		if (self.name == "data_2011" or self.name == "data_2012" or self.name == "data_2012_52x" or self.name == "data_2012_53x"):
@@ -114,11 +114,11 @@ class PlotInfo:
 		# Get the histogram
 		# Added some cloning into it
 		# because without cloning you have problems with the data
-		#print " Looking in file %s" % self.fileName
-		#print namePlusCycle
+# 		print " Looking in file %s" % self.fileName
+# 		print namePlusCycle
 		targetHist = None
 		if (JES == "nominal" or isData or self.skipSystematics):
-			#print "%s: Getting histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+# 			print "%s: Getting histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 			#print "EFFSTUDY: %s %0.2f %0.2f %0.3e" % (self.name, targetHist.GetEntries(), self.ngen, targetHist.GetEntries()/self.ngen)
 		elif (JES == "JESUp"):
@@ -158,7 +158,7 @@ class PlotInfo:
 		elif (JES == "Q2Up"):
 			
 			namePlusCycle = "%s_Q2scale_ttH_%sUp;1" % (histName, tmpSysName)
-			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+# 			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "Q2Down"):
 			namePlusCycle = "%s_Q2scale_ttH_%sDown;1" % (histName, tmpSysName)
@@ -257,8 +257,8 @@ class PlotInfo:
 
 class PlotGroup :
 	def __init__ (self, plotList, lumi, plotGroupName, directoryName, skipSystematics=False) :
-		#Uncomment for blinding
-		#directoryName = directoryName+'_blind'
+		self.blind = False
+# 		directoryName = directoryName+'_blind'
 		self.plotList = plotList
 		self.lumi = lumi
 		self.groupName = plotGroupName
@@ -289,6 +289,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	groupName = myPlotGroup.groupName
 	skipSystematicsPG = myPlotGroup.skipSystematics
 	paperStylePG = myPlotGroup.paperStyle
+	blindPG = myPlotGroup.blind
 	
 	print "Plot group name is %s" % (groupName)
 	jetSelection = ""
@@ -308,14 +309,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	if jetSelection == "eq2jeq2t":
 		print "Detected 2jet 2tag selection... changing saved histo names"
 		printedJetSelection = "e2je2t"
-
+		
 	if jetSelection == "eq3jeq2t":
 		print "Detected 3jet 2tag selection... changing saved histo names"
 		printedJetSelection = "e3je2t"
-
+		
 	if jetSelection == "ge4jeq2t":
 		print "Detected >=4jet 2tag selection... changing saved histo names"
-		printedJetSelection = "ge4je2t"		
+		printedJetSelection = "ge4je2t"
 		
 	print "drawing distribution %s with jet selection printing name %s" % (dist, printedJetSelection)
 	myStack = THStack("theStack", "")
@@ -359,13 +360,13 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	
 	if year == "2011" :
 		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
-		else: myLumiString = TexTitle+"                  #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
+		else: myLumiString = TexTitle+"				   #sqrt{s} = 7 TeV, L = 5.0 fb^{-1}"
 	elif (year == "2012_52x") :
 		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
-		else: myLumiString = TexTitle+"                  #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
+		else: myLumiString = TexTitle+"				   #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 	else:
-		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = 12.2 fb^{-1}"
-		else: myLumiString = TexTitle+"                  #sqrt{s} = 8 TeV, L = 12.2 fb^{-1}"
+		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = 19.45 fb^{-1}"
+		else: myLumiString = TexTitle+"				   #sqrt{s} = 8 TeV, L = 19.45 fb^{-1}"
 
 	myLumiTex = TLatex()
 	myLumiTex.SetNDC()
@@ -514,7 +515,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_rwtUp = rebinHistManual (origHist_rwtUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_rwtDown = rebinHistManual (origHist_rwtDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
-		   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") :	   
+		   if ( iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
 			   resultHist_MCErrorsOnly_Q2Up = rebinHistManual (origHist_Q2Up, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
 			   resultHist_MCErrorsOnly_Q2Down = rebinHistManual (origHist_Q2Down, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
 
@@ -574,7 +575,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   elif ((iplot.name == "data_2012" or iplot.name== "data_2012_52x" or iplot.name == "data_2012_53x") and (year == "2012" or year == "2012_52x" or year == "2012_53x")):
 		   myData2012 = resultHist_MCErrorsOnly.Clone("data_2012")
 		   Data2012Sum = myData2012.Integral()
-		   legForStack.AddEntry(myData2012, "Data ("+str(round(Data2012Sum,0))+")", "lpe") ##Comment out for blinding
+		   if (not blindPG): legForStack.AddEntry(myData2012, "Data ("+str(round(Data2012Sum,0))+")", "lpe")
 		   histoStorageList["data_obs"] = myData2012.Clone("data_obs_CFMlpANN_%s" % (printedJetSelection)  )
 		   
 	   elif (iplot.name == "ttH_125"):
@@ -784,7 +785,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #		 legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
 
 	if (ttHSum > 0):
-		if (dist.find("CFMlpANN") != -1):
+		if (dist.find("CFMlpANN") != -1 and paperStylePG):
 			if jetSelection == "eq2jeq2t": iSig.Scale(300)
 			else:	iSig.Scale(30)
 		else:
@@ -835,7 +836,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		
 		
 	plotMax = max(myStack.GetMaximum(),iSig.GetMaximum())	
-	plotMax = max(myStack.GetMaximum(),theDataHisto.GetMaximum())  ##Comment out for blinding
+	if (not blindPG): plotMax = max(myStack.GetMaximum(),theDataHisto.GetMaximum())
 	if (dist == "weight" or dist == "prob"):
 		plotMax = max(myStack.GetMaximum(),iSig.GetMaximum())
 	
@@ -875,11 +876,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	##End comment out for 2012
 
-	if ((dist == "numJets" and (jetSelection.startswith("ge") or jetSelection == "eq1t")) or (dist == "numTaggedJets" and jetSelection=="ge1t")):
-		myStack.SetMinimum(0.1)
-		myStack.SetMaximum(plotMax*3)  ##was 13
-		upLin.cd()
-		gPad.SetLogy()
+#	if ((dist == "numJets" and (jetSelection.startswith("ge") or jetSelection == "eq1t")) or (dist == "numTaggedJets" and jetSelection=="ge1t")):
+#		myStack.SetMinimum(0.1)
+#		myStack.SetMaximum(plotMax*3)  ##was 13
+#		upLin.cd()
+#		gPad.SetLogy()
 
 	upLin.cd()
 	gPad.SetBottomMargin(1e-5)
@@ -893,7 +894,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	
 	iSig.Draw('histsame')
 
-##	theDataHisto.Draw("pe1same")		##Comment out for blinding
+	if (not blindPG): theDataHisto.Draw("pe1same")
 
 #######
 ### asymmetrical poisson errors for data
@@ -916,7 +917,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	ggg.SetMarkerStyle(20)
 	ggg.SetLineWidth(2)
 
-	ggg.Draw("psame")
+	if (not blindPG): ggg.Draw("psame") ##Comment out for blinding
 	# calculate the KS test result, put it somewhere
 	# ksResult = theDataHisto.KolmogorovTest(MCErrHist)
 
@@ -925,8 +926,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	if not paperStylePG: legForStack.Draw()
 	myLumiTex.DrawLatex(0.14, 0.91, myLumiString)  ### cmt out 0.25
 	if paperStylePG: SELECTIONInfoLatex.DrawLatex(0.45, 0.84, catinfo)
-	if (dist.find("CFMlpANN") != -1):
-		SFInfoLatex.DrawLatex(0.64, 0.77, SFinfo)
+	if paperStylePG:
+		if (dist.find("CFMlpANN") != -1):
+			SFInfoLatex.DrawLatex(0.64, 0.77, SFinfo)
 	
 	##Begin comment out for 2012
 	downLin.cd()
@@ -941,7 +943,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		ratioHist = rebinHistManual (origHist, sys_hist_array, nBins, xMin, xMax, 1.0, 0.0, "off")
 		
 	ratioHist.SetMinimum(0)
-	ratioHist.SetMaximum(2.3)
+#	ratioHist.SetMaximum(2.3)
+	ratioHist.SetMaximum(3)
 	ratiotitleString = "%s;%s;%s" % ("", plotXLabel, "Data/MC")	 ###
 	ratioHist.SetTitle(ratiotitleString)  ###
 #	 ratioHist.SetTitle(";;Data/MC")
@@ -961,8 +964,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	ratioHist.SetLineColor(0)	 
 	ratioHist.SetMarkerColor(0)	 
 
-##	ratioHist.SetLineColor(kBlack)	   ##Comment out for blinding 
-##	ratioHist.SetMarkerColor(kBlack)   ##Comment out for blinding 
+	if (blindPG): ratioHist.SetLineColor(kBlue)	   
+	if (blindPG): ratioHist.SetMarkerColor(kBlue)
 
 	ratioErrHist = None
 	
@@ -979,9 +982,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	
 	for i in range(1, nBins+1):
 		MCVal = myStack.GetStack().Last().GetBinContent(i)
-		DataVal = theDataHisto.GetBinContent(i)
+		if (not blindPG): DataVal = theDataHisto.GetBinContent(i) 
+		if (blindPG): DataVal = iSig.GetBinContent(i) 
 		MCErr = math.sqrt(math.pow(myStack.GetStack().Last().GetBinError(i),2)+math.pow(lumi_trigSF_err*myStack.GetStack().Last().GetBinContent(i),2))
-		DataErr = theDataHisto.GetBinError(i)
+		if (not blindPG): DataErr = theDataHisto.GetBinError(i) ##Comment out for blind
+		if (blindPG): DataErr = iSig.GetBinError(i) ##Uncomment out for blind
 #		print "for MCStack bin %d, BinContent is %f and BinError is %f" % (i, MCVal, MCErr)
 		if (MCVal !=0 and DataVal !=0):
 			ratioVal = DataVal/MCVal
@@ -1001,23 +1006,23 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			ratioErrHist.SetBinContent(i,1)
 			ratioErrHist.SetBinError(i,ratErrMC)
 
-	ratioHist.DrawCopy()
-	ratioErrHist.DrawCopy("e2same")		##Comment out for blinding 
-##	ratioHist.DrawCopy("pe1same") ###
-	ratioHist.Draw("sameaxis")
+	ratioHist.DrawCopy() 
+	if (not blindPG): ratioErrHist.DrawCopy("e2same")		##Comment out for blinding 
+	if (not blindPG): ratioHist.Draw("sameaxis") ##Comment out for blinding
+# 	if (not blindPG): ratioHist.DrawCopy("pe1same") ##Commented out in favor of asymmetric
 #######
 ### asymmetrical poisson errors for data
 #######
 	ratioMax = 2.3
 	gRatio = TGraphAsymmErrors(ggg.GetN())
 	for	 jBin in range(0, gRatio.GetN()):
-		xPoint = theDataHisto.GetBinCenter(jBin+1);
-		xWidth = 0.5*theDataHisto.GetBinWidth(jBin+1);
+		xPoint = theDataHisto.GetBinCenter(jBin+1); 
+		xWidth = 0.5*theDataHisto.GetBinWidth(jBin+1);	
 		
 		yG = ggg.GetY()[jBin];
 		yG_low	= ggg.GetEYlow()[jBin];
 		yG_high = ggg.GetEYhigh()[jBin];
-		yData = theDataHisto.GetBinContent(jBin+1);
+		yData = theDataHisto.GetBinContent(jBin+1); 
 		
 		yBkg = myStack.GetStack().Last().GetBinContent(jBin+1);
 		
@@ -1048,7 +1053,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	  
 	gRatio.SetLineColor(kBlack)
 	gRatio.SetLineWidth(2)
-	gRatio.Draw("psame")
+	if (not blindPG): gRatio.Draw("psame") 
 ##############
 	saveRatioHist = True
 	if saveRatioHist:
