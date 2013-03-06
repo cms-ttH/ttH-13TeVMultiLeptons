@@ -36,7 +36,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
     rootStr = "_" + year + "_" + Zmask + "_" + charge + "_" + jetselection + "_" + lepselection +".root"
 
     #defaultLumi = 5288.0
-    defaultLumi = 12187.0
+    #defaultLumi = 12187.0
+    defaultLumi = 19443.0
     if lepselection.startswith("TwoMuon"):
         dataStr = dirStr+'DoubleMu_'+ year + "_" + Zmask + "_" + charge + "_" + jetselection + "_TwoMuon.root"
 
@@ -387,7 +388,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
          'file': dirStr+'ttbar_bb' +rootStr,
          'file_JESUp': dirStr+'ttbar_bb'+rootStr,
          'file_JESDown': dirStr+'ttbar_bb'+rootStr,
-         'xsec': 0.225197,
+         'xsec': 0.234,
          'xsec_err': 0.5*0.225197, #0.3*0.225197,
          'sys_array': sys_arrays['ttbb'],
          'ngen':  8252095,
@@ -406,7 +407,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
          'file': dirStr+'ttbar_cc' +rootStr,
          'file_JESUp': dirStr+'ttbar_cc'+rootStr,
          'file_JESDown': dirStr+'ttbar_cc'+rootStr,
-         'xsec': 0.225197,
+         'xsec': 0.234,
          'xsec_err': 0.3*0.225197,
          'sys_array': sys_arrays['ttcc'],
          'ngen':  8252095, 
@@ -425,7 +426,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
          'file': dirStr+'ttbar' +rootStr,
          'file_JESUp': dirStr+'ttbar'+rootStr,
          'file_JESDown': dirStr+'ttbar'+rootStr,
-         'xsec': 0.225197,
+         'xsec': 0.234,
          'xsec_err': 0.023,
          'sys_array': sys_arrays['tt'],
          'ngen':  8252095, 
