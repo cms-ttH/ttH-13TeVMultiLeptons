@@ -365,8 +365,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 		else: myLumiString = TexTitle+"				   #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 	else:
-		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = 19.45 fb^{-1}"
-		else: myLumiString = TexTitle+"				   #sqrt{s} = 8 TeV, L = 19.45 fb^{-1}"
+		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = %0.2f fb^{-1}" % (myPlotGroup.lumi/1.0e6)
+		else: myLumiString = TexTitle+"				   #sqrt{s} = 8 TeV, L = %0.2f fb^{-1}" % (myPlotGroup.lumi/1.0e6)
 
 	myLumiTex = TLatex()
 	myLumiTex.SetNDC()
