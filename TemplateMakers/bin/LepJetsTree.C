@@ -31,7 +31,7 @@
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 //#include "PhysicsTools/FWLite/interface/TFileService.h"
 
-#include "NtupleMaker/BEANmaker/interface/BEANsUtilities.h"
+#include "NtupleMaker/BEANmaker/interface/BEANhelper.h"
 #include "NtupleMaker/BEANmaker/interface/BtagWeight.h" 
 
 //#include "LumiReweightingStandAlone.h"
@@ -130,6 +130,7 @@ int main ( int argc, char ** argv )
 {
    // load framework libraries
    gSystem->Load( "libFWCoreFWLite" );
+   gSystem->Load("libNtupleMakerBEANmaker.so");
    AutoLibraryLoader::enable();
 
    //adding in python config parsing
@@ -172,7 +173,8 @@ int main ( int argc, char ** argv )
    bool useJetSelection      =  anaParams.getParameter<bool>("jetSel");
    int minJets  = anaParams.getParameter<int>("minJets");
    double nTags = anaParams.getParameter<double>("btags");
-
+   //Add this into cfg when you do btag systematic!
+   int btagCSVShape = 0;
    std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
 
    //  Btag file
@@ -255,6 +257,11 @@ int main ( int argc, char ** argv )
 
   histofile.cd();
 
+  //Pile Up Period
+  std::string PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July, 2012C_PR, 2012C_24Aug, 2012D_PR";
+  std::string Era  = "2012_53x";
+  
+
   //TTbar weights
   double fakeLumi = 1000000;
   double ttbarWeight = 0;
@@ -289,26 +296,34 @@ int main ( int argc, char ** argv )
    cout << "is Data? "<< isData<< endl;
 
    if( TString(sampleName).Contains("TTbar")  ){
-     sample = 2500;
-     if( TString(sampleName).Contains("SemiLep") ||
-         TString(sampleName).Contains("Semi") ||
-         TString(sampleName).Contains("semi")){      ttbarWeight = semWeight;}
-     else if (TString(sampleName).Contains("Had") ||
-              TString(sampleName).Contains("had")){  ttbarWeight = hadWeight;}
-     else if (TString(sampleName).Contains("Di") ||
-              TString(sampleName).Contains("di")){   ttbarWeight = dilWeight;}
-     else{ ttbarWeight = 1;}
+     if(TString(sampleName).Contains("Had"))              sample = 2566;
+     else if(TString(sampleName).Contains("Semilep"))     sample = 2563;
+     else if(TString(sampleName).Contains("Dilep"))       sample = 2533; 
+     else                                                 sample = 2500; 
    }
-  if( TString(sampleName).Contains("T_sChan")  )        sample = 2600;
-  if( TString(sampleName).Contains("T_tChan")  )        sample = 2602;
-  if( TString(sampleName).Contains("T_tWChan")  )       sample = 2604;
-  if( TString(sampleName).Contains("Tbar_sChan")  )     sample = 2501;
-  if( TString(sampleName).Contains("Tbar_tChan")  )     sample = 2503;
-  if( TString(sampleName).Contains("Tbar_tWChan")  )    sample = 2505;
+  if( TString(sampleName).Contains("T_sChan")
+      || TString(sampleName).Contains("t_sChan") )      sample = 2600;
+  if( TString(sampleName).Contains("T_tChan")
+      || TString(sampleName).Contains("t_tChan") )      sample = 2602;
+  if( TString(sampleName).Contains("T_tWChan")||
+      TString(sampleName).Contains("t_tWChan"))         sample = 2604;
+  if( TString(sampleName).Contains("Tbar_sChan")||
+      TString(sampleName).Contains("tbar_sChan"))       sample = 2601;
+  if( TString(sampleName).Contains("Tbar_tChan")||
+      TString(sampleName).Contains("tbar_tChan"))       sample = 2603;
+  if( TString(sampleName).Contains("Tbar_tWChan")||
+      TString(sampleName).Contains("tbar_tWChan"))      sample = 2605;
   if( TString(sampleName).Contains("DYJetsToLL")  )     sample = 2800;
-  if( TString(sampleName).Contains("ZJets")  )          sample = 2800;
+  if( TString(sampleName).Contains("Zjets")  )          sample = 2800;
   if( TString(sampleName).Contains("WJetsToLNu")  )     sample = 2400;
-  if( TString(sampleName).Contains("WJets")  )     sample = 2400;
+  if( TString(sampleName).Contains("WJets")  )          sample = 2400;
+  if( TString(sampleName).Contains("W")  ){
+    if (TString(sampleName).Contains("1"))              sample = 2401;
+    else if (TString(sampleName).Contains("2"))         sample = 2402;
+    else if (TString(sampleName).Contains("3"))         sample = 2403;
+    else if (TString(sampleName).Contains("4"))         sample = 2404;
+    else                                                sample = 2400;
+  }
   if( TString(sampleName).Contains("WW")  )             sample = 2700;
   if( TString(sampleName).Contains("WZ")  )             sample = 2701;
   if( TString(sampleName).Contains("ZZ")  )             sample = 2702;
@@ -317,7 +332,42 @@ int main ( int argc, char ** argv )
 
   cout << "Sample Name: " << sampleName<< "  Sample #:    " << sample << endl;
   if(isData==true){sysType = "data";}
-  BEANs::setMCsample(sample, true, true, "");
+  // BEANs::setMCsample(sample, true, true, "");
+
+  BEANhelper beanHelper;
+  //BEANhelper::SetUp(string iEra, int iSampleNumber, bool iIsLJ, bool iIsData, string iDataset, bool iReshapeCSV, bool iPfLeptons = true)
+  beanHelper.SetUp(Era, sample, true, isData, "SingleMu", true, false, PUPeriodStr);
+            
+  sysType::sysType iSysTypeJE = sysType::NA;
+if (isData || (jer==0 && jes==0)) {
+  iSysTypeJE = sysType::NA;
+ } else if (jer == 1) {
+  iSysTypeJE = sysType::JERup;
+ } else if (jer == -1) {
+  iSysTypeJE = sysType::JERdown;
+ } else if (jes == 1) {
+  iSysTypeJE = sysType::JESup;
+ } else if (jes == -1) {
+  iSysTypeJE = sysType::JESdown;
+ }
+
+sysType::sysType iSysTypeCSV = sysType::NA;
+if (isData || btagCSVShape==0) {
+  iSysTypeCSV = sysType::NA;
+ } else if (btagCSVShape == 1) {
+  iSysTypeCSV = sysType::hfSFup;
+ } else if (btagCSVShape == -1) {
+  iSysTypeCSV = sysType::hfSFdown;
+ } else if (btagCSVShape == 2) {
+  iSysTypeCSV = sysType::lfSFup;
+ } else if (btagCSVShape == -2) {
+  iSysTypeCSV = sysType::lfSFdown;
+ }
+
+sysType::sysType iSysType = sysType::NA;
+if (btagCSVShape == 0) iSysType = iSysTypeJE;
+ else iSysType = iSysTypeCSV;
+  
       
   
   //////////////////////////////////////////////////////////////////////////
@@ -751,10 +801,9 @@ int main ( int argc, char ** argv )
       double PUup = 1;
       double PUdown =1;
       if(!isData){
-        BEANs::getPUwgt(numTruePV,PU,PUup,PUdown);
-        PUwgt = PU;
-        PUwgt_up = PUup;
-        PUwgt_down = PUdown;
+        PUwgt = beanHelper.GetPUweight(numTruePV);
+        PUwgt_up = beanHelper.GetPUweightUp(numTruePV);
+        PUwgt_down = beanHelper.GetPUweightDown(numTruePV);
       }else{
           PUwgt = 1;
           PUwgt_up = 1;
@@ -1064,6 +1113,7 @@ int main ( int argc, char ** argv )
       ////////
       float leptonPt = 0.0 ;
       float leptonEta = -5;
+      double   leptonSF = 1;
      
    
       std::vector<int> tight_ele_index;
@@ -1107,6 +1157,7 @@ int main ( int argc, char ** argv )
                if( (tightIso) ) {
                  tight_ele_index.push_back(i);
                  leptonPt = elePt;
+                 leptonSF = beanHelper.GetElectronSF(electrons.at(i));
                  leptonEta = eleEta;
                  isEleEvent = true;
                }else {
@@ -1161,6 +1212,7 @@ int main ( int argc, char ** argv )
             if( (tightkin && id && tightIso) ){
               tight_mu_index.push_back(i);
               leptonPt = muPt;
+              leptonSF = beanHelper.GetMuonSF(muons.at(i));
               leptonEta = muEta;
               isMuonEvent = true;
           	} // end if tight muon
@@ -1173,6 +1225,7 @@ int main ( int argc, char ** argv )
             if(muPt>26 && tightIso){
               tight_mu_index.push_back(i);
               leptonPt = muPt;
+              leptonSF = beanHelper.GetMuonSF(muons.at(i));
               leptonEta = muEta;
               isMuonEvent = true;
             }
@@ -1266,95 +1319,97 @@ int main ( int argc, char ** argv )
              << " evt: " << ev.id().event()<< endl;
         cout << "PF Jets: " << pfjets.size() << endl;
       }
-     
+
+      BNjetCollection const &pfjetsSelected = beanHelper.GetCorrectedJets(pfjets,iSysType);
+      BNjetCollection const &pfjetsSelected_Uncorrected = beanHelper.GetUncorrectedJets(pfjetsSelected,pfjets);
       int passingJets = 0;
 
       //cout << "event: " << cnt ;
-      for( int i=0; i<int(pfjets.size()); i++ ){
+      for( int i=0; i<int(pfjetsSelected.size()); i++ ){
         if(verboseJetCut == true){cout << "jet " << i << ": ";}
        
-        jet_px.push_back(pfjets.at(i).px);
-        jet_py.push_back(pfjets.at(i).py);
-        jet_pz.push_back(pfjets.at(i).pz);
-        jet_pt.push_back(pfjets.at(i).pt);
-        jet_eta.push_back(pfjets.at(i).eta);
-        jet_energy.push_back(pfjets.at(i).energy);
+        jet_px.push_back(pfjetsSelected.at(i).px);
+        jet_py.push_back(pfjetsSelected.at(i).py);
+        jet_pz.push_back(pfjetsSelected.at(i).pz);
+        jet_pt.push_back(pfjetsSelected.at(i).pt);
+        jet_eta.push_back(pfjetsSelected.at(i).eta);
+        jet_energy.push_back(pfjetsSelected.at(i).energy);
 
         double origPx    = jet_px[i];
         double origPy    = jet_py[i];
         double origPz    = jet_pz[i];
-        double origJetPt = pfjets.at(i).pt;
+        double origJetPt = pfjetsSelected.at(i).pt;
         double origE     = jet_energy[i];
 
         // Apply JES uncertainty to all jets
-        double unc = pfjets.at(i).JESunc;
+        double unc = pfjetsSelected.at(i).JESunc;
         
-        jet_px[i] *= (1. + jes*unc);
-        jet_py[i] *= (1. + jes*unc);
-        jet_pz[i] *= (1. + jes*unc);
-        jet_pt[i] *= (1. + jes*unc);
-        jet_energy[i] *= (1. + jes*unc);
+        // //jet_px[i] *= (1. + jes*unc);
+//         jet_py[i] *= (1. + jes*unc);
+//         jet_pz[i] *= (1. + jes*unc);
+//         jet_pt[i] *= (1. + jes*unc);
+//         jet_energy[i] *= (1. + jes*unc);
 
-    	double jetPt = pfjets.at(i).pt;
-        jetPt *= (1. + jes*unc);
+    	double jetPt = pfjetsSelected.at(i).pt;
+        //jetPt *= (1. + jes*unc);
 
         // Apply JER uncertainty to all jets
 
         // 0 for nominal, 1 for up, -1 for down
-        double jetEta = pfjets.at(i).eta;
+        double jetEta = pfjetsSelected.at(i).eta;
         double jetAbsEta = fabs(jetEta);
-        double genJetPT = pfjets.at(i).genJetPT;
-        double jetPhi = pfjets.at(i).phi;
+        double genJetPT = pfjetsSelected.at(i).genJetPT;
+        double jetPhi = pfjetsSelected.at(i).phi;
 
 //          cout << "run: " <<ev.id().run() << " lumi: "<<ev.id().luminosityBlock()
 //              << " evt: " << ev.id().event()<< endl;
 
 //          cout <<"myJER (" << jer << ", " << jetAbsEta << ", "
 //               << genJetPT << ", " << jetPt << ") = ";
-        double myJER = BEANs::getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
+        // double myJER = beanHelper.getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
         //cout << myJER;
 
-        if( isData){
-           myJER = 1.0;
-          }
+        // if( isData){
+        //  myJER = 1.0;
+        // }
 
-          double deltaPx = jet_px[i] * (myJER - 1.0);
-          double deltaPy = jet_py[i] * (myJER - 1.0);
+        //   double deltaPx = jet_px[i] * (myJER - 1.0);
+//           double deltaPy = jet_py[i] * (myJER - 1.0);
           
-        if (jerDebugPrint || verbose)
-          std::cout << "Jet num " << i << "  Old px " << jet_px[i] << " new px " << jet_px[i]*myJER
-                    << " delta px " << deltaPx << std::endl
-                    << "      Old py " << jet_py[i] << " new py " << jet_py[i]*myJER
-                    << " delta py " << deltaPy << std::endl;
+//         if (jerDebugPrint || verbose)
+//           std::cout << "Jet num " << i << "  Old px " << jet_px[i] << " new px " << jet_px[i]*myJER
+//                     << " delta px " << deltaPx << std::endl
+//                     << "      Old py " << jet_py[i] << " new py " << jet_py[i]*myJER
+//                     << " delta py " << deltaPy << std::endl;
         
-        jet_px[i] *= myJER;
-        jet_py[i] *= myJER;
-        jet_pz[i] *= myJER;
-        jet_pt[i] *= myJER;
-        jet_energy[i] *= myJER;	
-        jetPt *= myJER;
+//         jet_px[i] *= myJER;
+//         jet_py[i] *= myJER;
+//         jet_pz[i] *= myJER;
+//         jet_pt[i] *= myJER;
+//         jet_energy[i] *= myJER;	
+//         jetPt *= myJER;
 
     
 
         bool tightJetPt = ( jetPt>40. );
         bool looseJetPt = ( jetPt>30. );//Tessa change this back to 20!!!
         bool eta = ( jetAbsEta<2.5 );
-        //bool id  = ( pfjets.at(i).jetIDLoose==1 );
-        bool id = (     (pfjets.at(i).nconstituents > 1)   &&
-                        (pfjets.at(i).neutralHadronEnergyFraction < 0.99) &&
-                        (pfjets.at(i).neutralEmEnergyFraction < 0.99)  &&
-                        (pfjets.at(i).chargedEmEnergyFraction < 0.99) 
-                        //(pfjets.at(i).chargedEmEnergyFraction < 0.99 ||fabs(jetEta)<2.4 ) &&
+        //bool id  = ( pfjetsSelected.at(i).jetIDLoose==1 );
+        bool id = (     (pfjetsSelected.at(i).nconstituents > 1)   &&
+                        (pfjetsSelected.at(i).neutralHadronEnergyFraction < 0.99) &&
+                        (pfjetsSelected.at(i).neutralEmEnergyFraction < 0.99)  &&
+                        (pfjetsSelected.at(i).chargedEmEnergyFraction < 0.99) 
+                        //(pfjetsSelected.at(i).chargedEmEnergyFraction < 0.99 ||fabs(jetEta)<2.4 ) &&
                         //if(fabs(jetEta)<2.4){
-                        // (pfjets.at(i).chargedHadronEnergyFraction > 0) &&
-                        //(pfjets.at(i).chargedMultiplicity > 0)
+                        // (pfjetsSelected.at(i).chargedHadronEnergyFraction > 0) &&
+                        //(pfjetsSelected.at(i).chargedMultiplicity > 0)
                         //}
                         );
 
         if(jetAbsEta<2.4){
           id = ( id &&
-                 (pfjets.at(i).chargedHadronEnergyFraction > 0) &&
-                 (pfjets.at(i).chargedMultiplicity > 0)
+                 (pfjetsSelected.at(i).chargedHadronEnergyFraction > 0) &&
+                 (pfjetsSelected.at(i).chargedMultiplicity > 0)
                  );
             }
 
@@ -1371,26 +1426,26 @@ int main ( int argc, char ** argv )
         // if( looseJetPt && eta && id){
         jetV[numGoodJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
         jetVbefJER[numGoodJets].SetPxPyPzE(origPx,origPy,origPz,origE);
-        jetUnc[numGoodJets] = jes*unc;
-        jetJER[numGoodJets] = myJER;
+        //jetUnc[numGoodJets] = jes*unc;
+        //jetJER[numGoodJets] = myJER;
         numGoodJets++;
         tight_pfjet_index.push_back(i);
         
-        totalDeltaPx += deltaPx;
-        totalDeltaPy += deltaPy;
+     //    totalDeltaPx += deltaPx;
+//         totalDeltaPy += deltaPy;
 
-        if (jerDebugPrint || verbose) 
-          std::cout << "*** Tight Jet Num = " << i << "  Jet abs eta = " << jetAbsEta
-                    << "  Gen Jet Pt = " << genJetPT << "  jetPt = " << jetPt
-                    << "  JER factor = " << myJER << std::endl
-                    << "    deltaPx = " << deltaPx << " deltaPy = " << deltaPy 
-                    << "    totalDeltaPx = " << totalDeltaPx
-                    << " totalDeltaPy = " << totalDeltaPy << std::endl ;
+//         if (jerDebugPrint || verbose) 
+//           std::cout << "*** Tight Jet Num = " << i << "  Jet abs eta = " << jetAbsEta
+//                     << "  Gen Jet Pt = " << genJetPT << "  jetPt = " << jetPt
+//                     << "  JER factor = " << myJER << std::endl
+//                     << "    deltaPx = " << deltaPx << " deltaPy = " << deltaPy 
+//                     << "    totalDeltaPx = " << totalDeltaPx
+//                     << " totalDeltaPy = " << totalDeltaPy << std::endl ;
         
-        int flavor = pfjets.at(i).flavour;
+        int flavor = pfjetsSelected.at(i).flavour;
         double factor = 1;
         if( sysType.compare("data")!=0 ){
-          double genJetPT = pfjets.at(i).genJetPT;
+          double genJetPT = pfjetsSelected.at(i).genJetPT;
           if( sysType.compare("JERUp")==0 )        factor = getJERfactor(1,jetAbsEta,genJetPT,jetPt);
           else if( sysType.compare("JERDown")==0 ) factor = getJERfactor(-1,jetAbsEta,genJetPT,jetPt);
           else                                     factor = getJERfactor(0,jetAbsEta,genJetPT,jetPt);
@@ -1399,9 +1454,10 @@ int main ( int argc, char ** argv )
         // Loose Cut is 0.244
         // Medium Cut is 0.679
         // Tight Cut is 0.898
-        double csv_old = pfjets.at(i).btagCombinedSecVertex;
+        //double csv_old = pfjetsSelected.at(i).btagCombinedSecVertex;
         // double csv = csv_old;
-        double csv = BEANs::reshape_csv(jetEta, jetPt, csv_old, flavor, sysType);
+        //double csv = BEANs::reshape_csv(jetEta, jetPt, csv_old, flavor, sysType);
+        double csv = pfjetsSelected.at(i).btagCombinedSecVertex;
         bool csvM (csv>btagThres);
         //cout << "csv: " << csv << endl;
         if( csvM ){
@@ -1468,19 +1524,19 @@ int main ( int argc, char ** argv )
 //       cout << "njets passing? " << passingJets << endl;
 //       for (int i=0; i<numGoodJets; i++ ){
 //         cout << "jet " << i << ":  pt: " << jetV[i].Pt() << endl;
-//         //  cout << "jet " << i << ":  pt: " << pfjets.at(i).pt << endl;
+//         //  cout << "jet " << i << ":  pt: " << pfjetsSelected.at(i).pt << endl;
 //       }
 
 
 
       
 // //Calculate the Single Muon ID and Trigger Efficiency
-      double IDandTrigSF =0;
-      if(isMuonEvent){
-        IDandTrigSF = getSingleMuEffSF(leptonEta, leptonPt);
+      // double IDandTrigSF =0;
+      //if(isMuonEvent){
+      //IDandTrigSF = getSingleMuEffSF(leptonEta, leptonPt);
         // cout << "Scale Factor: " << IDandTrigSF << endl;
-        wgt *= IDandTrigSF;
-      }
+        wgt *= leptonSF;
+        //}
 
       *(floatBranches["ttbarWeight"]) = ttbarWeight;
       *(intBranches["nPartons"]) = nPartons;
@@ -1553,91 +1609,91 @@ int main ( int argc, char ** argv )
       ////------------b-tag SF
       ////
       //////////////////////////
-      double wgt_prob=0, wgt_prob_hfSFup=0, wgt_prob_hfSFdown=0, wgt_prob_lfSFup=0, wgt_prob_lfSFdown=0;                                  
-      double wgt_prob_ge4=0, wgt_prob_ge4_hfSFup=0, wgt_prob_ge4_hfSFdown=0, wgt_prob_ge4_lfSFup=0, wgt_prob_ge4_lfSFdown=0;              
+    //   double wgt_prob=0, wgt_prob_hfSFup=0, wgt_prob_hfSFdown=0, wgt_prob_lfSFup=0, wgt_prob_lfSFdown=0;                                  
+//       double wgt_prob_ge4=0, wgt_prob_ge4_hfSFup=0, wgt_prob_ge4_hfSFdown=0, wgt_prob_ge4_lfSFup=0, wgt_prob_ge4_lfSFdown=0;              
 
-      if( (sample>=0 || sample==-2500) && !isData){
-        std::vector<BTagWeight::JetInfo> myjetinfo;                                                                   
-          std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
-          std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
-          std::vector<BTagWeight::JetInfo> myjetinfo_lfSFup;                                                            
-          std::vector<BTagWeight::JetInfo> myjetinfo_lfSFdown;
+//       if( (sample>=0 || sample==-2500) && !isData){
+//         std::vector<BTagWeight::JetInfo> mjetinfo;                                                                   
+//           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFup;                                                            
+//           std::vector<BTagWeight::JetInfo> myjetinfo_hfSFdown;                                                          
+//           std::vector<BTagWeight::JetInfo> myjetinfo_lfSFup;                                                            
+//           std::vector<BTagWeight::JetInfo> myjetinfo_lfSFdown;
 
-          if (verbose) std::cout << "Looping over  jets for btag uncert" <<std::endl;
-          for( int j=0; j<int(good_jet_pt.size()); j++ ){
-            if (verbose) std::cout << "calling btag sf" <<std::endl;
-            if (verbose) std::cout << "one" <<std::endl;
-            std::vector<double> myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");
-            // vdouble myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],);
-            if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
-            BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );
-            myjetinfo.push_back(myjet);
-            if (verbose) std::cout << "two" <<std::endl;
-            std::vector<double> myEffSF_hfSFup = BEANs::getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");     
-            BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );
-            myjetinfo_hfSFup.push_back(myjet_hfSFup);                            
-            if (verbose) std::cout << "three" <<std::endl;
-            std::vector<double> myEffSF_hfSFdown = BEANs::getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                     
-            BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );                                                 
-            myjetinfo_hfSFdown.push_back(myjet_hfSFdown);                                                                                   
-            if (verbose) std::cout << "four" <<std::endl;
-            std::vector<double> myEffSF_lfSFup = BEANs::getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                        
-            BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );                                                       
-            myjetinfo_lfSFup.push_back(myjet_lfSFup);                                                                                       
-            if (verbose) std::cout << "five" <<std::endl;
-            std::vector<double> myEffSF_lfSFdown = BEANs::getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                     
-            BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );                                                 
-            myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
-            if (verbose) std::cout << "done calling sf calc " <<std::endl;
-          }
+//           if (verbose) std::cout << "Looping over  jets for btag uncert" <<std::endl;
+//           for( int j=0; j<int(good_jet_pt.size()); j++ ){
+//             if (verbose) std::cout << "calling btag sf" <<std::endl;
+//             if (verbose) std::cout << "one" <<std::endl;
+//             std::vector<double> myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");
+//             // vdouble myEffSF = BEANs::getEffSF( 0, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],);
+//             if (verbose) std::cout << "return from getEffSF, try myjet" <<std::endl;
+//             BTagWeight::JetInfo myjet( myEffSF[0], myEffSF[1] );
+//             myjetinfo.push_back(myjet);
+//             if (verbose) std::cout << "two" <<std::endl;
+//             std::vector<double> myEffSF_hfSFup = BEANs::getEffSF( 1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");     
+//             BTagWeight::JetInfo myjet_hfSFup( myEffSF_hfSFup[0], myEffSF_hfSFup[1] );
+//             myjetinfo_hfSFup.push_back(myjet_hfSFup);                            
+//             if (verbose) std::cout << "three" <<std::endl;
+//             std::vector<double> myEffSF_hfSFdown = BEANs::getEffSF( -1, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                     
+//             BTagWeight::JetInfo myjet_hfSFdown( myEffSF_hfSFdown[0], myEffSF_hfSFdown[1] );                                                 
+//             myjetinfo_hfSFdown.push_back(myjet_hfSFdown);                                                                                   
+//             if (verbose) std::cout << "four" <<std::endl;
+//             std::vector<double> myEffSF_lfSFup = BEANs::getEffSF( 2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                        
+//             BTagWeight::JetInfo myjet_lfSFup( myEffSF_lfSFup[0], myEffSF_lfSFup[1] );                                                       
+//             myjetinfo_lfSFup.push_back(myjet_lfSFup);                                                                                       
+//             if (verbose) std::cout << "five" <<std::endl;
+//             std::vector<double> myEffSF_lfSFdown = BEANs::getEffSF( -2, good_jet_pt[j], good_jet_eta[j], good_jet_flavor[j],"2012");                     
+//             BTagWeight::JetInfo myjet_lfSFdown( myEffSF_lfSFdown[0], myEffSF_lfSFdown[1] );                                                 
+//             myjetinfo_lfSFdown.push_back(myjet_lfSFdown);
+//             if (verbose) std::cout << "done calling sf calc " <<std::endl;
+//           }
 
 
-          if (verbose) std::cout << "Now using btag weight" <<std::endl;
+//           if (verbose) std::cout << "Now using btag weight" <<std::endl;
  
 
-          BTagWeight bweight(1,1);                                                                                                          
-          if( numTag<4 ){                                                         
-            wgt_prob = bweight.weight(myjetinfo,numTag,numTag);                   
-            wgt_prob_hfSFup   = bweight.weight(myjetinfo_hfSFup,numTag,numTag);   
-            wgt_prob_hfSFdown = bweight.weight(myjetinfo_hfSFdown,numTag,numTag); 
-            wgt_prob_lfSFup   = bweight.weight(myjetinfo_lfSFup,numTag,numTag);   
-            wgt_prob_lfSFdown = bweight.weight(myjetinfo_lfSFdown,numTag,numTag); 
-          }                                                                       
-          else {                                                                  
-            wgt_prob_ge4 = bweight.weight(myjetinfo,4,99);                        
-            wgt_prob_ge4_hfSFup   = bweight.weight(myjetinfo_hfSFup,4,99);        
-            wgt_prob_ge4_hfSFdown = bweight.weight(myjetinfo_hfSFdown,4,99);      
-            wgt_prob_ge4_lfSFup   = bweight.weight(myjetinfo_lfSFup,4,99);        
-            wgt_prob_ge4_lfSFdown = bweight.weight(myjetinfo_lfSFdown,4,99);      
-          }
-      }
+//           BTagWeight bweight(1,1);                                                                                                          
+//           if( numTag<4 ){                                                         
+//             wgt_prob = bweight.weight(myjetinfo,numTag,numTag);                   
+//             wgt_prob_hfSFup   = bweight.weight(myjetinfo_hfSFup,numTag,numTag);   
+//             wgt_prob_hfSFdown = bweight.weight(myjetinfo_hfSFdown,numTag,numTag); 
+//             wgt_prob_lfSFup   = bweight.weight(myjetinfo_lfSFup,numTag,numTag);   
+//             wgt_prob_lfSFdown = bweight.weight(myjetinfo_lfSFdown,numTag,numTag); 
+//           }                                                                       
+//           else {                                                                  
+//             wgt_prob_ge4 = bweight.weight(myjetinfo,4,99);                        
+//             wgt_prob_ge4_hfSFup   = bweight.weight(myjetinfo_hfSFup,4,99);        
+//             wgt_prob_ge4_hfSFdown = bweight.weight(myjetinfo_hfSFdown,4,99);      
+//             wgt_prob_ge4_lfSFup   = bweight.weight(myjetinfo_lfSFup,4,99);        
+//             wgt_prob_ge4_lfSFdown = bweight.weight(myjetinfo_lfSFdown,4,99);      
+//           }
+//       }
 
-    if (verbose) std::cout << "done with btag weight loop" <<std::endl;
+//     if (verbose) std::cout << "done with btag weight loop" <<std::endl;
     
-        double wgt_btag = 1, wgt_btag_hfSFup = 1, wgt_btag_hfSFdown = 1, wgt_btag_lfSFup = 1, wgt_btag_lfSFdown = 1;                        
-        if( (sample>=0 || sample==-2500) && !isData){                                                                                                                    
-          if( numTag<4 ){                                                                                                                   
-            wgt_btag = wgt_prob;                                                                                                        
-            wgt_btag_hfSFup   = wgt_prob_hfSFup;                                                                                        
-            wgt_btag_hfSFdown = wgt_prob_hfSFdown;                                                                                      
-            wgt_btag_lfSFup   = wgt_prob_lfSFup;                                                                                        
-            wgt_btag_lfSFdown = wgt_prob_lfSFdown;                                                                                      
-          }   
-          else {                                                                                                                            
-            wgt_btag = wgt_prob_ge4;                                                                                                    
-            wgt_btag_hfSFup   = wgt_prob_ge4_hfSFup;                                                                                    
-            wgt_btag_hfSFdown = wgt_prob_ge4_hfSFdown;                                                                                  
-            wgt_btag_lfSFup   = wgt_prob_ge4_lfSFup;                                                                                    
-            wgt_btag_lfSFdown = wgt_prob_ge4_lfSFdown;                                                                                  
-          }
-        }
+//         double wgt_btag = 1, wgt_btag_hfSFup = 1, wgt_btag_hfSFdown = 1, wgt_btag_lfSFup = 1, wgt_btag_lfSFdown = 1;                        
+//         if( (sample>=0 || sample==-2500) && !isData){                                                                                                                    
+//           if( numTag<4 ){                                                                                                                   
+//             wgt_btag = wgt_prob;                                                                                                        
+//             wgt_btag_hfSFup   = wgt_prob_hfSFup;                                                                                        
+//             wgt_btag_hfSFdown = wgt_prob_hfSFdown;                                                                                      
+//             wgt_btag_lfSFup   = wgt_prob_lfSFup;                                                                                        
+//             wgt_btag_lfSFdown = wgt_prob_lfSFdown;                                                                                      
+//           }   
+//           else {                                                                                                                            
+//             wgt_btag = wgt_prob_ge4;                                                                                                    
+//             wgt_btag_hfSFup   = wgt_prob_ge4_hfSFup;                                                                                    
+//             wgt_btag_hfSFdown = wgt_prob_ge4_hfSFdown;                                                                                  
+//             wgt_btag_lfSFup   = wgt_prob_ge4_lfSFup;                                                                                    
+//             wgt_btag_lfSFdown = wgt_prob_ge4_lfSFdown;                                                                                  
+//           }
+//         }
 
-	//////
-        *(floatBranches["prob"]) = wgt_btag;                                                                                         
-        *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFup;                                                                       
-        *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFdown;                                                                           
-        *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFup;                                                                       
-        *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;
+// 	//////
+//         *(floatBranches["prob"]) = wgt_btag;                                                                                         
+//         *(floatBranches["prob_hfSFdown"]) = wgt_btag_hfSFup;                                                                       
+//         *(floatBranches["prob_hfSFup"]) = wgt_btag_hfSFdown;                                                                           
+//         *(floatBranches["prob_lfSFdown"]) = wgt_btag_lfSFup;                                                                       
+//         *(floatBranches["prob_lfSFup"]) = wgt_btag_lfSFdown;
 
 
 
@@ -1849,13 +1905,13 @@ int main ( int argc, char ** argv )
 //          TString histName2 = histName + "Pt_"; histName2+= nJetsPlot; histName2 += "j";
 
 
-	    if (pfjets.at(iJet).btagCombinedSecVertex > 0.679){
-	      avg_btag_disc_btags += pfjets.at(iJet).btagCombinedSecVertex;
-          float btagDisc = pfjets.at(iJet).btagCombinedSecVertex;
+	    if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679){
+	      avg_btag_disc_btags += pfjetsSelected.at(iJet).btagCombinedSecVertex;
+          float btagDisc = pfjetsSelected.at(iJet).btagCombinedSecVertex;
           *(floatBranches["btag_disc"]) = btagDisc;
 	    }
-	    if (pfjets.at(iJet).btagCombinedSecVertex <= 0.679){
-	      avg_btag_disc_non_btags += pfjets.at(iJet).btagCombinedSecVertex;   		  
+	    if (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679){
+	      avg_btag_disc_non_btags += pfjetsSelected.at(iJet).btagCombinedSecVertex;   		  
 	    }
 
 	  }
@@ -1882,7 +1938,7 @@ int main ( int argc, char ** argv )
 	  }
 	  
 	  for (int l=0; l < numTag; l++){
-	    dev_from_avg_disc_btags += pow((pfjets.at(tag_pfjet_index[l]).btagCombinedSecVertex - avg_btag_disc_btags),2);
+	    dev_from_avg_disc_btags += pow((pfjetsSelected.at(tag_pfjet_index[l]).btagCombinedSecVertex - avg_btag_disc_btags),2);
 	  }
 	  if ( numTag > 0 ) dev_from_avg_disc_btags /= numTag;
 
@@ -2301,7 +2357,7 @@ double getSingleMuEffSF(double muEta, double muPt){
   // cout << "get single muon efficiency for mu passing IsoMu24" << endl;
   double muonSF = 1;
   double muonTriggerSF;
-  muonSF = h_mu_SF_->GetBinContent( h_mu_SF_->FindBin(muPt, muEta) );
+  // muonSF = h_mu_SF_->GetBinContent( h_mu_SF_->FindBin(muPt, muEta) );
   // //muon ID and Trigger Eff from AN2012 218 v3
 //   //and are a function of eta for pt values of >26GeV Muon POG Tight Muons
 //   double muonIDSF= 0.999;

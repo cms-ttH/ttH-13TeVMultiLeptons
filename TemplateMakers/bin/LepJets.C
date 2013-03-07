@@ -276,6 +276,7 @@ int main ( int argc, char ** argv )
 
   //Pile Up Period
   std::string PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July, 2012C_PR, 2012C_24Aug, 2012D_PR";
+  //std::string PUPeriodStr = "2012A_13July, 2012A_06Aug, 2012B_13July";
   std::string Era  = "2012_53x";
   
   int sample = 0;
@@ -291,18 +292,35 @@ int main ( int argc, char ** argv )
   if(sample==-1) isData = true;
   cout << "is Data? "<< isData<< endl;
 
-  if( TString(sampleName).Contains("TTbar")  )          sample = 2500;
-  if( TString(sampleName).Contains("T_sChan")  )        sample = 2600;
-  if( TString(sampleName).Contains("T_tChan")  )        sample = 2602;
-  if( TString(sampleName).Contains("T_tWChan")  )       sample = 2604;
-  if( TString(sampleName).Contains("Tbar_sChan")  )     sample = 2501;
-  if( TString(sampleName).Contains("Tbar_tChan")  )     sample = 2503;
-  if( TString(sampleName).Contains("Tbar_tWChan")  )    sample = 2505;
+  if( TString(sampleName).Contains("TTbar")  ){
+    if(TString(sampleName).Contains("Had"))              sample = 2566;
+    else if(TString(sampleName).Contains("Semilep"))     sample = 2563;
+    else if(TString(sampleName).Contains("Dilep"))       sample = 2533; 
+    else                                                 sample = 2500; 
+  }
+  if( TString(sampleName).Contains("T_sChan")
+      || TString(sampleName).Contains("t_sChan") )      sample = 2600;
+  if( TString(sampleName).Contains("T_tChan")
+      || TString(sampleName).Contains("t_tChan") )      sample = 2602;
+  if( TString(sampleName).Contains("T_tWChan")||
+      TString(sampleName).Contains("t_tWChan"))         sample = 2604;
+  if( TString(sampleName).Contains("Tbar_sChan")||
+      TString(sampleName).Contains("tbar_sChan"))       sample = 2601;
+  if( TString(sampleName).Contains("Tbar_tChan")||
+      TString(sampleName).Contains("tbar_tChan"))       sample = 2603;
+  if( TString(sampleName).Contains("Tbar_tWChan")||
+      TString(sampleName).Contains("tbar_tWChan"))      sample = 2605;
   if( TString(sampleName).Contains("DYJetsToLL")  )     sample = 2800;
-  if( TString(sampleName).Contains("ZJets")  )          sample = 2800;
+  if( TString(sampleName).Contains("Zjets")  )          sample = 2800;
   if( TString(sampleName).Contains("WJetsToLNu")  )     sample = 2400;
   if( TString(sampleName).Contains("WJets")  )          sample = 2400;
-  if( TString(sampleName).Contains("W")  )              sample = 2400;
+  if( TString(sampleName).Contains("W")  ){
+    if (TString(sampleName).Contains("1"))              sample = 2401;
+    else if (TString(sampleName).Contains("2"))         sample = 2402;
+    else if (TString(sampleName).Contains("3"))         sample = 2403;
+    else if (TString(sampleName).Contains("4"))         sample = 2404;
+    else                                                sample = 2400;
+  }
   if( TString(sampleName).Contains("WW")  )             sample = 2700;
   if( TString(sampleName).Contains("WZ")  )             sample = 2701;
   if( TString(sampleName).Contains("ZZ")  )             sample = 2702;
@@ -699,6 +717,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       TH1F* h_numTrueMCPV = new TH1F("h_numTrueMCPV", "Number of Primary Verticies in MC", 50,-0.5,49.5);
       TH1F* h_weight      = new TH1F("h_weight", "weights", 10000,0,100);
       TH1F* h_PUweight    = new TH1F("h_PUweight", "Pile Up weights", 10000,0,100);
+      TH1F* h_csv         = new TH1F("h_csv", "csv values", 100, 0, 1);
 
       //Isolation Variable Plots
       histograms["h_pfrelIso"] = fs.make<TH1F>("h_pfrelIso", "PF RelIso", 250, 0, .25);
@@ -1532,6 +1551,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       ////////
       float leptonPt = 0.0 ;
       float leptonEta = -5;
+      double   leptonSF = 1;
      
    
       std::vector<int> tight_ele_index;
@@ -1575,6 +1595,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
                if( (tightIso) ) {
                  tight_ele_index.push_back(i);
                  leptonPt = elePt;
+                 leptonSF = beanHelper.GetElectronSF(electrons.at(i));
                  leptonEta = eleEta;
                  isEleEvent = true;
                }else {
@@ -1631,6 +1652,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
             if( (tightkin && id && tightIso) ){
               tight_mu_index.push_back(i);
               leptonPt = muPt;
+              leptonSF = beanHelper.GetMuonSF(muons.at(i));
               leptonEta = muEta;
               isMuonEvent = true;
           	} // end if tight muon
@@ -1643,6 +1665,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
             if(muPt>26 && tightIso){
               tight_mu_index.push_back(i);
               leptonPt = muPt;
+              leptonSF = beanHelper.GetMuonSF(muons.at(i));
               leptonEta = muEta;
               isMuonEvent = true;
             }
@@ -1754,19 +1777,22 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
         double origE     = jet_energy[i];
 
         // Apply JES uncertainty to all jets
+        //this is now done at the beginign
+        
         double unc = pfjetsSelected.at(i).JESunc;
         
-        jet_px[i] *= (1. + jes*unc);
-        jet_py[i] *= (1. + jes*unc);
-        jet_pz[i] *= (1. + jes*unc);
-        jet_pt[i] *= (1. + jes*unc);
-        jet_energy[i] *= (1. + jes*unc);
+        //jet_px[i] *= (1. + jes*unc);
+        //jet_py[i] *= (1. + jes*unc);
+        //jet_pz[i] *= (1. + jes*unc);
+        //jet_pt[i] *= (1. + jes*unc);
+        //jet_energy[i] *= (1. + jes*unc);
 
     	double jetPt = pfjetsSelected.at(i).pt;
-        jetPt *= (1. + jes*unc);
+        //jetPt *= (1. + jes*unc);
 
         // Apply JER uncertainty to all jets
-
+        //now done at the beginging
+        
         // 0 for nominal, 1 for up, -1 for down
         double jetEta = pfjetsSelected.at(i).eta;
         double jetAbsEta = fabs(jetEta);
@@ -1778,28 +1804,28 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 
 //          cout <<"myJER (" << jer << ", " << jetAbsEta << ", "
 //               << genJetPT << ", " << jetPt << ") = ";
-        double myJER = beanHelper.getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
+        // double myJER = beanHelper.getJERfactor( jer, jetAbsEta, genJetPT, jetPt);
         //cout << myJER;
 
-        if( isData){
-           myJER = 1.0;
-          }
+        // if( isData){
+        // myJER = 1.0;
+        //}
 
-          double deltaPx = jet_px[i] * (myJER - 1.0);
-          double deltaPy = jet_py[i] * (myJER - 1.0);
+        //double deltaPx = jet_px[i] * (myJER - 1.0);
+        //double deltaPy = jet_py[i] * (myJER - 1.0);
           
-        if (jerDebugPrint || verbose)
-          std::cout << "Jet num " << i << "  Old px " << jet_px[i] << " new px " << jet_px[i]*myJER
-                    << " delta px " << deltaPx << std::endl
-                    << "      Old py " << jet_py[i] << " new py " << jet_py[i]*myJER
-                    << " delta py " << deltaPy << std::endl;
+        // if (jerDebugPrint || verbose)
+          // std::cout << "Jet num " << i << "  Old px " << jet_px[i] << " new px " << jet_px[i]*myJER
+//                     << " delta px " << deltaPx << std::endl
+//                     << "      Old py " << jet_py[i] << " new py " << jet_py[i]*myJER
+//                     << " delta py " << deltaPy << std::endl;
         
-        jet_px[i] *= myJER;
-        jet_py[i] *= myJER;
-        jet_pz[i] *= myJER;
-        jet_pt[i] *= myJER;
-        jet_energy[i] *= myJER;	
-        jetPt *= myJER;
+//         jet_px[i] *= myJER;
+//         jet_py[i] *= myJER;
+//         jet_pz[i] *= myJER;
+//         jet_pt[i] *= myJER;
+//         jet_energy[i] *= myJER;	
+//         jetPt *= myJER;
 
 
        
@@ -1836,21 +1862,21 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
         // if( looseJetPt && eta && id){
         jetV[numGoodJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
         jetVbefJER[numGoodJets].SetPxPyPzE(origPx,origPy,origPz,origE);
-        jetUnc[numGoodJets] = jes*unc;
-        jetJER[numGoodJets] = myJER;
+        //jetUnc[numGoodJets] = jes*unc;
+        //jetJER[numGoodJets] = myJER;
         numGoodJets++;
         tight_pfjet_index.push_back(i);
         
-        totalDeltaPx += deltaPx;
-        totalDeltaPy += deltaPy;
+        // totalDeltaPx += deltaPx;
+        //totalDeltaPy += deltaPy;
 
-        if (jerDebugPrint || verbose) 
-          std::cout << "*** Tight Jet Num = " << i << "  Jet abs eta = " << jetAbsEta
-                    << "  Gen Jet Pt = " << genJetPT << "  jetPt = " << jetPt
-                    << "  JER factor = " << myJER << std::endl
-                    << "    deltaPx = " << deltaPx << " deltaPy = " << deltaPy 
-                    << "    totalDeltaPx = " << totalDeltaPx
-                    << " totalDeltaPy = " << totalDeltaPy << std::endl ;
+        //if (jerDebugPrint || verbose) 
+       //    std::cout << "*** Tight Jet Num = " << i << "  Jet abs eta = " << jetAbsEta
+//                     << "  Gen Jet Pt = " << genJetPT << "  jetPt = " << jetPt
+//                     << "  JER factor = " << myJER << std::endl
+//                     << "    deltaPx = " << deltaPx << " deltaPy = " << deltaPy 
+//                     << "    totalDeltaPx = " << totalDeltaPx
+//                     << " totalDeltaPy = " << totalDeltaPy << std::endl ;
         
         int flavor = pfjetsSelected.at(i).flavour;
         double factor = 1;
@@ -1929,8 +1955,8 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 
 
  
-     
-
+//Apply the lepton scale factor     
+      wgt = wgt*leptonSF;
 
 
       
@@ -1948,14 +1974,14 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 //       }
 
 //Calculate the Single Muon ID and Trigger Efficiency
-      double IDandTrigSF =0;
-      if(isMuonEvent){
-        IDandTrigSF = getSingleMuSF(leptonEta, leptonPt);
+      //  double IDandTrigSF =0;
+      //if(isMuonEvent){
+      //IDandTrigSF = getSingleMuSF(leptonEta, leptonPt);
        
         // IDandTrigSF =1;
         // cout << "Scale Factor: " << IDandTrigSF << endl;
-        wgt *= IDandTrigSF;
-      }
+        //wgt *= IDandTrigSF;
+      //}
            
    
       //if(isEleEvent == true){h_elePt->Fill(leptonPt);}
@@ -2681,6 +2707,8 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
         if (min_jet_lep1_dR > lep_vect1.DeltaR(jet_vect)){
           min_jet_lep1_dR = lep_vect1.DeltaR(jet_vect);
       }
+
+        h_csv->Fill(good_jet_tag[iJet],wgt);
         
 	  }//end loop over good jets 
  
@@ -2723,6 +2751,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       //      cout << "weight for event: "<< wgt << endl;
       h_PUweight->Fill(PUwgt);
       h_weight->Fill(wgt);
+     
       // cout << "numpv: " << numpv  << " numPV event:" << event->numPV << endl; 
       
 	  *(floatBranches["numPV"]) = numpv ;
