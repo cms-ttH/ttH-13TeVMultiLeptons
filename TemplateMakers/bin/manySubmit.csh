@@ -7,7 +7,7 @@
 #         btag LF down/off/up -2/0/2
 
 
-set jobLabel = betaTest_v1
+set jobLabel = feb25_baseline_v1
 
 echo "========== Zero =================="
 ./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=0 --btagLF=0 $jobLabel
