@@ -1,8 +1,8 @@
 
 
 set year = "2012_53x"
-set zmask = "noZmask"
-set charge = "SS"
+set zmask = "Zmask"
+set charge = "OS"
 
 #foreach zmask ("noZmask" "noZmask_lowPV" "noZmask_medPV" "noZmask_highPV")
 
@@ -11,7 +11,8 @@ foreach lepCat ("TwoMuon" "TwoEle" "MuonEle")
   echo "Now in $PWD"
   #foreach kind ("eq1t" "eq2jeq2t" "eq3jeq2t" "ge4jeq2t" "ge3t" )
   #foreach kind ("eq2jeq2t" "eq2jeq0t" "eq2jeq1t" "eq2jge0t")
-  foreach kind ("eq0j" "eq2jeq0t" "eq2jeq1t" "eq3jeq1t")
+  #foreach kind ("eq0j" "eq2jeq0t" "eq2jeq1t" "eq3jeq1t")
+  foreach kind ("eq2jeq2t" "eq3jeq2t" "ge4jeq2t" "ge3t" )
     set zjets_1pPartString = ""
     set zjets_2pPartString = ""
     set zjets_3pPartString = ""
