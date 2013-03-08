@@ -3678,6 +3678,8 @@ int main ( int argc, char ** argv )
         *(floatBranches["weight_Xsec"]) = weight_Xsec ;
         *(floatBranches["nGen"]) = nGen ;
         *(floatBranches["Xsec"]) = Xsec ;
+        *(floatBranches["topPtWgt"]) = topPtWgt ;
+        *(floatBranches["topPtWgtUp"]) = topPtWgtUp ;
 
         //met
         *(floatBranches["met"]) = met;
@@ -3702,6 +3704,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep2GenCharge"]) = lep2GenCharge;
 
         // jet variables
+        *(floatBranches["first_bjet_pt"]) = first_bjet_pt;
         *(floatBranches["first_jet_pt"]) = first_jet_pt;
         *(floatBranches["second_jet_pt"]) = second_jet_pt;
         *(floatBranches["third_jet_pt"]) = third_jet_pt;
