@@ -86,6 +86,7 @@ typedef std::vector<std::vector<std::string> > vvstring;
 typedef std::vector<string> vstring;
 typedef std::vector<bool> vbool;
 typedef std::vector<int> vint;
+typedef std::vector<TLorentzVector> vLorentz;
 
 
 // here is where you can change the btag threshold
@@ -272,23 +273,23 @@ int main ( int argc, char ** argv )
   else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
     if (isData) sampleNumber = -1;
     else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) { sampleNumber = 2500;
-      nGen = 6889624+1362471; Xsec = 225.197; }
+      nGen = 6889624+1362471; Xsec = 234.0; }
     else if (sampleName == "ttbar_bb" || tmpName.Contains("ttbar_bb_part")) { sampleNumber = 2555;
-      nGen = 6889624+1362471; Xsec = 225.197; }
+      nGen = 6889624+1362471; Xsec = 234.0; }
     else if (sampleName == "ttbar_cc" || tmpName.Contains("ttbar_cc_part")) { sampleNumber = 2544;
-      nGen = 6889624+1362471; Xsec = 225.197; }
+      nGen = 6889624+1362471; Xsec = 234.0; }
     else if (sampleName == "ttbar_scaleup") sampleNumber = 2511; 
     else if (sampleName == "ttbar_scaledown") sampleNumber = 2510; 
     else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
     else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
     else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2566;
-      nGen = 30997580; Xsec = 102.91; 
+      nGen = 30997580; Xsec = 106.94; 
       weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2563;
-      nGen = 25165429; Xsec = 98.65;
+      nGen = 25165429; Xsec = 102.49;
       weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2533;
-      nGen = 12063533; Xsec = 23.64;
+      nGen = 12063533; Xsec = 24.57;
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
       nGen = 30997580; Xsec = 102.91;
@@ -433,113 +434,97 @@ int main ( int argc, char ** argv )
   // 
   
   std::vector< TString >catList ;
-  catList.push_back("ge3t");
-  catList.push_back("ge3t_oldvar");
-  catList.push_back("e2je2t");   /////
-  catList.push_back("e2je2t_oldvar");   /////
+  catList.push_back("eq2jeq2t_ttbar");
+  catList.push_back("eq3jeq2t_ttbar");   /////
+  catList.push_back("ge4jeq2t_ttbar");   /////
+  catList.push_back("ge3t_ttbar");
+  catList.push_back("eq3jeq3t_ttbar");
+  catList.push_back("ge4jge3t_ttbar");
 
-  catList.push_back("e3je2t_53x");   /////
-  catList.push_back("ge4je2t_53x");   /////
-  catList.push_back("ge3t_53x");   /////
-
-  catList.push_back("var_best8");
-  catList.push_back("ge3t_new");
-
+  catList.push_back("SS_ge3jge0t_ttbar");
+  catList.push_back("SS_ge3jge1t_ttW");
+  
   const unsigned int nCat = catList.size();
 
   //Float_t fCFMlpANN[nCat];
   //TBranch* branchCFMlpANN[nCat] ;
-  
-  Float_t                 varfirst_jet_pt;
-  Float_t                 varmin_dr_tagged_jets; 
-  Float_t                 varnumJets_float; 
-  Float_t                 varmindr_lep1_jet;
-  Float_t                 varavg_btag_disc_btags;
-  Float_t                 varHt;
 
-  Float_t                 varavg_dr_tagged_jets;
-  Float_t                 varavg_tagged_dijet_mass;
-  Float_t                 varsecond_dibjet_mass;
-
-  Float_t                 varmin_dr_jets; 
-  Float_t                 varavg_dr_jets;
-  Float_t                 varavg_dijet_mass;
-  Float_t                 vardijet_mass_second;
-  Float_t                 vardijet_mass_first;
-
-  Float_t                 varCFMlpANN_var_best8;
+  //Robin's variables
   Float_t                 varavg_btag_disc_non_btags;
+  Float_t                 vardijet_mass_first;
   Float_t                 vardijet_mass_m2H;
+  
+  //Opposite sign variables
+  Float_t                 varavg_btag_disc_btags;
+  Float_t                 varavg_dr_jets;
+  Float_t                 varHt;
+  Float_t                 varhiggsLike_dijet_mass;
+  Float_t                 varhiggsLike_dijet_mass2;
+  Float_t                 varmin_dr_tagged_jets; 
+  Float_t                 varnumHiggsLike_dijet_15_float;
+  Float_t                 varnumJets_float; 
+
+  //Same sign vs. ttbar variables
+  Float_t                 varlep2Pt;
+  Float_t                 varmaxLepChargedIso;
+  Float_t                 varmaxLepAbsEta;
+  Float_t                 varmindr_lep1_jet;
+  Float_t                 varmindr_lep2_allJet;
+  Float_t                 varmindr_lep2_jet;
+//   Float_t                 varnumJets_float;
+  Float_t                 varsum_jet_pt;
+
+  //Same sign vs. ttW variables
+//   Float_t                 varlep2Pt;
+  Float_t                 varmindr_lep1_allJet;
+//   Float_t                 varmindr_lep1_jet;
+//   Float_t                 varmindr_lep2_jet;
+//   Float_t                 varnumJets_float;
+//   Float_t                 varsum_jet_pt;
+  
 
   vector<TMVA::Reader *> reader;
 
   for( unsigned int j = 0 ; j < nCat ; ++j ){
       TString label = catList[j];
       reader.push_back( new TMVA::Reader( "!Color:!Silent" ));    
-      if(j < 4) {
-	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
-	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
-	if (j < 2)   reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
-	reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
-	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
-	reader[j]->AddVariable( "Ht",         &varHt   );
+      if(j < 6) {
+        reader[j]->AddVariable( "avg_btag_disc_btags", &varavg_btag_disc_btags );
+        reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
+        reader[j]->AddVariable( "higgsLike_dijet_mass", &varhiggsLike_dijet_mass );
+        if (j!=0) reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
+        reader[j]->AddVariable( "Ht", &varHt );
+        reader[j]->AddVariable( "min_dr_tagged_jets", &varmin_dr_tagged_jets );
+        reader[j]->AddVariable( "numHiggsLike_dijet_15_float", &varnumHiggsLike_dijet_15_float );
+        if (j==2 || j==3 || j==5) reader[j]->AddVariable( "numJets_float", &varnumJets_float );
       }
-      else if (j==4){ //e3je2t_53x
-	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
-	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
-	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
-	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
-	reader[j]->AddVariable( "dijet_mass_m2H",         &vardijet_mass_m2H   ); 
-
+      else if (j==18) {
+        reader[j]->AddVariable( "lep2Pt", &varlep2Pt );
+        reader[j]->AddVariable( "maxLepChargedIso", &varmaxLepChargedIso );
+        reader[j]->AddVariable( "maxLepAbsEta", &varmaxLepAbsEta );
+        reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+        reader[j]->AddVariable( "mindr_lep2_allJet", &varmindr_lep2_allJet );
+        reader[j]->AddVariable( "mindr_lep2_jet", &varmindr_lep2_jet );
+        reader[j]->AddVariable( "numJets_float", &varnumJets_float );
+        reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
       }
-      else if (j==5){ //ge4je2t_53x
-	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
-	reader[j]->AddVariable( "avg_dijet_mass",         &varavg_dijet_mass   ); ///
-	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
-	reader[j]->AddVariable( "dijet_mass_first",         &vardijet_mass_first   ); 
-	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
-	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
-      }
-      else if (j==6){ //ge3t_53x
-	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
-	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
-	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
-	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
-	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
-	reader[j]->AddVariable( "Ht",         &varHt   );
-      }
-      else if (j==7){
-	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
-	reader[j]->AddVariable( "avg_dr_tagged_jets",         &varavg_dr_tagged_jets   ); ///
-	reader[j]->AddVariable( "avg_tagged_dijet_mass",         &varavg_tagged_dijet_mass   ); ///
-	reader[j]->AddVariable( "second_dibjet_mass",         &varsecond_dibjet_mass   ); ///
-
-	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
-	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
-	reader[j]->AddVariable( "avg_dijet_mass",         &varavg_dijet_mass   ); ///
-	reader[j]->AddVariable( "dijet_mass_second",         &vardijet_mass_second   ); ///
-      }
-      else {
-	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
-	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
-	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
-	reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
-	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
-	reader[j]->AddVariable( "CFMlpANN_var_best8",         &varCFMlpANN_var_best8   );
-	reader[j]->AddVariable( "Ht",         &varHt   );
+      else if (j==19) {
+        reader[j]->AddVariable( "lep2Pt", &varlep2Pt );
+        reader[j]->AddVariable( "mindr_lep1_allJet", &varmindr_lep1_allJet );
+        reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+        reader[j]->AddVariable( "mindr_lep2_jet", &varmindr_lep2_jet );
+        reader[j]->AddVariable( "numJets_float", &varnumJets_float );
+        reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
       }
 
-
-      TString dir    = "../../simpleweights/" + label + "/";
+      TString dir    = "../../TMVAv412/simpleweights/" + label + "/";
       TString prefix = "TMVAClassification";
       TString wfName = dir + prefix + TString("_CFMlpANN.weights.xml");
 
       std::cout << "Loading  weight file  " << wfName << std::endl; 
       
-      
       // Book method(s)
       reader[j]->BookMVA( "CFMlpANN method", wfName);  
-      
 
   }// end for each category 
   
@@ -590,13 +575,13 @@ int main ( int argc, char ** argv )
 
   bool CoreVariables = true;
   bool ExtraLeptonVariables = false;
-  bool ExtraJetVariables = false;
+  bool ExtraJetVariables = true;
   bool ExtraKinematicVariables = false;
   //bool ExtraEventVariables = false;
   bool ExtraTriggerVariables = false;
-  bool ExtraGenVariables = false;
+  bool ExtraGenVariables = true;
   bool ExtraHiggsVariables = false;
-  bool ExtraSameSignVariables = false;
+  bool ExtraSameSignVariables = true;
   
   bool ArtificialJetPt = false;
   float higgs_mass = 115.0;
@@ -640,19 +625,17 @@ int main ( int argc, char ** argv )
     uintBranches["runNumber"] = new unsigned int (0);
     uintBranches["eventNumber"] = new unsigned int (0);
     uintBranches["luminosityBlock"] = new unsigned int (0);
+    intBranches["sampleNumber"] = new int (0);
 
     /// MVA output variables
-    floatBranches["CFMlpANN_ge3t"] = new float(0.0);
-    floatBranches["CFMlpANN_e2je2t"] = new float(0.0);
-    floatBranches["CFMlpANN_ge3t_oldvar"] = new float(0.0);
-    floatBranches["CFMlpANN_e2je2t_oldvar"] = new float(0.0);
-
-    floatBranches["CFMlpANN_var_best8"] = new float(0.0);
-    floatBranches["CFMlpANN_ge3t_new"] = new float(0.0);
-
-    floatBranches["CFMlpANN_e3je2t_53x"] = new float(0.0);
-    floatBranches["CFMlpANN_ge4je2t_53x"] = new float(0.0);
-    floatBranches["CFMlpANN_ge3t_53x"] = new float(0.0);
+    floatBranches["CFMlpANN_eq2jeq2t_ttbar"] = new float(0.0);
+    floatBranches["CFMlpANN_eq3jeq2t_ttbar"] = new float(0.0);
+    floatBranches["CFMlpANN_ge4jeq2t_ttbar"] = new float(0.0);
+    floatBranches["CFMlpANN_ge3t_ttbar"] = new float(0.0);
+    floatBranches["CFMlpANN_eq3jeq3t_ttbar"] = new float(0.0);
+    floatBranches["CFMlpANN_ge4jge3t_ttbar"] = new float(0.0);
+    floatBranches["CFMlpANN_SS_ge3jge0t_ttbar"] = new float(0.0);
+    floatBranches["CFMlpANN_SS_ge3jge1t_ttW"] = new float(0.0);
 
     //pile up
     floatBranches["numPV"] = new float(0.0);
@@ -687,10 +670,13 @@ int main ( int argc, char ** argv )
     floatBranches["lep2Pt"] = new float(0.0);
     floatBranches["lep1Eta"] = new float(0.0);
     floatBranches["lep2Eta"] = new float(0.0);
+    floatBranches["maxLepEta"] = new float(0.0);
+    floatBranches["maxLepAbsEta"] = new float(0.0);
     floatBranches["lep1Phi"] = new float(0.0);
     floatBranches["lep2Phi"] = new float(0.0);
     floatBranches["lep1Iso"] = new float(0.0);
     floatBranches["lep2Iso"] = new float(0.0);
+    floatBranches["maxLepIso"] = new float(0.0);
     floatBranches["lep1TkCharge"] = new float (0.0);
     floatBranches["lep2TkCharge"] = new float (0.0);
     floatBranches["lep1GenCharge"] = new float (0.0);
@@ -716,35 +702,10 @@ int main ( int argc, char ** argv )
     floatBranches["avg_btag_disc_btags"] = new float(0.0);
     floatBranches["Ht"] = new float(0.0);
 
-    //---------- new variables for ANN
-    floatBranches["m2H_btag"] = new float(0.0);
-    floatBranches["first_dibjet_mass"] = new float(0.0);
-    floatBranches["second_dibjet_mass"] = new float(0.0);
-    floatBranches["third_dibjet_mass"] = new float(0.0);
-    
-    floatBranches["dijet_mass_m2H"] = new float(0.0);
-    floatBranches["dijet_mass_first"] = new float(0.0);
-    floatBranches["dijet_mass_second"] = new float(0.0);
-    floatBranches["dijet_mass_third"] = new float(0.0);
-
-    floatBranches["min_dr_jets"] = new float(0.0);
-    floatBranches["avg_dr_jets"] = new float(0.0);    
-    floatBranches["avg_dr_tagged_jets"] = new float(0.0);
-    floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
-    floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
-    
-    floatBranches["avg_dijet_mass"] = new float(0.0);
-    floatBranches["M2_of_closest_jets"] = new float(0.0);
-    floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
-    floatBranches["closest_dijet_mass"] = new float(0.0);
-    floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
-    
-    floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
-    floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
-    floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
-    floatBranches["first_highest_btag"] = new float(0.0);
-    floatBranches["second_highest_btag"] = new float(0.0);
-    floatBranches["lowest_btag"] = new float(0.0);
+    floatBranches["higgsLike_dijet_mass"] = new float(0.0);
+    floatBranches["higgsLike_dijet_mass2"] = new float(0.0);
+    intBranches["numHiggsLike_dijet_15"] = new int (0.0);
+    floatBranches["numHiggsLike_dijet_15_float"] = new float (0.0);
 
     ////leptons
     floatBranches["mass_leplep"] = new float(0.0);
@@ -762,6 +723,7 @@ int main ( int argc, char ** argv )
     floatBranches["pt_of_everything"] = new float(0.0);
     floatBranches["pz_of_everything"] = new float(0.0);
     floatBranches["pt_of_ttbar"] = new float(0.0);
+
   } //End if (CoreVariables)
 
   if (ExtraSameSignVariables) {
@@ -780,30 +742,37 @@ int main ( int argc, char ** argv )
     floatBranches["lep2GsfCharge"] = new float(0.0);
     floatBranches["lep1ChargedIso"] = new float(0.0);
     floatBranches["lep2ChargedIso"] = new float(0.0);
-    floatBranches["lep1NeutralIso"] = new float(0.0);
-    floatBranches["lep2NeutralIso"] = new float(0.0);
+    floatBranches["maxLepChargedIso"] = new float(0.0);
+//     floatBranches["lep1NeutralIso"] = new float(0.0);
+//     floatBranches["lep2NeutralIso"] = new float(0.0);
     floatBranches["lep1IP"] = new float(0.0);
     floatBranches["lep2IP"] = new float(0.0);
     floatBranches["lep1IPError"] = new float(0.0);
     floatBranches["lep2IPError"] = new float(0.0);
-    floatBranches["lep1dFracScEtTkPt"] = new float(0.0);
-    floatBranches["lep2dFracScEtTkPt"] = new float(0.0);
+//     floatBranches["lep1dFracScEtTkPt"] = new float(0.0);
+//     floatBranches["lep2dFracScEtTkPt"] = new float(0.0);
 
     floatBranches["mindr_lep1_allJet"] = new float(0.0);
     floatBranches["mindr_lep2_allJet"] = new float(0.0);
-    floatBranches["ptRel_lep1_jet"] = new float(0.0);
-    floatBranches["ptRel_lep2_jet"] = new float(0.0);
-    floatBranches["ptRel_lep1_allJet"] = new float(0.0);
-    floatBranches["ptRel_lep2_allJet"] = new float(0.0);
+//     floatBranches["mindr_lep1_sideJet"] = new float(0.0);
+//     floatBranches["mindr_lep2_sideJet"] = new float(0.0);
+//     floatBranches["ptRel_lep1_jet"] = new float(0.0);
+//     floatBranches["ptRel_lep2_jet"] = new float(0.0);
+//     floatBranches["ptRel_lep1_allJet"] = new float(0.0);
+//     floatBranches["ptRel_lep2_allJet"] = new float(0.0);
+//     floatBranches["ptRel_lep1_sideJet"] = new float(0.0);
+//     floatBranches["ptRel_lep2_sideJet"] = new float(0.0);
 
     floatBranches["wLike_dijet_mass"] = new float(0.0);
-    floatBranches["topLike_trijet_mass"] = new float(0.0);
-    floatBranches["topLike_dijet_lep1_mass"] = new float(0.0);
-    floatBranches["topLike_dijet_lep2_mass"] = new float(0.0);
-    floatBranches["MT_MHT_lep1"] = new float(0.0);
-    floatBranches["MT_MHT_lep2"] = new float(0.0);
-    floatBranches["MT_MHT_lep1_b"] = new float(0.0);
-    floatBranches["MT_MHT_lep2_b"] = new float(0.0);
+//     floatBranches["topLike_trijet_mass"] = new float(0.0);
+//     floatBranches["topLike_dijet_lep1_mass"] = new float(0.0);
+//     floatBranches["topLike_dijet_lep2_mass"] = new float(0.0);
+//     floatBranches["MT_MHT_lep1"] = new float(0.0);
+//     floatBranches["MT_MHT_lep2"] = new float(0.0);
+//     floatBranches["MT_MHT_lep1_b"] = new float(0.0);
+//     floatBranches["MT_MHT_lep2_b"] = new float(0.0);
+//     floatBranches["MT_met_lep1_b"] = new float(0.0);
+//     floatBranches["MT_met_lep2_b"] = new float(0.0);
     
   }
 
@@ -816,8 +785,6 @@ int main ( int argc, char ** argv )
     floatBranches["higgs_pz"] = new float(0.0);
     floatBranches["higgs_genJet_mass"] = new float(0.0);
     floatBranches["higgs_genParton_mass"] = new float(0.0);
-    floatBranches["higgsLike_dijet_mass"] = new float(0.0);
-    floatBranches["higgsLike_dijet_mass2"] = new float(0.0);
     floatBranches["higgsLike_diBjet_mass"] = new float(0.0);
     floatBranches["higgsLike_allDijet_mass"] = new float(0.0);
     floatBranches["higgsLike_dijet_dR"] = new float(0.0);
@@ -826,7 +793,6 @@ int main ( int argc, char ** argv )
     floatBranches["higgsLike_dijet_jet1_pt"] = new float(0.0);
     floatBranches["higgsLike_dijet_jet2_pt"] = new float(0.0);
     intBranches["numHiggsLike_dijet_10"] = new int (0);
-    intBranches["numHiggsLike_dijet_15"] = new int (0);
     intBranches["numHiggsLike_dijet_20"] = new int (0);
     intBranches["numHiggsLike_dijet_25"] = new int (0);
     intBranches["numHiggsLike_diBjet_10"] = new int (0);
@@ -834,7 +800,6 @@ int main ( int argc, char ** argv )
     intBranches["numHiggsLike_diBjet_20"] = new int (0);
     intBranches["numHiggsLike_diBjet_25"] = new int (0);
     floatBranches["numHiggsLike_dijet_10_float"] = new float (0.0);
-    floatBranches["numHiggsLike_dijet_15_float"] = new float (0.0);
     floatBranches["numHiggsLike_dijet_20_float"] = new float (0.0);
     floatBranches["numHiggsLike_dijet_25_float"] = new float (0.0);
     floatBranches["numHiggsLike_diBjet_10_float"] = new float (0.0);
@@ -893,7 +858,13 @@ int main ( int argc, char ** argv )
 //     floatBranches["second_jet_charge"] = new float(0.0);
 //     floatBranches["third_jet_charge"] = new float(0.0);
 //     floatBranches["fourth_jet_charge"] = new float(0.0);
+
 //     floatBranches["sum_jet_charge"] = new float(0.0);
+//     floatBranches["sum_untagged_jet_charge"] = new float(0.0);
+//     floatBranches["sum_tagged_jet_charge"] = new float(0.0);
+//     floatBranches["leps_minus_jets_charge"] = new float(0.0);
+//     floatBranches["leps_minus_untagged_jets_charge"] = new float(0.0);
+//     floatBranches["leps_minus_tagged_jets_charge"] = new float(0.0);
   
     floatBranches["first_jet_CSV"] = new float(0.0);
     floatBranches["second_jet_CSV"] = new float(0.0);
@@ -915,13 +886,6 @@ int main ( int argc, char ** argv )
 //     floatBranches["first_hf_jet_CSV_unshaped"] = new float(0.0);
 //     floatBranches["first_hf_jet_CSV_reshaped"] = new float(0.0);
 
-//     floatBranches["dPhi_jet1jet2"] = new float(0.0);
-//     floatBranches["dPhi_jet1jet3"] = new float(0.0);
-//     floatBranches["dPhi_jet1jet4"] = new float(0.0);
-//     floatBranches["dPhi_jet2jet3"] = new float(0.0);
-//     floatBranches["dPhi_jet2jet4"] = new float(0.0);
-//     floatBranches["dPhi_jet3jet4"] = new float(0.0);
-  
 //     floatBranches["first_allJet_pt"] = new float(0.0);
 //     floatBranches["second_allJet_pt"] = new float(0.0);
 //     floatBranches["third_allJet_pt"] = new float(0.0);
@@ -930,40 +894,47 @@ int main ( int argc, char ** argv )
 //     floatBranches["first_dibjet_mass"] = new float(0.0);
 //     floatBranches["second_dibjet_mass"] = new float(0.0);
 //     floatBranches["third_dibjet_mass"] = new float(0.0);
+//     floatBranches["lowest_dibjet_mass"] = new float(0.0);
+    
+//     floatBranches["first_untagged_dijet_mass"] = new float(0.0);
+//     floatBranches["second_untagged_dijet_mass"] = new float(0.0);
+//     floatBranches["third_untagged_dijet_mass"] = new float(0.0);
+//     floatBranches["lowest_untagged_dijet_mass"] = new float(0.0);
     
 //     floatBranches["dijet_mass_m2H"] = new float(0.0);
 //     floatBranches["dijet_mass_first"] = new float(0.0);
 //     floatBranches["dijet_mass_second"] = new float(0.0);
 //     floatBranches["dijet_mass_third"] = new float(0.0);
+//     floatBranches["dijet_mass_lowest"] = new float(0.0);
 
 //     floatBranches["min_dr_genB1_allJet"] = new float (0.0);
 //     floatBranches["min_dr_genB2_allJet"] = new float (0.0);
 
-    floatBranches["CSV_30to45_0p0to1p2_1"] = new float(0.0);
-    floatBranches["CSV_45to75_0p0to1p2_1"] = new float(0.0);
-    floatBranches["CSV_75to150_0p0to1p2_1"] = new float(0.0);
-    floatBranches["CSV_150toInf_0p0to1p2_1"] = new float(0.0);
-    floatBranches["CSV_30to45_1p2to2p1_1"] = new float(0.0);
-    floatBranches["CSV_45to75_1p2to2p1_1"] = new float(0.0);
-    floatBranches["CSV_75to150_1p2to2p1_1"] = new float(0.0);
-    floatBranches["CSV_150toInf_1p2to2p1_1"] = new float(0.0);
-    floatBranches["CSV_30to45_2p1to2p4_1"] = new float(0.0);
-    floatBranches["CSV_45to75_2p1to2p4_1"] = new float(0.0);
-    floatBranches["CSV_75to150_2p1to2p4_1"] = new float(0.0);
-    floatBranches["CSV_150toInf_2p1to2p4_1"] = new float(0.0);
+//     floatBranches["CSV_30to45_0p0to1p2_1"] = new float(0.0);
+//     floatBranches["CSV_45to75_0p0to1p2_1"] = new float(0.0);
+//     floatBranches["CSV_75to150_0p0to1p2_1"] = new float(0.0);
+//     floatBranches["CSV_150toInf_0p0to1p2_1"] = new float(0.0);
+//     floatBranches["CSV_30to45_1p2to2p1_1"] = new float(0.0);
+//     floatBranches["CSV_45to75_1p2to2p1_1"] = new float(0.0);
+//     floatBranches["CSV_75to150_1p2to2p1_1"] = new float(0.0);
+//     floatBranches["CSV_150toInf_1p2to2p1_1"] = new float(0.0);
+//     floatBranches["CSV_30to45_2p1to2p4_1"] = new float(0.0);
+//     floatBranches["CSV_45to75_2p1to2p4_1"] = new float(0.0);
+//     floatBranches["CSV_75to150_2p1to2p4_1"] = new float(0.0);
+//     floatBranches["CSV_150toInf_2p1to2p4_1"] = new float(0.0);
 
-    floatBranches["CSV_30to45_0p0to1p2_2"] = new float(0.0);
-    floatBranches["CSV_45to75_0p0to1p2_2"] = new float(0.0);
-    floatBranches["CSV_75to150_0p0to1p2_2"] = new float(0.0);
-    floatBranches["CSV_150toInf_0p0to1p2_2"] = new float(0.0);
-    floatBranches["CSV_30to45_1p2to2p1_2"] = new float(0.0);
-    floatBranches["CSV_45to75_1p2to2p1_2"] = new float(0.0);
-    floatBranches["CSV_75to150_1p2to2p1_2"] = new float(0.0);
-    floatBranches["CSV_150toInf_1p2to2p1_2"] = new float(0.0);
-    floatBranches["CSV_30to45_2p1to2p4_2"] = new float(0.0);
-    floatBranches["CSV_45to75_2p1to2p4_2"] = new float(0.0);
-    floatBranches["CSV_75to150_2p1to2p4_2"] = new float(0.0);
-    floatBranches["CSV_150toInf_2p1to2p4_2"] = new float(0.0);
+//     floatBranches["CSV_30to45_0p0to1p2_2"] = new float(0.0);
+//     floatBranches["CSV_45to75_0p0to1p2_2"] = new float(0.0);
+//     floatBranches["CSV_75to150_0p0to1p2_2"] = new float(0.0);
+//     floatBranches["CSV_150toInf_0p0to1p2_2"] = new float(0.0);
+//     floatBranches["CSV_30to45_1p2to2p1_2"] = new float(0.0);
+//     floatBranches["CSV_45to75_1p2to2p1_2"] = new float(0.0);
+//     floatBranches["CSV_75to150_1p2to2p1_2"] = new float(0.0);
+//     floatBranches["CSV_150toInf_1p2to2p1_2"] = new float(0.0);
+//     floatBranches["CSV_30to45_2p1to2p4_2"] = new float(0.0);
+//     floatBranches["CSV_45to75_2p1to2p4_2"] = new float(0.0);
+//     floatBranches["CSV_75to150_2p1to2p4_2"] = new float(0.0);
+//     floatBranches["CSV_150toInf_2p1to2p4_2"] = new float(0.0);
 
   } //End if (ExtraJetVariables)
 
@@ -1010,14 +981,13 @@ int main ( int argc, char ** argv )
 
   if (ExtraKinematicVariables) {
     ////objects
-    floatBranches["topLke_trijet_mass"] = new float(0.0);
+    //floatBranches["topLike_trijet_mass"] = new float(0.0);
+    floatBranches["m2H_btag"] = new float(0.0);
     floatBranches["wLike_allDijet_mass"] = new float(0.0);
     floatBranches["topLike_allTrijet_mass"] = new float(0.0);
 
     ////leptons
     floatBranches["dEta_leplep"] = new float(0.0);
-    //floatBranches["mindr_lep1_allJet"] = new float(0.0);
-    //floatBranches["mindr_lep2_allJet"] = new float(0.0);
     floatBranches["MT_met_lep1"] = new float(0.0);
     floatBranches["MT_met_lep2"] = new float(0.0);
     floatBranches["dPhi_met_lep1"] = new float(0.0);
@@ -1025,29 +995,30 @@ int main ( int argc, char ** argv )
     ////everything
     intBranches["PassZmask3"] = new int (0);
     
-//     floatBranches["min_dr_jets"] = new float(0.0);
-//     floatBranches["avg_dr_jets"] = new float(0.0);    
-//     floatBranches["avg_dr_tagged_jets"] = new float(0.0);
+    floatBranches["min_dr_jets"] = new float(0.0);
+    floatBranches["avg_dr_jets"] = new float(0.0);    
+    floatBranches["avg_dr_tagged_jets"] = new float(0.0);
     
-//     floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
-//     floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
-//     floatBranches["avg_dijet_mass"] = new float(0.0);
-//     floatBranches["M2_of_closest_jets"] = new float(0.0);
-//     floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
-//     floatBranches["closest_dijet_mass"] = new float(0.0);
-//     floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
+    floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
+    floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
+    floatBranches["avg_dijet_mass"] = new float(0.0);
+    floatBranches["M2_of_closest_jets"] = new float(0.0);
+    floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
+    floatBranches["closest_dijet_mass"] = new float(0.0);
+    floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
     
-//     floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
-//     floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
-//     floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
-//     floatBranches["first_highest_btag"] = new float(0.0);
-//     floatBranches["second_highest_btag"] = new float(0.0);
-//     floatBranches["lowest_btag"] = new float(0.0);
+    floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
+    floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
+    floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
+    floatBranches["first_highest_btag"] = new float(0.0);
+    floatBranches["second_highest_btag"] = new float(0.0);
+    floatBranches["lowest_btag"] = new float(0.0);
 
     floatBranches["mass_MHT"] = new float(0.0);
     floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
     floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
-    floatBranches["pt_total"] = new float(0.0);
+    floatBranches["pt_of_allEverything"] = new float(0.0);
+    //floatBranches["pt_total"] = new float(0.0);
     
   } //End if (ExtraKinematicVariables)
 
@@ -1170,7 +1141,7 @@ int main ( int argc, char ** argv )
       cnt++;
 
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
-      if( cnt%10000==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
+      if( cnt%1000==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
 					      << int(float(cnt)/float(nentries)*100) << "% done" << std::endl;
 
       if( cnt==(maxNentries+1) ) break;
@@ -1311,7 +1282,6 @@ int main ( int argc, char ** argv )
       double numTruePV = event->numTruePV;
       double numGenPV = event->numGenPV;
 
-      //// Q2scale weights
       float Q2ScaleUpWgt = 1.0;
       float Q2ScaleDownWgt = 1.0; 
 
@@ -1320,13 +1290,14 @@ int main ( int argc, char ** argv )
         Q2ScaleDownWgt = event->Q2ScaleDownWgt;
       }
 
-      /// top pt reweighting 
+      /// top pt reweighting
       double topPtWgt = 1.;
       double topPtWgtUp = 1.;
       topPtWgt = beanHelper.GetTopPtweight(mcparticles);
       topPtWgtUp = 2*(topPtWgt-1) + 1;
       if(cnt<5)  std::cout << "CONFIG: topPt rwt is: " << topPtWgt << std::endl;
       /////
+      
       float weight = 1.0 ;
 
       if(cnt<5)  std::cout << "CONFIG: Sample number from ntuple is: " << eventSampleNumber << std::endl;
@@ -1355,7 +1326,7 @@ int main ( int argc, char ** argv )
       vint muon_grandmother;
       vint ele_grandmother;
       
-      TLorentzVector higgsGenBV[100];
+      TLorentzVector higgsGenBV[2];
         //std::cout << "Event: " << cnt << std::endl;
       for( unsigned i=0; i< mcparticles.size(); i++ ){
         int Aid = mcparticles.at(i).id;
@@ -1367,10 +1338,10 @@ int main ( int argc, char ** argv )
           HtoBB = 1;
         }
         if ((Aid == 4 || Aid == -4) && AmotherID == 25) HtoCC = 1;
-        if ((Aid == 15 || Aid == -15) && AmotherID == 25) HtoTT = 1;
-        if ((Aid == 21 || Aid == -21) && AmotherID == 25) HtoGG = 1;
-        if ((Aid == 23 || Aid == -23) && AmotherID == 25) HtoZZ = 1;
-        if ((Aid == 24 || Aid == -24) && AmotherID == 25) HtoWW = 1;
+        if ((Aid == 15 || Aid == -15) && AmotherID == 25) HtoTT = 1;  
+        if ((Aid == 21 || Aid == -21) && AmotherID == 25) HtoGG = 1;  
+        if ((Aid == 23 || Aid == -23) && AmotherID == 25) HtoZZ = 1;  
+        if ((Aid == 24 || Aid == -24) && AmotherID == 25) HtoWW = 1;  
 
         if ((Aid == 11 || Aid == -11) && (AmotherID != 11 && AmotherID != -11 && AgrandMotherID != 11 && AgrandMotherID != -11)) {
           ele_px.push_back(mcparticles.at(i).px);
@@ -1784,20 +1755,15 @@ int main ( int argc, char ** argv )
     //beanHelper.GetSelectedJets(const BNjetCollection& iJets, const float iMinPt, const float iMaxAbsEta, const jetID::jetID iJetID, const char iCSVwp)
     //beanHelper.GetUncorrectedJets(const BNjetCollection& iCorrectedJets, const BNjetCollection& iOriginalJets)
     
-      std::vector<int> tight_pfjet_index;
-      std::vector<int> all_pfjet_index;
-      std::vector<int> tag_pfjet_index;
-      std::vector<int> tag_pfjet_csvVal;
-      std::vector<int> untag_pfjet_index;
+      std::vector<int> jet_index;
+      std::vector<int> allJet_index;
+      std::vector<int> tagJet_index;
+      std::list<float> jet_CSV_list;      
+      std::vector<float> jet_CSV;
+      std::vector<int> untagJet_index;
+      std::vector<float> tagJet_CSV;
 
-      std::vector<float> good_jet_pt;
-      std::vector<float> good_jet_eta;
-      std::vector<float> good_jet_CHEF;
-      std::vector<float> good_jet_charge;
-      std::vector<float> good_jet_tag;
-      std::vector<int>    good_jet_flavor;
-
-      std::vector<int>    jet_motherID;
+      std::vector<int>    allJet_motherID;
       
       vfloat jet_px;
       vfloat jet_py;
@@ -1811,17 +1777,29 @@ int main ( int argc, char ** argv )
       int numHiggsJets=0;
       int numHiggsAllJets=0;
       int numGoodAndBadJets=0;
-      TLorentzVector jetV[100];
-      TLorentzVector allJetV[100];
-      TLorentzVector higgsJetV[100];
-      TLorentzVector higgsGenJetV[100];
-      TLorentzVector higgsGenPartonV[100];
-      TLorentzVector muonTemp(0.0,0.0,0.0,0.0);
-      TLorentzVector electronTemp(0.0,0.0,0.0,0.0);
-      TLorentzVector trackTemp(0.0,0.0,0.0,0.0);
-      TLorentzVector higgsClosestMuonV[100];
-      TLorentzVector higgsClosestElectronV[100];
-      TLorentzVector higgsClosestTrackV[100];
+      int numBadJets=0;
+      vLorentz jetV;
+      vLorentz allJetV;
+      vLorentz sideJetV;
+      vLorentz higgsJetV;
+      vLorentz higgsGenJetV;
+      vLorentz higgsGenPartonV;
+      TLorentzVector jetVector;
+      TLorentzVector allJetVector;
+      TLorentzVector sideJetVector;
+      TLorentzVector higgsJetVector;
+      TLorentzVector higgsGenJetVector;
+      TLorentzVector higgsGenPartonVector;
+
+      TLorentzVector muonTemp;
+      TLorentzVector electronTemp;
+      TLorentzVector trackTemp;
+      vLorentz higgsClosestMuonV;
+      vLorentz higgsClosestElectronV;
+      vLorentz higgsClosestTrackV;
+      TLorentzVector higgsClosestMuonVector;
+      TLorentzVector higgsClosestElectronVector;
+      TLorentzVector higgsClosestTrackVector;
 
       float higgs_dijet_jet1_csv = dFloat;
       float higgs_dijet_jet2_csv = dFloat;
@@ -1841,11 +1819,7 @@ int main ( int argc, char ** argv )
       float higgs_dijet_jet2_leadCandPt = dFloat;
       float higgs_dijet_jet1_leadCandDistFromPV= dFloat;
       float higgs_dijet_jet2_leadCandDistFromPV = dFloat;
-      
-
-      
-      std::list<float> jet_CSV;      
-
+            
       bool jerDebugPrint = false;
 
       /////////////////////////////////////////////////
@@ -1861,6 +1835,7 @@ int main ( int argc, char ** argv )
       BNjetCollection const &pfjetsSelected = beanHelper.GetCorrectedJets(pfjets,iSysType);
       BNjetCollection const &pfjetsSelected_Uncorrected = beanHelper.GetUncorrectedJets(pfjetsSelected,pfjets);
 
+      if (debug_) cout << "Looping over pfjetsSelected" << endl;
       for( int i=0; i<int(pfjetsSelected.size()); i++ ){
 
 	float jetPt = pfjetsSelected.at(i).pt;
@@ -1895,37 +1870,45 @@ int main ( int argc, char ** argv )
     }
     jet_CHEF.push_back(pfjetsSelected.at(i).chargedHadronEnergyFraction);
     jet_charge.push_back(pfjetsSelected.at(i).charge);    
-      
+
+    //Beginning of numHiggsAllJets loop
+    if (debug_) cout << "Looping over numHiggsAllJets" << endl;
     if ( (tmpName.Contains("ttH") && pfjetsSelected.at(i).genPartonMotherId == 25) ||
          (sampleName == "ttbar_bb" && abs(pfjetsSelected.at(i).genPartonId) == 5 && abs(pfjetsSelected.at(i).genPartonMotherId) != 6) ||
          (sampleName == "ttbarW" && abs(pfjetsSelected.at(i).genPartonId) != 5 && abs(pfjetsSelected.at(i).genPartonMotherId) == 24) ||
          (sampleName == "ttbarZ" && abs(pfjetsSelected.at(i).genPartonId) != 5 && abs(pfjetsSelected.at(i).genPartonMotherId) == 23) ) {
-      higgsJetV[numHiggsAllJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
-      higgsGenJetV[numHiggsAllJets].SetPtEtaPhiE(pfjetsSelected.at(i).genJetPT,pfjetsSelected.at(i).genJetEta,pfjetsSelected.at(i).genJetPhi,pfjetsSelected.at(i).genJetET/sin(2*atan(exp(-pfjetsSelected.at(i).genJetEta))));
-      higgsGenPartonV[numHiggsAllJets].SetPtEtaPhiE(pfjetsSelected.at(i).genPartonPT,pfjetsSelected.at(i).genPartonEta,pfjetsSelected.at(i).genPartonPhi,pfjetsSelected.at(i).genPartonET/sin(2*atan(exp(-pfjetsSelected.at(i).genPartonEta))));
-      higgsClosestMuonV[numHiggsAllJets].SetPxPyPzE(-jet_px[i],-jet_py[i],-jet_pz[i],jet_energy[i]);
-      higgsClosestElectronV[numHiggsAllJets].SetPxPyPzE(-jet_px[i],-jet_py[i],-jet_pz[i],jet_energy[i]);
-      higgsClosestTrackV[numHiggsAllJets].SetPxPyPzE(-jet_px[i],-jet_py[i],-jet_pz[i],jet_energy[i]);
+      higgsJetVector.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+      higgsGenJetVector.SetPxPyPzE(pfjetsSelected.at(i).genJetPT,pfjetsSelected.at(i).genJetEta,pfjetsSelected.at(i).genJetPhi,pfjetsSelected.at(i).genJetET/sin(2*atan(exp(-pfjetsSelected.at(i).genJetEta))));
+      higgsGenPartonVector.SetPxPyPzE(pfjetsSelected.at(i).genPartonPT,pfjetsSelected.at(i).genPartonEta,pfjetsSelected.at(i).genPartonPhi,pfjetsSelected.at(i).genPartonET/sin(2*atan(exp(-pfjetsSelected.at(i).genPartonEta))));
+      higgsJetV.push_back(higgsJetVector);
+      higgsGenJetV.push_back(higgsGenJetVector);
+      higgsGenPartonV.push_back(higgsGenPartonVector);
+      higgsClosestMuonVector.SetPxPyPzE(-jet_px[i],-jet_py[i],-jet_pz[i],jet_energy[i]);
+      higgsClosestElectronVector.SetPxPyPzE(-jet_px[i],-jet_py[i],-jet_pz[i],jet_energy[i]);
+      higgsClosestTrackVector.SetPxPyPzE(-jet_px[i],-jet_py[i],-jet_pz[i],jet_energy[i]);
       for (unsigned int ii = 0; ii < muonsSide.size(); ii++) {
         muonTemp.SetPxPyPzE(muonsSide.at(ii).px,muonsSide.at(ii).py,muonsSide.at(ii).pz,muonsSide.at(ii).energy);
-        if ( higgsJetV[numHiggsAllJets].DeltaR(muonTemp) < higgsJetV[numHiggsAllJets].DeltaR(higgsClosestMuonV[numHiggsAllJets]) ) {
-          higgsClosestMuonV[numHiggsAllJets].SetPxPyPzE(muonsSide.at(ii).px,muonsSide.at(ii).py,muonsSide.at(ii).pz,muonsSide.at(ii).energy);
+        if ( higgsJetV[numHiggsAllJets].DeltaR(muonTemp) < higgsJetV[numHiggsAllJets].DeltaR(higgsClosestMuonVector) ) {
+          higgsClosestMuonVector.SetPxPyPzE(muonsSide.at(ii).px,muonsSide.at(ii).py,muonsSide.at(ii).pz,muonsSide.at(ii).energy);
         }
       }
+      higgsClosestMuonV.push_back(higgsClosestMuonVector);
       for (unsigned int ii = 0; ii < electronsSide.size(); ii++) {
         electronTemp.SetPxPyPzE(electronsSide.at(ii).px,electronsSide.at(ii).py,electronsSide.at(ii).pz,electronsSide.at(ii).energy);
-        if ( higgsJetV[numHiggsAllJets].DeltaR(electronTemp) < higgsJetV[numHiggsAllJets].DeltaR(higgsClosestElectronV[numHiggsAllJets]) ) {
-          higgsClosestElectronV[numHiggsAllJets].SetPxPyPzE(electronsSide.at(ii).px,electronsSide.at(ii).py,electronsSide.at(ii).pz,electronsSide.at(ii).energy);
+        if ( higgsJetV[numHiggsAllJets].DeltaR(electronTemp) < higgsJetV[numHiggsAllJets].DeltaR(higgsClosestElectronVector) ) {
+          higgsClosestElectronVector.SetPxPyPzE(electronsSide.at(ii).px,electronsSide.at(ii).py,electronsSide.at(ii).pz,electronsSide.at(ii).energy);
         }
       }
+      higgsClosestElectronV.push_back(higgsClosestElectronVector);
       for (unsigned int ii = 0; ii < tracks.size(); ii++) {
         trackTemp.SetPxPyPzE(tracks.at(ii).px,tracks.at(ii).py,tracks.at(ii).pz,sqrt ( pow(tracks.at(ii).px,2) + pow(tracks.at(ii).py,2) + pow(tracks.at(ii).pz,2) ));
         if ( higgsJetV[numHiggsAllJets].DeltaR(trackTemp) < 0.7 ) {
-          if (higgsJetV[numHiggsAllJets].DeltaR(higgsClosestTrackV[numHiggsAllJets]) > 0.7 || trackTemp.Pt() > higgsJetV[numHiggsAllJets].Pt() ) {
-            higgsClosestTrackV[numHiggsAllJets].SetPxPyPzE(tracks.at(ii).px,tracks.at(ii).py,tracks.at(ii).pz,sqrt ( pow(tracks.at(ii).px,2) + pow(tracks.at(ii).py,2) + pow(tracks.at(ii).pz,2) ));
+          if (higgsJetV[numHiggsAllJets].DeltaR(higgsClosestTrackVector) > 0.7 || trackTemp.Pt() > higgsJetV[numHiggsAllJets].Pt() ) {
+            higgsClosestTrackVector.SetPxPyPzE(tracks.at(ii).px,tracks.at(ii).py,tracks.at(ii).pz,sqrt ( pow(tracks.at(ii).px,2) + pow(tracks.at(ii).py,2) + pow(tracks.at(ii).pz,2) ));
           }
         }
       }
+      higgsClosestTrackV.push_back(higgsClosestTrackVector);
       if (numHiggsAllJets==0) {
         higgs_dijet_jet1_csv  = pfjetsSelected.at(i).btagCombinedSecVertex;
         higgs_dijet_jet1_btagSoftMuon  = pfjetsSelected.at(i).btagSoftMuon;
@@ -1950,37 +1933,46 @@ int main ( int argc, char ** argv )
       }        
 
       numHiggsAllJets++;
-    } 
+    } //End loop that sets numHiggsAllJets
 
-    //std::cout << "Jet " << i << " ID: " << pfjetsSelected.at(i).genPartonMotherId << std::endl;
-    jet_motherID.push_back(pfjetsSelected.at(i).genPartonMotherId);
-//     if (pfjetsSelected.at(i).genPartonMotherId != 25  && pfjetsSelected.at(i).genPartonGrandMotherId != 99 && pfjetsSelected.at(i).genPartonGrandMotherId != -99) {
-//       if (pfjetsSelected.at(i).genPartonGrandMotherId == 25) {
-//         std::cout << "GrandMother for jet " << i << " is HIGGS and mother is " << pfjetsSelected.at(i).genPartonMotherId << std::endl;
-//       }
-//       else {
-//         std::cout << "GrandMother for jet " << i << " is " << pfjetsSelected.at(i).genPartonGrandMotherId << std::endl;
-//       }
-//     }
-    allJetV[numGoodAndBadJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+    allJet_motherID.push_back(pfjetsSelected.at(i).genPartonMotherId);
+    allJetVector.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+    allJetV.push_back(allJetVector);
     numGoodAndBadJets++;
     
 	bool kin = ( jetPt>30. );
 	bool eta = ( jetAbsEta<2.4 );
 	bool id  = ( pfjetsSelected.at(i).jetIDLoose==1 );
-    
-	if( !(kin && eta && id) ) continue;
+
+    if (debug_) cout << "Before jet cut" << endl;
+
+	if( !(kin && eta && id) ) {
+      sideJetVector.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+      sideJetV.push_back(sideJetVector);
+      numBadJets++;
+      continue;
+    }
+
+    if (debug_) cout << "Passed jet cut" << endl;
 
 	if (tmpName.Contains("ttH") && pfjetsSelected.at(i).genPartonMotherId == 25) {
 	  numHiggsJets++;
 	} 
 	else if (sampleName == "ttbar_bb" && abs(pfjetsSelected.at(i).genPartonId) == 5 && abs(pfjetsSelected.at(i).genPartonMotherId) != 6) {
 	  numHiggsJets++;
-	} 
+	}
+    else if (sampleName == "ttbarW" && abs(pfjetsSelected.at(i).genPartonMotherId) == 24) {
+      numHiggsJets++;
+    }
+    else if (sampleName == "ttbarZ" && abs(pfjetsSelected.at(i).genPartonMotherId) == 23) {
+      numHiggsJets++;
+    }
+    
 
-	jetV[numGoodJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+    jetVector.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+	jetV.push_back(jetVector);
 	numGoodJets++;
-	tight_pfjet_index.push_back(i);
+	jet_index.push_back(i);
 
 	// Use Combined tags
 	// Loose Cut is 0.244
@@ -1995,26 +1987,22 @@ int main ( int argc, char ** argv )
 
 	
 	if( csvM ){
-	  tag_pfjet_index.push_back(i);
-	  jet_CSV.push_back(csv);
-      tag_pfjet_csvVal.push_back(csv);
+	  tagJet_index.push_back(i);
+      tagJet_CSV.push_back(csv);
 	}
-	else        untag_pfjet_index.push_back(i);
+	else        untagJet_index.push_back(i);
 	
 	int flavor =  pfjetsSelected.at(i).flavour;
 
-	good_jet_pt.push_back(jetPt);
-	good_jet_eta.push_back(jetEta);
-	good_jet_tag.push_back(csv);
-	good_jet_flavor.push_back(flavor);
-    good_jet_CHEF.push_back(jetCHEF);
-    good_jet_charge.push_back(jetcharge);
+	jet_CSV.push_back(csv);
+	jet_CSV_list.push_back(csv);
 
       }// end for each pf jet
+    if (debug_) cout << "Finished loop over pfjets" << endl;
       
       //------------------------
       int numAllJets = numGoodAndBadJets;
-      int numJets = int(tight_pfjet_index.size());
+      int numJets = int(jet_index.size());
       // Only select events with at least two jets
       // AWB Feb 14 2013
       // Moved this cut to the middle to avoid wasting time on calculations
@@ -2022,7 +2010,7 @@ int main ( int argc, char ** argv )
         if (numJets < 2) continue;
       }
 
-      int numTaggedJets = int(tag_pfjet_index.size());
+      int numTaggedJets = int(tagJet_index.size());
 
       ///////
 
@@ -2078,40 +2066,42 @@ int main ( int argc, char ** argv )
 
 
       //sort btag discriminator
-      jet_CSV.sort();  
-      std::vector<float> jet_CSV_sorted_vect;			
+      jet_CSV_list.sort();  
+      std::vector<float> jet_CSV_sorted;			
       std::list<float>::iterator listint;			
-      for (listint = jet_CSV.begin(); listint != jet_CSV.end(); listint++){
-	jet_CSV_sorted_vect.push_back(*listint);  //accessible form
+      for (listint = jet_CSV_list.begin(); listint != jet_CSV_list.end(); listint++){
+	jet_CSV_sorted.push_back(*listint);  //accessible form
       }
 
       //////  ttbb bkg -- dibjet mass combinations
       std::list<float> dibjet_mass_combinations;
       float m2H_btag = dFloat ;
 
+      std::list<float> untagged_dijet_mass_combinations;
+
       std::list<float> dijet_mass_combinations;
       float dijet_mass_m2H = dFloat ;
 
       //sum of all jets
-      TLorentzVector sum_jet_vect(0.0,0.0,0.0,0.0);
-      TLorentzVector sum_allJet_vect(0.0,0.0,0.0,0.0);
+      TLorentzVector sum_jet_vect;
+      TLorentzVector sum_allJet_vect;
       
       for (int sumv=0; sumv < numJets; sumv++) {
-	sum_jet_vect += jetV[sumv];
+        sum_jet_vect += jetV[sumv];
       }
       for (int sumv=0; sumv < numAllJets; sumv++) {
-	sum_allJet_vect += allJetV[sumv];
+        sum_allJet_vect += allJetV[sumv];
       }
 
 
       
-      TLorentzVector sum_higgs_dijet_vect(0.0,0.0,0.0,0.0);
-      TLorentzVector sum_higgsLike_dijet_vect(0.0,0.0,0.0,0.0);
-      TLorentzVector sum_higgsLike_allDijet_vect(0.0,0.0,0.0,0.0);
-      TLorentzVector sum_topLike_trijet_vect(0.0,0.0,0.0,0.0);
-      TLorentzVector sum_topLike_allTrijet_vect(0.0,0.0,0.0,0.0);
-      TLorentzVector sum_higgs_genJet_vect(0.0,0.0,0.0,0.0);
-      TLorentzVector sum_higgs_genParton_vect(0.0,0.0,0.0,0.0);
+      TLorentzVector sum_higgs_dijet_vect;
+      TLorentzVector sum_higgsLike_dijet_vect;
+      TLorentzVector sum_higgsLike_allDijet_vect;
+      TLorentzVector sum_topLike_trijet_vect;
+      TLorentzVector sum_topLike_allTrijet_vect;
+      TLorentzVector sum_higgs_genJet_vect;
+      TLorentzVector sum_higgs_genParton_vect;
       
       float higgs_dijet_mass = dFloat;
       float higgs_dijet_pt = dFloat;
@@ -2160,6 +2150,8 @@ int main ( int argc, char ** argv )
       float topLike_dijet_lep2_mass = dFloat;
       float MT_MHT_lep1_b = dFloat;
       float MT_MHT_lep2_b = dFloat;
+      float MT_met_lep1_b = dFloat;
+      float MT_met_lep2_b = dFloat;
       float topLike_trijet_mass1 = dFloat;
       float topLike_trijet_mass2 = dFloat;
       float higgsLike_allDijet_mass1 = dFloat;
@@ -2213,6 +2205,7 @@ int main ( int argc, char ** argv )
       TLorentzVector lep_vect2_transverse;
       TLorentzVector jet_vect;
       TLorentzVector allJet_vect;
+      TLorentzVector sideJet_vect;
       
       TLorentzVector btag_vect1;
       TLorentzVector btag_vect2;
@@ -2220,7 +2213,8 @@ int main ( int argc, char ** argv )
       // ttbb
       TLorentzVector jet_vect1;
       TLorentzVector jet_vect2;
-      float first_bjet_pt = dFloat ;      
+      
+      float first_bjet_pt = dFloat ;
       float first_jet_pt = dFloat ;
       float second_jet_pt = dFloat ;
       float third_jet_pt = dFloat ;
@@ -2252,6 +2246,8 @@ int main ( int argc, char ** argv )
       float third_jet_charge = dFloat;
       float fourth_jet_charge = dFloat;
       float sum_jet_charge = dFloat;
+      float sum_untagged_jet_charge = dFloat;
+      float sum_tagged_jet_charge = dFloat;
       
       float first_jet_genID = dInt ;
       float second_jet_genID = dInt ;
@@ -2267,13 +2263,6 @@ int main ( int argc, char ** argv )
       float first_hf_jet_eta = dFloat;
       float first_hf_jet_CSV_unshaped = dFloat;
       float first_hf_jet_CSV_reshaped = dFloat;
-
-//       float dPhi_jet1jet2 = dFloat;
-//       float dPhi_jet1jet3 = dFloat;
-//       float dPhi_jet1jet4 = dFloat;
-//       float dPhi_jet2jet3 = dFloat;
-//       float dPhi_jet2jet4 = dFloat;
-//       float dPhi_jet3jet4 = dFloat;
 
       float CSV_30to45_0p0to1p2_1 = dFloat ;
       float CSV_45to75_0p0to1p2_1 = dFloat ;
@@ -2310,12 +2299,16 @@ int main ( int argc, char ** argv )
       float mindr_lep2_jet = dFloat;
       float mindr_lep1_allJet = dFloat;
       float mindr_lep2_allJet = dFloat;
+      float mindr_lep1_sideJet = dFloat;
+      float mindr_lep2_sideJet = dFloat;
       float min_dr_tagged_jets = dFloat;
       float min_dr_jets = dFloat;
       float ptRel_lep1_jet = dFloat;
       float ptRel_lep2_jet = dFloat;
       float ptRel_lep1_allJet = dFloat;
       float ptRel_lep2_allJet = dFloat;
+      float ptRel_lep1_sideJet = dFloat;
+      float ptRel_lep2_sideJet = dFloat;
       
       float denom_avg_cnt = dFloat;
       float avg_btag_disc_btags = dFloat;     
@@ -2335,10 +2328,17 @@ int main ( int argc, char ** argv )
       float dijet_mass_first  = dFloat;
       float dijet_mass_second = dFloat;
       float dijet_mass_third  = dFloat;
+      float dijet_mass_lowest  = dFloat;
 
       float first_dibjet_mass  = dFloat;
       float second_dibjet_mass = dFloat;
       float third_dibjet_mass  = dFloat;
+      float lowest_dibjet_mass  = dFloat;
+
+      float first_untagged_dijet_mass  = dFloat;
+      float second_untagged_dijet_mass = dFloat;
+      float third_untagged_dijet_mass  = dFloat;
+      float lowest_untagged_dijet_mass  = dFloat;
 
       float avg_dr_jets = dFloat;
       float avg_dijet_mass = dFloat;
@@ -2396,10 +2396,10 @@ int main ( int argc, char ** argv )
     int lep2GenMotherID = dInt;
     float lep1SF = dFloat;
     float lep2SF = dFloat;
-    float lep1FlipSF = dInt;
-    float lep2FlipSF = dInt;
-    float lep1PromptSF = dInt;
-    float lep2PromptSF = dInt;
+    float lep1FlipSF = dFloat;
+    float lep2FlipSF = dFloat;
+    float lep1PromptSF = dFloat;
+    float lep2PromptSF = dFloat;
     int lep1PassSSCut = dInt;
     int lep2PassSSCut = dInt;
     int lep2IsGlobalMuon = dInt;
@@ -2515,17 +2515,24 @@ int main ( int argc, char ** argv )
         lep_vect1.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py, muonsSelected.at(0).pz, muonsSelected.at(0).energy);
 	    lep_vect2.SetPxPyPzE(muonsSelected.at(1).px, muonsSelected.at(1).py, muonsSelected.at(1).pz, muonsSelected.at(1).energy);
         lep_vect1_transverse.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py,
-                                        0.0, sqrt(pow(muonsSelected.at(0).energy,2) - pow(muonsSelected.at(0).pz,2)));
+                                        0.0, muonsSelected.at(0).pt);
         lep_vect2_transverse.SetPxPyPzE(muonsSelected.at(1).px, muonsSelected.at(1).py,
-                                        0.0, sqrt(pow(muonsSelected.at(1).energy,2) - pow(muonsSelected.at(1).pz,2)));
+                                        0.0, muonsSelected.at(1).pt);
 
         if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
         else {
           lep1FlipSF = 1.0;
           lep2FlipSF = 1.0;
-          
-          lep1PromptSF = 1.0; //Some function
-          lep2PromptSF = 1.0; //Some function
+
+          if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
+              abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
+            lep1PromptSF = 1.0; }
+          else lep1PromptSF = 1.7;
+          if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
+              abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
+            lep2PromptSF = 1.0; }
+          else lep2PromptSF = 1.7;
+
         }
         
         lep1PassSSCut = (muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7);
@@ -2632,9 +2639,9 @@ int main ( int argc, char ** argv )
 	    lep_vect1.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py, electronsSelected.at(0).pz, electronsSelected.at(0).energy);
 	    lep_vect2.SetPxPyPzE(electronsSelected.at(1).px, electronsSelected.at(1).py, electronsSelected.at(1).pz, electronsSelected.at(1).energy);
         lep_vect1_transverse.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py,
-                                        0.0, sqrt(pow(electronsSelected.at(0).energy,2) - pow(electronsSelected.at(0).pz,2)));
+                                        0.0, electronsSelected.at(0).pt);
 	    lep_vect2_transverse.SetPxPyPzE(electronsSelected.at(1).px, electronsSelected.at(1).py,
-                                        0.0, sqrt(pow(electronsSelected.at(1).energy,2) - pow(electronsSelected.at(1).pz,2)));
+                                        0.0, electronsSelected.at(1).pt);
 
         lep2NumTrackHits = electronsSelected.at(1).tkNumValidHits;
         lep2NumPixelHits = electronsSelected.at(1).numberOfValidPixelBarrelHits + electronsSelected.at(1).numberOfValidPixelEndcapHits;
@@ -2654,13 +2661,20 @@ int main ( int argc, char ** argv )
           lep1FlipSF = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep1Pt,-2));
           lep2FlipSF = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
 
-          lep1PromptSF = 1.0; //Some function
-          lep2PromptSF = 1.0; //Some function
+          if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
+              abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
+            lep1PromptSF = 1.0; }
+          else lep1PromptSF = 1.7;
+          if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
+              abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
+            lep2PromptSF = 1.0; }
+          else lep2PromptSF = 1.7;
         }
         
 	  }
 	  
-	  if( oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle){
+	  if( (oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle) &&
+          (muonsSelected.at(0).pt >= electronsSelected.at(0).pt ) ) {
 
         lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0));
         lep2SF = beanHelper.GetElectronSF(electronsSelected.at(0));
@@ -2755,9 +2769,9 @@ int main ( int argc, char ** argv )
 	    lep_vect1.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py, muonsSelected.at(0).pz, muonsSelected.at(0).energy);
 	    lep_vect2.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py, electronsSelected.at(0).pz, electronsSelected.at(0).energy);
         lep_vect1_transverse.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py,
-                                        0.0, sqrt(pow(muonsSelected.at(0).energy,2) - pow(muonsSelected.at(0).pz,2)));
+                                        0.0, muonsSelected.at(0).pt);
 	    lep_vect2_transverse.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py,
-                                        0.0, sqrt(pow(electronsSelected.at(0).energy,2) - pow(electronsSelected.at(0).pz,2)));
+                                        0.0, electronsSelected.at(0).pt);
 
         lep1PassSSCut = muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7;
         lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (fabs(lep2IP) < 0.02) &&
@@ -2770,12 +2784,142 @@ int main ( int argc, char ** argv )
           lep1FlipSF = 1.0;
           lep2FlipSF = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
 
-          lep1PromptSF = 1.0; //Some function
-          lep2PromptSF = 1.0; //Some function
+          if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
+              abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
+            lep1PromptSF = 1.0; }
+          else lep1PromptSF = 1.7;
+          if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
+              abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
+            lep2PromptSF = 1.0; }
+          else lep2PromptSF = 1.7;
         }
 
 	  }
 
+	  if( (oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle) &&
+          (muonsSelected.at(0).pt < electronsSelected.at(0).pt ) ) {
+
+        lep2SF = beanHelper.GetMuonSF(muonsSelected.at(0));
+        lep1SF = beanHelper.GetElectronSF(electronsSelected.at(0));
+
+	    lep2Pt = muonsSelected.at(0).pt;
+	    lep1Pt = electronsSelected.at(0).pt;
+	    
+	    lep2_et = muonsSelected.at(0).et;
+	    lep1_et = electronsSelected.at(0).et;  
+
+	    lep2Eta = muonsSelected.at(0).eta;
+	    lep1Eta = electronsSelected.at(0).eta;  
+
+	    lep2Phi = muonsSelected.at(0).phi;
+	    lep1Phi = electronsSelected.at(0).phi;  
+
+        lep2_tkDZ = muonsSelected.at(0).tkDZ;
+        lep1_tkDZ = electronsSelected.at(0).tkDZ;
+
+        lep2_correctedDZ = muonsSelected.at(0).correctedDZ;
+        lep1_correctedDZ = electronsSelected.at(0).correctedDZ;
+
+        lep2_correctedD0 = muonsSelected.at(0).correctedD0;
+        lep1_correctedD0 = electronsSelected.at(0).correctedD0;
+        
+        lep2IP = muonsSelected.at(0).IP;
+        lep1IP = electronsSelected.at(0).IP;
+
+        lep2IPError = muonsSelected.at(0).IPError;
+        lep1IPError = electronsSelected.at(0).IPError;
+
+        lep1dFracScEtTkPt = fabs(electronsSelected.at(0).scEt - electronsSelected.at(0).tkPT)/electronsSelected.at(0).scEt;
+        
+        lep2TkCharge = muonsSelected.at(0).tkCharge;
+        lep1TkCharge = electronsSelected.at(0).tkCharge;
+
+        lep1GsfCharge = electronsSelected.at(0).gsfCharge;
+
+        lep2GenID = muonsSelected.at(0).genId;
+        lep1GenID = electronsSelected.at(0).genId;
+
+        lep2GenMotherID = muonsSelected.at(0).genMotherId;
+        lep1GenMotherID = electronsSelected.at(0).genMotherId;
+
+        lep2GenCharge = muonsSelected.at(0).genCharge;
+        lep1GenCharge = electronsSelected.at(0).genCharge;
+
+        if (lep2GenID == -99) {
+          MCLep2 = beanHelper.GetMatchedMCparticle(mcparticles,muonsSelected.at(0),0.1);
+          if (MCLep2.id != -99 && abs(MCLep2.id) != 6 && abs(MCLep2.id) != 23 && abs(MCLep2.id) != 24 && abs(MCLep2.id) != 25) {
+            lep2GenID = MCLep2.id;
+            lep2GenMotherID = MCLep2.motherId;
+            lep2GenCharge = MCLep2.charge;
+          }
+        }
+        if (lep1GenID == -99) {
+          MCLep1 = beanHelper.GetMatchedMCparticle(mcparticles,electronsSelected.at(0),0.1);
+          if (MCLep1.id != -99 && abs(MCLep1.id) != 6 && abs(MCLep1.id) != 23 && abs(MCLep1.id) != 24 && abs(MCLep1.id) != 25) {
+            lep1GenID = MCLep1.id;
+            lep1GenMotherID = MCLep1.motherId;
+            lep1GenCharge = MCLep1.charge;
+          }
+        }
+
+        if (selectionYearStr == "2011") {
+          lep2Iso = (muonsSelected.at(0).chargedHadronIso
+                      + muonsSelected.at(0).neutralHadronIso
+                      + muonsSelected.at(0).photonIso) * 1.0 / lep2Pt;
+          lep1Iso = (electronsSelected.at(0).chargedHadronIso + electronsSelected.at(0).neutralHadronIso + electronsSelected.at(0).photonIso) * 1.0 / lep1Pt;
+
+          lep2ChargedIso = muonsSelected.at(0).chargedHadronIso / lep2Pt;
+          lep1ChargedIso = electronsSelected.at(0).chargedHadronIso / lep1Pt;
+        }
+        else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
+          lep2Iso = (muonsSelected.at(0).pfIsoR04SumChargedHadronPt
+                      + max(0.0, muonsSelected.at(0).pfIsoR04SumNeutralHadronEt
+                                 + muonsSelected.at(0).pfIsoR04SumPhotonEt
+                                 - 0.5*muonsSelected.at(0).pfIsoR04SumPUPt)) * 1.0 /lep2Pt;
+          lep1Iso = ( electronsSelected.at(0).chargedHadronIso
+                       + max(0.0, electronsSelected.at(0).neutralHadronIso
+                                  + electronsSelected.at(0).photonIso
+                                  - electronsSelected.at(0).AEffDr03*electronsSelected.at(0).rhoPrime) ) * 1.0 /lep1Pt;
+          lep2ChargedIso = muonsSelected.at(0).pfIsoR04SumChargedHadronPt /lep2Pt;
+          lep1ChargedIso = electronsSelected.at(0).chargedHadronIso / lep1Pt;
+        }
+        else {
+          assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
+        }
+        lep2NeutralIso = lep2Iso - lep2ChargedIso;
+        lep1NeutralIso = lep1Iso - lep1ChargedIso;
+        
+	    lep_vect2.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py, muonsSelected.at(0).pz, muonsSelected.at(0).energy);
+	    lep_vect1.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py, electronsSelected.at(0).pz, electronsSelected.at(0).energy);
+        lep_vect2_transverse.SetPxPyPzE(muonsSelected.at(0).px, muonsSelected.at(0).py,
+                                        0.0, muonsSelected.at(0).pt);
+	    lep_vect1_transverse.SetPxPyPzE(electronsSelected.at(0).px, electronsSelected.at(0).py,
+                                        0.0, electronsSelected.at(0).pt);
+
+        lep2PassSSCut = muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7;
+        lep1PassSSCut = ( (lep1TkCharge == lep1GsfCharge) && (fabs(lep1IP) < 0.02) &&
+                          (fabs(lep1_correctedD0 - lep1_correctedD0) < 0.015) &&
+                          (lep1dFracScEtTkPt < 1) );
+        
+
+        if (isData) { lep2FlipSF = 1.0; lep1FlipSF = 1.0; lep2PromptSF = 1.0; lep1PromptSF = 1.0; }
+        else {
+          lep2FlipSF = 1.0;
+          lep1FlipSF = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep1Pt,-2));
+
+          if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
+              abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
+            lep2PromptSF = 1.0; }
+          else lep2PromptSF = 1.7;
+          if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
+              abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
+            lep1PromptSF = 1.0; }
+          else lep1PromptSF = 1.7;
+        }
+
+	  }
+
+          
       if ( (abs(lep1GenID/100)%10 == 5) || (abs(lep1GenID/1000)%10 == 5))      lep1GenID = 5*lep1GenID/abs(lep1GenID);
       else if ( (abs(lep1GenID/100)%10 == 4) || (abs(lep1GenID/1000)%10 == 4)) lep1GenID = 4*lep1GenID/abs(lep1GenID);
       else if ( (abs(lep1GenID/100)%10 == 3) || (abs(lep1GenID/1000)%10 == 3)) lep1GenID = 3*lep1GenID/abs(lep1GenID);
@@ -2831,8 +2975,9 @@ int main ( int argc, char ** argv )
       } else if (fabs(lep1TkCharge) == 99) {
         oppositeLepCharge = -2;
       }
-      else std::cout << "Lep1 has charge " << lep1TkCharge << " and Lep2 has charge " << lep2TkCharge << std::endl;
-
+      else {
+        if (debug_) std::cout << "Lep1 has charge " << lep1TkCharge << " and Lep2 has charge " << lep2TkCharge << std::endl;
+      }
       if (applySelectionSameSign) {
         if (oppositeLepCharge == 1) continue;
       }
@@ -2846,8 +2991,12 @@ int main ( int argc, char ** argv )
       } else if (fabs(lep1GenCharge) == 99) {
         oppositeGenLepCharge = -2;
       }
-      else std::cout << "Lep1 has charge " << lep1GenCharge << " and Lep2 has charge " << lep2GenCharge << std::endl;
+      else {
+        if (debug_) std::cout << "Lep1 has charge " << lep1GenCharge << " and Lep2 has charge " << lep2GenCharge << std::endl;
+      }
 
+      if (debug_) std::cout << "Finished with leptons" << std::endl;
+      
       if (sum_pt == dFloat) sum_pt = 0.0;
       if (Ht == dFloat) Ht = 0.0;
 	  sum_pt += lep1Pt;
@@ -2857,16 +3006,16 @@ int main ( int argc, char ** argv )
 	  Ht += lep2_et ;
 	  
 	  // two leptons
-	  TLorentzVector two_lepton = lep_vect1 + lep_vect2;
-      TLorentzVector met_lep1 = metV + lep_vect1_transverse;
-      TLorentzVector met_lep2 = metV + lep_vect2_transverse;
+	  TLorentzVector two_lepton_vect = lep_vect1 + lep_vect2;
+      TLorentzVector met_lep1_vect = metV + lep_vect1_transverse;
+      TLorentzVector met_lep2_vect = metV + lep_vect2_transverse;
 
-      float mass_met_lep1_transverse = met_lep1.M();
-      float mass_met_lep2_transverse = met_lep2.M();
+      float MT_met_lep1 = met_lep1_vect.M();
+      float MT_met_lep2 = met_lep2_vect.M();
       float dPhi_met_lep1 = lep_vect1.DeltaPhi(metV);
       float dPhi_met_lep2 = lep_vect2.DeltaPhi(metV);
-	  float mass_leplep = two_lepton.M();
-	  float pt_leplep = two_lepton.Pt();
+	  float mass_leplep = two_lepton_vect.M();
+	  float pt_leplep = two_lepton_vect.Pt();
 	  float dPhi_leplep = lep_vect1.DeltaPhi(lep_vect2);
 	  float dR_leplep = lep_vect1.DeltaR(lep_vect2);
       float dEta_leplep = lep_vect1.Eta() - lep_vect2.Eta();
@@ -2877,11 +3026,13 @@ int main ( int argc, char ** argv )
 	  TLorentzVector everything_vect = metV + lep_vect1 + lep_vect2 + sum_jet_vect;
       TLorentzVector leps_and_jets_vect = lep_vect1 + lep_vect2 + sum_jet_vect;
       TLorentzVector leps_and_jets_vect_transverse;
-      leps_and_jets_vect_transverse.SetPxPyPzE(leps_and_jets_vect.Px(), leps_and_jets_vect.Py(), 0.0, sqrt(pow(leps_and_jets_vect.Energy(),2) - pow(leps_and_jets_vect.Pz(),2)));
+      leps_and_jets_vect_transverse.SetPxPyPzE(-leps_and_jets_vect.Px(),
+                                               -leps_and_jets_vect.Py(),
+                                               0.0,leps_and_jets_vect.Pt());
       TLorentzVector leps_and_allJets_vect = lep_vect1 + lep_vect2 + sum_allJet_vect;
       TLorentzVector allEverything_vect = leps_and_allJets_vect + metV;
-      TLorentzVector MHT_lep1_vect = lep_vect1_transverse - leps_and_jets_vect_transverse;
-      TLorentzVector MHT_lep2_vect = lep_vect2_transverse - leps_and_jets_vect_transverse;
+      TLorentzVector MHT_lep1_vect = lep_vect1_transverse + leps_and_jets_vect_transverse;
+      TLorentzVector MHT_lep2_vect = lep_vect2_transverse + leps_and_jets_vect_transverse;
 
       float mass_of_everything = everything_vect.M();
       float mass_MHT = leps_and_jets_vect.M();
@@ -2891,42 +3042,74 @@ int main ( int argc, char ** argv )
       float MHT = leps_and_jets_vect.Pt();
       float pt_of_leps_and_allJets = leps_and_allJets_vect.Pt();
       float pt_of_allEverything = allEverything_vect.Pt();
-      float mass_MHT_lep1_transverse = MHT_lep1_vect.M();
-      float mass_MHT_lep2_transverse = MHT_lep2_vect.M();
+      float MT_MHT_lep1 = MHT_lep1_vect.M();
+      float MT_MHT_lep2 = MHT_lep2_vect.M();
 
+      if (debug_) std::cout << "Finished setting vectors" << std::endl;
+      
       /// pt of ttbar
       float pt_of_ttbar = dFloat;
       if(numTaggedJets>0){
 
-        int bjet1 = tag_pfjet_index[0] ;
+        int bjet1 = tagJet_index[0] ;
         TLorentzVector bjet1_vect;
+        TLorentzVector bjet1_vect_transverse;
         bjet1_vect.SetPxPyPzE(jet_px[bjet1],jet_py[bjet1],jet_pz[bjet1],jet_energy[bjet1]);
+        bjet1_vect_transverse.SetPxPyPzE(jet_px[bjet1],jet_py[bjet1],0.0,jet_pt[bjet1]);
 
-        TLorentzVector MHT_lep1_b_vect = MHT_lep2_vect + bjet1_vect;
-        TLorentzVector MHT_lep2_b_vect = MHT_lep2_vect + bjet1_vect;
+        TLorentzVector MHT_lep1_b_vect = MHT_lep1_vect + bjet1_vect_transverse;
+        TLorentzVector MHT_lep2_b_vect = MHT_lep2_vect + bjet1_vect_transverse;
+        TLorentzVector met_lep1_b_vect = met_lep1_vect + bjet1_vect_transverse;
+        TLorentzVector met_lep2_b_vect = met_lep2_vect + bjet1_vect_transverse;
+        
 
         MT_MHT_lep1_b = MHT_lep1_b_vect.M();
         MT_MHT_lep2_b = MHT_lep2_b_vect.M();
+        MT_met_lep1_b = met_lep1_b_vect.M();
+        MT_met_lep2_b = met_lep2_b_vect.M();
 
         if(numTaggedJets>1) {
-          int bjet2 = tag_pfjet_index[1] ;
+          int bjet2 = tagJet_index[1] ;
           TLorentzVector bjet2_vect;
+          TLorentzVector bjet2_vect_transverse;
           bjet2_vect.SetPxPyPzE(jet_px[bjet2],jet_py[bjet2],jet_pz[bjet2],jet_energy[bjet2]);
+          bjet2_vect_transverse.SetPxPyPzE(jet_px[bjet2],jet_py[bjet2],0.0,jet_pt[bjet2]);
           
           TLorentzVector ttbar_vect = metV + lep_vect1 + lep_vect2 + bjet1_vect + bjet2_vect;
           pt_of_ttbar = ttbar_vect.Pt();
 
           if (bjet2_vect.Pt() > bjet1_vect.Pt()) {
-            MHT_lep1_b_vect = MHT_lep2_vect + bjet2_vect;
-            MHT_lep2_b_vect = MHT_lep2_vect + bjet2_vect;
+            MHT_lep1_b_vect = MHT_lep1_vect + bjet2_vect_transverse;
+            MHT_lep2_b_vect = MHT_lep2_vect + bjet2_vect_transverse;
+            met_lep1_b_vect = met_lep1_vect + bjet2_vect_transverse;
+            met_lep2_b_vect = met_lep2_vect + bjet2_vect_transverse;
 
             MT_MHT_lep1_b = MHT_lep1_b_vect.M();
             MT_MHT_lep2_b = MHT_lep2_b_vect.M();
+            MT_met_lep1_b = met_lep1_b_vect.M();
+            MT_met_lep2_b = met_lep2_b_vect.M();
           }
         }
       } 
 
 	  ///loop jet
+      if (debug_) std::cout << "Beginning loop over allJets" << std::endl;
+
+      for (int i=0; i<numBadJets; i++) {
+        sideJet_vect.SetPxPyPzE(sideJetV[i].Px(),sideJetV[i].Py(),sideJetV[i].Pz(),sideJetV[i].E());
+	    if (mindr_lep1_sideJet > lep_vect1.DeltaR(sideJet_vect) || mindr_lep1_sideJet == dFloat) {
+	      mindr_lep1_sideJet = lep_vect1.DeltaR(sideJet_vect);
+          ptRel_lep1_sideJet = lep_vect1.Pt() / (lep_vect1.Pt() + sideJet_vect.Pt());
+	    }
+
+	    if (mindr_lep2_sideJet > lep_vect2.DeltaR(sideJet_vect) || mindr_lep2_sideJet == dFloat) {
+	      mindr_lep2_sideJet = lep_vect2.DeltaR(sideJet_vect); 
+          ptRel_lep2_sideJet = lep_vect2.Pt() / (lep_vect2.Pt() + sideJet_vect.Pt());
+	    }
+
+      } //end loop over sideJets
+
+      if (debug_) std::cout << "Beginning loop over allJets" << std::endl;
 
       for (int i=0; i<numGoodAndBadJets; i++) {
         allJet_vect.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
@@ -2956,23 +3139,28 @@ int main ( int argc, char ** argv )
         for (int j=i+1; j < numGoodAndBadJets; j++) {
           sum_higgsLike_allDijet_vect = allJetV[i] + allJetV[j];
           higgsLike_allDijet_mass2 = sum_higgsLike_allDijet_vect.M();
-          if (pfjetsSelected.at(i).btagCombinedSecVertex > 0.679 || pfjetsSelected.at(j).btagCombinedSecVertex > 0.679) {
-            if (fabs(higgs_mass - higgsLike_allDijet_mass1) > fabs(higgs_mass - higgsLike_allDijet_mass2) || higgsLike_allDijet_mass1 == dFloat) {
+          if (pfjetsSelected.at(i).btagCombinedSecVertex > btagThres
+              || pfjetsSelected.at(j).btagCombinedSecVertex > btagThres) {
+            if (fabs(higgs_mass - higgsLike_allDijet_mass1) > fabs(higgs_mass - higgsLike_allDijet_mass2)
+                || higgsLike_allDijet_mass1 == dFloat) {
               higgsLike_allDijet_mass1 = higgsLike_allDijet_mass2;
             }
           }
-          if (pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679) {
-            if (fabs(81 - wLike_allDijet_mass1) > fabs(81 - higgsLike_allDijet_mass2) || wLike_allDijet_mass1 == dFloat) {
+          if (pfjetsSelected.at(i).btagCombinedSecVertex <= btagThres
+              && pfjetsSelected.at(j).btagCombinedSecVertex <= btagThres) {
+            if (fabs(81 - wLike_allDijet_mass1) > fabs(81 - higgsLike_allDijet_mass2)
+                || wLike_allDijet_mass1 == dFloat) {
               wLike_allDijet_mass1 = higgsLike_allDijet_mass2;
             }
           }
           for (int k=j+1; k < numGoodAndBadJets; k++) {
             sum_topLike_allTrijet_vect = allJetV[i] + allJetV[j] + allJetV[k];
             topLike_allTrijet_mass2 = sum_topLike_allTrijet_vect.M();
-            if ((pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex >= 0.679)
-                || (pfjetsSelected.at(i).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(j).btagCombinedSecVertex >= 0.679)
-                || (pfjetsSelected.at(j).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(k).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(i).btagCombinedSecVertex >= 0.679)) {
-              if (fabs(160 - topLike_allTrijet_mass1) > fabs(160 - topLike_allTrijet_mass2) || topLike_allTrijet_mass1 == dFloat) {
+            if ( ( 1*(pfjetsSelected.at(i).btagCombinedSecVertex > btagThres)
+                   + 1*(pfjetsSelected.at(j).btagCombinedSecVertex > btagThres)
+                   + 1*(pfjetsSelected.at(k).btagCombinedSecVertex > btagThres) ) == 1) {
+              if (fabs(160 - topLike_allTrijet_mass1) > fabs(160 - topLike_allTrijet_mass2)
+                  || topLike_allTrijet_mass1 == dFloat) {
                 topLike_allTrijet_mass1 = topLike_allTrijet_mass2;
               }
             }
@@ -2980,33 +3168,38 @@ int main ( int argc, char ** argv )
           
         }
       }
+      if (debug_) std::cout << "Beginning loop over jets" << std::endl;
 
-
-      TLorentzVector topLike_dijet_lep1_vect;
-      TLorentzVector topLike_dijet_lep2_vect;
+      TLorentzVector sum_topLike_dijet_lep1_vect;
+      TLorentzVector sum_topLike_dijet_lep2_vect;
       bool first_bjet_found = false;
+      
 	  for (int i=0; i < numGoodJets; i++) {
-	    int iJet = tight_pfjet_index[i] ;
+	    int iJet = jet_index[i] ;
         if (sum_jet_pt == dFloat) sum_jet_pt = 0.0;
         if (sum_jet_CHEF == dFloat) sum_jet_CHEF = 0.0;
         if (sum_jet_charge == dFloat) sum_jet_charge = 0.0;
+        if (sum_untagged_jet_charge == dFloat) sum_untagged_jet_charge = 0.0;
+        if (sum_tagged_jet_charge == dFloat) sum_tagged_jet_charge = 0.0;
 
 	    sum_pt += jet_pt[iJet];
         sum_jet_pt += jet_pt[iJet];
 	    Ht += jet_energy[iJet];
-        float iJet_csvVal = good_jet_tag[i];
         sum_jet_CHEF += jet_CHEF[iJet];
         sum_jet_charge += jet_charge[iJet];
-	    
+        if (jet_CSV[iJet] > btagThres) sum_tagged_jet_charge += jet_charge[iJet];
+        else sum_untagged_jet_charge += jet_charge[iJet];
+
+        
 	    jet_vect.SetPxPyPzE(jet_px[iJet],jet_py[iJet],jet_pz[iJet],jet_energy[iJet]);
 
         for (int j=i+1; j < numGoodJets; j++) {
           sum_higgsLike_dijet_vect = jetV[i] + jetV[j];
           higgsLike_dijet_massX = sum_higgsLike_dijet_vect.M();
-          topLike_dijet_lep1_vect = jetV[i] + jetV[j] + lep_vect1;
-          topLike_dijet_lep2_vect = jetV[i] + jetV[j] + lep_vect2;
-          if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679
-              || pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex > 0.679) {
+          sum_topLike_dijet_lep1_vect = jetV[i] + jetV[j] + lep_vect1;
+          sum_topLike_dijet_lep2_vect = jetV[i] + jetV[j] + lep_vect2;
+          if (pfjetsSelected.at(iJet).btagCombinedSecVertex > btagThres
+              || pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex > btagThres) {
             if (fabs(higgs_mass - higgsLike_dijet_mass2) > fabs(higgs_mass - higgsLike_dijet_massX)
                 || higgsLike_dijet_mass2 == dFloat) {
               if (fabs(higgs_mass - higgsLike_dijet_mass1) > fabs(higgs_mass - higgsLike_dijet_massX)
@@ -3026,8 +3219,8 @@ int main ( int argc, char ** argv )
             if (fabs(higgs_mass - higgsLike_dijet_massX) < 15) numHiggsLike_dijet_15++;
             if (fabs(higgs_mass - higgsLike_dijet_massX) < 20) numHiggsLike_dijet_20++;
             if (fabs(higgs_mass - higgsLike_dijet_massX) < 25) numHiggsLike_dijet_25++;
-            if (pfjetsSelected.at(iJet).btagCombinedSecVertex > 0.679
-                && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex > 0.679) {
+            if (pfjetsSelected.at(iJet).btagCombinedSecVertex > btagThres
+                && pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex > btagThres) {
               if (fabs(higgs_mass - higgsLike_diBjet_mass1) > fabs(higgs_mass - higgsLike_dijet_massX)
                   || higgsLike_diBjet_mass1 == dFloat)  higgsLike_diBjet_mass1 = higgsLike_dijet_massX;
               if (fabs(higgs_mass - higgsLike_dijet_massX) < 10) numHiggsLike_diBjet_10++;
@@ -3036,26 +3229,26 @@ int main ( int argc, char ** argv )
               if (fabs(higgs_mass - higgsLike_dijet_massX) < 25) numHiggsLike_diBjet_25++;
             }
           }
-          if (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679
-              && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679) {
+          if (pfjetsSelected.at(iJet).btagCombinedSecVertex <= btagThres
+              && pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex <= btagThres) {
             if (fabs(81 - wLike_dijet_mass1) > fabs(81 - higgsLike_dijet_massX) || wLike_dijet_mass1 == dFloat) {
               wLike_dijet_mass1 = higgsLike_dijet_massX;
-              topLike_dijet_lep1_mass = topLike_dijet_lep1_vect.M();
-              topLike_dijet_lep2_mass = topLike_dijet_lep2_vect.M();
+              topLike_dijet_lep1_mass = sum_topLike_dijet_lep1_vect.M();
+              topLike_dijet_lep2_mass = sum_topLike_dijet_lep2_vect.M();
             }
           }
           for (int k=j+1; k < numGoodJets; k++) {
             sum_topLike_trijet_vect = jetV[i] + jetV[j] + jetV[k];
             topLike_trijet_mass2 = sum_topLike_trijet_vect.M();
-            if ((pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex >= 0.679)
-                || (pfjetsSelected.at(iJet).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex >= 0.679)
-                || (pfjetsSelected.at(tight_pfjet_index[j]).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(tight_pfjet_index[k]).btagCombinedSecVertex <= 0.679 && pfjetsSelected.at(iJet).btagCombinedSecVertex >= 0.679)) {
+            if ((pfjetsSelected.at(iJet).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex >= btagThres)
+                || (pfjetsSelected.at(iJet).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex >= btagThres)
+                || (pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(iJet).btagCombinedSecVertex >= btagThres)) {
               if (fabs(160 - topLike_trijet_mass1) > fabs(160 - topLike_trijet_mass2) || topLike_trijet_mass1 == dFloat) {
                 topLike_trijet_mass1 = topLike_trijet_mass2;
               }
             }
-          }
-        }
+          } //End k loop over numGoodJets
+        } //End j loop over numGoodJets
 
         if (first_lf_jet_pt == dFloat && pfjetsSelected.at(iJet).flavour > 0 && pfjetsSelected.at(iJet).flavour < 4) {
           first_lf_jet_pt = jet_pt[iJet];
@@ -3069,13 +3262,13 @@ int main ( int argc, char ** argv )
           first_hf_jet_CSV_unshaped = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
           first_hf_jet_CSV_reshaped = pfjetsSelected.at(iJet).btagCombinedSecVertex;
         }
-        
-	////
-	if (iJet_csvVal > 0.679 && ! first_bjet_found){
-	  first_bjet_pt = jet_pt[iJet];	
-	  first_bjet_found = true;
-	}
 
+        ////
+        if (pfjetsSelected.at(iJet).btagCombinedSecVertex > btagThres && ! first_bjet_found) {
+          first_bjet_pt = jet_pt[iJet];
+          first_bjet_found = true;
+        }
+        
 	    if (i==0)  {        
           first_jet_pt = jet_pt[iJet];
           first_jet_eta = jet_vect.Eta();
@@ -3162,15 +3355,15 @@ int main ( int argc, char ** argv )
           ptRel_lep2_jet = lep_vect2.Pt() / (lep_vect2.Pt() + jet_vect.Pt());
 	    }
 	    
-	    if (iJet_csvVal > 0.679){
+	    if (jet_CSV[i] > btagThres){
           if (avg_btag_disc_btags == dFloat) avg_btag_disc_btags = 0.0;
-	      avg_btag_disc_btags += iJet_csvVal;
+	      avg_btag_disc_btags += jet_CSV[i];
 	    }
 	    
-	    if (iJet_csvVal <= 0.679){
+	    if (jet_CSV[i] <= btagThres){
           if (avg_btag_disc_non_btags == dFloat) avg_btag_disc_non_btags = 0.0;
-	      avg_btag_disc_non_btags += iJet_csvVal;
-          highest_btag_disc_non_btags = max(highest_btag_disc_non_btags,iJet_csvVal);
+	      avg_btag_disc_non_btags += jet_CSV[i];
+          highest_btag_disc_non_btags = max(highest_btag_disc_non_btags,jet_CSV[i]);
 	    }									
 	  } // End of loop over numGoodJets
 	  
@@ -3182,7 +3375,7 @@ int main ( int argc, char ** argv )
 	  
 	  for (int l=0; l < numTaggedJets; l++){
         if (dev_from_avg_disc_btags == dFloat) dev_from_avg_disc_btags = 0.0;
-        dev_from_avg_disc_btags += pow((tag_pfjet_csvVal[l] - avg_btag_disc_btags),2);
+        dev_from_avg_disc_btags += pow((tagJet_CSV[l] - avg_btag_disc_btags),2);
 	  }
 	  if ( numTaggedJets > 0 ) dev_from_avg_disc_btags /= numTaggedJets;
 
@@ -3218,17 +3411,19 @@ int main ( int argc, char ** argv )
       bool PassBigDiamondZmask2 = (mass_leplep < (65.5 + 3*met/8)) || (mass_leplep > (108 - met/4)) || (mass_leplep < (79 - 3*met/4)) || (mass_leplep > (99 + met/2));
       bool PassBigDiamondZmask3 = (mass_leplep < (65.5 + 3*pt_of_leps_and_allJets/8)) || (mass_leplep > (108 - pt_of_leps_and_allJets/4)) || (pt_of_leps_and_allJets < (79 - 3*pt_of_leps_and_allJets/4)) || (mass_leplep > (99 + pt_of_leps_and_allJets/2));
 
+
+      if (debug_) std::cout << "Beginning loop over tagged jets" << std::endl;      
 	  //// tagged jets
 	  float deltaHMass = 9999. ;
 	  float deltaHMass2 = 9999. ;
       denom_avg_cnt = 0.0;
 	  if (numTaggedJets > 1) {
 	    for (int j=0; j < (numTaggedJets - 1); j++) {
-	      int jbtag = tag_pfjet_index[j] ;
+	      int jbtag = tagJet_index[j] ;
 	      btag_vect1.SetPxPyPzE(jet_px[jbtag],jet_py[jbtag],jet_pz[jbtag],jet_energy[jbtag]);
 	      
 	      for (int k=j+1; k < numTaggedJets; k++) {
-		int kbtag = tag_pfjet_index[k] ; 
+		int kbtag = tagJet_index[k] ; 
 		btag_vect2.SetPxPyPzE(jet_px[kbtag],jet_py[kbtag],jet_pz[kbtag],jet_energy[kbtag]);
 		
 		dijet_vect = btag_vect1 + btag_vect2;
@@ -3246,7 +3441,7 @@ int main ( int argc, char ** argv )
 
 		//////// ttbb bkg
 		dibjet_mass_combinations.push_back(dijet_vect.M()); 
-		float deltaHMassTemp = abs(120 - dijet_vect.M());
+		float deltaHMassTemp = abs(higgs_mass - dijet_vect.M());
 		if (deltaHMassTemp < deltaHMass) {
 		  deltaHMass = deltaHMassTemp ;
 		  m2H_btag = dijet_vect.M() ;
@@ -3259,6 +3454,7 @@ int main ( int argc, char ** argv )
 	    avg_dr_tagged_jets /= denom_avg_cnt;
 	    
 	    ///// ttbb bkg
+      if (debug_) std::cout << "Beginning second loop over jets" << std::endl;
 
 	    dibjet_mass_combinations.sort();
 	    std::vector<float> dibjet_mass_sort_vect;
@@ -3270,42 +3466,56 @@ int main ( int argc, char ** argv )
         if (numCom > 0) first_dibjet_mass  = dibjet_mass_sort_vect[numCom - 1];
         if (numCom > 1) second_dibjet_mass = dibjet_mass_sort_vect[numCom - 2];
         if (numCom > 2) third_dibjet_mass  = dibjet_mass_sort_vect[numCom - 3];
-
+        lowest_dibjet_mass = dibjet_mass_sort_vect[0];
 	  } // End if numTaggedJets > 1
 
 	  
 	  ////non_tagged jets
-	  
+      if (debug_) std::cout << "Beginning loop over untagged jets" << std::endl;	  
 	  denom_avg_cnt = 0.0;
-	  int nonTags = untag_pfjet_index.size();
+	  int nonTags = untagJet_index.size();
 	  if (nonTags > 1){
 	    for (int m=0; m < (nonTags - 1); m++){
-	      int untag1 = untag_pfjet_index[m];
+	      int untag1 = untagJet_index[m];
 	      non_btag_vect1.SetPxPyPzE(jet_px[untag1],jet_py[untag1],jet_pz[untag1],jet_energy[untag1]);
 	      for (int n=m+1; n < nonTags; n++){
-		int untag2 = untag_pfjet_index[n];
+		int untag2 = untagJet_index[n];
 		non_btag_vect2.SetPxPyPzE(jet_px[untag2],jet_py[untag2],jet_pz[untag2],jet_energy[untag2]);
 		
 		dijet_vect = non_btag_vect1 + non_btag_vect2;
+        untagged_dijet_mass_combinations.push_back(dijet_vect.M());
         if (avg_untagged_dijet_mass == dFloat) avg_untagged_dijet_mass = 0.0;
 		avg_untagged_dijet_mass += dijet_vect.M();
 		++denom_avg_cnt;
 	      }
 	    }
-	  
+        
+        untagged_dijet_mass_combinations.sort();
+        std::vector<float> untagged_dijet_mass_sort_vect;
+        std::list<float>::iterator listinLF;
+        for (listinLF = untagged_dijet_mass_combinations.begin(); listinLF != untagged_dijet_mass_combinations.end(); listinLF++){
+          untagged_dijet_mass_sort_vect.push_back(*listinLF);  //accessible form
+        }
+        int numCom = untagged_dijet_mass_sort_vect.size();
+        if (numCom > 0) first_untagged_dijet_mass  = untagged_dijet_mass_sort_vect[numCom - 1];
+        if (numCom > 1) second_untagged_dijet_mass = untagged_dijet_mass_sort_vect[numCom - 2];
+        if (numCom > 2) third_untagged_dijet_mass  = untagged_dijet_mass_sort_vect[numCom - 3];
+        if (numCom > 0) lowest_untagged_dijet_mass  = untagged_dijet_mass_sort_vect[0];
+        
 	    avg_untagged_dijet_mass /= denom_avg_cnt;
 	  } // End if nonTags > 1
 
+      if (debug_) std::cout << "Beginning another loop over jets" << std::endl;	  
 	  
 	  ///// ttbb dijet_mass
 	  denom_avg_cnt = 0.0;
-	  if(numJets > 1 ){
+	  if(numJets > 1 ) {
 	    for (int j=0; j < (numJets - 1); j++) {
-	      int jJet = tight_pfjet_index[j] ;
+	      int jJet = jet_index[j] ;
 	      jet_vect1.SetPxPyPzE(jet_px[jJet],jet_py[jJet],jet_pz[jJet],jet_energy[jJet]);
 	      
 	      for (int k=j+1; k < numJets; k++) {
-		int kJet = tight_pfjet_index[k] ; 
+		int kJet = jet_index[k] ; 
 		jet_vect2.SetPxPyPzE(jet_px[kJet],jet_py[kJet],jet_pz[kJet],jet_energy[kJet]);
 		
 		dijet_vect = jet_vect1 + jet_vect2;
@@ -3323,14 +3533,14 @@ int main ( int argc, char ** argv )
 
 		//////// ttbb bkg
 		dijet_mass_combinations.push_back(dijet_vect.M()); 
-		float deltaHMassTemp2 = abs(120 - dijet_vect.M());
+		float deltaHMassTemp2 = abs(higgs_mass - dijet_vect.M());
 		if (deltaHMassTemp2 < deltaHMass2) {
 		  deltaHMass2 = deltaHMassTemp2 ;
 		  dijet_mass_m2H = dijet_vect.M() ;
 		}
 		
-	      }
-	    }
+	      } //end loop over k
+	    } //end loop over j
 
 	    avg_dijet_mass /= denom_avg_cnt; 
 	    avg_dr_jets /= denom_avg_cnt;
@@ -3342,21 +3552,21 @@ int main ( int argc, char ** argv )
 	      dijet_mass_sort_vect.push_back(*listintbb);  //accessible form
 	    }
 	    int numCom = dijet_mass_sort_vect.size();
-	    if (numCom > 2) {
-	      dijet_mass_first  = dijet_mass_sort_vect[numCom - 1];
-	      dijet_mass_second = dijet_mass_sort_vect[numCom - 2];
-	      dijet_mass_third  = dijet_mass_sort_vect[numCom - 3];
-	    }
+        if (numCom > 0) dijet_mass_first  = dijet_mass_sort_vect[numCom - 1];
+	    if (numCom > 1) dijet_mass_second = dijet_mass_sort_vect[numCom - 2];
+        if (numCom > 2) dijet_mass_third  = dijet_mass_sort_vect[numCom - 3];
+	    if (numCom > 0) dijet_mass_lowest = dijet_mass_sort_vect[0];
+	    
 
-	  }
+	  } //end if numJets > 1
 
 	  ////
       
 	  
 	  if (numTaggedJets > 0 ){
-	    first_highest_btag = jet_CSV_sorted_vect[numTaggedJets - 1];
-	    if (numTaggedJets > 1) second_highest_btag = jet_CSV_sorted_vect[numTaggedJets - 2];
-	    lowest_btag = jet_CSV_sorted_vect[0];	    
+	    first_highest_btag = jet_CSV_sorted[numTaggedJets - 1];
+	    if (numTaggedJets > 1) second_highest_btag = jet_CSV_sorted[numTaggedJets - 2];
+	    lowest_btag = jet_CSV_sorted[0];	    
 	  }
 
       //------------------------------------------
@@ -3364,47 +3574,54 @@ int main ( int argc, char ** argv )
       // Assign values to the vars the MVA will use
       // 
       //------------------------------------------
+      if (debug_) std::cout << "Starting MVA" << std::endl;	  
 
-      varfirst_jet_pt = first_jet_pt;
-      varmin_dr_tagged_jets 		  = min_dr_tagged_jets;  
-      varnumJets_float 		  = float(numJets);       
-      varmindr_lep1_jet		  = mindr_lep1_jet;      
-      varavg_btag_disc_btags		  = avg_btag_disc_btags; 
-      varavg_btag_disc_non_btags	  = avg_btag_disc_non_btags; 
-      varHt                              = Ht;
+      //Robin's variables
+      varavg_btag_disc_non_btags = avg_btag_disc_non_btags;
+      vardijet_mass_first = dijet_mass_first;
+      vardijet_mass_m2H = dijet_mass_m2H;
       
-      varavg_dr_tagged_jets	         =  avg_dr_tagged_jets;
-      varavg_tagged_dijet_mass       =  avg_tagged_dijet_mass;
-      varsecond_dibjet_mass	        =   second_dibjet_mass;
-
-      varavg_dijet_mass =       avg_dijet_mass;	   
-      vardijet_mass_second =    dijet_mass_second; 
-      vardijet_mass_first =    dijet_mass_first; 
-      vardijet_mass_m2H =    dijet_mass_m2H; 
-      varmin_dr_jets = 	      min_dr_jets; 	   
-      varavg_dr_jets =          avg_dr_jets;       
+      //Opposite sign variables
+      varavg_btag_disc_btags = avg_btag_disc_btags;
+      varavg_dr_jets = avg_dr_jets;
+      varHt = Ht;
+      varhiggsLike_dijet_mass = higgsLike_dijet_mass1;
+      varhiggsLike_dijet_mass2 = higgsLike_dijet_mass2;
+      varmin_dr_tagged_jets = min_dr_tagged_jets; 
+      varnumHiggsLike_dijet_15_float = float(numHiggsLike_dijet_15);
+      varnumJets_float = float(numJets); 
       
+      //Same sign vs. ttbar variables
+      varlep2Pt = lep2Pt;
+      varmaxLepChargedIso = max(lep1ChargedIso,lep2ChargedIso);
+      varmaxLepAbsEta = max(abs(lep1Eta),abs(lep2Eta));
+      varmindr_lep1_jet = mindr_lep1_jet;
+      varmindr_lep2_allJet = mindr_lep2_allJet;
+      varmindr_lep2_jet = mindr_lep2_jet;
+      //                    varnumJets_float;
+      varsum_jet_pt = sum_jet_pt;
 
+      //Same sign vs. ttW variables
+      //                    varlep2Pt;
+      varmindr_lep1_allJet = mindr_lep1_allJet;
+      //                    varmindr_lep1_jet;
+      //                    varmindr_lep2_jet;
+      //                    varnumJets_float;
+      //                    varsum_jet_pt;
+      
       //      std::cout << "-->error0 " << std::endl;
-      Float_t  ttbbANN = 0.;
-      for( unsigned int j = 0 ; j < nCat ; ++j ){
+      for( unsigned int j = 0 ; j < nCat ; ++j ) {
         // --- Return the MVA outputs and weights
-	TMVA::Reader  *tmpReader = reader[j];  
+        TMVA::Reader  *tmpReader = reader[j];  
         TString branchName = TString("CFMlpANN_") + catList[j];
-	//        cout << "This is NN category " << catList[j] << " saving into branch " << branchName << endl;
-	if( j < 8){
-	  Float_t annOut  = tmpReader->EvaluateMVA( "CFMlpANN method" );
-	  *(floatBranches[branchName]) = annOut;  
-	  if ( j==7 ) ttbbANN = annOut ;
-	}
-	else {
-	  varCFMlpANN_var_best8 = ttbbANN ;
-	  Float_t annOut1  = tmpReader->EvaluateMVA( "CFMlpANN method" );
-	  *(floatBranches[branchName]) = annOut1;  
+        //        cout << "This is NN category " << catList[j] << " saving into branch " << branchName << endl;
+        Float_t annOut  = tmpReader->EvaluateMVA( "CFMlpANN method" );
+        *(floatBranches[branchName]) = annOut;  
 
-	}
       } // End category loop
 
+      if (debug_) std::cout << "About to fill branches" << std::endl;	  
+      
       if (CoreVariables) {
 
         //event variables
@@ -3439,6 +3656,7 @@ int main ( int argc, char ** argv )
         *(uintBranches["runNumber"]) = event->run ;
         *(uintBranches["luminosityBlock"]) = event->lumi ;
         *(uintBranches["eventNumber"]) = unsigned(event->evt) ;
+        *(intBranches["sampleNumber"]) = sampleNumber ;
 
         //pile up
         *(floatBranches["numPV"]) = numPV ;
@@ -3460,8 +3678,6 @@ int main ( int argc, char ** argv )
         *(floatBranches["weight_Xsec"]) = weight_Xsec ;
         *(floatBranches["nGen"]) = nGen ;
         *(floatBranches["Xsec"]) = Xsec ;
-        *(floatBranches["topPtWgt"]) = topPtWgt;
-        *(floatBranches["topPtWgtUp"]) = topPtWgtUp;
 
         //met
         *(floatBranches["met"]) = met;
@@ -3473,17 +3689,19 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep2Pt"]) =  lep2Pt;
         *(floatBranches["lep1Eta"]) = lep1Eta;
         *(floatBranches["lep2Eta"]) = lep2Eta;
+        *(floatBranches["maxLepEta"]) = lep1Eta*(fabs(lep1Eta)>=fabs(lep2Eta))+lep2Eta*(fabs(lep1Eta)<fabs(lep2Eta));
+        *(floatBranches["maxLepAbsEta"]) = max(fabs(lep1Eta),fabs(lep2Eta));
         *(floatBranches["lep1Phi"]) = lep1Phi;
         *(floatBranches["lep2Phi"]) = lep2Phi;
         *(floatBranches["lep1Iso"]) = lep1Iso;
         *(floatBranches["lep2Iso"]) = lep2Iso;
+        *(floatBranches["maxLepIso"]) = max(lep1Iso,lep2Iso);
         *(floatBranches["lep1TkCharge"]) = lep1TkCharge;
         *(floatBranches["lep2TkCharge"]) = lep2TkCharge;
         *(floatBranches["lep1GenCharge"]) = lep1GenCharge;
         *(floatBranches["lep2GenCharge"]) = lep2GenCharge;
 
         // jet variables
-        *(floatBranches["first_bjet_pt"]) = first_bjet_pt;
         *(floatBranches["first_jet_pt"]) = first_jet_pt;
         *(floatBranches["second_jet_pt"]) = second_jet_pt;
         *(floatBranches["third_jet_pt"]) = third_jet_pt;
@@ -3497,40 +3715,15 @@ int main ( int argc, char ** argv )
         //kinematic variables
         ////ANN neural net inputs
         *(floatBranches["mass_of_everything"]) = mass_of_everything;
-	*(floatBranches["min_dr_tagged_jets"]) = min_dr_tagged_jets;
+	    *(floatBranches["min_dr_tagged_jets"]) = fmax(min_dr_tagged_jets,-1.0);
         *(floatBranches["mindr_lep1_jet"]) = mindr_lep1_jet;
-        *(floatBranches["avg_btag_disc_btags"]) = avg_btag_disc_btags;
+        *(floatBranches["avg_btag_disc_btags"]) = fmax(avg_btag_disc_btags,-1.0);
         *(floatBranches["Ht"]) = Ht;
 
-	////----- new variables for ANN
-	*(floatBranches["m2H_btag"]) = m2H_btag;
-        *(floatBranches["first_dibjet_mass"]) =  first_dibjet_mass;
-        *(floatBranches["second_dibjet_mass"]) = second_dibjet_mass;
-        *(floatBranches["third_dibjet_mass"]) =  third_dibjet_mass;
-
-	*(floatBranches["dijet_mass_m2H"]) = dijet_mass_m2H;
-        *(floatBranches["dijet_mass_first"]) =  dijet_mass_first;
-        *(floatBranches["dijet_mass_second"]) = dijet_mass_second;
-        *(floatBranches["dijet_mass_third"]) =  dijet_mass_third;
-
-        *(floatBranches["min_dr_jets"]) = min_dr_jets;
-	*(floatBranches["avg_dr_jets"]) = avg_dr_jets;
-	*(floatBranches["avg_dr_tagged_jets"]) = avg_dr_tagged_jets;
-	*(floatBranches["avg_tagged_dijet_mass"]) = avg_tagged_dijet_mass;
-        *(floatBranches["avg_untagged_dijet_mass"]) = avg_untagged_dijet_mass;
-
-	*(floatBranches["avg_dijet_mass"]) = avg_dijet_mass;
-	*(floatBranches["M2_of_closest_jets"]) = M2_of_closest_jets;
-	*(floatBranches["M2_of_closest_tagged_jets"]) = M2_of_closest_tagged_jets;
-	*(floatBranches["closest_dijet_mass"]) = closest_dijet_mass;
-        *(floatBranches["closest_tagged_dijet_mass"]) = closest_tagged_dijet_mass;
-
-        *(floatBranches["avg_btag_disc_non_btags"]) = avg_btag_disc_non_btags;
-        *(floatBranches["highest_btag_disc_non_btags"]) = highest_btag_disc_non_btags;
-        *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
-	*(floatBranches["first_highest_btag"]) = first_highest_btag;
-	*(floatBranches["second_highest_btag"]) = second_highest_btag;
-	*(floatBranches["lowest_btag"]) = lowest_btag;
+        *(floatBranches["higgsLike_dijet_mass"]) = fmax(higgsLike_dijet_mass1,-1.0);
+        *(floatBranches["higgsLike_dijet_mass2"]) = fmax(higgsLike_dijet_mass2,-1.0);
+        *(intBranches["numHiggsLike_dijet_15"]) = numHiggsLike_dijet_15;
+        *(floatBranches["numHiggsLike_dijet_15_float"]) = float(numHiggsLike_dijet_15);
 
         ////leptons
         *(floatBranches["mass_leplep"]) = mass_leplep;
@@ -3548,9 +3741,11 @@ int main ( int argc, char ** argv )
         *(floatBranches["pt_of_everything"]) = pt_of_everything;
         *(floatBranches["pz_of_everything"]) = pz_of_everything;
         *(floatBranches["pt_of_ttbar"]) = pt_of_ttbar;
+
       } //End if (CoreVariables)
 
       if (ExtraSameSignVariables) {
+        if (debug_) cout << "Filling ExtraSameSignVariables" << endl;
 
         *(floatBranches["lep1FlipSF"]) = lep1FlipSF;
         *(floatBranches["lep2FlipSF"]) = lep2FlipSF;
@@ -3566,36 +3761,44 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep2GsfCharge"]) = lep2GsfCharge;
         *(floatBranches["lep1ChargedIso"]) = lep1ChargedIso;
         *(floatBranches["lep2ChargedIso"]) = lep2ChargedIso;
-        *(floatBranches["lep1NeutralIso"]) = lep1NeutralIso;
-        *(floatBranches["lep2NeutralIso"]) = lep2NeutralIso;
+        *(floatBranches["maxLepChargedIso"]) = max(lep1ChargedIso,lep2ChargedIso);
+//         *(floatBranches["lep1NeutralIso"]) = lep1NeutralIso;
+//         *(floatBranches["lep2NeutralIso"]) = lep2NeutralIso;
         *(floatBranches["lep1IP"]) = lep1IP;
         *(floatBranches["lep2IP"]) = lep2IP;
         *(floatBranches["lep1IPError"]) = lep1IPError;
         *(floatBranches["lep2IPError"]) = lep2IPError;
-        *(floatBranches["lep1dFracScEtTkPt"]) = lep1dFracScEtTkPt;
-        *(floatBranches["lep2dFracScEtTkPt"]) = lep2dFracScEtTkPt;
+//         *(floatBranches["lep1dFracScEtTkPt"]) = lep1dFracScEtTkPt;
+//         *(floatBranches["lep2dFracScEtTkPt"]) = lep2dFracScEtTkPt;
 
         *(floatBranches["mindr_lep1_allJet"]) = mindr_lep1_allJet;
         *(floatBranches["mindr_lep2_allJet"]) = mindr_lep2_allJet;
-        *(floatBranches["ptRel_lep1_jet"]) = ptRel_lep1_jet;
-        *(floatBranches["ptRel_lep2_jet"]) = ptRel_lep2_jet;
-        *(floatBranches["ptRel_lep1_allJet"]) = ptRel_lep1_allJet;
-        *(floatBranches["ptRel_lep2_allJet"]) = ptRel_lep2_allJet;
+//         *(floatBranches["mindr_lep1_sideJet"]) = fmax(mindr_lep1_sideJet,-1);
+//         *(floatBranches["mindr_lep2_sideJet"]) = fmax(mindr_lep2_sideJet,-1);
+//         *(floatBranches["ptRel_lep1_jet"]) = ptRel_lep1_jet;
+//         *(floatBranches["ptRel_lep2_jet"]) = ptRel_lep2_jet;
+//         *(floatBranches["ptRel_lep1_allJet"]) = ptRel_lep1_allJet;
+//         *(floatBranches["ptRel_lep2_allJet"]) = ptRel_lep2_allJet;
+//         *(floatBranches["ptRel_lep1_sideJet"]) = fmax(ptRel_lep1_sideJet,-1);
+//         *(floatBranches["ptRel_lep2_sideJet"]) = fmax(ptRel_lep2_sideJet,-1);
 
-        *(floatBranches["wLike_dijet_mass"]) = wLike_dijet_mass1;
-        *(floatBranches["topLike_trijet_mass"]) = topLike_trijet_mass1;
-        *(floatBranches["topLike_dijet_lep1_mass"]) = topLike_dijet_lep1_mass;
-        *(floatBranches["topLike_dijet_lep2_mass"]) = topLike_dijet_lep2_mass;
-        *(floatBranches["MT_MHT_lep1"]) = mass_MHT_lep1_transverse;
-        *(floatBranches["MT_MHT_lep2"]) = mass_MHT_lep2_transverse;
-        *(floatBranches["MT_MHT_lep1_b"]) = MT_MHT_lep1_b;
-        *(floatBranches["MT_MHT_lep2_b"]) = MT_MHT_lep2_b;
+        *(floatBranches["wLike_dijet_mass"]) = fmax(wLike_dijet_mass1,-1.0);
+//         *(floatBranches["topLike_trijet_mass"]) = fmax(topLike_trijet_mass1,-1.0);
+//         *(floatBranches["topLike_dijet_lep1_mass"]) = fmax(topLike_dijet_lep1_mass,-1.0);
+//         *(floatBranches["topLike_dijet_lep2_mass"]) = fmax(topLike_dijet_lep2_mass,-1.0);
+//         *(floatBranches["MT_MHT_lep1"]) = MT_MHT_lep1;
+//         *(floatBranches["MT_MHT_lep2"]) = MT_MHT_lep2;
+//         *(floatBranches["MT_MHT_lep1_b"]) = fmax(MT_MHT_lep1_b,-1.0);
+//         *(floatBranches["MT_MHT_lep2_b"]) = fmax(MT_MHT_lep2_b,-1.0);
+//         *(floatBranches["MT_met_lep1_b"]) = fmax(MT_met_lep1_b,-1.0);
+//         *(floatBranches["MT_met_lep2_b"]) = fmax(MT_met_lep2_b,-1.0);
         
       }
 
         
         
       if (ExtraHiggsVariables) {
+        if (debug_) cout << "Filling ExtraHiggsVariables" << endl;
 
         *(intBranches["numHiggsJets"]) = numHiggsJets;
         *(intBranches["numHiggsAllJets"]) = numHiggsAllJets;
@@ -3604,17 +3807,14 @@ int main ( int argc, char ** argv )
         *(floatBranches["higgs_pz"]) = higgs_pz;
         *(floatBranches["higgs_genJet_mass"]) = higgs_genJet_mass;
         *(floatBranches["higgs_genParton_mass"]) = higgs_genParton_mass;
-        *(floatBranches["higgsLike_dijet_mass"]) = higgsLike_dijet_mass1;
-        *(floatBranches["higgsLike_dijet_mass2"]) = higgsLike_dijet_mass2;
-        *(floatBranches["higgsLike_diBjet_mass"]) = higgsLike_diBjet_mass1;
-        *(floatBranches["higgsLike_allDijet_mass"]) = higgsLike_allDijet_mass1;
-        *(floatBranches["higgsLike_dijet_dR"]) = higgsLike_dijet_dR;
-        *(floatBranches["higgsLike_dijet_pt"]) = higgsLike_dijet_pt;
-        *(floatBranches["higgsLike_dijet_eta"]) = higgsLike_dijet_eta;
-        *(floatBranches["higgsLike_dijet_jet1_pt"]) = higgsLike_dijet_jet1_pt;
-        *(floatBranches["higgsLike_dijet_jet2_pt"]) = higgsLike_dijet_jet2_pt;
+        *(floatBranches["higgsLike_diBjet_mass"]) = fmax(higgsLike_diBjet_mass1,-1.0);
+        *(floatBranches["higgsLike_allDijet_mass"]) = fmax(higgsLike_allDijet_mass1,-1.0);
+        *(floatBranches["higgsLike_dijet_dR"]) = fmax(higgsLike_dijet_dR,-1.0);
+        *(floatBranches["higgsLike_dijet_pt"]) = fmax(higgsLike_dijet_pt,-1.0);
+        *(floatBranches["higgsLike_dijet_eta"]) = fmax(higgsLike_dijet_eta,-5.0);
+        *(floatBranches["higgsLike_dijet_jet1_pt"]) = fmax(higgsLike_dijet_jet1_pt,-1.0);
+        *(floatBranches["higgsLike_dijet_jet2_pt"]) = fmax(higgsLike_dijet_jet2_pt,-1.0);
         *(intBranches["numHiggsLike_dijet_10"]) = numHiggsLike_dijet_10;
-        *(intBranches["numHiggsLike_dijet_15"]) = numHiggsLike_dijet_15;
         *(intBranches["numHiggsLike_dijet_20"]) = numHiggsLike_dijet_20;
         *(intBranches["numHiggsLike_dijet_25"]) = numHiggsLike_dijet_25;
         *(intBranches["numHiggsLike_diBjet_10"]) = numHiggsLike_diBjet_10;
@@ -3622,7 +3822,6 @@ int main ( int argc, char ** argv )
         *(intBranches["numHiggsLike_diBjet_20"]) = numHiggsLike_diBjet_20;
         *(intBranches["numHiggsLike_diBjet_25"]) = numHiggsLike_diBjet_25;
         *(floatBranches["numHiggsLike_dijet_10_float"]) = float(numHiggsLike_dijet_10);
-        *(floatBranches["numHiggsLike_dijet_15_float"]) = float(numHiggsLike_dijet_15);
         *(floatBranches["numHiggsLike_dijet_20_float"]) = float(numHiggsLike_dijet_20);
         *(floatBranches["numHiggsLike_dijet_25_float"]) = float(numHiggsLike_dijet_25);
         *(floatBranches["numHiggsLike_diBjet_10_float"]) = float(numHiggsLike_diBjet_10);
@@ -3665,8 +3864,8 @@ int main ( int argc, char ** argv )
 //         *(floatBranches["higgs_dijet_jet2_track_pt"]) = higgs_dijet_jet2_track_pt;
         
       } //End if (ExtraHiggsVariables)
-
       if (ExtraJetVariables) {
+      if (debug_) cout << "Filling ExtraJetVariables" << endl;
 
 //         *(intBranches["numAllJets"]) = numAllJets;
 
@@ -3681,6 +3880,12 @@ int main ( int argc, char ** argv )
 //         *(floatBranches["third_jet_charge"]) = third_jet_charge;
 //         *(floatBranches["fourth_jet_charge"]) = fourth_jet_charge;
 //         *(floatBranches["sum_jet_charge"]) = sum_jet_charge;
+
+//         *(floatBranches["sum_untagged_jet_charge"]) = sum_untagged_jet_charge;
+//         *(floatBranches["sum_tagged_jet_charge"]) = sum_tagged_jet_charge;
+//         *(floatBranches["leps_minus_jets_charge"]) = fabs(lep1TkCharge+lep2TkCharge-sum_jet_charge);
+//         *(floatBranches["leps_minus_untagged_jets_charge"]) = fabs(lep1TkCharge+lep2TkCharge-sum_untagged_jet_charge);
+//         *(floatBranches["leps_minus_tagged_jets_charge"]) = fabs(lep1TkCharge+lep2TkCharge-sum_tagged_jet_charge);
 
         *(floatBranches["first_jet_CSV"]) = first_jet_CSV;
         *(floatBranches["second_jet_CSV"]) = second_jet_CSV;
@@ -3702,55 +3907,55 @@ int main ( int argc, char ** argv )
 //         *(floatBranches["first_hf_jet_CSV_unshaped"]) = first_hf_jet_CSV_unshaped;
 //         *(floatBranches["first_hf_jet_CSV_reshaped"]) = first_hf_jet_CSV_reshaped;
 
-//         *(floatBranches["dPhi_jet1jet2"]) = dPhi_jet1jet2;
-//         *(floatBranches["dPhi_jet1jet3"]) = dPhi_jet1jet3;
-//         *(floatBranches["dPhi_jet1jet4"]) = dPhi_jet1jet4;
-//         *(floatBranches["dPhi_jet2jet3"]) = dPhi_jet2jet3;
-//         *(floatBranches["dPhi_jet2jet4"]) = dPhi_jet2jet4;
-//         *(floatBranches["dPhi_jet3jet4"]) = dPhi_jet3jet4;
-
 //         *(floatBranches["first_allJet_pt"]) = first_allJet_pt;
 //         *(floatBranches["second_allJet_pt"]) = second_allJet_pt;
 //         *(floatBranches["third_allJet_pt"]) = third_allJet_pt;
 //         *(floatBranches["fourth_allJet_pt"]) = fourth_allJet_pt;
 
-//         *(floatBranches["first_dibjet_mass"]) =  first_dibjet_mass;
-//         *(floatBranches["second_dibjet_mass"]) = second_dibjet_mass;
-//         *(floatBranches["third_dibjet_mass"]) =  third_dibjet_mass;
+//         *(floatBranches["first_dibjet_mass"]) =  fmax(first_dibjet_mass,-1.0);
+//         *(floatBranches["second_dibjet_mass"]) = fmax(second_dibjet_mass,-1.0);
+//         *(floatBranches["third_dibjet_mass"]) =  fmax(third_dibjet_mass,-1.0);
+//         *(floatBranches["lowest_dibjet_mass"]) =  fmax(lowest_dibjet_mass,-1.0);
 
-// 	    *(floatBranches["dijet_mass_m2H"]) = dijet_mass_m2H;
-//         *(floatBranches["dijet_mass_first"]) =  dijet_mass_first;
-//         *(floatBranches["dijet_mass_second"]) = dijet_mass_second;
-//         *(floatBranches["dijet_mass_third"]) =  dijet_mass_third;
+//         *(floatBranches["first_untagged_dijet_mass"]) =  fmax(first_untagged_dijet_mass,-1.0);
+//         *(floatBranches["second_untagged_dijet_mass"]) = fmax(second_untagged_dijet_mass,-1.0);
+//         *(floatBranches["third_untagged_dijet_mass"]) =  fmax(third_untagged_dijet_mass,-1.0);
+//         *(floatBranches["lowest_untagged_dijet_mass"]) =  fmax(lowest_untagged_dijet_mass,-1.0);
+
+//         *(floatBranches["dijet_mass_m2H"]) = fmax(dijet_mass_m2H,-1.0);
+//         *(floatBranches["dijet_mass_first"]) =  fmax(dijet_mass_first,-1.0);
+//         *(floatBranches["dijet_mass_second"]) = fmax(dijet_mass_second,-1.0);
+//         *(floatBranches["dijet_mass_third"]) =  fmax(dijet_mass_third,-1.0);
+//         *(floatBranches["dijet_mass_lowest"]) =  fmax(dijet_mass_lowest,-1.0);
 
 //         *(floatBranches["min_dr_genB1_allJet"]) = min_dr_genB1_allJet;
 //         *(floatBranches["min_dr_genB2_allJet"]) = min_dr_genB2_allJet;
 
-        *(floatBranches["CSV_30to45_0p0to1p2_1"]) = CSV_30to45_0p0to1p2_1;
-        *(floatBranches["CSV_45to75_0p0to1p2_1"]) = CSV_45to75_0p0to1p2_1;
-        *(floatBranches["CSV_75to150_0p0to1p2_1"]) = CSV_75to150_0p0to1p2_1;
-        *(floatBranches["CSV_150toInf_0p0to1p2_1"]) = CSV_150toInf_0p0to1p2_1;
-        *(floatBranches["CSV_30to45_1p2to2p1_1"]) = CSV_30to45_1p2to2p1_1;
-        *(floatBranches["CSV_45to75_1p2to2p1_1"]) = CSV_45to75_1p2to2p1_1;
-        *(floatBranches["CSV_75to150_1p2to2p1_1"]) = CSV_75to150_1p2to2p1_1;
-        *(floatBranches["CSV_150toInf_1p2to2p1_1"]) = CSV_150toInf_1p2to2p1_1;
-        *(floatBranches["CSV_30to45_2p1to2p4_1"]) = CSV_30to45_2p1to2p4_1;
-        *(floatBranches["CSV_45to75_2p1to2p4_1"]) = CSV_45to75_2p1to2p4_1;
-        *(floatBranches["CSV_75to150_2p1to2p4_1"]) = CSV_75to150_2p1to2p4_1;
-        *(floatBranches["CSV_150toInf_2p1to2p4_1"]) = CSV_150toInf_2p1to2p4_1;
+//         *(floatBranches["CSV_30to45_0p0to1p2_1"]) = CSV_30to45_0p0to1p2_1;
+//         *(floatBranches["CSV_45to75_0p0to1p2_1"]) = CSV_45to75_0p0to1p2_1;
+//         *(floatBranches["CSV_75to150_0p0to1p2_1"]) = CSV_75to150_0p0to1p2_1;
+//         *(floatBranches["CSV_150toInf_0p0to1p2_1"]) = CSV_150toInf_0p0to1p2_1;
+//         *(floatBranches["CSV_30to45_1p2to2p1_1"]) = CSV_30to45_1p2to2p1_1;
+//         *(floatBranches["CSV_45to75_1p2to2p1_1"]) = CSV_45to75_1p2to2p1_1;
+//         *(floatBranches["CSV_75to150_1p2to2p1_1"]) = CSV_75to150_1p2to2p1_1;
+//         *(floatBranches["CSV_150toInf_1p2to2p1_1"]) = CSV_150toInf_1p2to2p1_1;
+//         *(floatBranches["CSV_30to45_2p1to2p4_1"]) = CSV_30to45_2p1to2p4_1;
+//         *(floatBranches["CSV_45to75_2p1to2p4_1"]) = CSV_45to75_2p1to2p4_1;
+//         *(floatBranches["CSV_75to150_2p1to2p4_1"]) = CSV_75to150_2p1to2p4_1;
+//         *(floatBranches["CSV_150toInf_2p1to2p4_1"]) = CSV_150toInf_2p1to2p4_1;
         
-        *(floatBranches["CSV_30to45_0p0to1p2_2"]) = CSV_30to45_0p0to1p2_2;
-        *(floatBranches["CSV_45to75_0p0to1p2_2"]) = CSV_45to75_0p0to1p2_2;
-        *(floatBranches["CSV_75to150_0p0to1p2_2"]) = CSV_75to150_0p0to1p2_2;
-        *(floatBranches["CSV_150toInf_0p0to1p2_2"]) = CSV_150toInf_0p0to1p2_2;
-        *(floatBranches["CSV_30to45_1p2to2p1_2"]) = CSV_30to45_1p2to2p1_2;
-        *(floatBranches["CSV_45to75_1p2to2p1_2"]) = CSV_45to75_1p2to2p1_2;
-        *(floatBranches["CSV_75to150_1p2to2p1_2"]) = CSV_75to150_1p2to2p1_2;
-        *(floatBranches["CSV_150toInf_1p2to2p1_2"]) = CSV_150toInf_1p2to2p1_2;
-        *(floatBranches["CSV_30to45_2p1to2p4_2"]) = CSV_30to45_2p1to2p4_2;
-        *(floatBranches["CSV_45to75_2p1to2p4_2"]) = CSV_45to75_2p1to2p4_2;
-        *(floatBranches["CSV_75to150_2p1to2p4_2"]) = CSV_75to150_2p1to2p4_2;
-        *(floatBranches["CSV_150toInf_2p1to2p4_2"]) = CSV_150toInf_2p1to2p4_2;
+//         *(floatBranches["CSV_30to45_0p0to1p2_2"]) = CSV_30to45_0p0to1p2_2;
+//         *(floatBranches["CSV_45to75_0p0to1p2_2"]) = CSV_45to75_0p0to1p2_2;
+//         *(floatBranches["CSV_75to150_0p0to1p2_2"]) = CSV_75to150_0p0to1p2_2;
+//         *(floatBranches["CSV_150toInf_0p0to1p2_2"]) = CSV_150toInf_0p0to1p2_2;
+//         *(floatBranches["CSV_30to45_1p2to2p1_2"]) = CSV_30to45_1p2to2p1_2;
+//         *(floatBranches["CSV_45to75_1p2to2p1_2"]) = CSV_45to75_1p2to2p1_2;
+//         *(floatBranches["CSV_75to150_1p2to2p1_2"]) = CSV_75to150_1p2to2p1_2;
+//         *(floatBranches["CSV_150toInf_1p2to2p1_2"]) = CSV_150toInf_1p2to2p1_2;
+//         *(floatBranches["CSV_30to45_2p1to2p4_2"]) = CSV_30to45_2p1to2p4_2;
+//         *(floatBranches["CSV_45to75_2p1to2p4_2"]) = CSV_45to75_2p1to2p4_2;
+//         *(floatBranches["CSV_75to150_2p1to2p4_2"]) = CSV_75to150_2p1to2p4_2;
+//         *(floatBranches["CSV_150toInf_2p1to2p4_2"]) = CSV_150toInf_2p1to2p4_2;
         
       } //End if (ExtraJetVariables)
         
@@ -3781,6 +3986,7 @@ int main ( int argc, char ** argv )
       } //End if (ExtraTriggerVariables)
 
       if (ExtraGenVariables) {
+      if (debug_) cout << "Filling ExtraGenVariables" << endl;
 
         *(intBranches["lep1GenID"]) = lep1GenID;
         *(intBranches["lep2GenID"]) = lep2GenID;
@@ -3797,21 +4003,40 @@ int main ( int argc, char ** argv )
       
 
       if (ExtraKinematicVariables) {
+        if (debug_) cout << "Filling ExtraKinematicVariables" << endl;
+        
         ////objects
-        *(floatBranches["wLike_allDijet_mass"]) = wLike_allDijet_mass1;
-        *(floatBranches["topLike_allTrijet_mass"]) = topLike_allTrijet_mass1;
-
+	    *(floatBranches["m2H_btag"]) = m2H_btag;        
+        *(floatBranches["wLike_allDijet_mass"]) = fmax(wLike_allDijet_mass1,-1.0);
+        *(floatBranches["topLike_allTrijet_mass"]) = fmax(topLike_allTrijet_mass1,-1.0);
 
         ////leptons
         *(floatBranches["dEta_leplep"]) = dEta_leplep;
-        //*(floatBranches["mindr_lep1_allJet"]) = mindr_lep1_allJet;
-        //*(floatBranches["mindr_lep2_allJet"]) = mindr_lep2_allJet;
-        *(floatBranches["MT_met_lep1"]) = mass_met_lep1_transverse;
-        *(floatBranches["MT_met_lep2"]) = mass_met_lep2_transverse;
+        *(floatBranches["MT_met_lep1"]) = MT_met_lep1;
+        *(floatBranches["MT_met_lep2"]) = MT_met_lep2;
         *(floatBranches["dPhi_met_lep1"]) = dPhi_met_lep1;
         *(floatBranches["dPhi_met_lep2"]) = dPhi_met_lep2;
         ////everything
         *(intBranches["PassZmask3"]) = PassBigDiamondZmask3 ? 1 : 0;
+
+        *(floatBranches["min_dr_jets"]) = min_dr_jets;
+	    *(floatBranches["avg_dr_jets"]) = avg_dr_jets;
+	    *(floatBranches["avg_dr_tagged_jets"]) = avg_dr_tagged_jets;
+	    *(floatBranches["avg_tagged_dijet_mass"]) = avg_tagged_dijet_mass;
+        *(floatBranches["avg_untagged_dijet_mass"]) = avg_untagged_dijet_mass;
+
+	    *(floatBranches["avg_dijet_mass"]) = avg_dijet_mass;
+	    *(floatBranches["M2_of_closest_jets"]) = M2_of_closest_jets;
+	    *(floatBranches["M2_of_closest_tagged_jets"]) = M2_of_closest_tagged_jets;
+	    *(floatBranches["closest_dijet_mass"]) = closest_dijet_mass;
+        *(floatBranches["closest_tagged_dijet_mass"]) = closest_tagged_dijet_mass;
+
+        *(floatBranches["avg_btag_disc_non_btags"]) = avg_btag_disc_non_btags;
+        *(floatBranches["highest_btag_disc_non_btags"]) = highest_btag_disc_non_btags;
+        *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
+	    *(floatBranches["first_highest_btag"]) = first_highest_btag;
+	    *(floatBranches["second_highest_btag"]) = second_highest_btag;
+	    *(floatBranches["lowest_btag"]) = lowest_btag;
 
         *(floatBranches["mass_MHT"]) = mass_MHT;
         *(floatBranches["mass_of_leps_and_allJets"]) = mass_of_leps_and_allJets;
