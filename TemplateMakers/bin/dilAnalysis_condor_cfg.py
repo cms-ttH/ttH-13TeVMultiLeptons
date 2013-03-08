@@ -4,6 +4,19 @@ import os
 import sys
 
 
+def calcBeginEndFileThisJob (totalFiles, totalJobs, thisJob):
+    filesPerJob = totalFiles/totalJobs
+    firstFile = thisJob * filesPerJob
+    lastFile = firstFile
+    # if you are the last job, it is your duty to
+    # process up until the last file
+    if thisJob == totalJobs-1:
+        lastFile = totalFiles-1
+    else:
+        lastFile = firstFile + filesPerJob -1
+        
+    return (firstFile, lastFile)
+
 
 
 # read in arguments from cl
@@ -22,6 +35,8 @@ iJes = int (sys.argv[6])
 iJer = int (sys.argv[7])
 iBtag = int (sys.argv[8])
 iPUPeriod = str(sys.argv[9])
+iNJOBS = int(sys.argv[10])
+iDENSE = int(sys.argv[11])
 
 # update serach path
 
@@ -76,8 +91,16 @@ if iJob > len(readFiles):
 	print "Error: job %d is outside the bounds of the list (%d)" % (iJob, len(readFiles))
 	exit (-3)
 
-print "Adding file: ", readFiles[iJob]
-process.inputs.fileNames.append(readFiles[iJob])
+if iDENSE == 0:
+    print "Adding file: ", readFiles[iJob]
+    process.inputs.fileNames.append(readFiles[iJob])
+else:
+    firstFile,lastFile = calcBeginEndFileThisJob(len(readFiles), iNJOBS, iJob)
+    for iFile in range(firstFile, lastFile+1):
+        print "DENSE Adding file: ", readFiles[iFile]
+        process.inputs.fileNames.append(readFiles[iFile])
+    print "DENSE done adding files"
+
 
 if iJes == 0:
     if iJer == 0:

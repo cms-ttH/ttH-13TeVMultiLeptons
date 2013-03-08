@@ -6,6 +6,51 @@ import time
 from optparse import OptionParser
 
 
+def calculateDenseJobs (listName, initialJobs):
+	
+	# if there is only one job, you can't get more dense
+	if initialJobs==1:
+		return initialJobs
+	
+	# skip certain lists and
+	if 'ttbar.list' in listName \
+		   or ('ttbar_bb.list' in listName) \
+		   or ('ttbar_cc.list' in listName) \
+		   or ('zjets_h.list' in listName) \
+		   or ('wjets.list' in listName):
+		return initialJobs
+	
+	# if you've got 24 or less,
+	# just merge them
+	if initialJobs < 25:
+		return 1
+	
+	#
+	if initialJobs < 50:
+		return 2
+	
+	return 3
+
+
+def getNumLinesInFile (fileCountCommand):
+
+	fileNumLines = 0
+	foundJobs = False
+	for iLine in os.popen(fileCountCommand).readlines():
+			words = iLine.split()
+			#print "Line is ="
+			#print words
+			if len(words) < 1:
+				continue
+			#print "list file has length %s" % words[0]
+			if not foundJobs:
+				fileNumLines = words[0]
+				foundJobs = True
+				
+	return fileNumLines
+
+
+
 def main ():
 
 	parser = OptionParser(usage="./submitCondorJobs.py --year=2012_52x --jes=0 --btagHF=-1 --btagLF=0 LABEL")
@@ -16,18 +61,19 @@ def main ():
 	parser.add_option('-r', '--resoJet', dest='jer', default='0', help="JER -1/0/1 for down,off,up", type='int')
 	parser.add_option('-b', '--btagHF', dest='btagHF', default='0', help="btagHF -1/0/1 for down,off,up", type='int')
 	parser.add_option('-l', '--btagLF', dest='btagLF', default='0', help="btagLF -1/0/1 for down,off,up", type='int')
+	parser.add_option('-d', '--denseJobs', dest='denseJobs', default=False, help="Run fewer jobs that process many files",	action='store_true')
+	#parser.add_option('-c', '--countJobs', dest='countJobs', default=False, help="Count number of jobs, but do not submit",  action='store_true')
 	
 	(options, args) = parser.parse_args()
+
+	totalJobs = 0
 	
 	if len (args) < 1 :
-		parser.print_help()
+		#print "Dense jobs set to ", options.denseJobs
+		parser.print_help()		
 		exit(3)
-		
-	#print "Args = "
-	#print args
 
-	#print "Options"
-	#print options
+
 	
 	yearChoice = str(options.year)
 
@@ -37,6 +83,8 @@ def main ():
 	
 	jesChoice = int(options.jes)
 	jerChoice = int(options.jer)
+
+    
 	
 	if options.btagHF != 0 and options.btagLF !=0:
 		print "Error! Can't run btagHF and btagLF at the same time."
@@ -51,7 +99,7 @@ def main ():
 		btagChoice = 2
 	elif options.btagLF == -1:
 		btagChoice = -2
-	
+        
 	
 	jobLabel = str(args[0])
 	#iPUPeriod = "2012AB"
@@ -337,9 +385,7 @@ def main ():
 
 	if options.oneSample != 'NONE':
 		listOfSamples = oneSampleList
-
-
-
+    
 	print "Running on samples ..."
 	print listOfSamples
 
@@ -349,6 +395,11 @@ def main ():
 		condorHeader = "universe = vanilla\n"+"executable = runTemplatesCondor_modDilep.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
 		
 		condorJobFile = open ("dilBatch.submit", "w")
+
+		# Determine density for this job
+		# default is your cmdline option
+		# but we may change it
+		denseChoice = int(options.denseJobs)
 		
 		print condorHeader
 		condorJobFile.write(condorHeader)
@@ -356,8 +407,8 @@ def main ():
 		condorJobFile.write( "PUPeriod = %s\n" % iPUPeriod)
 		condorJobFile.write( "Label = %s\n" % jobLabel)
 		condorJobFile.write( "List = %s\n" % iList)
-		numJobs = 0
-		foundJobs = False
+		
+		
 #		 for iLine in os.popen("wc -l listsForSkims/%s.list" % iList).readlines():
 		if yearChoice == "2011":
 			listStr = "wc -l ../../listsForSkims/"
@@ -365,24 +416,28 @@ def main ():
 #			 listStr = "wc -l listsForSkims/"
 			listStr = "wc -l ../../listsForSkims2012_v3/"
 		elif yearChoice == "2012_53x":
-			listStr = "wc -l /afs/crc.nd.edu/user/a/abrinke1/BEANsHelper/CMSSW_5_3_2_patch5/src/BEAN/listsForSkims2012_53x_v1_hadoop/"
-		for iLine in os.popen(listStr+"%s.list" % iList).readlines():
-			words = iLine.split()
-			print "Line is ="
-			print words
-			if len(words) < 1:
-				continue
-			print "list file has length %s" % words[0]
-			if not foundJobs:
-				numJobs = words[0]
-				foundJobs = True
-		# done with for
+			listStr = "wc -l ../../listsForSkims2012_53x_v1_hadoop/"
+
+		# this loop counts the number of lines in the file
+		# using the unix wc command
+		# this tells you how many jobs to submit
+		numJobs = getNumLinesInFile(listStr+"%s.list" % iList)
+		
+		# now we know the number of files. this might not be the same as the number of jobs
+        # Next step: 
+		if options.denseJobs:
+			print "DENSE: starting with numJobs = ", numJobs
+			jobsToRun = calculateDenseJobs(iList, int(numJobs))
+			numJobs = jobsToRun
+			print "DENSE: running with new numJobs = ", numJobs
+		
 		condorJobFile.write( "Year = %s\n" % yearChoice)			
 		condorJobFile.write( "NJobs = %s\n" % numJobs)
 		condorJobFile.write( "JES = %s\n" % jesChoice)
 		condorJobFile.write( "JER = %s\n" % jerChoice)
 		condorJobFile.write( "BTAG = %s\n" % btagChoice)
-		condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER) $(BTAG) $(PUPeriod) \n")
+		condorJobFile.write( "DENSE = %s\n" % denseChoice)
+		condorJobFile.write( "arguments = $(List) $(Year) $(Process) $(Label) $(JES) $(JER) $(BTAG) $(PUPeriod) $(NJobs) $(DENSE)\n")
 
 		if (jesChoice == 0 and jerChoice == 0):
 			JetStr = ""
@@ -397,7 +452,7 @@ def main ():
 		condorJobFile.write( "output = batchBEAN/condorLogs/condor_$(List)_$(Process).stdout\n")
 		condorJobFile.write( "error = batchBEAN/condorLogs/condor_$(List)_$(Process).stderr\n") 
 		condorJobFile.write( "queue $(NJobs)\n")
-
+		totalJobs += int(numJobs)
 		condorJobFile.close()
 		print "Trying to submit jobs..."
 		print os.popen("condor_submit dilBatch.submit").readlines()
@@ -405,7 +460,7 @@ def main ():
 		#time.sleep(5)
 
 	print "Done with loop over samples"
-	
+	print "Submitted ", totalJobs, " jobs in total. "
 
 	return
 
