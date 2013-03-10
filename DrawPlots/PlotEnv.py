@@ -96,7 +96,7 @@ class PlotInfo:
 
 	def getHist(self, histName, lumi, lepselection, year, JES):
 		# add a namecycle to histName
-# 		print histName
+#		print histName
 		namePlusCycle = "%s;1" % (histName)
 		isData = False
 		if (self.name == "data_2011" or self.name == "data_2012" or self.name == "data_2012_52x" or self.name == "data_2012_53x"):
@@ -114,11 +114,11 @@ class PlotInfo:
 		# Get the histogram
 		# Added some cloning into it
 		# because without cloning you have problems with the data
-# 		print " Looking in file %s" % self.fileName
-# 		print namePlusCycle
+#		print " Looking in file %s" % self.fileName
+#		print namePlusCycle
 		targetHist = None
 		if (JES == "nominal" or isData or self.skipSystematics):
-# 			print "%s: Getting histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+#			print "%s: Getting histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 			#print "EFFSTUDY: %s %0.2f %0.2f %0.3e" % (self.name, targetHist.GetEntries(), self.ngen, targetHist.GetEntries()/self.ngen)
 		elif (JES == "JESUp"):
@@ -156,9 +156,8 @@ class PlotInfo:
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "Q2Up"):
-			
 			namePlusCycle = "%s_Q2scale_ttH_%sUp;1" % (histName, tmpSysName)
-# 			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+#			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		elif (JES == "Q2Down"):
 			namePlusCycle = "%s_Q2scale_ttH_%sDown;1" % (histName, tmpSysName)
@@ -171,6 +170,22 @@ class PlotInfo:
 		elif (JES == "rwtDown"):
 			namePlusCycle = "%s_CMS_ttH_PUcorrDown;1" % (histName)
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "PromptSFUp"):
+			namePlusCycle = "%s_PromptSFUp;1" % (histName)
+# 			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "PromptSFDown"):
+			namePlusCycle = "%s_PromptSFDown;1" % (histName)
+# 			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "FlipSFUp"):
+			namePlusCycle = "%s_FlipSFUp;1" % (histName)
+# 			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "FlipSFDown"):
+			namePlusCycle = "%s_FlipSFDown;1" % (histName)
+# 			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 		else :
 			print "No valid JES specified"
@@ -290,6 +305,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	skipSystematicsPG = myPlotGroup.skipSystematics
 	paperStylePG = myPlotGroup.paperStyle
 	blindPG = myPlotGroup.blind
+	charge = myPlotGroup.charge
 	
 	print "Plot group name is %s" % (groupName)
 	jetSelection = ""
@@ -439,6 +455,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   origHist_PUDown =  None
 	   origHist_rwtUp =	 None
 	   origHist_rwtDown =  None
+	   origHist_PromptSFUp =	 None
+	   origHist_PromptSFDown =	None
+	   origHist_FlipSFUp =	 None
+	   origHist_FlipSFDown =  None
 		   
 	   if not skipSystematicsPG:
 		   origHist_JESUp = iplot.getHist(dist,lumi, lepselection, year, "JESUp")[0]
@@ -451,6 +471,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   origHist_PUDown = iplot.getHist(dist,lumi, lepselection, year, "PUDown")[0]
 		   origHist_rwtUp = iplot.getHist(dist,lumi, lepselection, year, "rwtUp")[0]
 		   origHist_rwtDown = iplot.getHist(dist,lumi, lepselection, year, "rwtDown")[0]
+		   if (charge == "SS"):
+			   origHist_PromptSFUp = iplot.getHist(dist,lumi, lepselection, year, "PromptSFUp")[0]
+			   origHist_PromptSFDown = iplot.getHist(dist,lumi, lepselection, year, "PromptSFDown")[0]
+			   origHist_FlipSFUp = iplot.getHist(dist,lumi, lepselection, year, "FlipSFUp")[0]
+			   origHist_FlipSFDown = iplot.getHist(dist,lumi, lepselection, year, "FlipSFDown")[0]
 	   
 		   sys_hist_array.append(origHist_JESUp)
 		   sys_hist_array.append(origHist_JESDown)
@@ -462,6 +487,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   sys_hist_array.append(origHist_PUDown)
 		   sys_hist_array.append(origHist_rwtUp)
 		   sys_hist_array.append(origHist_rwtDown)
+		   if (charge == "SS"):
+			   sys_hist_array.append(origHist_PromptSFUp)
+			   sys_hist_array.append(origHist_PromptSFDown)
+			   sys_hist_array.append(origHist_FlipSFUp)
+			   sys_hist_array.append(origHist_FlipSFDown)
 
 	   if (binWidthChecker == -99 or origHist.GetBinWidth(1) == binWidthChecker):
 		   binWidthChecker = origHist.GetBinWidth(1)
@@ -515,6 +545,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_rwtUp = rebinHistManual (origHist_rwtUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_rwtDown = rebinHistManual (origHist_rwtDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   if (charge == "SS"):
+			   resultHist_MCErrorsOnly_PromptSFUp = rebinHistManual (origHist_PromptSFUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+			   resultHist_MCErrorsOnly_PromptSFDown = rebinHistManual (origHist_PromptSFDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+			   resultHist_MCErrorsOnly_FlipSFUp = rebinHistManual (origHist_FlipSFUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+			   resultHist_MCErrorsOnly_FlipSFDown = rebinHistManual (origHist_FlipSFDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+
 		   if ( iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
 			   resultHist_MCErrorsOnly_Q2Up = rebinHistManual (origHist_Q2Up, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
 			   resultHist_MCErrorsOnly_Q2Down = rebinHistManual (origHist_Q2Down, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
@@ -541,6 +577,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   storeName_PUDown = "%s_CFMlpANN_%s_PUDown" % (limitPlotName, printedJetSelection)
 	   storeName_rwtUp = "%s_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (limitPlotName, printedJetSelection)
 	   storeName_rwtDown = "%s_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (limitPlotName, printedJetSelection)
+	   if (charge == "SS"):
+		   storeName_PromptSFUp = "%s_CFMlpANN_%s_PromptSFUp" % (limitPlotName, printedJetSelection)
+		   storeName_PromptSFDown = "%s_CFMlpANN_%s_PromptSFDown" % (limitPlotName, printedJetSelection)
+		   storeName_FlipSFUp = "%s_CFMlpANN_%s_FlipSFUp" % (limitPlotName, printedJetSelection)
+		   storeName_FlipSFDown = "%s_CFMlpANN_%s_FlipSFDown" % (limitPlotName, printedJetSelection)
 	   
 	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
 		   storeName_Q2Up = "%s_CFMlpANN_%s_Q2scale_ttH_%sUp" % (limitPlotName, printedJetSelection, sysStr)
@@ -560,6 +601,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   keyName_rwtDown = "%s_rwtDown" % keyName
 	   keyName_Q2Up = "%s_Q2Up" % keyName
 	   keyName_Q2Down = "%s_Q2Down" % keyName	   
+	   keyName_PromptSFUp = "%s_PromptSFUp" % keyName
+	   keyName_PromptSFDown = "%s_PromptSFDown" % keyName
+	   keyName_FlipSFUp = "%s_FlipSFUp" % keyName
+	   keyName_FlipSFDown = "%s_FlipSFDown" % keyName
 	   
 	   # Save data for later
 	   Data2011Sum = 0
@@ -595,7 +640,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 			   histoStorageList[keyName_rwtUp] = resultHist_MCErrorsOnly_rwtUp.Clone(storeName_rwtUp)
 			   histoStorageList[keyName_rwtDown] = resultHist_MCErrorsOnly_rwtDown.Clone(storeName_rwtDown)
-
+			   if (charge == "SS"):
+				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
+				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
+				   histoStorageList[keyName_FlipSFUp] = resultHist_MCErrorsOnly_FlipSFUp.Clone(storeName_FlipSFUp)
+				   histoStorageList[keyName_FlipSFDown] = resultHist_MCErrorsOnly_FlipSFDown.Clone(storeName_FlipSFDown)
+				   
 	   elif (iplot.name.find("ttH_1") >= 0):
 #		   print "Just storing the %s histo, not stacking it!" % (iplot.name)
 		   #iSig = resultHist.Clone("signal")
@@ -613,7 +663,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 			   histoStorageList[keyName_rwtUp] = resultHist_MCErrorsOnly_rwtUp.Clone(storeName_rwtUp)
 			   histoStorageList[keyName_rwtDown] = resultHist_MCErrorsOnly_rwtDown.Clone(storeName_rwtDown)
-		   
+			   if (charge == "SS"):
+				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
+				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
+				   histoStorageList[keyName_FlipSFUp] = resultHist_MCErrorsOnly_FlipSFUp.Clone(storeName_FlipSFUp)
+				   histoStorageList[keyName_FlipSFDown] = resultHist_MCErrorsOnly_FlipSFDown.Clone(storeName_FlipSFDown)
+				   
 	   else :
 		   iHist = resultHist.Clone("stack")
 
@@ -631,7 +686,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 			   histoStorageList[keyName_rwtUp] = resultHist_MCErrorsOnly_rwtUp.Clone(storeName_rwtUp)
 			   histoStorageList[keyName_rwtDown] = resultHist_MCErrorsOnly_rwtDown.Clone(storeName_rwtDown)
-
+			   if (charge == "SS"):
+				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
+				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
+				   histoStorageList[keyName_FlipSFUp] = resultHist_MCErrorsOnly_FlipSFUp.Clone(storeName_FlipSFUp)
+				   histoStorageList[keyName_FlipSFDown] = resultHist_MCErrorsOnly_FlipSFDown.Clone(storeName_FlipSFDown)
+				   
 		   if ((iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG ):
 			   histoStorageList[keyName_Q2Up] = resultHist_MCErrorsOnly_Q2Up.Clone(storeName_Q2Up)
 			   histoStorageList[keyName_Q2Down] = resultHist_MCErrorsOnly_Q2Down.Clone(storeName_Q2Down)
@@ -660,6 +720,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["singlet_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("singlet_CFMlpANN_%s_PUDown" % (printedJetSelection))
 					   histoStorageList["singlet_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("singlet_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
 					   histoStorageList["singlet_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("singlet_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
+					   if (charge == "SS"):
+						   histoStorageList["singlet_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("singlet_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+						   histoStorageList["singlet_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("singlet_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
+						   histoStorageList["singlet_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("singlet_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+						   histoStorageList["singlet_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("singlet_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
 				   foundFirstSingleTop = true
 			   else:
 				   histoStorageList["singlet"].Add(resultHist_MCErrorsOnly)
@@ -674,6 +739,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["singlet_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
 					   histoStorageList["singlet_rwtUp"].Add(resultHist_MCErrorsOnly_rwtUp)
 					   histoStorageList["singlet_rwtDown"].Add(resultHist_MCErrorsOnly_rwtDown)
+					   if (charge == "SS"):
+						   histoStorageList["singlet_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
+						   histoStorageList["singlet_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
+						   histoStorageList["singlet_FlipSFUp"].Add(resultHist_MCErrorsOnly_FlipSFUp)
+						   histoStorageList["singlet_FlipSFDown"].Add(resultHist_MCErrorsOnly_FlipSFDown)
 		   elif (iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):				
 			   ZJetsSum += iHist.Integral()
 			   DiBosonSum += iHist.Integral()
@@ -695,6 +765,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["diboson_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("diboson_CFMlpANN_%s_PUDown" % (printedJetSelection))
 					   histoStorageList["diboson_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("diboson_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
 					   histoStorageList["diboson_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("diboson_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
+					   if (charge == "SS"):
+						   histoStorageList["diboson_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("diboson_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+						   histoStorageList["diboson_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("diboson_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
+						   histoStorageList["diboson_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("diboson_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+						   histoStorageList["diboson_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("diboson_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
 				   foundFirstDiboson = true
 			   else:
 				   histoStorageList["diboson"].Add(resultHist_MCErrorsOnly)
@@ -709,6 +784,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["diboson_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
 					   histoStorageList["diboson_rwtUp"].Add(resultHist_MCErrorsOnly_rwtUp)
 					   histoStorageList["diboson_rwtDown"].Add(resultHist_MCErrorsOnly_rwtDown)
+					   if (charge == "SS"):
+						   histoStorageList["diboson_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
+						   histoStorageList["diboson_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
+						   histoStorageList["diboson_FlipSFUp"].Add(resultHist_MCErrorsOnly_FlipSFUp)
+						   histoStorageList["diboson_FlipSFDown"].Add(resultHist_MCErrorsOnly_FlipSFDown)
 
 		   elif (iplot.name.startswith("ZJet")):
 			   ZJetsSum += iHist.Integral()
@@ -734,6 +814,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["zjets_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("zjets_CFMlpANN_%s_PUDown" % (printedJetSelection))
 					   histoStorageList["zjets_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("zjets_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
 					   histoStorageList["zjets_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("zjets_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
+					   if (charge == "SS"):
+						   histoStorageList["zjets_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("zjets_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+						   histoStorageList["zjets_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("zjets_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
+						   histoStorageList["zjets_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("zjets_CFMlpANN_%s_CMS_ttH_PUcorrUp" % (printedJetSelection))
+						   histoStorageList["zjets_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("zjets_CFMlpANN_%s_CMS_ttH_PUcorrDown" % (printedJetSelection))
 				   foundFirstZjets = true
 			   else:
 				   histoStorageList["zjets"].Add(resultHist_MCErrorsOnly)
@@ -748,6 +833,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["zjets_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
 					   histoStorageList["zjets_rwtUp"].Add(resultHist_MCErrorsOnly_rwtUp)
 					   histoStorageList["zjets_rwtDown"].Add(resultHist_MCErrorsOnly_rwtDown)
+					   if (charge == "SS"):
+						   histoStorageList["zjets_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
+						   histoStorageList["zjets_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
+						   histoStorageList["zjets_FlipSFUp"].Add(resultHist_MCErrorsOnly_FlipSFUp)
+						   histoStorageList["zjets_FlipSFDown"].Add(resultHist_MCErrorsOnly_FlipSFDown)
 		   
 		   #elif (iplot.name.startswith("ZJet") or iplot.name == "WJets" or iplot.name == "WW" or iplot.name == "WZ" or iplot.name == "ZZ"):
 			   
@@ -1009,7 +1099,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	ratioHist.DrawCopy() 
 	if (not blindPG): ratioErrHist.DrawCopy("e2same")		##Comment out for blinding 
 	if (not blindPG): ratioHist.Draw("sameaxis") ##Comment out for blinding
-# 	if (not blindPG): ratioHist.DrawCopy("pe1same") ##Commented out in favor of asymmetric
+#	if (not blindPG): ratioHist.DrawCopy("pe1same") ##Commented out in favor of asymmetric
 #######
 ### asymmetrical poisson errors for data
 #######
