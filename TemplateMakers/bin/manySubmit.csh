@@ -7,26 +7,27 @@
 #         btag LF down/off/up -2/0/2
 
 
-set jobLabel = feb25_baseline_v1
+#set jobLabel = feb25_baseline_v1
+set jobLabel = limits_v1
 
 echo "========== Zero =================="
-./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=0 --btagLF=0 $jobLabel
+./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=0 --btagLF=0 $jobLabel --denseJobs
 
 echo "========== One JES UP =================="
-./submitCondorJobs.py --year=2012_53x --jes=1 --btagHF=0 --btagLF=0 $jobLabel
+./submitCondorJobs.py --year=2012_53x --jes=1 --btagHF=0 --btagLF=0 $jobLabel --denseJobs
 
 echo "========== Two JES DOWN =================="
-./submitCondorJobs.py --year=2012_53x --jes=-1 --btagHF=0 --btagLF=0 $jobLabel
+./submitCondorJobs.py --year=2012_53x --jes=-1 --btagHF=0 --btagLF=0 $jobLabel --denseJobs
 
 echo "========== Three BTAG HF UP =================="
-./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=1 --btagLF=0 $jobLabel
+./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=1 --btagLF=0 $jobLabel --denseJobs
 
 echo "========== Four BTAG HF DOWN =================="
-./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=-1 --btagLF=0 $jobLabel
+./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=-1 --btagLF=0 $jobLabel --denseJobs
 
 echo "========== Five BTAG LF UP =================="
-./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=0 --btagLF=1 $jobLabel
+./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=0 --btagLF=1 $jobLabel --denseJobs
 
 echo "========== Six  =================="
-./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=0 --btagLF=-1 $jobLabel
+./submitCondorJobs.py --year=2012_53x --jes=0 --btagHF=0 --btagLF=-1 $jobLabel --denseJobs
 

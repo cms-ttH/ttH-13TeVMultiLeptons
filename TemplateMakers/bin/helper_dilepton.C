@@ -434,15 +434,22 @@ int main ( int argc, char ** argv )
   // 
   
   std::vector< TString >catList ;
-  catList.push_back("eq2jeq2t_ttbar");
-  catList.push_back("eq3jeq2t_ttbar");   /////
-  catList.push_back("ge4jeq2t_ttbar");   /////
-  catList.push_back("ge3t_ttbar");
-  catList.push_back("eq3jeq3t_ttbar");
-  catList.push_back("ge4jge3t_ttbar");
+  catList.push_back("ge3t_v1");
+  catList.push_back("ge3t_v2");
+  catList.push_back("ge4je2t_v1");   /////
+  catList.push_back("e3je2t_v1");   /////
+  catList.push_back("e2je2t_v1");
+
+  catList.push_back("e2je2t_oldvar");   /////
+  catList.push_back("e3je2t_53x");   /////
+  catList.push_back("ge4je2t_53x");   /////
+  catList.push_back("ge3t_53x");   /////
+
+//   catList.push_back("eq3jeq3t_ttbar");
+//   catList.push_back("ge4jge3t_ttbar");
 
   catList.push_back("SS_ge3jge0t_ttbar");
-  catList.push_back("SS_ge3jge1t_ttW");
+//   catList.push_back("SS_ge3jge1t_ttW");
   
   const unsigned int nCat = catList.size();
 
@@ -451,32 +458,40 @@ int main ( int argc, char ** argv )
 
   //Robin's variables
   Float_t                 varavg_btag_disc_non_btags;
+  Float_t                 vardijet_mass_third;
   Float_t                 vardijet_mass_first;
+  Float_t                 varavg_dijet_mass;
   Float_t                 vardijet_mass_m2H;
-  
+  Float_t              varfirst_jet_pt ;
   //Opposite sign variables
   Float_t                 varavg_btag_disc_btags;
   Float_t                 varavg_dr_jets;
+  Float_t                 varmin_dr_jets;
   Float_t                 varHt;
   Float_t                 varhiggsLike_dijet_mass;
   Float_t                 varhiggsLike_dijet_mass2;
   Float_t                 varmin_dr_tagged_jets; 
   Float_t                 varnumHiggsLike_dijet_15_float;
   Float_t                 varnumJets_float; 
+  Float_t                 varmindr_lep1_jet;
+  Float_t                 varsum_jet_pt;
+  Float_t                 varsum_pt;
+  Float_t                 varall_sum_pt;
 
   //Same sign vs. ttbar variables
+  Float_t                 varcorrectedD0_leplep;
   Float_t                 varlep2Pt;
   Float_t                 varmaxLepChargedIso;
+  Float_t                 varMHT;
   Float_t                 varmaxLepAbsEta;
-  Float_t                 varmindr_lep1_jet;
   Float_t                 varmindr_lep2_allJet;
   Float_t                 varmindr_lep2_jet;
 //   Float_t                 varnumJets_float;
-  Float_t                 varsum_jet_pt;
+
 
   //Same sign vs. ttW variables
 //   Float_t                 varlep2Pt;
-  Float_t                 varmindr_lep1_allJet;
+//   Float_t                 varmindr_lep1_allJet;
 //   Float_t                 varmindr_lep1_jet;
 //   Float_t                 varmindr_lep2_jet;
 //   Float_t                 varnumJets_float;
@@ -488,36 +503,107 @@ int main ( int argc, char ** argv )
   for( unsigned int j = 0 ; j < nCat ; ++j ){
       TString label = catList[j];
       reader.push_back( new TMVA::Reader( "!Color:!Silent" ));    
-      if(j < 6) {
-        reader[j]->AddVariable( "avg_btag_disc_btags", &varavg_btag_disc_btags );
+      if(j < 2) { 
         reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
-        reader[j]->AddVariable( "higgsLike_dijet_mass", &varhiggsLike_dijet_mass );
-        if (j!=0) reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
-        reader[j]->AddVariable( "Ht", &varHt );
-        reader[j]->AddVariable( "min_dr_tagged_jets", &varmin_dr_tagged_jets );
-        reader[j]->AddVariable( "numHiggsLike_dijet_15_float", &varnumHiggsLike_dijet_15_float );
-        if (j==2 || j==3 || j==5) reader[j]->AddVariable( "numJets_float", &varnumJets_float );
+	if (j==1) {
+	  reader[j]->AddVariable( "min_dr_tagged_jets", &varmin_dr_tagged_jets );
+	  reader[j]->AddVariable( "higgsLike_dijet_mass", &varhiggsLike_dijet_mass );
+	}
+	reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
+	reader[j]->AddVariable( "numHiggsLike_dijet_15_float", &varnumHiggsLike_dijet_15_float );
+	if (j==0) reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+        reader[j]->AddVariable( "sum_pt", &varsum_pt );
+	reader[j]->AddVariable( "avg_btag_disc_btags", &varavg_btag_disc_btags );
+
       }
-      else if (j==18) {
-        reader[j]->AddVariable( "lep2Pt", &varlep2Pt );
-        reader[j]->AddVariable( "maxLepChargedIso", &varmaxLepChargedIso );
-        reader[j]->AddVariable( "maxLepAbsEta", &varmaxLepAbsEta );
-        reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
-        reader[j]->AddVariable( "mindr_lep2_allJet", &varmindr_lep2_allJet );
-        reader[j]->AddVariable( "mindr_lep2_jet", &varmindr_lep2_jet );
-        reader[j]->AddVariable( "numJets_float", &varnumJets_float );
-        reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
+      else if (j == 2){ //>=4j2t
+	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
+	reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
+	reader[j]->AddVariable( "numJets_float", &varnumJets_float );
+	reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
+	reader[j]->AddVariable( "avg_btag_disc_non_btags",   &varavg_btag_disc_non_btags   ); 
+	reader[j]->AddVariable( "dijet_mass_m2H",         &vardijet_mass_m2H   ); 
       }
-      else if (j==19) {
-        reader[j]->AddVariable( "lep2Pt", &varlep2Pt );
-        reader[j]->AddVariable( "mindr_lep1_allJet", &varmindr_lep1_allJet );
-        reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
-        reader[j]->AddVariable( "mindr_lep2_jet", &varmindr_lep2_jet );
-        reader[j]->AddVariable( "numJets_float", &varnumJets_float );
-        reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
+      else if (j == 3){ //3j2t
+	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
+	reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+	reader[j]->AddVariable( "all_sum_pt", &varall_sum_pt );
+	reader[j]->AddVariable( "avg_btag_disc_non_btags",   &varavg_btag_disc_non_btags   ); 
+	reader[j]->AddVariable( "dijet_mass_third",         &vardijet_mass_third   ); 
+      }
+      else if (j == 4){ // 2j2t
+	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
+	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+	reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+	reader[j]->AddVariable( "sum_pt", &varsum_pt );
+	reader[j]->AddVariable( "avg_btag_disc_btags",   &varavg_btag_disc_btags   ); 
       }
 
-      TString dir    = "../../TMVAv412/simpleweights/" + label + "/";
+      /////
+
+      else if(j == 5) { //2j2t_oldvar
+	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
+	reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
+	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
+	reader[j]->AddVariable( "Ht",         &varHt   );
+      }
+      else if (j==6){ //e3je2t_53x
+	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
+	reader[j]->AddVariable( "dijet_mass_m2H",         &vardijet_mass_m2H   ); 
+
+      }
+      else if (j==7){ //ge4je2t_53x
+	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+	reader[j]->AddVariable( "avg_dijet_mass",         &varavg_dijet_mass   ); ///
+	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+	reader[j]->AddVariable( "dijet_mass_first",         &vardijet_mass_first   ); 
+	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
+	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+      }
+      else if (j==8){ //ge3t_53x
+	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
+	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
+	reader[j]->AddVariable( "Ht",         &varHt   );
+      }
+      ///////
+
+      else if (j==9){ //Same Sign
+	reader[j]->AddVariable( "correctedD0_leplep",         &varcorrectedD0_leplep   ); ///
+	reader[j]->AddVariable( "lep2Pt", &varlep2Pt );
+        reader[j]->AddVariable( "maxLepAbsEta", &varmaxLepAbsEta );
+	reader[j]->AddVariable( "maxLepChargedIso", &varmaxLepChargedIso );
+	reader[j]->AddVariable( "MHT", &varMHT );
+	reader[j]->AddVariable( "mindr_lep2_allJet", &varmindr_lep2_allJet );
+      }
+
+      /////
+//       else if (j==18) {
+//         reader[j]->AddVariable( "lep2Pt", &varlep2Pt );
+//         reader[j]->AddVariable( "maxLepChargedIso", &varmaxLepChargedIso );
+//         reader[j]->AddVariable( "maxLepAbsEta", &varmaxLepAbsEta );
+//         reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+//         reader[j]->AddVariable( "mindr_lep2_allJet", &varmindr_lep2_allJet );
+//         reader[j]->AddVariable( "mindr_lep2_jet", &varmindr_lep2_jet );
+//         reader[j]->AddVariable( "numJets_float", &varnumJets_float );
+//         reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
+//       }
+//       else if (j==19) {
+//         reader[j]->AddVariable( "lep2Pt", &varlep2Pt );
+//         reader[j]->AddVariable( "mindr_lep1_allJet", &varmindr_lep1_allJet );
+//         reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+//         reader[j]->AddVariable( "mindr_lep2_jet", &varmindr_lep2_jet );
+//         reader[j]->AddVariable( "numJets_float", &varnumJets_float );
+//         reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
+//       }
+
+      TString dir    = "../../simpleweights/" + label + "/"; //////
       TString prefix = "TMVAClassification";
       TString wfName = dir + prefix + TString("_CFMlpANN.weights.xml");
 
@@ -576,10 +662,10 @@ int main ( int argc, char ** argv )
   bool CoreVariables = true;
   bool ExtraLeptonVariables = false;
   bool ExtraJetVariables = true;
-  bool ExtraKinematicVariables = false;
+  bool ExtraKinematicVariables = true;
   //bool ExtraEventVariables = false;
   bool ExtraTriggerVariables = false;
-  bool ExtraGenVariables = true;
+  bool ExtraGenVariables = false;
   bool ExtraHiggsVariables = false;
   bool ExtraSameSignVariables = true;
   
@@ -628,14 +714,21 @@ int main ( int argc, char ** argv )
     intBranches["sampleNumber"] = new int (0);
 
     /// MVA output variables
-    floatBranches["CFMlpANN_eq2jeq2t_ttbar"] = new float(0.0);
-    floatBranches["CFMlpANN_eq3jeq2t_ttbar"] = new float(0.0);
-    floatBranches["CFMlpANN_ge4jeq2t_ttbar"] = new float(0.0);
-    floatBranches["CFMlpANN_ge3t_ttbar"] = new float(0.0);
-    floatBranches["CFMlpANN_eq3jeq3t_ttbar"] = new float(0.0);
-    floatBranches["CFMlpANN_ge4jge3t_ttbar"] = new float(0.0);
+    floatBranches["CFMlpANN_e2je2t_v1"] = new float(0.0);
+    floatBranches["CFMlpANN_e3je2t_v1"] = new float(0.0);
+    floatBranches["CFMlpANN_ge4je2t_v1"] = new float(0.0);
+    floatBranches["CFMlpANN_ge3t_v1"] = new float(0.0);
+    floatBranches["CFMlpANN_ge3t_v2"] = new float(0.0);
+
+    floatBranches["CFMlpANN_e2je2t_oldvar"] = new float(0.0);
+    floatBranches["CFMlpANN_e3je2t_53x"] = new float(0.0);
+    floatBranches["CFMlpANN_ge4je2t_53x"] = new float(0.0);
+    floatBranches["CFMlpANN_ge3t_53x"] = new float(0.0);
+
+//     floatBranches["CFMlpANN_eq3jeq3t_ttbar"] = new float(0.0);
+//     floatBranches["CFMlpANN_ge4jge3t_ttbar"] = new float(0.0);
     floatBranches["CFMlpANN_SS_ge3jge0t_ttbar"] = new float(0.0);
-    floatBranches["CFMlpANN_SS_ge3jge1t_ttW"] = new float(0.0);
+//     floatBranches["CFMlpANN_SS_ge3jge1t_ttW"] = new float(0.0);
 
     //pile up
     floatBranches["numPV"] = new float(0.0);
@@ -647,8 +740,8 @@ int main ( int argc, char ** argv )
     floatBranches["weight"] = new float(0.0);
     floatBranches["weight_PUup"] = new float(0.0);
     floatBranches["weight_PUdown"] = new float(0.0);
-    floatBranches["HtWgt"] = new float(0.0);
-    floatBranches["HtWgtUp"] = new float(0.0);
+//     floatBranches["HtWgt"] = new float(0.0);
+//     floatBranches["HtWgtUp"] = new float(0.0);
     floatBranches["Q2ScaleUpWgt"] = new float(0.0);
     floatBranches["Q2ScaleDownWgt"] = new float(0.0);
     floatBranches["lep1SF"] = new float (0.0);
@@ -683,7 +776,7 @@ int main ( int argc, char ** argv )
     floatBranches["lep2GenCharge"] = new float (0.0);
 
     // jet variables
-    floatBranches["first_bjet_pt"] = new float(0.0);
+//     floatBranches["first_bjet_pt"] = new float(0.0);
     floatBranches["first_jet_pt"] = new float(0.0);
     floatBranches["second_jet_pt"] = new float(0.0);
     floatBranches["third_jet_pt"] = new float(0.0);
@@ -696,7 +789,7 @@ int main ( int argc, char ** argv )
 
     //kinematic variables
     ////ANN neural net inputs
-    floatBranches["mass_of_everything"] = new float(0.0);
+//     floatBranches["mass_of_everything"] = new float(0.0);
     floatBranches["min_dr_tagged_jets"] = new float(0.0);
     floatBranches["mindr_lep1_jet"] = new float(0.0);
     floatBranches["avg_btag_disc_btags"] = new float(0.0);
@@ -720,22 +813,34 @@ int main ( int argc, char ** argv )
     floatBranches["all_sum_pt"] = new float(0.0);
     floatBranches["sum_pt"] = new float(0.0); 
     floatBranches["sum_jet_pt"] = new float(0.0);
-    floatBranches["pt_of_everything"] = new float(0.0);
-    floatBranches["pz_of_everything"] = new float(0.0);
-    floatBranches["pt_of_ttbar"] = new float(0.0);
+//     floatBranches["pt_of_everything"] = new float(0.0);
+//     floatBranches["pz_of_everything"] = new float(0.0);
+//      floatBranches["pt_of_ttbar"] = new float(0.0);
 
   } //End if (CoreVariables)
 
   if (ExtraSameSignVariables) {
 
-    floatBranches["lep1FlipSF"] = new float (0.0);
-    floatBranches["lep2FlipSF"] = new float (0.0);
+//     floatBranches["lep1FlipSF"] = new float (0.0);
+//     floatBranches["lep2FlipSF"] = new float (0.0);
     floatBranches["lepTotalFlipSF"] = new float (0.0);
-    floatBranches["lep1PromptSF"] = new float (0.0);
-    floatBranches["lep2PromptSF"] = new float (0.0);
+//     floatBranches["lep1FlipSFUp"] = new float (0.0);
+//     floatBranches["lep2FlipSFUp"] = new float (0.0);
+    floatBranches["lepTotalFlipSFUp"] = new float (0.0);
+//     floatBranches["lep1FlipSFDown"] = new float (0.0);
+//     floatBranches["lep2FlipSFDown"] = new float (0.0);
+    floatBranches["lepTotalFlipSFDown"] = new float (0.0);
+//     floatBranches["lep1PromptSF"] = new float (0.0);
+//     floatBranches["lep2PromptSF"] = new float (0.0);
     floatBranches["lepTotalPromptSF"] = new float (0.0);
-    intBranches["lep1PassSSCut"] = new int (0);
-    intBranches["lep2PassSSCut"] = new int (0);
+//     floatBranches["lep1PromptSFUp"] = new float (0.0);
+//     floatBranches["lep2PromptSFUp"] = new float (0.0);
+    floatBranches["lepTotalPromptSFUp"] = new float (0.0);
+//     floatBranches["lep1PromptSFDown"] = new float (0.0);
+//     floatBranches["lep2PromptSFDown"] = new float (0.0);
+    floatBranches["lepTotalPromptSFDown"] = new float (0.0);
+//     intBranches["lep1PassSSCut"] = new int (0);
+//     intBranches["lep2PassSSCut"] = new int (0);
     intBranches["lepTotalPassSSCut"] = new int (0);
 
     floatBranches["lep1GsfCharge"] = new float(0.0);
@@ -773,7 +878,10 @@ int main ( int argc, char ** argv )
 //     floatBranches["MT_MHT_lep2_b"] = new float(0.0);
 //     floatBranches["MT_met_lep1_b"] = new float(0.0);
 //     floatBranches["MT_met_lep2_b"] = new float(0.0);
-    
+   
+    intBranches["lep1GenMotherID"] = new int(0);
+    intBranches["lep2GenMotherID"] = new int(0);
+ 
   }
 
   if (ExtraHiggsVariables) {
@@ -901,10 +1009,10 @@ int main ( int argc, char ** argv )
 //     floatBranches["third_untagged_dijet_mass"] = new float(0.0);
 //     floatBranches["lowest_untagged_dijet_mass"] = new float(0.0);
     
-//     floatBranches["dijet_mass_m2H"] = new float(0.0);
-//     floatBranches["dijet_mass_first"] = new float(0.0);
+     floatBranches["dijet_mass_m2H"] = new float(0.0);
+     floatBranches["dijet_mass_first"] = new float(0.0);
 //     floatBranches["dijet_mass_second"] = new float(0.0);
-//     floatBranches["dijet_mass_third"] = new float(0.0);
+     floatBranches["dijet_mass_third"] = new float(0.0);
 //     floatBranches["dijet_mass_lowest"] = new float(0.0);
 
 //     floatBranches["min_dr_genB1_allJet"] = new float (0.0);
@@ -968,8 +1076,6 @@ int main ( int argc, char ** argv )
     
     intBranches["lep1GenID"] = new int(0);
     intBranches["lep2GenID"] = new int(0);
-    intBranches["lep1GenMotherID"] = new int(0);
-    intBranches["lep2GenMotherID"] = new int(0);
     intBranches["first_jet_genID"] = new int(0);
     intBranches["second_jet_genID"] = new int(0);
     intBranches["third_jet_genID"] = new int(0);
@@ -982,42 +1088,42 @@ int main ( int argc, char ** argv )
   if (ExtraKinematicVariables) {
     ////objects
     //floatBranches["topLike_trijet_mass"] = new float(0.0);
-    floatBranches["m2H_btag"] = new float(0.0);
-    floatBranches["wLike_allDijet_mass"] = new float(0.0);
-    floatBranches["topLike_allTrijet_mass"] = new float(0.0);
+//     floatBranches["m2H_btag"] = new float(0.0);
+//     floatBranches["wLike_allDijet_mass"] = new float(0.0);
+//     floatBranches["topLike_allTrijet_mass"] = new float(0.0);
 
     ////leptons
-    floatBranches["dEta_leplep"] = new float(0.0);
-    floatBranches["MT_met_lep1"] = new float(0.0);
-    floatBranches["MT_met_lep2"] = new float(0.0);
-    floatBranches["dPhi_met_lep1"] = new float(0.0);
-    floatBranches["dPhi_met_lep2"] = new float(0.0);
+//     floatBranches["dEta_leplep"] = new float(0.0);
+//     floatBranches["MT_met_lep1"] = new float(0.0);
+//     floatBranches["MT_met_lep2"] = new float(0.0);
+//     floatBranches["dPhi_met_lep1"] = new float(0.0);
+//     floatBranches["dPhi_met_lep2"] = new float(0.0);
     ////everything
-    intBranches["PassZmask3"] = new int (0);
+//     intBranches["PassZmask3"] = new int (0);
     
     floatBranches["min_dr_jets"] = new float(0.0);
     floatBranches["avg_dr_jets"] = new float(0.0);    
     floatBranches["avg_dr_tagged_jets"] = new float(0.0);
     
     floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
-    floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
+//     floatBranches["avg_untagged_dijet_mass"] = new float(0.0);
     floatBranches["avg_dijet_mass"] = new float(0.0);
-    floatBranches["M2_of_closest_jets"] = new float(0.0);
-    floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
-    floatBranches["closest_dijet_mass"] = new float(0.0);
-    floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
+//     floatBranches["M2_of_closest_jets"] = new float(0.0);
+//     floatBranches["M2_of_closest_tagged_jets"] = new float(0.0);
+//     floatBranches["closest_dijet_mass"] = new float(0.0);
+//     floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
     
     floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
-    floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
-    floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
-    floatBranches["first_highest_btag"] = new float(0.0);
-    floatBranches["second_highest_btag"] = new float(0.0);
-    floatBranches["lowest_btag"] = new float(0.0);
+//     floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
+//     floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
+//     floatBranches["first_highest_btag"] = new float(0.0);
+//     floatBranches["second_highest_btag"] = new float(0.0);
+//     floatBranches["lowest_btag"] = new float(0.0);
 
-    floatBranches["mass_MHT"] = new float(0.0);
-    floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
-    floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
-    floatBranches["pt_of_allEverything"] = new float(0.0);
+//     floatBranches["mass_MHT"] = new float(0.0);
+//     floatBranches["mass_of_leps_and_allJets"] = new float(0.0);
+//     floatBranches["pt_of_leps_and_allJets"] = new float(0.0);
+//     floatBranches["pt_of_allEverything"] = new float(0.0);
     //floatBranches["pt_total"] = new float(0.0);
     
   } //End if (ExtraKinematicVariables)
@@ -2398,8 +2504,16 @@ int main ( int argc, char ** argv )
     float lep2SF = dFloat;
     float lep1FlipSF = dFloat;
     float lep2FlipSF = dFloat;
+    float lep1FlipSFUp = dFloat;
+    float lep2FlipSFUp = dFloat;
+    float lep1FlipSFDown = dFloat;
+    float lep2FlipSFDown = dFloat;
     float lep1PromptSF = dFloat;
     float lep2PromptSF = dFloat;
+    float lep1PromptSFUp = dFloat;
+    float lep2PromptSFUp = dFloat;
+    float lep1PromptSFDown = dFloat;
+    float lep2PromptSFDown = dFloat;
     int lep1PassSSCut = dInt;
     int lep2PassSSCut = dInt;
     int lep2IsGlobalMuon = dInt;
@@ -2519,21 +2633,46 @@ int main ( int argc, char ** argv )
         lep_vect2_transverse.SetPxPyPzE(muonsSelected.at(1).px, muonsSelected.at(1).py,
                                         0.0, muonsSelected.at(1).pt);
 
-        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
+        if (isData) { lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
+          lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
+          lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;
+          lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
         else {
-          lep1FlipSF = 1.0;
-          lep2FlipSF = 1.0;
+          lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
+          lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
 
           if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
               abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
-            lep1PromptSF = 1.0; }
-          else lep1PromptSF = 1.7;
+            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;}
+          else {
+            if (lep1ChargedIso <= 0.001) {
+              lep1PromptSF = 3.0;
+              lep1PromptSFUp = 3.5;
+              lep1PromptSFDown = 2.5;
+            }
+            else {
+              lep1PromptSF = 1.5;
+              lep1PromptSFUp = 1.8;
+              lep1PromptSFDown = 1.2;
+            }
+          }
           if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
               abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
-            lep2PromptSF = 1.0; }
-          else lep2PromptSF = 1.7;
+            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
+          else {
+            if (lep2ChargedIso <= 0.001) {
+              lep2PromptSF = 3.0;
+              lep2PromptSFUp = 3.5;
+              lep2PromptSFDown = 2.5;
+            }
+            else {
+              lep2PromptSF = 1.5;
+              lep2PromptSFUp = 1.8;
+              lep2PromptSFDown = 1.2;
+            }
+          }
 
-        }
+        } // End if not data
         
         lep1PassSSCut = (muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7);
         lep2PassSSCut = (muonsSelected.at(1).numberOfValidTrackerHitsInnerTrack > 7);
@@ -2656,20 +2795,49 @@ int main ( int argc, char ** argv )
                           (fabs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep2dFracScEtTkPt < 1) );
 
-        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
+        if (isData) { lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
+          lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
+          lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;
+          lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
         else {
-          lep1FlipSF = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep1Pt,-2));
-          lep2FlipSF = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
+          lep1FlipSF = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * 0.1;
+          lep1FlipSFUp = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * 0.3;
+          lep1FlipSFDown = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * -0.1;
+          lep2FlipSF = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * 0.1;
+          lep2FlipSFUp = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * 0.3;
+          lep2FlipSFDown = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * -0.1;
 
           if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
               abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
-            lep1PromptSF = 1.0; }
-          else lep1PromptSF = 1.7;
+            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;}
+          else {
+            if (lep1ChargedIso <= 0.001) {
+              lep1PromptSF = 2.5;
+              lep1PromptSFUp = 2.9;
+              lep1PromptSFDown = 2.1;
+            }
+            else {
+              lep1PromptSF = 1.7;
+              lep1PromptSFUp = 2.0;
+              lep1PromptSFDown = 1.4;
+            }
+          }
           if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
               abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
-            lep2PromptSF = 1.0; }
-          else lep2PromptSF = 1.7;
-        }
+            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
+          else {
+            if (lep2ChargedIso <= 0.001) {
+              lep2PromptSF = 2.5;
+              lep2PromptSFUp = 2.9;
+              lep2PromptSFDown = 2.1;
+            }
+            else {
+              lep2PromptSF = 1.7;
+              lep2PromptSFUp = 2.0;
+              lep2PromptSFDown = 1.4;
+            }
+          }
+        } // End if not data
         
 	  }
 	  
@@ -2779,20 +2947,47 @@ int main ( int argc, char ** argv )
                           (lep2dFracScEtTkPt < 1) );
         
 
-        if (isData) { lep1FlipSF = 1.0; lep2FlipSF = 1.0; lep1PromptSF = 1.0; lep2PromptSF = 1.0; }
+        if (isData) { lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
+          lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
+          lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;
+          lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
         else {
-          lep1FlipSF = 1.0;
-          lep2FlipSF = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep2Pt,-2));
+          lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
+          lep2FlipSF = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * 0.1;
+          lep2FlipSFUp = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * 0.3;
+          lep2FlipSFDown = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * -0.1;
 
           if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
               abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
-            lep1PromptSF = 1.0; }
-          else lep1PromptSF = 1.7;
+            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;}
+          else {
+            if (lep1ChargedIso <= 0.001) {
+              lep1PromptSF = 3.0;
+              lep1PromptSFUp = 3.5;
+              lep1PromptSFDown = 2.5;
+            }
+            else {
+              lep1PromptSF = 1.5;
+              lep1PromptSFUp = 1.8;
+              lep1PromptSFDown = 1.2;
+            }
+          }
           if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
               abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
-            lep2PromptSF = 1.0; }
-          else lep2PromptSF = 1.7;
-        }
+            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
+          else {
+            if (lep2ChargedIso <= 0.001) {
+              lep2PromptSF = 2.5;
+              lep2PromptSFUp = 2.9;
+              lep2PromptSFDown = 2.1;
+            }
+            else {
+              lep2PromptSF = 1.7;
+              lep2PromptSFUp = 2.0;
+              lep2PromptSFDown = 1.4;
+            }
+          }
+        } //End if not data
 
 	  }
 
@@ -2902,20 +3097,47 @@ int main ( int argc, char ** argv )
                           (lep1dFracScEtTkPt < 1) );
         
 
-        if (isData) { lep2FlipSF = 1.0; lep1FlipSF = 1.0; lep2PromptSF = 1.0; lep1PromptSF = 1.0; }
+        if (isData) { lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
+          lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
+          lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0;
+          lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0; }
         else {
-          lep2FlipSF = 1.0;
-          lep1FlipSF = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * ((0.979 - 1.0) + 316.0*pow(lep1Pt,-2));
+          lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
+          lep1FlipSF = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * 0.1;
+          lep1FlipSFUp = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * 0.3;
+          lep1FlipSFDown = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * -0.1;
 
           if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
               abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
-            lep2PromptSF = 1.0; }
-          else lep2PromptSF = 1.7;
+            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
+          else {
+            if (lep2ChargedIso <= 0.001) {
+              lep2PromptSF = 3.0;
+              lep2PromptSFUp = 3.5;
+              lep2PromptSFDown = 2.5;
+            }
+            else {
+              lep2PromptSF = 1.5;
+              lep2PromptSFUp = 1.8;
+              lep2PromptSFDown = 1.2;
+            }
+          }
           if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
               abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
-            lep1PromptSF = 1.0; }
-          else lep1PromptSF = 1.7;
-        }
+            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;}
+          else {
+            if (lep1ChargedIso <= 0.001) {
+              lep1PromptSF = 2.5;
+              lep1PromptSFUp = 2.9;
+              lep1PromptSFDown = 2.1;
+            }
+            else {
+              lep1PromptSF = 1.7;
+              lep1PromptSFUp = 2.0;
+              lep1PromptSFDown = 1.4;
+            }
+          }
+        } //End if not data
 
 	  }
 
@@ -2946,7 +3168,11 @@ int main ( int argc, char ** argv )
       
       float lepTotalSF = lep1SF * lep2SF;
       float lepTotalFlipSF = lep1FlipSF*lep2FlipSF;
+      float lepTotalFlipSFUp = lep1FlipSFUp*lep2FlipSFUp;
+      float lepTotalFlipSFDown = lep1FlipSFDown*lep2FlipSFDown;
       float lepTotalPromptSF = lep1PromptSF*lep2PromptSF;
+      float lepTotalPromptSFUp = lep1PromptSFUp*lep2PromptSFUp;
+      float lepTotalPromptSFDown = lep1PromptSFDown*lep2PromptSFDown;
       int lepTotalPassSSCut = 1 * ( lep1PassSSCut == 1 && lep2PassSSCut == 1);
       
       if (verbose) std::cout << "about to fill two lep vars " <<std::endl
@@ -3173,7 +3399,7 @@ int main ( int argc, char ** argv )
       TLorentzVector sum_topLike_dijet_lep1_vect;
       TLorentzVector sum_topLike_dijet_lep2_vect;
       bool first_bjet_found = false;
-      
+      int numNonbjetsDom = 0 ;
 	  for (int i=0; i < numGoodJets; i++) {
 	    int iJet = jet_index[i] ;
         if (sum_jet_pt == dFloat) sum_jet_pt = 0.0;
@@ -3361,16 +3587,20 @@ int main ( int argc, char ** argv )
 	    }
 	    
 	    if (jet_CSV[i] <= btagThres){
-          if (avg_btag_disc_non_btags == dFloat) avg_btag_disc_non_btags = 0.0;
-	      avg_btag_disc_non_btags += jet_CSV[i];
-          highest_btag_disc_non_btags = max(highest_btag_disc_non_btags,jet_CSV[i]);
+	      if (avg_btag_disc_non_btags == dFloat) avg_btag_disc_non_btags = 0.0;
+	      if (jet_CSV[i] > 0){
+		avg_btag_disc_non_btags += jet_CSV[i];
+		numNonbjetsDom++;
+	      }
+	      highest_btag_disc_non_btags = max(highest_btag_disc_non_btags,jet_CSV[i]);
 	    }									
 	  } // End of loop over numGoodJets
 	  
 	  if ( numTaggedJets > 0 ) avg_btag_disc_btags /= numTaggedJets;
 	  
 	  if ((numGoodJets - numTaggedJets) != 0){
-	    avg_btag_disc_non_btags /= (numGoodJets - numTaggedJets);
+	    if (numNonbjetsDom == 0) avg_btag_disc_non_btags = -1; 
+	    else avg_btag_disc_non_btags /= numNonbjetsDom;
 	  }
 	  
 	  for (int l=0; l < numTaggedJets; l++){
@@ -3579,31 +3809,40 @@ int main ( int argc, char ** argv )
       //Robin's variables
       varavg_btag_disc_non_btags = avg_btag_disc_non_btags;
       vardijet_mass_first = dijet_mass_first;
+      vardijet_mass_third = dijet_mass_third;
+      varavg_dijet_mass = avg_dijet_mass;
       vardijet_mass_m2H = dijet_mass_m2H;
+      varfirst_jet_pt = first_jet_pt;
       
       //Opposite sign variables
       varavg_btag_disc_btags = avg_btag_disc_btags;
       varavg_dr_jets = avg_dr_jets;
+      varmin_dr_jets = min_dr_jets;
       varHt = Ht;
       varhiggsLike_dijet_mass = higgsLike_dijet_mass1;
       varhiggsLike_dijet_mass2 = higgsLike_dijet_mass2;
       varmin_dr_tagged_jets = min_dr_tagged_jets; 
       varnumHiggsLike_dijet_15_float = float(numHiggsLike_dijet_15);
       varnumJets_float = float(numJets); 
-      
+      varmindr_lep1_jet = mindr_lep1_jet; 
+      varsum_jet_pt = sum_jet_pt;
+      varsum_pt = sum_pt;
+      varall_sum_pt = all_sum_pt;    
+
       //Same sign vs. ttbar variables
+      varcorrectedD0_leplep = correctedD0_leplep;
       varlep2Pt = lep2Pt;
       varmaxLepChargedIso = max(lep1ChargedIso,lep2ChargedIso);
+      varMHT = MHT;
       varmaxLepAbsEta = max(abs(lep1Eta),abs(lep2Eta));
-      varmindr_lep1_jet = mindr_lep1_jet;
       varmindr_lep2_allJet = mindr_lep2_allJet;
       varmindr_lep2_jet = mindr_lep2_jet;
       //                    varnumJets_float;
-      varsum_jet_pt = sum_jet_pt;
+
 
       //Same sign vs. ttW variables
       //                    varlep2Pt;
-      varmindr_lep1_allJet = mindr_lep1_allJet;
+      //      varmindr_lep1_allJet = mindr_lep1_allJet;
       //                    varmindr_lep1_jet;
       //                    varmindr_lep2_jet;
       //                    varnumJets_float;
@@ -3668,8 +3907,8 @@ int main ( int argc, char ** argv )
         *(floatBranches["weight"]) = weight ;
         *(floatBranches["weight_PUup"]) = weight_PUup ;
         *(floatBranches["weight_PUdown"]) = weight_PUdown ;
-        *(floatBranches["HtWgt"]) = HtWgt;
-        *(floatBranches["HtWgtUp"]) = HtWgtUp;
+//         *(floatBranches["HtWgt"]) = HtWgt;
+//         *(floatBranches["HtWgtUp"]) = HtWgtUp;
         *(floatBranches["Q2ScaleUpWgt"]) = Q2ScaleUpWgt;
         *(floatBranches["Q2ScaleDownWgt"]) = Q2ScaleDownWgt;
         *(floatBranches["lep1SF"]) = lep1SF;
@@ -3704,7 +3943,7 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep2GenCharge"]) = lep2GenCharge;
 
         // jet variables
-        *(floatBranches["first_bjet_pt"]) = first_bjet_pt;
+//         *(floatBranches["first_bjet_pt"]) = first_bjet_pt;
         *(floatBranches["first_jet_pt"]) = first_jet_pt;
         *(floatBranches["second_jet_pt"]) = second_jet_pt;
         *(floatBranches["third_jet_pt"]) = third_jet_pt;
@@ -3717,8 +3956,8 @@ int main ( int argc, char ** argv )
 
         //kinematic variables
         ////ANN neural net inputs
-        *(floatBranches["mass_of_everything"]) = mass_of_everything;
-	    *(floatBranches["min_dr_tagged_jets"]) = fmax(min_dr_tagged_jets,-1.0);
+//         *(floatBranches["mass_of_everything"]) = mass_of_everything;
+	*(floatBranches["min_dr_tagged_jets"]) = fmax(min_dr_tagged_jets,-1.0);
         *(floatBranches["mindr_lep1_jet"]) = mindr_lep1_jet;
         *(floatBranches["avg_btag_disc_btags"]) = fmax(avg_btag_disc_btags,-1.0);
         *(floatBranches["Ht"]) = Ht;
@@ -3741,23 +3980,35 @@ int main ( int argc, char ** argv )
         *(floatBranches["all_sum_pt"]) = all_sum_pt;
         *(floatBranches["sum_pt"]) = sum_pt;
         *(floatBranches["sum_jet_pt"]) = sum_jet_pt;
-        *(floatBranches["pt_of_everything"]) = pt_of_everything;
-        *(floatBranches["pz_of_everything"]) = pz_of_everything;
-        *(floatBranches["pt_of_ttbar"]) = pt_of_ttbar;
+//         *(floatBranches["pt_of_everything"]) = pt_of_everything;
+//         *(floatBranches["pz_of_everything"]) = pz_of_everything;
+//         *(floatBranches["pt_of_ttbar"]) = pt_of_ttbar;
 
       } //End if (CoreVariables)
 
       if (ExtraSameSignVariables) {
         if (debug_) cout << "Filling ExtraSameSignVariables" << endl;
 
-        *(floatBranches["lep1FlipSF"]) = lep1FlipSF;
-        *(floatBranches["lep2FlipSF"]) = lep2FlipSF;
+//         *(floatBranches["lep1FlipSF"]) = lep1FlipSF;
+//         *(floatBranches["lep2FlipSF"]) = lep2FlipSF;
         *(floatBranches["lepTotalFlipSF"]) = lepTotalFlipSF;
-        *(floatBranches["lep1PromptSF"]) = lep1PromptSF;
-        *(floatBranches["lep2PromptSF"]) = lep2PromptSF;
+//         *(floatBranches["lep1FlipSFUp"]) = lep1FlipSFUp;
+//         *(floatBranches["lep2FlipSFUp"]) = lep2FlipSFUp;
+        *(floatBranches["lepTotalFlipSFUp"]) = lepTotalFlipSFUp;
+//         *(floatBranches["lep1FlipSFDown"]) = lep1FlipSFDown;
+//         *(floatBranches["lep2FlipSFDown"]) = lep2FlipSFDown;
+        *(floatBranches["lepTotalFlipSFDown"]) = lepTotalFlipSFDown;
+//         *(floatBranches["lep1PromptSF"]) = lep1PromptSF;
+//         *(floatBranches["lep2PromptSF"]) = lep2PromptSF;
         *(floatBranches["lepTotalPromptSF"]) = lepTotalPromptSF;
-        *(intBranches["lep1PassSSCut"]) = lep1PassSSCut;
-        *(intBranches["lep2PassSSCut"]) = lep2PassSSCut;
+//         *(floatBranches["lep1PromptSFUp"]) = lep1PromptSFUp;
+//         *(floatBranches["lep2PromptSFUp"]) = lep2PromptSFUp;
+        *(floatBranches["lepTotalPromptSFUp"]) = lepTotalPromptSFUp;
+//         *(floatBranches["lep1PromptSFDown"]) = lep1PromptSFDown;
+//         *(floatBranches["lep2PromptSFDown"]) = lep2PromptSFDown;
+        *(floatBranches["lepTotalPromptSFDown"]) = lepTotalPromptSFDown;
+//         *(intBranches["lep1PassSSCut"]) = lep1PassSSCut;
+//         *(intBranches["lep2PassSSCut"]) = lep2PassSSCut;
         *(intBranches["lepTotalPassSSCut"]) = lepTotalPassSSCut;
         
         *(floatBranches["lep1GsfCharge"]) = lep1GsfCharge;
@@ -3795,7 +4046,10 @@ int main ( int argc, char ** argv )
 //         *(floatBranches["MT_MHT_lep2_b"]) = fmax(MT_MHT_lep2_b,-1.0);
 //         *(floatBranches["MT_met_lep1_b"]) = fmax(MT_met_lep1_b,-1.0);
 //         *(floatBranches["MT_met_lep2_b"]) = fmax(MT_met_lep2_b,-1.0);
-        
+       
+        *(intBranches["lep1GenMotherID"]) = lep1GenMotherID;
+        *(intBranches["lep2GenMotherID"]) = lep2GenMotherID;
+ 
       }
 
         
@@ -3925,10 +4179,10 @@ int main ( int argc, char ** argv )
 //         *(floatBranches["third_untagged_dijet_mass"]) =  fmax(third_untagged_dijet_mass,-1.0);
 //         *(floatBranches["lowest_untagged_dijet_mass"]) =  fmax(lowest_untagged_dijet_mass,-1.0);
 
-//         *(floatBranches["dijet_mass_m2H"]) = fmax(dijet_mass_m2H,-1.0);
-//         *(floatBranches["dijet_mass_first"]) =  fmax(dijet_mass_first,-1.0);
+         *(floatBranches["dijet_mass_m2H"]) = fmax(dijet_mass_m2H,-1.0);
+         *(floatBranches["dijet_mass_first"]) =  fmax(dijet_mass_first,-1.0);
 //         *(floatBranches["dijet_mass_second"]) = fmax(dijet_mass_second,-1.0);
-//         *(floatBranches["dijet_mass_third"]) =  fmax(dijet_mass_third,-1.0);
+         *(floatBranches["dijet_mass_third"]) =  fmax(dijet_mass_third,-1.0);
 //         *(floatBranches["dijet_mass_lowest"]) =  fmax(dijet_mass_lowest,-1.0);
 
 //         *(floatBranches["min_dr_genB1_allJet"]) = min_dr_genB1_allJet;
@@ -3993,8 +4247,6 @@ int main ( int argc, char ** argv )
 
         *(intBranches["lep1GenID"]) = lep1GenID;
         *(intBranches["lep2GenID"]) = lep2GenID;
-        *(intBranches["lep1GenMotherID"]) = lep1GenMotherID;
-        *(intBranches["lep2GenMotherID"]) = lep2GenMotherID;
         *(intBranches["first_jet_genID"]) = first_jet_genID;
         *(intBranches["second_jet_genID"]) = second_jet_genID;
         *(intBranches["third_jet_genID"]) = third_jet_genID;
@@ -4009,42 +4261,42 @@ int main ( int argc, char ** argv )
         if (debug_) cout << "Filling ExtraKinematicVariables" << endl;
         
         ////objects
-	    *(floatBranches["m2H_btag"]) = m2H_btag;        
-        *(floatBranches["wLike_allDijet_mass"]) = fmax(wLike_allDijet_mass1,-1.0);
-        *(floatBranches["topLike_allTrijet_mass"]) = fmax(topLike_allTrijet_mass1,-1.0);
+// 	    *(floatBranches["m2H_btag"]) = m2H_btag;        
+//         *(floatBranches["wLike_allDijet_mass"]) = fmax(wLike_allDijet_mass1,-1.0);
+//         *(floatBranches["topLike_allTrijet_mass"]) = fmax(topLike_allTrijet_mass1,-1.0);
 
-        ////leptons
-        *(floatBranches["dEta_leplep"]) = dEta_leplep;
-        *(floatBranches["MT_met_lep1"]) = MT_met_lep1;
-        *(floatBranches["MT_met_lep2"]) = MT_met_lep2;
-        *(floatBranches["dPhi_met_lep1"]) = dPhi_met_lep1;
-        *(floatBranches["dPhi_met_lep2"]) = dPhi_met_lep2;
+//         ////leptons
+//         *(floatBranches["dEta_leplep"]) = dEta_leplep;
+//         *(floatBranches["MT_met_lep1"]) = MT_met_lep1;
+//         *(floatBranches["MT_met_lep2"]) = MT_met_lep2;
+//         *(floatBranches["dPhi_met_lep1"]) = dPhi_met_lep1;
+//         *(floatBranches["dPhi_met_lep2"]) = dPhi_met_lep2;
         ////everything
-        *(intBranches["PassZmask3"]) = PassBigDiamondZmask3 ? 1 : 0;
+//         *(intBranches["PassZmask3"]) = PassBigDiamondZmask3 ? 1 : 0;
 
         *(floatBranches["min_dr_jets"]) = min_dr_jets;
-	    *(floatBranches["avg_dr_jets"]) = avg_dr_jets;
-	    *(floatBranches["avg_dr_tagged_jets"]) = avg_dr_tagged_jets;
-	    *(floatBranches["avg_tagged_dijet_mass"]) = avg_tagged_dijet_mass;
-        *(floatBranches["avg_untagged_dijet_mass"]) = avg_untagged_dijet_mass;
+	*(floatBranches["avg_dr_jets"]) = avg_dr_jets;
+	*(floatBranches["avg_dr_tagged_jets"]) = avg_dr_tagged_jets;
 
-	    *(floatBranches["avg_dijet_mass"]) = avg_dijet_mass;
-	    *(floatBranches["M2_of_closest_jets"]) = M2_of_closest_jets;
-	    *(floatBranches["M2_of_closest_tagged_jets"]) = M2_of_closest_tagged_jets;
-	    *(floatBranches["closest_dijet_mass"]) = closest_dijet_mass;
-        *(floatBranches["closest_tagged_dijet_mass"]) = closest_tagged_dijet_mass;
+	*(floatBranches["avg_tagged_dijet_mass"]) = avg_tagged_dijet_mass;
+//         *(floatBranches["avg_untagged_dijet_mass"]) = avg_untagged_dijet_mass;
+	*(floatBranches["avg_dijet_mass"]) = avg_dijet_mass;
+// 	    *(floatBranches["M2_of_closest_jets"]) = M2_of_closest_jets;
+// 	    *(floatBranches["M2_of_closest_tagged_jets"]) = M2_of_closest_tagged_jets;
+// 	    *(floatBranches["closest_dijet_mass"]) = closest_dijet_mass;
+//         *(floatBranches["closest_tagged_dijet_mass"]) = closest_tagged_dijet_mass;
 
         *(floatBranches["avg_btag_disc_non_btags"]) = avg_btag_disc_non_btags;
-        *(floatBranches["highest_btag_disc_non_btags"]) = highest_btag_disc_non_btags;
-        *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
-	    *(floatBranches["first_highest_btag"]) = first_highest_btag;
-	    *(floatBranches["second_highest_btag"]) = second_highest_btag;
-	    *(floatBranches["lowest_btag"]) = lowest_btag;
+//         *(floatBranches["highest_btag_disc_non_btags"]) = highest_btag_disc_non_btags;
+//         *(floatBranches["dev_from_avg_disc_btags"]) = dev_from_avg_disc_btags;
+// 	    *(floatBranches["first_highest_btag"]) = first_highest_btag;
+// 	    *(floatBranches["second_highest_btag"]) = second_highest_btag;
+// 	    *(floatBranches["lowest_btag"]) = lowest_btag;
 
-        *(floatBranches["mass_MHT"]) = mass_MHT;
-        *(floatBranches["mass_of_leps_and_allJets"]) = mass_of_leps_and_allJets;
-        *(floatBranches["pt_of_leps_and_allJets"]) = pt_of_leps_and_allJets;
-        *(floatBranches["pt_of_allEverything"]) = pt_of_allEverything;
+//         *(floatBranches["mass_MHT"]) = mass_MHT;
+//         *(floatBranches["mass_of_leps_and_allJets"]) = mass_of_leps_and_allJets;
+//         *(floatBranches["pt_of_leps_and_allJets"]) = pt_of_leps_and_allJets;
+//         *(floatBranches["pt_of_allEverything"]) = pt_of_allEverything;
 
       } //End if (ExtraKinematicVariables)
 

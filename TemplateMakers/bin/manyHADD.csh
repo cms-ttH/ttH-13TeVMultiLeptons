@@ -1,6 +1,6 @@
 
 set thisYear = "2012_53x"
-set thisLabel = betaTest_v1
+set thisLabel = limits_v1
 
 ./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}
 ./haddAll.py --moveFiles --sumData --year=${thisYear} ${thisLabel}_JESUp

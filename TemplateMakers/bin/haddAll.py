@@ -91,17 +91,20 @@ def main ():
 											   'DoubleElectron_Run2012A-recover-06Aug2012-v1',
 											   'DoubleElectron_Run2012B-13Jul2012-v1',
 											   'DoubleElectron_Run2012C-PromptReco-v2',
-											   'DoubleElectron_Run2012C-24Aug2012-v1'],
+											   'DoubleElectron_Run2012C-24Aug2012-v1',
+											   'DoubleElectron_Run2012D-PromptReco-v1'],
 							 "DoubleMu":['DoubleMu_Run2012A-13Jul2012-v1',
 										 'DoubleMu_Run2012A-recover-06Aug2012-v1',
 										 'DoubleMu_Run2012B-13Jul2012-v4',
 										 'DoubleMu_Run2012C-PromptReco-v2',
-										 'DoubleMu_Run2012C-24Aug2012-v1'],
+										 'DoubleMu_Run2012C-24Aug2012-v1',
+										 'DoubleMu_Run2012D-PromptReco-v1'],
 							 "MuEG":['MuEG_Run2012A-13Jul2012-v1',
 									 'MuEG_Run2012A-recover-06Aug2012-v1',
 									 'MuEG_Run2012B-13Jul2012-v1',
 									 'MuEG_Run2012C-PromptReco-v2',
-									 'MuEG_Run2012C-24Aug2012-v1']
+									 'MuEG_Run2012C-24Aug2012-v1',
+									 'MuEG_Run2012D-PromptReco-v1']
 					 }
 
 		if dirLabel.startswith('2011'):
