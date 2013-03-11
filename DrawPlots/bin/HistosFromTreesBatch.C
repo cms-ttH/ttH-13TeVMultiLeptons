@@ -216,6 +216,7 @@ int main ( int argc, char ** argv )
   std::vector<string> JetTagReqs;
 
   //DIL analysis categories
+  if (inputCharge == "OS") {
 //   JetTagReqs.push_back("ge2t");
   JetTagReqs.push_back("eq2jeq2t");
   JetTagReqs.push_back("eq3jeq2t");
@@ -225,7 +226,8 @@ int main ( int argc, char ** argv )
 //   JetTagReqs.push_back("ge4jge3t");
   //JetTagReqs.push_back("ge4jeq3t");
   //JetTagReqs.push_back("ge4jge4t");
-
+  }
+  else {
 //   //Same sign analysis categories
 //   JetTagReqs.push_back("eq0j");
 //   JetTagReqs.push_back("eq1jeq0t");
@@ -237,7 +239,7 @@ int main ( int argc, char ** argv )
   JetTagReqs.push_back("eq3jge2t");
   JetTagReqs.push_back("ge4jeq1t");
   JetTagReqs.push_back("ge4jge2t");
-
+  }
   //CSV study categories
 //   JetTagReqs.push_back("eq2jge0t");
 //   JetTagReqs.push_back("eq2jeq0t");
@@ -269,8 +271,8 @@ int main ( int argc, char ** argv )
   sysList.push_back("CMS_eff_bDown"); // 6
   sysList.push_back("CMS_fake_bUp"); // 7 
   sysList.push_back("CMS_fake_bDown"); //8
-  sysList.push_back("CMS_ttH_PUcorrUp");  //9
-  sysList.push_back("CMS_ttH_PUcorrDown"); //10
+  sysList.push_back("CMS_ttH_topPtcorrUp");  //9
+  sysList.push_back("CMS_ttH_topPtcorrDown"); //10
   sysList.push_back("Q2scale_ttH"); //11 
   sysList.push_back("Q2scale_ttH"); //12
   if (inputCharge == "SS") {
@@ -326,18 +328,61 @@ int main ( int argc, char ** argv )
   if (makeCorePlots) {
 
     //MVA output variables
-//     varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_eq2jeq2t_ttbar", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 100, 0.45, 0.55);
-//     varList.push_back(CFMlpANN_e2je2t);
-//     varInfo *CFMlpANN_e3je2t = new varInfo("CFMlpANN_eq3jeq2t_ttbar", "CFMlpANN_e3je2t", "CFMlpANN_e3je2t", 100, 0, 1);
-//     varList.push_back(CFMlpANN_e3je2t);
-//     varInfo *CFMlpANN_ge4je2t = new varInfo("CFMlpANN_ge4jeq2t_ttbar", "CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", 100, 0, 1);
-//     varList.push_back(CFMlpANN_ge4je2t);
-//     varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t_ttbar", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 100, 0, 1);
-//     varList.push_back(CFMlpANN_ge3t);
-//     varInfo *CFMlpANN_e3je3t = new varInfo("CFMlpANN_eq3jeq3t_ttbar", "CFMlpANN_e3je3t", "CFMlpANN_e3je3t", 100, 0, 1);
-//     varList.push_back(CFMlpANN_e3je3t);
-//     varInfo *CFMlpANN_ge4jge3t = new varInfo("CFMlpANN_ge4jge3t_ttbar", "CFMlpANN_ge4jge3t", "CFMlpANN_ge4jge3t", 100, 0, 1);
-//     varList.push_back(CFMlpANN_ge4jge3t);
+    if (inputCharge == "OS"){
+    varInfo *CFMlpANN_e2je2t_oldvar = new varInfo("CFMlpANN_e2je2t_oldvar", "CFMlpANN_e2je2t_oldvar", "CFMlpANN_e2je2t_oldvar", 2000, 0.49, 0.51);
+    varList.push_back(CFMlpANN_e2je2t_oldvar);
+    varInfo *CFMlpANN_e3je2t_53x = new varInfo("CFMlpANN_e3je2t_53x", "CFMlpANN_e3je2t_53x", "CFMlpANN_e3je2t_53x", 1000, 0, 1);
+    varList.push_back(CFMlpANN_e3je2t_53x);
+    varInfo *CFMlpANN_ge4je2t_53x = new varInfo("CFMlpANN_ge4je2t_53x", "CFMlpANN_ge4je2t_53x", "CFMlpANN_ge4je2t_53x", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge4je2t_53x);
+    varInfo *CFMlpANN_ge3t_53x = new varInfo("CFMlpANN_ge3t_53x", "CFMlpANN_ge3t_53x", "CFMlpANN_ge3t_53x", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge3t_53x);
+
+    varInfo *CFMlpANN_e2je2t_v1 = new varInfo("CFMlpANN_e2je2t_v1", "CFMlpANN_e2je2t_v1", "CFMlpANN_e2je2t_v1", 2000, 0.49, 0.51); /// range
+    varList.push_back(CFMlpANN_e2je2t_v1);
+    varInfo *CFMlpANN_e3je2t_v1 = new varInfo("CFMlpANN_e3je2t_v1", "CFMlpANN_e3je2t_v1", "CFMlpANN_e3je2t_v1", 1000, 0, 1);
+    varList.push_back(CFMlpANN_e3je2t_v1);
+    varInfo *CFMlpANN_ge4je2t_v1 = new varInfo("CFMlpANN_ge4je2t_v1", "CFMlpANN_ge4je2t_v1", "CFMlpANN_ge4je2t_v1", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge4je2t_v1);
+    varInfo *CFMlpANN_ge3t_v1 = new varInfo("CFMlpANN_ge3t_v1", "CFMlpANN_ge3t_v1", "CFMlpANN_ge3t_v1", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge3t_v1);
+    varInfo *CFMlpANN_ge3t_v2 = new varInfo("CFMlpANN_ge3t_v2", "CFMlpANN_ge3t_v2", "CFMlpANN_ge3t_v2", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge3t_v2);
+    
+    //ANN neural net inputs
+    varInfo *avg_btag_disc_btags = new varInfo("avg_btag_disc_btags", "avg_btag_disc_btags", "avg_btag_disc_btags", 1000, 0, 1);
+    varList.push_back(avg_btag_disc_btags);
+    varInfo *avg_btag_disc_non_btags = new varInfo("avg_btag_disc_non_btags", "avg_btag_disc_non_btags", "avg_btag_disc_non_btags", 2000, -1, 1);
+    varList.push_back(avg_btag_disc_non_btags);
+
+    varInfo *Ht = new varInfo("Ht", "Ht", "Ht", 5000, 0, 5000);
+    varList.push_back(Ht);
+    varInfo *min_dr_tagged_jets = new varInfo("min_dr_tagged_jets", "min_dr_tagged_jets", "min_dr_tagged_jets", 600, 0, 6);
+    varList.push_back(min_dr_tagged_jets);
+    varInfo *avg_dr_jets = new varInfo("avg_dr_jets", "avg_dr_jets", "avg_dr_jets", 600, 0, 6);
+    varList.push_back(avg_dr_jets);
+    varInfo *min_dr_jets = new varInfo("min_dr_jets", "min_dr_jets", "min_dr_jets", 600, 0, 6);
+    varList.push_back(min_dr_jets);
+    varInfo *mindr_lep1_jet = new varInfo("mindr_lep1_jet", "mindr_lep1_jet", "mindr_lep1_jet", 600, 0, 6);
+    varList.push_back(mindr_lep1_jet);
+    varInfo *higgsLike_dijet_mass = new varInfo("higgsLike_dijet_mass", "higgsLike_dijet_mass", "higgsLike_dijet_mass", 1000, 0, 1000);
+    varList.push_back(higgsLike_dijet_mass);
+    varInfo *higgsLike_dijet_mass2 = new varInfo("higgsLike_dijet_mass2", "higgsLike_dijet_mass2", "higgsLike_dijet_mass2", 1000, 0, 1000);
+    varList.push_back(higgsLike_dijet_mass2);
+    varInfo *numHiggsLike_dijet_15 = new varInfo("numHiggsLike_dijet_15", "numHiggsLike_dijet_15", "numHiggsLike_dijet_15", 10, 0, 10);
+    varList.push_back(numHiggsLike_dijet_15);
+
+    varInfo *dijet_mass_first = new varInfo("dijet_mass_first", "dijet_mass_first", "dijet_mass_first", 1000, 0, 1000);
+    varList.push_back(dijet_mass_first);
+    varInfo *dijet_mass_third = new varInfo("dijet_mass_third", "dijet_mass_third", "dijet_mass_third", 1000, 0, 1000);
+    varList.push_back(dijet_mass_third);
+    varInfo *avg_dijet_mass = new varInfo("avg_dijet_mass", "avg_dijet_mass", "avg_dijet_mass", 1000, 0, 1000);
+    varList.push_back(avg_dijet_mass);
+    varInfo *dijet_mass_m2H = new varInfo("dijet_mass_m2H", "dijet_mass_m2H", "dijet_mass_m2H", 1000, 0, 1000);
+    varList.push_back(dijet_mass_m2H);
+    
+    }
+    else {  ///// SS ANN
     varInfo *CFMlpANN_SS_e3je1t = new varInfo("lep1TkCharge*CFMlpANN_SS_ge3jge0t_ttbar", "CFMlpANN_SS_e3je1t", "CFMlpANN_SS_e3je1t", 200, -1, 1);
     varList.push_back(CFMlpANN_SS_e3je1t);
     varInfo *CFMlpANN_SS_ge4je1t = new varInfo("lep1TkCharge*CFMlpANN_SS_ge3jge0t_ttbar", "CFMlpANN_SS_ge4je1t", "CFMlpANN_SS_ge4je1t", 200, -1, 1);
@@ -346,35 +391,14 @@ int main ( int argc, char ** argv )
     varList.push_back(CFMlpANN_SS_e3jge2t);
     varInfo *CFMlpANN_SS_ge4jge2t = new varInfo("lep1TkCharge*CFMlpANN_SS_ge3jge0t_ttbar", "CFMlpANN_SS_ge4jge2t", "CFMlpANN_SS_ge4jge2t", 200, -1, 1);
     varList.push_back(CFMlpANN_SS_ge4jge2t);
-
-    
-//     //ANN neural net inputs
-//     varInfo *avg_btag_disc_btags = new varInfo("avg_btag_disc_btags", "avg_btag_disc_btags", "avg_btag_disc_btags", 200, 0, 1);
-//     varList.push_back(avg_btag_disc_btags);
-    varInfo *Ht = new varInfo("Ht", "Ht", "Ht", 1000, 0, 5000);
-    varList.push_back(Ht);
-//     varInfo *mass_of_everything = new varInfo("mass_of_everything", "mass_of_everything", "mass_of_everything", 1000, 0, 5000);
-//     varList.push_back(mass_of_everything);
-//     varInfo *min_dr_tagged_jets = new varInfo("min_dr_tagged_jets", "min_dr_tagged_jets", "min_dr_tagged_jets", 600, 0, 6);
-//     varList.push_back(min_dr_tagged_jets);
-//     varInfo *avg_dr_jets = new varInfo("avg_dr_jets", "avg_dr_jets", "avg_dr_jets", 600, 0, 6);
-//     varList.push_back(avg_dr_jets);
-    varInfo *mindr_lep1_jet = new varInfo("mindr_lep1_jet", "mindr_lep1_jet", "mindr_lep1_jet", 600, 0, 6);
-    varList.push_back(mindr_lep1_jet);
-//     varInfo *higgsLike_dijet_mass = new varInfo("higgsLike_dijet_mass", "higgsLike_dijet_mass", "higgsLike_dijet_mass", 1000, 0, 1000);
-//     varList.push_back(higgsLike_dijet_mass);
-//     varInfo *higgsLike_dijet_mass2 = new varInfo("higgsLike_dijet_mass2", "higgsLike_dijet_mass2", "higgsLike_dijet_mass2", 1000, 0, 1000);
-//     varList.push_back(higgsLike_dijet_mass2);
-//     varInfo *numHiggsLike_dijet_15 = new varInfo("numHiggsLike_dijet_15", "numHiggsLike_dijet_15", "numHiggsLike_dijet_15", 10, 0, 10);
-//     varList.push_back(numHiggsLike_dijet_15);
-    
-//     //met
+    }
+    //met
     varInfo *met = new varInfo("met", "met", "met", 1000, 0, 1000);
     varList.push_back(met);
     varInfo *MHT = new varInfo("MHT", "MHT", "MHT", 1000, 0, 1000);
     varList.push_back(MHT);
     
-//     //event variables
+    //event variables
     varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, 0, 20);
     varList.push_back(numJets);
     varInfo *numTaggedJets = new varInfo("numTaggedJets", "numTaggedJets", "numTaggedJets", 10, 0, 10);
@@ -519,16 +543,6 @@ int main ( int argc, char ** argv )
   
 
   if (makeLepPlots) {
-    
-    varInfo *numTightMuons = new varInfo("numTightMuons", "numTightMuons", "numTightMuons", 10, 0, 10);
-    varList.push_back(numTightMuons);
-    varInfo *numLooseMuons = new varInfo("numLooseMuons", "numLooseMuons", "numLooseMuons", 10, 0, 10);
-    varList.push_back(numLooseMuons);
-    varInfo *numTightElectrons = new varInfo("numTightElectrons", "numTightElectrons", "numTightElectrons", 10, 0, 10);
-    varList.push_back(numTightElectrons);
-    varInfo *numLooseElectrons = new varInfo("numLooseElectrons", "numLooseElectrons", "numLooseElectrons", 10, 0, 10);
-    varList.push_back(numLooseElectrons);
-
     //lepton variables
     varInfo *lep1Pt = new varInfo("lep1Pt", "lep1Pt", "lep1Pt", 1000, 0, 1000);
     varList.push_back(lep1Pt);
@@ -542,6 +556,17 @@ int main ( int argc, char ** argv )
     varList.push_back(lep1Iso);
     varInfo *lep2Iso = new varInfo("lep2Iso", "lep2Iso", "lep2Iso", 200, 0, 0.2);
     varList.push_back(lep2Iso);
+    
+    if (inputCharge == "SS"){
+    varInfo *numTightMuons = new varInfo("numTightMuons", "numTightMuons", "numTightMuons", 10, 0, 10);
+    varList.push_back(numTightMuons);
+    varInfo *numLooseMuons = new varInfo("numLooseMuons", "numLooseMuons", "numLooseMuons", 10, 0, 10);
+    varList.push_back(numLooseMuons);
+    varInfo *numTightElectrons = new varInfo("numTightElectrons", "numTightElectrons", "numTightElectrons", 10, 0, 10);
+    varList.push_back(numTightElectrons);
+    varInfo *numLooseElectrons = new varInfo("numLooseElectrons", "numLooseElectrons", "numLooseElectrons", 10, 0, 10);
+    varList.push_back(numLooseElectrons);
+       
     varInfo *maxLepAbsEta = new varInfo("maxLepAbsEta", "maxLepAbsEta", "maxLepAbsEta", 250, 0, 2.5);
     varList.push_back(maxLepAbsEta);
     varInfo *maxLepChargedIso = new varInfo("maxLepChargedIso", "maxLepChargedIso", "maxLepChargedIso", 200, 0, 0.2);
@@ -551,7 +576,7 @@ int main ( int argc, char ** argv )
     varList.push_back(correctedDZ_leplep);
     varInfo *correctedD0_leplep = new varInfo("correctedD0_leplep", "correctedD0_leplep", "correctedD0_leplep", 200, -0.1, 0.1);
     varList.push_back(correctedD0_leplep);
-    
+    }
   } // end if makeLepPlots
 
   if (makeJetPlots) {
@@ -592,9 +617,11 @@ int main ( int argc, char ** argv )
     varList.push_back(mass_leplep);
     varInfo *mindr_lep2_jet = new varInfo("mindr_lep2_jet", "mindr_lep2_jet", "mindr_lep2_jet", 600, 0, 6);
     varList.push_back(mindr_lep2_jet);
-    varInfo *sum_pt = new varInfo("sum_pt", "sum_pt", "sum_pt", 1000, 0, 5000);
+    varInfo *sum_pt = new varInfo("sum_pt", "sum_pt", "sum_pt", 5000, 0, 5000);
     varList.push_back(sum_pt);
-    varInfo *sum_jet_pt = new varInfo("sum_jet_pt", "sum_jet_pt", "sum_jet_pt", 1000, 0, 5000);
+    varInfo *all_sum_pt = new varInfo("all_sum_pt", "all_sum_pt", "all_sum_pt", 5000, 0, 5000);
+    varList.push_back(all_sum_pt);
+    varInfo *sum_jet_pt = new varInfo("sum_jet_pt", "sum_jet_pt", "sum_jet_pt", 5000, 0, 5000);
     varList.push_back(sum_jet_pt);
 
   } // end if makeKinPlots
@@ -832,6 +859,7 @@ int main ( int argc, char ** argv )
       isData = true;
     }
 
+    /////// start systematics
     for (unsigned int ksys = 0 ; ksys < NumSys ; ++ksys ){
       if ( (isData || skipSystematics) && ksys!=2) continue;
 
@@ -1023,6 +1051,9 @@ int main ( int argc, char ** argv )
         else WeightStr = weight[ksys] ;
       }
 
+      if (inputYear == "2012_53x") XsecStr = "weight_Xsec*";
+      else XsecStr = "";
+
       /////// start sub-lepton category loop    
       const unsigned int nlepCatList = lepCatList.size();
       for( unsigned int j = 0; j < nlepCatList; j++) {
@@ -1069,9 +1100,7 @@ int main ( int argc, char ** argv )
           else EffStr = "lepTotalSF * ";
         }
 
-        if (inputYear == "2012_53x") XsecStr = "weight_Xsec*";
-        else XsecStr = "";
-	
+
         ////////////// no weight, SF for data
         if (isData) {
 

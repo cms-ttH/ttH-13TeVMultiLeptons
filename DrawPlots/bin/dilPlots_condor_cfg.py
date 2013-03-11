@@ -93,11 +93,11 @@ process.dilAnalysis = cms.PSet(
     corePlots = cms.bool(True),
     lepPlots = cms.bool(True),
     jetPlots = cms.bool(True),
-    kinPlots = cms.bool(False),
+    kinPlots = cms.bool(True),
     sameSignPlots = cms.bool(False),
     trileptonPlots = cms.bool(False),
     onePlot = cms.bool(False),
 	csvPlots = cms.bool(False),
-	topPtReweight = cms.bool(False)
+	topPtReweight = cms.bool(True)
     
 )
