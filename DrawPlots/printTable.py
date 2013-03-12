@@ -51,9 +51,9 @@ def main ():
 	#lepselection.append("SameLep")
 	lepselection.append("MuonEle")
 #	jetselection.append("eq1t")
-	#jetselection.append("eq2jeq2t")
-	#jetselection.append("eq3jeq2t")
-	#jetselection.append("ge4jeq2t")
+	jetselection.append("eq2jeq2t")
+	jetselection.append("eq3jeq2t")
+	jetselection.append("ge4jeq2t")
 	jetselection.append("ge3t")
 
 	Outputs = {}
@@ -115,13 +115,17 @@ def main ():
 #	sample = ["$t\\bar{t}+lf$","$t\\bar{t}$+$c\\bar{c}$","$t\\bar{t}$+$b\\bar{b}$","$t\\bar{t}V$","Single t","Z+jets","W+jets","DiBoson","Total bkg","Signal","Data"]
 	sample = ["$t\\bar{t}+lf$","$t\\bar{t}$+$c\\bar{c}$","$t\\bar{t}$+$b\\bar{b}$","$t\\bar{t}V$","Single t","V+jets","DiBoson","Total bkg","Signal","Data"]
 	print ''
-	print '%30s &  %10s | %10s  | %10s |' % ("Sample", "TwoMuon", "TwoEle", "MuonEle")
+#	print '%30s &  %10s | %10s  | %10s |' % ("Sample", "TwoMuon", "TwoEle", "MuonEle")
 #	for ijet in jetselection:
 #		print ' &  %s ' % (ijet) ,
 #	print	'	\\'+'\\'print
-	for iSam in range(0, 10):
-		print  "%-30s" % sample[iSam],
-		for ijet in jetselection:
+        for ijet in jetselection:
+		print '======  Event Yield Table for category %10s ===============' % ijet
+		print '%30s  &  %10s | %10s | %10s' % ("Sample", "TwoMuon", "TwoEle", "MuonEle"),
+		print	'	\\'+'\\'
+		for iSam in range(0, 10):
+			print  "%-30s" % sample[iSam],
+
 			nEventTemp = Outputs[ijet]["TwoMuon"][0][iSam] + Outputs[ijet]["TwoEle"][0][iSam] + Outputs[ijet]["MuonEle"][0][iSam]
 			errTemp = math.sqrt(Outputs[ijet]["TwoMuon"][1][iSam] + Outputs[ijet]["TwoEle"][1][iSam] + Outputs[ijet]["MuonEle"][1][iSam])
 			nEvent = round(nEventTemp,2)
@@ -134,16 +138,20 @@ def main ():
 #				print ' &  %s ' % (str(nEvent)) ,
 #			else:				
 #				print ' &  %s $\pm$ %s ' % (str(nEvent), str(err)) ,
-		print	'	\\'+'\\'
-        if iSam == 9:
-            for ijet in jetselection:
-                ratioTwoMuon = str(round(Outputs[ijet]["TwoMuon"][0][9]/Outputs[ijet]["TwoMuon"][0][7],2))
-                ratioTwoEle = str(round(Outputs[ijet]["TwoEle"][0][9]/Outputs[ijet]["TwoEle"][0][7],2))
-                ratioMuonEle = str(round(Outputs[ijet]["MuonEle"][0][9]/Outputs[ijet]["MuonEle"][0][7],2))
+#
+                        print	'	\\'+'\\'
+		        if iSam == 9:
+#			       for ijet in jetselection:
+				       ratioTwoMuon = str(round(Outputs[ijet]["TwoMuon"][0][9]/Outputs[ijet]["TwoMuon"][0][7],2))
+				       ratioTwoEle = str(round(Outputs[ijet]["TwoEle"][0][9]/Outputs[ijet]["TwoEle"][0][7],2))
+				       ratioMuonEle = str(round(Outputs[ijet]["MuonEle"][0][9]/Outputs[ijet]["MuonEle"][0][7],2))
                 #print ratioTwoEle
                 #print ratioTwoMuon
                 #print ratioMuonEle
-                print '%-30s &  %10s | %10s | %10s' % ("Ratio", ratioTwoMuon, ratioTwoEle, ratioMuonEle)
+			               print '%-30s  &  %10s | %10s | %10s' % ("Ratio", ratioTwoMuon, ratioTwoEle, ratioMuonEle),
+
+				       print	'	\\'+'\\'
+		print ''
 	#print '& Categories & ttbar & ttbarbb & ttbarcc & ttbarWorZ & zjets & singleTop & wjets & DiBoson & ttH120 & some ttH number & MC total & Data '+'	 \\'+'\\' 
 #	print "\\"+'multirow{4}{*}{$\geq$2 jets + 1 tag} & $\mu\mu $ & '+str(round(Outputs["eq1t"]["TwoMuon"][0],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][1],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][2],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][3],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][4],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][5],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][6],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][7],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][8],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][9],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][10],2))+' $\pm$ '+str(round(Outputs["eq1t"]["TwoMuon"][11],2))+' & '+str(round(Outputs["eq1t"]["TwoMuon"][12],0))+'	\\'+'\\'	 
 #	print '& $ee$ & '+str(round(Outputs["eq1t"]["TwoEle"][0],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][1],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][2],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][3],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][4],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][5],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][6],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][7],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][8],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][9],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][10],2))+' $\pm$ '+str(round(Outputs["eq1t"]["TwoEle"][11],2))+' & '+str(round(Outputs["eq1t"]["TwoEle"][12],0))+'	\\'+'\\'

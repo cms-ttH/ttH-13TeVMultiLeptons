@@ -54,14 +54,14 @@ def main ():
 		numBins = int(sys.argv[index+2])
 	except:
 		if "3t" in jetselection:
-			numBins = 10
+			numBins = 25 #10
 		elif "2t" in jetselection:
-			numBins = 25
+			numBins = 50 #25
 		else:
 			numBins = 50
 		
 	parser = OptionParser()
-	parser.add_option('-L', '--Lumi', dest='lumi', default=19.443, help='integrated lumi')
+	parser.add_option('-L', '--Lumi', dest='lumi', default=12.187, help='integrated lumi')
 	parser.add_option('-b', dest="batch", action='store_true', default=false)
 	
 	(options, args) = parser.parse_args()
@@ -108,53 +108,82 @@ def main ():
 
 	pival = 3.14
 
-#	if (jetselection != "ge1t"):
-#		drawStackPlot("min_dr_tagged_jets", pg, "minimum #DeltaR(b-tags)", 10, 0.5, 4.5, lepselection, year, "draw")
-#		drawStackPlot("mindr_lep1_jet", pg, "minimum #DeltaR(leading lepton,jet)", 10, 0, 4, lepselection, year, "draw")
-#		drawStackPlot("avg_btag_disc_btags", pg, "average CSV output (b-tags)", 10, 0.7, 1, lepselection,year, "draw")
-#		drawStackPlot("second_jet_pt", pg, "2nd jet p_{T}", 20, 30, 230, lepselection,year, "draw")
-#		drawStackPlot("pt_of_ttbar", pg, "p_{T} (lep,met,2bjets)", 20, 0, 240, lepselection,year, "draw")
-#		drawStackPlot("pt_of_everything", pg, "p_{T} vector sum", 20, 0, 140, lepselection,year, "draw")		
-		
-	#if (jetselection == "ge2t"):
+
+	drawStackPlot("avg_dr_jets", pg, "average #DeltaR(j, j)", 40, 0.5, 4.5, lepselection, year, "draw")
+	drawStackPlot("min_dr_jets", pg, "minimum #DeltaR(j, j)", 40, 0.5, 4.5, lepselection, year, "draw")
+	drawStackPlot("avg_btag_disc_non_btags", pg, "average CSV (non b-tags)", numBins, 0, 0.7, lepselection,year, "draw")
+
+	drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", numBins, 30, 330, lepselection,year, "draw")
+	drawStackPlot("numJets", pg, "N_{jets}", 5, 2, 7, lepselection,year, "draw")
+	
+	drawStackPlot("dijet_mass_m2H", pg, "dijet_mass_m2H", numBins, 0, 250, lepselection, year, "draw")
+	drawStackPlot("avg_dijet_mass", pg, "avg_dijet_mass", numBins, 0, 400, lepselection, year, "draw")
+	drawStackPlot("dijet_mass_first", pg, "dijet_mass_first", numBins, 0, 600, lepselection, year, "draw")
+	drawStackPlot("dijet_mass_third", pg, "dijet_mass_third", numBins, 0, 500, lepselection, year, "draw")
+
+	drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 40, 0.5, 3.5, lepselection, year, "draw")
+	drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 20, 0.7, 1, lepselection,year, "draw")
+	drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)", numBins, 200, 1600, lepselection,year, "draw")
+	drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 35, 0, 3.5, lepselection, year, "draw")
+
+	drawStackPlot("sum_pt", pg, "sum_pt", numBins, 100, 900, lepselection, year, "draw")
+	drawStackPlot("all_sum_pt", pg, "all_sum_pt", numBins, 150, 950, lepselection, year, "draw")	
+	drawStackPlot("sum_jet_pt", pg, "sum_jet_pt", numBins, 60, 760, lepselection, year, "draw")
+
+	drawStackPlot("higgsLike_dijet_mass", pg, "higgsLike_dijet_mass", numBins, 0, 300, lepselection, year, "draw")
+	drawStackPlot("higgsLike_dijet_mass2", pg, "higgsLike_dijet_mass2", numBins, 0, 400, lepselection, year, "draw")
+	drawStackPlot("numHiggsLike_dijet_15", pg, "numHiggsLike_dijet_15", 5, 0, 5, lepselection, year, "draw")
+	
+#	if (jetselection == "ge2t"):
 #		drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MHT)",20, 200, 1100, lepselection,year, "draw")
 #		drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 330, lepselection,year, "draw")
-		#drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 60, 660, lepselection,year, "draw")
-	#if (jetselection == "eq2jeq2t" or jetselection == "eq2jge0t" or jetselection == "eq2jeq0t" or jetselection == "eq2jeq1t"):
-		#drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 4.5, lepselection, year, "draw")
-		#drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0, 4, lepselection, year, "draw")
-		#drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
+#		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 60, 660, lepselection,year, "draw")
+	if (jetselection == "eq2jeq2t" or jetselection == "eq2jge0t" or jetselection == "eq2jeq0t" or jetselection == "eq2jeq1t"):
+###		drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 4.5, lepselection, year, "draw")
+###		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0, 4, lepselection, year, "draw")
+###		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
 ##		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 9, 0.4981, 0.5035, lepselection,year, "draw")
-#		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.4975, 0.5035, lepselection,year, "draw")
-		#drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)",10, 200, 1100, lepselection,year, "draw")
-		#drawStackPlot("first_jet_pt", pg, "jet 1 p_{T}", 10, 30, 330, lepselection,year, "draw")
+##		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.4975, 0.5035, lepselection,year, "draw")
+		drawStackPlot("CFMlpANN_e2je2t_oldvar", pg,  "ANN output", 10, 0.5, 0.502, lepselection,year, "draw")
+		drawStackPlot("CFMlpANN_e2je2t_v1", pg,  "ANN output", 10, 0.498, 0.503, lepselection,year, "draw")
+###		drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)",10, 200, 1100, lepselection,year, "draw")
+###		drawStackPlot("first_jet_pt", pg, "jet 1 p_{T}", 10, 30, 330, lepselection,year, "draw")
 #		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 60, 460, lepselection,year, "draw")
 #		drawStackPlot("pt_of_everything", pg, "p_{T} vector sum", 20, 0, 140, lepselection,year, "draw")
 #		drawStackPlot("pt_of_ttbar", pg, "p_{T} (lep,met,2bjets)", 20, 0, 140, lepselection,year, "draw")		
-	#if (jetselection == "eq3jeq2t"):
-		#drawStackPlot("CFMlpANN_e3je2t", pg,  "ANN output", 10, 0.33, 0.73, lepselection, year, "draw")    
-	#if (jetselection == "ge4jeq2t"):
-#		drawStackPlot("CFMlpANN_ge4je2t", pg,  "ANN output", 10, 0.26, 0.66, lepselection, year, "draw")
-		#drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 350, lepselection,year, "draw")
-		#drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MHT)",20, 300, 1900, lepselection,year, "draw")
-		#drawStackPlot("third_jet_pt", pg, "3rd jet p_{T}", 20, 30, 210, lepselection,year, "draw")
-		#drawStackPlot("fourth_jet_pt", pg, "4th jet p_{T}", 20, 30, 130, lepselection,year, "draw")
-		#drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 120, 840, lepselection,year, "draw")
-		#drawStackPlot("second_jet_pt", pg, "2nd jet p_{T}", 20, 30, 230, lepselection,year, "draw")
-	#if (jetselection == "ge3t"):
-		#drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 3.5, lepselection, year, "draw")
-		#drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0.2, 3.2, lepselection, year, "draw")
-		#drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
+	if (jetselection == "eq3jeq2t"):
+		drawStackPlot("CFMlpANN_e3je2t_53x", pg,  "ANN output", 10, 0.2, 0.86, lepselection, year, "draw")
+		drawStackPlot("CFMlpANN_e3je2t_v1", pg,  "ANN output", 10, 0.1, 0.9, lepselection, year, "draw")
+		drawStackPlot("third_jet_pt", pg, "3rd jet p_{T}", 20, 30, 210, lepselection,year, "draw")
+		drawStackPlot("third_jet_eta", pg, "third_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
+	if (jetselection == "ge4jeq2t"):
+		drawStackPlot("CFMlpANN_ge4je2t_53x", pg,  "ANN output", 10, 0.04, 0.94, lepselection, year, "draw")
+		drawStackPlot("CFMlpANN_ge4je2t_v1", pg,  "ANN output", 10, 0.04, 0.94, lepselection, year, "draw")
+###		drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 350, lepselection,year, "draw")
+###		drawStackPlot("Ht", pg, "sum p_{T} (leptons,jets,MHT)",20, 300, 1900, lepselection,year, "draw")
+		drawStackPlot("third_jet_pt", pg, "3rd jet p_{T}", 20, 30, 210, lepselection,year, "draw")
+		drawStackPlot("third_jet_eta", pg, "third_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
+###		drawStackPlot("fourth_jet_pt", pg, "4th jet p_{T}", 20, 30, 130, lepselection,year, "draw")
+###		drawStackPlot("sum_jet_pt", pg, "sum jet p_{T}", 20, 120, 840, lepselection,year, "draw")
+###		drawStackPlot("second_jet_pt", pg, "2nd jet p_{T}", 20, 30, 230, lepselection,year, "draw")
+	if (jetselection == "ge3t"):
+###		drawStackPlot("min_dr_tagged_jets", pg, "min. #DeltaR(j_{m}^{tag}, j_{n}^{tag})", 10, 0.5, 3.5, lepselection, year, "draw")
+###		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0.2, 3.2, lepselection, year, "draw")
+###		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
 ##		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 9, 0.12, 0.84, lepselection,year, "draw")
-#		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.04, 0.84, lepselection,year, "draw")
-		#drawStackPlot("numJets", pg, "N_{jets}", 5, 3, 8, lepselection,year, "draw")
-		#drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)", 10, 200, 1600, lepselection,year, "draw")
-		#drawStackPlot("first_jet_pt", pg, "jet 1 p_{T}", 10, 30, 400, lepselection,year, "draw")
-	#if (jetselection == "ge1t"):
-		#drawStackPlot("numJets", pg,  "number of jets", 5, 2, 7, lepselection, year, "draw")
-		#drawStackPlot("numTaggedJets", pg,  "number of b-tagged jets", 4, 1, 5, lepselection, year, "draw")
+		drawStackPlot("CFMlpANN_ge3t_53x", pg, "ANN output", 10, 0.04, 0.84, lepselection,year, "draw")
+		drawStackPlot("CFMlpANN_ge3t_v1", pg, "ANN output", 10, 0.04, 0.84, lepselection,year, "draw")
+		drawStackPlot("CFMlpANN_ge3t_v2", pg, "ANN output", 10, 0.04, 0.84, lepselection,year, "draw")
+###		drawStackPlot("numJets", pg, "N_{jets}", 5, 3, 8, lepselection,year, "draw")
+###		drawStackPlot("Ht", pg, "p_{T}(l, #slash{E}_{T}, jets)", 10, 200, 1600, lepselection,year, "draw")
+###		drawStackPlot("first_jet_pt", pg, "jet 1 p_{T}", 10, 30, 400, lepselection,year, "draw")
+		drawStackPlot("third_jet_pt", pg, "3rd jet p_{T}", 20, 30, 210, lepselection,year, "draw")
+		drawStackPlot("third_jet_eta", pg, "third_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
+	if (jetselection == "ge1t"):
+		drawStackPlot("numJets", pg,  "number of jets", 5, 2, 7, lepselection, year, "draw")
+		drawStackPlot("numTaggedJets", pg,  "number of b-tagged jets", 4, 1, 5, lepselection, year, "draw")
 		
-	#drawStackPlot("numTaggedJets", pg, "numTaggedJets", 3, 0, 3, lepselection, year, "draw")
+	drawStackPlot("numTaggedJets", pg, "numTaggedJets", 4, 2, 6, lepselection, year, "draw")
 	drawStackPlot("numPV", pg, "numPV", 30, 0, 30, lepselection, year, "draw")
 	drawStackPlot("met", pg, "met", numBins, 0, 300, lepselection, year, "draw")
 	drawStackPlot("MHT", pg, "MHT", numBins, 0, 300, lepselection, year, "draw")
@@ -162,24 +191,19 @@ def main ():
 	drawStackPlot("lep2Pt", pg, "lep2Pt", numBins, 10, 210, lepselection, year, "draw")
 	drawStackPlot("lep1Eta", pg, "lep1Eta", numBins, -2.5, 2.5, lepselection, year, "draw")
 	drawStackPlot("lep2Eta", pg, "lep2Eta", numBins, -2.5, 2.5, lepselection, year, "draw")
-	#drawStackPlot("lep1Iso", pg, "lep1Iso", numBins, 0, 0.2, lepselection, year, "draw")
-	#drawStackPlot("lep2Iso", pg, "lep2Iso", numBins, 0, 0.2, lepselection, year, "draw")
-	drawStackPlot("first_jet_pt", pg, "highest jet p_{T}", 20, 30, 330, lepselection,year, "draw")
+###	drawStackPlot("lep1Iso", pg, "lep1Iso", numBins, 0, 0.2, lepselection, year, "draw")
+###	drawStackPlot("lep2Iso", pg, "lep2Iso", numBins, 0, 0.2, lepselection, year, "draw")
 	drawStackPlot("second_jet_pt", pg, "second_jet_pt", numBins, 20, 220, lepselection, year, "draw")
+#	drawStackPlot("third_jet_pt", pg, "third_jet_pt", numBins, 0, 200, lepselection, year, "draw")
 	drawStackPlot("first_jet_eta", pg, "first_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
 	drawStackPlot("second_jet_eta", pg, "second_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
+#	drawStackPlot("third_jet_eta", pg, "third_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
+###	drawStackPlot("mass_of_everything", pg, "mass_of_everything", numBins, 0, 1000, lepselection, year, "draw")
+	drawStackPlot("mass_leplep", pg, "mass_leplep", numBins, 0, 400, lepselection, year, "draw")
+##	drawStackPlot("pt_of_ttbar", pg, "p_{T} (lep,met,2bjets)", numBins, 0, 300, lepselection,year, "draw")
+#	drawStackPlot("first_bjet_pt", pg, "highest bjet p_{T}", numBins, 30, 330, lepselection,year, "draw")
 
-	if jetselection == "ge3t" or jetselection == "eq3jeq2t" or jetselection == "ge4je2t":
-		drawStackPlot("third_jet_pt", pg, "third_jet_pt", numBins, 0, 200, lepselection, year, "draw")
-		drawStackPlot("third_jet_eta", pg, "third_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
-	if jetselection == "ge4je2t":
-		drawStackPlot("fourth_jet_pt", pg, "fourth_jet_pt", numBins, 0, 150, lepselection, year, "draw")
-		drawStackPlot("fourth_jet_eta", pg, "fourth_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
-	
-	#drawStackPlot("mass_of_everything", pg, "mass_of_everything", numBins, 0, 1000, lepselection, year, "draw")
-	#drawStackPlot("mass_leplep", pg, "mass_leplep", numBins, 0, 400, lepselection, year, "draw")
-	#drawStackPlot("sum_pt", pg, "sum_pt", numBins*6/5, 100, 700, lepselection, year, "draw")
-	#drawStackPlot("sum_jet_pt", pg, "sum_jet_pt", numBins*4/5, 60, 460, lepselection, year, "draw")
+
 
 	##Same-sign variables
 # 	drawStackPlot("numTightMuons", pg, "numTightMuons", 3, 0, 3, lepselection, year, "draw")
