@@ -50,11 +50,13 @@ if iJob > len(readFiles):
 print "Adding file: ", readFiles[iJob]
 process.inputs.fileNames.append(readFiles[iJob])
 
-Selection = True
+#Selection = True
 if UseSelection == 1:
 	SelName = 'SelOn'
+	Selection = True
 if UseSelection == 0:
 	SelName = 'SelOff'
+	Selection = False
 if iJes == 0:
 	JesName = ''
 if iJes == 1:
@@ -107,6 +109,6 @@ process.dilAnalysis = cms.PSet(
 	eleSel = cms.bool(Selection), #If no skim was applied 
 	muonSel  = cms.bool(Selection), #If no skim was applied TightMu and LooseLepVetos
 	jetSel = cms.bool(Selection),  #If skim was not applied to >=3jets
-	minJets= cms.int32(3), #minimum number of jets
-	btags = cms.double(2), #-1: pretag, 0: 0tag, n: >=ntags
+	minJets= cms.int32(3), #min jets ONLY if jetSel is on!
+ 	btags = cms.double(2), #-1: pretag, 0: 0tag, n: >=ntags
 )
