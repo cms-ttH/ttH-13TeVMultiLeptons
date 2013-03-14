@@ -977,6 +977,8 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       if (verbose) std::cout << "met stuff " <<std::endl;
       
       MetIter pfmet = pfmets.begin();
+      BNmet pfmetSelected = beanHelper.GetCorrectedMET(pfmets.at(0), pfjets, iSysType);
+       
       // MetIter calomet = calomets.begin();
       // MetIter tcmet = tcmets.begin();
 
@@ -1710,9 +1712,10 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
     double metx = pfmet->px;
     double mety = pfmet->py;
     double metpt = pfmet->pt;
-    double metx_new = metx - totalDeltaPx;
-    double mety_new = mety - totalDeltaPy;
-    double metpt_new = sqrt(metx_new*metx_new + mety_new *mety_new);
+    double metx_new = pfmetSelected.px;
+    double mety_new = pfmetSelected.py;
+    double metpt_new = pfmetSelected.pt;
+    
     
     if (jerDebugPrint || verbose)
       cout << "---> MET " << endl

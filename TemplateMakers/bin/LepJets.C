@@ -1252,7 +1252,6 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       
 
  
-
       //============================================
       //
       // Filter out different kinds of ttbar events
@@ -1410,6 +1409,8 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       if (verbose) std::cout << "met stuff " <<std::endl;
       
       MetIter pfmet = pfmets.begin();
+      BNmet pfmetSelected = beanHelper.GetCorrectedMET(pfmets.at(0), pfjets, iSysType);
+       
       // MetIter calomet = calomets.begin();
       // MetIter tcmet = tcmets.begin();
 
@@ -1821,8 +1822,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 //                     << " delta py " << deltaPy << std::endl;
         
 //         jet_px[i] *= myJER;
-//         jet_py[i] *= myJER;
-//         jet_pz[i] *= myJER;
+//         jet_py[i] *= myJER;_pz[i] *= myJER;
 //         jet_pt[i] *= myJER;
 //         jet_energy[i] *= myJER;	
 //         jetPt *= myJER;
@@ -1927,7 +1927,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
         nJetsPlot = numGoodJets;
         if(nJetsPlot > maxJetPlot) { nJetsPlot = maxJetPlot;}
 
-        // // Btag cut - Regular
+       //  // Btag cut - Regular
 //         if (nTags >= 1){
 //           if(tag_pfjet_index.size()<nTags){continue;}
 //         }
@@ -1948,10 +1948,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
         if(numTags<2){continue;}
       }
       
-    //   // 1 Tight and 1 Medium Btag
-//       if(tight_tag_pfjet_index.size()<1){continue;}
-//       int numTags = tight_tag_pfjet_index.size() + medium_tag_pfjet_index.size();
-//       if(numTags<2){continue;}
+
 
 
  
@@ -2197,9 +2194,9 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
     double metx = pfmet->px;
     double mety = pfmet->py;
     double metpt = pfmet->pt;
-    double metx_new = metx - totalDeltaPx;
-    double mety_new = mety - totalDeltaPy;
-    double metpt_new = sqrt(metx_new*metx_new + mety_new *mety_new);
+    double metx_new = pfmetSelected.px;
+    double mety_new = pfmetSelected.py;
+    double metpt_new = pfmetSelected.pt;
     
     if (jerDebugPrint || verbose)
       cout << "---> MET " << endl
