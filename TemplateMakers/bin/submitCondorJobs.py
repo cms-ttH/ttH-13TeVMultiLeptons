@@ -392,7 +392,7 @@ def main ():
 	#exit()
 
 	for iList in listOfSamples:
-		condorHeader = "universe = vanilla\n"+"executable = runTemplatesCondor_modDilep.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n"
+		condorHeader = "universe = vanilla\n"+"executable = runTemplatesCondor_modDilep.csh\n"+"notification = Never\n"+"log = batchBEAN/templates_modDilep_newSample.logfile\n"+"getenv = True\n" + "+IsExpressJob = True\n"
 		
 		condorJobFile = open ("dilBatch.submit", "w")
 
