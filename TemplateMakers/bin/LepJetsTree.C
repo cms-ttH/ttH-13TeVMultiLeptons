@@ -295,11 +295,24 @@ int main ( int argc, char ** argv )
   if(sample==-1) isData = true;
    cout << "is Data? "<< isData<< endl;
 
-   if( TString(sampleName).Contains("TTbar")  ){
-     if(TString(sampleName).Contains("Had"))              sample = 2566;
-     else if(TString(sampleName).Contains("Semilep"))     sample = 2563;
-     else if(TString(sampleName).Contains("Dilep"))       sample = 2533; 
-     else                                                 sample = 2500; 
+   if( TString(sampleName).Contains("TTbar")){
+     if(TString(sampleName).Contains("Had") ||TString(sampleName).Contains("had")){
+       sample = 2566;
+       ttbarWeight = hadWeight;
+     }
+     else if(TString(sampleName).Contains("Semilep")||TString(sampleName).Contains("Semi") ||
+             TString(sampleName).Contains("semi")){
+       sample = 2563;
+       ttbarWeight = semWeight;
+     }
+     else if(TString(sampleName).Contains("Dilep")||TString(sampleName).Contains("di")){
+       sample = 2533;
+       ttbarWeight = dilWeight;
+     }
+     else{
+       sample = 2500;
+       ttbarWeight = 1;
+     }
    }
   if( TString(sampleName).Contains("T_sChan")
       || TString(sampleName).Contains("t_sChan") )      sample = 2600;
@@ -998,7 +1011,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       ///--------------------------------
 
 
-     
+   
 
       
       ///--------------------------------
@@ -1234,7 +1247,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
           }
         }//end if loose muon
       }// end muon loop
-   
+
 
       //Cuts
       
@@ -1839,6 +1852,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 
 	  sum_pt += lep1_pt;
 	  Ht += lep1_et ;
+
  
       // sum_pt += lep2_pt;
       // Ht += lep2_et ;
@@ -1849,27 +1863,30 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
     
       *(floatBranches["mT"]) = WTrans.M();
       *(floatBranches["mTTruth"]) = WTransTruthLV.Et();
- 
+
       TLorentzVector everything_vect = metV + lep_vect1 + sum_jet_vect; //Lept+Jets Mttbar
+
 	  float ttbar_mass = everything_vect.M();
-	  float ttbar_pt = everything_vect.Pt();
+	  float ttbar_pt = everything_vect.Pt(); 
       float ttbar_eta = everything_vect.Eta();
+      // cout << "ttbar eta? " << everything_vect.Eta() << " same as " << ttbar_eta << endl;
+      
       float ttbar_y = everything_vect.Rapidity();
-	  *(floatBranches["Mttbar"]) = ttbar_mass;
-      *(floatBranches["MttbarTruth"]) = ttbarTruthLV.M();
+	  *(floatBranches["Mttbar"]) = ttbar_mass; 
+      *(floatBranches["MttbarTruth"]) = ttbarTruthLV.M(); 
       *(floatBranches["ttbarPt"]) = ttbar_pt;
-      *(floatBranches["ttbarPtTruth"]) = ttbarTruthLV.Pt();
+      *(floatBranches["ttbarPtTruth"]) = ttbarTruthLV.Pt(); 
       *(floatBranches["ttbarEta"]) = ttbar_eta;
       *(floatBranches["ttbarEtaTruth"]) =ttbarTruthLV.Eta();
       *(floatBranches["ttbarY"]) = ttbar_y;
       *(floatBranches["ttbarYTruth"]) =ttbarTruthLV.Rapidity();
- 
+
       //M3
       if(numGoodJets>=3){
         TLorentzVector top3Jets = jetV[0] +  jetV[1] +  jetV[2];
         *(floatBranches["m3"]) = top3Jets.M();
       }
-     
+
       
 	  ///loop jet
      //  h_nJets->Fill(nJetsPlot,wgt);
@@ -1918,7 +1935,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 	    }
 
 	  }
- 
+
 	  *(floatBranches["first_jet_pt"])  = first_jet_pt;
 	  *(floatBranches["second_jet_pt"]) = second_jet_pt;
 	  *(floatBranches["third_jet_pt"])  = third_jet_pt;
@@ -1939,7 +1956,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 	  if ((numGoodJets - numTag) != 0){
 	    avg_btag_disc_non_btags /= (numGoodJets - numTag);
 	  }
-	  
+
 	  for (int l=0; l < numTag; l++){
 	    dev_from_avg_disc_btags += pow((pfjetsSelected.at(tag_pfjet_index[l]).btagCombinedSecVertex - avg_btag_disc_btags),2);
 	  }
@@ -1968,7 +1985,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 	  *(floatBranches["all_sum_pt"]) = all_sum_pt;
 	  *(floatBranches["Ht"]) = Ht;
 
- 
+
 
 	  //// tagged jets
 	  if (numTag > 1) {
@@ -2022,6 +2039,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 	 
 	    avg_untagged_dijet_mass /= denom_avg_cnt;
 	  }
+
 
 	  ////	  	 
 	  if (numTag > 1){
