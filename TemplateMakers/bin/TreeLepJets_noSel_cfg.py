@@ -29,6 +29,7 @@ process.outputs = cms.PSet (
 process.dilAnalysis = cms.PSet(
 	jes = cms.int32(0),
 	jer = cms.int32(0),
+	btagsys = cms.int32(1),
 	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	puFile = cms.FileInPath("2012PileUpDists_LepJets.root"),
 	sampleName = cms.string("TTbar"),

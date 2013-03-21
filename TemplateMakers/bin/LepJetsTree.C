@@ -162,6 +162,7 @@ int main ( int argc, char ** argv )
    //JES
    int jes = anaParams.getParameter<int> ("jes");
    int jer = anaParams.getParameter<int> ("jer");
+   int btagCSVShape =   anaParams.getParameter<int> ("btagsys");
    cout << "About to read in the sample name" << endl;
    std::string sampleName = anaParams.getParameter<string>("sampleName");
    cout << "The sampleName: " << sampleName << endl; 
@@ -174,8 +175,7 @@ int main ( int argc, char ** argv )
    int minJets  = anaParams.getParameter<int>("minJets");
    double nTags = anaParams.getParameter<double>("btags");
    //Add this into cfg when you do btag systematic!
-   int btagCSVShape = 0;
-   std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
+   std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << "  btagSys = " << btagCSVShape <<  std::endl;
 
    //  Btag file
 

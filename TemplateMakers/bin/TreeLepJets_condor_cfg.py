@@ -9,7 +9,8 @@ iJob = int(sys.argv[3])
 iLabel = sys.argv[4]
 iJes = int (sys.argv[5])
 iJer = int (sys.argv[6])
-UseSelection = int(sys.argv[7])
+iBsys = int(sys.argv[7])
+UseSelection = int(sys.argv[8])
 
 print 
 
@@ -69,11 +70,21 @@ if iJer == 1:
 	JerName = '_JerUp'
 if iJer == -1:
 	JerName = '_JerDown'
+if iBsys == 0:
+    BsysName = ''
+if iBsys == 1:
+    BsysName = '_BtagSFUp'
+if iBsys == -1:
+    BsysName = '_BtagSFDown'
+if iBsys == 2:
+    BsysName = '_LightFlUp'
+if iBsys == -2:
+    BsysName = '_LightFlDown'
 
 #if UseSelection == 1:
     #print "selection is on so make SelOn Dir"	
-outDir = "batchBEAN/%s_%s_%s%s%s/" % (sampleNameCL, iLabel, SelName, JesName, JerName)
-outFileName = "batchBEAN/%s_%s_%s%s%s/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, SelName,JesName, JerName, sampleNameCL, iLabel, iJob)
+outDir = "batchBEAN/%s_%s_%s%s%s%s/" % (sampleNameCL, iLabel, SelName, JesName, JerName, BsysName)
+outFileName = "batchBEAN/%s_%s_%s%s%s%s/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, SelName, JesName, JerName, BsysName, sampleNameCL, iLabel, iJob)
 #if UseSelection == 0 :
     #print "selection is off so make SelOff Dir"
     #outDir = "batchBEAN/%s_%s_SelOff/" % (sampleNameCL, iLabel)
@@ -101,6 +112,7 @@ process.outputs = cms.PSet (
 process.dilAnalysis = cms.PSet(
 	jes = cms.int32(iJes),
 	jer = cms.int32(iJer),
+	btagsys = cms.int32(iBsys),
 	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	puFile = cms.FileInPath("2012PileUpDists_LepJets.root"),
 	sampleName = cms.string(sampleNameCL),

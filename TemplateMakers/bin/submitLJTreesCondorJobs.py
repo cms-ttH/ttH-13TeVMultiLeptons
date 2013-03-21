@@ -14,7 +14,8 @@ def main ():
     jobLabel = str(sys.argv[1])
     jesChoice = int(sys.argv[2])
     jerChoice = int(sys.argv[3])
-    selection = str(sys.argv[4])
+    btagSyst  = int(sys.argv[4])
+    selection = str(sys.argv[5])
 	#listDir = "53XHadoopSkims"
     print "selection is turned %s" % (selection)
     listOfSamples = []
@@ -23,8 +24,8 @@ def main ():
 		listDir = "53XHadoopSkims"
 		#listOfSamples.append('TTbar_53X_MassBF-v1-2')
 		listOfSamples.append('TTbar_Hadronic_53X')
-		#listOfSamples.append('TTbar_Semilep_53X')
-		#listOfSamples.append('TTbar_Dilep_53X')
+		listOfSamples.append('TTbar_Semilep_53X')
+		listOfSamples.append('TTbar_Dilep_53X')
 ##		listOfSamples.append('TTbar_skims_8TeV')
 ## 		listOfSamples.append('Wjets_skims_8TeV')
 ## 		listOfSamples.append('Zjets_skims_8TeV')
@@ -39,9 +40,9 @@ def main ():
 	   print "the selection is Off!"
 	   listDir = "53XHadoopBeans"
 	   #listOfSamples.append('WJets_Z2Str_noCuts')
-	   #listOfSamples.append('TTbar_Semilep_53X_noCuts')
+	   listOfSamples.append('TTbar_Semilep_53X_noCuts')
 	   listOfSamples.append('TTbar_Dilep_53X_noCuts')
-	   #listOfSamples.append('TTbar_Hadronic_53X_noCuts')
+	   listOfSamples.append('TTbar_Hadronic_53X_noCuts')
 	   #listOfSamples.append('TTbar_Semilep_53X_noCuts_p1')
  	   #listOfSamples.append('TTbar_Semilep_53X_noCuts_p2')
  	   #listOfSamples.append('TTbar_Semilep_53X_noCuts_p3')
@@ -83,8 +84,10 @@ def main ():
         condorJobFile.write( "JES = %s\n" % jesChoice)
         print "JES %s", jesChoice 
         condorJobFile.write( "JER = %s\n" % jerChoice)
-        print "JER %s", jerChoice 
-        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER) $(Selection) \n")
+        print "JER %s", jerChoice
+        condorJobFile.write( "BSys = %s\n" % btagSyst)
+        print "BSys %s", btagSyst
+        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER) $(BSys) $(Selection) \n")
 
         if (jesChoice == 0 and jerChoice == 0):
             JetStr = ""
