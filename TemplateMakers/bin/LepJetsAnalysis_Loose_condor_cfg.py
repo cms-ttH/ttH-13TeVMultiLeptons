@@ -9,7 +9,8 @@ iJob = int(sys.argv[3])
 iLabel = sys.argv[4]
 iJes = int (sys.argv[5])
 iJer = int (sys.argv[6])
-iBtag = int (sys.argv[7])
+iBsys = int(sys.argv[7])
+iBtag = int (sys.argv[8])
 
 
 searchPath = os.environ['CMSSW_SEARCH_PATH']
@@ -50,21 +51,30 @@ print "Adding file: ", readFiles[iJob]
 process.inputs.fileNames.append(readFiles[iJob])
 
 if iJes == 0:
-    if iJer == 0:
-	    outDir = "batchBEAN/%s_%s/" % (sampleNameCL, iLabel)
-	    outFileName = "batchBEAN/%s_%s/lepJetsTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
-    if iJer == -1:
-        outDir = "batchBEAN/%s_%s_JerDown/" % (sampleNameCL, iLabel)
-        outFileName = "batchBEAN/%s_%s_JerDown/lepJetsTemplateTrees_%s_%s_JerDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
-    if iJer == 1:
-        outDir = "batchBEAN/%s_%s_JerUp/" % (sampleNameCL, iLabel)
-        outFileName = "batchBEAN/%s_%s_JerUp/lepJetsTemplateTrees_%s_%s_JerUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
-if iJes == -1:
-	outDir = "batchBEAN/%s_%s_JesDown/" % (sampleNameCL, iLabel)
-	outFileName = "batchBEAN/%s_%s_JesDown/lepJetsTemplateTrees_%s_%s_JesDown_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	JesName = ''
 if iJes == 1:
-	outDir = "batchBEAN/%s_%s_JesUp/" % (sampleNameCL, iLabel)
-	outFileName = "batchBEAN/%s_%s_JesUp/lepJetsTemplateTrees_%s_%s_JesUp_job%03d.root" % (sampleNameCL, iLabel, sampleNameCL, iLabel, iJob)
+	JesName = '_JesUp'
+if iJes == -1:
+	JesName = '_JesDown'
+if iJer == 0:
+	JerName = ''
+if iJer == 1:
+	JerName = '_JerUp'
+if iJer == -1:
+	JerName = '_JerDown'
+if iBsys == 0:
+    BsysName = ''
+if iBsys == 1:
+    BsysName = '_BtagSFUp'
+if iBsys == -1:
+    BsysName = '_BtagSFDown'
+if iBsys == 2:
+    BsysName = '_LightFlUp'
+if iBsys == -2:
+    BsysName = '_LightFlDown'
+	
+outDir = "batchBEAN/%sLoose_%s%s%s%s/" % (sampleNameCL, iLabel, JesName, JerName, BsysName)
+outFileName = "batchBEAN/%sLoose_%s%s%s%s/lepJetsLooseTemplateTrees_%s_%s_job%03d.root" % (sampleNameCL, iLabel, JesName, JerName, BsysName, sampleNameCL, iLabel, iJob)
 
 
 if not os.path.exists(outDir):
@@ -87,6 +97,7 @@ if abs(iJer) > 1:
 process.dilAnalysis = cms.PSet(
 	jes = cms.int32(iJes),
 	jer = cms.int32(iJer),
+	btagsys = cms.int32(iBsys),
 	btagFile = cms.FileInPath("mc_btag_efficiency_v4_histo.root"),
 	puFile = cms.FileInPath("2012PileUpDists_LepJets.root"),
 	sampleName = cms.string(sampleNameCL),

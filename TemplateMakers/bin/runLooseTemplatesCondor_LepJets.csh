@@ -6,7 +6,8 @@ set iJob = $2
 set iLabel = $3
 set iJes = $4
 set iJer = $5
-set iBtag = $6
+set iBSys = $6 #Btag Systematic
+set iBtag = $7 #number of btags
 
 echo $listFileName
 #set sample = ${listFileName:r}
@@ -18,8 +19,21 @@ echo $iJer
 
 if ($iJes == 0) then
     if ($iJer == 0) then
-        set outDirName = batchBEAN/${sample}_${iLabel}/log
-    endif
+		if ($iBSys == 0 ) then
+			set outDirName = batchBEAN/${sample}_${iLabel}/log
+		endif
+		if ($iBSys == 1 ) then
+			set outDirName = batchBEAN/${sample}_${iLabel}_BtagSFUp/log
+		endif
+		if ($iBSys == -1 ) then
+			set outDirName = batchBEAN/${sample}_${iLabel}_BtagSFDown/log
+		endif
+		if ($iBSys == 2 ) then
+			set outDirName = batchBEAN/${sample}_${iLabel}_LflvSFUp/log
+		endif
+		if ($iBSys == -2 ) then
+			set outDirName = batchBEAN/${sample}_${iLabel}_LflvSFDown/log
+		endif
     if ($iJer == -1) then
         set outDirName = batchBEAN/${sample}_${iLabel}_JerDown/log
     endif
@@ -48,4 +62,4 @@ endif
 
 #root -b -q head.C 'test_beans_dileptonStudies.C+(-1,"'${sample}'", '$iJob', "'$iLabel'")' >&! $outDirName/test_beans_dileptonStudies_${sample}_${iLabel}_${iJob}.log
 
-LepJets LepJetsAnalysis_Loose_condor_cfg.py ${sample} $iJob $iLabel $iJes $iJer $iBtag > & ! $outDirName/lepjetsAnalysis_${sample}_${iLabel}_${iJob}.log
+LepJets LepJetsAnalysis_Loose_condor_cfg.py ${sample} $iJob $iLabel $iJes $iJer $iBSys $iBtag > & ! $outDirName/lepjetsAnalysis_${sample}_${iLabel}_${iJob}.log
