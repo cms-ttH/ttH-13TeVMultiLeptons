@@ -175,6 +175,7 @@ int main ( int argc, char ** argv )
    //JES
    int jes = anaParams.getParameter<int> ("jes");
    int jer = anaParams.getParameter<int> ("jer");
+   int btagCSVShape =   anaParams.getParameter<int> ("btagsys");
    cout << "About to read in the sample name" << endl;
    std::string sampleName = anaParams.getParameter<string>("sampleName");
    cout << "The sampleName: " << sampleName << endl; 
@@ -187,7 +188,7 @@ int main ( int argc, char ** argv )
    int minJets  = anaParams.getParameter<int>("minJets");
    double nTags = anaParams.getParameter<double>("btags");
    //Add this into cfg when you do btag systematic!
-   int btagCSVShape = 0;
+   
 
    std::cout <<"CONFIG: using jes = " << jes << " jer = " << jer << std::endl;
 
@@ -332,33 +333,50 @@ int main ( int argc, char ** argv )
   if(isData==true){sysType = "data";}
   //beanHelper.setMCsample(sample, true, true, "");
 
+  //Tessa only do this for this silly JES up and down on the data
+  //isData = false;
+  // sample = 2500;
+
   BEANhelper beanHelper;
   //BEANhelper::SetUp(string iEra, int iSampleNumber, bool iIsLJ, bool iIsData, string iDataset, bool iReshapeCSV, bool iPfLeptons = true)
   beanHelper.SetUp(Era, sample, true, isData, "SingleMu", true, false, PUPeriodStr);
-            
+
+
+  cout << "Time to set the iSysType" << endl;
   sysType::sysType iSysTypeJE = sysType::NA;
-if (isData || (jer==0 && jes==0)) {
-  iSysTypeJE = sysType::NA;
+  if (isData || (jer==0 && jes==0)) {
+    cout << "Setting the iSysTypeJE to NA" << endl;
+    iSysTypeJE = sysType::NA;
  } else if (jer == 1) {
-  iSysTypeJE = sysType::JERup;
+    cout << "Setting the iSysTypeJE to JERup" << endl;
+    iSysTypeJE = sysType::JERup;
  } else if (jer == -1) {
-  iSysTypeJE = sysType::JERdown;
+    cout << "Setting the iSysTypeJE to JERDown" << endl;
+    iSysTypeJE = sysType::JERdown;
  } else if (jes == 1) {
-  iSysTypeJE = sysType::JESup;
+    cout << "Setting the iSysTypeJE to JESup" << endl;
+    iSysTypeJE = sysType::JESup;
  } else if (jes == -1) {
-  iSysTypeJE = sysType::JESdown;
+    cout << "Setting the iSysTypeJE to JESdown" << endl;
+    iSysTypeJE = sysType::JESdown;
  }
+// cout << "iSysType:  " << iSysType << endl;
 
 sysType::sysType iSysTypeCSV = sysType::NA;
 if (isData || btagCSVShape==0) {
+  cout << "Setting the iSysTypeCSV to NA" << endl;
   iSysTypeCSV = sysType::NA;
  } else if (btagCSVShape == 1) {
+    cout << "Setting the iSysTypeCSV to HvyFl Up" << endl;
   iSysTypeCSV = sysType::hfSFup;
  } else if (btagCSVShape == -1) {
+    cout << "Setting the iSysTypeCSV to HvyFl Down" << endl;
   iSysTypeCSV = sysType::hfSFdown;
  } else if (btagCSVShape == 2) {
+    cout << "Setting the iSysTypeCSV to LgtFl Up" << endl;
   iSysTypeCSV = sysType::lfSFup;
  } else if (btagCSVShape == -2) {
+    cout << "Setting the iSysTypeCSV to LgtFl Down" << endl;
   iSysTypeCSV = sysType::lfSFdown;
  }
 
@@ -1248,6 +1266,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       }
 
       wgt *= PUwgt;
+      //wgt = 1; //TESSA this is WRONG for data shifting
       // cout << "PUwgt for this event: " << PUwgt  << " New weight: " << wgt << endl;
       
 
@@ -2158,7 +2177,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 //           }
         
           // }
-
+      //cout << "weight" << wgt << endl;
 
       *(floatBranches["leptonPt"]) = leptonPt ;
       *(floatBranches["leptonEta"]) = leptonEta ;
