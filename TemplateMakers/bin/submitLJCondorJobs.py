@@ -9,11 +9,13 @@ def main ():
 
     jesChoice = int(sys.argv[1])
     jerChoice = int(sys.argv[2])
-    btagChoice = int(sys.argv[3])
-    jobLabel = str(sys.argv[4])
+    btagSyst  = int(sys.argv[3])
+    btagChoice = int(sys.argv[4])
+    jobLabel = str(sys.argv[5])
     listDir = "53XHadoopSkims"
+    print "JES: %f,   JER: %f ,  BTagSys: %f" % (jesChoice, jerChoice, btagSyst)
 	#listDir = "53XHadoopBeans"
-    listOfSamples = [##'TTbar_53X_MassBD-v1-2',
+    listOfSamples = [###'TTbar_53X_MassBD-v1-2',
  					 'TTbar_Hadronic_53X',
  					 #'TTbar_Semilep_53X',
  					 #'TTbar_Dilep_53X',
@@ -21,16 +23,16 @@ def main ():
   					 #'W2_53X',
  					 #'W3_53X',
  					 #'W4_53X',
-					 ##'Wjets_53X_Z2St-v2',
+					 #'Wjets_53X_Z2St-v2',
 					 #'Zjets-M50_53X',
 					 #'ST_tbar_sChan_53X',
 					 #'ST_tbar_tChan_53X',
 					 #'ST_tbar_tWChan_53X',
 					 #'ST_t_sChan_53X',
-					 # 'ST_t_tChan_53X',
+					 #'ST_t_tChan_53X',
 					 #'ST_t_tWChan_53X',
   					 #'Data2012_53X'
-					 ##'Data2012A52XLoose'
+					 ###'Data2012A52XLoose'
 		             ##'Data2012A53XLoose'
 					 ]
    ##  listOfSamples = ['TTbar_skims_8TeV',
@@ -87,9 +89,10 @@ def main ():
         condorJobFile.write( "NJobs = %s\n" % numJobs)
         condorJobFile.write( "JES = %s\n" % jesChoice)
         condorJobFile.write( "JER = %s\n" % jerChoice)
+        condorJobFile.write( "BSys = %s\n" % btagSyst)
         condorJobFile.write( "BTAG = %s\n" % btagChoice)
         #condorJobFile.write( "SampleName = %s\n" % iList )
-        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER) $(BTAG) \n")
+        condorJobFile.write( "arguments = $(List) $(Process) $(Label) $(JES) $(JER) $(BSys) $(BTAG) \n")
 
         if (jesChoice == 0 and jerChoice == 0):
             JetStr = ""
