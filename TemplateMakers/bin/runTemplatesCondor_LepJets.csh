@@ -30,10 +30,10 @@ if ($iJes == 0) then
 			set outDirName = batchBEAN/${sample}_${iLabel}_BtagSFDown/log
 		endif
 		if ($iBSys == 2 ) then
-			set outDirName = batchBEAN/${sample}_${iLabel}_LflvSFUp/log
+			set outDirName = batchBEAN/${sample}_${iLabel}_LightFlUp/log
 		endif
 		if ($iBSys == -2 ) then
-			set outDirName = batchBEAN/${sample}_${iLabel}_LflvSFDown/log
+			set outDirName = batchBEAN/${sample}_${iLabel}_LightFlDown/log
 		endif		   
     endif
     if ($iJer == -1) then
