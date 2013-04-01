@@ -484,13 +484,15 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
   floatBranches["prob_lfSFup"] = new float(0.0);                                                                                 
   floatBranches["prob_lfSFdown"] = new float(0.0);                                                                               
 
-  //pile up
+  //weights
   floatBranches["numPV"] = new float(0.0);
   floatBranches["weight"] = new float(0.0);
   floatBranches["PUweight"] = new float(0.0);
   floatBranches["weight_PUup"] = new float(0.0);
   floatBranches["weight_PUdown"] = new float(0.0);
   floatBranches["ttbarWeight"] = new float(0.0);
+  floatBranches["Q2ScaleUpWgt"] = new float(0.0);
+  floatBranches["Q2ScaleDownWgt"] = new float(0.0);
   //  floatBranches["nPartons"] = new float(0.0);
 
   //met
@@ -826,6 +828,14 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       wgt *= PUwgt;
       // cout << "PUwgt for this event: " << PUwgt  << " New weight: " << wgt << endl;
 
+      float Q2ScaleUpWgt = 1.0;
+      float Q2ScaleDownWgt = 1.0;
+
+      if ( TString(sampleName).Contains("TTbar")) {
+        Q2ScaleUpWgt = event->Q2ScaleUpWgt;
+        Q2ScaleDownWgt = event->Q2ScaleDownWgt;
+      }
+      
 
 
  
@@ -1050,7 +1060,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 
 
       nevents++;
-      nevents_wgt+=wgt;
+      // nevents_wgt+=wgt;
 
 //       int mcut = 0;
 //       h_cutflow_unwgt->Fill(0.5 + mcut); h_cutflow->Fill(0.5 + (mcut++),wgt);  // preselection 0
@@ -1977,6 +1987,8 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       *(floatBranches["PUweight"]) = PUwgt;
 	  *(floatBranches["weight_PUup"]) = PUwgt_up ;
 	  *(floatBranches["weight_PUdown"]) = PUwgt_down ;
+      *(floatBranches["Q2ScaleUpWgt"]) = Q2ScaleUpWgt;
+      *(floatBranches["Q2ScaleDownWgt"]) = Q2ScaleDownWgt;
 	  *(floatBranches["met"]) = met;
       *(floatBranches["metTruth"]) = neutrinoTruthLV.M();
 	  *(floatBranches["unc_met"]) = unc_met;
