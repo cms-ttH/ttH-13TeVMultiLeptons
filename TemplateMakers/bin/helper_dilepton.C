@@ -434,21 +434,31 @@ int main ( int argc, char ** argv )
   // 
   
   std::vector< TString >catList ;
-  catList.push_back("ge3t_v1");
-  catList.push_back("ge3t_v2");
-  catList.push_back("ge4je2t_v1");   /////
-  catList.push_back("e3je2t_v1");   /////
-  catList.push_back("e2je2t_v1");
+  //catList.push_back("ge3t_v1");
+  //catList.push_back("ge3t_v2");
+  //catList.push_back("ge4je2t_v1");   /////
+  //catList.push_back("e3je2t_v1");   /////
+  //catList.push_back("e2je2t_v1");
+  //catList.push_back("e2je2t");
+  //catList.push_back("ge3t");
+  //catList.push_back("ge4je2t");
+  //catList.push_back("e3je2t");
+  //catList.push_back("SS_ge3jge0t_ttbar");
 
-  catList.push_back("e2je2t_oldvar");   /////
-  catList.push_back("e3je2t_53x");   /////
-  catList.push_back("ge4je2t_53x");   /////
-  catList.push_back("ge3t_53x");   /////
+  //catList.push_back("ge3t_new");
+
+  //catList.push_back("var_best8");
+  
+
+  //catList.push_back("e2je2t_oldvar");   /////
+  //catList.push_back("e3je2t_53x");   /////
+  //catList.push_back("ge4je2t_53x");   /////
+  //catList.push_back("ge3t_53x");   /////
 
 //   catList.push_back("eq3jeq3t_ttbar");
 //   catList.push_back("ge4jge3t_ttbar");
 
-  catList.push_back("SS_ge3jge0t_ttbar");
+  //catList.push_back("SS_ge3jge0t_ttbar");
 //   catList.push_back("SS_ge3jge1t_ttW");
   
   const unsigned int nCat = catList.size();
@@ -502,7 +512,9 @@ int main ( int argc, char ** argv )
 
   for( unsigned int j = 0 ; j < nCat ; ++j ){
       TString label = catList[j];
-      reader.push_back( new TMVA::Reader( "!Color:!Silent" ));    
+      reader.push_back( new TMVA::Reader( "!Color:!Silent" ));
+
+      // hope this works for e2je2t, ge3t
       if(j < 2) { 
         reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
 	if (j==1) {
@@ -747,6 +759,12 @@ int main ( int argc, char ** argv )
     floatBranches["lep1SF"] = new float (0.0);
     floatBranches["lep2SF"] = new float (0.0);
     floatBranches["lepTotalSF"] = new float (0.0);
+    floatBranches["triggerSF"] = new float (0.0);
+    //floatBranches["newSingleMuSF"] = new float (0.0);
+    //floatBranches["newSingleEleSF"] = new float (0.0);
+    //floatBranches["oldSingleMuSF"] = new float (0.0);
+    //floatBranches["oldSingleEleSF"] = new float (0.0);
+    
     floatBranches["weight_Xsec"] = new float(0.0);
     floatBranches["nGen"] = new float(0.0);
     floatBranches["Xsec"] = new float(0.0);
@@ -2502,6 +2520,13 @@ int main ( int argc, char ** argv )
     int lep2GenMotherID = dInt;
     float lep1SF = dFloat;
     float lep2SF = dFloat;
+
+    float triggerSF = dFloat;
+    //float newSingleMuSF = dFloat;
+    //float newSingleEleSF = dFloat;
+    //float oldSingleMuSF = dFloat;
+    //float oldSingleEleSF = dFloat;
+    
     float lep1FlipSF = dFloat;
     float lep2FlipSF = dFloat;
     float lep1FlipSFUp = dFloat;
@@ -2532,6 +2557,14 @@ int main ( int argc, char ** argv )
         
         lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0));
         lep2SF = beanHelper.GetMuonSF(muonsSelected.at(1));
+
+        if (debug_) cout << "DEBUG: Calling double muon trigger SF...";
+        triggerSF = beanHelper.GetDoubleMuonTriggerSF(muonsSelected.at(0), muonsSelected.at(1));
+        if (debug_) cout << "Returned!" << endl;
+
+        //newSingleMuSF = beanHelper.TestSingleMuonTriggerNew(muonsSelected.at(0));
+        //oldSingleMuSF = beanHelper.TestSingleMuonTriggerOld(muonsSelected.at(0));
+        
 
 	    lep1Pt = muonsSelected.at(0).pt;
 	    lep2Pt = muonsSelected.at(1).pt;
@@ -2683,7 +2716,14 @@ int main ( int argc, char ** argv )
 
         lep1SF = beanHelper.GetElectronSF(electronsSelected.at(0));
         lep2SF = beanHelper.GetElectronSF(electronsSelected.at(1));
-	  
+
+        if (debug_) cout << "DEBUG: Calling double ele trigger... ";
+        triggerSF = beanHelper.GetDoubleElectronTriggerSF(electronsSelected.at(0),electronsSelected.at(1));
+        if (debug_) cout << "RETURNED" << endl;
+
+        //newSingleEleSF = beanHelper.TestSingleEleTriggerNew(electronsSelected.at(0));
+        //oldSingleEleSF = beanHelper.TestSingleEleTriggerOld(electronsSelected.at(0));
+        
 	    lep1Pt = electronsSelected.at(0).pt;
 	    lep2Pt = electronsSelected.at(1).pt;
 	    
@@ -2847,6 +2887,17 @@ int main ( int argc, char ** argv )
         lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0));
         lep2SF = beanHelper.GetElectronSF(electronsSelected.at(0));
 
+        
+        if (debug_) cout << "DEBUG Calling muon ele trigger SF ... ";
+        triggerSF = beanHelper.GetMuonEleTriggerSF(muonsSelected.at(0), electronsSelected.at(0));
+        if (debug_) cout << "RETURNEd!" << endl;
+
+        //newSingleEleSF = beanHelper.TestSingleEleTriggerNew(electronsSelected.at(0));
+        //oldSingleEleSF = beanHelper.TestSingleEleTriggerOld(electronsSelected.at(0));
+
+        //newSingleMuSF = beanHelper.TestSingleMuonTriggerNew(muonsSelected.at(0));
+        //oldSingleMuSF = beanHelper.TestSingleMuonTriggerOld(muonsSelected.at(0));
+
 	    lep1Pt = muonsSelected.at(0).pt;
 	    lep2Pt = electronsSelected.at(0).pt;
 	    
@@ -2997,6 +3048,16 @@ int main ( int argc, char ** argv )
         lep2SF = beanHelper.GetMuonSF(muonsSelected.at(0));
         lep1SF = beanHelper.GetElectronSF(electronsSelected.at(0));
 
+        if (debug_) cout << "DEBUG Calling muon ele trigger SF ... ";
+        triggerSF = beanHelper.GetMuonEleTriggerSF(muonsSelected.at(0), electronsSelected.at(0));
+        if (debug_) cout << "RETUrNEd!" << endl;
+
+        //newSingleEleSF = beanHelper.TestSingleEleTriggerNew(electronsSelected.at(0));
+        //oldSingleEleSF = beanHelper.TestSingleEleTriggerOld(electronsSelected.at(0));
+
+        //newSingleMuSF = beanHelper.TestSingleMuonTriggerNew(muonsSelected.at(0));
+        //oldSingleMuSF = beanHelper.TestSingleMuonTriggerOld(muonsSelected.at(0));
+        
 	    lep2Pt = muonsSelected.at(0).pt;
 	    lep1Pt = electronsSelected.at(0).pt;
 	    
@@ -3914,6 +3975,13 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep1SF"]) = lep1SF;
         *(floatBranches["lep2SF"]) = lep2SF;
         *(floatBranches["lepTotalSF"]) = lepTotalSF;
+        *(floatBranches["triggerSF"]) = triggerSF;
+
+        //*(floatBranches["newSingleMuSF"]) = newSingleMuSF;
+        //*(floatBranches["newSingleEleSF"]) = newSingleEleSF;
+        //*(floatBranches["oldSingleMuSF"]) = oldSingleMuSF;
+        //*(floatBranches["oldSingleEleSF"]) = oldSingleEleSF;
+        
         *(floatBranches["weight_Xsec"]) = weight_Xsec ;
         *(floatBranches["nGen"]) = nGen ;
         *(floatBranches["Xsec"]) = Xsec ;
