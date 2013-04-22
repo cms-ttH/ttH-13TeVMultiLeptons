@@ -1088,13 +1088,16 @@ int main ( int argc, char ** argv )
         }
         else { //inputYear == "2012_53x"
           if (OutputDirectory == "TwoMuon" || OutputDirectory == "ThreeMuon" || OutputDirectory == "TwoMuonEle" ) {
-            TrigStr = "0.978 * ";
+            // was 0.978
+            TrigStr = "triggerSF * ";
           }
           else if (OutputDirectory == "TwoEle" || OutputDirectory == "ThreeEle" || OutputDirectory == "TwoEleMuon" ) {
-            TrigStr = "0.979 * ";
+            // was 0.979
+            TrigStr = "triggerSF * ";
           }
           else if (OutputDirectory == "MuonEle"  ) {
-            TrigStr = "0.972 * ";
+            // was 0.942
+            TrigStr = "triggerSF * ";
           }
           if (inputCharge == "SS" || makeTrileptonPlots) EffStr = "lepTotalSF * ((lepTotalPromptSFUp+lepTotalPromptSFDown)/2) * lepTotalFlipSF *"; 
           else EffStr = "lepTotalSF * ";
