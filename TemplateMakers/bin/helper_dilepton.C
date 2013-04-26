@@ -169,13 +169,80 @@ int main ( int argc, char ** argv )
    
    bool debug_ = false;
 
-   //// Ht re-weighting 
-   TString rwtFileName = "sum_jet_pt_rwt.root";
-   if ( selectionYearStr == "2011") rwtFileName = "sum_jet_pt_rwt_2011.root"; 
-   TFile *f_Ht_rwt = new TFile(rwtFileName);
-   TH1F* h_rwt_lowPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV0");
-   TH1F* h_rwt_medPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV1");
-   TH1F* h_rwt_highPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV2");
+   //// csv re-weighting 
+// //    if ( jes == 1 ) {
+// //      rwtFileName1 = "csv_rwt_lf_IT_v1_JESUp.root";
+// //      rwtFileName2 = "csv_rwt_hf_IT_v1_JESUp.root";
+// //    }
+// //    if ( jes == -1 ) {
+// //      rwtFileName1 = "csv_rwt_lf_IT_v1_JESDown.root";
+// //      rwtFileName2 = "csv_rwt_hf_IT_v1_JESDown.root";
+// //    }
+// //    std::cout << "using SF root files " << rwtFileName1 << " and " << rwtFileName2 << std::endl;
+   
+//    //   if ( selectionYearStr == "2011") rwtFileName = "sum_jet_pt_rwt_2011.root"; 
+
+//    TString rwtFileName1 = "csv_rwt_lf_final_IT_v2.root";
+//    TString rwtFileName2 = "csv_rwt_hf_final_IT_v2.root";
+
+//    TFile *f_rwt1 = new TFile(rwtFileName1);
+//    TFile *f_rwt2 = new TFile(rwtFileName2);
+
+//    std::vector<TString> syst_csv_suffix_hf;
+//    syst_csv_suffix_hf.push_back("");
+//    syst_csv_suffix_hf.push_back("LFUp");
+//    syst_csv_suffix_hf.push_back("LFDown");
+//    syst_csv_suffix_hf.push_back("Stats1Up");
+//    syst_csv_suffix_hf.push_back("Stats1Down");
+//    syst_csv_suffix_hf.push_back("Stats2Up");
+//    syst_csv_suffix_hf.push_back("Stats2Down");
+
+//    std::vector<TString> syst_csv_suffix_lf;
+//    syst_csv_suffix_lf.push_back("");
+//    syst_csv_suffix_lf.push_back("HFUp");
+//    syst_csv_suffix_lf.push_back("HFDown");
+//    syst_csv_suffix_lf.push_back("Stats1Up");
+//    syst_csv_suffix_lf.push_back("Stats1Down");
+//    syst_csv_suffix_lf.push_back("Stats2Up");
+//    syst_csv_suffix_lf.push_back("Stats2Down");
+//    const unsigned int nsys_csv = syst_csv_suffix_lf.size();
+
+//    TH1D* csv_hist_hf[nsys_csv][5];
+//    TH1D* csv_hist_lf[nsys_csv][3][3];
+
+//    for ( unsigned int iSF=0; iSF<nsys_csv; iSF++){
+//      TString hfsuffix = syst_csv_suffix_hf[iSF];
+//      TString lfsuffix = syst_csv_suffix_lf[iSF];
+
+//      if (jes==1) {
+//        if (iSF==0) { hfsuffix = "_JESUp"; lfsuffix = "_JESUp"; }
+//        else continue;
+//      }
+//      if (jes==-1){ 
+//        if (iSF==0) { hfsuffix = "_JESDown"; lfsuffix = "_JESDown"; }
+//        else continue;
+//      }
+
+//      for( unsigned int iPt=0; iPt<5; iPt++ ){
+//        TString csvhistName2 = Form("csv_ratio_Pt%i_Eta0_final",iPt);
+//        if (iSF !=0 ) csvhistName2 += "_";
+//        csvhistName2 += hfsuffix;
+//        csv_hist_hf[iSF][iPt] = (TH1D*)f_rwt2->Get(csvhistName2);
+//      }
+
+//      for( unsigned int iPt=0; iPt<3; iPt++ ){
+//        for( unsigned int iEta=0; iEta<3; iEta++ ){
+// 	 TString csvhistName1 = Form("csv_ratio_Pt%i_Eta%i_final",iPt,iEta);
+// 	 if (iSF !=0 ) csvhistName1 += "_";
+// 	 csvhistName1 += lfsuffix;
+// 	 csv_hist_lf[iSF][iPt][iEta] = (TH1D*)f_rwt1->Get(csvhistName1);
+//        }
+//      }
+//    }
+
+//    TH1F* h_rwt_lowPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV0");
+//    TH1F* h_rwt_medPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV1");
+//    TH1F* h_rwt_highPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV2");
    
    int maxNentries = inputs.getParameter<int> ("maxEvents");
 
@@ -273,41 +340,41 @@ int main ( int argc, char ** argv )
   else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
     if (isData) sampleNumber = -1;
     else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) { sampleNumber = 2500;
-      nGen = 6889624+1362471; Xsec = 234.0; }
+      nGen = 6889624+1362471; Xsec = 245.8; }
     else if (sampleName == "ttbar_bb" || tmpName.Contains("ttbar_bb_part")) { sampleNumber = 2555;
-      nGen = 6889624+1362471; Xsec = 234.0; }
+      nGen = 6889624+1362471; Xsec = 245.8; }
     else if (sampleName == "ttbar_cc" || tmpName.Contains("ttbar_cc_part")) { sampleNumber = 2544;
-      nGen = 6889624+1362471; Xsec = 234.0; }
+      nGen = 6889624+1362471; Xsec = 245.8; }
     else if (sampleName == "ttbar_scaleup") sampleNumber = 2511; 
     else if (sampleName == "ttbar_scaledown") sampleNumber = 2510; 
     else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
     else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
     else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2566;
-      nGen = 30997580; Xsec = 106.94; 
+      nGen = 30997580; Xsec = 0.457*245.8; 
       weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2563;
-      nGen = 25165429; Xsec = 102.49;
+      nGen = 25165429; Xsec = 0.438*245.8;
       weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2533;
-      nGen = 12063533; Xsec = 24.57;
+      nGen = 12063533; Xsec = 0.105*245.8;
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
-      nGen = 30997580; Xsec = 102.91;
+      nGen = 30997580; Xsec = 0.457*245.8;
       weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_lj" || tmpName.Contains("ttbar_cc_lj_part")) { sampleNumber = 2573;
-      nGen = 25165429; Xsec = 98.65;
+      nGen = 25165429; Xsec = 0.438*245.8;
       weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_cc_ll" || tmpName.Contains("ttbar_cc_ll_part")) { sampleNumber = 2543;
-      nGen = 12063533; Xsec = 23.64;
+      nGen = 12063533; Xsec = 0.105*245.8;
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_jj" || tmpName.Contains("ttbar_bb_jj_part")) { sampleNumber = 2586;
-      nGen = 30997580; Xsec = 102.91;
+      nGen = 30997580; Xsec = 0.457*245.8;
       weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_lj" || tmpName.Contains("ttbar_bb_lj_part")) { sampleNumber = 2583;
-      nGen = 25165429; Xsec = 98.65;
+      nGen = 25165429; Xsec = 0.438*245.8;
       weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) { sampleNumber = 2553;
-      nGen = 12063533; Xsec = 23.64; 
+      nGen = 12063533; Xsec = 0.105*245.8; 
       weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
     else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) { sampleNumber = 2400;
       nGen = 57108525; Xsec = 36257; }
@@ -411,7 +478,7 @@ int main ( int argc, char ** argv )
   if (debug_) std::cout << "beanHelper.SetUp(" << selectionYearStr << " , "
                         << sampleNumber << " , false  " << isData << " , "
                         << dset << " , true, true );" << std::endl;
-  beanHelper.SetUp(selectionYearStr,sampleNumber,false,isData,dset,true,true,PUPeriodStr);
+  beanHelper.SetUp(selectionYearStr,sampleNumber,false,isData,dset,false,true,PUPeriodStr);
   if (debug_) std::cout << "beanHelper.SetUp successful" << std::endl;
   
   // Load the files
@@ -434,32 +501,22 @@ int main ( int argc, char ** argv )
   // 
   
   std::vector< TString >catList ;
-  //catList.push_back("ge3t_v1");
-  //catList.push_back("ge3t_v2");
-  //catList.push_back("ge4je2t_v1");   /////
-  //catList.push_back("e3je2t_v1");   /////
-  //catList.push_back("e2je2t_v1");
-  //catList.push_back("e2je2t");
-  //catList.push_back("ge3t");
-  //catList.push_back("ge4je2t");
-  //catList.push_back("e3je2t");
-  //catList.push_back("SS_ge3jge0t_ttbar");
+//   catList.push_back("ge3t_v1");
+//   catList.push_back("ge3t_v2");
+//   catList.push_back("ge4je2t_v1");   /////
+//   catList.push_back("e3je2t_v1");   /////
+//   catList.push_back("e2je2t_v1");
 
-  //catList.push_back("ge3t_new");
+//   catList.push_back("e2je2t_oldvar");   /////
+//   catList.push_back("e3je2t_53x");   /////
+//   catList.push_back("ge4je2t_53x");   /////
+//   catList.push_back("ge3t_53x");   /////
 
-  //catList.push_back("var_best8");
-  
+// //   catList.push_back("eq3jeq3t_ttbar");
+// //   catList.push_back("ge4jge3t_ttbar");
 
-  //catList.push_back("e2je2t_oldvar");   /////
-  //catList.push_back("e3je2t_53x");   /////
-  //catList.push_back("ge4je2t_53x");   /////
-  //catList.push_back("ge3t_53x");   /////
-
-//   catList.push_back("eq3jeq3t_ttbar");
-//   catList.push_back("ge4jge3t_ttbar");
-
-  //catList.push_back("SS_ge3jge0t_ttbar");
-//   catList.push_back("SS_ge3jge1t_ttW");
+//   catList.push_back("SS_ge3jge0t_ttbar");
+// //   catList.push_back("SS_ge3jge1t_ttW");
   
   const unsigned int nCat = catList.size();
 
@@ -512,9 +569,7 @@ int main ( int argc, char ** argv )
 
   for( unsigned int j = 0 ; j < nCat ; ++j ){
       TString label = catList[j];
-      reader.push_back( new TMVA::Reader( "!Color:!Silent" ));
-
-      // hope this works for e2je2t, ge3t
+      reader.push_back( new TMVA::Reader( "!Color:!Silent" ));    
       if(j < 2) { 
         reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
 	if (j==1) {
@@ -677,9 +732,9 @@ int main ( int argc, char ** argv )
   bool ExtraKinematicVariables = true;
   //bool ExtraEventVariables = false;
   bool ExtraTriggerVariables = false;
-  bool ExtraGenVariables = false;
+  bool ExtraGenVariables = true; //false;
   bool ExtraHiggsVariables = false;
-  bool ExtraSameSignVariables = true;
+  bool ExtraSameSignVariables = false;
   
   bool ArtificialJetPt = false;
   float higgs_mass = 115.0;
@@ -770,7 +825,22 @@ int main ( int argc, char ** argv )
     floatBranches["Xsec"] = new float(0.0);
     floatBranches["topPtWgt"] = new float(0.0);
     floatBranches["topPtWgtUp"] = new float(0.0);
-    
+    floatBranches["csvWgtlf"] = new float(0.0);
+    floatBranches["csvWgthf"] = new float(0.0);
+    //// extra btag SFs weights
+    floatBranches["csvWgtlf_HFUp"] = new float(0.0);
+    floatBranches["csvWgtlf_HFDown"] = new float(0.0);
+    floatBranches["csvWgtlf_Stats1Up"] = new float(0.0);
+    floatBranches["csvWgtlf_Stats1Down"] = new float(0.0);
+    floatBranches["csvWgtlf_Stats2Up"] = new float(0.0);
+    floatBranches["csvWgtlf_Stats2Down"] = new float(0.0);
+
+    floatBranches["csvWgthf_LFUp"] = new float(0.0);
+    floatBranches["csvWgthf_LFDown"] = new float(0.0);
+    floatBranches["csvWgthf_Stats1Up"] = new float(0.0);
+    floatBranches["csvWgthf_Stats1Down"] = new float(0.0);
+    floatBranches["csvWgthf_Stats2Up"] = new float(0.0);
+    floatBranches["csvWgthf_Stats2Down"] = new float(0.0);
     //met
     floatBranches["met"] = new float(0.0);
     floatBranches["unc_met"] = new float(0.0);
@@ -1092,14 +1162,18 @@ int main ( int argc, char ** argv )
 
   if (ExtraGenVariables) {
     
-    intBranches["lep1GenID"] = new int(0);
-    intBranches["lep2GenID"] = new int(0);
+//     intBranches["lep1GenID"] = new int(0);
+//     intBranches["lep2GenID"] = new int(0);
     intBranches["first_jet_genID"] = new int(0);
     intBranches["second_jet_genID"] = new int(0);
     intBranches["third_jet_genID"] = new int(0);
     intBranches["fourth_jet_genID"] = new int(0);
-    floatBranches["top1_pt"] = new float(0.0);
-    floatBranches["top1_pz"] = new float(0.0);
+    intBranches["first_jet_flavor"] = new int(0);
+    intBranches["second_jet_flavor"] = new int(0);
+    intBranches["third_jet_flavor"] = new int(0);
+    intBranches["fourth_jet_flavor"] = new int(0);
+//     floatBranches["top1_pt"] = new float(0.0);
+//     floatBranches["top1_pz"] = new float(0.0);
 
   } //End if (ExtraGenVariables)
 
@@ -1265,7 +1339,7 @@ int main ( int argc, char ** argv )
       cnt++;
 
       if( cnt==1 )        std::cout << "     Event " << cnt << std::endl;
-      if( cnt%1000==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
+      if( cnt%10000==0 && cnt!=1 ) std::cout << "Helper events " << cnt << "\t" 
 					      << int(float(cnt)/float(nentries)*100) << "% done" << std::endl;
 
       if( cnt==(maxNentries+1) ) break;
@@ -1959,7 +2033,50 @@ int main ( int argc, char ** argv )
       BNjetCollection const &pfjetsSelected = beanHelper.GetCorrectedJets(pfjets,iSysType);
       BNjetCollection const &pfjetsSelected_Uncorrected = beanHelper.GetUncorrectedJets(pfjetsSelected,pfjets);
 
+      //////////////////
+      ////////// csv reweighting
+      //////////////////
+      double csvWgtlf[7] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+      double csvWgthf[7] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+      if ( !isData ) {
+	BNjetCollection const &selectedJets_unsorted  = beanHelper.GetSelectedJets( pfjetsSelected, 30., 2.4, jetID::jetLoose, '-' ); 
+	BNjetCollection const &selectedJets       = beanHelper.GetSortedByPt( selectedJets_unsorted );
+	vdouble csvWgt = beanHelper.GetCSVweights( selectedJets, iSysType );
+	csvWgthf[0] = csvWgt[0];
+	csvWgtlf[0] = csvWgt[1];
+
+	if ( jes == 0 ) {
+	  vdouble csvWgtLFup = beanHelper.GetCSVweights( selectedJets, sysType::CSVLFup );
+	  vdouble csvWgtLFdown = beanHelper.GetCSVweights( selectedJets, sysType::CSVLFdown );
+	  vdouble csvWgtHFStats1up = beanHelper.GetCSVweights( selectedJets, sysType::CSVHFStats1up );
+	  vdouble csvWgtHFStats1down = beanHelper.GetCSVweights( selectedJets, sysType::CSVHFStats1down );
+	  vdouble csvWgtHFStats2up = beanHelper.GetCSVweights( selectedJets, sysType::CSVHFStats2up );
+	  vdouble csvWgtHFStats2down = beanHelper.GetCSVweights( selectedJets, sysType::CSVHFStats2down );
+	  csvWgthf[1] = csvWgtLFup[0];
+	  csvWgthf[2] = csvWgtLFdown[0];
+	  csvWgthf[3] = csvWgtHFStats1up[0];
+	  csvWgthf[4] = csvWgtHFStats1down[0];
+	  csvWgthf[5] = csvWgtHFStats2up[0];
+	  csvWgthf[6] = csvWgtHFStats2down[0];
+
+	  vdouble csvWgtHFup = beanHelper.GetCSVweights( selectedJets, sysType::CSVHFup );
+	  vdouble csvWgtHFdown = beanHelper.GetCSVweights( selectedJets, sysType::CSVHFdown );
+	  vdouble csvWgtLFStats1up = beanHelper.GetCSVweights( selectedJets, sysType::CSVLFStats1up );
+	  vdouble csvWgtLFStats1down = beanHelper.GetCSVweights( selectedJets, sysType::CSVLFStats1down );
+	  vdouble csvWgtLFStats2up = beanHelper.GetCSVweights( selectedJets, sysType::CSVLFStats2up );
+	  vdouble csvWgtLFStats2down = beanHelper.GetCSVweights( selectedJets, sysType::CSVLFStats2down );
+	  csvWgtlf[1] = csvWgtHFup[1];
+	  csvWgtlf[2] = csvWgtHFdown[1];
+	  csvWgtlf[3] = csvWgtLFStats1up[1];
+	  csvWgtlf[4] = csvWgtLFStats1down[1];
+	  csvWgtlf[5] = csvWgtLFStats2up[1];
+	  csvWgtlf[6] = csvWgtLFStats2down[1];
+	}
+      }
+
+      ///////----
       if (debug_) cout << "Looping over pfjetsSelected" << endl;
+
       for( int i=0; i<int(pfjetsSelected.size()); i++ ){
 
 	float jetPt = pfjetsSelected.at(i).pt;
@@ -2120,6 +2237,44 @@ int main ( int argc, char ** argv )
 
 	jet_CSV.push_back(csv);
 	jet_CSV_list.push_back(csv);
+
+	////csv reweighting
+// 	if (! isData ){
+// 	  int iPt = -1; int iEta = -1;
+// 	  if (jetPt >=30 && jetPt<40) iPt = 0;
+// 	  else if (jetPt >=40 && jetPt<60) iPt = 1;
+// 	  else if (jetPt >=60 && jetPt<100) iPt = 2;
+// 	  else if (jetPt >=100 && jetPt<160) iPt = 3;
+// 	  else if (jetPt >=160 && jetPt<10000) iPt = 4;
+	  
+// 	  if (jetAbsEta >=0 &&  jetAbsEta<0.8) iEta = 0;
+// 	  else if ( jetAbsEta>=0.8 && jetAbsEta<1.6) iEta = 1;
+// 	  else if ( jetAbsEta>=1.6 && jetAbsEta<2.4) iEta = 2;
+	  
+// 	  if (iPt < 0 || iEta < 0) std::cout << "Error, couldn't find Pt, Eta bins for this b-flavor jet" << std::endl;
+
+// 	  if (abs(flavor) == 5 || abs(flavor) == 4){
+// 	    for ( unsigned int iSF=0; iSF<nsys_csv; iSF++){
+// 	      if (jes!=0  && iSF != 0)  continue;
+// 	      double iCSVWgt2 = csv_hist_hf[iSF][iPt]->GetBinContent(csv_hist_hf[iSF][iPt]->FindBin(csv));
+// 	      if (iCSVWgt2!=0) csvWgthf[iSF] *= iCSVWgt2;
+// // 	      cout << "wgt " << iSF << " = " << csvWgthf[iSF] << endl;
+// 	    }
+// 	  }
+// 	  else {
+// 	    if (iPt >=2) iPt=2;
+// 	    for ( unsigned int iSF=0; iSF<nsys_csv; iSF++){
+// 	      if (jes!=0  && iSF != 0)  continue;
+// 	      double iCSVWgt1 = csv_hist_lf[iSF][iPt][iEta]->GetBinContent(csv_hist_lf[iSF][iPt][iEta]->FindBin(csv));
+// 	      if (iCSVWgt1!=0) csvWgtlf[iSF] *= iCSVWgt1;
+// // 	      cout << "wgt " << iSF << " = " << csvWgtlf[iSF] << endl;
+// // 	    if(csv<0) {
+// // 	      cout << "csv wgt for jet " << i << " is " << iCSVWgt1 << endl;
+// // 	      cout << "jetPt is " << jetPt << " ; and jetEta is " << jetAbsEta << " ; and csv is " << csv << endl;
+// // 	    }
+// 	    }
+// 	  }
+// 	}
 
       }// end for each pf jet
     if (debug_) cout << "Finished loop over pfjets" << endl;
@@ -2373,10 +2528,14 @@ int main ( int argc, char ** argv )
       float sum_untagged_jet_charge = dFloat;
       float sum_tagged_jet_charge = dFloat;
       
-      float first_jet_genID = dInt ;
-      float second_jet_genID = dInt ;
-      float third_jet_genID = dInt ;
-      float fourth_jet_genID = dInt ;
+      int first_jet_genID = dInt ;
+      int second_jet_genID = dInt ;
+      int third_jet_genID = dInt ;
+      int fourth_jet_genID = dInt ;
+      int first_jet_flavor = dInt ;
+      int second_jet_flavor = dInt ;
+      int third_jet_flavor = dInt ;
+      int fourth_jet_flavor = dInt ;
 
       float first_lf_jet_pt = dFloat;
       float first_lf_jet_eta = dFloat;
@@ -2526,7 +2685,7 @@ int main ( int argc, char ** argv )
     //float newSingleEleSF = dFloat;
     //float oldSingleMuSF = dFloat;
     //float oldSingleEleSF = dFloat;
-    
+
     float lep1FlipSF = dFloat;
     float lep2FlipSF = dFloat;
     float lep1FlipSFUp = dFloat;
@@ -2564,7 +2723,7 @@ int main ( int argc, char ** argv )
 
         //newSingleMuSF = beanHelper.TestSingleMuonTriggerNew(muonsSelected.at(0));
         //oldSingleMuSF = beanHelper.TestSingleMuonTriggerOld(muonsSelected.at(0));
-        
+
 
 	    lep1Pt = muonsSelected.at(0).pt;
 	    lep2Pt = muonsSelected.at(1).pt;
@@ -2723,7 +2882,7 @@ int main ( int argc, char ** argv )
 
         //newSingleEleSF = beanHelper.TestSingleEleTriggerNew(electronsSelected.at(0));
         //oldSingleEleSF = beanHelper.TestSingleEleTriggerOld(electronsSelected.at(0));
-        
+	  
 	    lep1Pt = electronsSelected.at(0).pt;
 	    lep2Pt = electronsSelected.at(1).pt;
 	    
@@ -2887,7 +3046,7 @@ int main ( int argc, char ** argv )
         lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0));
         lep2SF = beanHelper.GetElectronSF(electronsSelected.at(0));
 
-        
+
         if (debug_) cout << "DEBUG Calling muon ele trigger SF ... ";
         triggerSF = beanHelper.GetMuonEleTriggerSF(muonsSelected.at(0), electronsSelected.at(0));
         if (debug_) cout << "RETURNEd!" << endl;
@@ -3057,7 +3216,7 @@ int main ( int argc, char ** argv )
 
         //newSingleMuSF = beanHelper.TestSingleMuonTriggerNew(muonsSelected.at(0));
         //oldSingleMuSF = beanHelper.TestSingleMuonTriggerOld(muonsSelected.at(0));
-        
+
 	    lep2Pt = muonsSelected.at(0).pt;
 	    lep1Pt = electronsSelected.at(0).pt;
 	    
@@ -3564,6 +3723,8 @@ int main ( int argc, char ** argv )
           first_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
           first_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
           first_jet_genID = pfjetsSelected.at(iJet).genPartonId;
+          first_jet_flavor = pfjetsSelected.at(iJet).flavour;
+	  //	  if(first_jet_genID!=first_jet_flavor) cout << "genID and flavor dont match: genID:flavor "<< first_jet_genID << ":" << first_jet_flavor  << endl;
           if (first_jet_pt > 30 && first_jet_pt < 45) {
             if (fabs(first_jet_eta) > 0 && fabs(first_jet_eta) < 1.2 ) CSV_30to45_0p0to1p2_1 = first_jet_CSV;
             if (fabs(first_jet_eta) > 1.2 && fabs(first_jet_eta) < 2.1 ) CSV_30to45_1p2to2p1_1 = first_jet_CSV;
@@ -3593,6 +3754,7 @@ int main ( int argc, char ** argv )
           second_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
           second_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
           second_jet_genID = pfjetsSelected.at(iJet).genPartonId;
+          second_jet_flavor = pfjetsSelected.at(iJet).flavour;
           if (second_jet_pt > 30 && second_jet_pt < 45) {
             if (fabs(second_jet_eta) > 0 && fabs(second_jet_eta) < 1.2 ) CSV_30to45_0p0to1p2_2 = second_jet_CSV;
             if (fabs(second_jet_eta) > 1.2 && fabs(second_jet_eta) < 2.1 ) CSV_30to45_1p2to2p1_2 = second_jet_CSV;
@@ -3622,14 +3784,17 @@ int main ( int argc, char ** argv )
           third_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
           third_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
           third_jet_genID = pfjetsSelected.at(iJet).genPartonId;
+	  third_jet_flavor = pfjetsSelected.at(iJet).flavour;
         }
 	    if (i==3)  {
           fourth_jet_pt = jet_pt[iJet];
           fourth_jet_eta = jet_vect.Eta();
           fourth_jet_CHEF = jet_CHEF[iJet];
           fourth_jet_charge = jet_charge[iJet];
+          fourth_jet_CSV = pfjetsSelected.at(iJet).btagCombinedSecVertex;
           fourth_jet_CSV_unc = pfjetsSelected_Uncorrected.at(iJet).btagCombinedSecVertex;
           fourth_jet_genID = pfjetsSelected.at(iJet).genPartonId;
+	  fourth_jet_flavor = pfjetsSelected.at(iJet).flavour;
         }
 	    
 	    if (mindr_lep1_jet > lep_vect1.DeltaR(jet_vect) || mindr_lep1_jet == dFloat){
@@ -3675,28 +3840,28 @@ int main ( int argc, char ** argv )
 	  Ht += MHT;
 
       /// Ht re-weighting
-      float HtWgt = dFloat;
-      float HtWgtUp = dFloat;
-      ////////////// mistake  for 2011
-      if (!isData){
-        if (sum_jet_pt == dFloat) sum_jet_pt = 0.0;
-        if(selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x"){
-          if (numPV<11)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
-          else if (10<numPV && numPV<16)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
-          else   HtWgt = h_rwt_highPV->GetBinContent(h_rwt_highPV->FindBin(sum_jet_pt));
-        }
-        else if(selectionYearStr == "2011") {  /// 2011
-          if (numPV<6)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
-          else if (5<numPV && numPV<9)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
-          else   HtWgt = h_rwt_highPV->GetBinContent(h_rwt_highPV->FindBin(sum_jet_pt));
-        }
-        else {
-          assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
-        }
+//       float HtWgt = dFloat;
+//       float HtWgtUp = dFloat;
+//       ////////////// mistake  for 2011
+//       if (!isData){
+//         if (sum_jet_pt == dFloat) sum_jet_pt = 0.0;
+//         if(selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x"){
+//           if (numPV<11)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
+//           else if (10<numPV && numPV<16)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
+//           else   HtWgt = h_rwt_highPV->GetBinContent(h_rwt_highPV->FindBin(sum_jet_pt));
+//         }
+//         else if(selectionYearStr == "2011") {  /// 2011
+//           if (numPV<6)  HtWgt = h_rwt_lowPV->GetBinContent(h_rwt_lowPV->FindBin(sum_jet_pt));
+//           else if (5<numPV && numPV<9)  HtWgt = h_rwt_medPV->GetBinContent(h_rwt_medPV->FindBin(sum_jet_pt));
+//           else   HtWgt = h_rwt_highPV->GetBinContent(h_rwt_highPV->FindBin(sum_jet_pt));
+//         }
+//         else {
+//           assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
+//         }
         
-        HtWgtUp = 1 + 2*(HtWgt - 1);
-        if (sum_jet_pt == 0.0) sum_jet_pt = dFloat;
-      }
+//         HtWgtUp = 1 + 2*(HtWgt - 1);
+//         if (sum_jet_pt == 0.0) sum_jet_pt = dFloat;
+//       }
 
       bool PassBigDiamondZmask = (MuonEle || (mass_leplep < (65.5 + 3*MHT/8)) || (mass_leplep > (108 - MHT/4)) || (mass_leplep < (79 - 3*MHT/4)) || (mass_leplep > (99 + MHT/2)) );
       bool PassBigDiamondZmask2 = (mass_leplep < (65.5 + 3*met/8)) || (mass_leplep > (108 - met/4)) || (mass_leplep < (79 - 3*met/4)) || (mass_leplep > (99 + met/2));
@@ -3981,12 +4146,28 @@ int main ( int argc, char ** argv )
         //*(floatBranches["newSingleEleSF"]) = newSingleEleSF;
         //*(floatBranches["oldSingleMuSF"]) = oldSingleMuSF;
         //*(floatBranches["oldSingleEleSF"]) = oldSingleEleSF;
-        
+
         *(floatBranches["weight_Xsec"]) = weight_Xsec ;
         *(floatBranches["nGen"]) = nGen ;
         *(floatBranches["Xsec"]) = Xsec ;
         *(floatBranches["topPtWgt"]) = topPtWgt ;
         *(floatBranches["topPtWgtUp"]) = topPtWgtUp ;
+        *(floatBranches["csvWgtlf"]) = csvWgtlf[0] ;
+        *(floatBranches["csvWgthf"]) = csvWgthf[0] ;
+	//// extra btag SFs weights
+	*(floatBranches["csvWgtlf_HFUp"])      = csvWgtlf[1];
+	*(floatBranches["csvWgtlf_HFDown"])    = csvWgtlf[2];
+	*(floatBranches["csvWgtlf_Stats1Up"])   = csvWgtlf[3];
+	*(floatBranches["csvWgtlf_Stats1Down"]) = csvWgtlf[4];
+	*(floatBranches["csvWgtlf_Stats2Up"])   = csvWgtlf[5];
+	*(floatBranches["csvWgtlf_Stats2Down"]) = csvWgtlf[6];
+
+	*(floatBranches["csvWgthf_LFUp"])      = csvWgthf[1];
+	*(floatBranches["csvWgthf_LFDown"])    = csvWgthf[2];
+	*(floatBranches["csvWgthf_Stats1Up"])   = csvWgthf[3];
+	*(floatBranches["csvWgthf_Stats1Down"]) = csvWgthf[4];
+	*(floatBranches["csvWgthf_Stats2Up"])   = csvWgthf[5];
+	*(floatBranches["csvWgthf_Stats2Down"]) = csvWgthf[6];
 
         //met
         *(floatBranches["met"]) = met;
@@ -4313,14 +4494,18 @@ int main ( int argc, char ** argv )
       if (ExtraGenVariables) {
       if (debug_) cout << "Filling ExtraGenVariables" << endl;
 
-        *(intBranches["lep1GenID"]) = lep1GenID;
-        *(intBranches["lep2GenID"]) = lep2GenID;
+//         *(intBranches["lep1GenID"]) = lep1GenID;
+//         *(intBranches["lep2GenID"]) = lep2GenID;
         *(intBranches["first_jet_genID"]) = first_jet_genID;
         *(intBranches["second_jet_genID"]) = second_jet_genID;
         *(intBranches["third_jet_genID"]) = third_jet_genID;
         *(intBranches["fourth_jet_genID"]) = fourth_jet_genID;
-        *(floatBranches["top1_pt"]) = top1_pt;
-        *(floatBranches["top1_pz"]) = top1_pz;
+        *(intBranches["first_jet_flavor"]) = first_jet_flavor;
+        *(intBranches["second_jet_flavor"]) = second_jet_flavor;
+        *(intBranches["third_jet_flavor"]) = third_jet_flavor;
+        *(intBranches["fourth_jet_flavor"]) = fourth_jet_flavor;
+//         *(floatBranches["top1_pt"]) = top1_pt;
+//         *(floatBranches["top1_pz"]) = top1_pz;
 
       } //End if (ExtraGenVariables)
       
@@ -4411,8 +4596,8 @@ int main ( int argc, char ** argv )
         "weight : " << setprecision(3) << weight << " , " << 
         "weight_PUup : " << setprecision(3) << weight_PUup << " , " << 
         "weight_PUdown : " << setprecision(3) << weight_PUdown << " , " << 
-        "HtWgt : " << setprecision(3) << HtWgt << " , " << 
-        "HtWgtUp : " << setprecision(3) << HtWgtUp << " , " << 
+//         "HtWgt : " << setprecision(3) << HtWgt << " , " << 
+//         "HtWgtUp : " << setprecision(3) << HtWgtUp << " , " << 
         "Q2ScaleUpWgt : " << setprecision(3) << Q2ScaleUpWgt << " , " << 
         "Q2ScaleDownWgt : " << setprecision(3) << Q2ScaleDownWgt << " , " << 
         std::endl;
