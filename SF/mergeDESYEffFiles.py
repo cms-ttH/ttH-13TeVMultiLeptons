@@ -24,6 +24,7 @@ def mergeDESYEffFiles () :
                               ('./trigger_SF_mumu.root', 'eta2d_scalefactor_with_syst', 'TwoMuonTriggerSF'),
                               ('./trigger_SF_emu.root', 'eta2d_scalefactor_with_syst', 'MuonEleTriggerSF'),
                               ('./LooseEle_chargeFlipSF.root', 'ChargeFlipSF', 'LooseEleChargeSafeSF'),
+                              ('./LooseEle_IdIsoSF.root', 'IsoIdSF', 'LooseEleIdIsoSF'),
                               ('./LooseMuo_IdIsoSF.root', 'IsoIdSF', 'LooseMuonIdIsoSF'),
                               ('./LooseMuo_TriggerSF.root', 'TriggerSF', 'LooseMuonTriggerSF'),
                               ('./TightEle_IdIsoSF.root', 'IsoIdSF', 'TightEleIdIsoSF'),
