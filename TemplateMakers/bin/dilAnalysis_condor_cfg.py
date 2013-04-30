@@ -73,7 +73,7 @@ elif iYear == '2012_52x':
     listFileName = "../../listsForSkims2012_v3_hadoop/" + sampleNameCL + ".list"
 elif iYear == '2012_53x':
 	#listFileName = "/afs/crc.nd.edu/user/a/abrinke1/BEANsHelper/CMSSW_5_3_2_patch5/src/BEAN/listsForSkims2012_53x_v1/" + sampleNameCL + ".list"
-    listFileName = "../../listsForSkims2012_53x_v1_hadoop/" + sampleNameCL + ".list"
+    listFileName = "../../listsForSkims2012_53x_v2_hadoop/" + sampleNameCL + ".list"
 
 # read in all files in the list
 print "Reading file names from list: %s" % listFileName
