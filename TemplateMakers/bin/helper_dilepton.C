@@ -2713,9 +2713,11 @@ int main ( int argc, char ** argv )
     BNmcparticle MCLep2;
     
 	  if( twoTightMuon || TightMuonLooseMuon ) {
-        
-        lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0));
-        lep2SF = beanHelper.GetMuonSF(muonsSelected.at(1));
+
+        muonID::muonID firstLep = muonID::muonTight;
+        muonID::muonID secondLep = (TightMuonLooseMuon) ? muonID::muonLoose : muonID::muonTight;
+        lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0), firstLep);
+        lep2SF = beanHelper.GetMuonSF(muonsSelected.at(1), secondLep);
 
         if (debug_) cout << "DEBUG: Calling double muon trigger SF...";
         triggerSF = beanHelper.GetDoubleMuonTriggerSF(muonsSelected.at(0), muonsSelected.at(1));
@@ -2873,8 +2875,12 @@ int main ( int argc, char ** argv )
 
 	  if( twoTightEle || TightEleLooseEle ) {
 
-        lep1SF = beanHelper.GetElectronSF(electronsSelected.at(0));
-        lep2SF = beanHelper.GetElectronSF(electronsSelected.at(1));
+        electronID::electronID firstLep = electronID::electronTight;
+        electronID::electronID secondLep =
+          (TightEleLooseEle) ? electronID::electronLoose : electronID::electronTight;
+        
+        lep1SF = beanHelper.GetElectronSF(electronsSelected.at(0), firstLep);
+        lep2SF = beanHelper.GetElectronSF(electronsSelected.at(1), secondLep);
 
         if (debug_) cout << "DEBUG: Calling double ele trigger... ";
         triggerSF = beanHelper.GetDoubleElectronTriggerSF(electronsSelected.at(0),electronsSelected.at(1));
@@ -3039,12 +3045,18 @@ int main ( int argc, char ** argv )
         } // End if not data
         
 	  }
-	  
+
+      // This is the case where the muon is higher pt than the
+      // electron
 	  if( (oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle) &&
           (muonsSelected.at(0).pt >= electronsSelected.at(0).pt ) ) {
 
-        lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0));
-        lep2SF = beanHelper.GetElectronSF(electronsSelected.at(0));
+        muonID::muonID  theMuonType = (oneEleOneMuon || TightMuonLooseEle) ? muonID::muonTight : muonID::muonLoose;
+        electronID::electronID  theEleType  =
+          (oneEleOneMuon || TightEleLooseMuon) ? electronID::electronTight : electronID::electronLoose;
+        
+        lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0), theMuonType);
+        lep2SF = beanHelper.GetElectronSF(electronsSelected.at(0), theEleType);
 
 
         if (debug_) cout << "DEBUG Calling muon ele trigger SF ... ";
@@ -3201,11 +3213,16 @@ int main ( int argc, char ** argv )
 
 	  }
 
+      // this is the case where the muon is lower pt than the electron
 	  if( (oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle) &&
           (muonsSelected.at(0).pt < electronsSelected.at(0).pt ) ) {
 
-        lep2SF = beanHelper.GetMuonSF(muonsSelected.at(0));
-        lep1SF = beanHelper.GetElectronSF(electronsSelected.at(0));
+        muonID::muonID  theMuonType = (oneEleOneMuon || TightMuonLooseEle) ? muonID::muonTight : muonID::muonLoose;
+        electronID::electronID  theEleType  =
+          (oneEleOneMuon || TightEleLooseMuon) ? electronID::electronTight : electronID::electronLoose;
+        
+        lep2SF = beanHelper.GetMuonSF(muonsSelected.at(0), theMuonType);
+        lep1SF = beanHelper.GetElectronSF(electronsSelected.at(0), theEleType);
 
         if (debug_) cout << "DEBUG Calling muon ele trigger SF ... ";
         triggerSF = beanHelper.GetMuonEleTriggerSF(muonsSelected.at(0), electronsSelected.at(0));
