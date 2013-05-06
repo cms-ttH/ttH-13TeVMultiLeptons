@@ -92,6 +92,7 @@ typedef std::vector<TLorentzVector> vLorentz;
 // here is where you can change the btag threshold
 // Medium combined tag threshold
 float btagThres = 0.679;
+float btagThresLoose = 0.244;
 
 // super loose combined tag threshold
 //float btagThres = 0.244;
@@ -166,84 +167,10 @@ int main ( int argc, char ** argv )
 
    bool applySelectionJets = anaParams.getParameter<bool>("applySelectionJets");
    bool applySelectionSameSign = anaParams.getParameter<bool>("applySelectionSameSign");
+   bool useSideLeptons = false;
    
    bool debug_ = false;
 
-   //// csv re-weighting 
-// //    if ( jes == 1 ) {
-// //      rwtFileName1 = "csv_rwt_lf_IT_v1_JESUp.root";
-// //      rwtFileName2 = "csv_rwt_hf_IT_v1_JESUp.root";
-// //    }
-// //    if ( jes == -1 ) {
-// //      rwtFileName1 = "csv_rwt_lf_IT_v1_JESDown.root";
-// //      rwtFileName2 = "csv_rwt_hf_IT_v1_JESDown.root";
-// //    }
-// //    std::cout << "using SF root files " << rwtFileName1 << " and " << rwtFileName2 << std::endl;
-   
-//    //   if ( selectionYearStr == "2011") rwtFileName = "sum_jet_pt_rwt_2011.root"; 
-
-//    TString rwtFileName1 = "csv_rwt_lf_final_IT_v2.root";
-//    TString rwtFileName2 = "csv_rwt_hf_final_IT_v2.root";
-
-//    TFile *f_rwt1 = new TFile(rwtFileName1);
-//    TFile *f_rwt2 = new TFile(rwtFileName2);
-
-//    std::vector<TString> syst_csv_suffix_hf;
-//    syst_csv_suffix_hf.push_back("");
-//    syst_csv_suffix_hf.push_back("LFUp");
-//    syst_csv_suffix_hf.push_back("LFDown");
-//    syst_csv_suffix_hf.push_back("Stats1Up");
-//    syst_csv_suffix_hf.push_back("Stats1Down");
-//    syst_csv_suffix_hf.push_back("Stats2Up");
-//    syst_csv_suffix_hf.push_back("Stats2Down");
-
-//    std::vector<TString> syst_csv_suffix_lf;
-//    syst_csv_suffix_lf.push_back("");
-//    syst_csv_suffix_lf.push_back("HFUp");
-//    syst_csv_suffix_lf.push_back("HFDown");
-//    syst_csv_suffix_lf.push_back("Stats1Up");
-//    syst_csv_suffix_lf.push_back("Stats1Down");
-//    syst_csv_suffix_lf.push_back("Stats2Up");
-//    syst_csv_suffix_lf.push_back("Stats2Down");
-//    const unsigned int nsys_csv = syst_csv_suffix_lf.size();
-
-//    TH1D* csv_hist_hf[nsys_csv][5];
-//    TH1D* csv_hist_lf[nsys_csv][3][3];
-
-//    for ( unsigned int iSF=0; iSF<nsys_csv; iSF++){
-//      TString hfsuffix = syst_csv_suffix_hf[iSF];
-//      TString lfsuffix = syst_csv_suffix_lf[iSF];
-
-//      if (jes==1) {
-//        if (iSF==0) { hfsuffix = "_JESUp"; lfsuffix = "_JESUp"; }
-//        else continue;
-//      }
-//      if (jes==-1){ 
-//        if (iSF==0) { hfsuffix = "_JESDown"; lfsuffix = "_JESDown"; }
-//        else continue;
-//      }
-
-//      for( unsigned int iPt=0; iPt<5; iPt++ ){
-//        TString csvhistName2 = Form("csv_ratio_Pt%i_Eta0_final",iPt);
-//        if (iSF !=0 ) csvhistName2 += "_";
-//        csvhistName2 += hfsuffix;
-//        csv_hist_hf[iSF][iPt] = (TH1D*)f_rwt2->Get(csvhistName2);
-//      }
-
-//      for( unsigned int iPt=0; iPt<3; iPt++ ){
-//        for( unsigned int iEta=0; iEta<3; iEta++ ){
-// 	 TString csvhistName1 = Form("csv_ratio_Pt%i_Eta%i_final",iPt,iEta);
-// 	 if (iSF !=0 ) csvhistName1 += "_";
-// 	 csvhistName1 += lfsuffix;
-// 	 csv_hist_lf[iSF][iPt][iEta] = (TH1D*)f_rwt1->Get(csvhistName1);
-//        }
-//      }
-//    }
-
-//    TH1F* h_rwt_lowPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV0");
-//    TH1F* h_rwt_medPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV1");
-//    TH1F* h_rwt_highPV = (TH1F*)f_Ht_rwt->Get("sum_jet_pt_ratio_PV2");
-   
    int maxNentries = inputs.getParameter<int> ("maxEvents");
 
   typedef BNeventCollection::const_iterator         EventIter;
@@ -340,80 +267,80 @@ int main ( int argc, char ** argv )
   else if (selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
     if (isData) sampleNumber = -1;
     else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) { sampleNumber = 2500;
-      nGen = 6889624+1362471; Xsec = 245.8; }
+      nGen = 6912438+1362471; Xsec = 245.8; }
     else if (sampleName == "ttbar_bb" || tmpName.Contains("ttbar_bb_part")) { sampleNumber = 2555;
-      nGen = 6889624+1362471; Xsec = 245.8; }
+      nGen = 6912438+1362471; Xsec = 245.8; }
     else if (sampleName == "ttbar_cc" || tmpName.Contains("ttbar_cc_part")) { sampleNumber = 2544;
-      nGen = 6889624+1362471; Xsec = 245.8; }
+      nGen = 6912438+1362471; Xsec = 245.8; }
     else if (sampleName == "ttbar_scaleup") sampleNumber = 2511; 
     else if (sampleName == "ttbar_scaledown") sampleNumber = 2510; 
     else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
     else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
     else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2566;
-      nGen = 30997580; Xsec = 0.457*245.8; 
-      weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      nGen = 31111456; Xsec = 0.457*245.8; 
+      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2563;
       nGen = 25165429; Xsec = 0.438*245.8;
-      weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2533;
-      nGen = 12063533; Xsec = 0.105*245.8;
-      weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      nGen = 12100452; Xsec = 0.105*245.8;
+      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
-      nGen = 30997580; Xsec = 0.457*245.8;
-      weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      nGen = 31111456; Xsec = 0.457*245.8;
+      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_cc_lj" || tmpName.Contains("ttbar_cc_lj_part")) { sampleNumber = 2573;
-      nGen = 25165429; Xsec = 0.438*245.8;
-      weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      nGen = 25327478; Xsec = 0.438*245.8;
+      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_cc_ll" || tmpName.Contains("ttbar_cc_ll_part")) { sampleNumber = 2543;
-      nGen = 12063533; Xsec = 0.105*245.8;
-      weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      nGen = 12100452; Xsec = 0.105*245.8;
+      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_bb_jj" || tmpName.Contains("ttbar_bb_jj_part")) { sampleNumber = 2586;
-      nGen = 30997580; Xsec = 0.457*245.8;
-      weight_Xsec = ( 0.457 / 30997580 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      nGen = 31111456; Xsec = 0.457*245.8;
+      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_bb_lj" || tmpName.Contains("ttbar_bb_lj_part")) { sampleNumber = 2583;
-      nGen = 25165429; Xsec = 0.438*245.8;
-      weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      nGen = 25327478; Xsec = 0.438*245.8;
+      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) { sampleNumber = 2553;
-      nGen = 12063533; Xsec = 0.105*245.8; 
-      weight_Xsec = ( 0.105 / 12063533 ) / ( 1.0 / ( 6889624 + 1362471 )); }
+      nGen = 12100452; Xsec = 0.105*245.8; 
+      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) { sampleNumber = 2400;
-      nGen = 57108525; Xsec = 36257; }
+      nGen = 57536319; Xsec = 36257; }
     else if (sampleName == "wjets_0p" || tmpName.Contains("wjets_0p_part")) { sampleNumber = 2400;
-      nGen = 57108525; Xsec = 36257; }
+      nGen = 57536319; Xsec = 36257; }
     else if (sampleName == "wjets_1p" || tmpName.Contains("wjets_1p_part")) { sampleNumber = 2400;
-      nGen = 23136036; Xsec = 6440.4;
-      weight_Xsec = ( 5400.0 / 23136036 ) / ( 30400.0 / 57108525 ); }
+      nGen = 23134881; Xsec = 6440.4;
+      weight_Xsec = ( 5400.0 / 23134881 ) / ( 30400.0 / 57536319 ); }
     else if (sampleName == "wjets_2p" || tmpName.Contains("wjets_2p_part")) { sampleNumber = 2400;
-      nGen =3403056; Xsec = 2087.2;
-      weight_Xsec = ( 1750.0 / 34030565 ) / ( 30400.0 / 57108525 ); }
+      nGen = 33933328; Xsec = 2087.2;
+      weight_Xsec = ( 1750.0 / 339333285 ) / ( 30400.0 / 57536319 ); }
     else if (sampleName == "wjets_3p" || tmpName.Contains("wjets_3p_part")) { sampleNumber = 2400;
-      nGen = 15472440; Xsec = 619.0;
-      weight_Xsec = ( 519.0 / 15472440 ) / ( 30400.0 / 57108525 ); }
+      nGen = 15463420; Xsec = 619.0;
+      weight_Xsec = ( 519.0 / 15463420 ) / ( 30400.0 / 57536319 ); }
     else if (sampleName == "wjets_4p" || tmpName.Contains("wjets_4p_part")) { sampleNumber = 2400;
-      nGen = 13360967; Xsec = 255.2;
-      weight_Xsec = ( 214.0 / 13360967 ) / ( 30400.0 / 57108525 ); } 
+      nGen = 13365439; Xsec = 255.2;
+      weight_Xsec = ( 214.0 / 13365439 ) / ( 30400.0 / 57536319 ); } 
     else if (sampleName == "zjets_lowmass" || tmpName.Contains("zjets_lowmass_part")) { sampleNumber = 2850;
-      nGen = 32600176; Xsec = 14702; }
+      nGen = 37828841; Xsec = 14702; }
     else if (sampleName == "zjets_lowmass_1p" || tmpName.Contains("zjets_lowmass_1p_part")) { sampleNumber = 2851;
-      weight_Xsec = ( 716.0 / 8039604 ) / ( 11050.0 / 32600176 ); }
+      weight_Xsec = ( 716.0 / 8039604 ) / ( 11050.0 / 37828841 ); }
     else if (sampleName == "zjets_lowmass_2p" || tmpName.Contains("zjets_lowmass_2p_part")) { sampleNumber = 2852;
-      weight_Xsec = ( 309.7 / 30684442 ) / ( 11050.0 / 32600176 ); }
+      weight_Xsec = ( 309.7 / 30684442 ) / ( 11050.0 / 37828841 ); }
     else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) { sampleNumber = 2800;
-      nGen = 30452141; Xsec = 3505.7; }
+      nGen =  30072710; Xsec = 3505.7; }
     else if (sampleName == "zjets_0p" || tmpName.Contains("zjets_0p_part")) { sampleNumber = 2800;
-      nGen = 30452141; Xsec = 3505.7; }
+      nGen =  30072710; Xsec = 3505.7; }
     else if (sampleName == "zjets_1p" || tmpName.Contains("zjets_1p_part")) { sampleNumber = 2801;
-      nGen = 23698301; Xsec = 666.7;
-      weight_Xsec = ( 561.0 / 23698301 ) / ( 2950.0 / 30452141 ); }
+      nGen = 24032562; Xsec = 666.7;
+      weight_Xsec = ( 561.0 / 24032562 ) / ( 2950.0 /  30072710 ); }
     else if (sampleName == "zjets_2p" || tmpName.Contains("zjets_2p_part")) { sampleNumber = 2802;
       nGen = 2350806; Xsec = 215.1;
-      weight_Xsec = ( 181.0 / 2350806 ) / ( 2950.0 / 30452141 ); }
+      weight_Xsec = ( 181.0 / 2350806 ) / ( 2950.0 /  30072710 ); }
     else if (sampleName == "zjets_3p" || tmpName.Contains("zjets_3p_part")) { sampleNumber = 2803;
-      nGen = 11004806; Xsec = 66.07;
-      weight_Xsec = ( 55.6 / 11004806 ) / ( 2950.0 / 30452141 ); }
+      nGen = 10753491; Xsec = 66.07;
+      weight_Xsec = ( 55.6 / 10753491 ) / ( 2950.0 /  30072710 ); }
     else if (sampleName == "zjets_4p" || tmpName.Contains("zjets_4p_part")) { sampleNumber = 2804;
-      nGen = 6387161; Xsec = 27.38;
-      weight_Xsec = ( 23.04 /6387161 ) / ( 2950.0 / 30452141 ); }
+      nGen = 6370630; Xsec = 27.38;
+      weight_Xsec = ( 23.04 /6370630 ) / ( 2950.0 /  30072710 ); }
     else if (sampleName == "singlet_s") { sampleNumber = 2600;
       nGen = 259657; Xsec = 3.79; }
     else if (sampleName == "singlet_s_ll") sampleNumber = 2630;
@@ -421,10 +348,10 @@ int main ( int argc, char ** argv )
       nGen = 139835; Xsec = 1.76; }
     else if (sampleName == "singletbar_s_ll") sampleNumber = 2631; 
     else if (sampleName == "singlet_t") { sampleNumber = 2602;
-      nGen = 3754544; Xsec = 56.4; }
+      nGen = 3744404; Xsec = 56.4; }
     else if (sampleName == "singlet_t_ll") sampleNumber = 2632; 
     else if (sampleName == "singletbar_t") { sampleNumber = 2603;
-      nGen = 1932776; Xsec = 30.7; }
+      nGen = 1933504; Xsec = 30.7; }
     else if (sampleName == "singletbar_t_ll") sampleNumber = 2633; 
     else if (sampleName == "singlet_tW") { sampleNumber = 2604;
       nGen = 496918; Xsec = 11.1; }
@@ -437,29 +364,60 @@ int main ( int argc, char ** argv )
     else if (sampleName == "singletbar_tW_jl") sampleNumber = 2565; 
     else if (sampleName == "singletbar_tW_ll") sampleNumber = 2535; 
     else if (sampleName == "ww") { sampleNumber = 2700;
-      nGen = 8965049; Xsec = 54.8; }
-    else if (sampleName == "www") sampleNumber = 2710; 
-    else if (sampleName == "wwz") sampleNumber = 2720; 
+      nGen = 9955089; Xsec = 54.8; }
+    else if (sampleName == "ww_ll") { sampleNumber = 2700;
+      nGen = 1931931; Xsec = 54.8*0.324*0.324; }
+    else if (sampleName == "www") { sampleNumber = 2710;
+      nGen = 220040; Xsec =  0.08217; }
+    else if (sampleName == "wwz") { sampleNumber = 2720;
+      nGen = 221576; Xsec = 0.0633; }
+    else if (sampleName == "wwG") { sampleNumber = 2720;
+      nGen = 94500; Xsec = 0.0000001; } //AWB incorrect values
     else if (sampleName == "wz") { sampleNumber = 2701;
-      nGen = 9821291; Xsec = 32.3; }
-    else if (sampleName == "wzz") sampleNumber = 2721; 
+      nGen = 9931257; Xsec = 32.3; }
+    else if (sampleName == "wz_lll") { sampleNumber = 2731;
+      nGen = 1987010; Xsec = 32.3*0.324*0.101; }
+    else if (sampleName == "wz_lljj") { sampleNumber = 2761;
+      nGen = 3212461; Xsec = 32.3*0.101*(1-0.324); }
+    else if (sampleName == "wz_ljj") { sampleNumber = 2791;
+      nGen = 2906320; Xsec = 32.3*0.324*0.699; }
+    else if (sampleName == "wzz") { sampleNumber = 2721;
+      nGen = 219835; Xsec = 0.01922; } //AWB doesn't exist in new GT?
     else if (sampleName == "zz") { sampleNumber = 2702;
-      nGen = 9568511; Xsec = 7.7; }
-    else if (sampleName == "zzz") sampleNumber = 2722; 
+      nGen = 9755621; Xsec = 7.7; }
+    else if (sampleName == "zz_llll") { sampleNumber = 2732;
+      nGen = 4804217; Xsec = 7.7*0.101*0.101; }
+    else if (sampleName == "zz_lljj") { sampleNumber = 2762;
+      nGen = 1934806; Xsec = 7.7*2*0.101*0.699; }
+    else if (sampleName == "zzz") { sampleNumber = 2722;
+      nGen = 224519; Xsec = 0.004587; }
     else if (sampleName == "ttbarW") { sampleNumber = 2524;
       nGen = 195396; Xsec = 0.249; }
-    else if (sampleName == "ttbarWW") sampleNumber = 2534; 
+    else if (sampleName == "ttbarWW") { sampleNumber = 2534;
+      nGen = 216867; Xsec = 0.002037; }
     else if (sampleName == "ttbarZ") { sampleNumber = 2523;
       nGen = 209512; Xsec = 0.208; }
-    else if (sampleName == "ttbartbar") sampleNumber = 2525;
+    else if (sampleName == "ttbarG") { sampleNumber = 2560;
+      nGen = 71405; Xsec = 0.0000001; } //AWB incorrect value
+    else if (sampleName == "ttbarttbar") { sampleNumber = 2525;
+      nGen = 99994; Xsec = 0.000716; } //AWB doesn't exist in new GT?
+    else if (sampleName == "VH_tautau") { sampleNumber = 2915;
+      nGen = 200124; Xsec = 0.07717352; } //AWB doesn't exist in new GT?
+    else if (sampleName == "VH_ZZ") { sampleNumber = 2923;
+      nGen = 500409; Xsec = 0.03223704; } //AWB doesn't exist in new GT?
+    else if (sampleName == "VH_WW") { sampleNumber = 2924;
+      nGen = 200408; Xsec = 0.2625365; } //AWB doesn't exist in new GT?
     else if (tmpName.Contains("ttH") && selectionYearStr == "2012_52x") {
       if (tmpName.Contains("FullSim")) sampleNumber = 8120;
       else sampleNumber = 9120;
     }
     else if (tmpName.Contains("ttH") && selectionYearStr == "2012_53x") {
-      if (tmpName.Contains("_tautau")) sampleNumber = 7120;
-      else if (tmpName.Contains("_bb")) sampleNumber = 8120;
-      else sampleNumber = 9120;
+      if (tmpName.Contains("_tautau")) { sampleNumber = 7120;
+        nGen = 992997; Xsec = 0.1302*0.1302; }
+      else if (tmpName.Contains("_bb")) { sampleNumber = 8120;
+        nGen = 980931; Xsec = 0.1302*0.577; }
+      else { sampleNumber = 9120;
+        nGen = 992997; Xsec = 0.1302; }
     }
     else assert (sampleName == "sampleName is not in the approved list");
   }
@@ -473,12 +431,12 @@ int main ( int argc, char ** argv )
 
   
   BEANhelper beanHelper;
-  //BEANhelper::SetUp(string iEra, int iSampleNumber, bool iIsLJ, bool iIsData, string iDataset, bool iReshapeCSV, bool iPfLeptons = true)
-  if (debug_) std::cout << "BEANhelper::SetUp(string iEra, int iSampleNumber, bool iIsLJ, bool iIsData, string iDataset, bool iReshapeCSV, bool iPfLeptons = true)" << std::endl;
+  //BEANhelper::SetUp(string iEra, int iSampleNumber, analysisType::analysisType, bool iIsData, string iDataset, bool iReshapeCSV, bool iPfLeptons = true)
+  if (debug_) std::cout << "BEANhelper::SetUp(string iEra, int iSampleNumber, analysisType::analysisType, bool iIsData, string iDataset, bool iReshapeCSV, bool iPfLeptons = true)" << std::endl;
   if (debug_) std::cout << "beanHelper.SetUp(" << selectionYearStr << " , "
-                        << sampleNumber << " , false  " << isData << " , "
+                        << sampleNumber << " , analysisType::DIL  " << isData << " , "
                         << dset << " , true, true );" << std::endl;
-  beanHelper.SetUp(selectionYearStr,sampleNumber,false,isData,dset,false,true,PUPeriodStr);
+  beanHelper.SetUp(selectionYearStr,sampleNumber,analysisType::DIL,isData,dset,false,true,PUPeriodStr);
   if (debug_) std::cout << "beanHelper.SetUp successful" << std::endl;
   
   // Load the files
@@ -734,7 +692,7 @@ int main ( int argc, char ** argv )
   bool ExtraTriggerVariables = false;
   bool ExtraGenVariables = true; //false;
   bool ExtraHiggsVariables = false;
-  bool ExtraSameSignVariables = false;
+  bool ExtraSameSignVariables = true;
   
   bool ArtificialJetPt = false;
   float higgs_mass = 115.0;
@@ -752,15 +710,21 @@ int main ( int argc, char ** argv )
     intBranches["TwoEle"] = new int (0);
     intBranches["MuonEle"] = new int (0);
 
+    intBranches["numMuons"] = new int (0);
     intBranches["numTightMuons"] = new int (0);
     intBranches["numLooseMuons"] = new int (0);
+    intBranches["numSideMuons"] = new int (0);
+    intBranches["numElectrons"] = new int (0);
     intBranches["numTightElectrons"] = new int (0);
     intBranches["numLooseElectrons"] = new int (0);
+    intBranches["numSideElectrons"] = new int (0);
 
     intBranches["numJets"] = new int (0);
     intBranches["numTaggedJets"] = new int (0);
+    intBranches["numLooseTaggedJets"] = new int (0);
     floatBranches["numJets_float"] = new float (0);
     floatBranches["numTaggedJets_float"] = new float (0);
+    floatBranches["numLooseTaggedJets_float"] = new float (0);
 
     intBranches["isCleanEvent"] = new int (0);
     intBranches["isTriggerPass"] = new int (0);
@@ -779,7 +743,7 @@ int main ( int argc, char ** argv )
     uintBranches["eventNumber"] = new unsigned int (0);
     uintBranches["luminosityBlock"] = new unsigned int (0);
     intBranches["sampleNumber"] = new int (0);
-
+    
     /// MVA output variables
     floatBranches["CFMlpANN_e2je2t_v1"] = new float(0.0);
     floatBranches["CFMlpANN_e3je2t_v1"] = new float(0.0);
@@ -862,7 +826,11 @@ int main ( int argc, char ** argv )
     floatBranches["lep2TkCharge"] = new float (0.0);
     floatBranches["lep1GenCharge"] = new float (0.0);
     floatBranches["lep2GenCharge"] = new float (0.0);
-
+    intBranches["lep1IsPrompt"] = new int (0);
+    intBranches["lep2IsPrompt"] = new int (0);
+    intBranches["lep1Flavor"] = new int (0);
+    intBranches["lep2Flavor"] = new int (0);
+    
     // jet variables
 //     floatBranches["first_bjet_pt"] = new float(0.0);
     floatBranches["first_jet_pt"] = new float(0.0);
@@ -875,11 +843,18 @@ int main ( int argc, char ** argv )
     floatBranches["third_jet_eta"] = new float(0.0);
     floatBranches["fourth_jet_eta"] = new float(0.0);
 
+    floatBranches["b1_jet_pt"] = new float(0.0);
+    floatBranches["b2_jet_pt"] = new float(0.0);
+    floatBranches["b1_jet_eta"] = new float(0.0);
+    floatBranches["b2_jet_eta"] = new float(0.0);
+    floatBranches["b1_jet_CSV"] = new float(0.0);
+    floatBranches["b2_jet_CSV"] = new float(0.0);
     //kinematic variables
     ////ANN neural net inputs
 //     floatBranches["mass_of_everything"] = new float(0.0);
     floatBranches["min_dr_tagged_jets"] = new float(0.0);
     floatBranches["mindr_lep1_jet"] = new float(0.0);
+    floatBranches["mindr_lep2_jet"] = new float(0.0);
     floatBranches["avg_btag_disc_btags"] = new float(0.0);
     floatBranches["Ht"] = new float(0.0);
 
@@ -890,13 +865,14 @@ int main ( int argc, char ** argv )
 
     ////leptons
     floatBranches["mass_leplep"] = new float(0.0);
+    floatBranches["MT_leplep"] = new float(0.0);
     floatBranches["pt_leplep"] = new float(0.0);
     floatBranches["dPhi_leplep"] = new float(0.0);
     floatBranches["dR_leplep"] = new float(0.0);
     floatBranches["correctedDZ_leplep"] = new float(0.0);
     floatBranches["correctedD0_leplep"] = new float(0.0);
     floatBranches["tkDZ_leplep"] = new float(0.0);
-    floatBranches["mindr_lep2_jet"] = new float(0.0);
+
     ////everything
     floatBranches["all_sum_pt"] = new float(0.0);
     floatBranches["sum_pt"] = new float(0.0); 
@@ -947,26 +923,53 @@ int main ( int argc, char ** argv )
 
     floatBranches["mindr_lep1_allJet"] = new float(0.0);
     floatBranches["mindr_lep2_allJet"] = new float(0.0);
-//     floatBranches["mindr_lep1_sideJet"] = new float(0.0);
-//     floatBranches["mindr_lep2_sideJet"] = new float(0.0);
 //     floatBranches["ptRel_lep1_jet"] = new float(0.0);
 //     floatBranches["ptRel_lep2_jet"] = new float(0.0);
 //     floatBranches["ptRel_lep1_allJet"] = new float(0.0);
 //     floatBranches["ptRel_lep2_allJet"] = new float(0.0);
-//     floatBranches["ptRel_lep1_sideJet"] = new float(0.0);
-//     floatBranches["ptRel_lep2_sideJet"] = new float(0.0);
 
-    floatBranches["wLike_dijet_mass"] = new float(0.0);
-//     floatBranches["topLike_trijet_mass"] = new float(0.0);
-//     floatBranches["topLike_dijet_lep1_mass"] = new float(0.0);
-//     floatBranches["topLike_dijet_lep2_mass"] = new float(0.0);
-//     floatBranches["MT_MHT_lep1"] = new float(0.0);
-//     floatBranches["MT_MHT_lep2"] = new float(0.0);
-//     floatBranches["MT_MHT_lep1_b"] = new float(0.0);
-//     floatBranches["MT_MHT_lep2_b"] = new float(0.0);
-//     floatBranches["MT_met_lep1_b"] = new float(0.0);
-//     floatBranches["MT_met_lep2_b"] = new float(0.0);
-   
+
+    floatBranches["wLike_dijet_mass_low1CSV"] = new float(0.0);
+    floatBranches["wLike_dijet_mass_low2CSV"] = new float(0.0);
+    floatBranches["wLike_dijet_pt_low1CSV"] = new float(0.0);
+    floatBranches["wLike_dijet_pt_low2CSV"] = new float(0.0);
+    floatBranches["wLike_dijet_eta_low1CSV"] = new float(0.0);
+    floatBranches["wLike_dijet_eta_low2CSV"] = new float(0.0);
+    floatBranches["topLike_trijet_mass_hiCSV_low1CSV"] = new float(0.0);
+    floatBranches["topLike_trijet_mass_hiCSV_low2CSV"] = new float(0.0);
+    floatBranches["topLike_trijet_mass_medTag_low1CSV"] = new float(0.0);
+    floatBranches["topLike_trijet_mass_medTag_low2CSV"] = new float(0.0);
+    floatBranches["topLike_trijet_mass_looseTag_low1CSV"] = new float(0.0);
+    floatBranches["topLike_trijet_mass_looseTag_low2CSV"] = new float(0.0);
+    floatBranches["topLike_dijet_lep1_mass_low1CSV"] = new float(0.0);
+    floatBranches["topLike_dijet_lep1_mass_low2CSV"] = new float(0.0);
+    floatBranches["topLike_dijet_lep2_mass_low1CSV"] = new float(0.0);
+    floatBranches["topLike_dijet_lep2_mass_low2CSV"] = new float(0.0);
+    floatBranches["MT_MHT_leplep"] = new float(0.0);
+    floatBranches["mass_MHT_leplep"] = new float(0.0);
+    floatBranches["MT_MHT_lep1"] = new float(0.0);
+    floatBranches["MT_MHT_lep2"] = new float(0.0);
+    floatBranches["MT_MHT_lep1_b1"] = new float(0.0);
+    floatBranches["MT_MHT_lep1_b2"] = new float(0.0);
+    floatBranches["MT_MHT_lep2_b1"] = new float(0.0);
+    floatBranches["MT_MHT_lep2_b2"] = new float(0.0);
+    floatBranches["MT_met_leplep"] = new float(0.0);
+    floatBranches["mass_met_leplep"] = new float(0.0);
+    floatBranches["MT_met_lep1"] = new float(0.0);
+    floatBranches["MT_met_lep2"] = new float(0.0);
+    floatBranches["MT_met_lep1_b1"] = new float(0.0);
+    floatBranches["MT_met_lep1_b2"] = new float(0.0);
+    floatBranches["MT_met_lep2_b1"] = new float(0.0);
+    floatBranches["MT_met_lep2_b2"] = new float(0.0);
+    floatBranches["mass_lep1_b1"] = new float(0.0);
+    floatBranches["mass_lep2_b1"] = new float(0.0);
+    floatBranches["mass_lep1_b2"] = new float(0.0);
+    floatBranches["mass_lep2_b2"] = new float(0.0);
+    floatBranches["dR_lep1_b1"] = new float(0.0);
+    floatBranches["dR_lep2_b1"] = new float(0.0);
+    floatBranches["dR_lep1_b2"] = new float(0.0);
+    floatBranches["dR_lep2_b2"] = new float(0.0);
+    
     intBranches["lep1GenMotherID"] = new int(0);
     intBranches["lep2GenMotherID"] = new int(0);
  
@@ -1067,11 +1070,6 @@ int main ( int argc, char ** argv )
     floatBranches["third_jet_CSV"] = new float(0.0);
     floatBranches["fourth_jet_CSV"] = new float(0.0);
 
-    floatBranches["first_jet_CSV_unc"] = new float(0.0);
-    floatBranches["second_jet_CSV_unc"] = new float(0.0);
-    floatBranches["third_jet_CSV_unc"] = new float(0.0);
-    floatBranches["fourth_jet_CSV_unc"] = new float(0.0);
-
 //     floatBranches["first_lf_jet_pt"] = new float(0.0);
 //     floatBranches["first_lf_jet_eta"] = new float(0.0);
 //     floatBranches["first_lf_jet_CSV_unshaped"] = new float(0.0);
@@ -1162,8 +1160,8 @@ int main ( int argc, char ** argv )
 
   if (ExtraGenVariables) {
     
-//     intBranches["lep1GenID"] = new int(0);
-//     intBranches["lep2GenID"] = new int(0);
+    intBranches["lep1GenID"] = new int(0);
+    intBranches["lep2GenID"] = new int(0);
     intBranches["first_jet_genID"] = new int(0);
     intBranches["second_jet_genID"] = new int(0);
     intBranches["third_jet_genID"] = new int(0);
@@ -1206,7 +1204,7 @@ int main ( int argc, char ** argv )
 //     floatBranches["closest_tagged_dijet_mass"] = new float(0.0);
     
     floatBranches["avg_btag_disc_non_btags"] = new float(0.0);
-//     floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
+    floatBranches["highest_btag_disc_non_btags"] = new float(0.0);
 //     floatBranches["dev_from_avg_disc_btags"] = new float(0.0);
 //     floatBranches["first_highest_btag"] = new float(0.0);
 //     floatBranches["second_highest_btag"] = new float(0.0);
@@ -1838,6 +1836,7 @@ int main ( int argc, char ** argv )
     BNelectronCollection electronsTS;
     BNelectronCollection electronsSelected;
 
+    int numElectrons = dInt;
     int numTightElectrons = dInt;
     int numLooseElectrons = dInt;
     int numSideElectrons = dInt;
@@ -1853,13 +1852,15 @@ int main ( int argc, char ** argv )
     }
     else if (selectionYearStr == "2012_53x") {
       electronsTight = beanHelper.GetSelectedElectrons(electrons,electronID::electronTight);
-      electronsInclusivelyLoose = beanHelper.GetSelectedElectrons(electrons,electronID::electronLoose);
+      if (useSideLeptons) electronsInclusivelyLoose = beanHelper.GetSelectedElectrons(looseElectrons,electronID::electronLoose);
+      else electronsInclusivelyLoose = beanHelper.GetSelectedElectrons(electrons,electronID::electronLoose);
       electronsInclusivelySide = beanHelper.GetSelectedElectrons(looseElectrons,electronID::electronSide);
     }
     else {
       assert (selectionYearStr == "either 2012_52x, 2012_53x, or 2011");
     }
 
+      
     try { electronsLoose = beanHelper.GetSymmetricDifference(electronsInclusivelyLoose,electronsTight); }
     catch(...) { std::cerr << " exception in GetSymmetricDifference" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
     try { electronsTL = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(electronsTight),beanHelper.GetSortedByPt(electronsInclusivelyLoose)); }
@@ -1867,14 +1868,22 @@ int main ( int argc, char ** argv )
     if (selectionYearStr == "2011" || selectionYearStr == "2012_53x") {
       try { electronsSide = beanHelper.GetSymmetricDifference(electronsInclusivelySide,electronsInclusivelyLoose); }
       catch(...) { std::cerr << " exception in GetUnionUnsorted" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
-      try { electronsTS = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(electronsTight),beanHelper.GetSortedByPt(electronsSide)); }
+      try { electronsTS = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(electronsTight),beanHelper.GetSortedByPt(electronsInclusivelySide)); }
       catch(...) { std::cerr << " exception in GetUnionUnsorted" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
-      numSideElectrons = electronsSide.size();
     }
-    electronsSelected = electronsTL;
-    
+
+    if (useSideLeptons) {
+      electronsSelected = electronsTS;
+      numElectrons = electronsTS.size();
+    }
+    else {
+      electronsSelected = electronsTL;
+      numElectrons = electronsTL.size();
+    }
+      
     numTightElectrons = electronsTight.size();
     numLooseElectrons = electronsTL.size() - electronsTight.size();
+    numSideElectrons = electronsTS.size() - electronsTight.size();
     
     /////////
     ///
@@ -1893,6 +1902,7 @@ int main ( int argc, char ** argv )
     BNmuonCollection muonsTS;
     BNmuonCollection muonsSelected;
 
+    int numMuons = dInt;
     int numTightMuons = dInt;
     int numLooseMuons = dInt;
     int numSideMuons = dInt;
@@ -1922,18 +1932,28 @@ int main ( int argc, char ** argv )
     if (selectionYearStr == "2011" || selectionYearStr == "2012_53x") {    
       try { muonsSide = beanHelper.GetSymmetricDifference(muonsInclusivelySide,muonsInclusivelyLoose); }
       catch(...) { std::cerr << " exception in GetSymmetricDifference" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
-      try { muonsTS = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(muonsTight),beanHelper.GetSortedByPt(muonsSide)); }
+      try { muonsTS = beanHelper.GetUnionUnsorted(beanHelper.GetSortedByPt(muonsTight),beanHelper.GetSortedByPt(muonsInclusivelySide)); }
       catch(...) { std::cerr << " exception in GetUnionUnsorted" << std::endl; continue; } //Don't segfault if two leptons have same eta,phi but different pt
-      numSideMuons = muonsSide.size();
     }
-    muonsSelected = muonsTL;
-    
+
+    if (useSideLeptons) {
+      muonsSelected = muonsTS;
+      numMuons = muonsTS.size();
+    }
+    else {
+      muonsSelected = muonsTL;
+      numMuons = muonsTL.size();
+    }
+      
     numTightMuons = muonsTight.size();
     numLooseMuons = muonsTL.size() - muonsTight.size();
-    //numLooseMuons = muonsLoose.size();
+    numSideMuons = muonsTS.size() - muonsSide.size();
 
 
     bool PassTwoLepton = (( numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons )== 2 && ( numTightMuons + numTightElectrons )> 0 );
+    if (useSideLeptons) PassTwoLepton = ( ( numMuons + numElectrons ) >= 2
+                                          && ( ( numTightMuons + numTightElectrons > 0 ) || ( numLooseMuons + numLooseElectrons == 2 ) )
+                                               && ( numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons ) <= 2 );
     //if ( !PassTwoLepton ) continue ;
     if ( debug_ && muons.size() + electrons.size() < 2 ) cout << "Event " << cnt << ", input collection of leptons less than 2" << endl;
     if ( debug_ && muons.size() + electrons.size() > 2 ) cout << "Event " << cnt << ", Input collection of leptons greater than 2" << endl;
@@ -1954,8 +1974,13 @@ int main ( int argc, char ** argv )
     //beanHelper.GetUncorrectedJets(const BNjetCollection& iCorrectedJets, const BNjetCollection& iOriginalJets)
     
       std::vector<int> jet_index;
+      int first_CSV_index_finder = 99;
+      int second_CSV_index_finder = 99;
+      int first_CSV_index = -1;
+      int second_CSV_index = -1;
       std::vector<int> allJet_index;
       std::vector<int> tagJet_index;
+      std::vector<int> looseTagJet_index;
       std::list<float> jet_CSV_list;      
       std::vector<float> jet_CSV;
       std::vector<int> untagJet_index;
@@ -1978,13 +2003,11 @@ int main ( int argc, char ** argv )
       int numBadJets=0;
       vLorentz jetV;
       vLorentz allJetV;
-      vLorentz sideJetV;
       vLorentz higgsJetV;
       vLorentz higgsGenJetV;
       vLorentz higgsGenPartonV;
       TLorentzVector jetVector;
       TLorentzVector allJetVector;
-      TLorentzVector sideJetVector;
       TLorentzVector higgsJetVector;
       TLorentzVector higgsGenJetVector;
       TLorentzVector higgsGenPartonVector;
@@ -2031,6 +2054,7 @@ int main ( int argc, char ** argv )
         cout << "\n--------------new event------------------" << endl;
 
       BNjetCollection const &pfjetsSelected = beanHelper.GetCorrectedJets(pfjets,iSysType);
+      BNjetCollection const &pfjetsSelected_CSV_sorted = beanHelper.GetSortedByCSV( pfjetsSelected );
       BNjetCollection const &pfjetsSelected_Uncorrected = beanHelper.GetUncorrectedJets(pfjetsSelected,pfjets);
 
       //////////////////
@@ -2188,8 +2212,6 @@ int main ( int argc, char ** argv )
     if (debug_) cout << "Before jet cut" << endl;
 
 	if( !(kin && eta && id) ) {
-      sideJetVector.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
-      sideJetV.push_back(sideJetVector);
       numBadJets++;
       continue;
     }
@@ -2215,6 +2237,22 @@ int main ( int argc, char ** argv )
 	numGoodJets++;
 	jet_index.push_back(i);
 
+    for( int j=0; j<int(pfjetsSelected_CSV_sorted.size()); j++ ) {
+      if (pfjetsSelected_CSV_sorted.at(j).px == pfjetsSelected.at(i).px
+          && pfjetsSelected_CSV_sorted.at(j).py == pfjetsSelected.at(i).py) {
+        if (j < first_CSV_index_finder) {
+          second_CSV_index_finder = first_CSV_index_finder;
+          second_CSV_index = first_CSV_index;
+          first_CSV_index_finder = j;
+          first_CSV_index = i;
+        }
+        else if (j < second_CSV_index_finder) {
+          second_CSV_index_finder = j;
+          second_CSV_index = i;
+        }
+      }
+    }
+    
 	// Use Combined tags
 	// Loose Cut is 0.244
 	// Medium Cut is 0.679
@@ -2225,58 +2263,24 @@ int main ( int argc, char ** argv )
     
     float csv = pfjetsSelected.at(i).btagCombinedSecVertex;
 	bool csvM = ( csv > btagThres );
+	bool csvL = ( csv > btagThresLoose );
 
 	
-	if( csvM ){
+	if( csvM ) {
 	  tagJet_index.push_back(i);
       tagJet_CSV.push_back(csv);
 	}
-	else        untagJet_index.push_back(i);
+	else { untagJet_index.push_back(i); }
+
+	if( csvL ) looseTagJet_index.push_back(i);
 	
 	int flavor =  pfjetsSelected.at(i).flavour;
-
+    
 	jet_CSV.push_back(csv);
 	jet_CSV_list.push_back(csv);
-
-	////csv reweighting
-// 	if (! isData ){
-// 	  int iPt = -1; int iEta = -1;
-// 	  if (jetPt >=30 && jetPt<40) iPt = 0;
-// 	  else if (jetPt >=40 && jetPt<60) iPt = 1;
-// 	  else if (jetPt >=60 && jetPt<100) iPt = 2;
-// 	  else if (jetPt >=100 && jetPt<160) iPt = 3;
-// 	  else if (jetPt >=160 && jetPt<10000) iPt = 4;
-	  
-// 	  if (jetAbsEta >=0 &&  jetAbsEta<0.8) iEta = 0;
-// 	  else if ( jetAbsEta>=0.8 && jetAbsEta<1.6) iEta = 1;
-// 	  else if ( jetAbsEta>=1.6 && jetAbsEta<2.4) iEta = 2;
-	  
-// 	  if (iPt < 0 || iEta < 0) std::cout << "Error, couldn't find Pt, Eta bins for this b-flavor jet" << std::endl;
-
-// 	  if (abs(flavor) == 5 || abs(flavor) == 4){
-// 	    for ( unsigned int iSF=0; iSF<nsys_csv; iSF++){
-// 	      if (jes!=0  && iSF != 0)  continue;
-// 	      double iCSVWgt2 = csv_hist_hf[iSF][iPt]->GetBinContent(csv_hist_hf[iSF][iPt]->FindBin(csv));
-// 	      if (iCSVWgt2!=0) csvWgthf[iSF] *= iCSVWgt2;
-// // 	      cout << "wgt " << iSF << " = " << csvWgthf[iSF] << endl;
-// 	    }
-// 	  }
-// 	  else {
-// 	    if (iPt >=2) iPt=2;
-// 	    for ( unsigned int iSF=0; iSF<nsys_csv; iSF++){
-// 	      if (jes!=0  && iSF != 0)  continue;
-// 	      double iCSVWgt1 = csv_hist_lf[iSF][iPt][iEta]->GetBinContent(csv_hist_lf[iSF][iPt][iEta]->FindBin(csv));
-// 	      if (iCSVWgt1!=0) csvWgtlf[iSF] *= iCSVWgt1;
-// // 	      cout << "wgt " << iSF << " = " << csvWgtlf[iSF] << endl;
-// // 	    if(csv<0) {
-// // 	      cout << "csv wgt for jet " << i << " is " << iCSVWgt1 << endl;
-// // 	      cout << "jetPt is " << jetPt << " ; and jetEta is " << jetAbsEta << " ; and csv is " << csv << endl;
-// // 	    }
-// 	    }
-// 	  }
-// 	}
-
+    
       }// end for each pf jet
+
     if (debug_) cout << "Finished loop over pfjets" << endl;
       
       //------------------------
@@ -2290,6 +2294,7 @@ int main ( int argc, char ** argv )
       }
 
       int numTaggedJets = int(tagJet_index.size());
+      int numLooseTaggedJets = int(looseTagJet_index.size());
 
       ///////
 
@@ -2298,15 +2303,45 @@ int main ( int argc, char ** argv )
       bool TightEleLooseMuon = ((numTightElectrons == 1) && (numLooseMuons==1));
       bool TightEleLooseEle = ((numTightElectrons == 1) && (numLooseElectrons==1));
 
+      bool TightMuonSideMuon = ((numTightMuons == 1) && (numSideMuons>=1));
+      bool TightMuonSideEle = ((numTightMuons == 1) && (numSideElectrons>=1));
+      bool TightEleSideMuon = ((numTightElectrons == 1) && (numSideMuons>=1));
+      bool TightEleSideEle = ((numTightElectrons == 1) && (numSideElectrons>=1));
+      
       bool twoTightMuon = (numTightMuons == 2);
-      bool oneEleOneMuon = ((numTightMuons ==1) && (numTightElectrons ==1));
+      bool oneEleOneMuonTight = ((numTightMuons ==1) && (numTightElectrons ==1));
       bool twoTightEle = (numTightElectrons ==2);
 
+      bool twoLooseMuon = (numLooseMuons == 2);
+      bool oneEleOneMuonLoose = ((numLooseMuons ==1) && (numLooseElectrons ==1));
+      bool twoLooseEle = (numLooseElectrons ==2);
+
+      bool GEtwoMuon = (numMuons >= 2);
+      bool GEoneEleOneMuon = ((numMuons >=1) && (numElectrons >=1));
+      bool GEtwoEle = (numElectrons >=2);
+      
       bool TwoMuon = PassTwoLepton && ( twoTightMuon || TightMuonLooseMuon ) ;
       bool TwoEle = PassTwoLepton && ( twoTightEle || TightEleLooseEle ) ;
-      bool MuonEle = PassTwoLepton && ( TightMuonLooseEle || TightEleLooseMuon || oneEleOneMuon );
+      bool MuonEle = PassTwoLepton && ( TightMuonLooseEle || TightEleLooseMuon || oneEleOneMuonTight );
 
 
+      if (useSideLeptons) {
+        TwoMuon = PassTwoLepton && ( twoTightMuon || (TightMuonLooseMuon && TightMuonSideMuon)
+                                        || ( (twoLooseMuon && GEtwoMuon)  && !(TightEleLooseEle && TightEleSideEle)
+                                             && !(TightMuonLooseEle && TightMuonSideEle) && !(TightEleLooseMuon && TightEleSideMuon) )
+                                        || ( TightMuonSideMuon  && !(TightEleLooseEle && TightEleSideEle)
+                                             && !(TightMuonLooseEle && TightMuonSideEle) && !(TightEleLooseMuon && TightEleSideMuon)
+                                             && !(oneEleOneMuonLoose && GEoneEleOneMuon) && !(twoLooseEle && GEtwoEle) ) );
+        MuonEle = PassTwoLepton && !TwoMuon && ( oneEleOneMuonTight || (TightMuonLooseEle && TightMuonSideEle) || (TightEleLooseMuon && TightEleSideMuon)
+                                                    || ( (oneEleOneMuonLoose && GEoneEleOneMuon) && !(TightEleLooseEle && TightEleSideEle) )
+                                                    || ( (TightMuonSideEle || TightEleSideMuon) && !(TightEleLooseEle && TightEleSideEle)
+                                                         && !(twoLooseEle && GEtwoEle) ) );
+        TwoEle = PassTwoLepton && !TwoMuon && !MuonEle && ( twoTightEle || (twoLooseEle && GEtwoEle) || (TightEleSideEle) );
+      }
+
+      if ( !(TwoMuon || MuonEle || TwoEle) ) continue;
+                                        
+      
       
       //long tempLongEventNum = event->evt;
       //unsigned tempUEventNum = (unsigned) tempLongEventNum;
@@ -2406,6 +2441,8 @@ int main ( int argc, char ** argv )
       float higgsLike_dijet_mass1 = dFloat;
       float higgsLike_dijet_mass2 = dFloat;
       float higgsLike_dijet_massX = dFloat;
+      float higgsLike_dijet_ptX = dFloat;
+      float higgsLike_dijet_etaX = dFloat;
       float higgsLike_diBjet_mass1 = dFloat;
       float higgsLike_dijet_dR = dFloat;
       float higgsLike_dijet_pt = dFloat;
@@ -2424,15 +2461,44 @@ int main ( int argc, char ** argv )
       float higgs_dijet_genJet2_pt = dFloat;
       float higgs_dijet_genParton1_pt= dFloat;
       float higgs_dijet_genParton2_pt = dFloat;
-      float wLike_dijet_mass1 = dFloat;
-      float topLike_dijet_lep1_mass = dFloat;
-      float topLike_dijet_lep2_mass = dFloat;
-      float MT_MHT_lep1_b = dFloat;
-      float MT_MHT_lep2_b = dFloat;
-      float MT_met_lep1_b = dFloat;
-      float MT_met_lep2_b = dFloat;
-      float topLike_trijet_mass1 = dFloat;
-      float topLike_trijet_mass2 = dFloat;
+      float wLike_dijet_mass_low1CSV1 = dFloat;
+      float wLike_dijet_mass_low2CSV1 = dFloat;
+      float wLike_dijet_pt_low1CSV = dFloat;
+      float wLike_dijet_pt_low2CSV = dFloat;
+      float wLike_dijet_eta_low1CSV = dFloat;
+      float wLike_dijet_eta_low2CSV = dFloat;
+      float topLike_dijet_lep1_mass_low1CSV = dFloat;
+      float topLike_dijet_lep1_mass_low2CSV = dFloat;
+      float topLike_dijet_lep2_mass_low1CSV = dFloat;
+      float topLike_dijet_lep2_mass_low2CSV = dFloat;
+      float MT_MHT_lep1_b1 = dFloat;
+      float MT_MHT_lep2_b1 = dFloat;
+      float MT_MHT_lep1_b2 = dFloat;
+      float MT_MHT_lep2_b2 = dFloat;
+      float MT_met_lep1_b1 = dFloat;
+      float MT_met_lep2_b1 = dFloat;
+      float MT_met_lep1_b2 = dFloat;
+      float MT_met_lep2_b2 = dFloat;
+      float mass_lep1_b1 = dFloat;
+      float mass_lep2_b1 = dFloat;
+      float mass_lep1_b2 = dFloat;
+      float mass_lep2_b2 = dFloat;
+      float dR_lep1_b1 = dFloat;
+      float dR_lep2_b1 = dFloat;
+      float dR_lep1_b2 = dFloat;
+      float dR_lep2_b2 = dFloat;
+      float topLike_trijet_mass_hiCSV_low1CSV1 = dFloat;
+      float topLike_trijet_mass_hiCSV_low1CSV2 = dFloat;
+      float topLike_trijet_mass_hiCSV_low2CSV1 = dFloat;
+      float topLike_trijet_mass_hiCSV_low2CSV2 = dFloat;
+      float topLike_trijet_mass_medTag_low1CSV1 = dFloat;
+      float topLike_trijet_mass_medTag_low1CSV2 = dFloat;
+      float topLike_trijet_mass_medTag_low2CSV1 = dFloat;
+      float topLike_trijet_mass_medTag_low2CSV2 = dFloat;
+      float topLike_trijet_mass_looseTag_low1CSV1 = dFloat;
+      float topLike_trijet_mass_looseTag_low1CSV2 = dFloat;
+      float topLike_trijet_mass_looseTag_low2CSV1 = dFloat;
+      float topLike_trijet_mass_looseTag_low2CSV2 = dFloat;
       float higgsLike_allDijet_mass1 = dFloat;
       float higgsLike_allDijet_mass2 = dFloat;
       float wLike_allDijet_mass1 = dFloat;
@@ -2483,8 +2549,8 @@ int main ( int argc, char ** argv )
       TLorentzVector lep_vect1_transverse;
       TLorentzVector lep_vect2_transverse;
       TLorentzVector jet_vect;
+      TLorentzVector jet_vect_transverse;
       TLorentzVector allJet_vect;
-      TLorentzVector sideJet_vect;
       
       TLorentzVector btag_vect1;
       TLorentzVector btag_vect2;
@@ -2537,6 +2603,13 @@ int main ( int argc, char ** argv )
       int third_jet_flavor = dInt ;
       int fourth_jet_flavor = dInt ;
 
+      float b1_jet_pt = dFloat;
+      float b2_jet_pt = dFloat;
+      float b1_jet_eta = dFloat;
+      float b2_jet_eta = dFloat;
+      float b1_jet_CSV = dFloat;
+      float b2_jet_CSV = dFloat;
+
       float first_lf_jet_pt = dFloat;
       float first_lf_jet_eta = dFloat;
       float first_lf_jet_CSV_unshaped = dFloat;
@@ -2582,16 +2655,12 @@ int main ( int argc, char ** argv )
       float mindr_lep2_jet = dFloat;
       float mindr_lep1_allJet = dFloat;
       float mindr_lep2_allJet = dFloat;
-      float mindr_lep1_sideJet = dFloat;
-      float mindr_lep2_sideJet = dFloat;
       float min_dr_tagged_jets = dFloat;
       float min_dr_jets = dFloat;
       float ptRel_lep1_jet = dFloat;
       float ptRel_lep2_jet = dFloat;
       float ptRel_lep1_allJet = dFloat;
       float ptRel_lep2_allJet = dFloat;
-      float ptRel_lep1_sideJet = dFloat;
-      float ptRel_lep2_sideJet = dFloat;
       
       float denom_avg_cnt = dFloat;
       float avg_btag_disc_btags = dFloat;     
@@ -2677,6 +2746,10 @@ int main ( int argc, char ** argv )
     int lep2GenID = dInt;
     int lep1GenMotherID = dInt;
     int lep2GenMotherID = dInt;
+    int lep1IsPrompt = dInt;
+    int lep2IsPrompt = dInt;
+    int lep1Flavor = dInt;
+    int lep2Flavor = dInt;
     float lep1SF = dFloat;
     float lep2SF = dFloat;
 
@@ -2835,10 +2908,11 @@ int main ( int argc, char ** argv )
           lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
           lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
 
-          if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
-              abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
-            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;}
+          if (((lep1GenMotherID == lep1GenID && (abs(lep1GenID) == 11 || abs(lep1GenID) == 13)) || abs(lep1GenMotherID) == 15 ||
+               abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) && abs(lep1GenID)>5) {
+            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0; lep1IsPrompt = 1;}
           else {
+            lep1IsPrompt = 0;
             if (lep1ChargedIso <= 0.001) {
               lep1PromptSF = 3.0;
               lep1PromptSFUp = 3.5;
@@ -2850,10 +2924,11 @@ int main ( int argc, char ** argv )
               lep1PromptSFDown = 1.2;
             }
           }
-          if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
-              abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
-            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
+          if (((lep2GenMotherID == lep2GenID && (abs(lep2GenID) == 11 || abs(lep2GenID) == 13)) || abs(lep2GenMotherID) == 15 ||
+               abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) && abs(lep2GenID)>5) {
+            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; lep2IsPrompt = 1; }
           else {
+            lep2IsPrompt = 0;
             if (lep2ChargedIso <= 0.001) {
               lep2PromptSF = 3.0;
               lep2PromptSFUp = 3.5;
@@ -2870,6 +2945,9 @@ int main ( int argc, char ** argv )
         
         lep1PassSSCut = (muonsSelected.at(0).numberOfValidTrackerHitsInnerTrack > 7);
         lep2PassSSCut = (muonsSelected.at(1).numberOfValidTrackerHitsInnerTrack > 7);
+
+        lep1Flavor = 13;
+        lep2Flavor = 13;
 
 	  }
 
@@ -3000,6 +3078,9 @@ int main ( int argc, char ** argv )
                           (fabs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep2dFracScEtTkPt < 1) );
 
+        lep1Flavor = 11;
+        lep2Flavor = 11;
+        
         if (isData) { lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
           lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
           lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;
@@ -3012,10 +3093,11 @@ int main ( int argc, char ** argv )
           lep2FlipSFUp = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * 0.3;
           lep2FlipSFDown = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * -0.1;
 
-          if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
-              abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
-            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;}
+          if (((lep1GenMotherID == lep1GenID && (abs(lep1GenID) == 11 || abs(lep1GenID) == 13)) || abs(lep1GenMotherID) == 15 ||
+               abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) && abs(lep1GenID)>5) {
+            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0; lep1IsPrompt = 1;}
           else {
+            lep1IsPrompt = 0;
             if (lep1ChargedIso <= 0.001) {
               lep1PromptSF = 2.5;
               lep1PromptSFUp = 2.9;
@@ -3027,10 +3109,11 @@ int main ( int argc, char ** argv )
               lep1PromptSFDown = 1.4;
             }
           }
-          if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
-              abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
-            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
+          if (((lep2GenMotherID == lep2GenID && (abs(lep2GenID) == 11 || abs(lep2GenID) == 13)) || abs(lep2GenMotherID) == 15 ||
+               abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) && abs(lep2GenID)>5) {
+            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; lep2IsPrompt = 1; }
           else {
+            lep2IsPrompt = 0;
             if (lep2ChargedIso <= 0.001) {
               lep2PromptSF = 2.5;
               lep2PromptSFUp = 2.9;
@@ -3048,12 +3131,12 @@ int main ( int argc, char ** argv )
 
       // This is the case where the muon is higher pt than the
       // electron
-	  if( (oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle) &&
+	  if( (oneEleOneMuonTight || TightEleLooseMuon || TightMuonLooseEle) &&
           (muonsSelected.at(0).pt >= electronsSelected.at(0).pt ) ) {
 
-        muonID::muonID  theMuonType = (oneEleOneMuon || TightMuonLooseEle) ? muonID::muonTight : muonID::muonLoose;
+        muonID::muonID  theMuonType = (oneEleOneMuonTight || TightMuonLooseEle) ? muonID::muonTight : muonID::muonLoose;
         electronID::electronID  theEleType  =
-          (oneEleOneMuon || TightEleLooseMuon) ? electronID::electronTight : electronID::electronLoose;
+          (oneEleOneMuonTight || TightEleLooseMuon) ? electronID::electronTight : electronID::electronLoose;
         
         lep1SF = beanHelper.GetMuonSF(muonsSelected.at(0), theMuonType);
         lep2SF = beanHelper.GetElectronSF(electronsSelected.at(0), theEleType);
@@ -3167,7 +3250,9 @@ int main ( int argc, char ** argv )
         lep2PassSSCut = ( (lep2TkCharge == lep2GsfCharge) && (fabs(lep2IP) < 0.02) &&
                           (fabs(lep1_correctedD0 - lep2_correctedD0) < 0.015) &&
                           (lep2dFracScEtTkPt < 1) );
-        
+
+        lep1Flavor = 13;
+        lep2Flavor = 11;
 
         if (isData) { lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
           lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
@@ -3179,10 +3264,11 @@ int main ( int argc, char ** argv )
           lep2FlipSFUp = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * 0.3;
           lep2FlipSFDown = 1.0 + (lep2GsfCharge == -1*lep2GenCharge && lep2PassSSCut) * -0.1;
 
-          if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
-              abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
-            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;}
+          if (((lep1GenMotherID == lep1GenID && (abs(lep1GenID) == 11 || abs(lep1GenID) == 13)) || abs(lep1GenMotherID) == 15 ||
+               abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) && abs(lep1GenID)>5) {
+            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0; lep1IsPrompt = 1;}
           else {
+            lep1IsPrompt = 0;
             if (lep1ChargedIso <= 0.001) {
               lep1PromptSF = 3.0;
               lep1PromptSFUp = 3.5;
@@ -3194,10 +3280,11 @@ int main ( int argc, char ** argv )
               lep1PromptSFDown = 1.2;
             }
           }
-          if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
-              abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
-            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
+          if (((lep2GenMotherID == lep2GenID && (abs(lep2GenID) == 11 || abs(lep2GenID) == 13)) || abs(lep2GenMotherID) == 15 ||
+               abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) && abs(lep2GenID)>5) {
+            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; lep2IsPrompt = 1; }
           else {
+            lep2IsPrompt = 0;
             if (lep2ChargedIso <= 0.001) {
               lep2PromptSF = 2.5;
               lep2PromptSFUp = 2.9;
@@ -3214,12 +3301,12 @@ int main ( int argc, char ** argv )
 	  }
 
       // this is the case where the muon is lower pt than the electron
-	  if( (oneEleOneMuon || TightEleLooseMuon || TightMuonLooseEle) &&
+	  if( (oneEleOneMuonTight || TightEleLooseMuon || TightMuonLooseEle) &&
           (muonsSelected.at(0).pt < electronsSelected.at(0).pt ) ) {
 
-        muonID::muonID  theMuonType = (oneEleOneMuon || TightMuonLooseEle) ? muonID::muonTight : muonID::muonLoose;
+        muonID::muonID  theMuonType = (oneEleOneMuonTight || TightMuonLooseEle) ? muonID::muonTight : muonID::muonLoose;
         electronID::electronID  theEleType  =
-          (oneEleOneMuon || TightEleLooseMuon) ? electronID::electronTight : electronID::electronLoose;
+          (oneEleOneMuonTight || TightEleLooseMuon) ? electronID::electronTight : electronID::electronLoose;
         
         lep2SF = beanHelper.GetMuonSF(muonsSelected.at(0), theMuonType);
         lep1SF = beanHelper.GetElectronSF(electronsSelected.at(0), theEleType);
@@ -3332,7 +3419,9 @@ int main ( int argc, char ** argv )
         lep1PassSSCut = ( (lep1TkCharge == lep1GsfCharge) && (fabs(lep1IP) < 0.02) &&
                           (fabs(lep1_correctedD0 - lep1_correctedD0) < 0.015) &&
                           (lep1dFracScEtTkPt < 1) );
-        
+
+        lep2Flavor = 13;
+        lep1Flavor = 11;
 
         if (isData) { lep2FlipSF = 1.0; lep2FlipSFUp = 1.0; lep2FlipSFDown = 1.0;
           lep1FlipSF = 1.0; lep1FlipSFUp = 1.0; lep1FlipSFDown = 1.0;
@@ -3344,10 +3433,11 @@ int main ( int argc, char ** argv )
           lep1FlipSFUp = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * 0.3;
           lep1FlipSFDown = 1.0 + (lep1GsfCharge == -1*lep1GenCharge && lep1PassSSCut) * -0.1;
 
-          if (abs(lep2GenMotherID) == 11 || abs(lep2GenMotherID) == 13 || abs(lep2GenMotherID) == 15 ||
-              abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) {
-            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; }
+          if (((lep2GenMotherID == lep2GenID && (abs(lep2GenID) == 11 || abs(lep2GenID) == 13)) || abs(lep2GenMotherID) == 15 ||
+               abs(lep2GenMotherID) == 23 || abs(lep2GenMotherID) == 24 || abs(lep2GenMotherID) == 25 ) && abs(lep2GenID)>5) {
+            lep2PromptSF = 1.0; lep2PromptSFUp = 1.0; lep2PromptSFDown = 1.0; lep2IsPrompt = 1; }
           else {
+            lep2IsPrompt = 0;
             if (lep2ChargedIso <= 0.001) {
               lep2PromptSF = 3.0;
               lep2PromptSFUp = 3.5;
@@ -3359,10 +3449,11 @@ int main ( int argc, char ** argv )
               lep2PromptSFDown = 1.2;
             }
           }
-          if (abs(lep1GenMotherID) == 11 || abs(lep1GenMotherID) == 13 || abs(lep1GenMotherID) == 15 ||
-              abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) {
-            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0;}
+          if (((lep1GenMotherID == lep1GenID && (abs(lep1GenID) == 11 || abs(lep1GenID) == 13)) || abs(lep1GenMotherID) == 15 ||
+               abs(lep1GenMotherID) == 23 || abs(lep1GenMotherID) == 24 || abs(lep1GenMotherID) == 25 ) && abs(lep1GenID)>5) {
+            lep1PromptSF = 1.0; lep1PromptSFUp = 1.0; lep1PromptSFDown = 1.0; lep1IsPrompt = 1;}
           else {
+            lep1IsPrompt = 0;
             if (lep1ChargedIso <= 0.001) {
               lep1PromptSF = 2.5;
               lep1PromptSFUp = 2.9;
@@ -3415,7 +3506,7 @@ int main ( int argc, char ** argv )
       if (verbose) std::cout << "about to fill two lep vars " <<std::endl
                              << "TwoMuon = " << TwoMuon << " twoTightMuon = " << twoTightMuon << " TightMuonLooseMuon = " << TightMuonLooseMuon   << endl
                              << "TwoEle = " << TwoEle  << " twoTightEle = " << twoTightEle << " TightEleLooseEle  " << TightEleLooseEle << endl
-                             << "MuonEle = " << MuonEle << " TightMuonLooseEle = " << TightMuonLooseEle << " TightEleLooseMuon = " << TightEleLooseMuon << " oneEleOneMuon = " << endl
+                             << "MuonEle = " << MuonEle << " TightMuonLooseEle = " << TightMuonLooseEle << " TightEleLooseMuon = " << TightEleLooseMuon << " oneEleOneMuonTight = " << endl
                              << "lep1SF = " << lep1SF << " lep2SF = " << lep2SF   << " lepTotalSF = " << lepTotalSF
                              << endl;
         
@@ -3470,14 +3561,21 @@ int main ( int argc, char ** argv )
 	  
 	  // two leptons
 	  TLorentzVector two_lepton_vect = lep_vect1 + lep_vect2;
+	  TLorentzVector two_lepton_vect_transverse = lep_vect1_transverse + lep_vect2_transverse;
       TLorentzVector met_lep1_vect = metV + lep_vect1_transverse;
       TLorentzVector met_lep2_vect = metV + lep_vect2_transverse;
+      TLorentzVector met_leplep_vect = metV + two_lepton_vect;
+      TLorentzVector met_leplep_vect_transverse = metV + two_lepton_vect_transverse;
 
       float MT_met_lep1 = met_lep1_vect.M();
       float MT_met_lep2 = met_lep2_vect.M();
+      float mass_met_leplep = met_leplep_vect.M();
+      float MT_met_leplep = met_leplep_vect_transverse.M();
+      
       float dPhi_met_lep1 = lep_vect1.DeltaPhi(metV);
       float dPhi_met_lep2 = lep_vect2.DeltaPhi(metV);
 	  float mass_leplep = two_lepton_vect.M();
+	  float MT_leplep = two_lepton_vect_transverse.M();
 	  float pt_leplep = two_lepton_vect.Pt();
 	  float dPhi_leplep = lep_vect1.DeltaPhi(lep_vect2);
 	  float dR_leplep = lep_vect1.DeltaR(lep_vect2);
@@ -3494,6 +3592,8 @@ int main ( int argc, char ** argv )
                                                0.0,leps_and_jets_vect.Pt());
       TLorentzVector leps_and_allJets_vect = lep_vect1 + lep_vect2 + sum_allJet_vect;
       TLorentzVector allEverything_vect = leps_and_allJets_vect + metV;
+      TLorentzVector MHT_leplep_vect = leps_and_jets_vect_transverse + two_lepton_vect;
+      TLorentzVector MHT_leplep_vect_transverse = leps_and_jets_vect_transverse + two_lepton_vect_transverse;
       TLorentzVector MHT_lep1_vect = lep_vect1_transverse + leps_and_jets_vect_transverse;
       TLorentzVector MHT_lep2_vect = lep_vect2_transverse + leps_and_jets_vect_transverse;
 
@@ -3505,77 +3605,41 @@ int main ( int argc, char ** argv )
       float MHT = leps_and_jets_vect.Pt();
       float pt_of_leps_and_allJets = leps_and_allJets_vect.Pt();
       float pt_of_allEverything = allEverything_vect.Pt();
+      float mass_MHT_leplep = MHT_leplep_vect.M();
+      float MT_MHT_leplep = MHT_leplep_vect_transverse.M();
       float MT_MHT_lep1 = MHT_lep1_vect.M();
       float MT_MHT_lep2 = MHT_lep2_vect.M();
 
       if (debug_) std::cout << "Finished setting vectors" << std::endl;
-      
+
+      TLorentzVector MHT_lep1_b1_vect;
+      TLorentzVector MHT_lep2_b1_vect;
+      TLorentzVector met_lep1_b1_vect;
+      TLorentzVector met_lep2_b1_vect;
+      TLorentzVector lep1_b1_vect;
+      TLorentzVector lep2_b1_vect;
+      TLorentzVector MHT_lep1_b2_vect;
+      TLorentzVector MHT_lep2_b2_vect;
+      TLorentzVector met_lep1_b2_vect;
+      TLorentzVector met_lep2_b2_vect;
+      TLorentzVector lep1_b2_vect;
+      TLorentzVector lep2_b2_vect;
+
+      TLorentzVector ttbar_vect;
+      TLorentzVector bjet1_vect;
+      TLorentzVector bjet2_vect;
+
       /// pt of ttbar
       float pt_of_ttbar = dFloat;
-      if(numTaggedJets>0){
-
-        int bjet1 = tagJet_index[0] ;
-        TLorentzVector bjet1_vect;
-        TLorentzVector bjet1_vect_transverse;
-        bjet1_vect.SetPxPyPzE(jet_px[bjet1],jet_py[bjet1],jet_pz[bjet1],jet_energy[bjet1]);
-        bjet1_vect_transverse.SetPxPyPzE(jet_px[bjet1],jet_py[bjet1],0.0,jet_pt[bjet1]);
-
-        TLorentzVector MHT_lep1_b_vect = MHT_lep1_vect + bjet1_vect_transverse;
-        TLorentzVector MHT_lep2_b_vect = MHT_lep2_vect + bjet1_vect_transverse;
-        TLorentzVector met_lep1_b_vect = met_lep1_vect + bjet1_vect_transverse;
-        TLorentzVector met_lep2_b_vect = met_lep2_vect + bjet1_vect_transverse;
-        
-
-        MT_MHT_lep1_b = MHT_lep1_b_vect.M();
-        MT_MHT_lep2_b = MHT_lep2_b_vect.M();
-        MT_met_lep1_b = met_lep1_b_vect.M();
-        MT_met_lep2_b = met_lep2_b_vect.M();
-
-        if(numTaggedJets>1) {
-          int bjet2 = tagJet_index[1] ;
-          TLorentzVector bjet2_vect;
-          TLorentzVector bjet2_vect_transverse;
-          bjet2_vect.SetPxPyPzE(jet_px[bjet2],jet_py[bjet2],jet_pz[bjet2],jet_energy[bjet2]);
-          bjet2_vect_transverse.SetPxPyPzE(jet_px[bjet2],jet_py[bjet2],0.0,jet_pt[bjet2]);
-          
-          TLorentzVector ttbar_vect = metV + lep_vect1 + lep_vect2 + bjet1_vect + bjet2_vect;
-          pt_of_ttbar = ttbar_vect.Pt();
-
-          if (bjet2_vect.Pt() > bjet1_vect.Pt()) {
-            MHT_lep1_b_vect = MHT_lep1_vect + bjet2_vect_transverse;
-            MHT_lep2_b_vect = MHT_lep2_vect + bjet2_vect_transverse;
-            met_lep1_b_vect = met_lep1_vect + bjet2_vect_transverse;
-            met_lep2_b_vect = met_lep2_vect + bjet2_vect_transverse;
-
-            MT_MHT_lep1_b = MHT_lep1_b_vect.M();
-            MT_MHT_lep2_b = MHT_lep2_b_vect.M();
-            MT_met_lep1_b = met_lep1_b_vect.M();
-            MT_met_lep2_b = met_lep2_b_vect.M();
-          }
-        }
-      } 
 
 	  ///loop jet
-      if (debug_) std::cout << "Beginning loop over allJets" << std::endl;
-
-      for (int i=0; i<numBadJets; i++) {
-        sideJet_vect.SetPxPyPzE(sideJetV[i].Px(),sideJetV[i].Py(),sideJetV[i].Pz(),sideJetV[i].E());
-	    if (mindr_lep1_sideJet > lep_vect1.DeltaR(sideJet_vect) || mindr_lep1_sideJet == dFloat) {
-	      mindr_lep1_sideJet = lep_vect1.DeltaR(sideJet_vect);
-          ptRel_lep1_sideJet = lep_vect1.Pt() / (lep_vect1.Pt() + sideJet_vect.Pt());
-	    }
-
-	    if (mindr_lep2_sideJet > lep_vect2.DeltaR(sideJet_vect) || mindr_lep2_sideJet == dFloat) {
-	      mindr_lep2_sideJet = lep_vect2.DeltaR(sideJet_vect); 
-          ptRel_lep2_sideJet = lep_vect2.Pt() / (lep_vect2.Pt() + sideJet_vect.Pt());
-	    }
-
-      } //end loop over sideJets
 
       if (debug_) std::cout << "Beginning loop over allJets" << std::endl;
 
       for (int i=0; i<numGoodAndBadJets; i++) {
+        if (jet_energy[i] < 0.1) continue;
         allJet_vect.SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+
         if (HtoBB == 1) {
           if (higgsGenBV[0].DeltaR(allJet_vect) < min_dr_genB1_allJet || min_dr_genB1_allJet == dFloat) {
             min_dr_genB1_allJet = higgsGenBV[0].DeltaR(allJet_vect);
@@ -3584,7 +3648,7 @@ int main ( int argc, char ** argv )
             min_dr_genB2_allJet = higgsGenBV[1].DeltaR(allJet_vect);
           }
         }
-        
+
 	    if (i==0)  first_allJet_pt = jet_pt[i];
 	    if (i==1)  second_allJet_pt = jet_pt[i];
 	    if (i==2)  third_allJet_pt = jet_pt[i];
@@ -3599,6 +3663,7 @@ int main ( int argc, char ** argv )
 	      mindr_lep2_allJet = lep_vect2.DeltaR(allJet_vect); 
           ptRel_lep2_allJet = lep_vect2.Pt() / (lep_vect2.Pt() + allJet_vect.Pt());
 	    }
+
         for (int j=i+1; j < numGoodAndBadJets; j++) {
           sum_higgsLike_allDijet_vect = allJetV[i] + allJetV[j];
           higgsLike_allDijet_mass2 = sum_higgsLike_allDijet_vect.M();
@@ -3630,14 +3695,20 @@ int main ( int argc, char ** argv )
           }
           
         }
+
       }
+
       if (debug_) std::cout << "Beginning loop over jets" << std::endl;
 
       TLorentzVector sum_topLike_dijet_lep1_vect;
       TLorentzVector sum_topLike_dijet_lep2_vect;
       bool first_bjet_found = false;
       int numNonbjetsDom = 0 ;
+
+      if (debug_) std::cout << "first_CSV_index = " << first_CSV_index << " , CSV = " << jet_CSV[first_CSV_index] << std::endl;
+      if (debug_) std::cout << "second_CSV_index = " << second_CSV_index << " , CSV = " << jet_CSV[second_CSV_index] << std::endl;
 	  for (int i=0; i < numGoodJets; i++) {
+        if (debug_) std::cout << "jet_index[" << i << "] = " << jet_index[i] << " , CSV = " << jet_CSV[jet_index[i]] << std::endl;
 	    int iJet = jet_index[i] ;
         if (sum_jet_pt == dFloat) sum_jet_pt = 0.0;
         if (sum_jet_CHEF == dFloat) sum_jet_CHEF = 0.0;
@@ -3655,10 +3726,13 @@ int main ( int argc, char ** argv )
 
         
 	    jet_vect.SetPxPyPzE(jet_px[iJet],jet_py[iJet],jet_pz[iJet],jet_energy[iJet]);
-
+        jet_vect_transverse.SetPxPyPzE(jet_px[iJet],jet_py[iJet],0.0,jet_pt[iJet]);
+        
         for (int j=i+1; j < numGoodJets; j++) {
           sum_higgsLike_dijet_vect = jetV[i] + jetV[j];
           higgsLike_dijet_massX = sum_higgsLike_dijet_vect.M();
+          higgsLike_dijet_ptX = sum_higgsLike_dijet_vect.Pt();
+          higgsLike_dijet_etaX = sum_higgsLike_dijet_vect.Eta();
           sum_topLike_dijet_lep1_vect = jetV[i] + jetV[j] + lep_vect1;
           sum_topLike_dijet_lep2_vect = jetV[i] + jetV[j] + lep_vect2;
           if (pfjetsSelected.at(iJet).btagCombinedSecVertex > btagThres
@@ -3692,24 +3766,84 @@ int main ( int argc, char ** argv )
               if (fabs(higgs_mass - higgsLike_dijet_massX) < 25) numHiggsLike_diBjet_25++;
             }
           }
-          if (pfjetsSelected.at(iJet).btagCombinedSecVertex <= btagThres
-              && pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex <= btagThres) {
-            if (fabs(81 - wLike_dijet_mass1) > fabs(81 - higgsLike_dijet_massX) || wLike_dijet_mass1 == dFloat) {
-              wLike_dijet_mass1 = higgsLike_dijet_massX;
-              topLike_dijet_lep1_mass = sum_topLike_dijet_lep1_vect.M();
-              topLike_dijet_lep2_mass = sum_topLike_dijet_lep2_vect.M();
+
+          if (jet_index[i] != first_CSV_index && jet_index[j] != first_CSV_index) {
+            if (fabs(81 - wLike_dijet_mass_low1CSV1) > fabs(81 - higgsLike_dijet_massX) || wLike_dijet_mass_low1CSV1 == dFloat) {
+              wLike_dijet_mass_low1CSV1 = higgsLike_dijet_massX;
+              wLike_dijet_pt_low1CSV = higgsLike_dijet_ptX;
+              wLike_dijet_eta_low1CSV = higgsLike_dijet_etaX;
+              topLike_dijet_lep1_mass_low1CSV = sum_topLike_dijet_lep1_vect.M();
+              topLike_dijet_lep2_mass_low1CSV = sum_topLike_dijet_lep2_vect.M();
             }
           }
-          for (int k=j+1; k < numGoodJets; k++) {
-            sum_topLike_trijet_vect = jetV[i] + jetV[j] + jetV[k];
-            topLike_trijet_mass2 = sum_topLike_trijet_vect.M();
-            if ((pfjetsSelected.at(iJet).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex >= btagThres)
-                || (pfjetsSelected.at(iJet).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex >= btagThres)
-                || (pfjetsSelected.at(jet_index[j]).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex <= btagThres && pfjetsSelected.at(iJet).btagCombinedSecVertex >= btagThres)) {
-              if (fabs(160 - topLike_trijet_mass1) > fabs(160 - topLike_trijet_mass2) || topLike_trijet_mass1 == dFloat) {
-                topLike_trijet_mass1 = topLike_trijet_mass2;
-              }
+          if (jet_index[i] != first_CSV_index && jet_index[i] != second_CSV_index
+              && jet_index[j] != first_CSV_index && jet_index[j] != second_CSV_index) {
+            if (fabs(81 - wLike_dijet_mass_low2CSV1) > fabs(81 - higgsLike_dijet_massX) || wLike_dijet_mass_low2CSV1 == dFloat) {
+              wLike_dijet_mass_low2CSV1 = higgsLike_dijet_massX;
+              wLike_dijet_pt_low2CSV = higgsLike_dijet_ptX;
+              wLike_dijet_eta_low2CSV = higgsLike_dijet_etaX;
+              topLike_dijet_lep1_mass_low2CSV = sum_topLike_dijet_lep1_vect.M();
+              topLike_dijet_lep2_mass_low2CSV = sum_topLike_dijet_lep2_vect.M();
             }
+          }
+
+          int k_min = 100;
+          for (int k=0; k < numGoodJets; k++) {
+            if (k != i && k != j) {
+              if (k < k_min) k_min = k;
+              sum_topLike_trijet_vect = jetV[i] + jetV[j] + jetV[k];
+
+              if (wLike_dijet_mass_low1CSV1 == higgsLike_dijet_massX) {
+                topLike_trijet_mass_hiCSV_low1CSV2 = sum_topLike_trijet_vect.M();
+                if (jet_index[k] == first_CSV_index) {
+                  if (fabs(160 - topLike_trijet_mass_hiCSV_low1CSV1) > fabs(160 - topLike_trijet_mass_hiCSV_low1CSV2) || topLike_trijet_mass_hiCSV_low1CSV1 == dFloat || k == k_min) {
+                    topLike_trijet_mass_hiCSV_low1CSV1 = topLike_trijet_mass_hiCSV_low1CSV2;
+                  }
+                }
+              }
+              if (wLike_dijet_mass_low1CSV1 == higgsLike_dijet_massX) {
+                topLike_trijet_mass_medTag_low1CSV2 = sum_topLike_trijet_vect.M();
+                if (pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex > btagThres) {
+                  if (fabs(160 - topLike_trijet_mass_medTag_low1CSV1) > fabs(160 - topLike_trijet_mass_medTag_low1CSV2) || topLike_trijet_mass_medTag_low1CSV1 == dFloat || k == k_min) {
+                    topLike_trijet_mass_medTag_low1CSV1 = topLike_trijet_mass_medTag_low1CSV2;
+                  }
+                }
+              }
+              if (wLike_dijet_mass_low1CSV1 == higgsLike_dijet_massX) {
+                topLike_trijet_mass_looseTag_low1CSV2 = sum_topLike_trijet_vect.M();
+                if (pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex > btagThresLoose) {
+                  if (fabs(160 - topLike_trijet_mass_looseTag_low1CSV1) > fabs(160 - topLike_trijet_mass_looseTag_low1CSV2) || topLike_trijet_mass_looseTag_low1CSV1 == dFloat || k == k_min) {
+                    topLike_trijet_mass_looseTag_low1CSV1 = topLike_trijet_mass_looseTag_low1CSV2;
+                  }
+                }
+              }
+              
+              if (wLike_dijet_mass_low2CSV1 == higgsLike_dijet_massX) {
+                topLike_trijet_mass_hiCSV_low2CSV2 = sum_topLike_trijet_vect.M();
+                if (jet_index[k] == first_CSV_index) {
+                  if (fabs(160 - topLike_trijet_mass_hiCSV_low2CSV1) > fabs(160 - topLike_trijet_mass_hiCSV_low2CSV2) || topLike_trijet_mass_hiCSV_low2CSV1 == dFloat || k == k_min) {
+                    topLike_trijet_mass_hiCSV_low2CSV1 = topLike_trijet_mass_hiCSV_low2CSV2;
+                  }
+                }
+              }
+              if (wLike_dijet_mass_low2CSV1 == higgsLike_dijet_massX) {
+                topLike_trijet_mass_medTag_low2CSV2 = sum_topLike_trijet_vect.M();
+                if (pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex > btagThres) {
+                  if (fabs(160 - topLike_trijet_mass_medTag_low2CSV1) > fabs(160 - topLike_trijet_mass_medTag_low2CSV2) || topLike_trijet_mass_medTag_low2CSV1 == dFloat || k == k_min) {
+                    topLike_trijet_mass_medTag_low2CSV1 = topLike_trijet_mass_medTag_low2CSV2;
+                  }
+                }
+              }
+              if (wLike_dijet_mass_low2CSV1 == higgsLike_dijet_massX) {
+                topLike_trijet_mass_looseTag_low2CSV2 = sum_topLike_trijet_vect.M();
+                if (pfjetsSelected.at(jet_index[k]).btagCombinedSecVertex > btagThresLoose) {
+                  if (fabs(160 - topLike_trijet_mass_looseTag_low2CSV1) > fabs(160 - topLike_trijet_mass_looseTag_low2CSV2) || topLike_trijet_mass_looseTag_low2CSV1 == dFloat || k == k_min) {
+                    topLike_trijet_mass_looseTag_low2CSV1 = topLike_trijet_mass_looseTag_low2CSV2;
+                  }
+                }
+              }
+            
+            } //End if k != j or i
           } //End k loop over numGoodJets
         } //End j loop over numGoodJets
 
@@ -3731,6 +3865,57 @@ int main ( int argc, char ** argv )
           first_bjet_pt = jet_pt[iJet];
           first_bjet_found = true;
         }
+
+        if (jet_index[i]==first_CSV_index) { //Highest CSV jet
+
+          bjet1_vect = jet_vect;
+
+          MHT_lep1_b1_vect = MHT_lep1_vect + jet_vect_transverse;
+          MHT_lep2_b1_vect = MHT_lep2_vect + jet_vect_transverse;
+          met_lep1_b1_vect = met_lep1_vect + jet_vect_transverse;
+          met_lep2_b1_vect = met_lep2_vect + jet_vect_transverse;
+          lep1_b1_vect = lep_vect1 + jet_vect;
+          lep2_b1_vect = lep_vect2 + jet_vect;
+
+          MT_MHT_lep1_b1 = MHT_lep1_b1_vect.M();
+          MT_MHT_lep2_b1 = MHT_lep2_b1_vect.M();
+          MT_met_lep1_b1 = met_lep1_b1_vect.M();
+          MT_met_lep2_b1 = met_lep2_b1_vect.M();
+          mass_lep1_b1 = lep1_b1_vect.M();
+          mass_lep2_b1 = lep2_b1_vect.M();
+          dR_lep1_b1 = lep_vect1.DeltaR(jet_vect);
+          dR_lep2_b1 = lep_vect2.DeltaR(jet_vect);
+
+          b1_jet_pt = jet_vect.Pt();
+          b1_jet_eta = jet_vect.Eta();
+          b1_jet_CSV = jet_CSV[iJet];
+        }
+        if (jet_index[i]==second_CSV_index) { //Highest CSV jet
+
+          bjet2_vect = jet_vect;
+
+          MHT_lep1_b2_vect = MHT_lep1_vect + jet_vect_transverse;
+          MHT_lep2_b2_vect = MHT_lep2_vect + jet_vect_transverse;
+          met_lep1_b2_vect = met_lep1_vect + jet_vect_transverse;
+          met_lep2_b2_vect = met_lep2_vect + jet_vect_transverse;
+          lep1_b2_vect = lep_vect1 + jet_vect;
+          lep2_b2_vect = lep_vect2 + jet_vect;
+
+          MT_MHT_lep1_b2 = MHT_lep1_b2_vect.M();
+          MT_MHT_lep2_b2 = MHT_lep2_b2_vect.M();
+          MT_met_lep1_b2 = met_lep1_b2_vect.M();
+          MT_met_lep2_b2 = met_lep2_b2_vect.M();
+          mass_lep1_b2 = lep1_b2_vect.M();
+          mass_lep2_b2 = lep2_b2_vect.M();
+          dR_lep1_b2 = lep_vect1.DeltaR(jet_vect);
+          dR_lep2_b2 = lep_vect2.DeltaR(jet_vect);
+
+          b2_jet_pt = jet_vect.Pt();
+          b2_jet_eta = jet_vect.Eta();
+          b2_jet_CSV = jet_CSV[iJet];
+        }
+
+        
         
 	    if (i==0)  {        
           first_jet_pt = jet_pt[iJet];
@@ -3838,7 +4023,10 @@ int main ( int argc, char ** argv )
 	      highest_btag_disc_non_btags = max(highest_btag_disc_non_btags,jet_CSV[i]);
 	    }									
 	  } // End of loop over numGoodJets
-	  
+
+      ttbar_vect = metV + lep_vect1 + lep_vect2 + bjet1_vect + bjet2_vect;
+      pt_of_ttbar = ttbar_vect.Pt();
+      
 	  if ( numTaggedJets > 0 ) avg_btag_disc_btags /= numTaggedJets;
 	  
 	  if ((numGoodJets - numTaggedJets) != 0){
@@ -4112,15 +4300,21 @@ int main ( int argc, char ** argv )
         *(intBranches["TwoEle"]) =  TwoEle ? 1 : 0;
         *(intBranches["MuonEle"]) = MuonEle ? 1 : 0;
 
+        *(intBranches["numMuons"]) = numMuons;
         *(intBranches["numTightMuons"]) = numTightMuons;
         *(intBranches["numLooseMuons"]) = numLooseMuons;
+        *(intBranches["numSideMuons"]) = numSideMuons;
+        *(intBranches["numElectrons"]) = numElectrons;
         *(intBranches["numTightElectrons"]) = numTightElectrons;
         *(intBranches["numLooseElectrons"]) = numLooseElectrons;
+        *(intBranches["numSideElectrons"]) = numSideElectrons;
 
         *(intBranches["numJets"]) = numJets ;
         *(intBranches["numTaggedJets"]) = numTaggedJets;
+        *(intBranches["numLooseTaggedJets"]) = numLooseTaggedJets;
         *(floatBranches["numJets_float"]) = float(numJets);
         *(floatBranches["numTaggedJets_float"]) = float(numTaggedJets);
+        *(floatBranches["numLooseTaggedJets_float"]) = float(numLooseTaggedJets);
 
         *(intBranches["isCleanEvent"]) = isCleanEvent ? 1 : 0;
         *(intBranches["isTriggerPass"]) = isTriggerPass ? 1 : 0;
@@ -4207,7 +4401,13 @@ int main ( int argc, char ** argv )
         *(floatBranches["lep2TkCharge"]) = lep2TkCharge;
         *(floatBranches["lep1GenCharge"]) = lep1GenCharge;
         *(floatBranches["lep2GenCharge"]) = lep2GenCharge;
+        *(intBranches["lep1IsPrompt"]) = lep1IsPrompt;
+        *(intBranches["lep2IsPrompt"]) = lep2IsPrompt;
+        *(intBranches["lep1Flavor"]) = lep1Flavor;
+        *(intBranches["lep2Flavor"]) = lep2Flavor;
+        
 
+        
         // jet variables
 //         *(floatBranches["first_bjet_pt"]) = first_bjet_pt;
         *(floatBranches["first_jet_pt"]) = first_jet_pt;
@@ -4220,11 +4420,19 @@ int main ( int argc, char ** argv )
         *(floatBranches["third_jet_eta"]) = third_jet_eta;
         *(floatBranches["fourth_jet_eta"]) = fourth_jet_eta;
 
+        *(floatBranches["b1_jet_pt"]) = b1_jet_pt;
+        *(floatBranches["b2_jet_pt"]) = b2_jet_pt;
+        *(floatBranches["b1_jet_eta"]) = b1_jet_eta;
+        *(floatBranches["b2_jet_eta"]) = b2_jet_eta;
+        *(floatBranches["b1_jet_CSV"]) = b1_jet_CSV;
+        *(floatBranches["b2_jet_CSV"]) = b2_jet_CSV;
+        
         //kinematic variables
         ////ANN neural net inputs
 //         *(floatBranches["mass_of_everything"]) = mass_of_everything;
-	*(floatBranches["min_dr_tagged_jets"]) = fmax(min_dr_tagged_jets,-1.0);
+        *(floatBranches["min_dr_tagged_jets"]) = fmax(min_dr_tagged_jets,-1.0);
         *(floatBranches["mindr_lep1_jet"]) = mindr_lep1_jet;
+        *(floatBranches["mindr_lep2_jet"]) = mindr_lep2_jet;
         *(floatBranches["avg_btag_disc_btags"]) = fmax(avg_btag_disc_btags,-1.0);
         *(floatBranches["Ht"]) = Ht;
 
@@ -4235,13 +4443,13 @@ int main ( int argc, char ** argv )
 
         ////leptons
         *(floatBranches["mass_leplep"]) = mass_leplep;
+        *(floatBranches["MT_leplep"]) = MT_leplep;
         *(floatBranches["pt_leplep"]) = pt_leplep;
         *(floatBranches["dPhi_leplep"]) = dPhi_leplep;
         *(floatBranches["dR_leplep"]) = dR_leplep;
         *(floatBranches["correctedDZ_leplep"]) = correctedDZ_leplep;
         *(floatBranches["correctedD0_leplep"]) = correctedD0_leplep;
         *(floatBranches["tkDZ_leplep"]) = tkDZ_leplep;
-        *(floatBranches["mindr_lep2_jet"]) = mindr_lep2_jet;
         ////everything
         *(floatBranches["all_sum_pt"]) = all_sum_pt;
         *(floatBranches["sum_pt"]) = sum_pt;
@@ -4293,26 +4501,53 @@ int main ( int argc, char ** argv )
 
         *(floatBranches["mindr_lep1_allJet"]) = mindr_lep1_allJet;
         *(floatBranches["mindr_lep2_allJet"]) = mindr_lep2_allJet;
-//         *(floatBranches["mindr_lep1_sideJet"]) = fmax(mindr_lep1_sideJet,-1);
-//         *(floatBranches["mindr_lep2_sideJet"]) = fmax(mindr_lep2_sideJet,-1);
 //         *(floatBranches["ptRel_lep1_jet"]) = ptRel_lep1_jet;
 //         *(floatBranches["ptRel_lep2_jet"]) = ptRel_lep2_jet;
 //         *(floatBranches["ptRel_lep1_allJet"]) = ptRel_lep1_allJet;
 //         *(floatBranches["ptRel_lep2_allJet"]) = ptRel_lep2_allJet;
-//         *(floatBranches["ptRel_lep1_sideJet"]) = fmax(ptRel_lep1_sideJet,-1);
-//         *(floatBranches["ptRel_lep2_sideJet"]) = fmax(ptRel_lep2_sideJet,-1);
 
-        *(floatBranches["wLike_dijet_mass"]) = fmax(wLike_dijet_mass1,-1.0);
-//         *(floatBranches["topLike_trijet_mass"]) = fmax(topLike_trijet_mass1,-1.0);
-//         *(floatBranches["topLike_dijet_lep1_mass"]) = fmax(topLike_dijet_lep1_mass,-1.0);
-//         *(floatBranches["topLike_dijet_lep2_mass"]) = fmax(topLike_dijet_lep2_mass,-1.0);
-//         *(floatBranches["MT_MHT_lep1"]) = MT_MHT_lep1;
-//         *(floatBranches["MT_MHT_lep2"]) = MT_MHT_lep2;
-//         *(floatBranches["MT_MHT_lep1_b"]) = fmax(MT_MHT_lep1_b,-1.0);
-//         *(floatBranches["MT_MHT_lep2_b"]) = fmax(MT_MHT_lep2_b,-1.0);
-//         *(floatBranches["MT_met_lep1_b"]) = fmax(MT_met_lep1_b,-1.0);
-//         *(floatBranches["MT_met_lep2_b"]) = fmax(MT_met_lep2_b,-1.0);
-       
+        *(floatBranches["wLike_dijet_mass_low1CSV"]) = fmax(wLike_dijet_mass_low1CSV1,-1.0);
+        *(floatBranches["wLike_dijet_mass_low2CSV"]) = fmax(wLike_dijet_mass_low2CSV1,-1.0);
+        *(floatBranches["wLike_dijet_pt_low1CSV"]) = fmax(wLike_dijet_pt_low1CSV,-1.0);
+        *(floatBranches["wLike_dijet_pt_low2CSV"]) = fmax(wLike_dijet_pt_low2CSV,-1.0);
+        *(floatBranches["wLike_dijet_eta_low1CSV"]) = fmax(wLike_dijet_eta_low1CSV,-5.0);
+        *(floatBranches["wLike_dijet_eta_low2CSV"]) = fmax(wLike_dijet_eta_low2CSV,-5.0);
+        *(floatBranches["topLike_trijet_mass_medTag_low1CSV"]) = fmax(topLike_trijet_mass_medTag_low1CSV1,-1.0);
+        *(floatBranches["topLike_trijet_mass_looseTag_low1CSV"]) = fmax(topLike_trijet_mass_looseTag_low1CSV1,-1.0);
+        *(floatBranches["topLike_trijet_mass_hiCSV_low1CSV"]) = fmax(topLike_trijet_mass_hiCSV_low1CSV1,-1.0);
+        *(floatBranches["topLike_trijet_mass_medTag_low2CSV"]) = fmax(topLike_trijet_mass_medTag_low2CSV1,-1.0);
+        *(floatBranches["topLike_trijet_mass_looseTag_low2CSV"]) = fmax(topLike_trijet_mass_looseTag_low2CSV1,-1.0);
+        *(floatBranches["topLike_trijet_mass_hiCSV_low2CSV"]) = fmax(topLike_trijet_mass_hiCSV_low2CSV1,-1.0);
+        *(floatBranches["topLike_dijet_lep1_mass_low1CSV"]) = fmax(topLike_dijet_lep1_mass_low1CSV,-1.0);
+        *(floatBranches["topLike_dijet_lep1_mass_low2CSV"]) = fmax(topLike_dijet_lep1_mass_low2CSV,-1.0);
+        *(floatBranches["topLike_dijet_lep2_mass_low1CSV"]) = fmax(topLike_dijet_lep2_mass_low1CSV,-1.0);
+        *(floatBranches["topLike_dijet_lep2_mass_low2CSV"]) = fmax(topLike_dijet_lep2_mass_low2CSV,-1.0);
+        *(floatBranches["MT_MHT_leplep"]) = MT_MHT_leplep;
+        *(floatBranches["mass_MHT_leplep"]) = mass_MHT_leplep;
+        *(floatBranches["MT_MHT_lep1"]) = MT_MHT_lep1;
+        *(floatBranches["MT_MHT_lep2"]) = MT_MHT_lep2;
+        *(floatBranches["MT_MHT_lep1_b1"]) = fmax(MT_MHT_lep1_b1,-1.0);
+        *(floatBranches["MT_MHT_lep1_b2"]) = fmax(MT_MHT_lep1_b2,-1.0);
+        *(floatBranches["MT_MHT_lep2_b1"]) = fmax(MT_MHT_lep2_b1,-1.0);
+        *(floatBranches["MT_MHT_lep2_b2"]) = fmax(MT_MHT_lep2_b2,-1.0);
+        *(floatBranches["MT_met_lep1_b1"]) = fmax(MT_met_lep1_b1,-1.0);
+        *(floatBranches["MT_met_lep1_b2"]) = fmax(MT_met_lep1_b2,-1.0);
+        *(floatBranches["MT_met_lep2_b1"]) = fmax(MT_met_lep2_b1,-1.0);
+        *(floatBranches["MT_met_lep2_b2"]) = fmax(MT_met_lep2_b2,-1.0);
+        *(floatBranches["MT_met_leplep"]) = MT_met_leplep;
+        *(floatBranches["mass_met_leplep"]) = mass_met_leplep;
+        *(floatBranches["MT_met_lep1"]) = MT_met_lep1;
+        *(floatBranches["MT_met_lep2"]) = MT_met_lep2;
+        *(floatBranches["mass_lep1_b1"]) = fmax(mass_lep1_b1,-1.0);
+        *(floatBranches["mass_lep2_b1"]) = fmax(mass_lep2_b1,-1.0);
+        *(floatBranches["mass_lep1_b2"]) = fmax(mass_lep1_b2,-1.0);
+        *(floatBranches["mass_lep2_b2"]) = fmax(mass_lep2_b2,-1.0);
+        *(floatBranches["dR_lep1_b1"]) = fmax(dR_lep1_b1,-1.0);
+        *(floatBranches["dR_lep2_b1"]) = fmax(dR_lep2_b1,-1.0);
+        *(floatBranches["dR_lep1_b2"]) = fmax(dR_lep1_b2,-1.0);
+        *(floatBranches["dR_lep2_b2"]) = fmax(dR_lep2_b2,-1.0);
+        
+
         *(intBranches["lep1GenMotherID"]) = lep1GenMotherID;
         *(intBranches["lep2GenMotherID"]) = lep2GenMotherID;
  
@@ -4414,11 +4649,6 @@ int main ( int argc, char ** argv )
         *(floatBranches["second_jet_CSV"]) = second_jet_CSV;
         *(floatBranches["third_jet_CSV"]) = third_jet_CSV;
         *(floatBranches["fourth_jet_CSV"]) = fourth_jet_CSV;
-
-        *(floatBranches["first_jet_CSV_unc"]) = first_jet_CSV_unc;
-        *(floatBranches["second_jet_CSV_unc"]) = second_jet_CSV_unc;
-        *(floatBranches["third_jet_CSV_unc"]) = third_jet_CSV_unc;
-        *(floatBranches["fourth_jet_CSV_unc"]) = fourth_jet_CSV_unc;
 
 //         *(floatBranches["first_lf_jet_pt"]) = first_lf_jet_pt;
 //         *(floatBranches["first_lf_jet_eta"]) = first_lf_jet_eta;
