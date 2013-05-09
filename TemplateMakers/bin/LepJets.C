@@ -669,10 +669,15 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
   }
   }
    
-
-  
   }
-      
+
+  //only 4jets Btagged plots
+  TH1F* h_min_dR_tag_4j       = new TH1F("h_min_dR_tag", "min #Delta R tagged jets", 1000, 0, 100);
+  TH1F* h_ave_dR_tag_4j       = new TH1F("h_ave_dR_tag", "ave #Delta R tagged jets", 1000, 0, 100);
+  TH1F* h_tag1Pt_4j           = new TH1F("h_tag1Pt_4j", "p_{T}", 1000, 0, 1000);
+  TH1F* h_tag2Pt_4j           = new TH1F("h_tag2Pt_4j", "p_{T}", 1000, 0, 1000);
+  TH1F* h_allTagPt_4j           = new TH1F("h_allTagPt_4j", "p_{T}", 1000, 0, 1000);
+  
 
   //TTbar Variable Plots
   TH1F* h_muHt       = new TH1F("h_muHt", "h_{T}", 2000, 0, 2000);
@@ -1740,8 +1745,9 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       vdouble jet_eta;
       vdouble jet_energy;
 
-      int numGoodJets=0;
+      int numGoodJets =0;
       int numUnTagJets=0;
+      int numTagJets  =0;
       int numTightJets=0;
       int numLooseJets=0;
       int nJetsPlot=0;
@@ -1750,6 +1756,7 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       double jetJER [100];
       TLorentzVector jetV[100];
       TLorentzVector unTagJetV[100];
+      TLorentzVector tagJetV[100];
       std::list<float> jet_desc;      
 
 
@@ -1916,6 +1923,8 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
         //cout << "csv: " << csv << endl;
         if( csvM ){
           tag_pfjet_index.push_back(i);
+          tagJetV[numTagJets].SetPxPyPzE(jet_px[i],jet_py[i],jet_pz[i],jet_energy[i]);
+          numTagJets++;
           jet_desc.push_back(csv);
         }else{
           untag_pfjet_index.push_back(i);
@@ -2257,7 +2266,8 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       TLorentzVector lep_vect1;
       TLorentzVector lep_vect2;
       TLorentzVector jet_vect;
-      
+
+      TLorentzVector btag_vect;
       TLorentzVector btag_vect1;
       TLorentzVector btag_vect2;
       
@@ -2472,7 +2482,14 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       leptonTrans.SetPz(0.);
       leptonTrans.SetE(lep_vect1.Pt());
       TLorentzVector WTrans = metV + leptonTrans;
-    
+
+      //cout << "MET vec::  px:" << metV.Px() <<  " py:" << metV.Py() << " Et:" << metV.E() << endl; 
+      //cout << "lepT vec:: px:" << leptonTrans.Px() << " py:" << leptonTrans.Py() << " Et:" << leptonTrans.E() <<endl;
+      //cout << "Mt^2:" << WTrans.M()*WTrans.M()<< " =? "
+      //  << ( metV.E() +leptonTrans.E())*( metV.E() +leptonTrans.E()) -
+      //((metV.Px() + leptonTrans.Px())*(metV.Px() + leptonTrans.Px()) + ((metV.Py() + leptonTrans.Py())*(metV.Py() + leptonTrans.Py()))) << endl;
+
+        
       *(floatBranches["mT"]) = WTrans.M();
     
       if(isMuonEvent == true){
@@ -2609,6 +2626,8 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
       
       h_nJets->Fill(nJetsPlot,wgt);
 
+      
+
       //loop jet
       for (int i=0; i < numGoodJets; i++){
               
@@ -2704,10 +2723,20 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
          histograms[histName2]->Fill(jet_eta[iJet],wgt);
          }
 
-         if(numGoodJets ==4){
+         if(nJetsPlot ==4){
            //Jet Mass Plots Only for the ==4 jets events   //h_jet1Mass_4j
-           histograms[histName+"Mass_4j"]->Fill(jetV[iJet].M(),wgt);
-           FillNPVHist(histograms,histName+"Mass_4j",numpv,jetV[iJet].M(),wgt);
+           if(jetV[iJet].M()>0){
+             histograms[histName+"Mass_4j"]->Fill(jetV[iJet].M(),wgt);
+             FillNPVHist(histograms,histName+"Mass_4j",numpv,jetV[iJet].M(),wgt);
+           }
+           if(jetV[iJet].M()==0){
+             iJet = tight_pfjet_index[1];
+             jet_vect.SetPxPyPzE(jet_px[iJet],jet_py[iJet],jet_pz[iJet],jet_energy[iJet]);
+             //cout << jet
+             histograms[histName+"Mass_4j"]->Fill(jet_vect.M(),wgt);
+             //cout << "M: " << jet_vect.M() << endl; 
+             // FillNPVHist(histograms,histName+"Mass_4j",numpv,jetV[iJet].M(),wgt);
+           }
          }
 
          
@@ -2819,14 +2848,31 @@ if (btagCSVShape == 0) iSysType = iSysTypeJE;
 		
 	      }
 	    }
-	    
+        
 	    avg_tagged_dijet_mass /= denom_avg_cnt; 
 	    avg_dr_tagged_jets /= denom_avg_cnt;
 	    
 	    min_dr_tagged_jets = min_tagged_jets_dR;
-	  }
-	  
 
+        if(numGoodJets == 4){
+           h_min_dR_tag_4j->Fill(min_dr_tagged_jets,wgt);
+           h_ave_dR_tag_4j->Fill(avg_dr_tagged_jets,wgt);
+         }
+         if(numGoodJets == 4 && numTagJets>1){
+           // cout << tagJetV.size() << endl;
+           h_tag1Pt_4j->Fill(tagJetV[0].Pt(),wgt);
+           h_tag2Pt_4j->Fill(tagJetV[1].Pt(),wgt);
+          for(int j=0; j<numTagJets; j++){
+            int bJet =  tag_pfjet_index[j];
+            btag_vect.SetPxPyPzE(jet_px[bJet],jet_py[bJet],jet_pz[bJet],jet_energy[bJet]);
+            // cout << btag_vect.Pt() << endl;
+            h_allTagPt_4j->Fill(btag_vect.Pt(),wgt);
+          }
+        }       
+	  }
+
+
+    
 	  ////non_tagged jets
 	  
 	  denom_avg_cnt = 0.;
