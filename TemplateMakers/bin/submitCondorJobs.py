@@ -431,7 +431,7 @@ def main ():
 #			 listStr = "wc -l listsForSkims/"
 			listStr = "wc -l ../../listsForSkims2012_v3/"
 		elif yearChoice == "2012_53x":
-			listStr = "wc -l ../../listsForSkims2012_53x_v1_hadoop/"
+			listStr = "wc -l ../../listsForSkims2012_53x_v2_hadoop/"
 
 		# this loop counts the number of lines in the file
 		# using the unix wc command
