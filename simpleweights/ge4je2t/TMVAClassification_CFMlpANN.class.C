@@ -7,13 +7,13 @@
 #GEN -*-*-*-*-*-*-*-*-*-*-*- general info -*-*-*-*-*-*-*-*-*-*-*-
 
 Method         : CFMlpANN::CFMlpANN
-TMVA Release   : 4.0.7         [262151]
-ROOT Release   : 5.27/06       [334598]
-Creator        : lwming
-Date           : Tue Jul 10 22:41:10 2012
-Host           : Linux lxbuild051.cern.ch 2.6.18-238.1.1.el5 #1 SMP Wed Jan 19 11:06:36 CET 2011 x86_64 x86_64 x86_64 GNU/Linux
-Dir            : /data/ndpc3/b/lwming/CMSSW_4_2_8_patch7/src/simpleMVA_new
-Training events: 8206
+TMVA Release   : 4.1.2         [262402]
+ROOT Release   : 5.32/00       [335872]
+Creator        : wluo1
+Date           : Mon May  6 22:07:40 2013
+Host           : Linux lxbuild168.cern.ch 2.6.18-308.16.1.el5 #1 SMP Thu Oct 4 14:02:28 CEST 2012 x86_64 x86_64 x86_64 GNU/Linux
+Dir            : /afs/crc.nd.edu/user/w/wluo1/LHCP_2013/CMSSW_5_3_8_patch1/src/BEAN/TMVA/TMVAv412
+Training events: 6868
 Analysis type  : [Classification]
 
 
@@ -34,12 +34,13 @@ IgnoreNegWeightsInTraining: "False" [Events with negative weights are ignored in
 
 #VAR -*-*-*-*-*-*-*-*-*-*-*-* variables *-*-*-*-*-*-*-*-*-*-*-*-
 
-NVar 5
-first_jet_pt                  first_jet_pt                  first_jet_pt                  first_jet_pt                                                    'F'    [35.5197944641,874.993774414]
-min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets                                              'F'    [0.490948081017,5.22522878647]
-mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                                                  'F'    [0.0210668668151,3.23765087128]
-avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags                                             'F'    [0.684769511223,1]
-Ht                            Ht                            Ht                            Ht                                                              'F'    [305.540527344,2969.20458984]
+NVar 6
+min_dr_jets                   min_dr_jets                   min_dr_jets                   min_dr_jets                                                     'F'    [0.497401833534,2.85201144218]
+higgsLike_dijet_mass          higgsLike_dijet_mass          higgsLike_dijet_mass          higgsLike_dijet_mass                                            'F'    [37.4215621948,410.138458252]
+higgsLike_dijet_mass2         higgsLike_dijet_mass2         higgsLike_dijet_mass2         higgsLike_dijet_mass2                                           'F'    [31.4232902527,600.763549805]
+numJets_float                 numJets_float                 numJets_float                 numJets_float                                                   'F'    [4,9]
+sum_pt                        sum_pt                        sum_pt                        sum_pt                                                          'F'    [178.192947388,1986.99072266]
+avg_btag_disc_non_btags       avg_btag_disc_non_btags       avg_btag_disc_non_btags       avg_btag_disc_non_btags                                         'F'    [0,0.667824625969]
 NSpec 0
 
 
@@ -65,11 +66,11 @@ class IClassifierReader {
    virtual double GetMvaValue( const std::vector<double>& inputValues ) const = 0;
 
    // returns classifier status
-   Bool_t IsStatusClean() const { return fStatusIsClean; }
+   bool IsStatusClean() const { return fStatusIsClean; }
 
  protected:
 
-   Bool_t fStatusIsClean;
+   bool fStatusIsClean;
 };
 
 #endif
@@ -82,11 +83,11 @@ class ReadCFMlpANN : public IClassifierReader {
    ReadCFMlpANN( std::vector<std::string>& theInputVars ) 
       : IClassifierReader(),
         fClassName( "ReadCFMlpANN" ),
-        fNvars( 5 ),
+        fNvars( 6 ),
         fIsNormalised( true )
    {      
       // the training input variables
-      const char* inputVars[] = { "first_jet_pt", "min_dr_tagged_jets", "mindr_lep1_jet", "avg_btag_disc_btags", "Ht" };
+      const char* inputVars[] = { "min_dr_jets", "higgsLike_dijet_mass", "higgsLike_dijet_mass2", "numJets_float", "sum_pt", "avg_btag_disc_non_btags" };
 
       // sanity checks
       if (theInputVars.size() <= 0) {
@@ -110,16 +111,18 @@ class ReadCFMlpANN : public IClassifierReader {
       }
 
       // initialize min and max vectors (for normalisation)
-      fVmin[0] = 35.5197944641113;
-      fVmax[0] = 874.993774414062;
-      fVmin[1] = 0.490948081016541;
-      fVmax[1] = 5.22522878646851;
-      fVmin[2] = 0.0210668668150902;
-      fVmax[2] = 3.23765087127686;
-      fVmin[3] = 0.684769511222839;
-      fVmax[3] = 1;
-      fVmin[4] = 305.54052734375;
-      fVmax[4] = 2969.20458984375;
+      fVmin[0] = 0.497401833534241;
+      fVmax[0] = 2.85201144218445;
+      fVmin[1] = 37.4215621948242;
+      fVmax[1] = 410.138458251953;
+      fVmin[2] = 31.4232902526855;
+      fVmax[2] = 600.763549804688;
+      fVmin[3] = 4;
+      fVmax[3] = 9;
+      fVmin[4] = 178.192947387695;
+      fVmax[4] = 1986.99072265625;
+      fVmin[5] = 0;
+      fVmax[5] = 0.667824625968933;
 
       // initialize input variable types
       fType[0] = 'F';
@@ -127,6 +130,7 @@ class ReadCFMlpANN : public IClassifierReader {
       fType[2] = 'F';
       fType[3] = 'F';
       fType[4] = 'F';
+      fType[5] = 'F';
 
       // initialize constants
       Initialize();
@@ -156,17 +160,17 @@ class ReadCFMlpANN : public IClassifierReader {
    char   GetType( int ivar ) const { return fType[ivar]; }
 
    // normalisation of input variables
-   const Bool_t fIsNormalised;
-   Bool_t IsNormalised() const { return fIsNormalised; }
-   double fVmin[5];
-   double fVmax[5];
+   const bool fIsNormalised;
+   bool IsNormalised() const { return fIsNormalised; }
+   double fVmin[6];
+   double fVmax[6];
    double NormVariable( double x, double xmin, double xmax ) const {
       // normalise to output range: [-1, 1]
       return 2*(x - xmin)/(xmax - xmin) - 1.0;
    }
 
    // type of input variable: 'F' or 'I'
-   char   fType[5];
+   char   fType[6];
 
    // initialize internal variables
    void Initialize();
