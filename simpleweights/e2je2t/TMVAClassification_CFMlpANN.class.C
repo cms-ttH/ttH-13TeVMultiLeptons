@@ -7,13 +7,13 @@
 #GEN -*-*-*-*-*-*-*-*-*-*-*- general info -*-*-*-*-*-*-*-*-*-*-*-
 
 Method         : CFMlpANN::CFMlpANN
-TMVA Release   : 4.0.7         [262151]
-ROOT Release   : 5.27/06       [334598]
-Creator        : lwming
-Date           : Tue Jul 10 22:46:12 2012
-Host           : Linux lxbuild051.cern.ch 2.6.18-238.1.1.el5 #1 SMP Wed Jan 19 11:06:36 CET 2011 x86_64 x86_64 x86_64 GNU/Linux
-Dir            : /data/ndpc3/b/lwming/CMSSW_4_2_8_patch7/src/simpleMVA_new
-Training events: 1704
+TMVA Release   : 4.1.2         [262402]
+ROOT Release   : 5.32/00       [335872]
+Creator        : wluo1
+Date           : Mon Feb 25 09:40:20 2013
+Host           : Linux lxbuild167.cern.ch 2.6.18-308.1.1.el5 #1 SMP Wed Mar 7 19:25:07 CET 2012 x86_64 x86_64 x86_64 GNU/Linux
+Dir            : /afs/crc.nd.edu/user/w/wluo1/release/CMSSW_5_3_2_patch5/src/TMVAv412
+Training events: 928
 Analysis type  : [Classification]
 
 
@@ -35,11 +35,11 @@ IgnoreNegWeightsInTraining: "False" [Events with negative weights are ignored in
 #VAR -*-*-*-*-*-*-*-*-*-*-*-* variables *-*-*-*-*-*-*-*-*-*-*-*-
 
 NVar 5
-first_jet_pt                  first_jet_pt                  first_jet_pt                  first_jet_pt                                                    'F'    [30.99259758,552.354675293]
-min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets                                              'F'    [0.513495862484,4.40982294083]
-mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                                                  'F'    [0.417816013098,3.34263944626]
-avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags                                             'F'    [0.702065587044,0.999999761581]
-Ht                            Ht                            Ht                            Ht                                                              'F'    [163.695220947,1455.95239258]
+first_jet_pt                  first_jet_pt                  first_jet_pt                  first_jet_pt                                                    'F'    [35.0905647278,589.738769531]
+min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets            min_dr_tagged_jets                                              'F'    [0.518199384212,4.52391672134]
+mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                mindr_lep1_jet                                                  'F'    [0.416120022535,3.56895089149]
+avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags           avg_btag_disc_btags                                             'F'    [0.724764943123,0.999999642372]
+Ht                            Ht                            Ht                            Ht                                                              'F'    [173.003829956,1665.30517578]
 NSpec 0
 
 
@@ -65,11 +65,11 @@ class IClassifierReader {
    virtual double GetMvaValue( const std::vector<double>& inputValues ) const = 0;
 
    // returns classifier status
-   Bool_t IsStatusClean() const { return fStatusIsClean; }
+   bool IsStatusClean() const { return fStatusIsClean; }
 
  protected:
 
-   Bool_t fStatusIsClean;
+   bool fStatusIsClean;
 };
 
 #endif
@@ -110,16 +110,16 @@ class ReadCFMlpANN : public IClassifierReader {
       }
 
       // initialize min and max vectors (for normalisation)
-      fVmin[0] = 30.9925975799561;
-      fVmax[0] = 552.354675292969;
-      fVmin[1] = 0.513495862483978;
-      fVmax[1] = 4.40982294082642;
-      fVmin[2] = 0.417816013097763;
-      fVmax[2] = 3.34263944625854;
-      fVmin[3] = 0.702065587043762;
-      fVmax[3] = 0.999999761581421;
-      fVmin[4] = 163.695220947266;
-      fVmax[4] = 1455.95239257812;
+      fVmin[0] = 35.0905647277832;
+      fVmax[0] = 589.73876953125;
+      fVmin[1] = 0.518199384212494;
+      fVmax[1] = 4.52391672134399;
+      fVmin[2] = 0.416120022535324;
+      fVmax[2] = 3.56895089149475;
+      fVmin[3] = 0.724764943122864;
+      fVmax[3] = 0.999999642372131;
+      fVmin[4] = 173.003829956055;
+      fVmax[4] = 1665.30517578125;
 
       // initialize input variable types
       fType[0] = 'F';
@@ -156,8 +156,8 @@ class ReadCFMlpANN : public IClassifierReader {
    char   GetType( int ivar ) const { return fType[ivar]; }
 
    // normalisation of input variables
-   const Bool_t fIsNormalised;
-   Bool_t IsNormalised() const { return fIsNormalised; }
+   const bool fIsNormalised;
+   bool IsNormalised() const { return fIsNormalised; }
    double fVmin[5];
    double fVmax[5];
    double NormVariable( double x, double xmin, double xmax ) const {
