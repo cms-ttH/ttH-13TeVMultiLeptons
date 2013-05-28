@@ -277,10 +277,10 @@ int main ( int argc, char ** argv )
     else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
     else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
     else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2566;
-      nGen = 31111456; Xsec = 0.457*245.8; 
+      nGen = 31111456; Xsec = 0.457*245.8;
       weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2563;
-      nGen = 25165429; Xsec = 0.438*245.8;
+      nGen = 25327478; Xsec = 0.438*245.8;
       weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2533;
       nGen = 12100452; Xsec = 0.105*245.8;
@@ -301,7 +301,16 @@ int main ( int argc, char ** argv )
       nGen = 25327478; Xsec = 0.438*245.8;
       weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) { sampleNumber = 2553;
-      nGen = 12100452; Xsec = 0.105*245.8; 
+      nGen = 12100452; Xsec = 0.105*245.8;
+      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_b_jj" || tmpName.Contains("ttbar_b_jj_part")) { sampleNumber = 2596;
+      nGen = 31111456; Xsec = 0.457*245.8;
+      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_b_lj" || tmpName.Contains("ttbar_b_lj_part")) { sampleNumber = 2593;
+      nGen = 25327478; Xsec = 0.438*245.8;
+      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_b_ll" || tmpName.Contains("ttbar_b_ll_part")) { sampleNumber = 2599;
+      nGen = 12100452; Xsec = 0.105*245.8;
       weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
     else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) { sampleNumber = 2400;
       nGen = 57536319; Xsec = 36257; }
@@ -465,16 +474,21 @@ int main ( int argc, char ** argv )
 //   catList.push_back("e3je2t_v1");   /////
 //   catList.push_back("e2je2t_v1");
 
-//   catList.push_back("e2je2t_oldvar");   /////
-//   catList.push_back("e3je2t_53x");   /////
-//   catList.push_back("ge4je2t_53x");   /////
-//   catList.push_back("ge3t_53x");   /////
+  catList.push_back("e2je2t");   /////
+  catList.push_back("e3je2t");   /////
+  catList.push_back("ge4je2t");   /////
+  catList.push_back("ge3t");   ///// 
+//   catList.push_back("e3je2t_4var");
+  //// BDT
+  catList.push_back("e3je2t");   /////
+  catList.push_back("ge4je2t");   /////
+  catList.push_back("ge3t");   /////
+//   catList.push_back("e3je2t_4var");
+//   catList.push_back("eq3jeq3t_ttbar");
+//   catList.push_back("ge4jge3t_ttbar");
 
-// //   catList.push_back("eq3jeq3t_ttbar");
-// //   catList.push_back("ge4jge3t_ttbar");
-
-//   catList.push_back("SS_ge3jge0t_ttbar");
-// //   catList.push_back("SS_ge3jge1t_ttW");
+  catList.push_back("SS_ge3jge0t_ttbar");
+//   catList.push_back("SS_ge3jge1t_ttW");
   
   const unsigned int nCat = catList.size();
 
@@ -528,78 +542,87 @@ int main ( int argc, char ** argv )
   for( unsigned int j = 0 ; j < nCat ; ++j ){
       TString label = catList[j];
       reader.push_back( new TMVA::Reader( "!Color:!Silent" ));    
-      if(j < 2) { 
-        reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
-	if (j==1) {
-	  reader[j]->AddVariable( "min_dr_tagged_jets", &varmin_dr_tagged_jets );
-	  reader[j]->AddVariable( "higgsLike_dijet_mass", &varhiggsLike_dijet_mass );
-	}
-	reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
-	reader[j]->AddVariable( "numHiggsLike_dijet_15_float", &varnumHiggsLike_dijet_15_float );
-	if (j==0) reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
-        reader[j]->AddVariable( "sum_pt", &varsum_pt );
-	reader[j]->AddVariable( "avg_btag_disc_btags", &varavg_btag_disc_btags );
+//       if(j < 2) { 
+//         reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
+// 	if (j==1) {
+// 	  reader[j]->AddVariable( "min_dr_tagged_jets", &varmin_dr_tagged_jets );
+// 	  reader[j]->AddVariable( "higgsLike_dijet_mass", &varhiggsLike_dijet_mass );
+// 	}
+// 	reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
+// 	reader[j]->AddVariable( "numHiggsLike_dijet_15_float", &varnumHiggsLike_dijet_15_float );
+// 	if (j==0) reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+//         reader[j]->AddVariable( "sum_pt", &varsum_pt );
+// 	reader[j]->AddVariable( "avg_btag_disc_btags", &varavg_btag_disc_btags );
 
-      }
-      else if (j == 2){ //>=4j2t
-	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
-	reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
-	reader[j]->AddVariable( "numJets_float", &varnumJets_float );
-	reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
-	reader[j]->AddVariable( "avg_btag_disc_non_btags",   &varavg_btag_disc_non_btags   ); 
-	reader[j]->AddVariable( "dijet_mass_m2H",         &vardijet_mass_m2H   ); 
-      }
-      else if (j == 3){ //3j2t
-	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
-	reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
-	reader[j]->AddVariable( "all_sum_pt", &varall_sum_pt );
-	reader[j]->AddVariable( "avg_btag_disc_non_btags",   &varavg_btag_disc_non_btags   ); 
-	reader[j]->AddVariable( "dijet_mass_third",         &vardijet_mass_third   ); 
-      }
-      else if (j == 4){ // 2j2t
-	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
-	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
-	reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
-	reader[j]->AddVariable( "sum_pt", &varsum_pt );
-	reader[j]->AddVariable( "avg_btag_disc_btags",   &varavg_btag_disc_btags   ); 
-      }
+//       }
+//       else if (j == 2){ //>=4j2t
+// 	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
+// 	reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
+// 	reader[j]->AddVariable( "numJets_float", &varnumJets_float );
+// 	reader[j]->AddVariable( "sum_jet_pt", &varsum_jet_pt );
+// 	reader[j]->AddVariable( "avg_btag_disc_non_btags",   &varavg_btag_disc_non_btags   ); 
+// 	reader[j]->AddVariable( "dijet_mass_m2H",         &vardijet_mass_m2H   ); 
+//       }
+//       else if (j == 3){ //3j2t
+// 	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
+// 	reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+// 	reader[j]->AddVariable( "all_sum_pt", &varall_sum_pt );
+// 	reader[j]->AddVariable( "avg_btag_disc_non_btags",   &varavg_btag_disc_non_btags   ); 
+// 	reader[j]->AddVariable( "dijet_mass_third",         &vardijet_mass_third   ); 
+//       }
+//       else if (j == 4){ // 2j2t
+// 	reader[j]->AddVariable( "avg_dr_jets", &varavg_dr_jets );
+// 	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+// 	reader[j]->AddVariable( "mindr_lep1_jet", &varmindr_lep1_jet );
+// 	reader[j]->AddVariable( "sum_pt", &varsum_pt );
+// 	reader[j]->AddVariable( "avg_btag_disc_btags",   &varavg_btag_disc_btags   ); 
+//       }
 
       /////
 
-      else if(j == 5) { //2j2t_oldvar
+      if(j == 0) { //2j2t_oldvar
 	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
 	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
 	reader[j]->AddVariable( "mindr_lep1_jet",         &varmindr_lep1_jet   );
 	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
 	reader[j]->AddVariable( "Ht",         &varHt   );
       }
-      else if (j==6){ //e3je2t_53x
-	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
-	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
-	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
-	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
-	reader[j]->AddVariable( "dijet_mass_m2H",         &vardijet_mass_m2H   ); 
+      else if (j<7) {
+	reader[j]->AddVariable( "min_dr_jets", &varmin_dr_jets );
+	if (j!=1 && j!=4) reader[j]->AddVariable( "higgsLike_dijet_mass", &varhiggsLike_dijet_mass );
+	if (j!=1 && j!=4) reader[j]->AddVariable( "higgsLike_dijet_mass2", &varhiggsLike_dijet_mass2 );
+	if (j==3 || j==6)  reader[j]->AddVariable( "numHiggsLike_dijet_15_float", &varnumHiggsLike_dijet_15_float );
+	if (j==2 || j==5)  reader[j]->AddVariable( "numJets_float", &varnumJets_float );
+	reader[j]->AddVariable( "sum_pt", &varsum_pt );
+	if (j!=2 && j!=5)  reader[j]->AddVariable( "avg_btag_disc_btags",   &varavg_btag_disc_btags   ); 
+	if (j!=3 && j!=6)  reader[j]->AddVariable( "avg_btag_disc_non_btags",   &varavg_btag_disc_non_btags   ); 
+      }
+//       else if (j==6){ //e3je2t_53x
+// 	reader[j]->AddVariable( "first_jet_pt",         &varfirst_jet_pt   );
+// 	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+// 	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+// 	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
+// 	reader[j]->AddVariable( "dijet_mass_m2H",         &vardijet_mass_m2H   ); 
 
-      }
-      else if (j==7){ //ge4je2t_53x
-	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
-	reader[j]->AddVariable( "avg_dijet_mass",         &varavg_dijet_mass   ); ///
-	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
-	reader[j]->AddVariable( "dijet_mass_first",         &vardijet_mass_first   ); 
-	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
-	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
-      }
-      else if (j==8){ //ge3t_53x
-	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
-	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
-	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
-	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
-	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
-	reader[j]->AddVariable( "Ht",         &varHt   );
-      }
+//       }
+//       else if (j==7){ //ge4je2t_53x
+// 	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+// 	reader[j]->AddVariable( "avg_dijet_mass",         &varavg_dijet_mass   ); ///
+// 	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+// 	reader[j]->AddVariable( "dijet_mass_first",         &vardijet_mass_first   ); 
+// 	reader[j]->AddVariable( "avg_btag_disc_non_btags",         &varavg_btag_disc_non_btags   ); 
+// 	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+//       }
+//       else if (j==8){ //ge3t_53x
+// 	reader[j]->AddVariable( "avg_dr_jets",         &varavg_dr_jets   ); ///
+// 	reader[j]->AddVariable( "numJets_float",         &varnumJets_float   ); ///
+// 	reader[j]->AddVariable( "min_dr_jets",         &varmin_dr_jets   ); 
+// 	reader[j]->AddVariable( "min_dr_tagged_jets",         &varmin_dr_tagged_jets   ); 
+// 	reader[j]->AddVariable( "avg_btag_disc_btags",         &varavg_btag_disc_btags   );
+// 	reader[j]->AddVariable( "Ht",         &varHt   );
       ///////
 
-      else if (j==9){ //Same Sign
+      else if (j==7){ //Same Sign
 	reader[j]->AddVariable( "correctedD0_leplep",         &varcorrectedD0_leplep   ); ///
 	reader[j]->AddVariable( "lep2Pt", &varlep2Pt );
         reader[j]->AddVariable( "maxLepAbsEta", &varmaxLepAbsEta );
@@ -631,11 +654,13 @@ int main ( int argc, char ** argv )
       TString dir    = "../../simpleweights/" + label + "/"; //////
       TString prefix = "TMVAClassification";
       TString wfName = dir + prefix + TString("_CFMlpANN.weights.xml");
+      if (3<j && j<7) wfName = dir + prefix + TString("_BDTG.weights.xml");
 
       std::cout << "Loading  weight file  " << wfName << std::endl; 
       
       // Book method(s)
-      reader[j]->BookMVA( "CFMlpANN method", wfName);  
+      if (3<j && j<7) reader[j]->BookMVA( "BDTG method", wfName);
+      else reader[j]->BookMVA( "CFMlpANN method", wfName);  
 
   }// end for each category 
   
@@ -692,7 +717,7 @@ int main ( int argc, char ** argv )
   bool ExtraTriggerVariables = false;
   bool ExtraGenVariables = true; //false;
   bool ExtraHiggsVariables = false;
-  bool ExtraSameSignVariables = true;
+  bool ExtraSameSignVariables = false; //true;
   
   bool ArtificialJetPt = false;
   float higgs_mass = 115.0;
@@ -745,16 +770,21 @@ int main ( int argc, char ** argv )
     intBranches["sampleNumber"] = new int (0);
     
     /// MVA output variables
-    floatBranches["CFMlpANN_e2je2t_v1"] = new float(0.0);
-    floatBranches["CFMlpANN_e3je2t_v1"] = new float(0.0);
-    floatBranches["CFMlpANN_ge4je2t_v1"] = new float(0.0);
-    floatBranches["CFMlpANN_ge3t_v1"] = new float(0.0);
-    floatBranches["CFMlpANN_ge3t_v2"] = new float(0.0);
+//     floatBranches["CFMlpANN_e2je2t_v1"] = new float(0.0);
+//     floatBranches["CFMlpANN_e3je2t_v1"] = new float(0.0);
+//     floatBranches["CFMlpANN_ge4je2t_v1"] = new float(0.0);
+//     floatBranches["CFMlpANN_ge3t_v1"] = new float(0.0);
+//     floatBranches["CFMlpANN_ge3t_v2"] = new float(0.0);
 
-    floatBranches["CFMlpANN_e2je2t_oldvar"] = new float(0.0);
-    floatBranches["CFMlpANN_e3je2t_53x"] = new float(0.0);
-    floatBranches["CFMlpANN_ge4je2t_53x"] = new float(0.0);
-    floatBranches["CFMlpANN_ge3t_53x"] = new float(0.0);
+    floatBranches["CFMlpANN_e2je2t"] = new float(0.0);
+    floatBranches["CFMlpANN_e3je2t"] = new float(0.0);
+    floatBranches["CFMlpANN_ge4je2t"] = new float(0.0);
+    floatBranches["CFMlpANN_ge3t"] = new float(0.0);
+//     floatBranches["CFMlpANN_e3je2t_4var"] = new float(0.0);
+    floatBranches["BDTG_e3je2t"] = new float(0.0);
+    floatBranches["BDTG_ge4je2t"] = new float(0.0);
+    floatBranches["BDTG_ge3t"] = new float(0.0);
+//     floatBranches["BDTG_e3je2t_4var"] = new float(0.0);
 
 //     floatBranches["CFMlpANN_eq3jeq3t_ttbar"] = new float(0.0);
 //     floatBranches["CFMlpANN_ge4jge3t_ttbar"] = new float(0.0);
@@ -1070,6 +1100,11 @@ int main ( int argc, char ** argv )
     floatBranches["third_jet_CSV"] = new float(0.0);
     floatBranches["fourth_jet_CSV"] = new float(0.0);
 
+    floatBranches["first_jet_CSV_unc"] = new float(0.0);
+    floatBranches["second_jet_CSV_unc"] = new float(0.0);
+    floatBranches["third_jet_CSV_unc"] = new float(0.0);
+    floatBranches["fourth_jet_CSV_unc"] = new float(0.0);
+
 //     floatBranches["first_lf_jet_pt"] = new float(0.0);
 //     floatBranches["first_lf_jet_eta"] = new float(0.0);
 //     floatBranches["first_lf_jet_CSV_unshaped"] = new float(0.0);
@@ -1193,6 +1228,8 @@ int main ( int argc, char ** argv )
     
     floatBranches["min_dr_jets"] = new float(0.0);
     floatBranches["avg_dr_jets"] = new float(0.0);    
+    floatBranches["avg_dEta_jets"] = new float(0.0);    
+    floatBranches["max_dEta_jets"] = new float(0.0);    
     floatBranches["avg_dr_tagged_jets"] = new float(0.0);
     
     floatBranches["avg_tagged_dijet_mass"] = new float(0.0);
@@ -1570,7 +1607,8 @@ int main ( int argc, char ** argv )
         
         bool keepEvent = false;
 
-        keepEvent = beanHelper.ttPlusHeavyKeepEvent (mcparticles, pfjets );
+        keepEvent = beanHelper.ttPlusHFKeepEvent (mcparticles, pfjets );
+//         keepEvent = beanHelper.ttPlusHeavyKeepEvent (mcparticles, pfjets );
 
         if(!keepEvent) continue;
       }// end if you are a top sample
@@ -2693,6 +2731,8 @@ int main ( int argc, char ** argv )
       float lowest_untagged_dijet_mass  = dFloat;
 
       float avg_dr_jets = dFloat;
+      float avg_dEta_jets = dFloat;
+      float max_dEta_jets = dFloat;
       float avg_dijet_mass = dFloat;
       float closest_dijet_mass = dFloat;
       float M2_of_closest_jets = dFloat;
@@ -4016,7 +4056,7 @@ int main ( int argc, char ** argv )
 	    
 	    if (jet_CSV[i] <= btagThres){
 	      if (avg_btag_disc_non_btags == dFloat) avg_btag_disc_non_btags = 0.0;
-	      if (jet_CSV[i] > 0){
+	      if (jet_CSV[i] >= 0){  /// including 0
 		avg_btag_disc_non_btags += jet_CSV[i];
 		numNonbjetsDom++;
 	      }
@@ -4030,7 +4070,7 @@ int main ( int argc, char ** argv )
 	  if ( numTaggedJets > 0 ) avg_btag_disc_btags /= numTaggedJets;
 	  
 	  if ((numGoodJets - numTaggedJets) != 0){
-	    if (numNonbjetsDom == 0) avg_btag_disc_non_btags = -1; 
+	    if (numNonbjetsDom == 0) avg_btag_disc_non_btags = 0; //// was -1;  ///// what value
 	    else avg_btag_disc_non_btags /= numNonbjetsDom;
 	  }
 	  
@@ -4183,7 +4223,11 @@ int main ( int argc, char ** argv )
         if (avg_dijet_mass == dFloat) avg_dijet_mass = 0.0;
 		avg_dijet_mass += dijet_vect.M();
         if (avg_dr_jets == dFloat) avg_dr_jets = 0.0;
+        if (avg_dEta_jets == dFloat) avg_dEta_jets = 0.0;
+        if (max_dEta_jets == dFloat) max_dEta_jets = 0.0;
 		avg_dr_jets += jet_vect1.DeltaR(jet_vect2);
+		avg_dEta_jets += fabs(jet_vect1.Eta() - jet_vect2.Eta());
+		if ( fabs(jet_vect1.Eta() - jet_vect2.Eta()) > max_dEta_jets) max_dEta_jets = fabs(jet_vect1.Eta() - jet_vect2.Eta());
 		++denom_avg_cnt;		      
 		
 		if (min_dr_jets > jet_vect1.DeltaR(jet_vect2) || min_dr_jets == dFloat){
@@ -4205,6 +4249,7 @@ int main ( int argc, char ** argv )
 
 	    avg_dijet_mass /= denom_avg_cnt; 
 	    avg_dr_jets /= denom_avg_cnt;
+	    avg_dEta_jets /= denom_avg_cnt;
 	    
 	    dijet_mass_combinations.sort();
 	    std::vector<float> dijet_mass_sort_vect; 
@@ -4283,9 +4328,12 @@ int main ( int argc, char ** argv )
       for( unsigned int j = 0 ; j < nCat ; ++j ) {
         // --- Return the MVA outputs and weights
         TMVA::Reader  *tmpReader = reader[j];  
-        TString branchName = TString("CFMlpANN_") + catList[j];
+	TString mvaName = "CFMlpANN";
+	if (3<j && j<7) mvaName = "BDTG";
+        TString branchName = mvaName + TString("_") + catList[j];
         //        cout << "This is NN category " << catList[j] << " saving into branch " << branchName << endl;
-        Float_t annOut  = tmpReader->EvaluateMVA( "CFMlpANN method" );
+	TString methodName = mvaName + TString(" method");
+        Float_t annOut  = tmpReader->EvaluateMVA( methodName );
         *(floatBranches[branchName]) = annOut;  
 
       } // End category loop
@@ -4650,6 +4698,11 @@ int main ( int argc, char ** argv )
         *(floatBranches["third_jet_CSV"]) = third_jet_CSV;
         *(floatBranches["fourth_jet_CSV"]) = fourth_jet_CSV;
 
+        *(floatBranches["first_jet_CSV_unc"]) = first_jet_CSV_unc;
+        *(floatBranches["second_jet_CSV_unc"]) = second_jet_CSV_unc;
+        *(floatBranches["third_jet_CSV_unc"]) = third_jet_CSV_unc;
+        *(floatBranches["fourth_jet_CSV_unc"]) = fourth_jet_CSV_unc;
+
 //         *(floatBranches["first_lf_jet_pt"]) = first_lf_jet_pt;
 //         *(floatBranches["first_lf_jet_eta"]) = first_lf_jet_eta;
 //         *(floatBranches["first_lf_jet_CSV_unshaped"]) = first_lf_jet_CSV_unshaped;
@@ -4776,6 +4829,8 @@ int main ( int argc, char ** argv )
 
         *(floatBranches["min_dr_jets"]) = min_dr_jets;
 	*(floatBranches["avg_dr_jets"]) = avg_dr_jets;
+	*(floatBranches["avg_dEta_jets"]) = avg_dEta_jets;
+	*(floatBranches["max_dEta_jets"]) = max_dEta_jets;
 	*(floatBranches["avg_dr_tagged_jets"]) = avg_dr_tagged_jets;
 
 	*(floatBranches["avg_tagged_dijet_mass"]) = avg_tagged_dijet_mass;
