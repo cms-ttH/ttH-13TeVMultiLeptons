@@ -217,6 +217,7 @@ int main ( int argc, char ** argv )
 
   //DIL analysis categories
   if (inputCharge == "OS") {
+//     JetTagReqs.push_back("eq2jge1t");
 //   JetTagReqs.push_back("ge2t");
   JetTagReqs.push_back("eq2jeq2t");
   JetTagReqs.push_back("eq3jeq2t");
@@ -275,6 +276,15 @@ int main ( int argc, char ** argv )
   sysList.push_back("CMS_ttH_topPtcorrDown"); //10
   sysList.push_back("Q2scale_ttH"); //11 
   sysList.push_back("Q2scale_ttH"); //12
+  sysList.push_back("CMS_ttH_lfStats1Up"); //13....
+  sysList.push_back("CMS_ttH_lfStats1Down"); //14
+  sysList.push_back("CMS_ttH_lfStats2Up"); //15....
+  sysList.push_back("CMS_ttH_lfStats2Down"); //16
+  sysList.push_back("CMS_ttH_hfStats1Up"); //17..
+  sysList.push_back("CMS_ttH_hfStats1Down"); //18
+  sysList.push_back("CMS_ttH_hfStats2Up"); //19..
+  sysList.push_back("CMS_ttH_hfStats2Down"); //20
+
   if (inputCharge == "SS") {
     sysList.push_back("PromptSFUp"); //13 
     sysList.push_back("PromptSFDown"); //14
@@ -311,6 +321,16 @@ int main ( int argc, char ** argv )
     weight[11] = "weight*Q2ScaleUpWgt*1.4065*"  ;     
     weight[12] = "weight*Q2ScaleDownWgt*0.6808*"  ;  
   }
+
+  weight[13] = "weight*";
+  weight[14] = "weight*";
+  weight[15] = "weight*";
+  weight[16] = "weight*";
+  weight[17] = "weight*";
+  weight[18] = "weight*";
+  weight[19] = "weight*";
+  weight[20] = "weight*";
+
   if ( (inputYear == "2012_52x" || inputYear == "2012_53x") && inputCharge == "SS") {
     weight[13] = "weight*(2*lepTotalPromptSFUp/(lepTotalPromptSFUp+lepTotalPromptSFDown))*";
     weight[14] = "weight*(2*lepTotalPromptSFDown/(lepTotalPromptSFUp+lepTotalPromptSFDown))*";
@@ -329,25 +349,35 @@ int main ( int argc, char ** argv )
 
     //MVA output variables
     if (inputCharge == "OS"){
-    varInfo *CFMlpANN_e2je2t_oldvar = new varInfo("CFMlpANN_e2je2t_oldvar", "CFMlpANN_e2je2t_oldvar", "CFMlpANN_e2je2t_oldvar", 2000, 0.49, 0.51);
-    varList.push_back(CFMlpANN_e2je2t_oldvar);
-    varInfo *CFMlpANN_e3je2t_53x = new varInfo("CFMlpANN_e3je2t_53x", "CFMlpANN_e3je2t_53x", "CFMlpANN_e3je2t_53x", 1000, 0, 1);
-    varList.push_back(CFMlpANN_e3je2t_53x);
-    varInfo *CFMlpANN_ge4je2t_53x = new varInfo("CFMlpANN_ge4je2t_53x", "CFMlpANN_ge4je2t_53x", "CFMlpANN_ge4je2t_53x", 1000, 0, 1);
-    varList.push_back(CFMlpANN_ge4je2t_53x);
-    varInfo *CFMlpANN_ge3t_53x = new varInfo("CFMlpANN_ge3t_53x", "CFMlpANN_ge3t_53x", "CFMlpANN_ge3t_53x", 1000, 0, 1);
-    varList.push_back(CFMlpANN_ge3t_53x);
+    varInfo *CFMlpANN_e2je2t = new varInfo("CFMlpANN_e2je2t", "CFMlpANN_e2je2t", "CFMlpANN_e2je2t", 2000, 0.49, 0.51);
+    varList.push_back(CFMlpANN_e2je2t);
+    varInfo *CFMlpANN_e3je2t = new varInfo("CFMlpANN_e3je2t", "CFMlpANN_e3je2t", "CFMlpANN_e3je2t", 1000, 0, 1);
+    varList.push_back(CFMlpANN_e3je2t);
+//     varInfo *CFMlpANN_e3je2t_4var = new varInfo("CFMlpANN_e3je2t_4var", "CFMlpANN_e3je2t_4var", "CFMlpANN_e3je2t_4var", 1000, 0, 1);
+//     varList.push_back(CFMlpANN_e3je2t_4var);
+    varInfo *CFMlpANN_ge4je2t = new varInfo("CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", "CFMlpANN_ge4je2t", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge4je2t);
+    varInfo *CFMlpANN_ge3t = new varInfo("CFMlpANN_ge3t", "CFMlpANN_ge3t", "CFMlpANN_ge3t", 1000, 0, 1);
+    varList.push_back(CFMlpANN_ge3t);
+    varInfo *BDTG_e3je2t = new varInfo("BDTG_e3je2t", "BDTG_e3je2t", "BDTG_e3je2t", 2000, -1, 1);
+    varList.push_back(BDTG_e3je2t);
+    varInfo *BDTG_ge4je2t = new varInfo("BDTG_ge4je2t", "BDTG_ge4je2t", "BDTG_ge4je2t", 2000, -1, 1);
+    varList.push_back(BDTG_ge4je2t);
+    varInfo *BDTG_ge3t = new varInfo("BDTG_ge3t", "BDTG_ge3t", "BDTG_ge3t", 2000, -1, 1);
+    varList.push_back(BDTG_ge3t);
+//     varInfo *BDTG_e3je2t_4var = new varInfo("BDTG_e3je2t_4var", "BDTG_e3je2t_4var", "BDTG_e3je2t_4var", 2000, -1, 1);
+//     varList.push_back(BDTG_e3je2t_4var);
 
-    varInfo *CFMlpANN_e2je2t_v1 = new varInfo("CFMlpANN_e2je2t_v1", "CFMlpANN_e2je2t_v1", "CFMlpANN_e2je2t_v1", 2000, 0.49, 0.51); /// range
-    varList.push_back(CFMlpANN_e2je2t_v1);
-    varInfo *CFMlpANN_e3je2t_v1 = new varInfo("CFMlpANN_e3je2t_v1", "CFMlpANN_e3je2t_v1", "CFMlpANN_e3je2t_v1", 1000, 0, 1);
-    varList.push_back(CFMlpANN_e3je2t_v1);
-    varInfo *CFMlpANN_ge4je2t_v1 = new varInfo("CFMlpANN_ge4je2t_v1", "CFMlpANN_ge4je2t_v1", "CFMlpANN_ge4je2t_v1", 1000, 0, 1);
-    varList.push_back(CFMlpANN_ge4je2t_v1);
-    varInfo *CFMlpANN_ge3t_v1 = new varInfo("CFMlpANN_ge3t_v1", "CFMlpANN_ge3t_v1", "CFMlpANN_ge3t_v1", 1000, 0, 1);
-    varList.push_back(CFMlpANN_ge3t_v1);
-    varInfo *CFMlpANN_ge3t_v2 = new varInfo("CFMlpANN_ge3t_v2", "CFMlpANN_ge3t_v2", "CFMlpANN_ge3t_v2", 1000, 0, 1);
-    varList.push_back(CFMlpANN_ge3t_v2);
+//     varInfo *CFMlpANN_e2je2t_v1 = new varInfo("CFMlpANN_e2je2t_v1", "CFMlpANN_e2je2t_v1", "CFMlpANN_e2je2t_v1", 2000, 0.49, 0.51); /// range
+//     varList.push_back(CFMlpANN_e2je2t_v1);
+//     varInfo *CFMlpANN_e3je2t_v1 = new varInfo("CFMlpANN_e3je2t_v1", "CFMlpANN_e3je2t_v1", "CFMlpANN_e3je2t_v1", 1000, 0, 1);
+//     varList.push_back(CFMlpANN_e3je2t_v1);
+//     varInfo *CFMlpANN_ge4je2t_v1 = new varInfo("CFMlpANN_ge4je2t_v1", "CFMlpANN_ge4je2t_v1", "CFMlpANN_ge4je2t_v1", 1000, 0, 1);
+//     varList.push_back(CFMlpANN_ge4je2t_v1);
+//     varInfo *CFMlpANN_ge3t_v1 = new varInfo("CFMlpANN_ge3t_v1", "CFMlpANN_ge3t_v1", "CFMlpANN_ge3t_v1", 1000, 0, 1);
+//     varList.push_back(CFMlpANN_ge3t_v1);
+//     varInfo *CFMlpANN_ge3t_v2 = new varInfo("CFMlpANN_ge3t_v2", "CFMlpANN_ge3t_v2", "CFMlpANN_ge3t_v2", 1000, 0, 1);
+//     varList.push_back(CFMlpANN_ge3t_v2);
     
     //ANN neural net inputs
     varInfo *avg_btag_disc_btags = new varInfo("avg_btag_disc_btags", "avg_btag_disc_btags", "avg_btag_disc_btags", 1000, 0, 1);
@@ -361,6 +391,12 @@ int main ( int argc, char ** argv )
     varList.push_back(min_dr_tagged_jets);
     varInfo *avg_dr_jets = new varInfo("avg_dr_jets", "avg_dr_jets", "avg_dr_jets", 600, 0, 6);
     varList.push_back(avg_dr_jets);
+    varInfo *avg_dr_tagged_jets = new varInfo("avg_dr_tagged_jets", "avg_dr_tagged_jets", "avg_dr_tagged_jets", 600, 0, 6);
+    varList.push_back(avg_dr_tagged_jets);
+    varInfo *avg_dEta_jets = new varInfo("avg_dEta_jets", "avg_dEta_jets", "avg_dEta_jets", 600, 0, 6);
+    varList.push_back(avg_dEta_jets);
+    varInfo *max_dEta_jets = new varInfo("max_dEta_jets", "max_dEta_jets", "max_dEta_jets", 600, 0, 6);
+    varList.push_back(max_dEta_jets);
     varInfo *min_dr_jets = new varInfo("min_dr_jets", "min_dr_jets", "min_dr_jets", 600, 0, 6);
     varList.push_back(min_dr_jets);
     varInfo *mindr_lep1_jet = new varInfo("mindr_lep1_jet", "mindr_lep1_jet", "mindr_lep1_jet", 600, 0, 6);
@@ -594,18 +630,26 @@ int main ( int argc, char ** argv )
     varList.push_back(second_jet_eta);
     varInfo *third_jet_eta = new varInfo("third_jet_eta", "third_jet_eta", "third_jet_eta", 500, -2.5, 2.5);
     varList.push_back(third_jet_eta);
-//     varInfo *first_jet_CSV = new varInfo("first_jet_CSV", "first_jet_CSV", "first_jet_CSV", 100, 0, 1);
-//     varList.push_back(first_jet_CSV);
-//     varInfo *second_jet_CSV = new varInfo("second_jet_CSV", "second_jet_CSV", "second_jet_CSV", 100, 0, 1);
-//     varList.push_back(second_jet_CSV);
-//     varInfo *third_jet_CSV = new varInfo("third_jet_CSV", "third_jet_CSV", "third_jet_CSV", 100, 0, 1);
-//     varList.push_back(third_jet_CSV);
-//     varInfo *first_jet_CSV_unc = new varInfo("first_jet_CSV_unc", "first_jet_CSV_unc", "first_jet_CSV_unc", 100, 0, 1);
-//     varList.push_back(first_jet_CSV_unc);
-//     varInfo *second_jet_CSV_unc = new varInfo("second_jet_CSV_unc", "second_jet_CSV_unc", "second_jet_CSV_unc", 100, 0, 1);
-//     varList.push_back(second_jet_CSV_unc);
-//     varInfo *third_jet_CSV_unc = new varInfo("third_jet_CSV_unc", "third_jet_CSV_unc", "third_jet_CSV_unc", 100, 0, 1);
-//     varList.push_back(third_jet_CSV_unc); 
+    varInfo *first_jet_CSV = new varInfo("first_jet_CSV", "first_jet_CSV", "first_jet_CSV", 100, 0, 1);
+    varList.push_back(first_jet_CSV);
+    varInfo *second_jet_CSV = new varInfo("second_jet_CSV", "second_jet_CSV", "second_jet_CSV", 100, 0, 1);
+    varList.push_back(second_jet_CSV);
+    varInfo *third_jet_CSV = new varInfo("third_jet_CSV", "third_jet_CSV", "third_jet_CSV", 100, 0, 1);
+    varList.push_back(third_jet_CSV);
+    varInfo *fourth_jet_CSV = new varInfo("fourth_jet_CSV", "fourth_jet_CSV", "fourth_jet_CSV", 100, 0, 1);
+    varList.push_back(fourth_jet_CSV);
+    varInfo *first_jet_CSV_unc = new varInfo("first_jet_CSV_unc", "first_jet_CSV_unc", "first_jet_CSV_unc", 100, 0, 1);
+    varList.push_back(first_jet_CSV_unc);
+    varInfo *second_jet_CSV_unc = new varInfo("second_jet_CSV_unc", "second_jet_CSV_unc", "second_jet_CSV_unc", 100, 0, 1);
+    varList.push_back(second_jet_CSV_unc);
+    varInfo *third_jet_CSV_unc = new varInfo("third_jet_CSV_unc", "third_jet_CSV_unc", "third_jet_CSV_unc", 100, 0, 1);
+    varList.push_back(third_jet_CSV_unc); 
+    varInfo *fourth_jet_CSV_unc = new varInfo("fourth_jet_CSV_unc", "fourth_jet_CSV_unc", "fourth_jet_CSV_unc", 100, 0, 1);
+    varList.push_back(fourth_jet_CSV_unc); 
+    varInfo *first_jet_flavor = new varInfo("first_jet_flavor", "first_jet_flavor", "first_jet_flavor", 28, -6, 22);
+    varList.push_back(first_jet_flavor);
+    varInfo *second_jet_flavor = new varInfo("second_jet_flavor", "second_jet_flavor", "second_jet_flavor", 28, -6, 22);
+    varList.push_back(second_jet_flavor);
 
   } // end if makeJetPlots
 
@@ -886,6 +930,21 @@ int main ( int argc, char ** argv )
 
       std::cout << "  == start systematic " << syst << " ==  " << std::endl;
 
+      //// csv SF weights for different systematic
+      std::string csvStr = "csvWgthf*csvWgtlf*";
+      if(ksys == 5 ) csvStr = "csvWgthf_LFUp*csvWgtlf*";
+      else if(ksys == 6 ) csvStr = "csvWgthf_LFDown*csvWgtlf*";
+      else if(ksys == 7 ) csvStr = "csvWgthf*csvWgtlf_HFUp*";
+      else if(ksys == 8 ) csvStr = "csvWgthf*csvWgtlf_HFDown*";
+      else if(ksys == 13 ) csvStr = "csvWgthf*csvWgtlf_Stats1Up*";
+      else if(ksys == 14 ) csvStr = "csvWgthf*csvWgtlf_Stats1Down*";
+      else if(ksys == 15 ) csvStr = "csvWgthf*csvWgtlf_Stats2Up*";
+      else if(ksys == 16 ) csvStr = "csvWgthf*csvWgtlf_Stats2Down*";
+      else if(ksys == 17 ) csvStr = "csvWgthf_Stats1Up*csvWgtlf*";
+      else if(ksys == 18 ) csvStr = "csvWgthf_Stats1Down*csvWgtlf*";
+      else if(ksys == 19 ) csvStr = "csvWgthf_Stats2Up*csvWgtlf*";
+      else if(ksys == 20 ) csvStr = "csvWgthf_Stats2Down*csvWgtlf*";
+
       TString InputFileName = treeFileNameNominal;
 
       if (ksys == 0 ) {
@@ -895,14 +954,14 @@ int main ( int argc, char ** argv )
       else if (ksys == 1 ) {
         //InputFileName += "_JESDown.root" ;
         InputFileName = treeFileNameJESDown;
-      } else if (ksys == 5) {
-        InputFileName = treeFileNamebtagHFUp;
-      } else if (ksys == 6) {
-        InputFileName = treeFileNamebtagHFDown;
-      } else if (ksys == 7) {
-        InputFileName = treeFileNamebtagLFUp;
-      } else if (ksys == 8) {
-        InputFileName = treeFileNamebtagLFDown;
+//       } else if (ksys == 5) {
+//         InputFileName = treeFileNamebtagHFUp;
+//       } else if (ksys == 6) {
+//         InputFileName = treeFileNamebtagHFDown;
+//       } else if (ksys == 7) {
+//         InputFileName = treeFileNamebtagLFUp;
+//       } else if (ksys == 8) {
+//         InputFileName = treeFileNamebtagLFDown;
       }
       //else  InputFileName += ".root" ;
       
@@ -928,6 +987,7 @@ int main ( int argc, char ** argv )
       //      std::string ProbStr = "holder";
       std::string WeightStr = "holder";
       std::string XsecStr = "holder";
+      //      std::string csvStr = "csvWgthf*csvWgtlf*";
 
       std::string EffStr = "holder";
       std::string TrigStr = "holder";
@@ -1113,6 +1173,7 @@ int main ( int argc, char ** argv )
           EffStr = "";
           TrigStr = "";
           XsecStr = "";
+          csvStr = "";
           std::cout << "DATA DETECTED: Set prob, weight, and eff to 1" << std::endl;
         }
 
@@ -1137,7 +1198,7 @@ int main ( int argc, char ** argv )
           //  + " ("+ OutputDirectory +") && (dR_leplep > 0.2) && (mass_leplep > 12) && "
           //  +CleanTrig+"("+JetReq+") && ("+TagReq+") )";
 
-          SelectionStr = WeightStr+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr
+          SelectionStr = csvStr+WeightStr+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr
             + " ("+ OutputDirectory +") && " + cutDrLepLep + cutMassLepLep
             +CleanTrig+"("+JetReq+") && ("+TagReq+") )";
           
@@ -1227,11 +1288,11 @@ int main ( int argc, char ** argv )
             continue;
           }
 
-          std::string SelectionOrig = weight[ksys]+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr
+          std::string SelectionOrig = WeightStr+EffStr+TrigStr+XsecStr+"(" + ChargeStr + ZmaskStr + PVStr + TightLepStr
             + " ("+ OutputDirectory +") && " + cutDrLepLep + cutMassLepLep
             +CleanTrig+"("+JetReq+") && ("+TagReq+") )";
           
-          if (isData || !dotopPtReweight) SelectionOrig = SelectionStr ;
+	  //          if (isData || !dotopPtReweight) SelectionOrig = SelectionStr ;
 
           //// get the correct normalization
           TString nameTmp = "njets_" + TString(JetTagReq + "_" + OutputDirectory) + syst;
@@ -1286,7 +1347,8 @@ int main ( int argc, char ** argv )
             //             DileptonSummaryTree->Draw(varSig1, SelectionStr.c_str(), "goff");
             //             DileptonSummaryTree->Draw(varSig2, SelectionStr.c_str(), "goff");
             //           }
-            DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
+	  if (variableName.Contains("CSV_unc")) DileptonSummaryTree->Draw(varSig, SelectionOrig.c_str(), "goff");
+          else  DileptonSummaryTree->Draw(varSig, SelectionStr.c_str(), "goff");
             myTime.Stop();
             drawTimesReal->Fill(myTime.RealTime());
             drawTimesCPU->Fill(myTime.CpuTime());
@@ -1304,7 +1366,7 @@ int main ( int argc, char ** argv )
             ////////////////////////////////////////////////////////
             
             
-            //if(!isData && doHtReweight &&  histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());
+	    //            if(!isData && histTemp->Integral()!=0) histTemp->Scale(totNorm/histTemp->Integral());
             histTemp->SetDirectory(OutputFile);
             
           
