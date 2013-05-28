@@ -919,6 +919,10 @@ int main ( int argc, char ** argv )
         if (ksys == 11) syst += "_ttbarUp";
         if (ksys == 12) syst += "_ttbarDown";
       }
+      if (tmpName.Contains("ttbar_b_")){
+        if (ksys == 11) syst += "_ttbar_bUp";
+        if (ksys == 12) syst += "_ttbar_bDown";
+      }
       if (tmpName.Contains("ttbar_bb")){
         if (ksys == 11) syst += "_ttbar_bbUp";
         if (ksys == 12) syst += "_ttbar_bbDown";
