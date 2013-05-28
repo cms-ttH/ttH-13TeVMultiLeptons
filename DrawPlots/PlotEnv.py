@@ -107,6 +107,8 @@ class PlotInfo:
 			tmpSysName = "ttbar"
 		if (self.name == "ttbb"):
 			tmpSysName = "ttbar_bb"
+		if (self.name == "ttb"):
+			tmpSysName = "ttbar_b"
 		if (self.name == "ttcc"):
 			tmpSysName = "ttbar_cc"
 			
@@ -171,6 +173,40 @@ class PlotInfo:
 			namePlusCycle = "%s_CMS_ttH_topPtcorrDown;1" % (histName)
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+######## csv stats
+		elif (JES == "lfStats1Up"):
+			namePlusCycle = "%s_CMS_ttH_lfStats1Up;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "lfStats1Down"):
+			namePlusCycle = "%s_CMS_ttH_lfStats1Down;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "hfStats1Up"):
+			namePlusCycle = "%s_CMS_ttH_hfStats1Up;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "hfStats1Down"):
+			namePlusCycle = "%s_CMS_ttH_hfStats1Down;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "lfStats2Up"):
+			namePlusCycle = "%s_CMS_ttH_lfStats2Up;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "lfStats2Down"):
+			namePlusCycle = "%s_CMS_ttH_lfStats2Down;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "hfStats2Up"):
+			namePlusCycle = "%s_CMS_ttH_hfStats2Up;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "hfStats2Down"):
+			namePlusCycle = "%s_CMS_ttH_hfStats2Down;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+			
 		elif (JES == "PromptSFUp"):
 			namePlusCycle = "%s_PromptSFUp;1" % (histName)
 # 			print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
@@ -356,7 +392,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	TexTitle9 = TexTitle8.replace('SameLep_',' #mu#mu/ee ')
 	TexTitle10 = TexTitle9.replace('TwoLep_',' Dilepton ')
 	TexTitle11 = TexTitle10.replace('_noZmask_','')
-	TexTitle12 = TexTitle11.replace('_Zmask_',' Z-masked ')
+	TexTitle12 = TexTitle11.replace('_Zmask_','')  ### Z-masked
 	TexTitle13 = TexTitle12.replace('_Zpeak_',' Z-peak ')
 	TexTitle14 = TexTitle13.replace('eq0j',' + 0 jets')
 	TexTitle15 = TexTitle14.replace('eq2jge0t',' + 2 jets + #geq0 b-tags')
@@ -460,7 +496,15 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   origHist_PromptSFDown =	None
 	   origHist_FlipSFUp =	 None
 	   origHist_FlipSFDown =  None
-		   
+	   origHist_lfStats1Up =  None
+	   origHist_lfStats1Down =  None
+	   origHist_hfStats1Up =  None
+	   origHist_hfStats1Down =  None
+	   origHist_lfStats2Up =  None
+	   origHist_lfStats2Down =  None
+	   origHist_hfStats2Up =  None
+	   origHist_hfStats2Down =  None
+
 	   if not skipSystematicsPG:
 		   origHist_JESUp = iplot.getHist(dist,lumi, lepselection, year, "JESUp")[0]
 		   origHist_JESDown = iplot.getHist(dist,lumi, lepselection, year,	"JESDown")[0]
@@ -472,6 +516,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   origHist_PUDown = iplot.getHist(dist,lumi, lepselection, year, "PUDown")[0]
 		   origHist_rwtUp = iplot.getHist(dist,lumi, lepselection, year, "rwtUp")[0]
 		   origHist_rwtDown = iplot.getHist(dist,lumi, lepselection, year, "rwtDown")[0]
+		   origHist_lfStats1Up = iplot.getHist(dist,lumi, lepselection, year, "lfStats1Up")[0]
+		   origHist_lfStats1Down = iplot.getHist(dist,lumi, lepselection, year, "lfStats1Down")[0]
+		   origHist_hfStats1Up = iplot.getHist(dist,lumi, lepselection, year, "hfStats1Up")[0]
+		   origHist_hfStats1Down = iplot.getHist(dist,lumi, lepselection, year, "hfStats1Down")[0]
+		   origHist_lfStats2Up = iplot.getHist(dist,lumi, lepselection, year, "lfStats2Up")[0]
+		   origHist_lfStats2Down = iplot.getHist(dist,lumi, lepselection, year, "lfStats2Down")[0]
+		   origHist_hfStats2Up = iplot.getHist(dist,lumi, lepselection, year, "hfStats2Up")[0]
+		   origHist_hfStats2Down = iplot.getHist(dist,lumi, lepselection, year, "hfStats2Down")[0]
 		   if (charge == "SS"):
 			   origHist_PromptSFUp = iplot.getHist(dist,lumi, lepselection, year, "PromptSFUp")[0]
 			   origHist_PromptSFDown = iplot.getHist(dist,lumi, lepselection, year, "PromptSFDown")[0]
@@ -488,6 +540,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   sys_hist_array.append(origHist_PUDown)
 		   sys_hist_array.append(origHist_rwtUp)
 		   sys_hist_array.append(origHist_rwtDown)
+		   sys_hist_array.append(origHist_lfStats1Up)
+		   sys_hist_array.append(origHist_lfStats1Down)
+		   sys_hist_array.append(origHist_hfStats1Up)
+		   sys_hist_array.append(origHist_hfStats1Down)
+		   sys_hist_array.append(origHist_lfStats2Up)
+		   sys_hist_array.append(origHist_lfStats2Down)
+		   sys_hist_array.append(origHist_hfStats2Up)
+		   sys_hist_array.append(origHist_hfStats2Down)
 		   if (charge == "SS"):
 			   sys_hist_array.append(origHist_PromptSFUp)
 			   sys_hist_array.append(origHist_PromptSFDown)
@@ -503,7 +563,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   sys.exit()
 		   
 
-	   if ((iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG ):
+	   if ((iplot.name == "tt" or iplot.name == "ttb" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG ):
 		   origHist_Q2Up = iplot.getHist(dist,lumi, lepselection, year,	 "Q2Up")[0]
 		   origHist_Q2Down = iplot.getHist(dist,lumi, lepselection, year, "Q2Down")[0]
 		   sys_hist_array.append(origHist_Q2Up)
@@ -518,6 +578,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   sysStr = ""
 	   if (iplot.name == "tt"):
 		   sysStr = "ttbar"
+	   if (iplot.name == "ttb"):
+		   sysStr = "ttbar_b"
 	   if (iplot.name == "ttbb"):
 		   sysStr = "ttbar_bb"
 	   if (iplot.name == "ttcc"):
@@ -546,13 +608,21 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   resultHist_MCErrorsOnly_PUDown = rebinHistManual (origHist_PUDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_rwtUp = rebinHistManual (origHist_rwtUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_rwtDown = rebinHistManual (origHist_rwtDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_lfStats1Up = rebinHistManual (origHist_lfStats1Up, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_lfStats1Down = rebinHistManual (origHist_lfStats1Down, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_hfStats1Up = rebinHistManual (origHist_hfStats1Up, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_hfStats1Down = rebinHistManual (origHist_hfStats1Down, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_lfStats2Up = rebinHistManual (origHist_lfStats2Up, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_lfStats2Down = rebinHistManual (origHist_lfStats2Down, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_hfStats2Up = rebinHistManual (origHist_hfStats2Up, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_hfStats2Down = rebinHistManual (origHist_hfStats2Down, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   if (charge == "SS"):
 			   resultHist_MCErrorsOnly_PromptSFUp = rebinHistManual (origHist_PromptSFUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 			   resultHist_MCErrorsOnly_PromptSFDown = rebinHistManual (origHist_PromptSFDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 			   resultHist_MCErrorsOnly_FlipSFUp = rebinHistManual (origHist_FlipSFUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 			   resultHist_MCErrorsOnly_FlipSFDown = rebinHistManual (origHist_FlipSFDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 
-		   if ( iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
+		   if ( iplot.name == "tt" or iplot.name == "ttb" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
 			   resultHist_MCErrorsOnly_Q2Up = rebinHistManual (origHist_Q2Up, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
 			   resultHist_MCErrorsOnly_Q2Down = rebinHistManual (origHist_Q2Down, 0,  nBins, xMin, xMax, scaleRatio, 1.0, "off")
 
@@ -567,26 +637,38 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   #print "CMS_eff_bUp Integral for orig = %s rebin = %s" % (origHist_eff_bUp.Integral(), resultHist_MCErrorsOnly_eff_bUp.Integral())
 	   #print "CMS_eff_bDown Integral for orig = %s, rebin = %s" % (origHist_eff_bDown.Integral(), resultHist_MCErrorsOnly_eff_bDown.Integral())
 
-	   storeName = "%s_CFMlpANN_%s" % (limitPlotName, printedJetSelection)
-	   storeNameJESUp = "%s_CFMlpANN_%s_CMS_scale_jUp" % (limitPlotName, printedJetSelection)
-	   storeNameJESDown = "%s_CFMlpANN_%s_CMS_scale_jDown" % (limitPlotName, printedJetSelection)
-	   storeName_eff_bUp = "%s_CFMlpANN_%s_CMS_eff_bUp" % (limitPlotName, printedJetSelection)
-	   storeName_eff_bDown = "%s_CFMlpANN_%s_CMS_eff_bDown" % (limitPlotName, printedJetSelection)
-	   storeName_fake_bUp = "%s_CFMlpANN_%s_CMS_fake_bUp" % (limitPlotName, printedJetSelection)
-	   storeName_fake_bDown = "%s_CFMlpANN_%s_CMS_fake_bDown" % (limitPlotName, printedJetSelection)
-	   storeName_PUUp = "%s_CFMlpANN_%s_PUUp" % (limitPlotName, printedJetSelection)
-	   storeName_PUDown = "%s_CFMlpANN_%s_PUDown" % (limitPlotName, printedJetSelection)
-	   storeName_rwtUp = "%s_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (limitPlotName, printedJetSelection)
-	   storeName_rwtDown = "%s_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (limitPlotName, printedJetSelection)
+	   storeName = "%s_MVA_%s" % (limitPlotName, printedJetSelection)
+	   storeNameJESUp = "%s_MVA_%s_CMS_scale_jUp" % (limitPlotName, printedJetSelection)
+	   storeNameJESDown = "%s_MVA_%s_CMS_scale_jDown" % (limitPlotName, printedJetSelection)
+#	   storeName_eff_bUp = "%s_MVA_%s_CMS_eff_bUp" % (limitPlotName, printedJetSelection)
+#	   storeName_eff_bDown = "%s_MVA_%s_CMS_eff_bDown" % (limitPlotName, printedJetSelection)
+#	   storeName_fake_bUp = "%s_MVA_%s_CMS_fake_bUp" % (limitPlotName, printedJetSelection)
+#	   storeName_fake_bDown = "%s_MVA_%s_CMS_fake_bDown" % (limitPlotName, printedJetSelection)
+	   storeName_eff_bUp = "%s_MVA_%s_CMS_ttH_CSVLFUp" % (limitPlotName, printedJetSelection)
+	   storeName_eff_bDown = "%s_MVA_%s_CMS_ttH_CSVLFDown" % (limitPlotName, printedJetSelection)
+	   storeName_fake_bUp = "%s_MVA_%s_CMS_ttH_CSVHFUp" % (limitPlotName, printedJetSelection)
+	   storeName_fake_bDown = "%s_MVA_%s_CMS_ttH_CSVHFDown" % (limitPlotName, printedJetSelection)
+	   storeName_PUUp = "%s_MVA_%s_PUUp" % (limitPlotName, printedJetSelection)
+	   storeName_PUDown = "%s_MVA_%s_PUDown" % (limitPlotName, printedJetSelection)
+	   storeName_rwtUp = "%s_MVA_%s_CMS_ttH_topPtcorrUp" % (limitPlotName, printedJetSelection)
+	   storeName_rwtDown = "%s_MVA_%s_CMS_ttH_topPtcorrDown" % (limitPlotName, printedJetSelection)
+	   storeName_lfStats1Up = "%s_MVA_%s_CMS_ttH_CSVLFStats1Up" % (limitPlotName, printedJetSelection)
+	   storeName_lfStats1Down = "%s_MVA_%s_CMS_ttH_CSVLFStats1Down" % (limitPlotName, printedJetSelection)
+	   storeName_hfStats1Up = "%s_MVA_%s_CMS_ttH_CSVHFStats1Up" % (limitPlotName, printedJetSelection)
+	   storeName_hfStats1Down = "%s_MVA_%s_CMS_ttH_CSVHFStats1Down" % (limitPlotName, printedJetSelection)
+	   storeName_lfStats2Up = "%s_MVA_%s_CMS_ttH_CSVLFStats2Up" % (limitPlotName, printedJetSelection)
+	   storeName_lfStats2Down = "%s_MVA_%s_CMS_ttH_CSVLFStats2Down" % (limitPlotName, printedJetSelection)
+	   storeName_hfStats2Up = "%s_MVA_%s_CMS_ttH_CSVHFStats2Up" % (limitPlotName, printedJetSelection)
+	   storeName_hfStats2Down = "%s_MVA_%s_CMS_ttH_CSVHFStats2Down" % (limitPlotName, printedJetSelection)
 	   if (charge == "SS"):
-		   storeName_PromptSFUp = "%s_CFMlpANN_%s_PromptSFUp" % (limitPlotName, printedJetSelection)
-		   storeName_PromptSFDown = "%s_CFMlpANN_%s_PromptSFDown" % (limitPlotName, printedJetSelection)
-		   storeName_FlipSFUp = "%s_CFMlpANN_%s_FlipSFUp" % (limitPlotName, printedJetSelection)
-		   storeName_FlipSFDown = "%s_CFMlpANN_%s_FlipSFDown" % (limitPlotName, printedJetSelection)
+		   storeName_PromptSFUp = "%s_MVA_%s_PromptSFUp" % (limitPlotName, printedJetSelection)
+		   storeName_PromptSFDown = "%s_MVA_%s_PromptSFDown" % (limitPlotName, printedJetSelection)
+		   storeName_FlipSFUp = "%s_MVA_%s_FlipSFUp" % (limitPlotName, printedJetSelection)
+		   storeName_FlipSFDown = "%s_MVA_%s_FlipSFDown" % (limitPlotName, printedJetSelection)
 	   
-	   if (iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
-		   storeName_Q2Up = "%s_CFMlpANN_%s_Q2scale_ttH_%sUp" % (limitPlotName, printedJetSelection, sysStr)
-		   storeName_Q2Down = "%s_CFMlpANN_%s_Q2scale_ttH_%sDown" % (limitPlotName, printedJetSelection, sysStr)	   
+	   if (iplot.name == "tt" or iplot.name == "ttb" or iplot.name == "ttbb" or iplot.name == "ttcc" ):	   
+		   storeName_Q2Up = "%s_MVA_%s_Q2scale_ttH_%sUp" % (limitPlotName, printedJetSelection, sysStr)
+		   storeName_Q2Down = "%s_MVA_%s_Q2scale_ttH_%sDown" % (limitPlotName, printedJetSelection, sysStr)	   
 
 
 	   keyName = limitPlotName
@@ -606,6 +688,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   keyName_PromptSFDown = "%s_PromptSFDown" % keyName
 	   keyName_FlipSFUp = "%s_FlipSFUp" % keyName
 	   keyName_FlipSFDown = "%s_FlipSFDown" % keyName
+	   keyName_lfStats1Up = "%s_lfStats1Up" % keyName
+	   keyName_lfStats1Down = "%s_lfStats1Down" % keyName
+	   keyName_hfStats1Up = "%s_hfStats1Up" % keyName
+	   keyName_hfStats1Down = "%s_hfStats1Down" % keyName
+	   keyName_lfStats2Up = "%s_lfStats2Up" % keyName
+	   keyName_lfStats2Down = "%s_lfStats2Down" % keyName
+	   keyName_hfStats2Up = "%s_hfStats2Up" % keyName
+	   keyName_hfStats2Down = "%s_hfStats2Down" % keyName
 	   
 	   # Save data for later
 	   Data2011Sum = 0
@@ -616,13 +706,13 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   Data2011Sum = myData2011.Integral()
 		   legForStack.AddEntry(myData2011, "Data ("+str(round(Data2011Sum,0))+")", "lpe")
 		   #print "Adding data_2011 histo to output list"
-		   histoStorageList["data_obs"] = myData2011.Clone ("data_obs_CFMlpANN_%s" % (printedJetSelection)	)
+		   histoStorageList["data_obs"] = myData2011.Clone ("data_obs_MVA_%s" % (printedJetSelection)	)
 		   
 	   elif ((iplot.name == "data_2012" or iplot.name== "data_2012_52x" or iplot.name == "data_2012_53x") and (year == "2012" or year == "2012_52x" or year == "2012_53x")):
 		   myData2012 = resultHist_MCErrorsOnly.Clone("data_2012")
 		   Data2012Sum = myData2012.Integral()
 		   if (not blindPG): legForStack.AddEntry(myData2012, "Data ("+str(round(Data2012Sum,0))+")", "lpe")
-		   histoStorageList["data_obs"] = myData2012.Clone("data_obs_CFMlpANN_%s" % (printedJetSelection)  )
+		   histoStorageList["data_obs"] = myData2012.Clone("data_obs_MVA_%s" % (printedJetSelection)  )
 		   
 	   elif (iplot.name == "ttH_125"):
 		   iSig = resultHist.Clone("signal")
@@ -641,6 +731,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 			   histoStorageList[keyName_rwtUp] = resultHist_MCErrorsOnly_rwtUp.Clone(storeName_rwtUp)
 			   histoStorageList[keyName_rwtDown] = resultHist_MCErrorsOnly_rwtDown.Clone(storeName_rwtDown)
+			   histoStorageList[keyName_lfStats1Up] = resultHist_MCErrorsOnly_lfStats1Up.Clone(storeName_lfStats1Up)
+			   histoStorageList[keyName_lfStats1Down] = resultHist_MCErrorsOnly_lfStats1Down.Clone(storeName_lfStats1Down)
+			   histoStorageList[keyName_hfStats1Up] = resultHist_MCErrorsOnly_hfStats1Up.Clone(storeName_hfStats1Up)
+			   histoStorageList[keyName_hfStats1Down] = resultHist_MCErrorsOnly_hfStats1Down.Clone(storeName_hfStats1Down)
+			   histoStorageList[keyName_lfStats2Up] = resultHist_MCErrorsOnly_lfStats2Up.Clone(storeName_lfStats2Up)
+			   histoStorageList[keyName_lfStats2Down] = resultHist_MCErrorsOnly_lfStats2Down.Clone(storeName_lfStats2Down)
+			   histoStorageList[keyName_hfStats2Up] = resultHist_MCErrorsOnly_hfStats2Up.Clone(storeName_hfStats2Up)
+			   histoStorageList[keyName_hfStats2Down] = resultHist_MCErrorsOnly_hfStats2Down.Clone(storeName_hfStats2Down)
 			   if (charge == "SS"):
 				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
 				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
@@ -664,6 +762,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 			   histoStorageList[keyName_rwtUp] = resultHist_MCErrorsOnly_rwtUp.Clone(storeName_rwtUp)
 			   histoStorageList[keyName_rwtDown] = resultHist_MCErrorsOnly_rwtDown.Clone(storeName_rwtDown)
+			   histoStorageList[keyName_lfStats1Up] = resultHist_MCErrorsOnly_lfStats1Up.Clone(storeName_lfStats1Up)
+			   histoStorageList[keyName_lfStats1Down] = resultHist_MCErrorsOnly_lfStats1Down.Clone(storeName_lfStats1Down)
+			   histoStorageList[keyName_hfStats1Up] = resultHist_MCErrorsOnly_hfStats1Up.Clone(storeName_hfStats1Up)
+			   histoStorageList[keyName_hfStats1Down] = resultHist_MCErrorsOnly_hfStats1Down.Clone(storeName_hfStats1Down)
+			   histoStorageList[keyName_lfStats2Up] = resultHist_MCErrorsOnly_lfStats2Up.Clone(storeName_lfStats2Up)
+			   histoStorageList[keyName_lfStats2Down] = resultHist_MCErrorsOnly_lfStats2Down.Clone(storeName_lfStats2Down)
+			   histoStorageList[keyName_hfStats2Up] = resultHist_MCErrorsOnly_hfStats2Up.Clone(storeName_hfStats2Up)
+			   histoStorageList[keyName_hfStats2Down] = resultHist_MCErrorsOnly_hfStats2Down.Clone(storeName_hfStats2Down)
 			   if (charge == "SS"):
 				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
 				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
@@ -687,13 +793,21 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_PUDown] = resultHist_MCErrorsOnly_PUDown.Clone(storeName_PUDown)
 			   histoStorageList[keyName_rwtUp] = resultHist_MCErrorsOnly_rwtUp.Clone(storeName_rwtUp)
 			   histoStorageList[keyName_rwtDown] = resultHist_MCErrorsOnly_rwtDown.Clone(storeName_rwtDown)
+			   histoStorageList[keyName_lfStats1Up] = resultHist_MCErrorsOnly_lfStats1Up.Clone(storeName_lfStats1Up)
+			   histoStorageList[keyName_lfStats1Down] = resultHist_MCErrorsOnly_lfStats1Down.Clone(storeName_lfStats1Down)
+			   histoStorageList[keyName_hfStats1Up] = resultHist_MCErrorsOnly_hfStats1Up.Clone(storeName_hfStats1Up)
+			   histoStorageList[keyName_hfStats1Down] = resultHist_MCErrorsOnly_hfStats1Down.Clone(storeName_hfStats1Down)
+			   histoStorageList[keyName_lfStats2Up] = resultHist_MCErrorsOnly_lfStats2Up.Clone(storeName_lfStats2Up)
+			   histoStorageList[keyName_lfStats2Down] = resultHist_MCErrorsOnly_lfStats2Down.Clone(storeName_lfStats2Down)
+			   histoStorageList[keyName_hfStats2Up] = resultHist_MCErrorsOnly_hfStats2Up.Clone(storeName_hfStats2Up)
+			   histoStorageList[keyName_hfStats2Down] = resultHist_MCErrorsOnly_hfStats2Down.Clone(storeName_hfStats2Down)
 			   if (charge == "SS"):
 				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
 				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
 				   histoStorageList[keyName_FlipSFUp] = resultHist_MCErrorsOnly_FlipSFUp.Clone(storeName_FlipSFUp)
 				   histoStorageList[keyName_FlipSFDown] = resultHist_MCErrorsOnly_FlipSFDown.Clone(storeName_FlipSFDown)
 				   
-		   if ((iplot.name == "tt" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG ):
+		   if ((iplot.name == "tt" or iplot.name == "ttb" or iplot.name == "ttbb" or iplot.name == "ttcc") and not skipSystematicsPG ):
 			   histoStorageList[keyName_Q2Up] = resultHist_MCErrorsOnly_Q2Up.Clone(storeName_Q2Up)
 			   histoStorageList[keyName_Q2Down] = resultHist_MCErrorsOnly_Q2Down.Clone(storeName_Q2Down)
 		   
@@ -709,23 +823,31 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   #print "SINGLETOP: recognized name %s" % iplot.name
 			   if not foundFirstSingleTop:
 				   #print ".... first!"
-				   histoStorageList["singlet"] = resultHist_MCErrorsOnly.Clone("singlet_CFMlpANN_%s" % (printedJetSelection))
+				   histoStorageList["singlet"] = resultHist_MCErrorsOnly.Clone("singlet_MVA_%s" % (printedJetSelection))
 				   if not skipSystematicsPG:
-					   histoStorageList["singlet_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("singlet_CFMlpANN_%s_CMS_scale_jUp" % (printedJetSelection))
-					   histoStorageList["singlet_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("singlet_CFMlpANN_%s_CMS_scale_jDown" % (printedJetSelection))
-					   histoStorageList["singlet_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("singlet_CFMlpANN_%s_CMS_eff_bUp" % (printedJetSelection))
-					   histoStorageList["singlet_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("singlet_CFMlpANN_%s_CMS_eff_bDown" % (printedJetSelection))
-					   histoStorageList["singlet_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("singlet_CFMlpANN_%s_CMS_fake_bUp" % (printedJetSelection))
-					   histoStorageList["singlet_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("singlet_CFMlpANN_%s_CMS_fake_bDown" % (printedJetSelection))
-					   histoStorageList["singlet_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("singlet_CFMlpANN_%s_PUUp" % (printedJetSelection))
-					   histoStorageList["singlet_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("singlet_CFMlpANN_%s_PUDown" % (printedJetSelection))
-					   histoStorageList["singlet_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("singlet_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-					   histoStorageList["singlet_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("singlet_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+					   histoStorageList["singlet_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("singlet_MVA_%s_CMS_scale_jUp" % (printedJetSelection))
+					   histoStorageList["singlet_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("singlet_MVA_%s_CMS_scale_jDown" % (printedJetSelection))
+					   histoStorageList["singlet_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("singlet_MVA_%s_CMS_ttH_CSVLFUp" % (printedJetSelection))
+					   histoStorageList["singlet_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("singlet_MVA_%s_CMS_ttH_CSVLFDown" % (printedJetSelection))
+					   histoStorageList["singlet_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("singlet_MVA_%s_CMS_ttH_CSVHFUp" % (printedJetSelection))
+					   histoStorageList["singlet_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("singlet_MVA_%s_CMS_ttH_CSVHFDown" % (printedJetSelection))
+					   histoStorageList["singlet_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("singlet_MVA_%s_PUUp" % (printedJetSelection))
+					   histoStorageList["singlet_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("singlet_MVA_%s_PUDown" % (printedJetSelection))
+					   histoStorageList["singlet_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("singlet_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+					   histoStorageList["singlet_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("singlet_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+					   histoStorageList["singlet_lfStats1Up"] = resultHist_MCErrorsOnly_lfStats1Up.Clone("singlet_MVA_%s_CMS_ttH_CSVLFStats1Up" % (printedJetSelection))
+					   histoStorageList["singlet_lfStats1Down"] = resultHist_MCErrorsOnly_lfStats1Down.Clone("singlet_MVA_%s_CMS_ttH_CSVLFStats1Down" % (printedJetSelection))
+					   histoStorageList["singlet_hfStats1Up"] = resultHist_MCErrorsOnly_hfStats1Up.Clone("singlet_MVA_%s_CMS_ttH_CSVHFStats1Up" % (printedJetSelection))
+					   histoStorageList["singlet_hfStats1Down"] = resultHist_MCErrorsOnly_hfStats1Down.Clone("singlet_MVA_%s_CMS_ttH_CSVHFStats1Down" % (printedJetSelection))
+					   histoStorageList["singlet_lfStats2Up"] = resultHist_MCErrorsOnly_lfStats2Up.Clone("singlet_MVA_%s_CMS_ttH_CSVLFStats2Up" % (printedJetSelection))
+					   histoStorageList["singlet_lfStats2Down"] = resultHist_MCErrorsOnly_lfStats2Down.Clone("singlet_MVA_%s_CMS_ttH_CSVLFStats2Down" % (printedJetSelection))
+					   histoStorageList["singlet_hfStats2Up"] = resultHist_MCErrorsOnly_hfStats2Up.Clone("singlet_MVA_%s_CMS_ttH_CSVHFStats2Up" % (printedJetSelection))
+					   histoStorageList["singlet_hfStats2Down"] = resultHist_MCErrorsOnly_hfStats2Down.Clone("singlet_MVA_%s_CMS_ttH_CSVHFStats2Down" % (printedJetSelection))
 					   if (charge == "SS"):
-						   histoStorageList["singlet_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("singlet_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-						   histoStorageList["singlet_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("singlet_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
-						   histoStorageList["singlet_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("singlet_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-						   histoStorageList["singlet_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("singlet_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+						   histoStorageList["singlet_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("singlet_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+						   histoStorageList["singlet_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("singlet_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+						   histoStorageList["singlet_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("singlet_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+						   histoStorageList["singlet_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("singlet_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
 				   foundFirstSingleTop = true
 			   else:
 				   histoStorageList["singlet"].Add(resultHist_MCErrorsOnly)
@@ -740,6 +862,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["singlet_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
 					   histoStorageList["singlet_rwtUp"].Add(resultHist_MCErrorsOnly_rwtUp)
 					   histoStorageList["singlet_rwtDown"].Add(resultHist_MCErrorsOnly_rwtDown)
+					   histoStorageList["singlet_lfStats1Up"].Add(resultHist_MCErrorsOnly_lfStats1Up)
+					   histoStorageList["singlet_lfStats1Down"].Add(resultHist_MCErrorsOnly_lfStats1Down)
+					   histoStorageList["singlet_hfStats1Up"].Add(resultHist_MCErrorsOnly_hfStats1Up)
+					   histoStorageList["singlet_hfStats1Down"].Add(resultHist_MCErrorsOnly_hfStats1Down)
+					   histoStorageList["singlet_lfStats2Up"].Add(resultHist_MCErrorsOnly_lfStats2Up)
+					   histoStorageList["singlet_lfStats2Down"].Add(resultHist_MCErrorsOnly_lfStats2Down)
+					   histoStorageList["singlet_hfStats2Up"].Add(resultHist_MCErrorsOnly_hfStats2Up)
+					   histoStorageList["singlet_hfStats2Down"].Add(resultHist_MCErrorsOnly_hfStats2Down)
 					   if (charge == "SS"):
 						   histoStorageList["singlet_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
 						   histoStorageList["singlet_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
@@ -754,23 +884,31 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   #print "DIBOSON: recognized name %s" % iplot.name
 			   if not foundFirstDiboson:
 				   #print ".... first!"
-				   histoStorageList["diboson"] = resultHist_MCErrorsOnly.Clone("diboson_CFMlpANN_%s" % (printedJetSelection))
+				   histoStorageList["diboson"] = resultHist_MCErrorsOnly.Clone("diboson_MVA_%s" % (printedJetSelection))
 				   if not skipSystematicsPG:
-					   histoStorageList["diboson_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("diboson_CFMlpANN_%s_CMS_scale_jUp" % (printedJetSelection))
-					   histoStorageList["diboson_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("diboson_CFMlpANN_%s_CMS_scale_jDown" % (printedJetSelection))
-					   histoStorageList["diboson_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("diboson_CFMlpANN_%s_CMS_eff_bUp" % (printedJetSelection))
-					   histoStorageList["diboson_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("diboson_CFMlpANN_%s_CMS_eff_bDown" % (printedJetSelection))
-					   histoStorageList["diboson_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("diboson_CFMlpANN_%s_CMS_fake_bUp" % (printedJetSelection))
-					   histoStorageList["diboson_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("diboson_CFMlpANN_%s_CMS_fake_bDown" % (printedJetSelection))
-					   histoStorageList["diboson_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("diboson_CFMlpANN_%s_PUUp" % (printedJetSelection))
-					   histoStorageList["diboson_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("diboson_CFMlpANN_%s_PUDown" % (printedJetSelection))
-					   histoStorageList["diboson_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("diboson_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-					   histoStorageList["diboson_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("diboson_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+					   histoStorageList["diboson_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("diboson_MVA_%s_CMS_scale_jUp" % (printedJetSelection))
+					   histoStorageList["diboson_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("diboson_MVA_%s_CMS_scale_jDown" % (printedJetSelection))
+					   histoStorageList["diboson_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("diboson_MVA_%s_CMS_ttH_CSVLFUp" % (printedJetSelection))
+					   histoStorageList["diboson_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("diboson_MVA_%s_CMS_ttH_CSVLFDown" % (printedJetSelection))
+					   histoStorageList["diboson_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("diboson_MVA_%s_CMS_ttH_CSVHFUp" % (printedJetSelection))
+					   histoStorageList["diboson_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("diboson_MVA_%s_CMS_ttH_CSVHFDown" % (printedJetSelection))
+					   histoStorageList["diboson_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("diboson_MVA_%s_PUUp" % (printedJetSelection))
+					   histoStorageList["diboson_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("diboson_MVA_%s_PUDown" % (printedJetSelection))
+					   histoStorageList["diboson_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("diboson_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+					   histoStorageList["diboson_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("diboson_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+					   histoStorageList["diboson_lfStats1Up"] = resultHist_MCErrorsOnly_lfStats1Up.Clone("diboson_MVA_%s_CMS_ttH_CSVLFStats1Up" % (printedJetSelection))
+					   histoStorageList["diboson_lfStats1Down"] = resultHist_MCErrorsOnly_lfStats1Down.Clone("diboson_MVA_%s_CMS_ttH_CSVLFStats1Down" % (printedJetSelection))
+					   histoStorageList["diboson_hfStats1Up"] = resultHist_MCErrorsOnly_hfStats1Up.Clone("diboson_MVA_%s_CMS_ttH_CSVHFStats1Up" % (printedJetSelection))
+					   histoStorageList["diboson_hfStats1Down"] = resultHist_MCErrorsOnly_hfStats1Down.Clone("diboson_MVA_%s_CMS_ttH_CSVHFStats1Down" % (printedJetSelection))
+					   histoStorageList["diboson_lfStats2Up"] = resultHist_MCErrorsOnly_lfStats2Up.Clone("diboson_MVA_%s_CMS_ttH_CSVLFStats2Up" % (printedJetSelection))
+					   histoStorageList["diboson_lfStats2Down"] = resultHist_MCErrorsOnly_lfStats2Down.Clone("diboson_MVA_%s_CMS_ttH_CSVLFStats2Down" % (printedJetSelection))
+					   histoStorageList["diboson_hfStats2Up"] = resultHist_MCErrorsOnly_hfStats2Up.Clone("diboson_MVA_%s_CMS_ttH_CSVHFStats2Up" % (printedJetSelection))
+					   histoStorageList["diboson_hfStats2Down"] = resultHist_MCErrorsOnly_hfStats2Down.Clone("diboson_MVA_%s_CMS_ttH_CSVHFStats2Down" % (printedJetSelection))
 					   if (charge == "SS"):
-						   histoStorageList["diboson_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("diboson_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-						   histoStorageList["diboson_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("diboson_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
-						   histoStorageList["diboson_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("diboson_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-						   histoStorageList["diboson_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("diboson_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+						   histoStorageList["diboson_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("diboson_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+						   histoStorageList["diboson_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("diboson_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+						   histoStorageList["diboson_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("diboson_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+						   histoStorageList["diboson_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("diboson_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
 				   foundFirstDiboson = true
 			   else:
 				   histoStorageList["diboson"].Add(resultHist_MCErrorsOnly)
@@ -785,6 +923,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["diboson_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
 					   histoStorageList["diboson_rwtUp"].Add(resultHist_MCErrorsOnly_rwtUp)
 					   histoStorageList["diboson_rwtDown"].Add(resultHist_MCErrorsOnly_rwtDown)
+					   histoStorageList["diboson_lfStats1Up"].Add(resultHist_MCErrorsOnly_lfStats1Up)
+					   histoStorageList["diboson_lfStats1Down"].Add(resultHist_MCErrorsOnly_lfStats1Down)
+					   histoStorageList["diboson_hfStats1Up"].Add(resultHist_MCErrorsOnly_hfStats1Up)
+					   histoStorageList["diboson_hfStats1Down"].Add(resultHist_MCErrorsOnly_hfStats1Down)
+					   histoStorageList["diboson_lfStats2Up"].Add(resultHist_MCErrorsOnly_lfStats2Up)
+					   histoStorageList["diboson_lfStats2Down"].Add(resultHist_MCErrorsOnly_lfStats2Down)
+					   histoStorageList["diboson_hfStats2Up"].Add(resultHist_MCErrorsOnly_hfStats2Up)
+					   histoStorageList["diboson_hfStats2Down"].Add(resultHist_MCErrorsOnly_hfStats2Down)
 					   if (charge == "SS"):
 						   histoStorageList["diboson_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
 						   histoStorageList["diboson_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
@@ -803,23 +949,31 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   if not foundFirstZjets:
 				   #print ".... first!"
 				   
-				   histoStorageList["zjets"] = resultHist_MCErrorsOnly.Clone("zjets_CFMlpANN_%s" % (printedJetSelection))
+				   histoStorageList["zjets"] = resultHist_MCErrorsOnly.Clone("zjets_MVA_%s" % (printedJetSelection))
 				   if not skipSystematicsPG:
-					   histoStorageList["zjets_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("zjets_CFMlpANN_%s_CMS_scale_jUp" % (printedJetSelection))
-					   histoStorageList["zjets_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("zjets_CFMlpANN_%s_CMS_scale_jDown" % (printedJetSelection))
-					   histoStorageList["zjets_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("zjets_CFMlpANN_%s_CMS_eff_bUp" % (printedJetSelection))
-					   histoStorageList["zjets_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("zjets_CFMlpANN_%s_CMS_eff_bDown" % (printedJetSelection))
-					   histoStorageList["zjets_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("zjets_CFMlpANN_%s_CMS_fake_bUp" % (printedJetSelection))
-					   histoStorageList["zjets_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("zjets_CFMlpANN_%s_CMS_fake_bDown" % (printedJetSelection))
-					   histoStorageList["zjets_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("zjets_CFMlpANN_%s_PUUp" % (printedJetSelection))
-					   histoStorageList["zjets_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("zjets_CFMlpANN_%s_PUDown" % (printedJetSelection))
-					   histoStorageList["zjets_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("zjets_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-					   histoStorageList["zjets_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("zjets_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+					   histoStorageList["zjets_JESUp"] = resultHist_MCErrorsOnly_JESUp.Clone("zjets_MVA_%s_CMS_scale_jUp" % (printedJetSelection))
+					   histoStorageList["zjets_JESDown"] = resultHist_MCErrorsOnly_JESDown.Clone("zjets_MVA_%s_CMS_scale_jDown" % (printedJetSelection))
+					   histoStorageList["zjets_eff_bUp"] = resultHist_MCErrorsOnly_eff_bUp.Clone("zjets_MVA_%s_CMS_ttH_CSVLFUp" % (printedJetSelection))
+					   histoStorageList["zjets_eff_bDown"] = resultHist_MCErrorsOnly_eff_bDown.Clone("zjets_MVA_%s_CMS_ttH_CSVLFDown" % (printedJetSelection))
+					   histoStorageList["zjets_fake_bUp"] = resultHist_MCErrorsOnly_fake_bUp.Clone("zjets_MVA_%s_CMS_ttH_CSVHFUp" % (printedJetSelection))
+					   histoStorageList["zjets_fake_bDown"] = resultHist_MCErrorsOnly_fake_bDown.Clone("zjets_MVA_%s_CMS_ttH_CSVHFDown" % (printedJetSelection))
+					   histoStorageList["zjets_PUUp"] = resultHist_MCErrorsOnly_PUUp.Clone("zjets_MVA_%s_PUUp" % (printedJetSelection))
+					   histoStorageList["zjets_PUDown"] = resultHist_MCErrorsOnly_PUDown.Clone("zjets_MVA_%s_PUDown" % (printedJetSelection))
+					   histoStorageList["zjets_rwtUp"] = resultHist_MCErrorsOnly_rwtUp.Clone("zjets_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+					   histoStorageList["zjets_rwtDown"] = resultHist_MCErrorsOnly_rwtDown.Clone("zjets_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+					   histoStorageList["zjets_lfStats1Up"] = resultHist_MCErrorsOnly_lfStats1Up.Clone("zjets_MVA_%s_CMS_ttH_CSVLFStats1Up" % (printedJetSelection))
+					   histoStorageList["zjets_lfStats1Down"] = resultHist_MCErrorsOnly_lfStats1Down.Clone("zjets_MVA_%s_CMS_ttH_CSVLFStats1Down" % (printedJetSelection))
+					   histoStorageList["zjets_hfStats1Up"] = resultHist_MCErrorsOnly_hfStats1Up.Clone("zjets_MVA_%s_CMS_ttH_CSVHFStats1Up" % (printedJetSelection))
+					   histoStorageList["zjets_hfStats1Down"] = resultHist_MCErrorsOnly_hfStats1Down.Clone("zjets_MVA_%s_CMS_ttH_CSVHFStats1Down" % (printedJetSelection))
+					   histoStorageList["zjets_lfStats2Up"] = resultHist_MCErrorsOnly_lfStats2Up.Clone("zjets_MVA_%s_CMS_ttH_CSVLFStats2Up" % (printedJetSelection))
+					   histoStorageList["zjets_lfStats2Down"] = resultHist_MCErrorsOnly_lfStats2Down.Clone("zjets_MVA_%s_CMS_ttH_CSVLFStats2Down" % (printedJetSelection))
+					   histoStorageList["zjets_hfStats2Up"] = resultHist_MCErrorsOnly_hfStats2Up.Clone("zjets_MVA_%s_CMS_ttH_CSVHFStats2Up" % (printedJetSelection))
+					   histoStorageList["zjets_hfStats2Down"] = resultHist_MCErrorsOnly_hfStats2Down.Clone("zjets_MVA_%s_CMS_ttH_CSVHFStats2Down" % (printedJetSelection))
 					   if (charge == "SS"):
-						   histoStorageList["zjets_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("zjets_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-						   histoStorageList["zjets_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("zjets_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
-						   histoStorageList["zjets_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("zjets_CFMlpANN_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
-						   histoStorageList["zjets_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("zjets_CFMlpANN_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+						   histoStorageList["zjets_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("zjets_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+						   histoStorageList["zjets_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("zjets_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
+						   histoStorageList["zjets_FlipSFUp"] = resultHist_MCErrorsOnly_FlipSFUp.Clone("zjets_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
+						   histoStorageList["zjets_FlipSFDown"] = resultHist_MCErrorsOnly_FlipSFDown.Clone("zjets_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
 				   foundFirstZjets = true
 			   else:
 				   histoStorageList["zjets"].Add(resultHist_MCErrorsOnly)
@@ -834,6 +988,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["zjets_PUDown"].Add(resultHist_MCErrorsOnly_PUDown)
 					   histoStorageList["zjets_rwtUp"].Add(resultHist_MCErrorsOnly_rwtUp)
 					   histoStorageList["zjets_rwtDown"].Add(resultHist_MCErrorsOnly_rwtDown)
+					   histoStorageList["zjets_lfStats1Up"].Add(resultHist_MCErrorsOnly_lfStats1Up)
+					   histoStorageList["zjets_lfStats1Down"].Add(resultHist_MCErrorsOnly_lfStats1Down)
+					   histoStorageList["zjets_hfStats1Up"].Add(resultHist_MCErrorsOnly_hfStats1Up)
+					   histoStorageList["zjets_hfStats1Down"].Add(resultHist_MCErrorsOnly_hfStats1Down)
+					   histoStorageList["zjets_lfStats2Up"].Add(resultHist_MCErrorsOnly_lfStats2Up)
+					   histoStorageList["zjets_lfStats2Down"].Add(resultHist_MCErrorsOnly_lfStats2Down)
+					   histoStorageList["zjets_hfStats2Up"].Add(resultHist_MCErrorsOnly_hfStats2Up)
+					   histoStorageList["zjets_hfStats2Down"].Add(resultHist_MCErrorsOnly_hfStats2Down)
 					   if (charge == "SS"):
 						   histoStorageList["zjets_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
 						   histoStorageList["zjets_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
@@ -858,6 +1020,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   ttbbSum = iHist.Integral()
 			   ttbbErr = math.pow(iHist.GetBinError(1),2)
 			   legForStack.AddEntry(iHist, "t#bar{t} + b#bar{b}"+" ("+str(round(MCsum,1))+")", "f")
+		   elif (iplot.name == "ttb"):
+			   ttbSum = iHist.Integral()
+			   ttbErr = math.pow(iHist.GetBinError(1),2)
+			   legForStack.AddEntry(iHist, "t#bar{t} + b"+" ("+str(round(MCsum,1))+")", "f")
 		   elif (iplot.name == "ttcc"):
 			   ttccSum = iHist.Integral()
 			   ttccErr = math.pow(iHist.GetBinError(1),2)
@@ -928,6 +1094,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		
 	plotMax = max(myStack.GetMaximum(),iSig.GetMaximum())	
 	if (not blindPG): plotMax = max(myStack.GetMaximum(),theDataHisto.GetMaximum())
+	plotMax = max(plotMax,iSig.GetMaximum())
 	if (dist == "weight" or dist == "prob"):
 		plotMax = max(myStack.GetMaximum(),iSig.GetMaximum())
 	
@@ -967,11 +1134,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	##End comment out for 2012
 
-#	if ((dist == "numJets" and (jetSelection.startswith("ge") or jetSelection == "eq1t")) or (dist == "numTaggedJets" and jetSelection=="ge1t")):
-#		myStack.SetMinimum(0.1)
-#		myStack.SetMaximum(plotMax*3)  ##was 13
-#		upLin.cd()
-#		gPad.SetLogy()
+	if ((dist == "numJets" and (jetSelection.startswith("ge2t") or jetSelection == "eq1t")) or (dist == "numTaggedJets" and jetSelection=="ge2t")):
+		myStack.SetMinimum(1)
+		myStack.SetMaximum(plotMax*13)  ##was 13
+		upLin.cd()
+		gPad.SetLogy()
 
 	upLin.cd()
 	gPad.SetBottomMargin(1e-5)
@@ -1011,12 +1178,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	
 	if (not blindPG): ggg.Draw("psame") ##Comment out for blinding
 	# calculate the KS test result, put it somewhere
-	# ksResult = theDataHisto.KolmogorovTest(MCErrHist)
+#	ksResult = theDataHisto.KolmogorovTest(MCErrHist)
 
-	# myLumiString = myLumiString + " (KS = %0.2f)" % (ksResult)
+#	myLumiString = myLumiString + " (KS = %0.3f)" % (ksResult)
 
 	if not paperStylePG: legForStack.Draw()
-	myLumiTex.DrawLatex(0.14, 0.91, myLumiString)  ### cmt out 0.25
+#	myLumiTex.DrawLatex(0.14, 0.91, myLumiString)  ### cmt out 0.25
 	if paperStylePG: SELECTIONInfoLatex.DrawLatex(0.45, 0.84, catinfo)
 	if paperStylePG:
 		if (dist.find("CFMlpANN") != -1):
@@ -1055,14 +1222,14 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		ratioHist.GetXaxis().SetTitleOffset(1.1) ### 1.1
 		ratioHist.GetXaxis().SetTitleSize(0.12) ### 0.12
 
-#	if (dist == "CFMlpANN_e2je2t"):
-#		ratioHist.GetXaxis().SetNdivisions(504)
+	if (jetSelection=="ge2t"):
+		ratioHist.GetXaxis().SetNdivisions(405)
 	
 	ratioHist.SetLineColor(0)	 
 	ratioHist.SetMarkerColor(0)	 
 
-	if (blindPG): ratioHist.SetLineColor(kBlack)	   
-	if (blindPG): ratioHist.SetMarkerColor(kBlack)
+	if (blindPG): ratioHist.SetLineColor(kWhite)	   
+	if (blindPG): ratioHist.SetMarkerColor(kWhite)
 
 	ratioErrHist = None
 	
@@ -1107,6 +1274,19 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	if (not blindPG): ratioErrHist.DrawCopy("e2same")		##Comment out for blinding 
 	if (not blindPG): ratioHist.Draw("sameaxis") ##Comment out for blinding
 #	if (not blindPG): ratioHist.DrawCopy("pe1same") ##Commented out in favor of asymmetric
+
+#####
+## fitting ratio to a line
+#####
+        func = TF1("func","[0] + [1]*x",xMin,xMax)
+	func.SetParameters(1.,0.)
+	ratioHist.Fit("func","N0Q")
+	func.SetLineColor(2)
+#	func.Draw("same")
+	slope = func.GetParameter(1)
+	slopeErr = func.GetParError(1)
+#	myLumiString = myLumiString + " ( slope = %0.3f +/- %0.3f)" % (slope, slopeErr)
+
 #######
 ### asymmetrical poisson errors for data
 #######
@@ -1171,13 +1351,16 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	l.DrawLine(xMin,1.,xMax,1.)
 	##End comment for 2012
 
+	upLin.cd()
+	myLumiTex.DrawLatex(0.14, 0.91, myLumiString)  ### cmt out 0.25
+
 	pdfName = "%s/%s_%s.pdf" % (directoryName, dist, groupName)
 	pngName = "%s/%s_%s.png" % (directoryName, dist, groupName)
 
 
 	if output == "draw":
 		myCanvasLin.SaveAs(pngName)
-#		myCanvasLin.SaveAs(pdfName)
+		myCanvasLin.SaveAs(pdfName)
 		gPad.Close()
 		upLin.Close()
 		downLin.Close()
@@ -1194,7 +1377,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #		return [[ttSum,ttccSum,ttbbSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum,WJetsSum,DiBosonSum,TotalMCsum,ttHSum,Data2011Sum],[ttErr,ttccErr,ttbbErr,ttBosonErr,SingleTopErr,ZJetsErr,WJetsErr,DiBosonErr,TotalMCErr,ttHErr,0]]
 #  ,100*ttHSum*998833/(4982*0.098*105138),TotalMCErr   \\\	,Data2011Sum,TotalMCsum
 		else:
-			return [[ttSum,ttccSum,ttbbSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum+WJetsSum,DiBosonSum,TotalMCsum,ttHSum,Data2012Sum],[ttErr,ttccErr,ttbbErr,ttBosonErr,SingleTopErr,ZJetsErr+WJetsErr,DiBosonErr,TotalMCErr,ttHErr,0]]
+			return [[ttSum,ttccSum,ttbbSum,ttbSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum+WJetsSum,DiBosonSum,TotalMCsum,ttHSum,Data2012Sum],[ttErr,ttccErr,ttbbErr,ttbErr,ttBosonErr,SingleTopErr,ZJetsErr+WJetsErr,DiBosonErr,TotalMCErr,ttHErr,0]]
 #		return [[ttSum,ttccSum,ttbbSum,ttBosonSum,SingleTopSum,ZJetsSum-WJetsSum-DiBosonSum,WJetsSum,DiBosonSum,TotalMCsum,ttHSum,Data2012Sum],[ttErr,ttccErr,ttbbErr,ttBosonErr,SingleTopErr,ZJetsErr,WJetsErr,DiBosonErr,TotalMCErr,ttHErr,0]]
 # ,100*ttHSum*972496/(5117*0.147*105138.0*(40018.0/43150.0)),TotalMCErr	 \\\   ,Data2012Sum,TotalMCsum		
 	elif output == "root":

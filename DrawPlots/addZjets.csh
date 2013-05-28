@@ -20,6 +20,7 @@ foreach lepCat ("TwoMuon" "TwoEle" "MuonEle")
 
     set ttbarPartString = ""
     set ttbar_bbPartString = ""
+    set ttbar_bPartString = ""
     set ttbar_ccPartString = ""
     foreach iPart ("part1" "part2" "part3" "part4" "part5" "part6" "part7" "part8" "part9" "part10" "part11" "part12")
        set zjets_1pPartString = "${zjets_1pPartString} zjets_1p_${iPart}_${year}_${zmask}_${charge}_${kind}_${lepCat}.root" 
@@ -39,6 +40,7 @@ foreach lepCat ("TwoMuon" "TwoEle" "MuonEle")
     foreach iPart ("part1" "part2" "part3" "part4" "part5" "part6" "part7" "part8" "part9" "part10" "part11" "part12" "part13")
        set ttbarPartString = "${ttbarPartString} ttbar_ll_${iPart}_${year}_${zmask}_${charge}_${kind}_${lepCat}.root" 
        set ttbar_bbPartString = "${ttbar_bbPartString} ttbar_bb_ll_${iPart}_${year}_${zmask}_${charge}_${kind}_${lepCat}.root" 
+       set ttbar_bPartString = "${ttbar_bPartString} ttbar_b_ll_${iPart}_${year}_${zmask}_${charge}_${kind}_${lepCat}.root" 
        set ttbar_ccPartString = "${ttbar_ccPartString} ttbar_cc_ll_${iPart}_${year}_${zmask}_${charge}_${kind}_${lepCat}.root" 
     end
 
@@ -50,6 +52,7 @@ foreach lepCat ("TwoMuon" "TwoEle" "MuonEle")
 
     hadd  -f ttbar_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ttbar_jj_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ttbar_lj_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ${ttbarPartString}
     hadd  -f ttbar_bb_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ttbar_bb_jj_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ttbar_bb_lj_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ${ttbar_bbPartString}
+    hadd  -f ttbar_b_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ttbar_b_jj_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ttbar_b_lj_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ${ttbar_bPartString}
     hadd  -f ttbar_cc_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ttbar_cc_jj_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ttbar_cc_lj_${year}_${zmask}_${charge}_${kind}_${lepCat}.root ${ttbar_ccPartString}
 
   end

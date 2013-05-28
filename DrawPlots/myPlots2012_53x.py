@@ -32,7 +32,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 	skipSystematics = False
 
 	dirStr = lepselection+"/"
-	#dirStr = year+"/"+lepselection+"/"
+
 	rootStr = "_" + year + "_" + Zmask + "_" + charge + "_" + jetselection + "_" + lepselection +".root"
 
 #	defaultLumi = 5288.0
@@ -136,9 +136,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 0.0548,#0.0571,
 		 'xsec_err': 0.0015,
 		 'sys_array': sys_arrays['diboson'],
-		 'ngen': 8965049,
+		 'ngen': 9955089,
 #		  'fillColor': ROOT.kCyan+2,
-		 'fillColor': ROOT.kAzure+1,
+		 'fillColor': ROOT.kAzure+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'skipSystematics':skipSystematics,
@@ -155,9 +155,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 0.0323,
 		 'xsec_err': 0.0007,
 		 'sys_array': sys_arrays['diboson'],
-		 'ngen':  9821291,
+		 'ngen':  9931257,
 #		  'fillColor': ROOT.kCyan-2,
-		 'fillColor': ROOT.kAzure+1,
+		 'fillColor': ROOT.kAzure+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'skipSystematics':skipSystematics,
@@ -174,15 +174,91 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 0.0077,#0.00826,
 		 'xsec_err': 0.00015,
 		 'sys_array': sys_arrays['diboson'],
-		 'ngen':  9568511,
+		 'ngen':  9755621,
 #		  'fillColor': ROOT.kCyan,
-		 'fillColor': ROOT.kAzure+1,
+		 'fillColor': ROOT.kAzure+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'skipSystematics':skipSystematics,
 		 }
 		)
 		)
+
+##	plotList.append(
+##		PlotInfo(
+##		{'name': 'WWW',
+##		 'file': dirStr+'www' +rootStr,
+##		 'file_JESUp': dirStr+'www'+rootStr,
+##		 'file_JESDown': dirStr+'www'+rootStr,
+##		 'xsec': 0.00008217,#0.0571,
+##		 'xsec_err': 0.00008217*0.0015/0.0548,
+##		 'sys_array': sys_arrays['diboson'],
+##		 'ngen': 220040,
+###		  'fillColor': ROOT.kCyan+2,
+##		 'fillColor': ROOT.kAzure+1,
+##		 'fillPattern': 1001,
+##		 'isNormPerJetBin': 0,
+##		 'skipSystematics':skipSystematics,
+##		 }
+##		)
+##		)
+##
+##	plotList.append(
+##		PlotInfo(
+##		{'name': 'WWZ',
+##		 'file': dirStr+'wwz' +rootStr,
+##		 'file_JESUp': dirStr+'wwz'+rootStr,
+##		 'file_JESDown': dirStr+'wwz'+rootStr,
+##		 'xsec': 0.0000633,#0.0571,
+##		 'xsec_err': 0.0000633*0.0015/0.0548,
+##		 'sys_array': sys_arrays['diboson'],
+##		 'ngen': 221576,
+###		  'fillColor': ROOT.kCyan+2,
+##		 'fillColor': ROOT.kAzure+1,
+##		 'fillPattern': 1001,
+##		 'isNormPerJetBin': 0,
+##		 'skipSystematics':skipSystematics,
+##		 }
+##		)
+##		)
+##
+##	plotList.append(
+##		PlotInfo(
+##		{'name': 'WZZ',
+##		 'file': dirStr+'wzz' +rootStr,
+##		 'file_JESUp': dirStr+'wzz'+rootStr,
+##		 'file_JESDown': dirStr+'wzz'+rootStr,
+##		 'xsec': 0.00001922,#0.0571,
+##		 'xsec_err': 0.00001922*0.0015/0.0548,
+##		 'sys_array': sys_arrays['diboson'],
+##		 'ngen': 219835,
+###		  'fillColor': ROOT.kCyan+2,
+##		 'fillColor': ROOT.kAzure+1,
+##		 'fillPattern': 1001,
+##		 'isNormPerJetBin': 0,
+##		 'skipSystematics':skipSystematics,
+##		 }
+##		)
+##		)
+##
+##	plotList.append(
+##		PlotInfo(
+##		{'name': 'ZZZ',
+##		 'file': dirStr+'zzz' +rootStr,
+##		 'file_JESUp': dirStr+'zzz'+rootStr,
+##		 'file_JESDown': dirStr+'zzz'+rootStr,
+##		 'xsec': 0.000004587,#0.0571,
+##		 'xsec_err': 0.000004587*0.0015/0.0548,
+##		 'sys_array': sys_arrays['diboson'],
+##		 'ngen': 224519,
+###		  'fillColor': ROOT.kCyan+2,
+##		 'fillColor': ROOT.kAzure+1,
+##		 'fillPattern': 1001,
+##		 'isNormPerJetBin': 0,
+##		 'skipSystematics':skipSystematics,
+##		 }
+##		)
+##		)
 
 	plotList.append(
 		PlotInfo(
@@ -193,9 +269,9 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 36.257,
 		 'xsec_err': 1.558,
 		 'sys_array': sys_arrays['WJets'],
-		 'ngen':  57108525,
+		 'ngen':  57536319,
 #		  'fillColor': ROOT.kAzure-1,
-		 'fillColor': ROOT.kAzure+1,
+		 'fillColor': ROOT.kAzure+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'wjets',
@@ -213,8 +289,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 3.5057,
 		 'xsec_err': 0.132,
 		 'sys_array': sys_arrays['ZJets'],
-		 'ngen':	30452141,
-		 'fillColor': ROOT.kAzure+1,
+		 'ngen':	30072710,
+		 'fillColor': ROOT.kAzure+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'zjets_h',
@@ -232,8 +308,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 14.7, #0.860,
 		 'xsec_err': 0.132*0.86/3.5057,
 		 'sys_array': sys_arrays['ZJets'],
-		 'ngen': 32600176,
-		 'fillColor': ROOT.kAzure+1,
+		 'ngen': 37828841,
+		 'fillColor': ROOT.kAzure+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'zjets_lowmass',
@@ -252,7 +328,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.2*0.000249,
 		 'sys_array': sys_arrays['ttV'],
 		 'ngen':  195396,
-		 'fillColor': ROOT.kBlue-9,
+		 'fillColor': ROOT.kBlue-10,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttbarW',
@@ -271,7 +347,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.2*0.000208,
 		 'sys_array': sys_arrays['ttV'],
 		 'ngen':  209512,
-		 'fillColor': ROOT.kBlue-9,
+		 'fillColor': ROOT.kBlue-10,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttbarZ',
@@ -279,6 +355,44 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 }
 		)
 		)
+
+##	plotList.append(
+##		PlotInfo(
+##		{'name': 'ttWW',
+##		 'file': dirStr+'ttbarWW' +rootStr,
+##		 'file_JESUp': dirStr+'ttbarWW'+rootStr,
+##		 'file_JESDown': dirStr+'ttbarWW'+rootStr,
+##		 'xsec': 0.000002037,#0.000136*1.5,
+##		 'xsec_err': 0.2*0.000002037,
+##		 'sys_array': sys_arrays['ttV'],
+##		 'ngen':  216867,
+##		 'fillColor': ROOT.kBlue-9,
+##		 'fillPattern': 1001,
+##		 'isNormPerJetBin': 0,
+##		 'limitPlotName':'ttbarWW',
+##		 'skipSystematics':skipSystematics,
+##		 }
+##		)
+##		)
+##
+##	plotList.append(
+##		PlotInfo(
+##		{'name': 'tttt',
+##		 'file': dirStr+'ttbarttbar' +rootStr,
+##		 'file_JESUp': dirStr+'ttbarttbar'+rootStr,
+##		 'file_JESDown': dirStr+'ttbarttbar'+rootStr,
+##		 'xsec': 0.0000000001,#0.000000716,
+##		 'xsec_err': 0.2*0.000000716,
+##		 'sys_array': sys_arrays['ttV'],
+##		 'ngen':  99994,
+##		 'fillColor': ROOT.kBlue-9,
+##		 'fillPattern': 1001,
+##		 'isNormPerJetBin': 0,
+##		 'limitPlotName':'ttbarttbar',
+##		 'skipSystematics':skipSystematics,
+##		 }
+##		)
+##		)
 
 	plotList.append(
 		PlotInfo(
@@ -290,7 +404,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.00006*0.00379/(0.00379+0.00176),
 		 'sys_array': sys_arrays['t'],
 		 'ngen': 259657,
-		 'fillColor': ROOT.kOrange+7,
+		 'fillColor': ROOT.kMagenta,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'singlet_s',
@@ -309,7 +423,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.00006*0.00176/(0.00379+0.00176),
 		 'sys_array': sys_arrays['t'],
 		 'ngen': 139835,
-		 'fillColor': ROOT.kOrange+7,
+		 'fillColor': ROOT.kMagenta,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'singletbar_s',
@@ -327,8 +441,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 0.0564,
 		 'xsec_err': 0.0032*0.0564/(0.0564+0.0307),
 		 'sys_array': sys_arrays['t'],
-		 'ngen': 3754544,
-		 'fillColor': ROOT.kOrange+7,
+		 'ngen': 3744404,
+		 'fillColor': ROOT.kMagenta,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'singlet_t',
@@ -346,8 +460,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 0.0307,
 		 'xsec_err': 0.0032*0.0307/(0.0564+0.0307),
 		 'sys_array': sys_arrays['t'],
-		 'ngen': 1932776,
-		 'fillColor': ROOT.kOrange+7,
+		 'ngen': 1933504,
+		 'fillColor': ROOT.kMagenta,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'singletbar_t',
@@ -366,7 +480,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.0008*0.0111/0.00106,	  #### 0.00106
 		 'sys_array': sys_arrays['t'],
 		 'ngen': 496918,
-		 'fillColor': ROOT.kOrange+7,
+		 'fillColor': ROOT.kMagenta,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'singlet_tW',
@@ -385,10 +499,29 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.0008*0.0111/0.00106,	 #### 0.00106
 		 'sys_array': sys_arrays['t'],
 		 'ngen': 492779,
-		 'fillColor': ROOT.kOrange+7,
+		 'fillColor': ROOT.kMagenta,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'singletbar_tW',
+		 'skipSystematics':skipSystematics,
+		 }
+		)
+		)
+
+	plotList.append(
+		PlotInfo(
+		{'name': 'ttb',
+		 'file': dirStr+'ttbar_b' +rootStr,
+		 'file_JESUp': dirStr+'ttbar_b'+rootStr,
+		 'file_JESDown': dirStr+'ttbar_b'+rootStr,
+		 'xsec': 0.2458, #0.225197,
+		 'xsec_err': 0.5*0.2458, #0.225197, #0.3*0.225197,
+		 'sys_array': sys_arrays['ttbb'],
+		 'ngen':  6912438+1362471,
+		 'fillColor': ROOT.kRed+3,
+		 'fillPattern': 1001,
+		 'isNormPerJetBin': 0,
+		 'limitPlotName':'ttbarPlusB',
 		 'skipSystematics':skipSystematics,
 		 }
 		)
@@ -400,11 +533,11 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'file': dirStr+'ttbar_bb' +rootStr,
 		 'file_JESUp': dirStr+'ttbar_bb'+rootStr,
 		 'file_JESDown': dirStr+'ttbar_bb'+rootStr,
-		 'xsec': 0.234, #0.225197,
-		 'xsec_err': 0.5*0.234, #0.225197, #0.3*0.225197,
+		 'xsec': 0.2458, #0.225197,
+		 'xsec_err': 0.5*0.2458, #0.225197, #0.3*0.225197,
 		 'sys_array': sys_arrays['ttbb'],
-		 'ngen':  8252095,
-		 'fillColor': ROOT.kMagenta+2,
+		 'ngen':  6912438+1362471,
+		 'fillColor': ROOT.kRed+3,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttbarPlusBBbar',
@@ -419,11 +552,11 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'file': dirStr+'ttbar_cc' +rootStr,
 		 'file_JESUp': dirStr+'ttbar_cc'+rootStr,
 		 'file_JESDown': dirStr+'ttbar_cc'+rootStr,
-		 'xsec': 0.234, #0.225197,
-		 'xsec_err': 0.3*0.234, #0.225197,
+		 'xsec': 0.2458, #0.225197,
+		 'xsec_err': 0.3*0.2458, #0.225197,
 		 'sys_array': sys_arrays['ttcc'],
-		 'ngen':  8252095, 
-		 'fillColor': ROOT.kOrange-7,
+		 'ngen':  6912438+1362471, 
+		 'fillColor': ROOT.kRed-7,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttbarPlusCCbar',
@@ -438,11 +571,11 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'file': dirStr+'ttbar' +rootStr,
 		 'file_JESUp': dirStr+'ttbar'+rootStr,
 		 'file_JESDown': dirStr+'ttbar'+rootStr,
-		 'xsec': 0.234, #0.225197,
+		 'xsec': 0.2458, #0.225197,
 		 'xsec_err': 0.023,
 		 'sys_array': sys_arrays['tt'],
-		 'ngen':  8252095, 
-		 'fillColor': ROOT.kRed,
+		 'ngen':  6912438+1362471, 
+		 'fillColor': ROOT.kRed+1,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttbar',
@@ -462,7 +595,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.0,
 		 'sys_array': sys_arrays['ttH_120'],
 		 'ngen': 975341, 
-		 'fillColor': ROOT.kMagenta,
+		 'fillColor': ROOT.kBlue+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttH110',
@@ -481,8 +614,8 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec': 0.0001663,
 		 'xsec_err': 0.0,
 		 'sys_array': sys_arrays['ttH_120'],
-		 'ngen': 997426, 
-		 'fillColor': ROOT.kMagenta,
+		 'ngen': 995188, 
+		 'fillColor': ROOT.kBlue+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttH115',
@@ -502,7 +635,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.0,
 		 'sys_array': sys_arrays['ttH_120'],
 		 'ngen': 996773,
-		 'fillColor': ROOT.kMagenta,
+		 'fillColor': ROOT.kBlue+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttH120',
@@ -521,7 +654,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.0,
 		 'sys_array': sys_arrays['ttH_120'],
 		 'ngen':  992997,
-		 'fillColor': ROOT.kMagenta,
+		 'fillColor': ROOT.kBlue+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttH125',
@@ -540,7 +673,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.0,
 		 'sys_array': sys_arrays['ttH_120'],
 		 'ngen': 931369,
-		 'fillColor': ROOT.kMagenta,
+		 'fillColor': ROOT.kBlue+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttH130',
@@ -558,7 +691,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.0,
 		 'sys_array': sys_arrays['ttH_120'],
 		 'ngen': 993975,
-		 'fillColor': ROOT.kMagenta,
+		 'fillColor': ROOT.kBlue+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttH135',
@@ -577,7 +710,7 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 		 'xsec_err': 0.0,
 		 'sys_array': sys_arrays['ttH_120'],
 		 'ngen': 997191,
-		 'fillColor': ROOT.kMagenta,
+		 'fillColor': ROOT.kBlue+2,
 		 'fillPattern': 1001,
 		 'isNormPerJetBin': 0,
 		 'limitPlotName':'ttH140',
