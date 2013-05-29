@@ -109,13 +109,17 @@ def main ():
 	pival = 3.14
 
 	if charge == "OS" and jetselection == "eq2jeq2t":
-		drawStackPlot("CFMlpANN_e2je2t_v1", pg, "ANN output", 10, 0.498, 0.503, lepselection, year, "root")
+		drawStackPlot("CFMlpANN_e2je2t", pg,  "ANN output", 10, 0.5, 0.502, lepselection, year, "root")
 	if charge == "OS" and jetselection == "eq3jeq2t":
-		drawStackPlot("CFMlpANN_e3je2t_v1", pg, "ANN output", 10, 0.1, 0.9, lepselection, year, "root")
+		drawStackPlot("BDTG_e3je2t", pg,  "BDTG output", 10, -0.9, 0.8, lepselection, year, "root")
+#		drawStackPlot("CFMlpANN_e3je2t", pg,  "ANN output", 10, 0.2, 0.9, lepselection, year, "root")
 	if charge == "OS" and jetselection == "ge4jeq2t":
-		drawStackPlot("CFMlpANN_ge4je2t_v1", pg, "ANN output", 10, 0.04, 0.94, lepselection, year, "root")
+		drawStackPlot("BDTG_ge4je2t", pg,  "BDTG output", 10, -0.8, 0.7, lepselection, year, "root")
+#		drawStackPlot("CFMlpANN_ge4je2t", pg,  "ANN output", 10, 0.2, 0.9, lepselection, year, "root")
 	if charge == "OS" and jetselection == "ge3t":
-		drawStackPlot("CFMlpANN_ge3t_v1", pg, "ANN output", 10, 0.04, 0.84, lepselection, year, "root")
+		drawStackPlot("BDTG_ge3t", pg,  "BDTG output", 10, -0.9, 0.8, lepselection,year, "root")
+#		drawStackPlot("CFMlpANN_ge3t", pg,  "ANN output", 10, 0.1, 0.8, lepselection, year, "root")
+
 	if charge == "OS" and jetselection == "eq3jeq3t":
 		drawStackPlot("CFMlpANN_e3je3t", pg, "ANN output", 10, 0.2, 0.7, lepselection, year, "root")
 	if charge == "OS" and jetselection == "ge4jge3t":
