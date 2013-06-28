@@ -206,6 +206,23 @@ class PlotInfo:
 			namePlusCycle = "%s_CMS_ttH_hfStats2Down;1" % (histName)
 			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
 			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+#### cjets csv sys
+		elif (JES == "cErr1Up"):
+			namePlusCycle = "%s_CMS_ttH_cErr1Up;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "cErr1Down"):
+			namePlusCycle = "%s_CMS_ttH_cErr1Down;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "cErr2Up"):
+			namePlusCycle = "%s_CMS_ttH_cErr2Up;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
+		elif (JES == "cErr2Down"):
+			namePlusCycle = "%s_CMS_ttH_cErr2Down;1" % (histName)
+			#print "%s: Getting JES shifted histo %s (isData=%s)" % (self.name, namePlusCycle, isData)
+			targetHist = self.rootFile.Get(namePlusCycle).Clone()
 			
 		elif (JES == "PromptSFUp"):
 			namePlusCycle = "%s_PromptSFUp;1" % (histName)
@@ -390,25 +407,25 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	TexTitle7 = TexTitle6.replace('TwoEle_',' e e ')
 	TexTitle8 = TexTitle7.replace('MuonEle_',' #mu e ')
 	TexTitle9 = TexTitle8.replace('SameLep_',' #mu#mu/ee ')
-	TexTitle10 = TexTitle9.replace('TwoLep_',' Dilepton ')
+	TexTitle10 = TexTitle9.replace('TwoLep_',' Dilepton')
 	TexTitle11 = TexTitle10.replace('_noZmask_','')
 	TexTitle12 = TexTitle11.replace('_Zmask_','')  ### Z-masked
 	TexTitle13 = TexTitle12.replace('_Zpeak_',' Z-peak ')
 	TexTitle14 = TexTitle13.replace('eq0j',' + 0 jets')
-	TexTitle15 = TexTitle14.replace('eq2jge0t',' + 2 jets + #geq0 b-tags')
+	TexTitle15 = TexTitle14.replace('ge2t',' + #geq2 jets + #geq2 b-tags')
 	TexTitle16 = TexTitle15.replace('eq2jeq0t',' + 2 jets + 0 b-tags')
 	TexTitle17 = TexTitle16.replace('eq2jeq1t',' + 2 jets + 1 b-tag')
 	TexTitle18 = TexTitle17.replace('eq2jeq2t',' + 2 jets + 2 b-tags')
 	TexTitle19 = TexTitle18.replace('eq3jeq2t',' + 3 jets + 2 b-tags')
 	TexTitle20 = TexTitle19.replace('ge4jeq2t',' + #geq4 jets + 2 b-tags')
 	TexTitle21 = TexTitle20.replace('ge3t',' + #geq3 jets + #geq3 b-tags')
-	TexTitle22 = TexTitle21.replace('52x',' ')
-	TexTitle23 = TexTitle22.replace('53x',' ')
-	TexTitle24 = TexTitle23.replace('2011',' ')
-	TexTitle25 = TexTitle24.replace('2012',' ')
-	TexTitle26 = TexTitle25.replace('_OS_',' ')
+	TexTitle22 = TexTitle21.replace('52x','')
+	TexTitle23 = TexTitle22.replace('53x','')
+	TexTitle24 = TexTitle23.replace('2011','')
+	TexTitle25 = TexTitle24.replace('2012','')
+	TexTitle26 = TexTitle25.replace('OS','')
 	TexTitle27 = TexTitle26.replace('_SS_',' same-sign ')
-	TexTitle = TexTitle27.replace('_',' ')
+	TexTitle = TexTitle27.replace('_','')
 	
 	
 	if year == "2011" :
@@ -419,7 +436,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		else: myLumiString = TexTitle+"				   #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 	else:
 		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = %0.2f fb^{-1}" % (myPlotGroup.lumi/1.0e6)
-		else: myLumiString = TexTitle+"				   #sqrt{s} = 8 TeV, L = %0.2f fb^{-1}" % (myPlotGroup.lumi/1.0e6)
+		else: myLumiString = TexTitle+"  CMS Preliminary				   #sqrt{s} = 8 TeV, L = %0.2f fb^{-1}" % (myPlotGroup.lumi/1.0e6)
 
 	myLumiTex = TLatex()
 	myLumiTex.SetNDC()
@@ -504,7 +521,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   origHist_lfStats2Down =  None
 	   origHist_hfStats2Up =  None
 	   origHist_hfStats2Down =  None
-
+	   origHist_cErr1Up =  None
+	   origHist_cErr1Down =  None
+	   origHist_cErr2Up =  None
+	   origHist_cErr2Down =  None
+	   
 	   if not skipSystematicsPG:
 		   origHist_JESUp = iplot.getHist(dist,lumi, lepselection, year, "JESUp")[0]
 		   origHist_JESDown = iplot.getHist(dist,lumi, lepselection, year,	"JESDown")[0]
@@ -524,6 +545,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   origHist_lfStats2Down = iplot.getHist(dist,lumi, lepselection, year, "lfStats2Down")[0]
 		   origHist_hfStats2Up = iplot.getHist(dist,lumi, lepselection, year, "hfStats2Up")[0]
 		   origHist_hfStats2Down = iplot.getHist(dist,lumi, lepselection, year, "hfStats2Down")[0]
+		   origHist_cErr1Up = iplot.getHist(dist,lumi, lepselection, year, "cErr1Up")[0]
+		   origHist_cErr1Down = iplot.getHist(dist,lumi, lepselection, year, "cErr1Down")[0]
+		   origHist_cErr2Up = iplot.getHist(dist,lumi, lepselection, year, "cErr2Up")[0]
+		   origHist_cErr2Down = iplot.getHist(dist,lumi, lepselection, year, "cErr2Down")[0]
+
 		   if (charge == "SS"):
 			   origHist_PromptSFUp = iplot.getHist(dist,lumi, lepselection, year, "PromptSFUp")[0]
 			   origHist_PromptSFDown = iplot.getHist(dist,lumi, lepselection, year, "PromptSFDown")[0]
@@ -548,6 +574,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   sys_hist_array.append(origHist_lfStats2Down)
 		   sys_hist_array.append(origHist_hfStats2Up)
 		   sys_hist_array.append(origHist_hfStats2Down)
+		   sys_hist_array.append(origHist_cErr1Up)
+		   sys_hist_array.append(origHist_cErr1Down)
+		   sys_hist_array.append(origHist_cErr2Up)
+		   sys_hist_array.append(origHist_cErr2Down)
+
 		   if (charge == "SS"):
 			   sys_hist_array.append(origHist_PromptSFUp)
 			   sys_hist_array.append(origHist_PromptSFDown)
@@ -616,6 +647,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		   resultHist_MCErrorsOnly_lfStats2Down = rebinHistManual (origHist_lfStats2Down, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_hfStats2Up = rebinHistManual (origHist_hfStats2Up, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 		   resultHist_MCErrorsOnly_hfStats2Down = rebinHistManual (origHist_hfStats2Down, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_cErr1Up = rebinHistManual (origHist_cErr1Up, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_cErr1Down = rebinHistManual (origHist_cErr1Down, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_cErr2Up = rebinHistManual (origHist_cErr2Up, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+		   resultHist_MCErrorsOnly_cErr2Down = rebinHistManual (origHist_cErr2Down, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
+
 		   if (charge == "SS"):
 			   resultHist_MCErrorsOnly_PromptSFUp = rebinHistManual (origHist_PromptSFUp, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
 			   resultHist_MCErrorsOnly_PromptSFDown = rebinHistManual (origHist_PromptSFDown, 0,	 nBins, xMin, xMax, scaleRatio, 1.0, "off")
@@ -660,6 +696,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   storeName_lfStats2Down = "%s_MVA_%s_CMS_ttH_CSVLFStats2Down" % (limitPlotName, printedJetSelection)
 	   storeName_hfStats2Up = "%s_MVA_%s_CMS_ttH_CSVHFStats2Up" % (limitPlotName, printedJetSelection)
 	   storeName_hfStats2Down = "%s_MVA_%s_CMS_ttH_CSVHFStats2Down" % (limitPlotName, printedJetSelection)
+	   storeName_cErr1Up = "%s_MVA_%s_CMS_ttH_CSVCErr1Up" % (limitPlotName, printedJetSelection)
+	   storeName_cErr1Down = "%s_MVA_%s_CMS_ttH_CSVCErr1Down" % (limitPlotName, printedJetSelection)
+	   storeName_cErr2Up = "%s_MVA_%s_CMS_ttH_CSVCErr2Up" % (limitPlotName, printedJetSelection)
+	   storeName_cErr2Down = "%s_MVA_%s_CMS_ttH_CSVCErr2Down" % (limitPlotName, printedJetSelection)
+
 	   if (charge == "SS"):
 		   storeName_PromptSFUp = "%s_MVA_%s_PromptSFUp" % (limitPlotName, printedJetSelection)
 		   storeName_PromptSFDown = "%s_MVA_%s_PromptSFDown" % (limitPlotName, printedJetSelection)
@@ -695,8 +736,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	   keyName_lfStats2Up = "%s_lfStats2Up" % keyName
 	   keyName_lfStats2Down = "%s_lfStats2Down" % keyName
 	   keyName_hfStats2Up = "%s_hfStats2Up" % keyName
-	   keyName_hfStats2Down = "%s_hfStats2Down" % keyName
-	   
+	   keyName_hfStats2Down = "%s_hfStats2Down" % keyName	   
+	   keyName_cErr1Up = "%s_cErr1Up" % keyName
+	   keyName_cErr1Down = "%s_cErr1Down" % keyName
+	   keyName_cErr2Up = "%s_cErr2Up" % keyName
+	   keyName_cErr2Down = "%s_cErr2Down" % keyName
+
 	   # Save data for later
 	   Data2011Sum = 0
 	   Data2012Sum = 0
@@ -739,6 +784,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_lfStats2Down] = resultHist_MCErrorsOnly_lfStats2Down.Clone(storeName_lfStats2Down)
 			   histoStorageList[keyName_hfStats2Up] = resultHist_MCErrorsOnly_hfStats2Up.Clone(storeName_hfStats2Up)
 			   histoStorageList[keyName_hfStats2Down] = resultHist_MCErrorsOnly_hfStats2Down.Clone(storeName_hfStats2Down)
+			   histoStorageList[keyName_cErr1Up] = resultHist_MCErrorsOnly_cErr1Up.Clone(storeName_cErr1Up)
+			   histoStorageList[keyName_cErr1Down] = resultHist_MCErrorsOnly_cErr1Down.Clone(storeName_cErr1Down)
+			   histoStorageList[keyName_cErr2Up] = resultHist_MCErrorsOnly_cErr2Up.Clone(storeName_cErr2Up)
+			   histoStorageList[keyName_cErr2Down] = resultHist_MCErrorsOnly_cErr2Down.Clone(storeName_cErr2Down)
+
 			   if (charge == "SS"):
 				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
 				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
@@ -770,6 +820,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_lfStats2Down] = resultHist_MCErrorsOnly_lfStats2Down.Clone(storeName_lfStats2Down)
 			   histoStorageList[keyName_hfStats2Up] = resultHist_MCErrorsOnly_hfStats2Up.Clone(storeName_hfStats2Up)
 			   histoStorageList[keyName_hfStats2Down] = resultHist_MCErrorsOnly_hfStats2Down.Clone(storeName_hfStats2Down)
+			   histoStorageList[keyName_cErr1Up] = resultHist_MCErrorsOnly_cErr1Up.Clone(storeName_cErr1Up)
+			   histoStorageList[keyName_cErr1Down] = resultHist_MCErrorsOnly_cErr1Down.Clone(storeName_cErr1Down)
+			   histoStorageList[keyName_cErr2Up] = resultHist_MCErrorsOnly_cErr2Up.Clone(storeName_cErr2Up)
+			   histoStorageList[keyName_cErr2Down] = resultHist_MCErrorsOnly_cErr2Down.Clone(storeName_cErr2Down)
+
 			   if (charge == "SS"):
 				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
 				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
@@ -801,6 +856,11 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 			   histoStorageList[keyName_lfStats2Down] = resultHist_MCErrorsOnly_lfStats2Down.Clone(storeName_lfStats2Down)
 			   histoStorageList[keyName_hfStats2Up] = resultHist_MCErrorsOnly_hfStats2Up.Clone(storeName_hfStats2Up)
 			   histoStorageList[keyName_hfStats2Down] = resultHist_MCErrorsOnly_hfStats2Down.Clone(storeName_hfStats2Down)
+			   histoStorageList[keyName_cErr1Up] = resultHist_MCErrorsOnly_cErr1Up.Clone(storeName_cErr1Up)
+			   histoStorageList[keyName_cErr1Down] = resultHist_MCErrorsOnly_cErr1Down.Clone(storeName_cErr1Down)
+			   histoStorageList[keyName_cErr2Up] = resultHist_MCErrorsOnly_cErr2Up.Clone(storeName_cErr2Up)
+			   histoStorageList[keyName_cErr2Down] = resultHist_MCErrorsOnly_cErr2Down.Clone(storeName_cErr2Down)
+
 			   if (charge == "SS"):
 				   histoStorageList[keyName_PromptSFUp] = resultHist_MCErrorsOnly_PromptSFUp.Clone(storeName_PromptSFUp)
 				   histoStorageList[keyName_PromptSFDown] = resultHist_MCErrorsOnly_PromptSFDown.Clone(storeName_PromptSFDown)
@@ -843,6 +903,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["singlet_lfStats2Down"] = resultHist_MCErrorsOnly_lfStats2Down.Clone("singlet_MVA_%s_CMS_ttH_CSVLFStats2Down" % (printedJetSelection))
 					   histoStorageList["singlet_hfStats2Up"] = resultHist_MCErrorsOnly_hfStats2Up.Clone("singlet_MVA_%s_CMS_ttH_CSVHFStats2Up" % (printedJetSelection))
 					   histoStorageList["singlet_hfStats2Down"] = resultHist_MCErrorsOnly_hfStats2Down.Clone("singlet_MVA_%s_CMS_ttH_CSVHFStats2Down" % (printedJetSelection))
+					   histoStorageList["singlet_cErr1Up"] = resultHist_MCErrorsOnly_cErr1Up.Clone("singlet_MVA_%s_CMS_ttH_CSVCErr1Up" % (printedJetSelection))
+					   histoStorageList["singlet_cErr1Down"] = resultHist_MCErrorsOnly_cErr1Down.Clone("singlet_MVA_%s_CMS_ttH_CSVCErr1Down" % (printedJetSelection))
+					   histoStorageList["singlet_cErr2Up"] = resultHist_MCErrorsOnly_cErr2Up.Clone("singlet_MVA_%s_CMS_ttH_CSVCErr2Up" % (printedJetSelection))
+					   histoStorageList["singlet_cErr2Down"] = resultHist_MCErrorsOnly_cErr2Down.Clone("singlet_MVA_%s_CMS_ttH_CSVCErr2Down" % (printedJetSelection))
 					   if (charge == "SS"):
 						   histoStorageList["singlet_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("singlet_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
 						   histoStorageList["singlet_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("singlet_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
@@ -870,6 +934,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["singlet_lfStats2Down"].Add(resultHist_MCErrorsOnly_lfStats2Down)
 					   histoStorageList["singlet_hfStats2Up"].Add(resultHist_MCErrorsOnly_hfStats2Up)
 					   histoStorageList["singlet_hfStats2Down"].Add(resultHist_MCErrorsOnly_hfStats2Down)
+					   histoStorageList["singlet_cErr1Up"].Add(resultHist_MCErrorsOnly_cErr1Up)
+					   histoStorageList["singlet_cErr1Down"].Add(resultHist_MCErrorsOnly_cErr1Down)
+					   histoStorageList["singlet_cErr2Up"].Add(resultHist_MCErrorsOnly_cErr2Up)
+					   histoStorageList["singlet_cErr2Down"].Add(resultHist_MCErrorsOnly_cErr2Down)
 					   if (charge == "SS"):
 						   histoStorageList["singlet_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
 						   histoStorageList["singlet_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
@@ -904,6 +972,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["diboson_lfStats2Down"] = resultHist_MCErrorsOnly_lfStats2Down.Clone("diboson_MVA_%s_CMS_ttH_CSVLFStats2Down" % (printedJetSelection))
 					   histoStorageList["diboson_hfStats2Up"] = resultHist_MCErrorsOnly_hfStats2Up.Clone("diboson_MVA_%s_CMS_ttH_CSVHFStats2Up" % (printedJetSelection))
 					   histoStorageList["diboson_hfStats2Down"] = resultHist_MCErrorsOnly_hfStats2Down.Clone("diboson_MVA_%s_CMS_ttH_CSVHFStats2Down" % (printedJetSelection))
+					   histoStorageList["diboson_cErr1Up"] = resultHist_MCErrorsOnly_cErr1Up.Clone("diboson_MVA_%s_CMS_ttH_CSVCErr1Up" % (printedJetSelection))
+					   histoStorageList["diboson_cErr1Down"] = resultHist_MCErrorsOnly_cErr1Down.Clone("diboson_MVA_%s_CMS_ttH_CSVCErr1Down" % (printedJetSelection))
+					   histoStorageList["diboson_cErr2Up"] = resultHist_MCErrorsOnly_cErr2Up.Clone("diboson_MVA_%s_CMS_ttH_CSVCErr2Up" % (printedJetSelection))
+					   histoStorageList["diboson_cErr2Down"] = resultHist_MCErrorsOnly_cErr2Down.Clone("diboson_MVA_%s_CMS_ttH_CSVCErr2Down" % (printedJetSelection))
 					   if (charge == "SS"):
 						   histoStorageList["diboson_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("diboson_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
 						   histoStorageList["diboson_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("diboson_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
@@ -931,6 +1003,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["diboson_lfStats2Down"].Add(resultHist_MCErrorsOnly_lfStats2Down)
 					   histoStorageList["diboson_hfStats2Up"].Add(resultHist_MCErrorsOnly_hfStats2Up)
 					   histoStorageList["diboson_hfStats2Down"].Add(resultHist_MCErrorsOnly_hfStats2Down)
+					   histoStorageList["diboson_cErr1Up"].Add(resultHist_MCErrorsOnly_cErr1Up)
+					   histoStorageList["diboson_cErr1Down"].Add(resultHist_MCErrorsOnly_cErr1Down)
+					   histoStorageList["diboson_cErr2Up"].Add(resultHist_MCErrorsOnly_cErr2Up)
+					   histoStorageList["diboson_cErr2Down"].Add(resultHist_MCErrorsOnly_cErr2Down)					   
 					   if (charge == "SS"):
 						   histoStorageList["diboson_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
 						   histoStorageList["diboson_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
@@ -969,6 +1045,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["zjets_lfStats2Down"] = resultHist_MCErrorsOnly_lfStats2Down.Clone("zjets_MVA_%s_CMS_ttH_CSVLFStats2Down" % (printedJetSelection))
 					   histoStorageList["zjets_hfStats2Up"] = resultHist_MCErrorsOnly_hfStats2Up.Clone("zjets_MVA_%s_CMS_ttH_CSVHFStats2Up" % (printedJetSelection))
 					   histoStorageList["zjets_hfStats2Down"] = resultHist_MCErrorsOnly_hfStats2Down.Clone("zjets_MVA_%s_CMS_ttH_CSVHFStats2Down" % (printedJetSelection))
+					   histoStorageList["zjets_cErr1Up"] = resultHist_MCErrorsOnly_cErr1Up.Clone("zjets_MVA_%s_CMS_ttH_CSVCErr1Up" % (printedJetSelection))
+					   histoStorageList["zjets_cErr1Down"] = resultHist_MCErrorsOnly_cErr1Down.Clone("zjets_MVA_%s_CMS_ttH_CSVCErr1Down" % (printedJetSelection))
+					   histoStorageList["zjets_cErr2Up"] = resultHist_MCErrorsOnly_cErr2Up.Clone("zjets_MVA_%s_CMS_ttH_CSVCErr2Up" % (printedJetSelection))
+					   histoStorageList["zjets_cErr2Down"] = resultHist_MCErrorsOnly_cErr2Down.Clone("zjets_MVA_%s_CMS_ttH_CSVCErr2Down" % (printedJetSelection))
 					   if (charge == "SS"):
 						   histoStorageList["zjets_PromptSFUp"] = resultHist_MCErrorsOnly_PromptSFUp.Clone("zjets_MVA_%s_CMS_ttH_topPtcorrUp" % (printedJetSelection))
 						   histoStorageList["zjets_PromptSFDown"] = resultHist_MCErrorsOnly_PromptSFDown.Clone("zjets_MVA_%s_CMS_ttH_topPtcorrDown" % (printedJetSelection))
@@ -996,6 +1076,10 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 					   histoStorageList["zjets_lfStats2Down"].Add(resultHist_MCErrorsOnly_lfStats2Down)
 					   histoStorageList["zjets_hfStats2Up"].Add(resultHist_MCErrorsOnly_hfStats2Up)
 					   histoStorageList["zjets_hfStats2Down"].Add(resultHist_MCErrorsOnly_hfStats2Down)
+					   histoStorageList["zjets_cErr1Up"].Add(resultHist_MCErrorsOnly_cErr1Up)
+					   histoStorageList["zjets_cErr1Down"].Add(resultHist_MCErrorsOnly_cErr1Down)
+					   histoStorageList["zjets_cErr2Up"].Add(resultHist_MCErrorsOnly_cErr2Up)
+					   histoStorageList["zjets_cErr2Down"].Add(resultHist_MCErrorsOnly_cErr2Down)					   
 					   if (charge == "SS"):
 						   histoStorageList["zjets_PromptSFUp"].Add(resultHist_MCErrorsOnly_PromptSFUp)
 						   histoStorageList["zjets_PromptSFDown"].Add(resultHist_MCErrorsOnly_PromptSFDown)
