@@ -956,10 +956,10 @@ int main ( int argc, char ** argv )
       else if(ksys == 18 ) csvStr = "csvWgthf_Stats1Down*csvWgtlf*";
       else if(ksys == 19 ) csvStr = "csvWgthf_Stats2Up*csvWgtlf*";
       else if(ksys == 20 ) csvStr = "csvWgthf_Stats2Down*csvWgtlf*";
-      else if(ksys == 21 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err1Up";
-      else if(ksys == 22 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err1Down";
-      else if(ksys == 23 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err2Up";
-      else if(ksys == 24 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err2Down";
+      else if(ksys == 21 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err1Up*";
+      else if(ksys == 22 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err1Down*";
+      else if(ksys == 23 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err2Up*";
+      else if(ksys == 24 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err2Down*";
 
       TString InputFileName = treeFileNameNominal;
 
