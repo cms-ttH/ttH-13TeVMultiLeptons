@@ -284,6 +284,10 @@ int main ( int argc, char ** argv )
   sysList.push_back("CMS_ttH_hfStats1Down"); //18
   sysList.push_back("CMS_ttH_hfStats2Up"); //19..
   sysList.push_back("CMS_ttH_hfStats2Down"); //20
+  sysList.push_back("CMS_ttH_cErr1Up"); //21..
+  sysList.push_back("CMS_ttH_cErr1Down"); //22
+  sysList.push_back("CMS_ttH_cErr2Up"); //23..
+  sysList.push_back("CMS_ttH_cErr2Down"); //24
 
   if (inputCharge == "SS") {
     sysList.push_back("PromptSFUp"); //13 
@@ -330,6 +334,10 @@ int main ( int argc, char ** argv )
   weight[18] = "weight*";
   weight[19] = "weight*";
   weight[20] = "weight*";
+  weight[21] = "weight*";
+  weight[22] = "weight*";
+  weight[23] = "weight*";
+  weight[24] = "weight*";
 
   if ( (inputYear == "2012_52x" || inputYear == "2012_53x") && inputCharge == "SS") {
     weight[13] = "weight*(2*lepTotalPromptSFUp/(lepTotalPromptSFUp+lepTotalPromptSFDown))*";
@@ -948,6 +956,10 @@ int main ( int argc, char ** argv )
       else if(ksys == 18 ) csvStr = "csvWgthf_Stats1Down*csvWgtlf*";
       else if(ksys == 19 ) csvStr = "csvWgthf_Stats2Up*csvWgtlf*";
       else if(ksys == 20 ) csvStr = "csvWgthf_Stats2Down*csvWgtlf*";
+      else if(ksys == 21 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err1Up";
+      else if(ksys == 22 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err1Down";
+      else if(ksys == 23 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err2Up";
+      else if(ksys == 24 ) csvStr = "csvWgthf*csvWgtlf*csvWgtc_Err2Down";
 
       TString InputFileName = treeFileNameNominal;
 
