@@ -835,6 +835,11 @@ int main ( int argc, char ** argv )
     floatBranches["csvWgthf_Stats1Down"] = new float(0.0);
     floatBranches["csvWgthf_Stats2Up"] = new float(0.0);
     floatBranches["csvWgthf_Stats2Down"] = new float(0.0);
+
+    floatBranches["csvWgtc_Err1Up"] = new float(0.0);
+    floatBranches["csvWgtc_Err1Down"] = new float(0.0);
+    floatBranches["csvWgtc_Err2Up"] = new float(0.0);
+    floatBranches["csvWgtc_Err2Down"] = new float(0.0);
     //met
     floatBranches["met"] = new float(0.0);
     floatBranches["unc_met"] = new float(0.0);
@@ -2100,6 +2105,7 @@ int main ( int argc, char ** argv )
       //////////////////
       double csvWgtlf[7] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
       double csvWgthf[7] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+      double csvWgtc[4] = {1.0, 1.0, 1.0, 1.0};
       if ( !isData ) {
 	BNjetCollection const &selectedJets_unsorted  = beanHelper.GetSelectedJets( pfjetsSelected, 30., 2.4, jetID::jetLoose, '-' ); 
 	BNjetCollection const &selectedJets       = beanHelper.GetSortedByPt( selectedJets_unsorted );
@@ -2133,6 +2139,15 @@ int main ( int argc, char ** argv )
 	  csvWgtlf[4] = csvWgtLFStats1down[1];
 	  csvWgtlf[5] = csvWgtLFStats2up[1];
 	  csvWgtlf[6] = csvWgtLFStats2down[1];
+
+	  vdouble csvWgtcErr1up = beanHelper.GetCSVweights( selectedJets, sysType::CSVCErr1up );
+	  vdouble csvWgtcErr1down = beanHelper.GetCSVweights( selectedJets, sysType::CSVCErr1down );
+	  vdouble csvWgtcErr2up = beanHelper.GetCSVweights( selectedJets, sysType::CSVCErr2up );
+	  vdouble csvWgtcErr2down = beanHelper.GetCSVweights( selectedJets, sysType::CSVCErr2down );
+	  csvWgtc[0] = csvWgtcErr1up[2];
+	  csvWgtc[1] = csvWgtcErr1down[2];
+	  csvWgtc[2] = csvWgtcErr2up[2];
+	  csvWgtc[3] = csvWgtcErr2down[2];
 	}
       }
 
@@ -4427,6 +4442,11 @@ int main ( int argc, char ** argv )
 	*(floatBranches["csvWgthf_Stats1Down"]) = csvWgthf[4];
 	*(floatBranches["csvWgthf_Stats2Up"])   = csvWgthf[5];
 	*(floatBranches["csvWgthf_Stats2Down"]) = csvWgthf[6];
+
+	*(floatBranches["csvWgtc_Err1Up"])   = csvWgtc[0];
+	*(floatBranches["csvWgtc_Err1Down"]) = csvWgtc[1];
+	*(floatBranches["csvWgtc_Err2Up"])   = csvWgtc[2];
+	*(floatBranches["csvWgtc_Err2Down"]) = csvWgtc[3];
 
         //met
         *(floatBranches["met"]) = met;
