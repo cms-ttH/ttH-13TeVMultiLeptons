@@ -510,25 +510,6 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 
 	plotList.append(
 		PlotInfo(
-		{'name': 'ttb',
-		 'file': dirStr+'ttbar_b' +rootStr,
-		 'file_JESUp': dirStr+'ttbar_b'+rootStr,
-		 'file_JESDown': dirStr+'ttbar_b'+rootStr,
-		 'xsec': 0.2458, #0.225197,
-		 'xsec_err': 0.5*0.2458, #0.225197, #0.3*0.225197,
-		 'sys_array': sys_arrays['ttbb'],
-		 'ngen':  6912438+1362471,
-		 'fillColor': ROOT.kRed+3,
-		 'fillPattern': 1001,
-		 'isNormPerJetBin': 0,
-		 'limitPlotName':'ttbarPlusB',
-		 'skipSystematics':skipSystematics,
-		 }
-		)
-		)
-
-	plotList.append(
-		PlotInfo(
 		{'name': 'ttbb',
 		 'file': dirStr+'ttbar_bb' +rootStr,
 		 'file_JESUp': dirStr+'ttbar_bb'+rootStr,
@@ -548,12 +529,31 @@ def getMyPlotsAndrewNorm (lepselection, year, Zmask, charge, jetselection) :
 
 	plotList.append(
 		PlotInfo(
+		{'name': 'ttb',
+		 'file': dirStr+'ttbar_b' +rootStr,
+		 'file_JESUp': dirStr+'ttbar_b'+rootStr,
+		 'file_JESDown': dirStr+'ttbar_b'+rootStr,
+		 'xsec': 0.2458, #0.225197,
+		 'xsec_err': 0.5*0.2458, #0.225197, #0.3*0.225197,
+		 'sys_array': sys_arrays['ttbb'],
+		 'ngen':  6912438+1362471,
+		 'fillColor': ROOT.kRed-2,
+		 'fillPattern': 1001,
+		 'isNormPerJetBin': 0,
+		 'limitPlotName':'ttbarPlusB',
+		 'skipSystematics':skipSystematics,
+		 }
+		)
+		)
+
+	plotList.append(
+		PlotInfo(
 		{'name': 'ttcc',
 		 'file': dirStr+'ttbar_cc' +rootStr,
 		 'file_JESUp': dirStr+'ttbar_cc'+rootStr,
 		 'file_JESDown': dirStr+'ttbar_cc'+rootStr,
 		 'xsec': 0.2458, #0.225197,
-		 'xsec_err': 0.3*0.2458, #0.225197,
+		 'xsec_err': 0.5*0.2458, #0.225197,
 		 'sys_array': sys_arrays['ttcc'],
 		 'ngen':  6912438+1362471, 
 		 'fillColor': ROOT.kRed-7,
