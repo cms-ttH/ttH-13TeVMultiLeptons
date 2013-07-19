@@ -155,7 +155,7 @@ def main ():
 	if (jetselection == "eq3jeq2t"):
 		drawStackPlot("BDTG_e3je2t", pg,  "BDT output", 10, -0.9, 0.8, lepselection, year, "draw")
 		drawStackPlot("sum_pt", pg, "p_{T}(l, jets)", 10, 150, 750, lepselection, year, "draw")
-		drawStackPlot("min_dr_jets", pg, "minimum #DeltaR(j, j)", 10, 0.5, 3, lepselection, year, "draw")
+		drawStackPlot("min_dr_jets", pg, "min. #DeltaR(j, j)", 10, 0.5, 3, lepselection, year, "draw")
 		drawStackPlot("avg_btag_disc_non_btags", pg, "#mu^{CSV}(non b-tags)", 10, 0, 0.65, lepselection,year, "draw")
 		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
 #		drawStackPlot("CFMlpANN_e3je2t_4var", pg,  "ANN output", 10, 0.2, 0.9, lepselection, year, "draw")		
@@ -167,7 +167,7 @@ def main ():
 	if (jetselection == "ge4jeq2t"):
 		drawStackPlot("BDTG_ge4je2t", pg,  "BDT output", 10, -0.8, 0.7, lepselection, year, "draw")
 		drawStackPlot("sum_pt", pg, "p_{T}(l, jets)", 10, 200, 1000, lepselection, year, "draw")
-		drawStackPlot("min_dr_jets", pg, "minimum #DeltaR(j, j)", 10, 0.5, 2.5, lepselection, year, "draw")
+		drawStackPlot("min_dr_jets", pg, "min. #DeltaR(j, j)", 10, 0.5, 2.5, lepselection, year, "draw")
 		drawStackPlot("avg_btag_disc_non_btags", pg, "#mu^{CSV}(non b-tags)", 10, 0, 0.55, lepselection,year, "draw")
 		drawStackPlot("higgsLike_dijet_mass", pg, "higgsLike dijet mass", 10, 60, 190, lepselection, year, "draw")
 		drawStackPlot("higgsLike_dijet_mass2", pg, "higgsLike dijet mass2", 10, 50, 250, lepselection, year, "draw")
@@ -184,13 +184,13 @@ def main ():
 ###		drawStackPlot("second_jet_pt", pg, "2nd jet p_{T}", 20, 30, 230, lepselection,year, "draw")
 	if (jetselection == "ge3t"):
 		drawStackPlot("sum_pt", pg, "p_{T}(l, jets)", 10, 200, 1000, lepselection, year, "draw")
-		drawStackPlot("min_dr_jets", pg, "minimum #DeltaR(j, j)", 10, 0.5, 2.5, lepselection, year, "draw")
+		drawStackPlot("min_dr_jets", pg, "min. #DeltaR(j, j)", 10, 0.5, 2.5, lepselection, year, "draw")
 		drawStackPlot("higgsLike_dijet_mass", pg, "higgsLike dijet mass", 10, 60, 190, lepselection, year, "draw")
 		drawStackPlot("higgsLike_dijet_mass2", pg, "higgsLike dijet mass2", 10, 50, 250, lepselection, year, "draw")
 		drawStackPlot("numHiggsLike_dijet_15", pg, "numHiggsLike dijet 15", 5, 0, 5, lepselection, year, "draw")
 		drawStackPlot("avg_btag_disc_btags", pg, "#mu^{CSV}", 10, 0.7, 1, lepselection,year, "draw")		
 ##		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 9, 0.12, 0.84, lepselection,year, "draw")
-####		drawStackPlot("BDTG_ge3t", pg, "BDT output", 10, -0.9, 0.8, lepselection,year, "draw")
+		drawStackPlot("BDTG_ge3t", pg, "BDT output", 10, -0.9, 0.8, lepselection,year, "draw")
 
 #		drawStackPlot("CFMlpANN_ge3t", pg, "ANN output", 10, 0.1, 0.8, lepselection,year, "draw")
 #		drawStackPlot("CFMlpANN_ge3t_v1", pg, "ANN output", 10, 0.04, 0.84, lepselection,year, "draw")
@@ -203,7 +203,7 @@ def main ():
 ###		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0.2, 3.2, lepselection, year, "draw")
 	if (jetselection == "ge2t"):
 		drawStackPlot("numJets", pg,  "Number of jets", 5, 2, 7, lepselection, year, "draw")
-		drawStackPlot("numTaggedJets", pg,  "Number of tags", 3, 2, 5, lepselection, year, "draw")
+		drawStackPlot("numTaggedJets", pg,  "Number of b-tags", 3, 2, 5, lepselection, year, "draw")
 		
 #	drawStackPlot("numTaggedJets", pg, "numTaggedJets", 4, 2, 6, lepselection, year, "draw")
 #	drawStackPlot("numPV", pg, "numPV", 30, 0, 30, lepselection, year, "draw")

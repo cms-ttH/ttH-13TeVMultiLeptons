@@ -333,7 +333,7 @@ class PlotGroup :
 		self.directoryName = directoryName
 		self.jetSelection = ""
 		self.skipSystematics = skipSystematics
-		self.paperStyle = False
+		self.paperStyle = True #False
 		self.charge = ""
 		
 		if (not os.path.exists(self.directoryName)) :
@@ -435,7 +435,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 		else: myLumiString = TexTitle+"				   #sqrt{s} = 8 TeV, L = 5.1 fb^{-1}"
 	else:
-		if paperStylePG: myLumiString = "CMS								 #sqrt{s} = 8 TeV, L = %0.2f fb^{-1}" % (myPlotGroup.lumi/1.0e6)
+		if paperStylePG: myLumiString = "CMS Preliminary         #sqrt{s} = 8 TeV, L = %0.1f fb^{-1}" % (19.5)
 		else: myLumiString = TexTitle+"  CMS Preliminary				   #sqrt{s} = 8 TeV, L = %0.2f fb^{-1}" % (myPlotGroup.lumi/1.0e6)
 
 	myLumiTex = TLatex()
@@ -1126,11 +1126,12 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 #		 legForStack.AddEntry(iHist, "EWK ("+str(round(ZJetsSum,1))+")", "f")
 
 	if (ttHSum > 0):
-		if (dist.find("CFMlpANN") != -1 and paperStylePG):
-			if jetSelection == "eq2jeq2t": iSig.Scale(300)
-			else:	iSig.Scale(30)
-		else:
-			iSig.Scale(TotalMCsum/ttHSum)
+		iSig.Scale(30)
+#		if (dist.find("BDT") != -1 and paperStylePG):
+#			if jetSelection == "eq2jeq2t": iSig.Scale(300)
+#			else:	iSig.Scale(30)
+#		else:
+#			iSig.Scale(TotalMCsum/ttHSum)
 
 	iSig.SetLineColor(kBlue+2)  ## was kBlue
 	iSig.SetFillColor(0)
@@ -1220,7 +1221,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	if ((dist == "numJets" and (jetSelection.startswith("ge2t") or jetSelection == "eq1t")) or (dist == "numTaggedJets" and jetSelection=="ge2t")):
 		myStack.SetMinimum(1)
-		myStack.SetMaximum(plotMax*13)  ##was 13
+		myStack.SetMaximum(plotMax*10)  ##was 13
 		upLin.cd()
 		gPad.SetLogy()
 
@@ -1257,7 +1258,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	ggg.SetLineColor(kBlack)
 	ggg.SetMarkerStyle(20)
-	ggg.SetLineWidth(2)
+	ggg.SetLineWidth(4)
 	ggg.SetMarkerSize(1)
 	
 	if (not blindPG): ggg.Draw("psame") ##Comment out for blinding
@@ -1269,9 +1270,9 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	if not paperStylePG: legForStack.Draw()
 #	myLumiTex.DrawLatex(0.14, 0.91, myLumiString)  ### cmt out 0.25
 	if paperStylePG: SELECTIONInfoLatex.DrawLatex(0.45, 0.84, catinfo)
-	if paperStylePG:
-		if (dist.find("CFMlpANN") != -1):
-			SFInfoLatex.DrawLatex(0.64, 0.77, SFinfo)
+##	if paperStylePG:
+##		if (dist.find("BDT") != -1):
+##			SFInfoLatex.DrawLatex(0.64, 0.77, SFinfo)
 	
 	##Begin comment out for 2012
 	downLin.cd()
