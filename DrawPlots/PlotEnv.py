@@ -1260,7 +1260,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 	ggg.SetMarkerStyle(20)
 	ggg.SetLineWidth(4)
 	ggg.SetMarkerSize(1)
-	
+	if (jetSelection=="ge2t"):
+		ggg.SetMarkerSize(1.2)
 	if (not blindPG): ggg.Draw("psame") ##Comment out for blinding
 	# calculate the KS test result, put it somewhere
 #	ksResult = theDataHisto.KolmogorovTest(MCErrHist)
@@ -1414,7 +1415,7 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 
 	  
 	gRatio.SetLineColor(kBlack)
-	gRatio.SetLineWidth(2)
+	gRatio.SetLineWidth(4)
 	if (not blindPG): gRatio.Draw("psame") 
 ##############
 	saveRatioHist = True

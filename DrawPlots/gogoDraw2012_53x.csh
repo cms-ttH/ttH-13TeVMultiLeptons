@@ -1,5 +1,5 @@
 
-foreach kind ( "eq2jeq2t" "eq3jeq2t" "ge4jeq2t" "ge2t")
+foreach kind ( "ge3t" "eq3jeq2t" "ge4jeq2t" "ge2t")
     echo "Plot for jet tag cat ${kind} ============================================="
 
     foreach lepCat ("TwoLep" ) ##"TwoMuon" "TwoEle" "MuonEle")
