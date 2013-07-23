@@ -443,7 +443,7 @@ int main ( int argc, char ** argv )
     varList.push_back(MHT);
     
     //event variables
-    varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, 0, 20);
+    varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, -0.5, 19.5);
     varList.push_back(numJets);
     varInfo *numTaggedJets = new varInfo("numTaggedJets", "numTaggedJets", "numTaggedJets", 10, 0, 10);
     varList.push_back(numTaggedJets);
@@ -711,8 +711,10 @@ int main ( int argc, char ** argv )
   
   if (makeOnePlot) {
     //event variables
-    varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, 0, 20);
+    varInfo *numJets = new varInfo("numJets", "numJets", "numJets", 20, -0.5, 19.5);
     varList.push_back(numJets);
+    varInfo *numTaggedJets = new varInfo("numTaggedJets", "numTaggedJets", "numTaggedJets", 10, -0.5, 9.5);
+    varList.push_back(numTaggedJets);
   }
 
 //   varInfo *all_sum_pt = new varInfo("all_sum_pt", "all_sum_pt", "all_sum_pt", 10000, 0, 10000);

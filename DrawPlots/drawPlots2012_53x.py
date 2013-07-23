@@ -202,8 +202,8 @@ def main ():
 #		drawStackPlot("third_jet_eta", pg, "third_jet_eta", numBins, -2.5, 2.5, lepselection, year, "draw")
 ###		drawStackPlot("mindr_lep1_jet", pg, "#DeltaR(l, j_{closest})", 10, 0.2, 3.2, lepselection, year, "draw")
 	if (jetselection == "ge2t"):
-		drawStackPlot("numJets", pg,  "Number of jets", 5, 2, 7, lepselection, year, "draw")
-		drawStackPlot("numTaggedJets", pg,  "Number of b-tags", 3, 2, 5, lepselection, year, "draw")
+		drawStackPlot("numJets", pg,  "Number of jets", 5, 1.5, 6.5, lepselection, year, "draw")
+		drawStackPlot("numTaggedJets", pg,  "Number of b-tags", 3, 1.5, 4.5, lepselection, year, "draw")
 		
 #	drawStackPlot("numTaggedJets", pg, "numTaggedJets", 4, 2, 6, lepselection, year, "draw")
 #	drawStackPlot("numPV", pg, "numPV", 30, 0, 30, lepselection, year, "draw")

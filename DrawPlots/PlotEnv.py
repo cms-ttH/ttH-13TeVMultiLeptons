@@ -1309,8 +1309,8 @@ def drawStackPlot(dist, myPlotGroup, plotXLabel, nBins, xMin, xMax, lepselection
 		ratioHist.GetXaxis().SetTitleSize(0.12) ### 0.12
 
 	if (jetSelection=="ge2t"):
-		ratioHist.GetXaxis().SetNdivisions(405)
-	
+		ratioHist.GetXaxis().SetNdivisions(005)
+		myStack.GetXaxis().SetNdivisions(005)
 	ratioHist.SetLineColor(0)	 
 	ratioHist.SetMarkerColor(0)	 
 
