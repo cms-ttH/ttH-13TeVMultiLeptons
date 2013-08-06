@@ -339,7 +339,7 @@ int main ( int argc, char ** argv )
 
   BEANhelper beanHelper;
   //BEANhelper::SetUp(string iEra, int iSampleNumber, bool iIsLJ, bool iIsData, string iDataset, bool iReshapeCSV, bool iPfLeptons = true)
-  beanHelper.SetUp(Era, sample, true, isData, "SingleMu", true, false, PUPeriodStr);
+  beanHelper.SetUp(Era, sample, analysisType::DIL, isData, "SingleMu", true, false, PUPeriodStr);
 
 
   cout << "Time to set the iSysType" << endl;
