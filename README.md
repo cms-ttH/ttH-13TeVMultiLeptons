@@ -5,8 +5,8 @@ See the [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NovaDilWorkfl
 To use this package, perform the following steps:
 
     cd $CMSSW_BASE/src
-    git clone https://github.com/annawoodard/ttH-Multileptons
+    git clone https://github.com/cms-ttH/ttH-Multileptons.git
     cd ttH-Multileptons
     scram b -j32
     
-(These instructions should be updated if this repo's ownership is transferred to cms-ttH)
+
