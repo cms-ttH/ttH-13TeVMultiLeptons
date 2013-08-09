@@ -41,19 +41,19 @@
 #include "DataFormats/FWLite/interface/ChainEvent.h"
 
 //Headers for the data items
-#include "ProductArea/BNcollections/interface/BNelectron.h"
-#include "ProductArea/BNcollections/interface/BNevent.h"
-#include "ProductArea/BNcollections/interface/BNjet.h"
-#include "ProductArea/BNcollections/interface/BNmcparticle.h"
-#include "ProductArea/BNcollections/interface/BNmet.h"
-#include "ProductArea/BNcollections/interface/BNmuon.h"
-#include "ProductArea/BNcollections/interface/BNphoton.h"
-#include "ProductArea/BNcollections/interface/BNsupercluster.h"
-#include "ProductArea/BNcollections/interface/BNtrack.h"
-#include "ProductArea/BNcollections/interface/BNtrigger.h"
-#include "ProductArea/BNcollections/interface/BNskimbits.h"
-#include "ProductArea/BNcollections/interface/BNtrigobj.h"
-#include "ProductArea/BNcollections/interface/BNprimaryvertex.h"
+#include "BEAN/Collections/interface/BNelectron.h"
+#include "BEAN/Collections/interface/BNevent.h"
+#include "BEAN/Collections/interface/BNjet.h"
+#include "BEAN/Collections/interface/BNmcparticle.h"
+#include "BEAN/Collections/interface/BNmet.h"
+#include "BEAN/Collections/interface/BNmuon.h"
+#include "BEAN/Collections/interface/BNphoton.h"
+#include "BEAN/Collections/interface/BNsupercluster.h"
+#include "BEAN/Collections/interface/BNtrack.h"
+#include "BEAN/Collections/interface/BNtrigger.h"
+#include "BEAN/Collections/interface/BNskimbits.h"
+#include "BEAN/Collections/interface/BNtrigobj.h"
+#include "BEAN/Collections/interface/BNprimaryvertex.h"
 
 
 // headers for python config processing
@@ -62,8 +62,8 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
-#include "NtupleMaker/BEANmaker/interface/BtagWeight.h"
-#include "NtupleMaker/BEANmaker/interface/BEANhelper.h"
+#include "BEAN/BEANmaker/interface/BtagWeight.h"
+#include "BEAN/BEANmaker/interface/BEANhelper.h"
 
 #include "AnglesUtil.h"
 #include "PhysicsTools/Utilities/interface/LumiReweightingStandAlone.h"

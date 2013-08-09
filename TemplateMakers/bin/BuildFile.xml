@@ -11,15 +11,13 @@
 <use   name="PhysicsTools/FWLite"/>
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/KinFitter" />
-<use   name="NtupleMaker/BEANmaker" />
+<use   name="BEAN/BEANmaker" />
 <use   name="CondFormats/JetMETObjects"  />
 <lib   name="TMVA" />
 <environment>
 #  <bin   file="test_beans_dileptonStudies.C">
 #  </bin>
   <bin   file="helper_dilepton.C">
-  </bin>
-  <bin   file="helper_forAcc.C">
   </bin>
   <bin   file="LepJets.C">
   </bin>
