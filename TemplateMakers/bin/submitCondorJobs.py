@@ -50,6 +50,14 @@ def getNumLinesInFile (fileCountCommand):
 	return fileNumLines
 
 
+def checkCondorDirs () :
+
+    if not os.path.exists("batchBEAN"):
+        os.mkdir("batchBEAN")
+    if not os.path.exists("batchBEAN/condorLogs"):
+        os.mkdir("batchBEAN/condorLogs")
+    
+
 
 def main ():
 
@@ -112,7 +120,8 @@ def main ():
 	print " btag = ", btagChoice
 	print " label = ", jobLabel
 	print " PUPeriod = ", iPUPeriod
-	
+
+	checkCondorDirs()
 	
 	
 	listOfSamples2011Data = ['DoubleElectron_Run2011A-05Aug2011-v1',
