@@ -4,6 +4,15 @@ import os
 import sys
 from optparse import OptionParser
 
+
+def checkDirs () :
+
+	if not os.path.exists("../../DrawPlots/bin/treeFiles"):
+		os.mkdir("../../DrawPlots/bin/treeFiles")
+	
+
+
+
 def main ():
 
 	parser = OptionParser(usage="./haddAll.py --sumData --moveFiles --year=2012_52x tryNewStuff_v1")
@@ -25,10 +34,13 @@ def main ():
 
 		
 	dirLabel = "%s_%s" % (options.year, args[0])
+
+
 	
 	print "Directory label %s" % dirLabel
 
 	print "Running with sumData = %s" % options.sumData
+
 
 	if not (options.skipHadd):
 		print "Hadding everything together"
@@ -154,7 +166,9 @@ def main ():
 			print "-------Done suming data---------"
 			
 			
-			
+		
+	# make sure the destination exists before sending files
+	checkDirs()
 
 		
 	if (options.copyFiles):
