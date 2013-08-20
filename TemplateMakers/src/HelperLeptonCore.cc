@@ -360,3 +360,70 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   return & rawCollections;
 
 }
+
+
+void HelperLeptonCore::getTightAndLooseElectrons (electronID::electronID tightID, electronID::electronID looseID, BEANFileInterface * selectedCollections) {
+
+  electronsTight = bHelp.GetSelectedElectrons(*(rawCollections.eleCollection), tightID );
+  
+  //
+  // this is a temp variable
+  // so you can compute the electrons by taking the difference
+  //
+
+  BNelectronCollection electronsInclusivelyLoose = bHelp.GetSelectedElectrons(*(rawCollections.eleCollection), looseID );
+  electronsLoose = bHelp.GetSymmetricDifference(electronsInclusivelyLoose, electronsTight);
+  
+  selectedCollections->eleCollection = &electronsTight;
+  selectedCollections->looseEleCollection = &electronsLoose;
+  
+  
+}
+
+void HelperLeptonCore::getTightAndLooseMuons ( muonID::muonID tightID, muonID::muonID looseID, BEANFileInterface * selectedCollections) {
+
+      
+  muonsTight = bHelp.GetSelectedMuons((*rawCollections.muonCollection), tightID);
+    // a temporary variable
+    // to calculate the loose muons 
+  BNmuonCollection muonsInclusivelyLoose = bHelp.GetSelectedMuons((*rawCollections.muonCollection), looseID);
+    
+  muonsLoose = bHelp.GetSymmetricDifference(muonsInclusivelyLoose,muonsTight);
+    
+  selectedCollections->muonCollection = &muonsTight;
+  selectedCollections->looseMuonCollection = &muonsLoose;
+
+}
+
+void HelperLeptonCore::getTightCorrectedJets (double ptCut,
+                                              double etaCut,
+                                              jetID::jetID tightID,
+                                              BEANFileInterface * selectedCollections,
+                                              sysType::sysType shift) {
+
+  BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), shift);
+  BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, '-' ) ;
+  
+  jetsTight = bHelp.GetSortedByPt(tmpCorrSelJets);
+
+  selectedCollections->jetCollection = &jetsTight;
+
+}
+
+void HelperLeptonCore::getCorrectedMet (BEANFileInterface * selectedCollections, sysType::sysType shift ) {
+
+  // make sure you clear this out
+  // before you add something into again
+  metCorrected.clear();
+  
+  //--- Important notice from BEANhelper
+  //--- Use unselected jets for correction 
+  //--- Use uncorrected jets to correct the met
+
+  BNmet tmpMet = bHelp.GetCorrectedMET( rawCollections.metCollection->at(0), *rawCollections.jetCollection, shift);
+
+  metCorrected.push_back(tmpMet);
+
+  selectedCollections->metCollection = & metCorrected;
+
+}
