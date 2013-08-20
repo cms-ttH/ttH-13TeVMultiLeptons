@@ -34,15 +34,27 @@ int main () {
   fwlite::ChainEvent ev(fileNames);
 
 
-  // declare your kinematic variables
+  // declare your kinematic variables that you want
+  // to be written out into the tree
   vector<KinematicVariable*> kinVars;
+  vector<KinematicVariable*> cutVars;
   
-  AllJetPt myJetPt(4);
+  AllJetPt myJetPt(4); // parameter is max num jet pts to save
   kinVars.push_back(&myJetPt);
 
   NumJets myNjets;
-  kinVars.push_back(&myNjets);
+  myNjets.setCut(2); // parameter is keep events with jets  >= num
+  kinVars.push_back(&myNjets); //save it in the tree
+  cutVars.push_back(&myNjets); //also cut on it
 
+  
+  
+  
+
+  // declare some cut variables
+  // you might want to write them out
+  
+  
 
   HelperLeptonCore lepHelper;
 
@@ -61,20 +73,43 @@ int main () {
   }
 
   int numEvents = 0;
+  int numEventsFailCuts = 0;
+  int numEventsPassCuts = 0;
+  
   for (ev.toBegin(); !ev.atEnd(); ++ev){
-
-    BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, false);
-
-
-    BNjetCollection selectedJets_unsorted  = beanHelper->GetSelectedJets( *(rawCollections->jetCollection), 30., 2.4, jetID::jetLoose, '-' ); 
-	BNjetCollection selectedJets       = beanHelper->GetSortedByPt( selectedJets_unsorted );
+    numEvents++;
     
-
-    // Shallow copy
+    BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, false);
+    // make a shallow copy
+    // update pointer as you make new collections
     BEANFileInterface eventCollections = (*rawCollections);
 
-    // replace raw objects with selected ones
-    eventCollections.jetCollection = &selectedJets;
+
+
+    /////////////////////////////////////////////////////////////
+    //
+    //    Apply object ids
+    //   
+    //
+    //////////////////////////////////////////////////////////////
+
+
+    //------------    Jets
+    
+	lepHelper.getTightCorrectedJets(30.0, 2.4, jetID::jetLoose, &eventCollections);
+
+
+    //------------  Electrons
+
+    lepHelper.getTightAndLooseElectrons(electronID::electronTight, electronID::electronLoose, &eventCollections);
+    
+    //-----------    Muons
+
+    lepHelper.getTightAndLooseMuons(muonID::muonTight, muonID::muonLoose, &eventCollections);
+
+
+    //----------    MET
+    lepHelper.getCorrectedMet(&eventCollections);
     
 
     // reset all the vars
@@ -90,6 +125,23 @@ int main () {
 
 
     // In principle, you could apply different selections here
+    bool passAllCuts = true;
+    for (vector<KinematicVariable*>::iterator iCut = cutVars.begin();
+         iCut != cutVars.end();
+         iCut++ ) {
+
+      (*iCut)->evaluate();
+      passAllCuts = passAllCuts && (*iCut)->passCut();
+
+    }
+
+    if (!passAllCuts) {
+      numEventsFailCuts++;
+      continue;
+    } else {
+      numEventsPassCuts++;
+    }
+    
     
     // Now  evaluate the vars
     
@@ -101,14 +153,16 @@ int main () {
       
     }
 
-    numEvents++;
+
     
     summaryTree->Fill();
 
   }// end for each event
   
 
-  cout << "Num Events processed " << numEvents << endl;
+  cout << "Num Events processed " << numEvents << endl
+       << "Passed cuts " << numEventsPassCuts << endl
+       << "Failed cuts " << numEventsFailCuts << endl ;
 
 
   outputFile->Write();

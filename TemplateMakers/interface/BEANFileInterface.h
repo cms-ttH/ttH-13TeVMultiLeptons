@@ -90,9 +90,11 @@ public:
 
   BEANFileInterface () :
     muonCollection(0),
+    looseMuonCollection(0),
     metCollection(0),
     jetCollection(0),
     eleCollection(0),
+    looseEleCollection(0),
     mcParticleCollection(0),
     eventCollection(0),
     hltCollection (0),
@@ -106,13 +108,19 @@ public:
 
   //important kinematic stuff
   BNmuonCollection *  muonCollection;
+  BNmuonCollection *  looseMuonCollection;
+  
   BNmetCollection *   metCollection;
   BNjetCollection * jetCollection;
+
   BNelectronCollection * eleCollection;
+  BNelectronCollection * looseEleCollection;
+  
   BNmcparticleCollection * mcParticleCollection;
   BNeventCollection * eventCollection;
   BNtriggerCollection * hltCollection;
   BNprimaryvertexCollection * primaryVertexCollection;
+  
 
   bool checkJets() {
     if (jetCollection == 0 )
@@ -125,7 +133,12 @@ public:
       return false;
     return true;
   };
-  
+
+  bool checkElectrons() {
+    if (eleCollection==0)
+      return false;
+    return true;
+  };
 
 
 };

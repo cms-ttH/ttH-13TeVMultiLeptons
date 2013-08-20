@@ -142,6 +142,24 @@ public:
   bool parseSysTypes();
   
 
+  // Handle the gymnastics of tight and loose collection definitions
+  void getTightAndLooseElectrons (electronID::electronID tightID,
+                                  electronID::electronID looseID,
+                                  BEANFileInterface* selectedCollections);
+  
+    // Handle the gymnastics of tight and loose collection definitions
+  void getTightAndLooseMuons (muonID::muonID tightID,
+                              muonID::muonID looseID,
+                              BEANFileInterface* selectedCollections);
+
+  void getTightCorrectedJets (double ptCut,
+                              double etaCut,
+                              jetID::jetID tightID,                    
+                              BEANFileInterface * selectedCollections,
+                              sysType::sysType shift = sysType::NA );
+
+  void getCorrectedMet (BEANFileInterface * selectedCollections,
+                        sysType::sysType shift = sysType::NA);
   
   // fill in everything you have
   //void fillOutputBranches ();
@@ -178,6 +196,9 @@ public:
 
   fwlite::Handle<BNmuonCollection> h_muons;
   BNmuonCollection  muons;
+  BNmuonCollection muonsTight;
+  BNmuonCollection muonsLoose;
+  
 
   fwlite::Handle<BNmcparticleCollection> h_mcparticles;
   BNmcparticleCollection mcparticles;
@@ -185,9 +206,11 @@ public:
 
   fwlite::Handle<BNjetCollection> h_pfjets;
   BNjetCollection pfjets;
+  BNjetCollection jetsTight;
 
   fwlite::Handle<BNmetCollection> h_pfmets;
   BNmetCollection pfmets;
+  BNmetCollection metCorrected;
 
   fwlite::Handle<BNtriggerCollection> h_hlt;
   BNtriggerCollection hltInfo;
@@ -197,6 +220,9 @@ public:
 
   fwlite::Handle<BNelectronCollection> h_electrons;
   BNelectronCollection electrons;
+  BNelectronCollection electronsTight;
+  BNelectronCollection electronsLoose;
+  
   
 };
 

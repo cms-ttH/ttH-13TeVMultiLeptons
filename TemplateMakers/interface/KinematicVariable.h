@@ -106,7 +106,12 @@ public:
   };
   virtual void reset ( ) {
     cout << "Error, you should not be using this function"  << endl;
-  };  
+  };
+
+  virtual bool passCut () {
+    cout << "Error, you should not be using this function" << endl;
+    return false;
+  };
 
 };
 

@@ -10,6 +10,11 @@ class NumJets: public KinematicVariable {
 public:  
   int numJets;
 
+  // pass if >= threshold
+  int threshold;
+
+  bool evaluatedThisEvent;
+
   NumJets();
 
   TString branchName;
@@ -19,8 +24,14 @@ public:
   void attachToTree (TTree * inTree);
   void reset ();
 
+  bool passCut ();
+
+  void setCut (int th);
 
 
 };
+
+
+
 
 #endif
