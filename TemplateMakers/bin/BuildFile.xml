@@ -14,12 +14,15 @@
 <use   name="BEAN/BEANmaker" />
 <use   name="CondFormats/JetMETObjects"  />
 <lib   name="TMVA" />
+<use   name="ttH-Multileptons/TemplateMakers" />
 <environment>
 #  <bin   file="test_beans_dileptonStudies.C">
 #  </bin>
   <bin   file="helper_dilepton.C">
   </bin>
   <bin   file="LepJets.C">
+  </bin>
+  <bin   file="toolTest.C">
   </bin>
 #  <bin   file="test_beans_trileptonStudies.C">
 #  </bin>

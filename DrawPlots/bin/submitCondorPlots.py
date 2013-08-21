@@ -5,6 +5,16 @@ import sys
 import time
 from optparse import OptionParser
 
+def checkCondorDirs () :
+
+    if not os.path.exists("batchBEAN"):
+        os.mkdir("batchBEAN")
+    
+    if not os.path.exists("batchBEAN/condorLogs"):
+        os.mkdir("batchBEAN/condorLogs")
+
+
+
 def main ():
 
     parser = OptionParser(usage="./submitCondorPlots.py --year=2012_52x  LABEL")
@@ -21,6 +31,7 @@ def main ():
         parser.print_help()
         exit(3)
 
+    checkCondorDirs()
     iYear = str(options.year) #2011, 2012_52x, 2012_53x
     iZmask = str(options.zmask) #noZmask, Zmask, Zpeak
     iCharge = str(options.charge) #OS, SS
