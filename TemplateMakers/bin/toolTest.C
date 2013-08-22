@@ -62,40 +62,10 @@ int main () {
   BNmuon targetMuon;
   
   GenericObjectMember<double> muonPt(Reflex::Type::ByName("BNmuon"),  &targetMuon, "pt", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
+  GenericObjectMember<double> muonEta(Reflex::Type::ByName("BNmuon"),  &targetMuon, "eta", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
+  GenericObjectMember<double> muonPhi(Reflex::Type::ByName("BNmuon"),  &targetMuon, "phi", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
   
   kinVars.push_back(&muonPt);
-
-
-  Reflex::Type bf = Reflex::Type::ByName("BEANFileInterface");
-
-  cout << "Number of members in BF = " << bf.DataMemberSize() << endl
-       << "Number of tempalte memebers in BF = " << bf.MemberTemplateSize() << endl
-       << "Sub Type template is  " << bf.SubTypeTemplateSize() << endl
-       << "Template argument size " << bf.TemplateArgumentSize() << endl
-       << "Is template instance? " << bf.IsTemplateInstance() << endl
-       << endl;
-
-  for (unsigned iMem = 0 ;
-       iMem < bf.DataMemberSize();
-       iMem ++){
-
-    cout << "---Member " << bf.DataMemberAt(iMem).Name() << endl;
-  }
-
-  // testing 
-  cout << "We made a muon. It has pt = " << targetMuon.pt << endl
-       << "Can we call evaluate? " << endl;
-
-  muonPt.evaluate();
-  muonPt.print();
-
-  cout << "       TEST OK" << endl;
-
-  
-    
-       
-  
-  
   
 
   HelperLeptonCore lepHelper;
