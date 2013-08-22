@@ -3,20 +3,21 @@ import sys
 import ROOT
 
 class Plot:
-    def __init__(self, output_file, tree, distribution, parameters, draw_string):
+    def __init__(self, output_file, tree, distribution, plot_name, parameters, draw_string):
         self.set_global_style()
-        (plot_type, name, title, num_bins, x_min, x_max) = parameters
+        (plot_type, title, num_bins, x_min, x_max) = parameters
 
         if plot_type == 'TH1F':
-            self.plot = ROOT.TH1F(name, title, num_bins, x_min, x_max)
+            self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
         else:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
             sys.exit(2)
 
         self.plot.Sumw2()
-        tree.Draw(distribution+'>>'+name, draw_string, 'goff')
+        tree.Draw(distribution+'>>'+plot_name, draw_string, 'goff')
         self.plot.SetDirectory(output_file)
-        self.plot.Write('', ROOT.TObject.kOverwrite) #without the overwrite, I'm writing two cycles each time.. this must be inefficient..
+        output_file.Write('', ROOT.TObject.kOverwrite)
+
 
     def set_global_style(self): #later we can add arguments for different style sets
         ROOT.gROOT.SetStyle("Plain")

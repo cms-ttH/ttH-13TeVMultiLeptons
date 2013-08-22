@@ -35,27 +35,25 @@ def run(args, config, samples, project_label):
     plot_parameters = config['distributions'].values()
 
     for sample in samples:
-
         sample_info = SampleInformation(sample)
-        systematics_info = SystematicsInformation(baseline_systematics)
-        systematics_info.edit_systematics_list(sample_info.systematics)
-        for systematic in systematics_info.systematics_list:
 
-            systematic_weight_string = systematics_info.dictionary[systematic]['weight_string']
-            source_file_label = systematics_info.dictionary[systematic]['source_file_label']
-            if source_file_label == '' or source_file_label == 'nominal':
-                source_file_name = 'tree_files/summary_trees_%s_%s_all.root' % (sample, project_label)                
-            else:
-                source_file_name = 'tree_files/summary_trees_%s_%s_%s_all.root' % (sample, project_label, source_file_label)
-            source_file = ROOT.TFile(source_file_name)
-            tree = source_file.Get('summaryTree')
+        for lepton_category in lepton_categories:
 
-            for lepton_category in lepton_categories:
-                output_file_name = '%s/%s_%s.root' % (lepton_category, sample, project_label)
+            for jet_tag_category in jet_tag_categories:
+                output_file_name = '%s/%s_%s_%s_%s.root' % (lepton_category, lepton_category, jet_tag_category, sample, project_label)
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
-                for jet_tag_category in jet_tag_categories:
-                    print 'Beginning loop.  Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (jet_tag_category, lepton_category, systematic)
+                systematics_info = SystematicsInformation(baseline_systematics)
+                systematics_info.edit_systematics_list(sample_info.systematics)
+                for systematic in systematics_info.systematics_list:
+                    systematic_weight_string = systematics_info.dictionary[systematic]['weight_string']
+                    source_file_label = systematics_info.dictionary[systematic]['source_file_label']
+                    if source_file_label != '':
+                        source_file_label = '_' + source_file_label
+                    source_file_name = 'tree_files/summary_trees_%s_%s%s_all.root' % (sample, project_label, source_file_label)
+                    source_file = ROOT.TFile(source_file_name)
+
+                    tree = source_file.Get('summaryTree')
 
                     draw_string_maker = DrawStringMaker()
                     draw_string_maker.append_selection_requirements(cut_strings)
@@ -65,12 +63,14 @@ def run(args, config, samples, project_label):
                     if not sample_info.is_data:
                         draw_string_maker.multiply_by_factors(mc_weight_strings)
                         draw_string_maker.multiply_by_factor('%s * %s / %s' % (sample_info.x_section, lumi, sample_info.num_generated))
-                        
+
+                    print 'Beginning loop over distributions.  Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (jet_tag_category, lepton_category, systematic)
                     for (distribution, parameters) in zip(distributions, plot_parameters):
-                        plot = Plot(output_file, tree, distribution, parameters, draw_string_maker.draw_string)
-                        
-                output_file.Close() #end lepton category
-            source_file.Close() #end systematic
+                        plot_name = '%s_%s_%s%s' % (lepton_category, jet_tag_category, distribution, source_file_label)
+                        plot = Plot(output_file, tree, distribution, plot_name, parameters, draw_string_maker.draw_string)
+
+                    source_file.Close() #end systematic
+                output_file.Close() #end jet tag category
 
 if not args.batch:
     run(args, config, samples, project_label)    
