@@ -2,7 +2,7 @@
 #ifndef _NumJets_h
 #define _NumJets_h
 
-#include "ttH-Multileptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 
 class NumJets: public KinematicVariable {
 
@@ -28,6 +28,7 @@ public:
 
   void setCut (int th);
 
+  void print ();
 
 };
 

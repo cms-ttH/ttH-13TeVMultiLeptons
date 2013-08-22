@@ -169,7 +169,7 @@ int main ( int argc, char ** argv )
    bool applySelectionSameSign = anaParams.getParameter<bool>("applySelectionSameSign");
    bool useSideLeptons = false;
    
-   bool debug_ = false;
+   bool debug_ = true;
 
    int maxNentries = inputs.getParameter<int> ("maxEvents");
 
@@ -1991,6 +1991,13 @@ int main ( int argc, char ** argv )
     numTightMuons = muonsTight.size();
     numLooseMuons = muonsTL.size() - muonsTight.size();
     numSideMuons = muonsTS.size() - muonsSide.size();
+
+    if (debug_)cout << "JMS_DEBUG "<< event->run
+                    << " " << event->lumi
+                    << " " << event->evt
+                    << " numTightMuons = " << numTightMuons
+                    << " numLooseMuons = " << numLooseMuons
+                    << endl;
 
 
     bool PassTwoLepton = (( numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons )== 2 && ( numTightMuons + numTightElectrons )> 0 );

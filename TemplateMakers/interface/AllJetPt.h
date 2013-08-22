@@ -4,8 +4,8 @@
 #ifndef _AllJetPt_h
 #define _AllJetPt_h
 
-#include "ttH-Multileptons/TemplateMakers/interface/BranchInfo.h"
-#include "ttH-Multileptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 
 class AllJetPt: public KinematicVariable {
 
@@ -21,7 +21,7 @@ public:
   void evaluate ();
   void attachToTree (TTree * inTree);
   void reset ();
-
+  void print ();
 
 
 };

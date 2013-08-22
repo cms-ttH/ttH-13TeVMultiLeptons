@@ -1,5 +1,5 @@
 
-#include "ttH-Multileptons/TemplateMakers/interface/AllJetPt.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/AllJetPt.h"
 
 
 //////////////////////////////////
@@ -79,4 +79,22 @@ void AllJetPt::evaluate () {
        
   }
 
+}
+
+
+void AllJetPt::print () {
+
+  unsigned numJets = blocks->jetCollection->size();
+  unsigned loopMax = (unsigned(maxJets) < numJets) ? unsigned(maxJets) : numJets;
+
+  
+  for (unsigned iCat = 0; iCat < loopMax; iCat++ ) {
+    
+    cout << " " << branchInfos[iCat].branchName
+         << " " << branchInfos[iCat].branchVal
+         << endl;
+       
+  }
+  
+  
 }

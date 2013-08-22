@@ -69,7 +69,7 @@
 #include "TMVA/MethodCuts.h"
 
 
-#include "ttH-Multileptons/TemplateMakers/interface/BEANFileInterface.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 
 
 using namespace std;
@@ -113,6 +113,10 @@ public:
     return false;
   };
 
+  virtual void print () {
+    cout << "Error, you should not be using this function" << endl;    
+  };
+
 };
 
 
@@ -120,7 +124,7 @@ namespace KinematicVariableConstants {
 
   const float FLOAT_INIT = -9.0e20;
   const int INT_INIT = -99999999;
-
+  const unsigned UINT_INIT = 987654;
 }
 
 #endif // KinematicVariable

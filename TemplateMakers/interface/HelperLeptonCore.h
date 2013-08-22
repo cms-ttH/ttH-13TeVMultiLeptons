@@ -83,7 +83,7 @@
 
 #endif
 
-#include "ttH-Multileptons/TemplateMakers/interface/BEANFileInterface.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 
 
 // HelperLeptonCore

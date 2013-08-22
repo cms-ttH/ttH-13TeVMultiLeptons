@@ -2,8 +2,8 @@
 #ifndef _NumTightLooseMuons_h
 #define _NumTightLooseMuons_h
 
-#include "ttH-Multileptons/TemplateMakers/interface/KinematicVariable.h"
-#include "ttH-Multileptons/TemplateMakers/interface/BranchInfo.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
 
 class NumTightLooseMuons: public KinematicVariable {
 
@@ -18,6 +18,12 @@ public:
   int maxTight;
   int minLoose;
   int maxLoose;
+  int totalTightPlusLoose;
+
+  
+  bool useSumTightLoose;
+  
+
 
   bool evaluatedThisEvent;
 
@@ -31,6 +37,9 @@ public:
 
   void setCut (int minT, int maxT, int minL, int maxL);
 
+  void setCutOnSumTightLoose (int minT, int total);
+
+  void print ();
 
 };
 

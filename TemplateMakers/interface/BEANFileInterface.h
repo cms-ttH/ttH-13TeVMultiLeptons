@@ -129,7 +129,13 @@ public:
   };
 
   bool checkMuons() {
-    if (muonCollection==0 )
+    if (muonCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkLooseMuons() {
+    if (looseMuonCollection == 0)
       return false;
     return true;
   };
@@ -140,6 +146,27 @@ public:
     return true;
   };
 
+  bool checkLooseElectrons() {
+    if (looseEleCollection == 0)
+      return false;
+    return true;
+  };
+
+  void print () {
+
+    cout << "BEANFileIterface.print() ............." << endl
+         << "    muonCollection " <<  muonCollection << endl
+         << "    looseMuonCollection " << looseMuonCollection << endl
+         << "    metCollection " << metCollection << endl
+         << "    jetCollection " << jetCollection << endl
+         << "    eleCollection " << eleCollection << endl
+         << "    looseEleCollection " << looseEleCollection << endl
+         << "    mcParticleCollection " << mcParticleCollection << endl
+         << "    eventCollection " << eventCollection << endl
+         << "    hltCollection  " << hltCollection << endl
+         << "    primaryVertexCollection " << primaryVertexCollection << endl;
+
+  };
 
 };
 

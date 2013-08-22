@@ -1,5 +1,5 @@
 
-#include "ttH-Multileptons/TemplateMakers/interface/NumJets.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/NumJets.h"
 
 NumJets::NumJets () : branchName("numJets"), branchType("numJets/I"), threshold(0) {
 
@@ -45,3 +45,11 @@ void NumJets::setCut (int th) {
   threshold = th;
   
 }
+
+void NumJets::print () {
+
+  cout << " numJets = " << numJets << endl;
+
+}
+
+
