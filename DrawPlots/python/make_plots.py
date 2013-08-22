@@ -8,6 +8,7 @@ import ROOT
 parser = ArgumentParser(description='Make plots from summary trees.')
 parser.add_argument('config_file_name', help='Configuration file to process.')
 parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
+parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
 parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
 args = parser.parse_args()
 
@@ -52,7 +53,6 @@ def run(args, config, samples, project_label):
                         source_file_label = '_' + source_file_label
                     source_file_name = 'tree_files/summary_trees_%s_%s%s_all.root' % (sample, project_label, source_file_label)
                     source_file = ROOT.TFile(source_file_name)
-
                     tree = source_file.Get('summaryTree')
 
                     draw_string_maker = DrawStringMaker()
@@ -64,10 +64,12 @@ def run(args, config, samples, project_label):
                         draw_string_maker.multiply_by_factors(mc_weight_strings)
                         draw_string_maker.multiply_by_factor('%s * %s / %s' % (sample_info.x_section, lumi, sample_info.num_generated))
 
-                    print 'Beginning loop over distributions.  Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (jet_tag_category, lepton_category, systematic)
+                    print 'Beginning next loop iteration. Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (jet_tag_category, lepton_category, systematic)
                     for (distribution, parameters) in zip(distributions, plot_parameters):
                         plot_name = '%s_%s_%s%s' % (lepton_category, jet_tag_category, distribution, source_file_label)
                         plot = Plot(output_file, tree, distribution, plot_name, parameters, draw_string_maker.draw_string)
+                        if args.pdf:
+                            plot.save_pdf()
 
                     source_file.Close() #end systematic
                 output_file.Close() #end jet tag category

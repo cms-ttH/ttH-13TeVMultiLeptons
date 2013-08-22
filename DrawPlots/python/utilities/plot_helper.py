@@ -1,34 +1,41 @@
 #!/usr/bin/env python
-import sys
+import os, sys
 import ROOT
 
 class Plot:
     def __init__(self, output_file, tree, distribution, plot_name, parameters, draw_string):
-        self.set_global_style()
         (plot_type, title, num_bins, x_min, x_max) = parameters
+        self.plot_name = plot_name
 
         if plot_type == 'TH1F':
             self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
+            tree.Project(self.plot_name, distribution, draw_string)
         else:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
             sys.exit(2)
-
-        self.plot.Sumw2()
-        tree.Draw(distribution+'>>'+plot_name, draw_string, 'goff')
+        #tree.Draw(distribution + '>>' + self.plot_name, draw_string, 'goff')
         self.plot.SetDirectory(output_file)
         output_file.Write('', ROOT.TObject.kOverwrite)
 
+    def save_pdf(self):
+        if not os.path.exists('plot_pdfs'):
+            os.makedirs('plot_pdfs')
+        self.set_style()
+        ROOT.gROOT.SetBatch(ROOT.kTRUE)
+        canvas = ROOT.TCanvas('canvas', 'canvas', 700, 800)
+        self.plot.Draw()
+        canvas.Print('plot_pdfs/%s.pdf' % self.plot_name)
 
-    def set_global_style(self): #later we can add arguments for different style sets
-        ROOT.gROOT.SetStyle("Plain")
+    def set_style(self): #later we can add arguments for different style sets if needed
         ROOT.gStyle.SetOptStat(0)
-        ROOT.gStyle.SetPadLeftMargin(0.15)
-        ROOT.gStyle.SetPadRightMargin(0.07)
-        ROOT.gStyle.SetPadTopMargin(0.07)
-        ROOT.gStyle.SetPadBottomMargin(0.1)
         ROOT.gStyle.SetPadBorderMode(0)
         ROOT.gStyle.SetFrameBorderMode(0)
-        ROOT.gStyle.SetTitleOffset(1.4, "y")  
+        ROOT.gStyle.SetLineWidth(2)
+        ROOT.gStyle.SetLabelOffset(0.01)
+        ROOT.gStyle.SetLabelSize(0.035)
+        ROOT.gStyle.SetHistLineWidth(2)
+        #self.plot.GetYaxis().SetNoExponent(ROOT.kTRUE)
+
 
 class DrawStringMaker:
     def __init__(self):
