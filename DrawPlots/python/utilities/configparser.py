@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #I'm copying this into our analysis area because we don't have access to
-#it with python 2.6 from pscratch. This python module has been
+#it with python 2.6 from pscractch. This python module has been
 #in the standard library since 2008.  We're pretty lame.
 
 u"""Configuration file parser.
@@ -129,9 +129,9 @@ from __future__ import with_statement
 from collections import MutableMapping
 from io import open
 try:
-    from collections import defaultdict as _default_dict
+    from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import OrderedDict as _default_dict
 except ImportError:
-    from ordereddict import defaultdict as _default_dict
+    from OrderedDict import OrderedDict as _default_dict
 import functools
 import io
 import itertools
