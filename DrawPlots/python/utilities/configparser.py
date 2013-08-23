@@ -1308,6 +1308,8 @@ class SectionProxy(MutableMapping):
 		entry = self._parser.get(self._name, option, raw=raw, vars=vars,
 								fallback=fallback)
 		import re
+
+		#AW - added interpretation of ints, floats, and bools for lists and single items
 		if ',' in entry:			
 			string_list = [value.strip() for value in entry.split(',')]
 			type_list = []
@@ -1324,7 +1326,12 @@ class SectionProxy(MutableMapping):
 				type_list.append(value)
 			entry = type_list
 		else:
-			if 'true' in entry or 'True' in entry:
+			if not re.search('[a-zA-Z]', entry):
+				if '.' in entry:
+					entry = float(entry)
+				else:
+					entry = int(entry)
+			elif 'true' in entry or 'True' in entry:
 				entry = bool(True)
 			elif 'false' in entry or 'False' in entry:
 				entry = bool(False)
