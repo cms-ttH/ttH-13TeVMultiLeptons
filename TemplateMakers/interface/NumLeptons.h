@@ -20,8 +20,8 @@ NumLeptons::NumLeptons  () {
   branches["numTightMuons"] = BranchInfo<int>("numTightMuons");
   branches["numLooseMuons"] = BranchInfo<int>("numLooseMuons");
   
-  branches["numTightEle"] = BranchInfo<int>("numLooseMuons");
-  branches["numLooseEle"] = BranchInfo<int>("numLooseMuons");
+  branches["numTightEle"] = BranchInfo<int>("numTightEle");
+  branches["numLooseEle"] = BranchInfo<int>("numLooseEle");
   
 }
 

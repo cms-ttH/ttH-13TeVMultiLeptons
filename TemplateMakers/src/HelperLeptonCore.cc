@@ -30,10 +30,10 @@ void HelperLeptonCore::initializePUReweighting () {
 }
 
 
-BEANhelper * HelperLeptonCore::setupAnalysisParameters (string year, string sampleName){
+BEANhelper * HelperLeptonCore::setupAnalysisParameters (string year, string inputName ) {
 
   analysisYear = year;
-  
+  sampleName = inputName;
 
   detectData (sampleName);
   convertSampleNameToNumber(sampleName);
@@ -398,10 +398,10 @@ void HelperLeptonCore::getTightAndLooseMuons ( muonID::muonID tightID, muonID::m
 void HelperLeptonCore::getTightCorrectedJets (double ptCut,
                                               double etaCut,
                                               jetID::jetID tightID,
-                                              BEANFileInterface * selectedCollections,
-                                              sysType::sysType shift) {
+                                              BEANFileInterface * selectedCollections
+                                              ) {
 
-  BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), shift);
+  BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);
   BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, '-' ) ;
   
   jetsTight = bHelp.GetSortedByPt(tmpCorrSelJets);

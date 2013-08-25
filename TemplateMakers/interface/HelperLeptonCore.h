@@ -155,8 +155,8 @@ public:
   void getTightCorrectedJets (double ptCut,
                               double etaCut,
                               jetID::jetID tightID,                    
-                              BEANFileInterface * selectedCollections,
-                              sysType::sysType shift = sysType::NA );
+                              BEANFileInterface * selectedCollections
+                               );
 
   void getCorrectedMet (BEANFileInterface * selectedCollections,
                         sysType::sysType shift = sysType::NA);
@@ -177,10 +177,14 @@ public:
   int nGen;
   float Xsec;
   int sampleNumber;
+  string sampleName;
 
   bool isData;
 
   string sysType_lep;
+  sysType::sysType jetEnergyShift;
+  sysType::sysType csvShift;
+  
 
   BEANhelper bHelp;
   BEANFileInterface rawCollections;

@@ -93,6 +93,15 @@ int main () {
   fwlite::ChainEvent ev(fileNames);
 
 
+  
+  HelperLeptonCore lepHelper;
+
+  // declare your helper
+  // it comes from the lepHelper
+  BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", "ttH125");
+  
+
+  
   // declare your kinematic variables that you want
   // to be written out into the tree
   vector<ArbitraryVariable*> kinVars;
@@ -108,14 +117,23 @@ int main () {
    NumLeptons myNlep;
    kinVars.push_back(&myNlep);
 
+
+   CSVWeights myCSV(beanHelper);
+   kinVars.push_back(&myCSV);
+
+   PUWeights myPU(&lepHelper);
+   kinVars.push_back(&myPU);
+   
+
    int TwoMuon = 0;
    int TwoEle = 0;
    int MuonEle = 0;
 
+
    summaryTree->Branch("TwoMuon", &TwoMuon);
    summaryTree->Branch("TwoEle", &TwoEle);
    summaryTree->Branch("MuonEle", &MuonEle);
-   
+
   
 
   GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
@@ -130,21 +148,17 @@ int main () {
   GenericJetCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"),  "eta", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetEta);
 
-  GenericEventCollectionMember<double, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"),  "run", "eventInfo",  KinematicVariableConstants::FLOAT_INIT, 1);
+  GenericEventCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"),  "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
   kinVars.push_back(&runNumber);
 
-  GenericEventCollectionMember<double, BNeventCollection> lumiBlock(Reflex::Type::ByName("BNevent"),  "lumi", "eventInfo",  KinematicVariableConstants::FLOAT_INIT, 1);
+  GenericEventCollectionMember<unsigned, BNeventCollection> lumiBlock(Reflex::Type::ByName("BNevent"),  "lumi", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
   kinVars.push_back(&lumiBlock);
 
-  GenericEventCollectionMember<double, BNeventCollection> eventNumber(Reflex::Type::ByName("BNevent"),  "evt", "eventInfo",  KinematicVariableConstants::FLOAT_INIT, 1);
+  // this is a long inside BNevent
+  // just using keyword long won't work
+  // needs to be Long64_t 
+  GenericEventCollectionMember<Long64_t, BNeventCollection> eventNumber(Reflex::Type::ByName("BNevent"),  "evt", "eventInfo",  KinematicVariableConstants::INT_INIT, 1);
   kinVars.push_back(&eventNumber);
-
-  HelperLeptonCore lepHelper;
-
-  // declare your helper
-  // it comes from the lepHelper
-  BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", "ttH125");
-  
   // hook up the variables
 
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}

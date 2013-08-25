@@ -41,7 +41,7 @@ bool NumJets::passCut() {
 
   evaluate();
   
-  if (branches["numJets"].branchVal > threshold)
+  if (branches["numJets"].branchVal >= threshold)
     return true;
   return false;
 
