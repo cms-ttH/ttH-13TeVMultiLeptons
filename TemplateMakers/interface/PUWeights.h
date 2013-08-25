@@ -7,12 +7,7 @@
 ///////////////////////////////////////////////////////
 //
 //
-//  Books the 18 variables necessary for 
-//  producing the proper CSV weights in your jets
-//
-//  Note that the weighting doesn't depend on
-//  which btag cut you make: it applies for all 
-//  CSV values.
+//  PU Weights
 //
 //
 ////////////////////////////////////////////////////

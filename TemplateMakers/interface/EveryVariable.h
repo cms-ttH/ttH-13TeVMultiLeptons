@@ -17,3 +17,7 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/NumLeptons.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CSVWeights.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/PUWeights.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/TopPtWeights.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/XsecWeight.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonScaleFactors.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonTriggerScaleFactors.h"

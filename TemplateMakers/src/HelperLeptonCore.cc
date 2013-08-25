@@ -427,3 +427,45 @@ void HelperLeptonCore::getCorrectedMet (BEANFileInterface * selectedCollections,
   selectedCollections->metCollection = & metCorrected;
 
 }
+
+void HelperLeptonCore::fillLepCollectionWithSelectedLeptons (BEANFileInterface * selectedCollections) {
+
+  // remove all entires first
+  leptonsTight.clear();
+  leptonsLoose.clear();
+  
+  for (BNelectronCollection::iterator iEle = selectedCollections->eleCollection->begin();
+       iEle != selectedCollections->eleCollection->end();
+       iEle ++ ){
+    leptonsTight.push_back( (*iEle));
+  }
+
+  
+  for (BNelectronCollection::iterator iEle = selectedCollections->looseEleCollection->begin();
+       iEle != selectedCollections->looseEleCollection->end();
+       iEle ++ ){
+    leptonsLoose.push_back( (*iEle));
+  }
+
+    
+  for (BNmuonCollection::iterator iMuon = selectedCollections->muonCollection->begin();
+       iMuon != selectedCollections->muonCollection->end();
+       iMuon ++ ){
+    leptonsTight.push_back( (*iMuon));
+  }
+
+  for (BNmuonCollection::iterator iMuon = selectedCollections->looseMuonCollection->begin();
+       iMuon != selectedCollections->looseMuonCollection->end();
+       iMuon ++ ){
+    leptonsLoose.push_back( (*iMuon));      
+  }
+
+  // sort them by pt
+  // 
+  leptonsTight.sort();
+  leptonsLoose.sort();
+
+  selectedCollections->leptonCollection = &leptonsTight;
+  selectedCollections->looseLeptonCollection = &leptonsLoose;
+
+}

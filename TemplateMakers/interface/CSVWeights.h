@@ -21,17 +21,17 @@ class CSVWeights: public KinematicVariable<double> {
 
 public:
   
-  CSVWeights(BEANhelper *in);
+  CSVWeights(HelperLeptonCore *in);
 
 
   void evaluate ();
   bool passCut ();
 
-  BEANhelper * myHelper;
+  HelperLeptonCore * myHelper;
 
 };
 
-CSVWeights::CSVWeights  (BEANhelper *in) :
+CSVWeights::CSVWeights  (HelperLeptonCore *in) :
   myHelper(in)
 {
 
@@ -66,27 +66,28 @@ void CSVWeights::evaluate () {
   evaluatedThisEvent = true;
 
   BNjetCollection * myJets = this->blocks->jetCollection;
+  BEANhelper * beanHelper = &(myHelper->bHelp);
 
-  vector<double> nominalWeights = myHelper->GetCSVweights(*(myJets), sysType::NA);
+  vector<double> nominalWeights = beanHelper->GetCSVweights(*(myJets), sysType::NA);
 
-  vector<double> csvWgtHFup = myHelper->GetCSVweights( *(myJets), sysType::CSVHFup );
-  vector<double> csvWgtHFdown = myHelper->GetCSVweights( *(myJets), sysType::CSVHFdown );
-  vector<double> csvWgtLFStats1up = myHelper->GetCSVweights( *(myJets), sysType::CSVLFStats1up );
-  vector<double> csvWgtLFStats1down = myHelper->GetCSVweights( *(myJets), sysType::CSVLFStats1down );
-  vector<double> csvWgtLFStats2up = myHelper->GetCSVweights( *(myJets), sysType::CSVLFStats2up );
-  vector<double> csvWgtLFStats2down = myHelper->GetCSVweights( *(myJets), sysType::CSVLFStats2down );
+  vector<double> csvWgtHFup = beanHelper->GetCSVweights( *(myJets), sysType::CSVHFup );
+  vector<double> csvWgtHFdown = beanHelper->GetCSVweights( *(myJets), sysType::CSVHFdown );
+  vector<double> csvWgtLFStats1up = beanHelper->GetCSVweights( *(myJets), sysType::CSVLFStats1up );
+  vector<double> csvWgtLFStats1down = beanHelper->GetCSVweights( *(myJets), sysType::CSVLFStats1down );
+  vector<double> csvWgtLFStats2up = beanHelper->GetCSVweights( *(myJets), sysType::CSVLFStats2up );
+  vector<double> csvWgtLFStats2down = beanHelper->GetCSVweights( *(myJets), sysType::CSVLFStats2down );
 
-  vector<double> csvWgtLFup = myHelper->GetCSVweights( *(myJets), sysType::CSVLFup );
-  vector<double> csvWgtLFdown = myHelper->GetCSVweights( *(myJets), sysType::CSVLFdown );
-  vector<double> csvWgtHFStats1up = myHelper->GetCSVweights( *(myJets), sysType::CSVHFStats1up );
-  vector<double> csvWgtHFStats1down = myHelper->GetCSVweights( *(myJets), sysType::CSVHFStats1down );
-  vector<double> csvWgtHFStats2up = myHelper->GetCSVweights( *(myJets), sysType::CSVHFStats2up );
-  vector<double> csvWgtHFStats2down = myHelper->GetCSVweights( *(myJets), sysType::CSVHFStats2down );
+  vector<double> csvWgtLFup = beanHelper->GetCSVweights( *(myJets), sysType::CSVLFup );
+  vector<double> csvWgtLFdown = beanHelper->GetCSVweights( *(myJets), sysType::CSVLFdown );
+  vector<double> csvWgtHFStats1up = beanHelper->GetCSVweights( *(myJets), sysType::CSVHFStats1up );
+  vector<double> csvWgtHFStats1down = beanHelper->GetCSVweights( *(myJets), sysType::CSVHFStats1down );
+  vector<double> csvWgtHFStats2up = beanHelper->GetCSVweights( *(myJets), sysType::CSVHFStats2up );
+  vector<double> csvWgtHFStats2down = beanHelper->GetCSVweights( *(myJets), sysType::CSVHFStats2down );
 
-  vector<double> csvWgtcErr1up = myHelper->GetCSVweights( *(myJets), sysType::CSVCErr1up );
-  vector<double> csvWgtcErr1down = myHelper->GetCSVweights( *(myJets), sysType::CSVCErr1down );
-  vector<double> csvWgtcErr2up = myHelper->GetCSVweights( *(myJets), sysType::CSVCErr2up );
-  vector<double> csvWgtcErr2down = myHelper->GetCSVweights( *(myJets), sysType::CSVCErr2down );
+  vector<double> csvWgtcErr1up = beanHelper->GetCSVweights( *(myJets), sysType::CSVCErr1up );
+  vector<double> csvWgtcErr1down = beanHelper->GetCSVweights( *(myJets), sysType::CSVCErr1down );
+  vector<double> csvWgtcErr2up = beanHelper->GetCSVweights( *(myJets), sysType::CSVCErr2up );
+  vector<double> csvWgtcErr2down = beanHelper->GetCSVweights( *(myJets), sysType::CSVCErr2down );
       
   branches["csvWgtlf"].branchVal = nominalWeights[1];
   branches["csvWgtlf_HFUp"].branchVal = csvWgtHFup[1];

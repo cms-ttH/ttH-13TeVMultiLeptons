@@ -160,6 +160,8 @@ public:
 
   void getCorrectedMet (BEANFileInterface * selectedCollections,
                         sysType::sysType shift = sysType::NA);
+
+  void fillLepCollectionWithSelectedLeptons ( BEANFileInterface * selectedCollections);
   
   // fill in everything you have
   //void fillOutputBranches ();
@@ -173,7 +175,7 @@ public:
   std::string analysisYear;
 
   
-  float weight_Xsec;
+  double weight_Xsec;
   int nGen;
   float Xsec;
   int sampleNumber;
@@ -226,6 +228,9 @@ public:
   BNelectronCollection electrons;
   BNelectronCollection electronsTight;
   BNelectronCollection electronsLoose;
+
+  BNleptonCollection leptonsTight;
+  BNleptonCollection leptonsLoose;
   
   
 };

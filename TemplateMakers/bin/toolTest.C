@@ -99,6 +99,16 @@ int main () {
   // declare your helper
   // it comes from the lepHelper
   BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", "ttH125");
+
+  // ---------------------------------------------
+  // Note for future development: should these be
+  // saved inside the lepHelper somewhere?
+  // ---------------------------------------------
+  
+  muonID::muonID muonTightID = muonID::muonTight;
+  muonID::muonID muonLooseID = muonID::muonLoose;
+  electronID::electronID eleTightID = electronID::electronTight;
+  electronID::electronID eleLooseID = electronID::electronLoose;
   
 
   
@@ -118,11 +128,24 @@ int main () {
    kinVars.push_back(&myNlep);
 
 
-   CSVWeights myCSV(beanHelper);
+   CSVWeights myCSV(&lepHelper);
    kinVars.push_back(&myCSV);
 
    PUWeights myPU(&lepHelper);
    kinVars.push_back(&myPU);
+
+   TopPtWeights myTopPt(&lepHelper);
+   kinVars.push_back(&myTopPt);
+
+   XsecWeight myXsec (&lepHelper);
+   kinVars.push_back(&myXsec);
+
+
+   LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, eleTightID, eleLooseID);
+   kinVars.push_back(&myLepSF);
+
+   LeptonTriggerScaleFactors myLepTrig( &lepHelper);
+   kinVars.push_back(&myLepTrig);
    
 
    int TwoMuon = 0;
@@ -179,9 +202,10 @@ int main () {
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
     
     BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, false);
+
     // make a shallow copy
     // update pointer as you make new collections
-    BEANFileInterface eventCollections = (*rawCollections);
+    BEANFileInterface selectedCollections = (*rawCollections);
 
 
 
@@ -195,21 +219,28 @@ int main () {
 
     //------------    Jets
     if (debug > 9) cout << "Getting jets "  << endl;
-	lepHelper.getTightCorrectedJets(30.0, 2.4, jetID::jetLoose, &eventCollections);
+	lepHelper.getTightCorrectedJets(30.0, 2.4, jetID::jetLoose, &selectedCollections);
 
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
-    lepHelper.getTightAndLooseElectrons(electronID::electronTight, electronID::electronLoose, &eventCollections);
+    lepHelper.getTightAndLooseElectrons(eleTightID, eleLooseID, &selectedCollections);
     
     //-----------    Muons
     if (debug > 9) cout << "Getting muons "  << endl;
-    lepHelper.getTightAndLooseMuons(muonID::muonTight, muonID::muonLoose, &eventCollections);
+    lepHelper.getTightAndLooseMuons(muonTightID, muonLooseID, &selectedCollections);
 
 
     //----------    MET
     if (debug > 9) cout << "Getting met "  << endl;
-    lepHelper.getCorrectedMet(&eventCollections);
+    lepHelper.getCorrectedMet(&selectedCollections);
+
+
+    //--------- fill up the lepton collections
+
+    if (debug >9) cout << "Filling lepton collections" << endl;
+    lepHelper.fillLepCollectionWithSelectedLeptons(&selectedCollections);
+    
     
 
     // reset all the vars
@@ -219,7 +250,7 @@ int main () {
          iVar++) {
       
       (*iVar)->reset();
-      (*iVar)->assignCollections(&eventCollections);
+      (*iVar)->assignCollections(&selectedCollections);
       
     }
 
@@ -228,7 +259,10 @@ int main () {
     MuonEle = 0;
 
 
-    // In principle, you could apply different selections here
+    // There are several ways to define a selection
+    // One way is with a kinematic varaible,
+    // Another way is with a function that is a cut
+        
     bool passAllCuts = true;
 
     if (debug > 9) cout << "Checking cuts "  << endl;
@@ -243,12 +277,16 @@ int main () {
     }
 
     // do the lepton cut
-    passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&eventCollections);
+    passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&selectedCollections);
     
     
     if (!passAllCuts) {
       numEventsFailCuts++;
+
+      //!!!!    Skip The event  ///////////////
+      
       continue;
+
     } else {
       numEventsPassCuts++;
     }
@@ -278,7 +316,7 @@ int main () {
       }
     }
 
-    LeptonVarsThisAnalysis(&eventCollections, LeptonCutThisAnalysis(&eventCollections), TwoMuon, TwoEle, MuonEle);
+    LeptonVarsThisAnalysis(&selectedCollections, LeptonCutThisAnalysis(&selectedCollections), TwoMuon, TwoEle, MuonEle);
 
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();
