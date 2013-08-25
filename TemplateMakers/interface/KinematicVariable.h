@@ -28,6 +28,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <map>
 #include "TGraphAsymmErrors.h"
 #include "TLorentzVector.h"
 //Root includes
@@ -70,7 +71,7 @@
 
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
-
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
 
 using namespace std;
 
@@ -79,45 +80,154 @@ using namespace std;
 //   Parent class describing how each kinematic
 //     variable will work
 //
-//  Can't be abstract because you want to loop on it
+//  The reason you have this base class is that you 
+//    want to take advantage of it's polymorphic
+//    properties and make a loop that goes 
+//    over each Arbitrary variable without 
+//    worrying about which template type it has
+//
+//  
 //
 //
 //////////////////////////////////////////////////
 
-class KinematicVariable {
+
+class ArbitraryVariable {
+
+public:
+  
+  ArbitraryVariable() {};
+
+  virtual void assignCollections( BEANFileInterface *col) {
+    cout << "Called ArbitraryVariable assignCollections, which is not right!" << endl;
+  };
+  
+  virtual void evaluate () {};
+
+  
+  virtual void attachToTree (TTree *) {};
+  
+  virtual void reset () {};
+
+  virtual bool passCut () {
+    return true;
+  };
+
+
+  virtual void print () {};
+  
+  
+};
+
+
+
+
+template <class branchDataType> 
+class KinematicVariable: public ArbitraryVariable {
 
 
 public:
 
   // Do nothing
-  KinematicVariable () {};
+  KinematicVariable ();
 
   BEANFileInterface *blocks;
 
-  virtual void assignCollections( BEANFileInterface *col) {
-    blocks = col;
-  };
+  branchDataType resetVal;
+
+  // all of the things you want to store
+  map<TString, BranchInfo<branchDataType> > branches;
+
+  bool evaluatedThisEvent;
+
+  virtual void assignCollections( BEANFileInterface *col);
   
-  virtual void evaluate ( ) {
-    cout << "Error, you should not be using this function" << endl;
-  };  
-  virtual void attachToTree (TTree *)  {
-    cout << "Error, you should not be using this funciton" << endl;
-  };
-  virtual void reset ( ) {
-    cout << "Error, you should not be using this function"  << endl;
-  };
+  virtual void evaluate ();
 
-  virtual bool passCut () {
-    cout << "Error, you should not be using this function" << endl;
-    return false;
-  };
+  
+  virtual void attachToTree (TTree *);
+  
+  virtual void reset ();
 
-  virtual void print () {
-    cout << "Error, you should not be using this function" << endl;    
-  };
+  virtual bool passCut ();
+
+
+  virtual void print ();
 
 };
+
+
+// Default constructor
+// Don't do anything 
+
+template <class branchDataType>
+KinematicVariable<branchDataType>::KinematicVariable() {
+
+  
+}
+
+template <class branchDataType>
+void KinematicVariable<branchDataType>::assignCollections(BEANFileInterface * col ) {
+    blocks = col;
+}
+
+template <class branchDataType>
+void KinematicVariable<branchDataType>::attachToTree(TTree * inTree ) {
+
+
+  for ( typename map<TString, BranchInfo<branchDataType> >::iterator iBranch = branches.begin();
+        iBranch != branches.end();
+        iBranch++ ) {
+    BranchInfo<branchDataType> * iInfo = &(iBranch->second);
+    inTree->Branch(iInfo->branchName, &iInfo->branchVal);
+  }
+  
+}
+
+template <class branchDataType>
+void KinematicVariable<branchDataType>::reset() {
+
+  evaluatedThisEvent = false;
+  for ( typename map<TString, BranchInfo<branchDataType> >::iterator iBranch = branches.begin();
+        iBranch != branches.end();
+        iBranch++ ) {
+    BranchInfo<branchDataType> * iInfo = &(iBranch->second);
+    iInfo->branchVal = resetVal;
+  }  
+  
+}
+
+template <class branchDataType>
+void KinematicVariable<branchDataType>::print() {
+
+  for ( typename map<TString, BranchInfo<branchDataType> >::iterator iBranch = branches.begin();
+        iBranch != branches.end();
+        iBranch++ ) {
+    BranchInfo<branchDataType> * iInfo = &(iBranch->second);
+    cout << "     "  << iInfo->branchName << "  " <<  iInfo->branchVal;
+  }
+  
+  
+}
+
+
+template <class branchDataType>
+void KinematicVariable<branchDataType>::evaluate() {
+
+  cout << "Error, you called evaluate for KinematicVariable, which is just a base class"
+       << endl;
+  assert(false);
+  
+}
+
+template <class branchDataType>
+bool KinematicVariable<branchDataType>::passCut() {
+
+  cout << "Error, you called passCut for KinematicVariable, which is just a base class"
+       << endl;
+  assert(false);
+  
+}
 
 
 namespace KinematicVariableConstants {

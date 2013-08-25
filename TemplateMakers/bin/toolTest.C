@@ -14,6 +14,63 @@
 #include "Reflex/Member.h"
 #include "Reflex/Kernel.h"
 
+
+
+
+bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
+
+  unsigned numTightMuons = inputCollections->muonCollection->size();
+  unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
+  unsigned numTightElectrons = inputCollections->eleCollection->size();
+  unsigned numLooseElectrons = inputCollections->looseEleCollection->size();
+
+  bool passTwoLepton = false;
+  
+  if ( (numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons) ==2
+       && (numTightMuons + numTightElectrons) > 0)
+    passTwoLepton = true;
+
+  return passTwoLepton;
+
+}
+
+void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLepton, int & TwoMuon, int & TwoEle, int & MuonEle) {
+
+  unsigned numTightMuons = inputCollections->muonCollection->size();
+  unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
+  unsigned numTightElectrons = inputCollections->eleCollection->size();
+  unsigned numLooseElectrons = inputCollections->looseEleCollection->size();
+
+  TwoMuon = 0;
+  TwoEle = 0;
+  MuonEle = 0;
+  
+  if (!passTwoLepton){
+    return;
+  }
+
+  if (numTightMuons == 2 || (numTightMuons==1 && numLooseMuons==1)) {
+    TwoMuon = 1;
+    return;
+  }
+
+  if (numTightElectrons ==2 || (numTightElectrons==1 && numLooseElectrons==1)) {
+    TwoEle = 1;
+    return;
+  }
+
+  if ( (numTightElectrons ==1 && numTightMuons==1)
+       || (numTightElectrons ==1 && numLooseMuons ==1)
+       || (numTightMuons == 1 && numLooseElectrons ==1) ) {
+    MuonEle =1;
+    return;
+    
+  }
+  
+}
+
+
+
 int main () {
 
   // load framework libraries
@@ -38,35 +95,49 @@ int main () {
 
   // declare your kinematic variables that you want
   // to be written out into the tree
-  vector<KinematicVariable*> kinVars;
-  vector<KinematicVariable*> cutVars;
+  vector<ArbitraryVariable*> kinVars;
+  vector<ArbitraryVariable*> cutVars;
 
-  RunLumiEvent myEvent;
-  kinVars.push_back(&myEvent);
   
-  AllJetPt myJetPt(4); // parameter is max num jet pts to save
-  kinVars.push_back(&myJetPt);
 
-  NumJets myNjets;
-  myNjets.setCut(2); // parameter is keep events with jets  >= num
-  kinVars.push_back(&myNjets); //save it in the tree
-  cutVars.push_back(&myNjets); //also cut on it
+   NumJets myNjets;
+   myNjets.setCut(2); // parameter is keep events with jets  >= num
+   kinVars.push_back(&myNjets); //save it in the tree
+   cutVars.push_back(&myNjets); //also cut on it
 
+   NumLeptons myNlep;
+   kinVars.push_back(&myNlep);
 
-  NumTightLooseMuons myNmuons;
-  myNmuons.setCutOnSumTightLoose(1, 2); // at least one tight, at most two total t+l
-  kinVars.push_back(&myNmuons);
-  cutVars.push_back(&myNmuons); // use this to make a small ntuple
+   int TwoMuon = 0;
+   int TwoEle = 0;
+   int MuonEle = 0;
 
-
-  BNmuon targetMuon;
+   summaryTree->Branch("TwoMuon", &TwoMuon);
+   summaryTree->Branch("TwoEle", &TwoEle);
+   summaryTree->Branch("MuonEle", &MuonEle);
+   
   
-  GenericObjectMember<double> muonPt(Reflex::Type::ByName("BNmuon"),  &targetMuon, "pt", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
-  GenericObjectMember<double> muonEta(Reflex::Type::ByName("BNmuon"),  &targetMuon, "eta", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
-  GenericObjectMember<double> muonPhi(Reflex::Type::ByName("BNmuon"),  &targetMuon, "phi", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
-  
-  kinVars.push_back(&muonPt);
-  
+
+  GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allMuonPt);
+
+  GenericMuonCollectionMember<double, BNmuonCollection> allMuonEta(Reflex::Type::ByName("BNmuon"),  "eta", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allMuonEta);
+
+  GenericJetCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"),  "pt", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  kinVars.push_back(&allJetPt);
+
+  GenericJetCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"),  "eta", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  kinVars.push_back(&allJetEta);
+
+  GenericEventCollectionMember<double, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"),  "run", "eventInfo",  KinematicVariableConstants::FLOAT_INIT, 1);
+  kinVars.push_back(&runNumber);
+
+  GenericEventCollectionMember<double, BNeventCollection> lumiBlock(Reflex::Type::ByName("BNevent"),  "lumi", "eventInfo",  KinematicVariableConstants::FLOAT_INIT, 1);
+  kinVars.push_back(&lumiBlock);
+
+  GenericEventCollectionMember<double, BNeventCollection> eventNumber(Reflex::Type::ByName("BNevent"),  "evt", "eventInfo",  KinematicVariableConstants::FLOAT_INIT, 1);
+  kinVars.push_back(&eventNumber);
 
   HelperLeptonCore lepHelper;
 
@@ -77,7 +148,7 @@ int main () {
   // hook up the variables
 
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
-  for (vector<KinematicVariable*>::iterator iVar = kinVars.begin();
+  for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
        iVar != kinVars.end();
        iVar++) {
     
@@ -129,7 +200,7 @@ int main () {
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
-    for (vector<KinematicVariable*>::iterator iVar = kinVars.begin();
+    for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
          iVar != kinVars.end();
          iVar++) {
       
@@ -138,21 +209,17 @@ int main () {
       
     }
 
-    // rest targetMuon
-    targetMuon = BNmuon();
+    TwoMuon = 0;
+    TwoEle = 0;
+    MuonEle = 0;
 
-    if (eventCollections.muonCollection->size() >0){
-
-      targetMuon = eventCollections.muonCollection->at(0);
-
-    }
 
     // In principle, you could apply different selections here
     bool passAllCuts = true;
 
     if (debug > 9) cout << "Checking cuts "  << endl;
     
-    for (vector<KinematicVariable*>::iterator iCut = cutVars.begin();
+    for (vector<ArbitraryVariable*>::iterator iCut = cutVars.begin();
          iCut != cutVars.end();
          iCut++ ) {
 
@@ -161,6 +228,10 @@ int main () {
 
     }
 
+    // do the lepton cut
+    passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&eventCollections);
+    
+    
     if (!passAllCuts) {
       numEventsFailCuts++;
       continue;
@@ -173,7 +244,7 @@ int main () {
     if (debug > 9) cout << "Evaluating vars "  << endl;
 
     
-    for (vector<KinematicVariable*>::iterator iVar = kinVars.begin();
+    for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
          iVar != kinVars.end();
          iVar++) {
       
@@ -183,7 +254,7 @@ int main () {
 
 
     if (debug > 9) {
-      for (vector<KinematicVariable*>::iterator iVar = kinVars.begin();
+      for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
            iVar != kinVars.end();
            iVar++) {
         
@@ -193,6 +264,7 @@ int main () {
       }
     }
 
+    LeptonVarsThisAnalysis(&eventCollections, LeptonCutThisAnalysis(&eventCollections), TwoMuon, TwoEle, MuonEle);
 
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();
