@@ -21,3 +21,4 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/XsecWeight.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonScaleFactors.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonTriggerScaleFactors.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/CleanEventVars.h"

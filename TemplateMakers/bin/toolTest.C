@@ -93,16 +93,17 @@ int main () {
   fwlite::ChainEvent ev(fileNames);
 
 
-  
+  // the lepton helper  
   HelperLeptonCore lepHelper;
 
-  // declare your helper
+  // setup the analysis 
   // it comes from the lepHelper
   BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", "ttH125");
 
   // ---------------------------------------------
   // Note for future development: should these be
   // saved inside the lepHelper somewhere?
+  // For now they are ok here
   // ---------------------------------------------
   
   muonID::muonID muonTightID = muonID::muonTight;
@@ -146,6 +147,10 @@ int main () {
 
    LeptonTriggerScaleFactors myLepTrig( &lepHelper);
    kinVars.push_back(&myLepTrig);
+
+   CleanEventVars myClean (&lepHelper);
+   kinVars.push_back(&myClean);
+   
    
 
    int TwoMuon = 0;
