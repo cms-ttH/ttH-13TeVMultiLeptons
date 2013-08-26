@@ -11,11 +11,11 @@
 
 
 template <class branchDataType> 
-class GenericObjectMember: public KinematicVariable {
+class GenericObjectMember: public KinematicVariable<branchDataType> {
 
 
 public:  
-  BranchInfo<branchDataType> myVar;
+  //BranchInfo<branchDataType> myVar;
 
   Reflex::Object inputObject;
   void * rInstance;
@@ -23,14 +23,15 @@ public:
   Reflex::Type myClass;
   //Reflex::Object dynamicLookupBEANFileInterface;
   
-  bool evaluatedThisEvent;
+  //bool evaluatedThisEvent;
 
   string memberName;
   string storePrefix;
 
+  TString myName;
 
   branchDataType threshold;
-  branchDataType resetVal;
+  //branchDataType resetVal;
 
 
 
@@ -41,15 +42,17 @@ public:
   // constructor requires an instance of the class you want to fill
   GenericObjectMember(Reflex::Type rType, void * obj, string mem, string storePrefix,  branchDataType defval );
 
+  
+  //void attachToTree (TTree * inTree);
+  //void reset ();
+  //  void print ();
+
+
   void evaluate ();
-  void attachToTree (TTree * inTree);
-  void reset ();
 
   bool passCut ();
 
   void setCut (branchDataType cutVal);
-
-  void print ();
 
   void listAvailableMembers ();
 
@@ -59,44 +62,45 @@ template <class branchDataType>
 GenericObjectMember<branchDataType>::GenericObjectMember  ( Reflex::Type rType,  void * obj, string mem, string prefix,  branchDataType defval):
   myClass(rType),
   memberName(mem),
-  storePrefix(prefix),
-  resetVal(defval)
+  storePrefix(prefix)
 {
 
+  this->resetVal = defval;
   // do this to make sure you get the inherited ones
   myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);
   inputObject = Reflex::Object(myClass, obj);
+
+  myName = (prefix+"_"+mem).c_str();  
+  this->branches[myName] = BranchInfo<branchDataType>(myName);
   
-  myVar.branchName = (prefix+"_"+mem).c_str();  
-  
-  reset();
+  this->reset();
   
 }
 
-template <class branchDataType>
-void GenericObjectMember<branchDataType>::reset  () {
+// template <class branchDataType>
+// void GenericObjectMember<branchDataType>::reset  () {
 
-  myVar.branchVal = resetVal;
-  evaluatedThisEvent = false;
+//   myVar.branchVal = resetVal;
+//   evaluatedThisEvent = false;
 
-}
+// }
 
-template <class branchDataType>
-void GenericObjectMember<branchDataType>::attachToTree  (TTree * inTree) {
+// template <class branchDataType>
+// void GenericObjectMember<branchDataType>::attachToTree  (TTree * inTree) {
 
-  inTree->Branch(myVar.branchName, &myVar.branchVal);
+//   inTree->Branch(myVar.branchName, &myVar.branchVal);
 
-}
+// }
 
 template <class branchDataType>
 void GenericObjectMember<branchDataType>::evaluate () {
 
-  if (evaluatedThisEvent) return;
-  evaluatedThisEvent = true;
+  if (this->evaluatedThisEvent) return;
+  this->evaluatedThisEvent = true;
 
   branchDataType * tempValPtr = (branchDataType*) (inputObject.Get(memberName).Address());
   
-  myVar.branchVal = *tempValPtr;
+  this->branches[myName].branchVal = *tempValPtr;
   
 
 }
@@ -105,7 +109,10 @@ template <class branchDataType>
 bool GenericObjectMember<branchDataType>::passCut () {
 
 
-  return true;
+  if (this->branches[myName].branchVal > threshold)
+    return true;
+  
+  return false;
 
 }
 
@@ -116,16 +123,16 @@ void GenericObjectMember<branchDataType>::setCut (branchDataType cutVal) {
   
 }
 
-template <class branchDataType>
-void GenericObjectMember<branchDataType>::print () {
+// template <class branchDataType>
+// void GenericObjectMember<branchDataType>::print () {
 
-  cout << "Printing GenericObjectMember .... " 
-       << "   memberName " << memberName
-       << "   storePrefix " << storePrefix
-       << "   value  " << myVar.branchVal;
+//   cout << "Printing GenericObjectMember .... " 
+//        << "   memberName " << memberName
+//        << "   storePrefix " << storePrefix
+//        << "   value  " << this->branches[myName].branchVal;
        
 
-}
+// }
 
 template <class branchDataType>
 void GenericObjectMember<branchDataType>::listAvailableMembers () {

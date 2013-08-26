@@ -54,6 +54,8 @@
 #include "BEAN/Collections/interface/BNskimbits.h"
 #include "BEAN/Collections/interface/BNtrigobj.h"
 #include "BEAN/Collections/interface/BNprimaryvertex.h"
+#include "BEAN/Collections/interface/BNlepton.h"
+#include "BEAN/Collections/interface/BNleptonCollection.h"
 
 
 // headers for python config processing
@@ -91,10 +93,10 @@ public:
   BEANFileInterface () :
     muonCollection(0),
     looseMuonCollection(0),
-    metCollection(0),
-    jetCollection(0),
     eleCollection(0),
     looseEleCollection(0),
+    metCollection(0),
+    jetCollection(0),    
     mcParticleCollection(0),
     eventCollection(0),
     hltCollection (0),
@@ -109,12 +111,17 @@ public:
   //important kinematic stuff
   BNmuonCollection *  muonCollection;
   BNmuonCollection *  looseMuonCollection;
+
+  BNelectronCollection * eleCollection;
+  BNelectronCollection * looseEleCollection;
+
+  BNleptonCollection * leptonCollection;
+  BNleptonCollection * looseLeptonCollection;
+  
   
   BNmetCollection *   metCollection;
   BNjetCollection * jetCollection;
 
-  BNelectronCollection * eleCollection;
-  BNelectronCollection * looseEleCollection;
   
   BNmcparticleCollection * mcParticleCollection;
   BNeventCollection * eventCollection;

@@ -17,6 +17,9 @@ public :
   BranchInfo (TString name, TString type):
     branchName(name), branchType(type)
   {};
+  BranchInfo (TString name):
+    branchName(name), branchType("")
+  {};
 
 };
 

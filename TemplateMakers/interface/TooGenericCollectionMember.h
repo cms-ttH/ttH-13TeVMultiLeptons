@@ -15,32 +15,32 @@ class GenericCollectionMember: public KinematicVariable {
 
 
 public:  
-  vector< BranchInfo<branchDataType> > myVars;
+  BranchInfo<branchDataType> myVar;
 
   Reflex::Object inputObject;
   void * rInstance;
 
   Reflex::Type myClass;
-  
+  Reflex::Object dynamicLookupBEANFileInterface;
   
   bool evaluatedThisEvent;
 
   string memberName;
   string storePrefix;
 
-  //string collectionName;
+  string collectionName;
 
   branchDataType threshold;
   branchDataType resetVal;
 
-  int maxObjInColl;
+  bool eachObjInColl;
 
 
   // at this time, no sensible default exists
   // GenericCollectionMember();
 
   // constructor requires an instance of the class you want to fill
-  GenericCollectionMember(Reflex::Type rType, string mem, string storePrefix,  branchDataType defval, int max = 1);
+  GenericCollectionMember(Reflex::Type rType, string mem, string storePrefix, string collName, branchDataType defval, bool allObjs = false);
 
   void evaluate ();
   void attachToTree (TTree * inTree);
@@ -57,21 +57,21 @@ public:
 };
 
 template <class branchDataType, class collectionType>
-GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember  ( Reflex::Type rType,  string mem, string prefix,  branchDataType defval, int max):
-  myClass(rType),  
+GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember  ( Reflex::Type rType,  string mem, string prefix, string collName, branchDataType defval, bool allObjs):
+  myClass(rType),
+  dynamicLookupBEANFileInterface(Reflex::Type::ByName("BEANFileInterface"), blocks),
   memberName(mem),
   storePrefix(prefix),
+  collectionName(collName),
   resetVal(defval),
-  maxObjInColl(max)
+  eachObjInColl(allObjs)
 {
 
   // do this to make sure you get the inherited ones
   myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);  
-
-  for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
-    TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, mem.c_str());
-    myVars.push_back(BranchInfo<branchDataType>(bName, ""));
-  }
+  
+  myVar.branchName = (prefix+"_"+mem).c_str();  
+  
   reset();
   
 }
@@ -79,9 +79,7 @@ GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::reset  () {
 
-  for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
-    myVars[iVar].branchVal = resetVal;
-  }
+  myVar.branchVal = resetVal;
   evaluatedThisEvent = false;
 
 }
@@ -89,48 +87,39 @@ void GenericCollectionMember<branchDataType, collectionType>::reset  () {
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::attachToTree  (TTree * inTree) {
 
-  for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
-    inTree->Branch(myVars[iVar].branchName, &myVars[iVar].branchVal);
-  }
-  
-  
+  inTree->Branch(myVar.branchName, &myVar.branchVal);
 
 }
-
-///////////////////  Generically, doesn't work
 
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
 
-  cout << "You're calling something that you're not supposed to." << endl
-       << "GenericCollection member only works for a few kinds of classes" << endl
-       << "Sorry! " << endl;
-  assert (false);
-  
-}
+  if (evaluatedThisEvent) return;
+  evaluatedThisEvent = true;
 
+  Reflex::Object tmpVectorPtr = dynamicLookupBEANFileInterface.Get(collectionName);
+  collectionType** collectionPtr = static_cast<collectionType**> (tmpVectorPtr.Address());
 
-//////////////////  Specification: muon collection
-
-template <class branchDataType>
-void GenericCollectionMember<branchDataType, BNmuonCollection>::evaluate () {
-
-  unsigned nMuons = blocks->muonCollection->size();
-  unsigned loopMax = (unsigned (maxObjInColl) < nMuons ) ? unsigned(maxObjInColl) : nMuons;
-
-  for (unsigned iVar = 0; iVar < loopMax; iVar++){
-
-    Reflex::Object tmpObj = Reflex::Object(myClass, &blocks->muonCollection->at(iVar));
-    branchDataType* tempValPtr = (branchDataType*) (tmpObj.Get(memberName).Address())
-    myVars[iVar].branchVal = *tempValPtr;
+  if (collectionPtr == 0) {
+    cout << "..null pointer detected" << endl;
   }
 
-  
+  cout << "De-referencing collection to see its size " << endl;
+  unsigned collSize = (*collectionPtr)->size(); // double de-reference
+
+  cout << "Coll size " << collSize << endl;
+
+  if (collSize  > 0) {
+    void * objInColl = &((*collectionPtr)->at(0));
+    cout << "Is there a pointer to the object?" << hex << objInColl << dec << endl;
+    Reflex::Object targetObject(myClass, objInColl );
+    branchDataType * tempValPtr = (branchDataType*) (targetObject.Get(memberName).Address());
+
+    myVar.branchVal = *tempValPtr;
+  }
+
 }
 
-    
-    
-    
 template <class branchDataType, class collectionType>
 bool GenericCollectionMember<branchDataType, collectionType>::passCut () {
 
@@ -152,13 +141,7 @@ void GenericCollectionMember<branchDataType, collectionType>::print () {
   cout << "Printing GenericCollectionMember .... " 
        << "   memberName " << memberName
        << "   storePrefix " << storePrefix
-       << "   values:  ";
-
-  for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
-    cout << "[ " << iVar << "] " <<  myVars[iVar].branchVal;
-  }
-
-  //cout << endl;
+       << "   value  " << myVar.branchVal;
        
 
 }

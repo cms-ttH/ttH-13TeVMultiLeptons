@@ -155,11 +155,13 @@ public:
   void getTightCorrectedJets (double ptCut,
                               double etaCut,
                               jetID::jetID tightID,                    
-                              BEANFileInterface * selectedCollections,
-                              sysType::sysType shift = sysType::NA );
+                              BEANFileInterface * selectedCollections
+                               );
 
   void getCorrectedMet (BEANFileInterface * selectedCollections,
                         sysType::sysType shift = sysType::NA);
+
+  void fillLepCollectionWithSelectedLeptons ( BEANFileInterface * selectedCollections);
   
   // fill in everything you have
   //void fillOutputBranches ();
@@ -173,14 +175,18 @@ public:
   std::string analysisYear;
 
   
-  float weight_Xsec;
+  double weight_Xsec;
   int nGen;
   float Xsec;
   int sampleNumber;
+  string sampleName;
 
   bool isData;
 
   string sysType_lep;
+  sysType::sysType jetEnergyShift;
+  sysType::sysType csvShift;
+  
 
   BEANhelper bHelp;
   BEANFileInterface rawCollections;
@@ -222,6 +228,9 @@ public:
   BNelectronCollection electrons;
   BNelectronCollection electronsTight;
   BNelectronCollection electronsLoose;
+
+  BNleptonCollection leptonsTight;
+  BNleptonCollection leptonsLoose;
   
   
 };

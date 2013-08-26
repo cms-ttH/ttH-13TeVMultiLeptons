@@ -14,6 +14,63 @@
 #include "Reflex/Member.h"
 #include "Reflex/Kernel.h"
 
+
+
+
+bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
+
+  unsigned numTightMuons = inputCollections->muonCollection->size();
+  unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
+  unsigned numTightElectrons = inputCollections->eleCollection->size();
+  unsigned numLooseElectrons = inputCollections->looseEleCollection->size();
+
+  bool passTwoLepton = false;
+  
+  if ( (numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons) ==2
+       && (numTightMuons + numTightElectrons) > 0)
+    passTwoLepton = true;
+
+  return passTwoLepton;
+
+}
+
+void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLepton, int & TwoMuon, int & TwoEle, int & MuonEle) {
+
+  unsigned numTightMuons = inputCollections->muonCollection->size();
+  unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
+  unsigned numTightElectrons = inputCollections->eleCollection->size();
+  unsigned numLooseElectrons = inputCollections->looseEleCollection->size();
+
+  TwoMuon = 0;
+  TwoEle = 0;
+  MuonEle = 0;
+  
+  if (!passTwoLepton){
+    return;
+  }
+
+  if (numTightMuons == 2 || (numTightMuons==1 && numLooseMuons==1)) {
+    TwoMuon = 1;
+    return;
+  }
+
+  if (numTightElectrons ==2 || (numTightElectrons==1 && numLooseElectrons==1)) {
+    TwoEle = 1;
+    return;
+  }
+
+  if ( (numTightElectrons ==1 && numTightMuons==1)
+       || (numTightElectrons ==1 && numLooseMuons ==1)
+       || (numTightMuons == 1 && numLooseElectrons ==1) ) {
+    MuonEle =1;
+    return;
+    
+  }
+  
+}
+
+
+
 int main () {
 
   // load framework libraries
@@ -36,48 +93,99 @@ int main () {
   fwlite::ChainEvent ev(fileNames);
 
 
-  // declare your kinematic variables that you want
-  // to be written out into the tree
-  vector<KinematicVariable*> kinVars;
-  vector<KinematicVariable*> cutVars;
-
-  RunLumiEvent myEvent;
-  kinVars.push_back(&myEvent);
   
-  AllJetPt myJetPt(4); // parameter is max num jet pts to save
-  kinVars.push_back(&myJetPt);
-
-  NumJets myNjets;
-  myNjets.setCut(2); // parameter is keep events with jets  >= num
-  kinVars.push_back(&myNjets); //save it in the tree
-  cutVars.push_back(&myNjets); //also cut on it
-
-
-  NumTightLooseMuons myNmuons;
-  myNmuons.setCutOnSumTightLoose(1, 2); // at least one tight, at most two total t+l
-  kinVars.push_back(&myNmuons);
-  cutVars.push_back(&myNmuons); // use this to make a small ntuple
-
-
-  BNmuon targetMuon;
-  
-  GenericObjectMember<double> muonPt(Reflex::Type::ByName("BNmuon"),  &targetMuon, "pt", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
-  GenericObjectMember<double> muonEta(Reflex::Type::ByName("BNmuon"),  &targetMuon, "eta", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
-  GenericObjectMember<double> muonPhi(Reflex::Type::ByName("BNmuon"),  &targetMuon, "phi", "muon_1",  KinematicVariableConstants::FLOAT_INIT);
-  
-  kinVars.push_back(&muonPt);
-  
-
   HelperLeptonCore lepHelper;
 
   // declare your helper
   // it comes from the lepHelper
   BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", "ttH125");
+
+  // ---------------------------------------------
+  // Note for future development: should these be
+  // saved inside the lepHelper somewhere?
+  // ---------------------------------------------
   
+  muonID::muonID muonTightID = muonID::muonTight;
+  muonID::muonID muonLooseID = muonID::muonLoose;
+  electronID::electronID eleTightID = electronID::electronTight;
+  electronID::electronID eleLooseID = electronID::electronLoose;
+  
+
+  
+  // declare your kinematic variables that you want
+  // to be written out into the tree
+  vector<ArbitraryVariable*> kinVars;
+  vector<ArbitraryVariable*> cutVars;
+
+  
+
+   NumJets myNjets;
+   myNjets.setCut(2); // parameter is keep events with jets  >= num
+   kinVars.push_back(&myNjets); //save it in the tree
+   cutVars.push_back(&myNjets); //also cut on it
+
+   NumLeptons myNlep;
+   kinVars.push_back(&myNlep);
+
+
+   CSVWeights myCSV(&lepHelper);
+   kinVars.push_back(&myCSV);
+
+   PUWeights myPU(&lepHelper);
+   kinVars.push_back(&myPU);
+
+   TopPtWeights myTopPt(&lepHelper);
+   kinVars.push_back(&myTopPt);
+
+   XsecWeight myXsec (&lepHelper);
+   kinVars.push_back(&myXsec);
+
+
+   LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, eleTightID, eleLooseID);
+   kinVars.push_back(&myLepSF);
+
+   LeptonTriggerScaleFactors myLepTrig( &lepHelper);
+   kinVars.push_back(&myLepTrig);
+   
+
+   int TwoMuon = 0;
+   int TwoEle = 0;
+   int MuonEle = 0;
+
+
+   summaryTree->Branch("TwoMuon", &TwoMuon);
+   summaryTree->Branch("TwoEle", &TwoEle);
+   summaryTree->Branch("MuonEle", &MuonEle);
+
+  
+
+  GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allMuonPt);
+
+  GenericMuonCollectionMember<double, BNmuonCollection> allMuonEta(Reflex::Type::ByName("BNmuon"),  "eta", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allMuonEta);
+
+  GenericJetCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"),  "pt", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  kinVars.push_back(&allJetPt);
+
+  GenericJetCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"),  "eta", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  kinVars.push_back(&allJetEta);
+
+  GenericEventCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"),  "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
+  kinVars.push_back(&runNumber);
+
+  GenericEventCollectionMember<unsigned, BNeventCollection> lumiBlock(Reflex::Type::ByName("BNevent"),  "lumi", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
+  kinVars.push_back(&lumiBlock);
+
+  // this is a long inside BNevent
+  // just using keyword long won't work
+  // needs to be Long64_t 
+  GenericEventCollectionMember<Long64_t, BNeventCollection> eventNumber(Reflex::Type::ByName("BNevent"),  "evt", "eventInfo",  KinematicVariableConstants::INT_INIT, 1);
+  kinVars.push_back(&eventNumber);
   // hook up the variables
 
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
-  for (vector<KinematicVariable*>::iterator iVar = kinVars.begin();
+  for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
        iVar != kinVars.end();
        iVar++) {
     
@@ -94,9 +202,10 @@ int main () {
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
     
     BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, false);
+
     // make a shallow copy
     // update pointer as you make new collections
-    BEANFileInterface eventCollections = (*rawCollections);
+    BEANFileInterface selectedCollections = (*rawCollections);
 
 
 
@@ -110,49 +219,55 @@ int main () {
 
     //------------    Jets
     if (debug > 9) cout << "Getting jets "  << endl;
-	lepHelper.getTightCorrectedJets(30.0, 2.4, jetID::jetLoose, &eventCollections);
+	lepHelper.getTightCorrectedJets(30.0, 2.4, jetID::jetLoose, &selectedCollections);
 
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
-    lepHelper.getTightAndLooseElectrons(electronID::electronTight, electronID::electronLoose, &eventCollections);
+    lepHelper.getTightAndLooseElectrons(eleTightID, eleLooseID, &selectedCollections);
     
     //-----------    Muons
     if (debug > 9) cout << "Getting muons "  << endl;
-    lepHelper.getTightAndLooseMuons(muonID::muonTight, muonID::muonLoose, &eventCollections);
+    lepHelper.getTightAndLooseMuons(muonTightID, muonLooseID, &selectedCollections);
 
 
     //----------    MET
     if (debug > 9) cout << "Getting met "  << endl;
-    lepHelper.getCorrectedMet(&eventCollections);
+    lepHelper.getCorrectedMet(&selectedCollections);
+
+
+    //--------- fill up the lepton collections
+
+    if (debug >9) cout << "Filling lepton collections" << endl;
+    lepHelper.fillLepCollectionWithSelectedLeptons(&selectedCollections);
+    
     
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
-    for (vector<KinematicVariable*>::iterator iVar = kinVars.begin();
+    for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
          iVar != kinVars.end();
          iVar++) {
       
       (*iVar)->reset();
-      (*iVar)->assignCollections(&eventCollections);
+      (*iVar)->assignCollections(&selectedCollections);
       
     }
 
-    // rest targetMuon
-    targetMuon = BNmuon();
+    TwoMuon = 0;
+    TwoEle = 0;
+    MuonEle = 0;
 
-    if (eventCollections.muonCollection->size() >0){
 
-      targetMuon = eventCollections.muonCollection->at(0);
-
-    }
-
-    // In principle, you could apply different selections here
+    // There are several ways to define a selection
+    // One way is with a kinematic varaible,
+    // Another way is with a function that is a cut
+        
     bool passAllCuts = true;
 
     if (debug > 9) cout << "Checking cuts "  << endl;
     
-    for (vector<KinematicVariable*>::iterator iCut = cutVars.begin();
+    for (vector<ArbitraryVariable*>::iterator iCut = cutVars.begin();
          iCut != cutVars.end();
          iCut++ ) {
 
@@ -161,9 +276,17 @@ int main () {
 
     }
 
+    // do the lepton cut
+    passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&selectedCollections);
+    
+    
     if (!passAllCuts) {
       numEventsFailCuts++;
+
+      //!!!!    Skip The event  ///////////////
+      
       continue;
+
     } else {
       numEventsPassCuts++;
     }
@@ -173,7 +296,7 @@ int main () {
     if (debug > 9) cout << "Evaluating vars "  << endl;
 
     
-    for (vector<KinematicVariable*>::iterator iVar = kinVars.begin();
+    for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
          iVar != kinVars.end();
          iVar++) {
       
@@ -183,7 +306,7 @@ int main () {
 
 
     if (debug > 9) {
-      for (vector<KinematicVariable*>::iterator iVar = kinVars.begin();
+      for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
            iVar != kinVars.end();
            iVar++) {
         
@@ -193,6 +316,7 @@ int main () {
       }
     }
 
+    LeptonVarsThisAnalysis(&selectedCollections, LeptonCutThisAnalysis(&selectedCollections), TwoMuon, TwoEle, MuonEle);
 
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();
