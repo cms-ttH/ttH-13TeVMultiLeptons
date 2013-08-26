@@ -1314,7 +1314,8 @@ class SectionProxy(MutableMapping):
 			string_list = [value.strip() for value in entry.split(',')]
 			type_list = []
 			for value in string_list:
-				if not re.search('[a-zA-Z]', value):
+				##AWB - if there are no letters, and it does not begin or end with double quotes
+				if not re.search('[a-zA-Z]', value) and not value.startswith('"') and not value.endswith('"'):
 					if '.' in value:
 						value = float(value)
 					else:
@@ -1323,10 +1324,15 @@ class SectionProxy(MutableMapping):
 					value = bool(True)
 				elif 'false' in value or 'False' in value:
 					value = bool(False)
+				##AWB - if it starts and ends with double quotes, remove them, and return a string
+				elif value.startswith('"') and value.endswith('"'):
+					value = value[1:]
+					value = value[:-1]
 				type_list.append(value)
 			entry = type_list
 		else:
-			if not re.search('[a-zA-Z]', entry):
+		    ##AWB - if there are no letters, and it does not begin or end with double quotes
+			if not re.search('[a-zA-Z]', entry) and not entry.startswith('"') and not entry.endswith('"'):
 				if '.' in entry:
 					entry = float(entry)
 				else:
@@ -1335,7 +1341,10 @@ class SectionProxy(MutableMapping):
 				entry = bool(True)
 			elif 'false' in entry or 'False' in entry:
 				entry = bool(False)
-		
+			##AWB - if it starts and ends with double quotes, remove them, and return a string
+			elif entry.startswith('"') and entry.endswith('"'):
+				entry = entry[1:]
+				entry = entry[:-1]
 		
 		return entry
 
