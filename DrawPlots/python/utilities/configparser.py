@@ -1310,7 +1310,11 @@ class SectionProxy(MutableMapping):
 		import re
 
 		#AW - added interpretation of ints, floats, and bools for lists and single items
-		if ',' in entry:			
+		## AWB - if entry is " , " it is not a list. " " , is a list.
+		entry_first_doublequote_removed = entry
+		if entry.startswith('"'): entry_first_doublequote_removed = entry[1:]
+		## AWB - .find() returns -1 if the character is not found.
+		if ',' in entry and entry_first_doublequote_removed.find('"') < entry_first_doublequote_removed.find(','):			
 			string_list = [value.strip() for value in entry.split(',')]
 			type_list = []
 			for value in string_list:
