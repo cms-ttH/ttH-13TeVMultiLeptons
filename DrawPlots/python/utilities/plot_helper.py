@@ -19,7 +19,7 @@ class Plot:
         output_file.Write('', ROOT.TObject.kOverwrite)
 
 
-    def save_image(self, sample, *image_types): #I am choosing for now not to add the option in make_plots to save pngs (though it can be called here), since pdfs look nicer
+    def save_image(self, *image_types): #I am choosing for now not to add the option in make_plots to save pngs (though it can be called here), since pdfs look nicer
         if not os.path.exists('plot_pdfs'):
             os.makedirs('plot_pdfs')
         self.set_style()
@@ -27,18 +27,18 @@ class Plot:
         canvas = ROOT.TCanvas('canvas', 'canvas', 700, 800)
         self.plot.Draw()
         for type in image_types:
-            canvas.Print('plot_pdfs/%s_%s.%s' % (sample, self.plot_name, type))
+            canvas.Print('plot_pdfs/%s.%s' % (self.plot_name, type))
 
-    def post_to_web(self, sample, config_file_name, config, lepton_category):
-        self.save_image(sample, 'png', 'pdf')
+    def post_to_web(self, config_file_name, config, lepton_category):
+        self.save_image('png', 'pdf')
         afs_base_directory = self.get_afs_base_directory(config)
         afs_directory = afs_base_directory + '/' + config['run_parameters']['label'] + '/' + lepton_category
         if not os.path.exists(afs_directory):
             os.makedirs(afs_directory)
             
         from distutils import file_util
-        file_util.move_file('plot_pdfs/%s_%s.png' % (sample, self.plot_name), afs_directory)
-        file_util.copy_file('plot_pdfs/%s_%s.pdf' % (sample, self.plot_name), afs_directory)
+        file_util.move_file('plot_pdfs/%s.png' % self.plot_name, afs_directory)
+        file_util.copy_file('plot_pdfs/%s.pdf' % self.plot_name, afs_directory)
         file_util.copy_file('%s' % config_file_name, afs_directory)
         file_util.copy_file('utilities/index.php', afs_directory)
         file_util.copy_file('utilities/index.php', afs_base_directory + '/' + config['run_parameters']['label'])

@@ -68,12 +68,12 @@ def run(args, config, samples, project_label):
 
                     print 'Beginning next loop iteration. Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (jet_tag_category, lepton_category, systematic)
                     for (distribution, parameters) in zip(distributions, plot_parameters):
-                        plot_name = '%s_%s_%s%s' % (lepton_category, jet_tag_category, distribution, source_file_label)
+                        plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, source_file_label)
                         plot = Plot(output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string_maker.draw_string)
                         if args.pdf:
-                            plot.save_image(sample, 'pdf')
+                            plot.save_image('pdf')
                         if args.web:
-                            plot.post_to_web(sample, args.config_file_name, config, lepton_category)
+                            plot.post_to_web(args.config_file_name, config, lepton_category)
 
                     source_file.Close() #end systematic
                 output_file.Close() #end jet tag category
