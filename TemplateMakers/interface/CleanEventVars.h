@@ -2,6 +2,8 @@
 #ifndef _CleanEventVars_h
 #define _CleanEventVars_h
 
+#include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+
 //
 //   isCleanEvent
 //   has 3 different checks
@@ -13,6 +15,7 @@
 //   Alternatively, if the event is MC,
 //   then we just say pass.
 //
+
 
 
 class CleanEventVars: public KinematicVariable<int> {
@@ -65,7 +68,7 @@ void CleanEventVars::evaluate () {
     passGoodVertex = true;
     passFilterOutScraping = true;
     passHBHENoiseFilter = true;
-    branches["isCleanEvent"].branchVal = true;
+    branches["isCleanEvent"].branchVal = 1;
 
   } else {
 

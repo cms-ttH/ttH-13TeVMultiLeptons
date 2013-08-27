@@ -150,7 +150,9 @@ int main () {
 
    CleanEventVars myClean (&lepHelper);
    kinVars.push_back(&myClean);
-   
+
+   CheckTwoLepTrigger checkTrig (&lepHelper);
+   kinVars.push_back(&checkTrig);
    
 
    int TwoMuon = 0;

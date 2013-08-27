@@ -22,3 +22,4 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonScaleFactors.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonTriggerScaleFactors.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CleanEventVars.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/CheckTwoLepTrigger.h"
