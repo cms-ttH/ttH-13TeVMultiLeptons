@@ -54,8 +54,9 @@ LeptonScaleFactors::LeptonScaleFactors  (HelperLeptonCore *in,
 {
 
   branches["lepTotalSF"] = BranchInfo<double>("lepTotalSF");
+
+  this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
   
-   
 }
 
 void LeptonScaleFactors::evaluate () {

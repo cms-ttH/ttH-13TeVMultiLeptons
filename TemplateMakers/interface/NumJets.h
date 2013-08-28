@@ -19,6 +19,8 @@ public:
 NumJets::NumJets  () {
 
   branches["numJets"] = BranchInfo<int>("numJets");
+
+  this->resetVal = KinematicVariableConstants::INT_INIT;
   
 }
 

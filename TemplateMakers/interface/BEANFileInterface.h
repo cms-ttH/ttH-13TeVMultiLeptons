@@ -95,12 +95,16 @@ public:
     looseMuonCollection(0),
     eleCollection(0),
     looseEleCollection(0),
+    leptonCollection(0),
+    looseLeptonCollection(0),
+    mergedLeptonCollection(0),
     metCollection(0),
     jetCollection(0),    
     mcParticleCollection(0),
     eventCollection(0),
     hltCollection (0),
-    primaryVertexCollection(0)
+    primaryVertexCollection(0),
+    jetsForLepMVACollection(0)
   {};
 
   // Copy constructor
@@ -117,6 +121,7 @@ public:
 
   BNleptonCollection * leptonCollection;
   BNleptonCollection * looseLeptonCollection;
+  BNleptonCollection * mergedLeptonCollection;
   
   
   BNmetCollection *   metCollection;
@@ -127,6 +132,9 @@ public:
   BNeventCollection * eventCollection;
   BNtriggerCollection * hltCollection;
   BNprimaryvertexCollection * primaryVertexCollection;
+
+  // -- only need these for the lepMVA
+  BNjetCollection * jetsForLepMVACollection;
   
 
   bool checkJets() {

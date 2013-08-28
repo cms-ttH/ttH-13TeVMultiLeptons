@@ -87,7 +87,7 @@ GenericCollectionMemberBase<branchDataType, collectionType>::GenericCollectionMe
 
   for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
     TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, mem.c_str());
-    cout << "branch name " << iVar << " will be " << bName << endl;
+    //cout << "branch name " << iVar << " will be " << bName << endl;
     myVars.push_back(BranchInfo<branchDataType>(bName));
   }
   reset();
@@ -150,7 +150,7 @@ void GenericCollectionMemberBase<branchDataType, collectionType>::evaluate (coll
     
     branchDataType * tempValPtr = (branchDataType*) (targetObject.Get(memberName).Address());
 
-    cout << "Storing value " << *tempValPtr << endl;
+    //cout << "Storing value " << *tempValPtr << endl;
     
     myVars[iObj].branchVal = *tempValPtr;
     

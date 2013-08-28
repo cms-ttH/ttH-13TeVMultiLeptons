@@ -39,7 +39,8 @@ LeptonTriggerScaleFactors::LeptonTriggerScaleFactors  (HelperLeptonCore *in) :
   branches["TwoMuonTriggerSF"] = BranchInfo<double>("TwoMuonTriggerSF");
   branches["TwoEleTriggerSF"] = BranchInfo<double>("TwoEleTriggerSF");
   branches["MuonEleTriggerSF"] = BranchInfo<double>("MuonEleTriggerSF");
-  
+
+  this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
    
 }
 

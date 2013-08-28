@@ -35,6 +35,8 @@ CSVWeights::CSVWeights  (HelperLeptonCore *in) :
   myHelper(in)
 {
 
+  this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
+  
   branches["csvWgtlf"] = BranchInfo<double>("csvWgtlf");
   branches["csvWgtlf_HFUp"] = BranchInfo<double>("csvWgtlf_HFUp");
   branches["csvWgtlf_HFDown"] = BranchInfo<double>("csvWgtlf_HFDown");

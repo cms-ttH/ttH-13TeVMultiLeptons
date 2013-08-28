@@ -22,6 +22,8 @@ NumLeptons::NumLeptons  () {
   
   branches["numTightEle"] = BranchInfo<int>("numTightEle");
   branches["numLooseEle"] = BranchInfo<int>("numLooseEle");
+
+  this->resetVal = KinematicVariableConstants::INT_INIT;
   
 }
 

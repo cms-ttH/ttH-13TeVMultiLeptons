@@ -235,6 +235,7 @@ namespace KinematicVariableConstants {
   const float FLOAT_INIT = -9.0e20;
   const int INT_INIT = -99999999;
   const unsigned UINT_INIT = 987654;
+  const double DOUBLE_INIT = -9.0e20;
 }
 
 #endif // KinematicVariable

@@ -35,7 +35,8 @@ PUWeights::PUWeights  (HelperLeptonCore *in) :
   branches["weight_PU"] = BranchInfo<double>("weight_PU");
   branches["weight_PUup"] = BranchInfo<double>("weight_PUup");
   branches["weight_PUdown"] = BranchInfo<double>("weight_PUdown");
-  
+
+  this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
   
 }
 

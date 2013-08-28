@@ -318,7 +318,15 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   
 
   //------- Muons
-  if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsPFlow");
+  if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
+    
+    if (!isLepMVA) {
+      h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsPFlow");
+    } else {
+      h_muons.getByLabel(ev, "BNproducer", "selectedPatMuonsLoosePFlow");
+    }
+    
+  }
   else h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsLoosePFlow");
 
   muons = *h_muons;
@@ -327,7 +335,14 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   //-----  Electrons
 
   
-  if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
+  if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
+
+    if (!isLepMVA) {
+      h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
+    } else {
+      h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsGSF");
+    }
+  }
   else h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
   electrons = * h_electrons;
   rawCollections.eleCollection = &electrons;
@@ -353,6 +368,13 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   pvs = *h_pvs;
   rawCollections.primaryVertexCollection = &pvs;
 
+
+  // careful, not defined in every sample
+  if (analysisYear == "2012_53x" && isLepMVA) {
+    h_lepMvaJets.getByLabel(ev, "BNproducer", "patJetsAK5PF");
+    lepMvaJets = *h_lepMvaJets;
+    rawCollections.jetsForLepMVACollection = & lepMvaJets;
+  }
   
   
   
@@ -364,14 +386,14 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
 
 void HelperLeptonCore::getTightAndLooseElectrons (electronID::electronID tightID, electronID::electronID looseID, BEANFileInterface * selectedCollections) {
 
-  electronsTight = bHelp.GetSelectedElectrons(*(rawCollections.eleCollection), tightID );
+  electronsTight = bHelp.GetSelectedElectrons(*(rawCollections.eleCollection), tightID, rawCollections.jetsForLepMVACollection );
   
   //
   // this is a temp variable
   // so you can compute the electrons by taking the difference
   //
 
-  BNelectronCollection electronsInclusivelyLoose = bHelp.GetSelectedElectrons(*(rawCollections.eleCollection), looseID );
+  BNelectronCollection electronsInclusivelyLoose = bHelp.GetSelectedElectrons(*(rawCollections.eleCollection), looseID, rawCollections.jetsForLepMVACollection );
   electronsLoose = bHelp.GetSymmetricDifference(electronsInclusivelyLoose, electronsTight);
   
   selectedCollections->eleCollection = &electronsTight;
@@ -383,10 +405,10 @@ void HelperLeptonCore::getTightAndLooseElectrons (electronID::electronID tightID
 void HelperLeptonCore::getTightAndLooseMuons ( muonID::muonID tightID, muonID::muonID looseID, BEANFileInterface * selectedCollections) {
 
       
-  muonsTight = bHelp.GetSelectedMuons((*rawCollections.muonCollection), tightID);
+  muonsTight = bHelp.GetSelectedMuons((*rawCollections.muonCollection), tightID, rawCollections.jetsForLepMVACollection);
     // a temporary variable
     // to calculate the loose muons 
-  BNmuonCollection muonsInclusivelyLoose = bHelp.GetSelectedMuons((*rawCollections.muonCollection), looseID);
+  BNmuonCollection muonsInclusivelyLoose = bHelp.GetSelectedMuons((*rawCollections.muonCollection), looseID, rawCollections.jetsForLepMVACollection);
     
   muonsLoose = bHelp.GetSymmetricDifference(muonsInclusivelyLoose,muonsTight);
     
@@ -433,6 +455,7 @@ void HelperLeptonCore::fillLepCollectionWithSelectedLeptons (BEANFileInterface *
   // remove all entires first
   leptonsTight.clear();
   leptonsLoose.clear();
+  leptonsMerged.clear();
   
   for (BNelectronCollection::iterator iEle = selectedCollections->eleCollection->begin();
        iEle != selectedCollections->eleCollection->end();
@@ -467,5 +490,39 @@ void HelperLeptonCore::fillLepCollectionWithSelectedLeptons (BEANFileInterface *
 
   selectedCollections->leptonCollection = &leptonsTight;
   selectedCollections->looseLeptonCollection = &leptonsLoose;
+
+  
+  mergeTightLooseLeptons(selectedCollections, leptonsMerged);
+  
+  
+  selectedCollections->mergedLeptonCollection = & leptonsMerged;
+
+}
+
+void HelperLeptonCore::mergeTightLooseLeptons (BEANFileInterface * inputCollections, BNleptonCollection & resultCollection) {
+
+  
+  resultCollection.clear();
+
+  for ( BNleptonCollection::iterator iLep = inputCollections->leptonCollection->begin();
+        iLep != inputCollections->leptonCollection->end();
+        iLep ++ ) {
+
+    resultCollection.push_back((*iLep));
+
+  }
+
+  //---- 
+  
+  for ( BNleptonCollection::iterator iLep = inputCollections->looseLeptonCollection->begin();
+        iLep != inputCollections->looseLeptonCollection->end();
+        iLep ++ ) {
+
+    resultCollection.push_back((*iLep));
+
+  }
+
+  // sort the result by pt
+  resultCollection.sort();
 
 }

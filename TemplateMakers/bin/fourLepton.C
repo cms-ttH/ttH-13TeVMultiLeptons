@@ -8,6 +8,7 @@
 
 #include "BEAN/BEANmaker/interface/BtagWeight.h"
 #include "BEAN/BEANmaker/interface/BEANhelper.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
 
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"
@@ -24,73 +25,72 @@ bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
   unsigned numTightElectrons = inputCollections->eleCollection->size();
   unsigned numLooseElectrons = inputCollections->looseEleCollection->size();
 
-  bool passTwoLepton = false;
-  
-  if ( (numTightMuons + numLooseMuons + numTightElectrons + numLooseElectrons) ==2
-       && (numTightMuons + numTightElectrons) > 0)
-    passTwoLepton = true;
+  bool passLeptonCut = false;
 
-  return passTwoLepton;
+  // three tight leptons
+  // no loose leptons
+  if ( (numTightMuons + numTightElectrons) == 4 )
+    passLeptonCut = true;
 
-}
+  return passLeptonCut;
 
-void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLepton, int & TwoMuon, int & TwoEle, int & MuonEle) {
-
-  unsigned numTightMuons = inputCollections->muonCollection->size();
-  unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
-  unsigned numTightElectrons = inputCollections->eleCollection->size();
-  unsigned numLooseElectrons = inputCollections->looseEleCollection->size();
-
-  TwoMuon = 0;
-  TwoEle = 0;
-  MuonEle = 0;
-  
-  if (!passTwoLepton){
-    return;
-  }
-
-  if (numTightMuons == 2 || (numTightMuons==1 && numLooseMuons==1)) {
-    TwoMuon = 1;
-    return;
-  }
-
-  if (numTightElectrons ==2 || (numTightElectrons==1 && numLooseElectrons==1)) {
-    TwoEle = 1;
-    return;
-  }
-
-  if ( (numTightElectrons ==1 && numTightMuons==1)
-       || (numTightElectrons ==1 && numLooseMuons ==1)
-       || (numTightMuons == 1 && numLooseElectrons ==1) ) {
-    MuonEle =1;
-    return;
-    
-  }
-  
 }
 
 
 
-int main () {
+void loadTTH125Files (vector<string> & target ) {
+
+  //----- version 3 skims have better configurations
+  target.push_back("file:/hadoop/users/awoodard/BEAN_53xOn53x_V04_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_53xOn53x_V04_CV02/d821efbc3befd142036a29052ef27c00/output_1_2_AHw.root");                   
+
+}
+
+
+
+// use this function to figure out how to
+// setup the job
+// for now, it is just a hack to make testing easy
+JobParameters parseJobOptions (int argc, char** argv) {
+
+  JobParameters myConfig;
+
+  myConfig.outputFileName = "ntuple_toolTest.root";
+  myConfig.sampleName = "ttH125";
+  myConfig.maxEvents = 4000;
+
+  loadTTH125Files(myConfig.inputFileNames);
+  
+  return myConfig;
+
+}
+
+
+
+int main (int argc, char** argv) {
 
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
   //gSystem->Load("libNtupleMakerBEANmaker.so");
   AutoLibraryLoader::enable();
   
-  int debug = 10; // levels of debug
+  int debug = 0; // levels of debug, 10 is large
+
+  JobParameters myConfig = parseJobOptions(argc, argv);
   
-  TFile * outputFile = new TFile ("ntuple_toolTest.root", "RECREATE");
+  TFile * outputFile = new TFile (myConfig.outputFileName.c_str(), "RECREATE");
 
   outputFile->cd();
 
   TTree * summaryTree = new TTree("summaryTree", "Summary Event Values");
 
 
-  vector<string> fileNames;
+  //vector<string> fileNames;
   //                   file:/hadoop/users/awoodard/2012_53x_BEAN_GTV7G_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_GTV7G_V01_CV04/d821efbc3befd142036a29052ef27c00/output_10_2_3LV.root
-  fileNames.push_back("file:/hadoop/users/awoodard/2012_53x_BEAN_GTV7G_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_GTV7G_V01_CV04/d821efbc3befd142036a29052ef27c00/output_10_2_3LV.root");
-  fwlite::ChainEvent ev(fileNames);
+  //fileNames.push_back("file:/hadoop/users/awoodard/2012_53x_BEAN_GTV7G_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_GTV7G_V01_CV04/d821efbc3befd142036a29052ef27c00/output_10_2_3LV.root");
+
+
+  
+  fwlite::ChainEvent ev(myConfig.inputFileNames);
 
 
   // the lepton helper  
@@ -98,18 +98,19 @@ int main () {
 
   // setup the analysis 
   // it comes from the lepHelper
-  BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", "ttH125");
+  BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", myConfig.sampleName);
 
   // ---------------------------------------------
   // Note for future development: should these be
   // saved inside the lepHelper somewhere?
   // For now they are ok here
   // ---------------------------------------------
-  
-  muonID::muonID muonTightID = muonID::muonTight;
-  muonID::muonID muonLooseID = muonID::muonLoose;
-  electronID::electronID eleTightID = electronID::electronTight;
-  electronID::electronID eleLooseID = electronID::electronLoose;
+
+  // when the selections are the same, then everything should be tight not loose
+  muonID::muonID muonTightID = muonID::muonSideLooseMVA;
+  muonID::muonID muonLooseID = muonID::muonSideLooseMVA; 
+  electronID::electronID eleTightID = electronID::electronSideLooseMVA;
+  electronID::electronID eleLooseID = electronID::electronSideLooseMVA;
   
 
   
@@ -128,9 +129,11 @@ int main () {
    NumLeptons myNlep;
    kinVars.push_back(&myNlep);
 
-
-   CSVWeights myCSV(&lepHelper);
-   kinVars.push_back(&myCSV);
+   // CSV weights don't exist for jets
+   // with a pt < 30
+   // 
+   //   CSVWeights myCSV(&lepHelper);
+   //   kinVars.push_back(&myCSV);
 
    PUWeights myPU(&lepHelper);
    kinVars.push_back(&myPU);
@@ -141,7 +144,8 @@ int main () {
    XsecWeight myXsec (&lepHelper);
    kinVars.push_back(&myXsec);
 
-
+   // do these definitions work?
+   // yes, it it tight and everything else is loose
    LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, eleTightID, eleLooseID);
    kinVars.push_back(&myLepSF);
 
@@ -153,16 +157,13 @@ int main () {
 
    CheckTwoLepTrigger checkTrig (&lepHelper);
    kinVars.push_back(&checkTrig);
+
+   MassLepLep mll;
+   kinVars.push_back(&mll);
+
+   
    
 
-   int TwoMuon = 0;
-   int TwoEle = 0;
-   int MuonEle = 0;
-
-
-   summaryTree->Branch("TwoMuon", &TwoMuon);
-   summaryTree->Branch("TwoEle", &TwoEle);
-   summaryTree->Branch("MuonEle", &MuonEle);
 
   
 
@@ -203,12 +204,21 @@ int main () {
   int numEvents = 0;
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
+
+  int printEvery = 1000;
   
   for (ev.toBegin(); !ev.atEnd(); ++ev){
     numEvents++;
+
+    if (numEvents > myConfig.maxEvents) break;
+
+    if (numEvents == 1 || numEvents % printEvery == 0 )
+      cout << "Processing event.... " << numEvents << endl;
+
+    
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
     
-    BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, false);
+    BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, true);
 
     // make a shallow copy
     // update pointer as you make new collections
@@ -226,7 +236,7 @@ int main () {
 
     //------------    Jets
     if (debug > 9) cout << "Getting jets "  << endl;
-	lepHelper.getTightCorrectedJets(30.0, 2.4, jetID::jetLoose, &selectedCollections);
+	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
 
 
     //------------  Electrons
@@ -261,9 +271,6 @@ int main () {
       
     }
 
-    TwoMuon = 0;
-    TwoEle = 0;
-    MuonEle = 0;
 
 
     // There are several ways to define a selection
@@ -323,7 +330,7 @@ int main () {
       }
     }
 
-    LeptonVarsThisAnalysis(&selectedCollections, LeptonCutThisAnalysis(&selectedCollections), TwoMuon, TwoEle, MuonEle);
+    //LeptonVarsThisAnalysis(&selectedCollections, LeptonCutThisAnalysis(&selectedCollections), TwoMuon, TwoEle, MuonEle);
 
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();

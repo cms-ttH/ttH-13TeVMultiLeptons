@@ -37,7 +37,7 @@ TopPtWeights::TopPtWeights  (HelperLeptonCore *in) :
   branches["topPtWgt"] = BranchInfo<double>("topPtWgt");
   branches["topPtWgtUp"] = BranchInfo<double>("topPtWgtUp");
 
-  
+  this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
   
 }
 

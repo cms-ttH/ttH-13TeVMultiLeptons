@@ -1,3 +1,6 @@
 *~
 *.log
 *.tgz
+*.pyc
+.emacs*
+*.submit

@@ -4,6 +4,7 @@
 
 
 
+
 ///////////////////////////////////////////////////////
 //
 //
@@ -37,7 +38,7 @@ XsecWeight::XsecWeight  (HelperLeptonCore *in) :
 {
 
   branches["weight_Xsec"] = BranchInfo<double>("weight_Xsec");
-   
+  this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 }
 
 void XsecWeight::evaluate () {

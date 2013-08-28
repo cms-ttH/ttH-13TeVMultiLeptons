@@ -27,9 +27,6 @@ public:
   bool passCut ();
 
   std::string removeVersion (std::string);
-
-  int calculateNumGoodPVs (BNprimaryvertexCollection * pvCol);
-
   
   HelperLeptonCore * myHelper;
 
@@ -45,6 +42,7 @@ CheckTwoLepTrigger::CheckTwoLepTrigger (HelperLeptonCore * in):
   myHelper(in)
 {
 
+  this->resetVal = KinematicVariableConstants::INT_INIT;
 
   branches["isDoubleMuTriggerPass"] = BranchInfo<int>("isDoubleMuTriggerPass");
   branches["isDoubleEleTriggerPass"] = BranchInfo<int>("isDoubleEleTriggerPass");
@@ -110,8 +108,8 @@ void CheckTwoLepTrigger::evaluate () {
     if (doubleMuonTriggerNames.find(trigName) != doubleMuonTriggerNames.end()) {
 
       //------------- 
-      cout << "Found a match for trigger " << trigName
-           << " pass = " << iTrig->pass << endl;
+      //cout << "Found a match for trigger " << trigName
+      //     << " pass = " << iTrig->pass << endl;
       
       if (iTrig->pass == 1) {
         twoMuonTrigFired = true;
@@ -158,7 +156,9 @@ bool CheckTwoLepTrigger::passCut() {
 
   evaluate();
   
-  if (branches["isCleanEvent"].branchVal == 1)
+  if (branches["isDoubleMuTriggerPass"].branchVal == 1
+      || branches["isDoubleEleTriggerPass"].branchVal == 1
+      || branches["isMuEGTriggerPass"].branchVal == 1)
     return true;
   return false;
 

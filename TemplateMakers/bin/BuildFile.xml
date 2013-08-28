@@ -22,7 +22,13 @@
   </bin>
   <bin   file="LepJets.C">
   </bin>
-  <bin   file="toolTest.C">
+  <bin   file="twoLepOS.C">
+  </bin>
+  <bin   file="ssTwoLep.C">
+  </bin>
+  <bin file="threeLepton.C">
+  </bin>
+  <bin file="fourLepton.C">
   </bin>
 #  <bin   file="test_beans_trileptonStudies.C">
 #  </bin>

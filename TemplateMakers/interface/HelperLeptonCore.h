@@ -162,6 +162,10 @@ public:
                         sysType::sysType shift = sysType::NA);
 
   void fillLepCollectionWithSelectedLeptons ( BEANFileInterface * selectedCollections);
+
+  void mergeTightLooseLeptons (BEANFileInterface * inputCollections, BNleptonCollection & resultCollection);
+
+  //void checkCollections ();
   
   // fill in everything you have
   //void fillOutputBranches ();
@@ -231,6 +235,10 @@ public:
 
   BNleptonCollection leptonsTight;
   BNleptonCollection leptonsLoose;
+  BNleptonCollection leptonsMerged;
+
+  fwlite::Handle<BNjetCollection> h_lepMvaJets;
+  BNjetCollection lepMvaJets;
   
   
 };

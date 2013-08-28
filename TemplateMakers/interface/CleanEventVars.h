@@ -51,6 +51,8 @@ CleanEventVars::CleanEventVars  (HelperLeptonCore *in ):
 {
 
   branches["isCleanEvent"] = BranchInfo<int>("isCleanEvent");
+
+  this->resetVal = KinematicVariableConstants::INT_INIT;
   
 }
 
