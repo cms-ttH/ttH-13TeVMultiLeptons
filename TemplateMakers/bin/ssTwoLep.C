@@ -18,7 +18,7 @@
 
 
 
-bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
+bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
 
   unsigned numTightMuons = inputCollections->muonCollection->size();
   unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
@@ -28,11 +28,9 @@ bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
   bool passTwoLepton = false;
 
   // two tight leptons
-  // no loose leptons
-  if ( (numTightMuons ==2 || numTightElectrons==2 || (numTightMuons==1 && numTightElectrons==1))
-       && ((numLooseMuons + numLooseElectrons) == 0)
-       )
-    passTwoLepton = true;
+  // we will cut on loose muons later
+  if (numTightMuons ==2 || numTightElectrons==2 || (numTightMuons==1 && numTightElectrons==1))
+      passTwoLepton = true;
 
   return passTwoLepton;
 
@@ -117,12 +115,6 @@ int main (int argc, char** argv) {
   TTree * summaryTree = new TTree("summaryTree", "Summary Event Values");
 
 
-  //vector<string> fileNames;
-  //                   file:/hadoop/users/awoodard/2012_53x_BEAN_GTV7G_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_GTV7G_V01_CV04/d821efbc3befd142036a29052ef27c00/output_10_2_3LV.root
-  //fileNames.push_back("file:/hadoop/users/awoodard/2012_53x_BEAN_GTV7G_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_GTV7G_V01_CV04/d821efbc3befd142036a29052ef27c00/output_10_2_3LV.root");
-
-
-  
   fwlite::ChainEvent ev(myConfig.inputFileNames);
 
 
@@ -140,9 +132,9 @@ int main (int argc, char** argv) {
   // ---------------------------------------------
   
   muonID::muonID muonTightID = muonID::muonSideTightMVA;
-  muonID::muonID muonLooseID = muonID::muonSideLooseMVA;
+  muonID::muonID muonLooseID = muonID::muonSide;
   electronID::electronID eleTightID = electronID::electronSideTightMVA;
-  electronID::electronID eleLooseID = electronID::electronSideLooseMVA;
+  electronID::electronID eleLooseID = electronID::electronSide;
   
 
   
@@ -154,7 +146,7 @@ int main (int argc, char** argv) {
   
 
    NumJets myNjets;
-   myNjets.setCut(2); // parameter is keep events with jets  >= num
+   myNjets.setCut(3); // parameter is keep events with jets  >= num
    kinVars.push_back(&myNjets); //save it in the tree
    cutVars.push_back(&myNjets); //also cut on it
 
@@ -195,7 +187,11 @@ int main (int argc, char** argv) {
 
    LepMVAs myLepMVAs(&lepHelper, 5);
    kinVars.push_back(&myLepMVAs);
-   
+
+   LepTrackCharges myLepTrackCharges(2);
+   kinVars.push_back(&myLepTrackCharges);
+   myLepTrackCharges.setCut("SS");
+   cutVars.push_back(&myLepTrackCharges);
 
    int TwoMuon = 0;
    int TwoEle = 0;
@@ -207,7 +203,6 @@ int main (int argc, char** argv) {
    summaryTree->Branch("MuonEle", &MuonEle);
 
   
-
   GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonPt);
 
