@@ -24,3 +24,4 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CleanEventVars.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CheckTwoLepTrigger.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/MassLepLep.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/LepMVAs.h"

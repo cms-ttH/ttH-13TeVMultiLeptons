@@ -193,7 +193,8 @@ int main (int argc, char** argv) {
    MassLepLep mll;
    kinVars.push_back(&mll);
 
-   
+   LepMVAs myLepMVAs(&lepHelper, 5);
+   kinVars.push_back(&myLepMVAs);
    
 
    int TwoMuon = 0;
