@@ -68,6 +68,7 @@ public:
   // a different version of evaluate
   // can be used in several ways 
   void evaluate (collectionType * inputCol);
+  void evaluateLeptonCollection (collectionType * inputCol);
 
 };
 
@@ -145,8 +146,6 @@ void GenericCollectionMemberBase<branchDataType, collectionType>::evaluate (coll
     
     
     Reflex::Object targetObject(myClass, &(inputCol->at(iObj)));
-
-
     
     branchDataType * tempValPtr = (branchDataType*) (targetObject.Get(memberName).Address());
 
@@ -155,12 +154,23 @@ void GenericCollectionMemberBase<branchDataType, collectionType>::evaluate (coll
     myVars[iObj].branchVal = *tempValPtr;
     
   }
-  
 }
 
+template <class branchDataType, class collectionType>
+void GenericCollectionMemberBase<branchDataType, collectionType>::evaluateLeptonCollection (collectionType * inputCol) {
+  if (evaluatedThisEvent ) return;
+  evaluatedThisEvent = true;
 
+  unsigned numObjs = inputCol->size();
+  unsigned loopMax = (unsigned(maxObjInColl) < numObjs) ? unsigned(maxObjInColl) : numObjs;
+  for (unsigned iObj = 0; iObj < loopMax; iObj++ ){
+      Reflex::Object targetObject(myClass, &(*(inputCol->at(iObj))));
     
-    
+      branchDataType * tempValPtr = (branchDataType*) (targetObject.Get(memberName).Address());
+      myVars[iObj].branchVal = *tempValPtr;
+  }
+}
+
 template <class branchDataType, class collectionType>
 bool GenericCollectionMemberBase<branchDataType, collectionType>::passCut () {
 
