@@ -87,7 +87,7 @@ JobParameters parseJobOptions (int argc, char** argv) {
 
   myConfig.outputFileName = "ntuple_toolTest.root";
   myConfig.sampleName = "ttH125";
-  myConfig.maxEvents = 4000;
+  myConfig.maxEvents = 1000;
 
   loadTTH125Files(myConfig.inputFileNames);
   
@@ -143,8 +143,10 @@ int main (int argc, char** argv) {
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
 
-  
-
+   // This is a hack, so that we can specify which collection to use before it is initialized inside the
+   // event loop. After initialization, ptrToSelectedCollections is set to point at selectedCollections.
+   BEANFileInterface * ptrToSelectedCollections = new BEANFileInterface;
+   
    NumJets myNjets;
    myNjets.setCut(3); // parameter is keep events with jets  >= num
    kinVars.push_back(&myNjets); //save it in the tree
@@ -193,6 +195,11 @@ int main (int argc, char** argv) {
    myLepTrackCharges.setCut("SS");
    cutVars.push_back(&myLepTrackCharges);
 
+   CERNTightCharges myCERNTightCharges(&(ptrToSelectedCollections->mergedLeptonCollection), "CERN_tight_charge", "preselected_leptons_by_pt", 2);
+   kinVars.push_back(&myCERNTightCharges);
+   myCERNTightCharges.setCut("pass");
+   //#cutVars.push_back(&myCERNTightCharges);
+
    int TwoMuon = 0;
    int TwoEle = 0;
    int MuonEle = 0;
@@ -202,7 +209,7 @@ int main (int argc, char** argv) {
    summaryTree->Branch("TwoEle", &TwoEle);
    summaryTree->Branch("MuonEle", &MuonEle);
 
-  
+   
   GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonPt);
 
@@ -215,11 +222,21 @@ int main (int argc, char** argv) {
   GenericJetCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"),  "eta", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetEta);
 
+//   GenericJetCollectionMember<double, BNjetCollection> allJetCSV(Reflex::Type::ByName("BNjet"),  "btagCombinedSecVertex", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+//   kinVars.push_back(&allJetCSV);
+
+  GenericCollectionMember<double, BNjetCollection> allJetCSV(Reflex::Type::ByName("BNjet"),  &(ptrToSelectedCollections->jetCollection), "btagCombinedSecVertex", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  kinVars.push_back(&allJetCSV);
+
   GenericEventCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"),  "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
   kinVars.push_back(&runNumber);
 
   GenericEventCollectionMember<unsigned, BNeventCollection> lumiBlock(Reflex::Type::ByName("BNevent"),  "lumi", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
   kinVars.push_back(&lumiBlock);
+
+  //MET
+  GenericCollectionMember<double, BNmetCollection> metPt(Reflex::Type::ByName("BNmet"),  &(ptrToSelectedCollections->metCollection), "pt", "met",  KinematicVariableConstants::FLOAT_INIT, 1);
+  kinVars.push_back(&metPt);
 
   // this is a long inside BNevent
   // just using keyword long won't work
@@ -294,7 +311,7 @@ int main (int argc, char** argv) {
     if (debug >9) cout << "Filling lepton collections" << endl;
     lepHelper.fillLepCollectionWithSelectedLeptons(&selectedCollections);
     
-    
+    *ptrToSelectedCollections = selectedCollections;
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
