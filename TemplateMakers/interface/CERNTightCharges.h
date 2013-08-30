@@ -48,13 +48,13 @@ void CERNTightCharges::evaluate () {
       BNlepton * iLepton = selectedLeptons->at(i);
       branchName = Form("%s_%d_%s", storePrefix.c_str(), i+1, mem.c_str());
       if (iLepton->isMuon) {
-        std::cout << "tkPtErr/tkPt: " << ((BNmuon*) iLepton)->innerTrackPtError / ((BNmuon*) iLepton)->innerTrackPt << std::endl;
+//        std::cout << "tkPtErr/tkPt: " << ((BNmuon*) iLepton)->innerTrackPtError / ((BNmuon*) iLepton)->innerTrackPt << std::endl;
         branches[branchName].branchVal = ( ((BNmuon*) iLepton)->innerTrackPtError / ((BNmuon*) iLepton)->innerTrackPt < 0.2 );
       }
       else {
-        std::cout << "isGsfCtfScPixChargeConsistent: " << ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent << std::endl;
-        std::cout << "numberOfExpectedInnerHits: " << ((BNelectron*) iLepton)->numberOfExpectedInnerHits << std::endl;
-        std::cout << "passConvVeto: " << ((BNelectron*) iLepton)->passConvVeto << std::endl;
+//         std::cout << "isGsfCtfScPixChargeConsistent: " << ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent << std::endl;
+//         std::cout << "numberOfExpectedInnerHits: " << ((BNelectron*) iLepton)->numberOfExpectedInnerHits << std::endl;
+//         std::cout << "passConvVeto: " << ((BNelectron*) iLepton)->passConvVeto << std::endl;
         branches[branchName].branchVal = ( ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent &&
                                            ((BNelectron*) iLepton)->numberOfExpectedInnerHits == 0 &&
                                            ((BNelectron*) iLepton)->passConvVeto );
