@@ -84,7 +84,7 @@ JobParameters parseJobOptions (int argc, char** argv) {
 
   JobParameters myConfig;
 
-  myConfig.outputFileName = "ntuple_toolTest.root";
+  myConfig.outputFileName = "ntuple_ssTwoLep.root";
   myConfig.sampleName = "ttH125";
   myConfig.maxEvents = 1000;
 
@@ -291,7 +291,7 @@ int main (int argc, char** argv) {
 
     //------------    Jets
     if (debug > 9) cout << "Getting jets "  << endl;
-	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
+	lepHelper.getTightCorrectedJets(25.0, 4.7, jetID::jetLoose, &selectedCollections);
 
 
     //------------  Electrons
