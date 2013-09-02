@@ -85,7 +85,7 @@ JobParameters parseJobOptions (int argc, char** argv) {
 
   myConfig.outputFileName = "ntuple_ssTwoLep.root";
   myConfig.sampleName = "ttH125";
-  myConfig.maxEvents = 1000;
+  myConfig.maxEvents = -1;
 
   loadTTH125Files(myConfig.inputFileNames);
   
@@ -142,11 +142,17 @@ int main (int argc, char** argv) {
    
    GenericCollectionSizeVariable<BNjetCollection> numJets(&(ptrToSelectedCollections->jetCollection), "numJets");
    kinVars.push_back(&numJets);
-   numJets.setCut(4);
+   numJets.setCut(2);
    cutVars.push_back(&numJets); 
 
-   GenericCollectionSizeVariable<BNleptonCollection> numLeptons(&(ptrToSelectedCollections->mergedLeptonCollection), "numLeptons");
-   kinVars.push_back(&numLeptons);
+   GenericCollectionSizeVariable<BNjetCollection> numLooseBJets(&(ptrToSelectedCollections->jetCollectionLooseCSV), "numLooseBJets");
+   kinVars.push_back(&numLooseBJets);
+
+   GenericCollectionSizeVariable<BNjetCollection> numMediumBJets(&(ptrToSelectedCollections->jetCollectionMediumCSV), "numMediumBJets");
+   kinVars.push_back(&numMediumBJets);   
+   
+   GenericCollectionSizeVariable<BNleptonCollection> numPreselectedLeptons(&(ptrToSelectedCollections->mergedLeptonCollection), "numPreselectedLeptons");
+   kinVars.push_back(&numPreselectedLeptons);
 
    GenericCollectionSizeVariable<BNmuonCollection> numMuons(&(ptrToSelectedCollections->muonCollection), "numMuons");
    kinVars.push_back(&numMuons);
@@ -204,14 +210,10 @@ int main (int argc, char** argv) {
    int TwoMuon = 0;
    int TwoEle = 0;
    int MuonEle = 0;
-   int numLooseBJets = 0;
-   int numMediumBJets = 0;
 
    summaryTree->Branch("TwoMuon", &TwoMuon);
    summaryTree->Branch("TwoEle", &TwoEle);
    summaryTree->Branch("MuonEle", &MuonEle);
-   summaryTree->Branch("numLooseBJets", &numLooseBJets);
-   summaryTree->Branch("numMediumBJets", &numMediumBJets);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "pt", "preselected_lepton_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonPt);
@@ -317,11 +319,9 @@ int main (int argc, char** argv) {
 
     if (debug > 9) cout << "Getting loose CSV jets"  << endl;
 	selectedCollections.jetCollectionLooseCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'L');
-    numLooseBJets = int((selectedCollections.jetCollectionLooseCSV)->size());
     
     if (debug > 9) cout << "Getting medium CSV jets"  << endl;
 	selectedCollections.jetCollectionMediumCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'M');
-    numMediumBJets = int((selectedCollections.jetCollectionMediumCSV)->size());
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
