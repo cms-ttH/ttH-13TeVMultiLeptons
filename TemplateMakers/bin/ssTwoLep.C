@@ -1,3 +1,4 @@
+
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
 
@@ -84,7 +85,7 @@ JobParameters parseJobOptions (int argc, char** argv) {
 
   myConfig.outputFileName = "ntuple_ssTwoLep.root";
   myConfig.sampleName = "ttH125";
-  myConfig.maxEvents = -1;
+  myConfig.maxEvents = 1000;
 
   loadTTH125Files(myConfig.inputFileNames);
   
@@ -139,13 +140,19 @@ int main (int argc, char** argv) {
    // event loop. After initialization, ptrToSelectedCollections is set to point at selectedCollections.
    BEANFileInterface * ptrToSelectedCollections = new BEANFileInterface;
    
-   NumJets myNjets;
-   myNjets.setCut(3); // parameter is keep events with jets  >= num
-   kinVars.push_back(&myNjets); //save it in the tree
-   cutVars.push_back(&myNjets); //also cut on it
+   GenericCollectionSizeVariable<BNjetCollection> numJets(&(ptrToSelectedCollections->jetCollection), "numJets");
+   kinVars.push_back(&numJets);
+   numJets.setCut(4);
+   cutVars.push_back(&numJets); 
 
-   NumLeptons myNlep;
-   kinVars.push_back(&myNlep);
+   GenericCollectionSizeVariable<BNleptonCollection> numLeptons(&(ptrToSelectedCollections->mergedLeptonCollection), "numLeptons");
+   kinVars.push_back(&numLeptons);
+
+   GenericCollectionSizeVariable<BNmuonCollection> numMuons(&(ptrToSelectedCollections->muonCollection), "numMuons");
+   kinVars.push_back(&numMuons);
+
+   GenericCollectionSizeVariable<BNelectronCollection> numElectrons(&(ptrToSelectedCollections->eleCollection), "numElectrons");
+   kinVars.push_back(&numElectrons);
 
    // CSV weights don't exist for jets
    // with a pt < 30
