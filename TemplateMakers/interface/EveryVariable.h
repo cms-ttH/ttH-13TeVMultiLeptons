@@ -29,3 +29,5 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/LepTrackCharges.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CERNTightCharges.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/MHT.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/MetLD.h"

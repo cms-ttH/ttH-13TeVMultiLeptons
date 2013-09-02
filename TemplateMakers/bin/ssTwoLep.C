@@ -189,6 +189,9 @@ int main (int argc, char** argv) {
    LepMVAs myLepMVAs(&lepHelper, 5);
    kinVars.push_back(&myLepMVAs);
 
+   MHT myMHT;
+   kinVars.push_back(&myMHT);
+
 //    LepTrackCharges myLepTrackCharges(2);
 //    kinVars.push_back(&myLepTrackCharges);
 //    myLepTrackCharges.setCut("SS");
@@ -262,6 +265,9 @@ int main (int argc, char** argv) {
   GenericEventCollectionMember<Long64_t, BNeventCollection> eventNumber(Reflex::Type::ByName("BNevent"),  "evt", "eventInfo",  KinematicVariableConstants::INT_INIT, 1);
   kinVars.push_back(&eventNumber);
   // hook up the variables
+
+  MetLD myMetLD(&myMHT, &metPt);
+  kinVars.push_back(&myMetLD);
 
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
