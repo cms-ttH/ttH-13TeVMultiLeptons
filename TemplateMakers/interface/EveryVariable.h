@@ -11,7 +11,6 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericObjectMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericMuonCollectionMember.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericLeptonCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericJetCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericEventCollectionMember.h"
