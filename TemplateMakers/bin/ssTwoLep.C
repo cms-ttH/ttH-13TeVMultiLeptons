@@ -317,12 +317,6 @@ int main (int argc, char** argv) {
     if (debug > 9) cout << "Getting jets "  << endl;
 	lepHelper.getTightCorrectedJets(25.0, 4.7, jetID::jetLoose, &selectedCollections);
 
-    if (debug > 9) cout << "Getting loose CSV jets"  << endl;
-	selectedCollections.jetCollectionLooseCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'L');
-    
-    if (debug > 9) cout << "Getting medium CSV jets"  << endl;
-	selectedCollections.jetCollectionMediumCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'M');
-
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
     lepHelper.getTightAndLooseElectrons(eleTightID, eleLooseID, &selectedCollections);

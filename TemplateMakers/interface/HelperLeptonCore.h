@@ -221,6 +221,8 @@ public:
   fwlite::Handle<BNjetCollection> h_pfjets;
   BNjetCollection pfjets;
   BNjetCollection jetsTight;
+  BNjetCollection jetsLooseCSV;
+  BNjetCollection jetsMediumCSV;  
 
   fwlite::Handle<BNmetCollection> h_pfmets;
   BNmetCollection pfmets;
