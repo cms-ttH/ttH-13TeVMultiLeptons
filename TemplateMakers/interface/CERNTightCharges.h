@@ -6,20 +6,20 @@
 class CERNTightCharges: public KinematicVariable<int> {
 
 public:
-  BNleptonCollection ** selCollection;
+  BNleptonCollection **selCollection;
   unsigned int max;
   string mem;
   string storePrefix;
   string CERNTightChargeCut;
   unsigned int loopMax;
 
-  CERNTightCharges(BNleptonCollection ** input_selCollection, string input_mem, string input_storePrefix, unsigned int input_max);
+  CERNTightCharges(BNleptonCollection **input_selCollection, string input_mem, string input_storePrefix, unsigned int input_max);
   void evaluate ();
   void setCut (string cut);
   bool passCut ();
 };
 
-CERNTightCharges::CERNTightCharges (BNleptonCollection ** input_selCollection, string input_mem, string input_storePrefix, unsigned int input_max):
+CERNTightCharges::CERNTightCharges (BNleptonCollection **input_selCollection, string input_mem, string input_storePrefix, unsigned int input_max):
   selCollection(input_selCollection),
   mem(input_mem),
   storePrefix(input_storePrefix),
@@ -39,13 +39,13 @@ void CERNTightCharges::evaluate () {
   evaluatedThisEvent = true;
 
   //--------
-  //BNleptonCollection * selectedLeptons = this->blocks->mergedLeptonCollection;
-  BNleptonCollection * selectedLeptons = (*selCollection);
+  //BNleptonCollection *selectedLeptons = this->blocks->mergedLeptonCollection;
+  BNleptonCollection *selectedLeptons = (*selCollection);
   TString branchName;
   loopMax = (unsigned (max) < selectedLeptons->size()) ? unsigned(max) : selectedLeptons->size();
 
   for (unsigned int i = 0; i < loopMax; i++) {
-      BNlepton * iLepton = selectedLeptons->at(i);
+      BNlepton *iLepton = selectedLeptons->at(i);
       branchName = Form("%s_%d_%s", storePrefix.c_str(), i+1, mem.c_str());
       if (iLepton->isMuon) {
 //        std::cout << "tkPtErr/tkPt: " << ((BNmuon*) iLepton)->innerTrackPtError / ((BNmuon*) iLepton)->innerTrackPt << std::endl;
