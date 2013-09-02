@@ -215,40 +215,40 @@ int main (int argc, char** argv) {
    summaryTree->Branch("TwoEle", &TwoEle);
    summaryTree->Branch("MuonEle", &MuonEle);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "pt", "preselected_lepton_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "pt", "preselected_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonPt);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonEta(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "eta", "preselected_lepton_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonEta(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "eta", "preselected_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonEta);
 
-  GenericCollectionMember<int, BNleptonCollection> allLeptonIsMuon(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "isMuon", "preselected_lepton_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNleptonCollection> allLeptonIsMuon(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "isMuon", "preselected_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonIsMuon);
 
-  GenericCollectionMember<int, BNleptonCollection> allLeptonIsElectron(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "isElectron", "preselected_lepton_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNleptonCollection> allLeptonIsElectron(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "isElectron", "preselected_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonIsElectron);
 
-  GenericCollectionMember<int, BNleptonCollection> allLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "tkCharge", "preselected_lepton_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNleptonCollection> allLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "tkCharge", "preselected_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonTkCharge);         
 
-  GenericCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->muonCollection), "pt", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->muonCollection), "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonPt);
 
-  GenericCollectionMember<double, BNmuonCollection> allMuonEta(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->muonCollection), "eta", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericCollectionMember<double, BNmuonCollection> allMuonEta(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->muonCollection), "eta", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonEta);
 
-  GenericCollectionMember<double, BNelectronCollection> allElectronEta(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->eleCollection), "eta", "electron_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericCollectionMember<double, BNelectronCollection> allElectronEta(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->eleCollection), "eta", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allElectronEta);
 
-  GenericCollectionMember<double, BNelectronCollection> allElectronPt(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->eleCollection), "pt", "electron_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericCollectionMember<double, BNelectronCollection> allElectronPt(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->eleCollection), "pt", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allElectronPt);  
 
-  GenericCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "pt", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  GenericCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "pt", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetPt);
 
-  GenericCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "eta", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  GenericCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "eta", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetEta);
 
-  GenericCollectionMember<double, BNjetCollection> allJetCSV(Reflex::Type::ByName("BNjet"),  &(ptrToSelectedCollections->jetCollection), "btagCombinedSecVertex", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  GenericCollectionMember<double, BNjetCollection> allJetCSV(Reflex::Type::ByName("BNjet"),  &(ptrToSelectedCollections->jetCollection), "btagCombinedSecVertex", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetCSV);
 
   GenericCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"), &(ptrToSelectedCollections->eventCollection), "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);

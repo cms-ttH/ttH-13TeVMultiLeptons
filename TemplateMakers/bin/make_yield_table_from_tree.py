@@ -38,7 +38,7 @@ for (cut_label, cut_string) in labels_and_cut_strings:
 
     for event in range(list.GetN()):
         tree.GetEntry(list.GetEntry(event))
-        output_line = "%i:%i:%i:%.4f:%.4f:%.4f:%.2f:%i:%.2f:%.2f:%.2f:%.2f:%.2f:%.2f:%.2f\n" % (tree.eventInfo_1_run, tree.eventInfo_1_lumi, tree.eventInfo_1_evt, tree.preselected_leptons_by_pt_1_lepMVA, tree.preselected_leptons_by_pt_2_lepMVA, 0.0, tree.met_1_pt, tree.numJets, tree.jet_by_pt_1_pt, tree.jet_by_pt_2_pt, tree.jet_by_pt_3_pt, tree.jet_by_pt_4_pt, tree.jet_by_pt_4_pt, tree.jet_by_pt_5_pt, tree.jet_by_pt_6_pt)
+        output_line = "%i:%i:%i:%.4f:%.4f:%.4f:%.2f:%i:%.2f:%.2f:%.2f:%.2f:%.2f:%.2f:%.2f\n" % (tree.eventInfo_run, tree.eventInfo_lumi, tree.eventInfo_evt, tree.preselected_leptons_by_pt_1_lepMVA, tree.preselected_leptons_by_pt_2_lepMVA, tree.met_ld, tree.met_pt, tree.numJets, tree.jet_by_pt_1_pt, tree.jet_by_pt_2_pt, tree.jet_by_pt_3_pt, tree.jet_by_pt_4_pt, tree.jet_by_pt_4_pt, tree.jet_by_pt_5_pt, tree.jet_by_pt_6_pt)
         output_line = output_line.replace("-899999982852417519616.00", "-99.00")
         output_file.write(output_line)
 

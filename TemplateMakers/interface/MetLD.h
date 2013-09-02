@@ -14,7 +14,7 @@ public:
 };
 
 MetLD::MetLD(MHT * mht, GenericCollectionMember<double, BNmetCollection> * met): myMht(mht), myMet(met) {
-    branches["met_LD"] = BranchInfo<double>("met_LD");
+    branches["met_ld"] = BranchInfo<double>("met_ld");
 }
 
 void MetLD::evaluate() {
@@ -26,12 +26,12 @@ void MetLD::evaluate() {
   myMet->evaluate();
   myMht->evaluate();
 
-  float met = branches["met_1_pt"].branchVal;
+  float met = branches["met_pt"].branchVal;
   float mht = branches["mht"].branchVal;
 
   float met_ld = met * 0.00397 + mht * 0.00265;
 
-  branches["met_LD"].branchVal = met_ld;
+  branches["met_ld"].branchVal = met_ld;
 
 }
 

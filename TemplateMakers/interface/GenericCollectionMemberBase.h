@@ -84,13 +84,19 @@ GenericCollectionMemberBase<branchDataType, collectionType>::GenericCollectionMe
   //cout << "Blocks is " << hex << blocks << dec << endl;
   
   // do this to make sure you get the inherited ones
-  myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);  
+  myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);
 
-  for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
-    TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, mem.c_str());
-    //cout << "branch name " << iVar << " will be " << bName << endl;
-    myVars.push_back(BranchInfo<branchDataType>(bName));
+  if (myClass.Name()=="BNevent" || myClass.Name()=="BNmet") {
+      TString bName = Form("%s_%s", prefix.c_str(), mem.c_str());
+      myVars.push_back(BranchInfo<branchDataType>(bName));      
+  } else {
+      for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
+          TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, mem.c_str());
+          //cout << "branch name " << iVar << " will be " << bName << endl;
+          myVars.push_back(BranchInfo<branchDataType>(bName));
+      }
   }
+
   reset();
   
 }
