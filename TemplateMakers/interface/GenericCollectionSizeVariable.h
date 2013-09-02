@@ -9,14 +9,13 @@ template <class collectionType>
 class GenericCollectionSizeVariable: public KinematicVariable<int> {
 
 public:
-    collectionType ** collection;
-    int collectionSize;
+    collectionType **selCollection;
     int threshold;
     string branch_name;
     bool evaluatedThisEvent;
-    int resetVal;
+    unsigned int resetVal;
 
-    GenericCollectionSizeVariable(string b_name, collectionType **coll);
+  GenericCollectionSizeVariable(collectionType **input_selCollection, string input_branch_name);
     void reset();
     void evaluate();
     bool passCut();
@@ -24,28 +23,30 @@ public:
 };
 
 template<class collectionType>
-GenericCollectionSizeVariable<collectionType>::GenericCollectionSizeVariable(string b_name, collectionType **coll): branch_name(b_name) {
-    collection = coll;
+GenericCollectionSizeVariable<collectionType>::GenericCollectionSizeVariable(collectionType **input_selCollection, string input_branch_name):
+  selCollection(input_selCollection),
+  branch_name(input_branch_name)
+{
+  
+  branches[branch_name] = BranchInfo<int>(branch_name);
+  resetVal = KinematicVariableConstants::INT_INIT;
 
-    branches[branch_name] = BranchInfo<int>(branch_name);
-
-    resetVal = KinematicVariableConstants::INT_INIT;
-    reset();
+  reset();
 }
 
 template<class collectionType>
 void GenericCollectionSizeVariable<collectionType>::reset() {
-    branches[branch_name].branchVal = resetVal;
-    evaluatedThisEvent = false;
+  branches[branch_name].branchVal = resetVal;
+  evaluatedThisEvent = false;
 }
 
 template<class collectionType>
 void GenericCollectionSizeVariable<collectionType>::evaluate() {
-    if (evaluatedThisEvent) return;
-    evaluatedThisEvent = true;
-
-    branches[branch_name].branchVal = int((*collection)->size());
-
+  if (evaluatedThisEvent) return;
+  evaluatedThisEvent = true;
+  
+  branches[branch_name].branchVal = (*selCollection)->size();
+    
 }
 
 template<class collectionType>
@@ -60,7 +61,7 @@ bool GenericCollectionSizeVariable<collectionType>::passCut() {
   if (branches[branch_name].branchVal >= threshold)
     return true;
   return false;
-
+  
 }
 
 
