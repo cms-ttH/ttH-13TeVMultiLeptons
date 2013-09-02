@@ -420,15 +420,27 @@ void HelperLeptonCore::getTightAndLooseMuons ( muonID::muonID tightID, muonID::m
 void HelperLeptonCore::getTightCorrectedJets (double ptCut,
                                               double etaCut,
                                               jetID::jetID tightID,
-                                              BEANFileInterface * selectedCollections
-                                              ) {
+                                              BEANFileInterface * selectedCollections) {
+
+    BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);
+    BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, '-' ) ;
+
+    jetsTight = bHelp.GetSortedByPt(tmpCorrSelJets);
+
+    selectedCollections->jetCollection = &jetsTight;
+
+}
+
+BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets (double ptCut,
+                                                 double etaCut,
+                                                 jetID::jetID jetID,
+                                                 const char csvWorkingPoint) {
 
   BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);
-  BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, '-' ) ;
-  
-  jetsTight = bHelp.GetSortedByPt(tmpCorrSelJets);
+  BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, jetID, csvWorkingPoint) ;
+  BNjetCollection sortedCorrSelJets = bHelp.GetSortedByPt(tmpCorrSelJets);
 
-  selectedCollections->jetCollection = &jetsTight;
+  return &sortedCorrSelJets;
 
 }
 

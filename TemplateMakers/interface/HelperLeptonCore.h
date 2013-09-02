@@ -154,10 +154,14 @@ public:
 
   void getTightCorrectedJets (double ptCut,
                               double etaCut,
-                              jetID::jetID tightID,                    
-                              BEANFileInterface * selectedCollections
-                               );
-
+                              jetID::jetID tightID,
+                              BEANFileInterface * selectedCollections);
+    
+  BNjetCollection * getCorrectedSelectedJets (double ptCut,
+                                              double etaCut,
+                                              jetID::jetID jetID,
+                                              const char csvWorkingPoint);
+                                 
   void getCorrectedMet (BEANFileInterface * selectedCollections,
                         sysType::sysType shift = sysType::NA);
 

@@ -99,7 +99,9 @@ public:
     looseLeptonCollection(0),
     mergedLeptonCollection(0),
     metCollection(0),
-    jetCollection(0),    
+    jetCollection(0),
+    jetCollectionLooseCSV(0),
+    jetCollectionMediumCSV(0),
     mcParticleCollection(0),
     eventCollection(0),
     hltCollection (0),
@@ -126,6 +128,8 @@ public:
   
   BNmetCollection *   metCollection;
   BNjetCollection * jetCollection;
+  BNjetCollection * jetCollectionLooseCSV;
+  BNjetCollection * jetCollectionMediumCSV;    
 
   
   BNmcparticleCollection * mcParticleCollection;
