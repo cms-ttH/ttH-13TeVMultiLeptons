@@ -194,10 +194,14 @@ int main (int argc, char** argv) {
    int TwoMuon = 0;
    int TwoEle = 0;
    int MuonEle = 0;
+   int numLooseBJets = 0;
+   int numMediumBJets = 0;
 
    summaryTree->Branch("TwoMuon", &TwoMuon);
    summaryTree->Branch("TwoEle", &TwoEle);
    summaryTree->Branch("MuonEle", &MuonEle);
+   summaryTree->Branch("numLooseBJets", &numLooseBJets);
+   summaryTree->Branch("numMediumBJets", &numMediumBJets);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "pt", "preselected_lepton_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonPt);
@@ -300,9 +304,11 @@ int main (int argc, char** argv) {
 
     if (debug > 9) cout << "Getting loose CSV jets"  << endl;
 	selectedCollections.jetCollectionLooseCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'L');
-
+    numLooseBJets = int((selectedCollections.jetCollectionLooseCSV)->size());
+    
     if (debug > 9) cout << "Getting medium CSV jets"  << endl;
-	selectedCollections.jetCollectionMediumCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'M');        
+	selectedCollections.jetCollectionMediumCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'M');
+    numMediumBJets = int((selectedCollections.jetCollectionMediumCSV)->size());
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
@@ -315,7 +321,6 @@ int main (int argc, char** argv) {
     //----------    MET
     if (debug > 9) cout << "Getting met "  << endl;
     lepHelper.getCorrectedMet(&selectedCollections);
-
 
     //--------- fill up the lepton collections
     if (debug >9) cout << "Filling lepton collections" << endl;
@@ -337,7 +342,6 @@ int main (int argc, char** argv) {
     TwoMuon = 0;
     TwoEle = 0;
     MuonEle = 0;
-
 
     // There are several ways to define a selection
     // One way is with a kinematic varaible,
