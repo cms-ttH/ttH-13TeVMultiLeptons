@@ -15,8 +15,6 @@
 #include "Reflex/Kernel.h"
 
 
-
-
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
 
   unsigned numTightMuons = inputCollections->muonCollection->size();
@@ -86,14 +84,13 @@ JobParameters parseJobOptions (int argc, char** argv) {
 
   myConfig.outputFileName = "ntuple_ssTwoLep.root";
   myConfig.sampleName = "ttH125";
-  myConfig.maxEvents = 1000;
+  myConfig.maxEvents = -1;
 
   loadTTH125Files(myConfig.inputFileNames);
   
   return myConfig;
 
 }
-
 
 
 int main (int argc, char** argv) {
@@ -185,15 +182,14 @@ int main (int argc, char** argv) {
    LepMVAs myLepMVAs(&lepHelper, 5);
    kinVars.push_back(&myLepMVAs);
 
-   LepTrackCharges myLepTrackCharges(2);
-   kinVars.push_back(&myLepTrackCharges);
-   myLepTrackCharges.setCut("SS");
-   cutVars.push_back(&myLepTrackCharges);
+//    LepTrackCharges myLepTrackCharges(2);
+//    kinVars.push_back(&myLepTrackCharges);
+//    myLepTrackCharges.setCut("SS");
+//    cutVars.push_back(&myLepTrackCharges);
 
    CERNTightCharges myCERNTightCharges(&(ptrToSelectedCollections->mergedLeptonCollection), "CERN_tight_charge", "preselected_leptons_by_pt", 2);
    kinVars.push_back(&myCERNTightCharges);
    myCERNTightCharges.setCut("pass");
-   //#cutVars.push_back(&myCERNTightCharges);
 
    int TwoMuon = 0;
    int TwoEle = 0;
@@ -203,11 +199,20 @@ int main (int argc, char** argv) {
    summaryTree->Branch("TwoEle", &TwoEle);
    summaryTree->Branch("MuonEle", &MuonEle);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "pt", "preselected_lepton_by_pt",  KinematicVariableConstants::FLOAT_INIT, 5);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "pt", "preselected_lepton_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonPt);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonEta(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "eta", "preselected_lepton_by_pt",  KinematicVariableConstants::FLOAT_INIT, 5);
-  kinVars.push_back(&allLeptonEta);   
+  GenericCollectionMember<double, BNleptonCollection> allLeptonEta(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "eta", "preselected_lepton_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonEta);
+
+  GenericCollectionMember<int, BNleptonCollection> allLeptonIsMuon(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "isMuon", "preselected_lepton_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonIsMuon);
+
+  GenericCollectionMember<int, BNleptonCollection> allLeptonIsElectron(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "isElectron", "preselected_lepton_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonIsElectron);
+
+  GenericCollectionMember<int, BNleptonCollection> allLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "tkCharge", "preselected_lepton_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonTkCharge);         
 
   GenericCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->muonCollection), "pt", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonPt);
@@ -265,7 +270,7 @@ int main (int argc, char** argv) {
   for (ev.toBegin(); !ev.atEnd(); ++ev){
     numEvents++;
 
-    if (numEvents > myConfig.maxEvents) break;
+    if ((numEvents > myConfig.maxEvents) && myConfig.maxEvents != -1) break;
 
     if (numEvents == 1 || numEvents % printEvery == 0 )
       cout << "Processing event.... " << numEvents << endl;
@@ -293,6 +298,11 @@ int main (int argc, char** argv) {
     if (debug > 9) cout << "Getting jets "  << endl;
 	lepHelper.getTightCorrectedJets(25.0, 4.7, jetID::jetLoose, &selectedCollections);
 
+    if (debug > 9) cout << "Getting loose CSV jets"  << endl;
+	selectedCollections.jetCollectionLooseCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'L');
+
+    if (debug > 9) cout << "Getting medium CSV jets"  << endl;
+	selectedCollections.jetCollectionMediumCSV = lepHelper.getCorrectedSelectedJets(25.0, 4.7, jetID::jetLoose, 'M');        
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
@@ -302,14 +312,12 @@ int main (int argc, char** argv) {
     if (debug > 9) cout << "Getting muons "  << endl;
     lepHelper.getTightAndLooseMuons(muonTightID, muonLooseID, &selectedCollections);
 
-
     //----------    MET
     if (debug > 9) cout << "Getting met "  << endl;
     lepHelper.getCorrectedMet(&selectedCollections);
 
 
     //--------- fill up the lepton collections
-
     if (debug >9) cout << "Filling lepton collections" << endl;
     lepHelper.fillLepCollectionWithSelectedLeptons(&selectedCollections);
     
