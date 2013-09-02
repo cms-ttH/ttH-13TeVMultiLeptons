@@ -2,7 +2,6 @@
 import optparse
 import os
 from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
-from ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper import *
 from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import *
 from ttHMultileptonAnalysis.DrawPlots.utilities.prettytable import *
 from argparse import ArgumentParser
@@ -27,6 +26,7 @@ tree = tree_file.Get("summaryTree")
 all_cuts = ROOT.TCut()
 index = 0
 for (cut_label, cut_string) in labels_and_cut_strings:
+    print "Evaluating yields for cut: %s..." % cut_label
     index += 1
     cut = ROOT.TCut(cut_string)
     all_cuts += cut
@@ -43,7 +43,6 @@ for (cut_label, cut_string) in labels_and_cut_strings:
         output_file.write(output_line)
 
     output_file.close()
-
 
 yield_table = PrettyTable(['cut', 'yield'])
 for cut_label, cut_yield in yields.items():
