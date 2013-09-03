@@ -193,7 +193,7 @@ int main (int argc, char** argv) {
    MassLepLep mll;
    kinVars.push_back(&mll);
 
-   LepMVAs myLepMVAs(&lepHelper, 5);
+   LepMVAs myLepMVAs(&lepHelper, 4);
    kinVars.push_back(&myLepMVAs);
 
    MHT myMHT;
@@ -201,6 +201,9 @@ int main (int argc, char** argv) {
 
    SumLep1Lep2MetPt suml1l2metPts;
    kinVars.push_back(&suml1l2metPts);
+
+   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
+   kinVars.push_back(&myDBCorrectedRelIsoDR04s);
 
 //    LepTrackCharges myLepTrackCharges(2);
 //    kinVars.push_back(&myLepTrackCharges);

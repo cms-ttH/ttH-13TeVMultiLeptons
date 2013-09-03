@@ -32,3 +32,4 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/MHT.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/MetLD.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/SumLep1Lep2MetPt.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/DBCorrectedRelIsoDR04s.h"
