@@ -125,10 +125,11 @@ int main (int argc, char** argv) {
   // saved inside the lepHelper somewhere?
   // For now they are ok here
   // ---------------------------------------------
-  
-  muonID::muonID muonTightID = muonID::muonSideTightMVA;
+
+  // drop the MVA id requirement, it is not necessary
+  muonID::muonID muonTightID = muonID::muonSide;
   muonID::muonID muonLooseID = muonID::muonSide;
-  electronID::electronID eleTightID = electronID::electronSideTightMVA;
+  electronID::electronID eleTightID = electronID::electronSide;
   electronID::electronID eleLooseID = electronID::electronSide;
   
   // declare your kinematic variables that you want
@@ -198,6 +199,9 @@ int main (int argc, char** argv) {
    MHT myMHT;
    kinVars.push_back(&myMHT);
 
+   SumLep1Lep2MetPt suml1l2metPts;
+   kinVars.push_back(&suml1l2metPts);
+
 //    LepTrackCharges myLepTrackCharges(2);
 //    kinVars.push_back(&myLepTrackCharges);
 //    myLepTrackCharges.setCut("SS");
@@ -228,8 +232,34 @@ int main (int argc, char** argv) {
   kinVars.push_back(&allLeptonIsElectron);
 
   GenericCollectionMember<int, BNleptonCollection> allLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "tkCharge", "preselected_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
-  kinVars.push_back(&allLeptonTkCharge);         
+  kinVars.push_back(&allLeptonTkCharge);
 
+
+  ///////////////////////////////////////////////////////////////////
+  //
+  // Try add lepton variables
+  //
+
+  GenericMuonCollectionMember<int, BNmuonCollection> allLeptonD0(Reflex::Type::ByName("BNmuon"),  "correctedD0Vertex", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonD0);
+
+  GenericMuonCollectionMember<int, BNmuonCollection> allLeptonDZ(Reflex::Type::ByName("BNmuon"),  "correctedDZ", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonDZ);
+
+  GenericMuonCollectionMember<int, BNmuonCollection> allLeptonPFmuon(Reflex::Type::ByName("BNmuon"), "isPFMuon", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonPFmuon);
+
+  GenericMuonCollectionMember<int, BNmuonCollection> allLeptonGlobalMuon(Reflex::Type::ByName("BNmuon"),  "isGlobalMuon", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonGlobalMuon);
+
+  GenericMuonCollectionMember<int, BNmuonCollection> allLeptonTrackerMuon(Reflex::Type::ByName("BNmuon"),  "isTrackerMuon", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonTrackerMuon);
+
+  //GenericCollectionMember<int, BNleptonCollection> allLeptonGlobalMuon(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "isTrackerMuon", "preselected_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  //kinVars.push_back(&allLeptonGlobalMuon);
+
+  ///////////////////////////////////////////////////////////////////
+  
   GenericCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->muonCollection), "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonPt);
 
@@ -315,7 +345,7 @@ int main (int argc, char** argv) {
 
     //------------    Jets
     if (debug > 9) cout << "Getting jets "  << endl;
-	lepHelper.getTightCorrectedJets(25.0, 4.7, jetID::jetLoose, &selectedCollections);
+	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;

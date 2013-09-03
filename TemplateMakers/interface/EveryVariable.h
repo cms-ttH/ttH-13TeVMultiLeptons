@@ -31,3 +31,4 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/MHT.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/MetLD.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/SumLep1Lep2MetPt.h"
