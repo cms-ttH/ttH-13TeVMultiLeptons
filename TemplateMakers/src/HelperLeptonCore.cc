@@ -437,8 +437,15 @@ void HelperLeptonCore::getTightCorrectedJets (double ptCut,
     BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, '-' ) ;
 
     jetsTight = bHelp.GetSortedByPt(tmpCorrSelJets);
-
     selectedCollections->jetCollection = &jetsTight;
+
+    tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'L');
+    jetsLooseCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
+    selectedCollections->jetCollectionLooseCSV = &jetsLooseCSV;
+
+    tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'M');
+    jetsMediumCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
+    selectedCollections->jetCollectionMediumCSV = &jetsMediumCSV;    
 
 }
 
