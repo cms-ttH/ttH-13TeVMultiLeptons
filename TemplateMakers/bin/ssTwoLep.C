@@ -240,10 +240,10 @@ int main (int argc, char** argv) {
   // Try add lepton variables
   //
 
-  GenericMuonCollectionMember<int, BNmuonCollection> allLeptonD0(Reflex::Type::ByName("BNmuon"),  "correctedD0Vertex", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericMuonCollectionMember<double, BNmuonCollection> allLeptonD0(Reflex::Type::ByName("BNmuon"),  "correctedD0Vertex", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonD0);
 
-  GenericMuonCollectionMember<int, BNmuonCollection> allLeptonDZ(Reflex::Type::ByName("BNmuon"),  "correctedDZ", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericMuonCollectionMember<double, BNmuonCollection> allLeptonDZ(Reflex::Type::ByName("BNmuon"),  "correctedDZ", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonDZ);
 
   GenericMuonCollectionMember<int, BNmuonCollection> allLeptonPFmuon(Reflex::Type::ByName("BNmuon"), "isPFMuon", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
@@ -255,8 +255,11 @@ int main (int argc, char** argv) {
   GenericMuonCollectionMember<int, BNmuonCollection> allLeptonTrackerMuon(Reflex::Type::ByName("BNmuon"),  "isTrackerMuon", "muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonTrackerMuon);
 
-  //GenericCollectionMember<int, BNleptonCollection> allLeptonGlobalMuon(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->mergedLeptonCollection), "isTrackerMuon", "preselected_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
-  //kinVars.push_back(&allLeptonGlobalMuon);
+  GenericMuonCollectionMember<double, BNmuonCollection> allMuonImpactParameter(Reflex::Type::ByName("BNmuon"),  "IP", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allMuonImpactParameter);
+
+  GenericMuonCollectionMember<double, BNmuonCollection> allMuonImpactParameterError(Reflex::Type::ByName("BNmuon"),  "IPError", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allMuonImpactParameterError);  
 
   ///////////////////////////////////////////////////////////////////
   
