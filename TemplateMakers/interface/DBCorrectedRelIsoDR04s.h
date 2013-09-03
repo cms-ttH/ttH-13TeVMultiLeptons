@@ -44,7 +44,7 @@ void DBCorrectedRelIsoDR04s::evaluate () {
 
   for (unsigned int i=0; i<loopMax; i++) {
       BNlepton * iLepton = preselectedLeptons->at(i);
-      branchName = Form("preselected_leptons_by_pt_%d__DBCorrectedRelIsoDR04", i+1);
+      branchName = Form("preselected_leptons_by_pt_%d_DBCorrectedRelIsoDR04", i+1);
       branches[branchName].branchVal = beanHelper->GetDBCorrectedRelIsoDR04(*iLepton, 0.5);
   }
 }
