@@ -79,8 +79,6 @@
 #include "TMVA/MethodCuts.h"
 
 
-
-
 #endif
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
@@ -143,13 +141,15 @@ public:
   
 
   // Handle the gymnastics of tight and loose collection definitions
-  void getTightAndLooseElectrons (electronID::electronID tightID,
+  void getTightLoosePreselectedElectrons (electronID::electronID tightID,
                                   electronID::electronID looseID,
+                                  electronID::electronID preselectedID,
                                   BEANFileInterface* selectedCollections);
   
     // Handle the gymnastics of tight and loose collection definitions
-  void getTightAndLooseMuons (muonID::muonID tightID,
+  void getTightLoosePreselectedMuons (muonID::muonID tightID,
                               muonID::muonID looseID,
+                              muonID::muonID preselectedID,
                               BEANFileInterface* selectedCollections);
 
   void getTightCorrectedJets (double ptCut,
@@ -166,8 +166,6 @@ public:
                         sysType::sysType shift = sysType::NA);
 
   void fillLepCollectionWithSelectedLeptons ( BEANFileInterface * selectedCollections);
-
-  void mergeTightLooseLeptons (BEANFileInterface * inputCollections, BNleptonCollection & resultCollection);
 
   //void checkCollections ();
   
@@ -209,9 +207,13 @@ public:
   BNeventCollection events;
 
   fwlite::Handle<BNmuonCollection> h_muons;
-  BNmuonCollection  muons;
+  BNmuonCollection muonsRaw;
   BNmuonCollection muonsTight;
   BNmuonCollection muonsLoose;
+  BNmuonCollection muonsPreselected;
+  BNmuonCollection muonsTightLoose;
+  BNmuonCollection muonsLoosePreselected;
+  BNmuonCollection muonsTightLoosePreselected;
   
 
   fwlite::Handle<BNmcparticleCollection> h_mcparticles;
@@ -233,13 +235,23 @@ public:
   BNprimaryvertexCollection pvs;
 
   fwlite::Handle<BNelectronCollection> h_electrons;
-  BNelectronCollection electrons;
+  BNelectronCollection electronsRaw;
   BNelectronCollection electronsTight;
   BNelectronCollection electronsLoose;
+  BNelectronCollection electronsPreselected;
+  BNelectronCollection electronsTightLoose;
+  BNelectronCollection electronsLoosePreselected;
+  BNelectronCollection electronsTightLoosePreselected;
+  
 
+  BNleptonCollection leptonsRaw;
   BNleptonCollection leptonsTight;
   BNleptonCollection leptonsLoose;
-  BNleptonCollection leptonsMerged;
+  BNleptonCollection leptonsPreselected;
+  BNleptonCollection leptonsTightLoose;
+  BNleptonCollection leptonsLoosePreselected;
+  BNleptonCollection leptonsTightLoosePreselected;
+
 
   fwlite::Handle<BNjetCollection> h_lepMvaJets;
   BNjetCollection lepMvaJets;
