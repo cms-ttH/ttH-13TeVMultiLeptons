@@ -24,10 +24,6 @@ public:
   
   //HelperLeptonCore * myHelper;
 
-  // --- moved to HelperLeptonCore
-  //void mergeTightLooseLeptons (BNleptonCollection & resultCollection);
-  
-  
 };
 
 MassLepLep::MassLepLep ()
@@ -46,12 +42,12 @@ void MassLepLep::evaluate () {
 
   //--------
 
-  BNleptonCollection* tightAndLooseLeptons = this->blocks->mergedLeptonCollection;
+  BNleptonCollection* tightLoosePreselectedLeptons = this->blocks->tightLoosePreselectedLeptonCollection;
   
 
   double massResult = 10000.0;
 
-  if (tightAndLooseLeptons->size() < 2) {
+  if (tightLoosePreselectedLeptons->size() < 2) {
     massResult = this->resetVal;
   } else {
 
@@ -63,18 +59,18 @@ void MassLepLep::evaluate () {
     // store the minimum.
     
     for (unsigned firstIndex = 0;
-         firstIndex < tightAndLooseLeptons->size();
+         firstIndex < tightLoosePreselectedLeptons->size();
          firstIndex++){
 
-      BNlepton * temp1 = tightAndLooseLeptons->at(firstIndex);
+      BNlepton * temp1 = tightLoosePreselectedLeptons->at(firstIndex);
       TLorentzVector firstLep(temp1->px, temp1->py, temp1->pz, temp1->energy);
       
       for (unsigned secondIndex = firstIndex+1;
-           secondIndex < tightAndLooseLeptons->size();
+           secondIndex < tightLoosePreselectedLeptons->size();
            secondIndex++ ) {
 
 
-        BNlepton * temp2 = tightAndLooseLeptons->at(secondIndex);
+        BNlepton * temp2 = tightLoosePreselectedLeptons->at(secondIndex);
         TLorentzVector secondLep (temp2->px, temp2->py, temp2->pz, temp2->energy);
 
         TLorentzVector comboLep = firstLep + secondLep;

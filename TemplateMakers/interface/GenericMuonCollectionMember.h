@@ -28,7 +28,7 @@ template <class branchDataType, class collectionType>
 void GenericMuonCollectionMember<branchDataType, collectionType>::evaluate () {
 
   // blocks is inherited
-  GenericCollectionMemberBase<branchDataType, collectionType>::evaluate (this->blocks->muonCollection);
+  GenericCollectionMemberBase<branchDataType, collectionType>::evaluate (this->blocks->tightMuonCollection);
    
 }
 

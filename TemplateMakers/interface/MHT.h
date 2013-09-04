@@ -28,7 +28,7 @@ void MHT::evaluate() {
 
   //--------
 
-  BNleptonCollection* tightLeptons = this->blocks->leptonCollection;
+  BNleptonCollection* tightLeptons = this->blocks->tightLeptonCollection;
   BNjetCollection* selectedJets = this->blocks->jetCollection;
   TLorentzVector object_p4;
   TLorentzVector vector_sum;

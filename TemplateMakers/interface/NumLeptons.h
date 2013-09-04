@@ -20,8 +20,8 @@ NumLeptons::NumLeptons  () {
   branches["numTightMuons"] = BranchInfo<int>("numTightMuons");
   branches["numLooseMuons"] = BranchInfo<int>("numLooseMuons");
   
-  branches["numTightEle"] = BranchInfo<int>("numTightEle");
-  branches["numLooseEle"] = BranchInfo<int>("numLooseEle");
+  branches["numTightElectrons"] = BranchInfo<int>("numTightElectrons");
+  branches["numLooseElectrons"] = BranchInfo<int>("numLooseElectrons");
 
   this->resetVal = KinematicVariableConstants::INT_INIT;
   
@@ -32,11 +32,11 @@ void NumLeptons::evaluate () {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
   
-  branches["numTightMuons"].branchVal = int(this->blocks->muonCollection->size());
+  branches["numTightMuons"].branchVal = int(this->blocks->tightMuonCollection->size());
   branches["numLooseMuons"].branchVal = int(this->blocks->looseMuonCollection->size());
 
-  branches["numTightEle"].branchVal = int(this->blocks->eleCollection->size());
-  branches["numLooseEle"].branchVal = int(this->blocks->looseEleCollection->size());
+  branches["numTightElectrons"].branchVal = int(this->blocks->tightElectronCollection->size());
+  branches["numLooseElectrons"].branchVal = int(this->blocks->looseElectronCollection->size());
   
 }
 

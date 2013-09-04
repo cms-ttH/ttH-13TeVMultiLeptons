@@ -23,15 +23,10 @@ public:
   bool passCut ();
   
   
-
-  
-  
-  
 };
 
 DeltaRLepLep::DeltaRLepLep ()
 {
-
 
   branches["min_dR_leplep"] = BranchInfo<double>("min_dR_leplep");
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
@@ -44,13 +39,11 @@ void DeltaRLepLep::evaluate () {
 
   //--------
 
-  BNleptonCollection tightAndLooseLeptons = this->blocks->mergedLeptonCollection;
-
-
+  BNleptonCollection tightLoosePreselectedLeptons = this->blocks->preselectedLeptonCollection;
 
   double drResult = 10000.0;
 
-  if (tightAndLooseLeptons.size() < 2) {
+  if (tightLoosePreselectedLeptons.size() < 2) {
     massResult = this->resetVal;
   } else {
 
@@ -62,18 +55,18 @@ void DeltaRLepLep::evaluate () {
     // store the minimum.
     
     for (unsigned firstIndex = 0;
-         firstIndex < tightAndLooseLeptons.size();
+         firstIndex < tightLoosePreselectedLeptons.size();
          firstIndex++){
 
-      BNlepton * temp1 = tightAndLooseLeptons.at(firstIndex);
+      BNlepton * temp1 = tightLoosePreselectedLeptons.at(firstIndex);
 
       
       for (unsigned secondIndex = firstIndex+1;
-           secondIndex < tightAndLooseLeptons.size();
+           secondIndex < tightLoosePreselectedLeptons.size();
            secondIndex++ ) {
 
 
-        BNlepton * temp2 = tightAndLooseLeptons.at(secondIndex);
+        BNlepton * temp2 = tightLoosePreselectedLeptons.at(secondIndex);
 
         // where is this defined? who knows...
         tempDR = deltaR(temp1->phi, temp1->eta, temp2->phi, temp2->eta);
@@ -92,44 +85,6 @@ void DeltaRLepLep::evaluate () {
   
   
 }
-
-
-//
-//  Recall that a BNleptonCollection is actually pointers to 
-//  leptons and not lepton instances
-//
-//  Stuff everything into a single collection so it is easier to work with.
-//
-//
-
-void DeltaRLepLep::mergeTightLooseLeptons ( BNleptonCollection & resultCollection) {
-
-
-  resultCollection.clear();
-
-  for ( BNleptonCollection::iterator iLep = this->blocks->leptonCollection->begin();
-        iLep != this->blocks->leptonCollection->end();
-        iLep ++ ) {
-
-    resultCollection.push_back((*iLep));
-
-  }
-
-  //---- 
-  
-  for ( BNleptonCollection::iterator iLep = this->blocks->looseLeptonCollection->begin();
-        iLep != this->blocks->looseLeptonCollection->end();
-        iLep ++ ) {
-
-    resultCollection.push_back((*iLep));
-
-  }
-
-
-  
-
-}
-
 
 
 bool DeltaRLepLep::passCut() {

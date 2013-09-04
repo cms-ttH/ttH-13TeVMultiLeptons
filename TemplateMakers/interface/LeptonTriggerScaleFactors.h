@@ -37,8 +37,8 @@ LeptonTriggerScaleFactors::LeptonTriggerScaleFactors  (HelperLeptonCore *in) :
 {
 
   branches["TwoMuonTriggerSF"] = BranchInfo<double>("TwoMuonTriggerSF");
-  branches["TwoEleTriggerSF"] = BranchInfo<double>("TwoEleTriggerSF");
-  branches["MuonEleTriggerSF"] = BranchInfo<double>("MuonEleTriggerSF");
+  branches["TwoElectronTriggerSF"] = BranchInfo<double>("TwoElectronTriggerSF");
+  branches["MuonElectronTriggerSF"] = BranchInfo<double>("MuonElectronTriggerSF");
 
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
    
@@ -51,12 +51,12 @@ void LeptonTriggerScaleFactors::evaluate () {
 
   BEANhelper * beanHelper = &(myHelper->bHelp);
   
-  double muonSF = 1.0, eleSF = 1.0, meleSF= 1.0;
+  double muonSF = 1.0, electronSF = 1.0, muonElectronSF= 1.0;
 
-  unsigned numTightMuons = this->blocks->muonCollection->size();
+  unsigned numTightMuons = this->blocks->tightMuonCollection->size();
   unsigned numLooseMuons = this->blocks->looseMuonCollection->size();
-  unsigned numTightElectrons = this->blocks->eleCollection->size();
-  unsigned numLooseElectrons = this->blocks->looseEleCollection->size();
+  unsigned numTightElectrons = this->blocks->tightElectronCollection->size();
+  unsigned numLooseElectrons = this->blocks->looseElectronCollection->size();
 
   ////////////////////////////////////////////////////////
   // 
@@ -69,8 +69,8 @@ void LeptonTriggerScaleFactors::evaluate () {
 
     BNmuonCollection bestMuons;
     
-    for (BNmuonCollection::iterator iMuon = this->blocks->muonCollection->begin();
-         iMuon != this->blocks->muonCollection->end();
+    for (BNmuonCollection::iterator iMuon = this->blocks->tightMuonCollection->begin();
+         iMuon != this->blocks->tightMuonCollection->end();
          iMuon ++ ){
       bestMuons.push_back((*iMuon));
     }
@@ -87,20 +87,20 @@ void LeptonTriggerScaleFactors::evaluate () {
 
   if (numTightElectrons + numLooseElectrons >=2 ){
 
-    BNelectronCollection bestEles;
-    for (BNelectronCollection::iterator iEle = this->blocks->eleCollection->begin();
-         iEle != this->blocks->eleCollection->end();
-         iEle ++ ){
-      bestEles.push_back((*iEle));
+    BNelectronCollection bestElectrons;
+    for (BNelectronCollection::iterator iElectron = this->blocks->tightElectronCollection->begin();
+         iElectron != this->blocks->tightElectronCollection->end();
+         iElectron ++ ){
+      bestElectrons.push_back((*iElectron));
     }
   
-    for (BNelectronCollection::iterator iEle = this->blocks->looseEleCollection->begin();
-         iEle != this->blocks->looseEleCollection->end();
-         iEle ++ ){
-      bestEles.push_back((*iEle));
+    for (BNelectronCollection::iterator iElectron = this->blocks->looseElectronCollection->begin();
+         iElectron != this->blocks->looseElectronCollection->end();
+         iElectron ++ ){
+      bestElectrons.push_back((*iElectron));
     }
 
-    eleSF = beanHelper->GetDoubleElectronTriggerSF(bestEles.at(0), bestEles.at(1));
+    electronSF = beanHelper->GetDoubleElectronTriggerSF(bestElectrons.at(0), bestElectrons.at(1));
   }// end if you have two electrons
 
 
@@ -131,8 +131,8 @@ void LeptonTriggerScaleFactors::evaluate () {
 
     BNmuonCollection bestMuons;
     
-    for (BNmuonCollection::iterator iMuon = this->blocks->muonCollection->begin();
-         iMuon != this->blocks->muonCollection->end();
+    for (BNmuonCollection::iterator iMuon = this->blocks->tightMuonCollection->begin();
+         iMuon != this->blocks->tightMuonCollection->end();
          iMuon ++ ){
       bestMuons.push_back((*iMuon));
     }
@@ -143,21 +143,21 @@ void LeptonTriggerScaleFactors::evaluate () {
       bestMuons.push_back((*iMuon));      
     }
 
-    BNelectronCollection bestEles;
+    BNelectronCollection bestElectrons;
 
-    for (BNelectronCollection::iterator iEle = this->blocks->eleCollection->begin();
-         iEle != this->blocks->eleCollection->end();
-         iEle ++ ){
-      bestEles.push_back((*iEle));
+    for (BNelectronCollection::iterator iElectron = this->blocks->tightElectronCollection->begin();
+         iElectron != this->blocks->tightElectronCollection->end();
+         iElectron ++ ){
+      bestElectrons.push_back((*iElectron));
     }
   
-    for (BNelectronCollection::iterator iEle = this->blocks->looseEleCollection->begin();
-         iEle != this->blocks->looseEleCollection->end();
-         iEle ++ ){
-      bestEles.push_back((*iEle));
+    for (BNelectronCollection::iterator iElectron = this->blocks->looseElectronCollection->begin();
+         iElectron != this->blocks->looseElectronCollection->end();
+         iElectron ++ ){
+      bestElectrons.push_back((*iElectron));
     }
     
-    meleSF = beanHelper->GetMuonEleTriggerSF ( bestMuons.at(0), bestEles.at(0));
+    muonElectronSF = beanHelper->GetMuonEleTriggerSF ( bestMuons.at(0), bestElectrons.at(0));
     
   }// end if you have muons + electrons
 
@@ -165,8 +165,8 @@ void LeptonTriggerScaleFactors::evaluate () {
   
   
   branches["TwoMuonTriggerSF"].branchVal = muonSF;
-  branches["TwoEleTriggerSF"].branchVal = eleSF;
-  branches["MuonEleTriggerSF"].branchVal = meleSF;
+  branches["TwoElectronTriggerSF"].branchVal = electronSF;
+  branches["MuonElectronTriggerSF"].branchVal = muonElectronSF;
   
 
 }

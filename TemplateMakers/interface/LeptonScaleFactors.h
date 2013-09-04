@@ -32,8 +32,8 @@ public:
   muonID::muonID muonTightID;
   muonID::muonID muonLooseID;
 
-  electronID::electronID eleTightID;
-  electronID::electronID eleLooseID;
+  electronID::electronID electronTightID;
+  electronID::electronID electronLooseID;
   
 
 };
@@ -48,8 +48,8 @@ LeptonScaleFactors::LeptonScaleFactors  (HelperLeptonCore *in,
   myHelper(in),
   muonTightID(mt),
   muonLooseID(ml),
-  eleTightID(et),
-  eleLooseID(el)
+  electronTightID(et),
+  electronLooseID(el)
 
 {
 
@@ -68,8 +68,8 @@ void LeptonScaleFactors::evaluate () {
   
   double totalSF = 1.0;
 
-  for (BNmuonCollection::iterator iMuon = this->blocks->muonCollection->begin();
-       iMuon != this->blocks->muonCollection->end();
+  for (BNmuonCollection::iterator iMuon = this->blocks->tightMuonCollection->begin();
+       iMuon != this->blocks->tightMuonCollection->end();
        iMuon ++ ){
     totalSF *= beanHelper->GetMuonSF((*iMuon), muonTightID);
   }
@@ -80,16 +80,16 @@ void LeptonScaleFactors::evaluate () {
     totalSF *= beanHelper->GetMuonSF((*iMuon), muonLooseID);
   }
 
-  for (BNelectronCollection::iterator iEle = this->blocks->eleCollection->begin();
-       iEle != this->blocks->eleCollection->end();
-       iEle ++ ){
-    totalSF *= beanHelper->GetElectronSF((*iEle), eleTightID);
+  for (BNelectronCollection::iterator iElectron = this->blocks->tightElectronCollection->begin();
+       iElectron != this->blocks->tightElectronCollection->end();
+       iElectron ++ ){
+    totalSF *= beanHelper->GetElectronSF((*iElectron), electronTightID);
   }
   
-  for (BNelectronCollection::iterator iEle = this->blocks->looseEleCollection->begin();
-       iEle != this->blocks->looseEleCollection->end();
-       iEle ++ ){
-    totalSF *= beanHelper->GetElectronSF((*iEle), eleLooseID);
+  for (BNelectronCollection::iterator iElectron = this->blocks->looseElectronCollection->begin();
+       iElectron != this->blocks->looseElectronCollection->end();
+       iElectron ++ ){
+    totalSF *= beanHelper->GetElectronSF((*iElectron), electronLooseID);
   }
   
   branches["lepTotalSF"].branchVal = totalSF;

@@ -91,13 +91,27 @@ class BEANFileInterface {
 public:
 
   BEANFileInterface () :
-    muonCollection(0),
+    rawMuonCollection(0),
+    tightMuonCollection(0),
     looseMuonCollection(0),
-    eleCollection(0),
-    looseEleCollection(0),
-    leptonCollection(0),
+    preselectedMuonCollection(0),
+    tightLooseMuonCollection(0),
+    loosePreselectedMuonCollection(0),
+    tightLoosePreselectedMuonCollection(0),
+    rawElectronCollection(0),
+    tightElectronCollection(0),
+    looseElectronCollection(0),
+    preselectedElectronCollection(0),
+    tightLooseElectronCollection(0),
+    loosePreselectedElectronCollection(0),
+    tightLoosePreselectedElectronCollection(0),
+    rawLeptonCollection(0),
+    tightLeptonCollection(0),
     looseLeptonCollection(0),
-    mergedLeptonCollection(0),
+    preselectedLeptonCollection(0),
+    tightLooseLeptonCollection(0),
+    loosePreselectedLeptonCollection(0),
+    tightLoosePreselectedLeptonCollection(0),
     metCollection(0),
     jetCollection(0),
     jetCollectionLooseCSV(0),
@@ -115,17 +129,31 @@ public:
 
 
   //important kinematic stuff
-  BNmuonCollection *  muonCollection;
+  BNmuonCollection *  rawMuonCollection;
+  BNmuonCollection *  tightMuonCollection;
   BNmuonCollection *  looseMuonCollection;
+  BNmuonCollection *  preselectedMuonCollection;
+  BNmuonCollection *  tightLooseMuonCollection;
+  BNmuonCollection *  loosePreselectedMuonCollection;
+  BNmuonCollection *  tightLoosePreselectedMuonCollection;
 
-  BNelectronCollection * eleCollection;
-  BNelectronCollection * looseEleCollection;
+  BNelectronCollection *  rawElectronCollection;
+  BNelectronCollection *  tightElectronCollection;
+  BNelectronCollection *  looseElectronCollection;
+  BNelectronCollection *  preselectedElectronCollection;
+  BNelectronCollection *  tightLooseElectronCollection;
+  BNelectronCollection *  loosePreselectedElectronCollection;
+  BNelectronCollection *  tightLoosePreselectedElectronCollection;
 
-  BNleptonCollection * leptonCollection;
-  BNleptonCollection * looseLeptonCollection;
-  BNleptonCollection * mergedLeptonCollection;
-  
-  
+  BNleptonCollection *  rawLeptonCollection;
+  BNleptonCollection *  tightLeptonCollection;
+  BNleptonCollection *  looseLeptonCollection;
+  BNleptonCollection *  preselectedLeptonCollection;
+  BNleptonCollection *  tightLooseLeptonCollection;
+  BNleptonCollection *  loosePreselectedLeptonCollection;
+  BNleptonCollection *  tightLoosePreselectedLeptonCollection;
+
+
   BNmetCollection *   metCollection;
   BNjetCollection * jetCollection;
   BNjetCollection * jetCollectionLooseCSV;
@@ -147,8 +175,14 @@ public:
     return true;
   };
 
-  bool checkMuons() {
-    if (muonCollection == 0 )
+  bool checkRawMuons() {
+    if (rawMuonCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkTightMuons() {
+    if (tightMuonCollection == 0 )
       return false;
     return true;
   };
@@ -159,27 +193,86 @@ public:
     return true;
   };
 
-  bool checkElectrons() {
-    if (eleCollection==0)
+  bool checkPreselectedMuons() {
+    if (preselectedMuonCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkTightLooseMuons() {
+    if (tightLooseMuonCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkLoosePreselectedMuons() {
+    if (loosePreselectedMuonCollection == 0)
       return false;
     return true;
   };
 
-  bool checkLooseElectrons() {
-    if (looseEleCollection == 0)
+  bool checkTightLoosePreselectedMuons() {
+    if (tightLoosePreselectedMuonCollection == 0 )
       return false;
     return true;
   };
+  
+  bool checkRawElectrons() {
+    if (rawElectronCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkTightElectrons() {
+    if (tightElectronCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkLooseElectrons() {
+    if (looseElectronCollection == 0)
+      return false;
+    return true;
+  };
+
+  bool checkPreselectedElectrons() {
+    if (preselectedElectronCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkTightLooseElectrons() {
+    if (tightLooseElectronCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkLoosePreselectedElectrons() {
+    if (loosePreselectedElectronCollection == 0)
+      return false;
+    return true;
+  };
+
+  bool checkTightLoosePreselectedElectrons() {
+    if (tightLoosePreselectedElectronCollection == 0 )
+      return false;
+    return true;
+  };
+  
 
   void print () {
 
     cout << "BEANFileIterface.print() ............." << endl
-         << "    muonCollection " <<  muonCollection << endl
+         << "    rawMuonCollection " << rawMuonCollection << endl
+         << "    tightMuonCollection " << tightMuonCollection << endl
          << "    looseMuonCollection " << looseMuonCollection << endl
+         << "    preselectedMuonCollection " << preselectedMuonCollection << endl
+         << "    rawElectronCollection " << rawElectronCollection << endl
+         << "    tightElectronCollection " << tightElectronCollection << endl
+         << "    looseElectronCollection " << looseElectronCollection << endl
+         << "    preselectedElectronCollection " << preselectedElectronCollection << endl
          << "    metCollection " << metCollection << endl
          << "    jetCollection " << jetCollection << endl
-         << "    eleCollection " << eleCollection << endl
-         << "    looseEleCollection " << looseEleCollection << endl
          << "    mcParticleCollection " << mcParticleCollection << endl
          << "    eventCollection " << eventCollection << endl
          << "    hltCollection  " << hltCollection << endl

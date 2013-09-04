@@ -20,10 +20,10 @@
 
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
 
-  unsigned numTightMuons = inputCollections->muonCollection->size();
+  unsigned numTightMuons = inputCollections->tightMuonCollection->size();
   unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
-  unsigned numTightElectrons = inputCollections->eleCollection->size();
-  unsigned numLooseElectrons = inputCollections->looseEleCollection->size();
+  unsigned numTightElectrons = inputCollections->tightElectronCollection->size();
+  unsigned numLooseElectrons = inputCollections->looseElectronCollection->size();
 
   bool passLeptonCut = false;
 
@@ -110,8 +110,10 @@ int main (int argc, char** argv) {
   
   muonID::muonID muonTightID = muonID::muonSideTightMVA;
   muonID::muonID muonLooseID = muonID::muonSideLooseMVA;
-  electronID::electronID eleTightID = electronID::electronSideTightMVA;
-  electronID::electronID eleLooseID = electronID::electronSideLooseMVA;
+  muonID::muonID muonPreselectedID = muonID::muonSide;
+  electronID::electronID electronTightID = electronID::electronSideTightMVA;
+  electronID::electronID electronLooseID = electronID::electronSideLooseMVA;
+  electronID::electronID electronPreselectedID = electronID::electronSide;
   
 
   
@@ -147,7 +149,7 @@ int main (int argc, char** argv) {
 
    // do these definitions work?
    // yes, it it tight and everything else is loose
-   LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, eleTightID, eleLooseID);
+   LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
    kinVars.push_back(&myLepSF);
 
    LeptonTriggerScaleFactors myLepTrig( &lepHelper);
@@ -168,10 +170,10 @@ int main (int argc, char** argv) {
 
   
 
-  GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonPt);
 
-  GenericMuonCollectionMember<double, BNmuonCollection> allMuonEta(Reflex::Type::ByName("BNmuon"),  "eta", "muon_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericMuonCollectionMember<double, BNmuonCollection> allMuonEta(Reflex::Type::ByName("BNmuon"),  "eta", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonEta);
 
   GenericJetCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"),  "pt", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
@@ -242,11 +244,11 @@ int main (int argc, char** argv) {
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
-    lepHelper.getTightAndLooseElectrons(eleTightID, eleLooseID, &selectedCollections);
+    lepHelper.getTightLoosePreselectedElectrons(electronTightID, electronLooseID, electronPreselectedID, &selectedCollections);
     
     //-----------    Muons
     if (debug > 9) cout << "Getting muons "  << endl;
-    lepHelper.getTightAndLooseMuons(muonTightID, muonLooseID, &selectedCollections);
+    lepHelper.getTightLoosePreselectedMuons(muonTightID, muonLooseID, muonPreselectedID, &selectedCollections);
 
 
     //----------    MET
@@ -331,7 +333,7 @@ int main (int argc, char** argv) {
       }
     }
 
-    //LeptonVarsThisAnalysis(&selectedCollections, LeptonCutThisAnalysis(&selectedCollections), TwoMuon, TwoEle, MuonEle);
+    //LeptonVarsThisAnalysis(&selectedCollections, LeptonCutThisAnalysis(&selectedCollections), TwoMuon, TwoElectron, MuonElectron);
 
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();

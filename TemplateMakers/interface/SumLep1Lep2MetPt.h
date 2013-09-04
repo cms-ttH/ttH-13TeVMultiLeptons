@@ -37,14 +37,14 @@ void SumLep1Lep2MetPt::evaluate () {
 
   //--------
 
-  BNleptonCollection* tightAndLooseLeptons = this->blocks->mergedLeptonCollection;
+  BNleptonCollection* tightLoosePreselectedLeptons = this->blocks->tightLoosePreselectedLeptonCollection;
   BNmet & theMet = this->blocks->metCollection->at(0);
 
   double metVal = theMet.pt;
  
   double result = metVal;
 
-  unsigned numLeps = tightAndLooseLeptons->size();
+  unsigned numLeps = tightLoosePreselectedLeptons->size();
   unsigned loopMax = (numLeps < 2) ? numLeps : 2;
 
   
@@ -52,7 +52,7 @@ void SumLep1Lep2MetPt::evaluate () {
        firstIndex < loopMax;
        firstIndex++){
 
-    BNlepton * temp1 = tightAndLooseLeptons->at(firstIndex);
+    BNlepton * temp1 = tightLoosePreselectedLeptons->at(firstIndex);
     result += temp1->pt;
     
   }// end first loop

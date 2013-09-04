@@ -39,7 +39,6 @@ void CERNTightCharges::evaluate () {
   evaluatedThisEvent = true;
 
   //--------
-  //BNleptonCollection *selectedLeptons = this->blocks->mergedLeptonCollection;
   BNleptonCollection *selectedLeptons = (*selCollection);
   TString branchName;
   loopMax = (unsigned (max) < selectedLeptons->size()) ? unsigned(max) : selectedLeptons->size();
