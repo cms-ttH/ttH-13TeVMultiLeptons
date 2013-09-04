@@ -1,4 +1,3 @@
-
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
 
@@ -85,9 +84,17 @@ JobParameters parseJobOptions (int argc, char** argv) {
 
   JobParameters myConfig;
 
+  vector<string> inputFiles;
+  //inputFiles.push_back(argv[1]);
+
+  //string outputFileName = argv[2];
+
+  //myConfig.inputFileNames = inputFiles;
+  //myConfig.outputFileName = outputFileName;
+
   myConfig.outputFileName = "ntuple_ssTwoLep.root";
   myConfig.sampleName = "ttH125";
-  myConfig.maxEvents = 1000;
+  myConfig.maxEvents = -1;
 
   loadTTH125Files(myConfig.inputFileNames);
   
@@ -211,9 +218,8 @@ int main (int argc, char** argv) {
    DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
    kinVars.push_back(&myDBCorrectedRelIsoDR04s);
 
-   //HiggsDecayType fails to compile ... no header file? - AWB
-//    HiggsDecayType myHiggsDecayType(&lepHelper);
-//    kinVars.push_back(&myHiggsDecayType);
+   HiggsDecayType myHiggsDecayType(&lepHelper);
+   kinVars.push_back(&myHiggsDecayType);
 
 //    LepTrackCharges myLepTrackCharges(2);
 //    kinVars.push_back(&myLepTrackCharges);
@@ -414,7 +420,7 @@ int main (int argc, char** argv) {
     }
 
     // do the lepton cut
-    passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&selectedCollections);
+    //passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&selectedCollections);
     
     
     if (!passAllCuts) {

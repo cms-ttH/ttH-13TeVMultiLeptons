@@ -309,6 +309,7 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   //------ MC particles 
   h_mcparticles.getByLabel(ev,"BNproducer","MCstatus3");
   mcparticles = *h_mcparticles;
+  rawCollections.mcParticleCollection = &mcparticles;
 
   //----- hlt
   h_hlt.getByLabel(ev,"BNproducer","HLT");
@@ -393,14 +394,14 @@ void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID
   electronsTightLoosePreselected = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), preselectedID, rawCollections.jetsForLepMVACollection );
   electronsPreselected = bHelp.GetDifference(electronsTightLoosePreselected, electronsTightLoose);
 
-  electronsLoosePreselected = bHelp.GetUnion(electronsLoose, electronsPreselected);
+  //electronsLoosePreselected = bHelp.GetUnion(electronsLoose, electronsPreselected);
   
   selectedCollections->tightElectronCollection = &electronsTight;
   selectedCollections->looseElectronCollection = &electronsLoose;
   selectedCollections->preselectedElectronCollection = &electronsPreselected;
 
   selectedCollections->tightLooseElectronCollection = &electronsTightLoose;
-  selectedCollections->loosePreselectedElectronCollection = &electronsLoosePreselected;
+  //selectedCollections->loosePreselectedElectronCollection = &electronsLoosePreselected;
   selectedCollections->tightLoosePreselectedElectronCollection = &electronsTightLoosePreselected;
   
 }
@@ -415,14 +416,14 @@ void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, mu
   muonsTightLoosePreselected = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), preselectedID, rawCollections.jetsForLepMVACollection );
   muonsPreselected = bHelp.GetDifference(muonsTightLoosePreselected, muonsTightLoose);
 
-  muonsLoosePreselected = bHelp.GetUnion(muonsLoose, muonsPreselected);
+  //muonsLoosePreselected = bHelp.GetUnion(muonsLoose, muonsPreselected);
   
   selectedCollections->tightMuonCollection = &muonsTight;
   selectedCollections->looseMuonCollection = &muonsLoose;
   selectedCollections->preselectedMuonCollection = &muonsPreselected;
 
   selectedCollections->tightLooseMuonCollection = &muonsTightLoose;
-  selectedCollections->loosePreselectedMuonCollection = &muonsLoosePreselected;
+  //selectedCollections->loosePreselectedMuonCollection = &muonsLoosePreselected;
   selectedCollections->tightLoosePreselectedMuonCollection = &muonsTightLoosePreselected;
 
 }
@@ -499,8 +500,8 @@ void HelperLeptonCore::fillLepCollectionWithSelectedLeptons (BEANFileInterface *
   leptonsPreselected.push_back(*(selectedCollections->preselectedElectronCollection));
   leptonsTightLoose.push_back(*(selectedCollections->tightLooseMuonCollection));
   leptonsTightLoose.push_back(*(selectedCollections->tightLooseElectronCollection));
-  leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedMuonCollection));
-  leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedElectronCollection));
+  //leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedMuonCollection));
+  //leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedElectronCollection));
   leptonsTightLoosePreselected.push_back(*(selectedCollections->tightLoosePreselectedMuonCollection));
   leptonsTightLoosePreselected.push_back(*(selectedCollections->tightLoosePreselectedElectronCollection));
   
@@ -509,14 +510,14 @@ void HelperLeptonCore::fillLepCollectionWithSelectedLeptons (BEANFileInterface *
   leptonsLoose.sort();
   leptonsPreselected.sort();
   leptonsTightLoose.sort();
-  leptonsLoosePreselected.sort();
+  //leptonsLoosePreselected.sort();
   leptonsTightLoosePreselected.sort();
 
   selectedCollections->tightLeptonCollection = &leptonsTight;
   selectedCollections->looseLeptonCollection = &leptonsLoose;
   selectedCollections->preselectedLeptonCollection = &leptonsPreselected;
   selectedCollections->tightLooseLeptonCollection = &leptonsTightLoose;
-  selectedCollections->loosePreselectedLeptonCollection = &leptonsLoosePreselected;
+  //selectedCollections->loosePreselectedLeptonCollection = &leptonsLoosePreselected;
   selectedCollections->tightLoosePreselectedLeptonCollection = &leptonsTightLoosePreselected;
 
 }
