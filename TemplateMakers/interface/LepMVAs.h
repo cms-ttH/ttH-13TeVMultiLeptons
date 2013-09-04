@@ -59,11 +59,11 @@ LepMVAs::LepMVAs (HelperLeptonCore *in, int maxTight, int maxLoose, int maxPrese
         branches[branchName].branchVal = this->resetVal;
     }
 
-    for (unsigned int i=0; i<maxLeptonsLoosePreselected; i++) {
-        TString branchName = Form("loosePreselected_leptons_by_pt_%d_lepMVA", i+1);
-        branches[branchName] = BranchInfo<double>(branchName);
-        branches[branchName].branchVal = this->resetVal;
-    }
+//     for (unsigned int i=0; i<maxLeptonsLoosePreselected; i++) {
+//         TString branchName = Form("loosePreselected_leptons_by_pt_%d_lepMVA", i+1);
+//         branches[branchName] = BranchInfo<double>(branchName);
+//         branches[branchName].branchVal = this->resetVal;
+//     }
 
     for (unsigned int i=0; i<maxLeptonsTightLoosePreselected; i++) {
         TString branchName = Form("all_leptons_by_pt_%d_lepMVA", i+1);
@@ -145,16 +145,16 @@ void LepMVAs::evaluate () {
       }      
   }
 
-  for (unsigned int i=0; i<loopMaxLoosePreselected; i++) {
-      BNlepton * iLepton = loosePreselectedLeptons->at(i);
-      branchName = Form("loosePreselected_leptons_by_pt_%d_lepMVA", i+1);
+//   for (unsigned int i=0; i<loopMaxLoosePreselected; i++) {
+//       BNlepton * iLepton = loosePreselectedLeptons->at(i);
+//       branchName = Form("loosePreselected_leptons_by_pt_%d_lepMVA", i+1);
 
-      if (iLepton->isElectron) {
-          branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)iLepton, this->blocks->jetsForLepMVACollection);
-      } else {
-          branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)iLepton, this->blocks->jetsForLepMVACollection);
-      }      
-  }
+//       if (iLepton->isElectron) {
+//           branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)iLepton, this->blocks->jetsForLepMVACollection);
+//       } else {
+//           branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)iLepton, this->blocks->jetsForLepMVACollection);
+//       }      
+//   }
 
   for (unsigned int i=0; i<loopMaxTightLoosePreselected; i++) {
       BNlepton * iLepton = tightLoosePreselectedLeptons->at(i);
