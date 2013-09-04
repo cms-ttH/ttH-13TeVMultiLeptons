@@ -309,6 +309,7 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   //------ MC particles 
   h_mcparticles.getByLabel(ev,"BNproducer","MCstatus3");
   mcparticles = *h_mcparticles;
+  rawCollections.mcParticleCollection = &mcparticles;
 
   //----- hlt
   h_hlt.getByLabel(ev,"BNproducer","HLT");
