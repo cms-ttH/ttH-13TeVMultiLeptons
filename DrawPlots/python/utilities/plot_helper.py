@@ -58,7 +58,7 @@ class Plot:
         return afs_base_directory 
             
     def set_style(self): #later we can add arguments for different style sets if needed
-        ROOT.gStyle.SetOptStat(0)
+        #ROOT.gStyle.SetOptStat(0)
         ROOT.gStyle.SetPadBorderMode(0)
         ROOT.gStyle.SetFrameBorderMode(0)
         ROOT.gStyle.SetLineWidth(2)
@@ -133,6 +133,8 @@ class DrawStringMaker:
             jet_tag_string = 'numJets >= 4 && numTaggedJets == 1'
         elif jet_tag_category == 'ge4jge2t':
             jet_tag_string = 'numJets >= 4 && numTaggedJets >= 2'
+        elif jet_tag_category == 'inclusive':
+            jet_tag_string = ''
         else:
             print 'ERROR [plot_helper.py]: Unrecognized jet tag category. Please update DrawStringMaker::append_jet_tag_category_requirements'
             sys.exit(2)
@@ -146,6 +148,8 @@ class DrawStringMaker:
             lepton_category_string = '(isDoubleElectronTriggerPass == 1)'
         elif lepton_category == 'mu_ele':
             lepton_category_string = '(isMuEGTriggerPass == 1)'
+        elif lepton_category == 'inclusive':
+            lepton_category_string = ''
         else:
             print 'ERROR [plot_helper.py]: Unrecognized lepton category.  Please update DrawStringMaker::append_lepton_category_requirements'
             sys.exit(2)
