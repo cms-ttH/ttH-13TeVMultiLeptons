@@ -14,6 +14,12 @@
 #include "Reflex/Member.h"
 #include "Reflex/Kernel.h"
 
+//----------  Use python utilities to configure
+#include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
+#include "FWCore/ParameterSet/interface/ProcessDesc.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
+
+
 
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
 
@@ -76,27 +82,52 @@ void loadTTH125Files (vector<string> & target ) {
 }
 
 
+void safetyCheckJobOptions (int argc, char** argv) {
+
+  std::cout << "--->Num argments provided at command line...  " << argc << std::endl;
+
+  if (argc < 2) {
+
+    std::cout << "Usage: " << std::endl
+              << argv[0] << " jobParams.py " << " sampleName " 
+              << std::endl;
+
+    std::cout << "You provided " << argc
+              << " arguments, which is less than 2, quitting"
+              << endl;
+    
+    exit (3);
+  }
+      
+  return;
+
+}
+
+
 
 // use this function to figure out how to
 // setup the job
 // for now, it is just a hack to make testing easy
 JobParameters parseJobOptions (int argc, char** argv) {
 
+  
+
+
   JobParameters myConfig;
+  safetyCheckJobOptions (argc, argv);
+  PythonProcessDesc builder(argv[1],argc,argv);
 
-  vector<string> inputFiles;
-  inputFiles.push_back(argv[1]);
+  edm::ParameterSet const & inputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("inputs");
+  edm::ParameterSet const & outputs = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("outputs");
+  edm::ParameterSet const & analysis = builder.processDesc()->getProcessPSet()->getParameter<edm::ParameterSet>("analysis");
 
-  string outputFileName = argv[2];
+  myConfig.inputFileNames = inputs.getParameter< vector<string> > ("fileNames");
+  myConfig.maxEvents = inputs.getParameter < int > ("maxEvents");
 
-  myConfig.inputFileNames = inputFiles;
-  myConfig.outputFileName = outputFileName;
+  myConfig.outputFileName = outputs.getParameter < string > ("fileName");
+  
+  myConfig.sampleName = analysis.getParameter < string > ("sampleName");
 
-//   myConfig.outputFileName = "ntuple_ssTwoLep.root";
-   myConfig.sampleName = "ttH125";
-   myConfig.maxEvents = -1;
-
-//   loadTTH125Files(myConfig.inputFileNames);
   
   return myConfig;
 
