@@ -135,6 +135,8 @@ class DrawStringMaker:
             jet_tag_string = 'numJets >= 4 && numTaggedJets >= 2'
         elif jet_tag_category == 'inclusive':
             jet_tag_string = ''
+        elif jet_tag_category == 'ge4j':
+            jet_tag_string = 'numJets>=4'
         else:
             print 'ERROR [plot_helper.py]: Unrecognized jet tag category. Please update DrawStringMaker::append_jet_tag_category_requirements'
             sys.exit(2)
