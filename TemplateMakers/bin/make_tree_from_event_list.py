@@ -22,7 +22,7 @@ events = []
 
 with open(args.event_list_file_name, 'r') as event_list_file:
     for line in event_list_file.readlines():
-        match = re.search('(\d*):(\d*):(\d*):.*', line)
+        match = re.search('(\d*):(\d*):(\d*).*', line)
         if match:
             events.append(match.groups(0))    
 
