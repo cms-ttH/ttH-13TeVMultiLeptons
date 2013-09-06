@@ -90,49 +90,49 @@ class DrawStringMaker:
 
     def append_jet_tag_category_requirements(self, jet_tag_category):
         if jet_tag_category == 'ge2t':
-            jet_tag_string = ' numJets >= 2 && numTaggedJets >= 2'
+            jet_tag_string = ' numJets >= 2 && numMediumBJets >= 2'
         elif jet_tag_category == 'eq2jeq2t':
-            jet_tag_string = ' numJets == 2 && numTaggedJets == 2'
+            jet_tag_string = ' numJets == 2 && numMediumBJets == 2'
         elif jet_tag_category == 'eq3jeq2t':
-            jet_tag_string = ' numJets == 3 && numTaggedJets == 2'
+            jet_tag_string = ' numJets == 3 && numMediumBJets == 2'
         elif jet_tag_category == 'ge4jeq2t':
-            jet_tag_string = ' numJets >= 4 && numTaggedJets == 2'
+            jet_tag_string = ' numJets >= 4 && numMediumBJets == 2'
         elif jet_tag_category == 'ge3t':
-            jet_tag_string = ' numJets >= 3 && numTaggedJets >= 3'
+            jet_tag_string = ' numJets >= 3 && numMediumBJets >= 3'
         elif jet_tag_category == 'eq3jeq3t':
-            jet_tag_string = ' numJets == 3 && numTaggedJets ==3'
+            jet_tag_string = ' numJets == 3 && numMediumBJets ==3'
         elif jet_tag_category == 'ge4jeq3t':
-            jet_tag_string = ' numJets >= 4 && numTaggedJets == 3'
+            jet_tag_string = ' numJets >= 4 && numMediumBJets == 3'
         elif jet_tag_category == 'ge4jge3t':
-            jet_tag_string = ' numJets >= 4 && numTaggedJets >= 3'
+            jet_tag_string = ' numJets >= 4 && numMediumBJets >= 3'
         elif jet_tag_category == 'ge4t':
-            jet_tag_string = ' numJets >= 4 && numTaggedJets >= 4'
+            jet_tag_string = ' numJets >= 4 && numMediumBJets >= 4'
         elif jet_tag_category == 'eq0j':
-            jet_tag_string = ' numJets == 0 && numTaggedJets == 0'
+            jet_tag_string = ' numJets == 0 && numMediumBJets == 0'
         elif jet_tag_category == 'eq1jeq0t':
-            jet_tag_string = ' numJets == 1 && numTaggedJets == 0'
+            jet_tag_string = ' numJets == 1 && numMediumBJets == 0'
         elif jet_tag_category == 'eq1jeq1t':
-            jet_tag_string = ' numJets == 1 && numTaggedJets == 1'
+            jet_tag_string = ' numJets == 1 && numMediumBJets == 1'
         elif jet_tag_category == 'eq2jge0t':
-            jet_tag_string = ' numJets == 2 && numTaggedJets >= 0'
+            jet_tag_string = ' numJets == 2 && numMediumBJets >= 0'
         elif jet_tag_category == 'eq2jeq0t':
-            jet_tag_string = ' numJets == 2 && numTaggedJets == 0'
+            jet_tag_string = ' numJets == 2 && numMediumBJets == 0'
         elif jet_tag_category == 'eq2jge1t':
-            jet_tag_string = ' numJets == 2 && numTaggedJets >= 1'
+            jet_tag_string = ' numJets == 2 && numMediumBJets >= 1'
         elif jet_tag_category == 'eq2jeq1t':
-            jet_tag_string = ' numJets == 2 && numTaggedJets == 1'
+            jet_tag_string = ' numJets == 2 && numMediumBJets == 1'
         elif jet_tag_category == 'eq3jeq0t':
-            jet_tag_string = ' numJets == 3 && numTaggedJets == 0'
+            jet_tag_string = ' numJets == 3 && numMediumBJets == 0'
         elif jet_tag_category == 'eq3jge1t':
-            jet_tag_string = ' numJets == 3 && numTaggedJets >= 1'
+            jet_tag_string = ' numJets == 3 && numMediumBJets >= 1'
         elif jet_tag_category == 'eq3jeq1t':
-            jet_tag_string = ' numJets == 3 && numTaggedJets == 1'
+            jet_tag_string = ' numJets == 3 && numMediumBJets == 1'
         elif jet_tag_category == 'eq3jge2t':
-            jet_tag_string = 'numJets == 3 && numTaggedJets >= 2'
+            jet_tag_string = 'numJets == 3 && numMediumBJets >= 2'
         elif jet_tag_category == 'ge4jeq1t':
-            jet_tag_string = 'numJets >= 4 && numTaggedJets == 1'
+            jet_tag_string = 'numJets >= 4 && numMediumBJets == 1'
         elif jet_tag_category == 'ge4jge2t':
-            jet_tag_string = 'numJets >= 4 && numTaggedJets >= 2'
+            jet_tag_string = 'numJets >= 4 && numMediumBJets >= 2'
         elif jet_tag_category == 'inclusive':
             jet_tag_string = ''
         elif jet_tag_category == 'ge4j':
