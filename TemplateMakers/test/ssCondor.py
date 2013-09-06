@@ -138,7 +138,7 @@ outputDir = outputBaseDir + sampleName + "_" + jobLabel + "/"
 
 checkDir(outputDir)
 
-outputFileName = outputDir + sampleName + "_%s_job%03d_of_%02d.root" % (jobLabel, jobNum, totalNumJobs)
+outputFileName = outputDir + sampleName + "_%s_job%03d.root" % (jobLabel, jobNum)
 
 process.outputs.fileName = outputFileName
 

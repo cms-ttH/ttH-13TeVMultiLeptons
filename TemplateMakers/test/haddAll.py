@@ -5,10 +5,10 @@ import sys
 from optparse import OptionParser
 
 
-def checkDirs () :
+def checkDirs (inDir) :
 
-    if not os.path.exists("../../DrawPlots/bin/treeFiles"):
-        os.mkdir("../../DrawPlots/bin/treeFiles")
+    if not os.path.exists(inDir):
+        os.mkdir(inDir)
     
 
 
@@ -32,7 +32,9 @@ def main ():
         
     dirLabel = "%s" % (args[0])
 
-
+    ####### Hard-coded ouput directory #####
+    baseDir = os.environ['CMSSW_BASE']
+    outDir = baseDir +"/src/ttHMultileptonAnalysis/DrawPlots/treeFiles/"
     
     print "Directory label %s" % dirLabel
 
@@ -53,7 +55,7 @@ def main ():
             elif len(listOfFiles) == 1:             
                 oldName = listOfFiles[0].strip()
                 newName = oldName.replace('job000', 'all')
-                newName = newName.replace('.root', '_all.root')
+                #newName = newName.replace('.root', '_all.root')
                 haddCommand = "cp %s %s" % ( oldName,  newName)
                 for feedback in os.popen(haddCommand).readlines():
                     newName= newName
@@ -63,7 +65,7 @@ def main ():
             
                 oldName = listOfFiles[0].strip()
                 newName = oldName.replace('job000', 'all')
-                newName = newName.replace('.root', '_all.root')
+                #newName = newName.replace('.root', '_all.root')
                 haddCommand = "hadd -v 0 -f %s " % (newName)
                 for iFile in listOfFiles[0:]:
                     haddCommand = haddCommand + " " + iFile.strip()
@@ -158,19 +160,19 @@ def main ():
             
         
     # make sure the destination exists before sending files
-    checkDirs()
+    checkDirs(outDir)
 
         
     if (options.copyFiles):
         print "Now copying results to tree files!"
-        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} ../../DrawPlots/bin/treeFiles \;" % dirLabel  ):
+        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} %s \;" % (dirLabel, outDir)  ):
             print iLine
         print "Done copying files"
     # end copy files
 
     if (options.moveFiles):
         print "Now moving results to tree files!"
-        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec mv {} ../../DrawPlots/bin/treeFiles \;" % dirLabel  ):
+        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec mv {} %s \;" % (dirLabel, outDir)  ):
             print iLine
         print "Done moving files"
     # end move files

@@ -53,8 +53,9 @@ def run(args, config, samples, project_label):
 					source_file_label = systematics_info.dictionary[systematic]['source_file_label']
 					if source_file_label != '':
 						source_file_label = '_' + source_file_label
-#					 source_file_name = 'tree_files/summary_trees_%s_%s%s_all.root' % (sample, project_label, source_file_label)
-					source_file_name = '%s%s_%s%s_all_of_01_all.root' % (input_trees_directory, sample, project_label, source_file_label)					 
+					#source_file_name = 'tree_files/summary_trees_%s_%s%s_all.root' % (sample, project_label, source_file_label)
+					#source_file_name = '%s%s_%s%s_all_of_01_all.root' % (input_trees_directory, sample, project_label, source_file_label)
+					source_file_name = '%s%s_%s%s_all.root' % (input_trees_directory, sample, project_label, source_file_label)					 
 					source_file = ROOT.TFile(source_file_name)
 					tree = source_file.Get('summaryTree')
 
