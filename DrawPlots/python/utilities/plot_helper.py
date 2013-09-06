@@ -147,7 +147,7 @@ class DrawStringMaker:
         if lepton_category == 'mu_mu':
             lepton_category_string = '(isDoubleMuTriggerPass == 1)'
         elif lepton_category == 'ele_ele':
-            lepton_category_string = '(isDoubleElectronTriggerPass == 1)'
+            lepton_category_string = '(isDoubleEleTriggerPass == 1)'
         elif lepton_category == 'mu_ele':
             lepton_category_string = '(isMuEGTriggerPass == 1)'
         elif lepton_category == 'inclusive':
