@@ -11,6 +11,8 @@ args = parser.parse_args()
 def get_base(string):
     if '.' in string:
         string = string[:string.rfind('.')]
+    if '/' in string:
+        string = string[string.find('/')+1:]
     return string
 
 tree_file = ROOT.TFile(args.tree_file_name)
