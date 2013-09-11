@@ -19,11 +19,16 @@ if args.branches:
 dump_table = PrettyTable(branches)
 dump_table.float_format = '4.2'
 
+selected_run_lumi_events = []
 if args.event_list:
-    selected_run_lumi_events = []
     with open(args.event_list) as event_list:
-        for line in event_list:
-            run_lumi_events = [entry.strip() for entry in re.split('[,:\s]', line)] #can be comma or colon delineated
+        lines_with_numbers = [line for line in event_list.readlines() if re.search('\d', line)]        
+        for line in lines_with_numbers:
+            if ',' in line or ':' in line:
+                run_lumi_events = [entry.strip() for entry in re.split('[,:]', line.strip())] #can be comma or colon delineated
+            else:
+                run_lumi_events = [entry.strip() for entry in re.split('\w', line)]
+            print run_lumi_events
             selected_run_lumi_events.append([int(entry) for entry in run_lumi_events[:3]]) #in case there are extra columns after run, lumi, event
     
 for index, event in enumerate(tree):
