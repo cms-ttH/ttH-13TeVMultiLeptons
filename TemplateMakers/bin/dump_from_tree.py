@@ -28,7 +28,6 @@ if args.event_list:
                 run_lumi_events = [entry.strip() for entry in re.split('[,:]', line.strip())] #can be comma or colon delineated
             else:
                 run_lumi_events = [entry.strip() for entry in re.split('\w', line)]
-            print run_lumi_events
             selected_run_lumi_events.append([int(entry) for entry in run_lumi_events[:3]]) #in case there are extra columns after run, lumi, event
     
 for index, event in enumerate(tree):
@@ -37,14 +36,7 @@ for index, event in enumerate(tree):
     if [tree.eventInfo_run, tree.eventInfo_lumi, tree.eventInfo_evt] in selected_run_lumi_events or not args.event_list:
         dump_table.add_row([getattr(tree, branch) for branch in branches])    
 
-print 'Writing dump table...'
 output_file_name = '%s_branch_value_dump.txt' % args.tree_file_name.replace('.root', '')
+print 'Writing dump table to %s...' % output_file_name
 with open(output_file_name, 'w+') as output_file:
     output_file.write(dump_table.get_string())
-        
-
-
-
-
-
-
