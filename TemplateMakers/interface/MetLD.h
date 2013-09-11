@@ -26,8 +26,8 @@ void MetLD::evaluate() {
   myMet->evaluate();
   myMht->evaluate();
 
-  float met = branches["met_pt"].branchVal;
-  float mht = branches["mht"].branchVal;
+  float met = (*myMet).myVars[0].branchVal;
+  float mht = myMht->mht;
 
   float met_ld = met * 0.00397 + mht * 0.00265;
 
