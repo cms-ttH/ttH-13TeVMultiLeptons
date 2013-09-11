@@ -22,7 +22,7 @@ def get_events(text_file_name):
                 run_lumi_events = [entry.strip() for entry in re.split('[,:]', line.strip())] #can be comma or colon delimited
             else:
                 run_lumi_events = [entry.strip() for entry in re.split('\w', line)]
-            events[tuple([int(entry) for entry in run_lumi_events[:3]])] = line
+            events[tuple(run_lumi_events[:3])] = line
 
     return events
 
@@ -68,7 +68,7 @@ if args.cuts_file:
         dump_file_name = 'event_dumps/event_list_%s.txt' % cut_label
         dump_file = open(dump_file_name, 'r')
         event_dump_text[cut_label] = dump_file.readlines()
-        
+
     for (run, lumi, event) in events_in_first_missing_in_second:
         killing_cut = ''
         for cut_label in cut_labels:
