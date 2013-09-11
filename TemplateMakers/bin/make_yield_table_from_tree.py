@@ -10,8 +10,6 @@ import ROOT
 parser = ArgumentParser(description='Dump events from summary trees and make a yield table.')
 parser.add_argument('cuts_file_name', help='Cuts file to process.')
 parser.add_argument('tree_file_name', help='ROOT file with tree to dump.')
-parser.add_argument('--dump_at_cut', help='Dump all branch values for events passing dump_at_cut' )
-parser.add_argument('--dump_from_list', action='store_true', help='Dump all branch values for events under [events] header in your cut file.')
 
 if not os.path.exists('event_dumps'):
         os.makedirs('event_dumps')
@@ -24,17 +22,6 @@ labels_and_cut_strings = config['cuts'].items()
 yields = OrderedDict()
 tree = tree_file.Get('summaryTree')
 
-if (args.dump_at_cut or args.dump_from_list):
-    branches = [branch.GetName() for branch in tree.GetListOfBranches()]
-    dump_table = PrettyTable(branches)
-    dump_table.float_format = '4.2'
-
-if args.dump_from_list:
-    selected_run_lumi_events = [tuple(int(item) for item in entry.split(',')) for entry in config['events'].keys()] #I'm going to a bad place for people who use nested list comprehensions
-    for event in tree:
-        if (tree.eventInfo_run, tree.eventInfo_lumi, tree.eventInfo_evt) in selected_run_lumi_events:
-                dump_table.add_row([getattr(tree, branch.GetName()) for branch in tree.GetListOfBranches()])
-
 all_cuts = ROOT.TCut()
 for (cut_label, cut_string) in labels_and_cut_strings:
     print "Evaluating yields for cut: %s..." % cut_label
@@ -43,6 +30,7 @@ for (cut_label, cut_string) in labels_and_cut_strings:
     event_list = ROOT.gDirectory.Get("event_list_%s" % cut_label)
     yields[cut_label] = int(event_list.GetN())
     output_file_name = "event_dumps/event_list_%s.txt" % cut_label
+    tree.SetEventList(event_list)
     with open(output_file_name, 'w') as output_file:
         for event in range(event_list.GetN()):
             tree.GetEntry(event_list.GetEntry(event))
@@ -52,11 +40,6 @@ for (cut_label, cut_string) in labels_and_cut_strings:
             if args.dump_at_cut == cut_label:
                 dump_table.add_row([getattr(tree, branch.GetName()) for branch in tree.GetListOfBranches()])
             
-if args.dump_at_cut or args.dump_from_list:
-    print 'Writing dump table...'
-    with open('dump_of_all_branch_values.txt', 'w+') as dump_file:
-        dump_file.write(dump_table.get_string())
-        
 yield_table = PrettyTable(['cut', 'yield'])
 for cut_label, cut_yield in yields.items():
     yield_table.add_row([cut_label, cut_yield])
