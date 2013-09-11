@@ -28,12 +28,14 @@ bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
   unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
   unsigned numTightElectrons = inputCollections->tightElectronCollection->size();
   unsigned numLooseElectrons = inputCollections->looseElectronCollection->size();
+  unsigned numAllLeptons = inputCollections->tightLoosePreselectedLeptonCollection->size();
 
   bool passTwoLepton = false;
 
   // two tight leptons
   // we will cut on loose muons later
-  if (numTightMuons ==2 || numTightElectrons==2 || (numTightMuons==1 && numTightElectrons==1))
+  //  if (numTightMuons ==2 || numTightElectrons==2 || (numTightMuons==1 && numTightElectrons==1))
+  if (numAllLeptons >=2)
       passTwoLepton = true;
 
   return passTwoLepton;
@@ -312,9 +314,13 @@ int main (int argc, char** argv) {
   GenericCollectionMember<double, BNmuonCollection> tightMuonEta(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "eta", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&tightMuonEta);
 
+  ////////// all electrons //////////
+  GenericCollectionMember<int, BNelectronCollection> allElectronNumberOfExpectedInnerHits(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightLoosePreselectedElectronCollection), "numberOfExpectedInnerHits", "all_electrons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
+  kinVars.push_back(&allElectronNumberOfExpectedInnerHits);
+
   ////////// tight electrons //////////
   GenericCollectionMember<double, BNelectronCollection> tightElectronEta(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightElectronCollection), "eta", "tight_electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&tightElectronEta);
+  kinVars.push_back(&tightElectronEta);  
 
   GenericCollectionMember<double, BNelectronCollection> tightElectronPt(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightElectronCollection), "pt", "tight_electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&tightElectronPt);  
@@ -447,8 +453,7 @@ int main (int argc, char** argv) {
     }
 
     // do the lepton cut
-    //passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&selectedCollections);
-    
+    passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&selectedCollections);
     
     if (!passAllCuts) {
       numEventsFailCuts++;
@@ -473,7 +478,6 @@ int main (int argc, char** argv) {
       (*iVar)->evaluate();
       
     }
-
 
     if (debug > 9) {
       for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
