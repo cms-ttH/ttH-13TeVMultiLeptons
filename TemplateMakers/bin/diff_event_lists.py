@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from collections import defaultdict
 
 parser = ArgumentParser(description='Compare two event lists.')
-parser.add_argument('first_file', help='First text file. Events should be in run:lumi:event (or run:lumi:event:x:y:z) format. ')
+parser.add_argument('first_file', help='First text file. Events should be in this order: run:lumi:event:anything:else:here:is:ok.  Events can also be comma delimited (run, lumi, event, anything, else) or space delimited (run lumi event anything else).')
 parser.add_argument('second_file', help='Second text file.')
 parser.add_argument('--cuts_file', help='Cuts file (must first run make_yields_from_tree.py)')
 parser.add_argument('--nolist', action='store_true', help='Do not print lists for event overlap.')
@@ -15,12 +15,14 @@ args = parser.parse_args()
 
 def get_events(text_file_name):
     events = {}
-    text_file = open(text_file_name,'r')
-    lines = text_file.readlines()
-    for line in lines:
-        match = re.search('(\d*):(\d*):(\d*).*', line)
-        if match:
-            events[match.groups(0)] = match.group(0)
+    with open(text_file_name, 'r') as event_list:
+        lines_with_numbers = [line for line in event_list.readlines() if re.search('\d', line)]        
+        for line in lines_with_numbers:
+            if ',' in line or ':' in line:
+                run_lumi_events = [entry.strip() for entry in re.split('[,:]', line.strip())] #can be comma or colon delimited
+            else:
+                run_lumi_events = [entry.strip() for entry in re.split('\w', line)]
+            events[tuple([int(entry) for entry in run_lumi_events[:3]])] = line
 
     return events
 
