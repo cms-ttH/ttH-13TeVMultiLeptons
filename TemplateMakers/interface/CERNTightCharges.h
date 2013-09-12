@@ -54,9 +54,7 @@ void CERNTightCharges::evaluate () {
 //         std::cout << "isGsfCtfScPixChargeConsistent: " << ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent << std::endl;
 //         std::cout << "numberOfExpectedInnerHits: " << ((BNelectron*) iLepton)->numberOfExpectedInnerHits << std::endl;
 //         std::cout << "passConvVeto: " << ((BNelectron*) iLepton)->passConvVeto << std::endl;
-        branches[branchName].branchVal = ( ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent &&
-                                           ((BNelectron*) iLepton)->numberOfExpectedInnerHits == 0 &&
-                                           ((BNelectron*) iLepton)->passConvVeto );
+          branches[branchName].branchVal = ( ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent);                                          
       }
   }
 }
