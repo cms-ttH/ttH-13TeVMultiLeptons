@@ -37,6 +37,8 @@ for index, event in enumerate(tree):
         dump_table.add_row([getattr(tree, branch) for branch in branches])    
 
 output_file_name = '%s_branch_value_dump.txt' % args.tree_file_name.replace('.root', '')
+if '/' in output_file_name:
+    output_file_name = output_file_name[output_file_name.rfind('/')+1:]
 print 'Writing dump table to %s...' % output_file_name
 with open(output_file_name, 'w+') as output_file:
     output_file.write(dump_table.get_string())
