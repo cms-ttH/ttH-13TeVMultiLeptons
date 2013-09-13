@@ -32,8 +32,6 @@ bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
 
   bool passTwoLepton = false;
 
-  // two tight leptons
-  // we will cut on loose muons later
   //  if (numTightMuons ==2 || numTightElectrons==2 || (numTightMuons==1 && numTightElectrons==1))
   if (numAllLeptons >=2)
       passTwoLepton = true;
@@ -125,12 +123,9 @@ JobParameters parseJobOptions (int argc, char** argv) {
 
   myConfig.inputFileNames = inputs.getParameter< vector<string> > ("fileNames");
   myConfig.maxEvents = inputs.getParameter < int > ("maxEvents");
-
   myConfig.outputFileName = outputs.getParameter < string > ("fileName");
-  
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
 
-  
   return myConfig;
 
 }
@@ -295,7 +290,10 @@ int main (int argc, char** argv) {
   kinVars.push_back(&allLeptonImpactParameter);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonImpactParameterError(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection),  "IPError", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-  kinVars.push_back(&allLeptonImpactParameterError);  
+  kinVars.push_back(&allLeptonImpactParameterError);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonPhi(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection),  "phi", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonPhi);    
   
   ////////// all muons //////////
   GenericCollectionMember<int, BNmuonCollection> allMuonPFmuon(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "isPFMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
@@ -318,6 +316,9 @@ int main (int argc, char** argv) {
   GenericCollectionMember<int, BNelectronCollection> allElectronNumberOfExpectedInnerHits(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightLoosePreselectedElectronCollection), "numberOfExpectedInnerHits", "all_electrons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
   kinVars.push_back(&allElectronNumberOfExpectedInnerHits);
 
+  GenericCollectionMember<int, BNelectronCollection> allElectronPassConvVeto(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightLoosePreselectedElectronCollection), "passConvVeto", "all_electrons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
+  kinVars.push_back(&allElectronPassConvVeto);  
+
   ////////// tight electrons //////////
   GenericCollectionMember<double, BNelectronCollection> tightElectronEta(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightElectronCollection), "eta", "tight_electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&tightElectronEta);  
@@ -331,6 +332,9 @@ int main (int argc, char** argv) {
 
   GenericCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "eta", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetEta);
+
+  GenericCollectionMember<double, BNjetCollection> allJetPhi(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "phi", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  kinVars.push_back(&allJetPhi);  
 
   GenericCollectionMember<double, BNjetCollection> allJetCSV(Reflex::Type::ByName("BNjet"),  &(ptrToSelectedCollections->jetCollection), "btagCombinedSecVertex", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetCSV);
@@ -368,7 +372,6 @@ int main (int argc, char** argv) {
   int numEvents = 0;
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
-
   int printEvery = 1000;
   
   for (ev.toBegin(); !ev.atEnd(); ++ev){
@@ -397,11 +400,6 @@ int main (int argc, char** argv) {
     //
     //////////////////////////////////////////////////////////////
 
-
-    //------------    Jets
-    if (debug > 9) cout << "Getting jets "  << endl;
-	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
-
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
     lepHelper.getTightLoosePreselectedElectrons(electronTightID, electronLooseID, electronPreselectedID, &selectedCollections);
@@ -417,7 +415,13 @@ int main (int argc, char** argv) {
     //--------- fill up the lepton collections
     if (debug >9) cout << "Filling lepton collections" << endl;
     lepHelper.fillLepCollectionWithSelectedLeptons(&selectedCollections);
+
+    //------------    Jets
+    *(lepHelper.rawCollections.jetCollection) = beanHelper->GetCleanJets(*(lepHelper.rawCollections.jetCollection), *(selectedCollections.tightLoosePreselectedLeptonCollection), 0.5);
     
+    if (debug > 9) cout << "Getting jets "  << endl;
+	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
+
     *ptrToSelectedCollections = selectedCollections;
 
     // reset all the vars
