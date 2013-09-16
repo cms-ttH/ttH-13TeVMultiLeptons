@@ -45,7 +45,7 @@ CheckTwoLepTrigger::CheckTwoLepTrigger (HelperLeptonCore * in):
   this->resetVal = KinematicVariableConstants::INT_INIT;
 
   branches["isDoubleMuTriggerPass"] = BranchInfo<int>("isDoubleMuTriggerPass");
-  branches["isDoubleEleTriggerPass"] = BranchInfo<int>("isDoubleEleTriggerPass");
+  branches["isDoubleElectronTriggerPass"] = BranchInfo<int>("isDoubleElectronTriggerPass");
   branches["isMuEGTriggerPass"] = BranchInfo<int> ("isMuEGTriggerPass");
 
   if( myHelper->analysisYear == "2011"){
@@ -135,7 +135,7 @@ void CheckTwoLepTrigger::evaluate () {
 
 
   branches["isDoubleMuTriggerPass"].branchVal = twoMuonTrigFired ? 1 : 0;
-  branches["isDoubleEleTriggerPass"].branchVal = twoEleTrigFired ? 1 : 0;
+  branches["isDoubleElectronTriggerPass"].branchVal = twoEleTrigFired ? 1 : 0;
   branches["isMuEGTriggerPass"].branchVal = muonEleTrigFired ? 1 : 0;
     
   
@@ -157,7 +157,7 @@ bool CheckTwoLepTrigger::passCut() {
   evaluate();
   
   if (branches["isDoubleMuTriggerPass"].branchVal == 1
-      || branches["isDoubleEleTriggerPass"].branchVal == 1
+      || branches["isDoubleElectronTriggerPass"].branchVal == 1
       || branches["isMuEGTriggerPass"].branchVal == 1)
     return true;
   return false;
