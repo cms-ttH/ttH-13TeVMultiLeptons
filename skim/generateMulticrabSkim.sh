@@ -12,11 +12,10 @@
 ##########################################################################################
 
 ### User-defined parameters (change these as needed)
-project="skimDilep_BEAN_GTV7G_V01_CV04"
-workingDir="/afs/crc.nd.edu/user/a/awoodard/CMSSW_5_3_8_patch1/src/NtupleMaker/SkimDilep/BEAN_53xOn53x_V04_CV01"
-pset="skimDilep_condor.py"
+project="skimMultilep_BEAN_53xOn53x_V04_CV03"
+workingDir="/afs/crc.nd.edu/user/a/awoodard/CMSSW_5_3_11_patch5/src/ttHMultileptonAnalysis/skim/skimMultilep_BEAN_53xOn53x_V04_CV03_data"
+pset="skim_ss.py"
 storageElement="T3_US_NotreDame"
-
 
 ##########################################################################################
 ### After this point, any modifications risk messing up the script. Hack responsibly!  ###
