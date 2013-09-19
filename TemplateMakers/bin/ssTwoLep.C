@@ -1,13 +1,12 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
 
-
 ///-------------- Kinematic Variables ------------------
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/EveryVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
 
 #include "BEAN/BEANmaker/interface/BtagWeight.h"
 #include "BEAN/BEANmaker/interface/BEANhelper.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
 
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"
@@ -19,10 +18,7 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
-
-
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
-
   //Collection definitions set by muonID::muonID and electronID::electronID inside main function
   unsigned numTightMuons = inputCollections->tightMuonCollection->size();
   unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
@@ -37,11 +33,9 @@ bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
       passTwoLepton = true;
 
   return passTwoLepton;
-
 }
 
 void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLepton, int & TwoMuon, int & TwoElectron, int & MuonElectron) {
-
   //Collection definitions set by muonID::muonID and electronID::electronID inside main function
   unsigned numTightMuons = inputCollections->tightMuonCollection->size();
   unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
@@ -71,21 +65,10 @@ void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLe
     return;
     
   }
-  
 }
-
-void loadTTH125Files (vector<string> & target ) {
-
-  //----- version 3 skims have better configurations
-  target.push_back("file:/hadoop/users/awoodard/BEAN_53xOn53x_V04_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_53xOn53x_V04_CV02/d821efbc3befd142036a29052ef27c00/output_1_2_AHw.root");                   
-
-}
-
 
 void safetyCheckJobOptions (int argc, char** argv) {
-
   std::cout << "--->Num argments provided at command line...  " << argc << std::endl;
-
   if (argc < 2) {
 
     std::cout << "Usage: " << std::endl
@@ -100,19 +83,12 @@ void safetyCheckJobOptions (int argc, char** argv) {
   }
       
   return;
-
 }
-
-
 
 // use this function to figure out how to
 // setup the job
 // for now, it is just a hack to make testing easy
 JobParameters parseJobOptions (int argc, char** argv) {
-
-  
-
-
   JobParameters myConfig;
   safetyCheckJobOptions (argc, argv);
   PythonProcessDesc builder(argv[1],argc,argv);
@@ -127,12 +103,9 @@ JobParameters parseJobOptions (int argc, char** argv) {
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
 
   return myConfig;
-
 }
 
-
 int main (int argc, char** argv) {
-
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
   //gSystem->Load("libNtupleMakerBEANmaker.so");
@@ -150,7 +123,6 @@ int main (int argc, char** argv) {
 
   fwlite::ChainEvent ev(myConfig.inputFileNames);
 
-  // the lepton helper  
   HelperLeptonCore lepHelper;
 
   // setup the analysis 
@@ -299,11 +271,11 @@ int main (int argc, char** argv) {
   kinVars.push_back(&allLeptonPhi);    
   
   ////////// all muons //////////
-  GenericCollectionMember<int, BNmuonCollection> allMuonSamPT(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "samPT", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
-  kinVars.push_back(&allMuonSamPT);
+//   GenericCollectionMember<double, BNmuonCollection> allMuonSamPT(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "samPT", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+//   kinVars.push_back(&allMuonSamPT);
 
-  GenericCollectionMember<int, BNmuonCollection> allMuonComPT(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "comPT", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
-  kinVars.push_back(&allMuonComPT);  
+//   GenericCollectionMember<double, BNmuonCollection> allMuonComPT(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "comPT", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+//   kinVars.push_back(&allMuonComPT);  
 
   GenericCollectionMember<int, BNmuonCollection> allMuonPFmuon(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "isPFMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allMuonPFmuon);
@@ -314,7 +286,6 @@ int main (int argc, char** argv) {
   GenericCollectionMember<int, BNmuonCollection> allMuonTrackerMuon(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection),  "isTrackerMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allMuonTrackerMuon);
 
-  ////////// tight muons //////////
   GenericCollectionMember<double, BNmuonCollection> tightMuonPt(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "pt", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&tightMuonPt);
 
@@ -375,7 +346,6 @@ int main (int argc, char** argv) {
        iVar++) {
     
     (*iVar)->attachToTree (summaryTree);
-    
   }
 
   int numEvents = 0;
@@ -391,7 +361,6 @@ int main (int argc, char** argv) {
     if (numEvents == 1 || numEvents % printEvery == 0 )
       cout << "Processing event.... " << numEvents << endl;
 
-    
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
     
     BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, true);
@@ -399,8 +368,6 @@ int main (int argc, char** argv) {
     // make a shallow copy
     // update pointer as you make new collections
     BEANFileInterface selectedCollections = (*rawCollections);
-
-
 
     /////////////////////////////////////////////////////////////
     //
@@ -509,15 +476,11 @@ int main (int argc, char** argv) {
     summaryTree->Fill();
     if (debug > 9) cout << "Done with event  " << numEvents  << endl;
   }// end for each event
-  
 
   cout << "Num Events processed " << numEvents << endl
        << "Passed cuts " << numEventsPassCuts << endl
        << "Failed cuts " << numEventsFailCuts << endl ;
 
-
   outputFile->Write();
   outputFile->Close();
-  
-
 }
