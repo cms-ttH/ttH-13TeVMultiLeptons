@@ -26,7 +26,7 @@ def main ():
 
     if not (args.skipHadd):
         print "Hadding everything together"
-        for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (args.project_label)  ).readlines():
+        for iDir in os.popen("find batch_trees -name '*_%s' -type d" % (args.project_label)  ).readlines():
             dirStrip = iDir.strip()
             print "Directory name is %s" % dirStrip
             lsCommand = "ls %s/*.root | grep -v '_all'" % dirStrip
@@ -107,7 +107,7 @@ def main ():
             #print "=========Data category is %s=============" % dataCat
             # get a whole list of file names
             matchedDirs = []
-            for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (args.project_label)  ).readlines():
+            for iDir in os.popen("find batch_trees -name '*_%s' -type d" % (args.project_label)  ).readlines():
                 for iMatch in listOfNames:
                     if iMatch in iDir:
                         print "Directory %s matches name %s" % (iDir,iMatch)
