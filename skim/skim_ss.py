@@ -24,6 +24,7 @@ process.skimMultilepton = cms.EDFilter("SkimMultilepton",
                                        eleSrc = cms.untracked.InputTag("BNproducer", "selectedPatElectronsGSF"),
                                        muoSrc = cms.untracked.InputTag("BNproducer", "selectedPatMuonsLoosePFlow"),
                                        lepMvaJetSrc = cms.untracked.InputTag("BNproducer", "patJetsAK5PF")
+
                                  )
 
 process.p = cms.Path(

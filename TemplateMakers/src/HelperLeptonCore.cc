@@ -1,37 +1,25 @@
-
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
-
 
 using namespace std;
 
-
-
-
 // constructor
-
 HelperLeptonCore::HelperLeptonCore (): rawCollections() {
-
   verbose = true;
   
   if (verbose) std::cout << "Inside constructor" << std::endl;
-  
-
 }
 
 void HelperLeptonCore::initializePUReweighting () {
-
   listOfCollisionDatasets = "2012A_13July, 2012A_06Aug, 2012B_13July, 2012C_PR, 2012C_24Aug, 2012D_PR";
 
   // this cannot be blank
   // but it is only used for 2011 PU reweighting
   // Options are SingleMu, and ElectronHad
   datasetForBEANHelper = "SingleMu";
-
 }
 
 
 BEANhelper * HelperLeptonCore::setupAnalysisParameters (string year, string inputName ) {
-
   analysisYear = year;
   sampleName = inputName;
 
@@ -47,18 +35,12 @@ BEANhelper * HelperLeptonCore::setupAnalysisParameters (string year, string inpu
   // param 6: use pf leptons?
   // param 8: list of collision datasets, which much be long
 
-
   bHelp.SetUp(analysisYear, sampleNumber, analysisType::DIL, isData, datasetForBEANHelper, false, true,listOfCollisionDatasets);
 
-
   return &bHelp;
-  
 }
 
 bool HelperLeptonCore::detectData (string sampleName) {
-
-  // data detection
-  //
   isData = false;
   sysType_lep = "MC";
   if (TString(sampleName).Contains("DoubleElectron")
@@ -70,16 +52,13 @@ bool HelperLeptonCore::detectData (string sampleName) {
 
     isData = true;
     sysType_lep = "data";
-
   }
 
   return isData;
-
 }
 
 
 int HelperLeptonCore::convertSampleNameToNumber (string sampleName ) {
-  
   sampleNumber = 999999;
   weight_Xsec = 1.0;
   nGen = 1;
@@ -283,23 +262,17 @@ int HelperLeptonCore::convertSampleNameToNumber (string sampleName ) {
     assert (analysisYear == "either 2012_52x, 2012_53x, or 2011");
   }
 
-
   std::cout << "CONFIG: Sample Name = " << sampleName
             << ", sample Number = " << sampleNumber << endl;
 
-
   return sampleNumber;
-  
-
 }
 
   // setup several  BN pointers
 BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainEvent & ev, bool isLepMVA) {
-
   // Each handle for a collection must be de-referenced to get the collection
   // Then you can store a pointer to the collection in a BEANFileInterface
   // then return a pointer to the BEANFileInterface for other folks to use.
-
 
   //------   Event 
   h_event.getByLabel(ev,"BNproducer");
@@ -316,11 +289,8 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   hltInfo = *h_hlt;
   rawCollections.hltCollection = &hltInfo;
 
-  
-
   //------- Muons
   if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
-    
     if (!isLepMVA) {
       h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsPFlow");
     } else {
@@ -334,10 +304,7 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   rawCollections.rawMuonCollection = &muonsRaw;
 
   //-----  Electrons
-
-  
   if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
-
     if (!isLepMVA) {
       h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
     } else {
@@ -348,27 +315,21 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   electronsRaw = * h_electrons;
   rawCollections.rawElectronCollection = &electronsRaw;
 
-  
-  
   //-----  Jets 
   h_pfjets.getByLabel(ev,"BNproducer","selectedPatJetsPFlow");
   pfjets = *h_pfjets; 
   rawCollections.jetCollection = &pfjets;
 
   //----- MET
-
   if ( analysisYear == "2011" ) h_pfmets.getByLabel(ev,"BNproducer","patMETsTypeIPFlow");
   else if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) h_pfmets.getByLabel(ev,"BNproducer","patMETsPFlow");
   pfmets = * h_pfmets;
   rawCollections.metCollection = &pfmets;
 
-
   // ----- Primary Vertices
-  
   h_pvs.getByLabel(ev,"BNproducer","offlinePrimaryVertices");
   pvs = *h_pvs;
   rawCollections.primaryVertexCollection = &pvs;
-
 
   // careful, not defined in every sample
   if (analysisYear == "2012_53x" && isLepMVA) {
@@ -376,16 +337,11 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
     lepMvaJets = *h_lepMvaJets;
     rawCollections.jetsForLepMVACollection = & lepMvaJets;
   }
-  
-  
-  
 
   return & rawCollections;
-
 }
 
 void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID tightID, electronID::electronID looseID, electronID::electronID preselectedID, BEANFileInterface * selectedCollections) {
-
   electronsTight = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), tightID, rawCollections.jetsForLepMVACollection );
 
   electronsTightLoose = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), looseID, rawCollections.jetsForLepMVACollection );
@@ -394,20 +350,18 @@ void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID
   electronsTightLoosePreselected = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), preselectedID, rawCollections.jetsForLepMVACollection );
   electronsPreselected = bHelp.GetDifference(electronsTightLoosePreselected, electronsTightLoose);
 
-  //electronsLoosePreselected = bHelp.GetUnion(electronsLoose, electronsPreselected);
+  electronsLoosePreselected = bHelp.GetUnion(electronsLoose, electronsPreselected);
   
   selectedCollections->tightElectronCollection = &electronsTight;
   selectedCollections->looseElectronCollection = &electronsLoose;
   selectedCollections->preselectedElectronCollection = &electronsPreselected;
 
   selectedCollections->tightLooseElectronCollection = &electronsTightLoose;
-  //selectedCollections->loosePreselectedElectronCollection = &electronsLoosePreselected;
+  selectedCollections->loosePreselectedElectronCollection = &electronsLoosePreselected;
   selectedCollections->tightLoosePreselectedElectronCollection = &electronsTightLoosePreselected;
-  
 }
 
 void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, muonID::muonID looseID, muonID::muonID preselectedID, BEANFileInterface * selectedCollections) {
-
   muonsTight = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), tightID, rawCollections.jetsForLepMVACollection );
  
   muonsTightLoose = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), looseID, rawCollections.jetsForLepMVACollection );
@@ -416,14 +370,14 @@ void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, mu
   muonsTightLoosePreselected = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), preselectedID, rawCollections.jetsForLepMVACollection );
   muonsPreselected = bHelp.GetDifference(muonsTightLoosePreselected, muonsTightLoose);
 
-  //muonsLoosePreselected = bHelp.GetUnion(muonsLoose, muonsPreselected);
+  muonsLoosePreselected = bHelp.GetUnion(muonsLoose, muonsPreselected);
   
   selectedCollections->tightMuonCollection = &muonsTight;
   selectedCollections->looseMuonCollection = &muonsLoose;
   selectedCollections->preselectedMuonCollection = &muonsPreselected;
 
   selectedCollections->tightLooseMuonCollection = &muonsTightLoose;
-  //selectedCollections->loosePreselectedMuonCollection = &muonsLoosePreselected;
+  selectedCollections->loosePreselectedMuonCollection = &muonsLoosePreselected;
   selectedCollections->tightLoosePreselectedMuonCollection = &muonsTightLoosePreselected;
 
 }

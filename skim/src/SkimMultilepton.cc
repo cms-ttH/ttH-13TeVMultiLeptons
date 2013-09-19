@@ -25,7 +25,7 @@ class SkimMultilepton : public edm::EDFilter {
       virtual bool beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
       virtual bool endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
-      // ----------member data ---------------------------
+    // ----------member data ---------------------------
     std::string era_;
     edm::InputTag eleSrc_, muoSrc_, lepMvaJetSrc_;
     muonID::muonID muonTightID_, muonLooseID_, muonPreselectedID_;
