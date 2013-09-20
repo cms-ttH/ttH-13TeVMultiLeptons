@@ -100,7 +100,7 @@ def main ():
     for iList in listsToRun:
         sampleName = getSampleFromListPath(iList)
         nJobs = getNumLinesInFile(iList)
-        nJobs = int(nJobs/10)
+#        nJobs = int(nJobs/10)
         print "Calling create with ", executable, " ", sampleName, " ", args.project_label, " ", nJobs
         createCondorSubFileAndSubmit(executable, sampleName, args.project_label, nJobs)
         
