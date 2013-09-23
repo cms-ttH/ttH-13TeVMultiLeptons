@@ -375,9 +375,11 @@ class SystematicsInformation:
         self.dictionary = {
             'nominal': {'weight_string': '1', 'source_file_label': ''},
             'JESUp': {'weight_string': '1', 'source_file_label': 'JESUp'},
-            'PUUp': {'weight_string':'(weight_PUup/weight)', 'source_file_label': ''},
+            'PUup': {'weight_string':'(weight_PUup/weight_PU)', 'source_file_label': ''},
+            'PUdown': {'weight_string':'(weight_PUdown/weight_PU)', 'source_file_label': ''},            
             'CSV_HFUp': {'weight_string': 'CSV_HFUp', 'source_file_label': ''},
-            'TopPtDown': {'weight_string': '(1/TopPT_wgt)', 'source_file_label': ''}
+            'TopPtDown': {'weight_string': '(1/topPtWgt)', 'source_file_label': ''},
+            'TopPtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'source_file_label': ''}            
             }
 
         self.add_systematics(baseline_systematics)
