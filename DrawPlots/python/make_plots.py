@@ -5,31 +5,54 @@ from ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper import *
 from argparse import ArgumentParser
 import ROOT
 
-parser = ArgumentParser(description='Make plots from summary trees.')
-parser.add_argument('config_file_name', help='Configuration file to process.')
-parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
-parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
-parser.add_argument('-w', '--web', action='store_true', help='Post each plot to the user\'s AFS space.')
-parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
-parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
-parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
-    
-args = parser.parse_args()
+def main():
+    parser = ArgumentParser(description='Make plots from summary trees.')
+    parser.add_argument('config_file_name', help='Configuration file to process.')
+    parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
+    parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
+    parser.add_argument('-w', '--web', action='store_true', help='Post each plot to the user\'s AFS space.')
+    parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
+    parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
+    parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
 
-config = ConfigParser()
-config.read(args.config_file_name)
-project_label = config['run_parameters']['label']
-lepton_categories = config['lepton_categories'].keys()
-for lepton_category in lepton_categories: #This should be outside the run loop so we don't create race conditions in batch mode
-    if not os.path.exists(lepton_category):
-        os.makedirs(lepton_category)
-        
-if args.sample:
-    samples = args.sample
-else:
-    samples = config['samples'].keys()
+    args = parser.parse_args()
 
-def run(args, config, samples, project_label):
+    config = ConfigParser()
+    config.read(args.config_file_name)
+    project_label = config['run_parameters']['label']    
+    lepton_categories = config['lepton_categories'].keys()
+    for lepton_category in lepton_categories: #This should be outside the run loop so we don't create race conditions in batch mode
+        if not os.path.exists(lepton_category):
+            os.makedirs(lepton_category)
+
+    if args.sample:
+        samples = args.sample
+    else:
+        samples = config['samples'].keys()
+
+    if not args.batch:
+        run(args, config, samples)    
+    else:
+        if not os.path.exists('batch_logs'):
+            os.makedirs('batch_logs')
+            
+        condor_header = 'universe = vanilla \nexecutable = make_plots.py \nnotification = Never \ngetenv = True \n+IsExpressJob = True'
+        for sample in samples:        
+            condor_submit_file = open('make_plots_batch.submit', 'w')
+            condor_submit_file.write(condor_header)
+            condor_submit_file.write('\narguments = -s %s %s' % (sample, args.config_file_name))
+            condor_submit_file.write('\nlog = batch_logs/%s_%s.log' % (project_label, sample))
+            condor_submit_file.write('\noutput = batch_logs/%s_%s.stdout' % (project_label, sample))
+            condor_submit_file.write('\nerror = batch_logs/%s_%s.stderr' % (project_label, sample))
+            condor_submit_file.write('\nqueue 1')
+            condor_submit_file.close()
+
+            os.popen('condor_submit make_plots_batch.submit')
+            print 'Submitting batch jobs for sample: %s... ' % sample
+
+def run(args, config, samples):
+    project_label = config['run_parameters']['label']
+    lepton_categories = config['lepton_categories'].keys()    
     lumi = config['run_parameters']['lumi']
     default_num_bins = config['run_parameters']['default_num_bins']
     input_trees_directory = config['run_parameters']['input_trees_directory']
@@ -44,6 +67,8 @@ def run(args, config, samples, project_label):
         sample_info = SampleInformation(sample)
 
         for lepton_category in lepton_categories:
+            if sample_info.is_data and not does_data_sample_match_lepton_category(lepton_category, sample):
+                    continue
             lepton_category_cut_strings = config['%s cuts' % lepton_category].values()
 
             for jet_tag_category in jet_tag_categories:
@@ -87,23 +112,17 @@ def run(args, config, samples, project_label):
                 output_file.Close() #end jet tag category
 
         if args.web:
-            print '\nPlots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label']) 
+            print '\nPlots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label'])
 
-if not args.batch:
-    run(args, config, samples, project_label)    
-else:
-    if not os.path.exists('batch_logs'):
-        os.makedirs('batch_logs')
-    condor_header = 'universe = vanilla \nexecutable = make_plots.py \nnotification = Never \ngetenv = True \n+IsExpressJob = True'
-    for sample in samples:        
-        condor_submit_file = open('make_plots_batch.submit', 'w')
-        condor_submit_file.write(condor_header)
-        condor_submit_file.write('\narguments = -s %s %s' % (sample, args.config_file_name))
-        condor_submit_file.write('\nlog = batch_logs/%s_%s.log' % (project_label, sample))
-        condor_submit_file.write('\noutput = batch_logs/%s_%s.stdout' % (project_label, sample))
-        condor_submit_file.write('\nerror = batch_logs/%s_%s.stderr' % (project_label, sample))
-        condor_submit_file.write('\nqueue 1')
-        condor_submit_file.close()
+def does_data_sample_match_lepton_category(lepton_category, sample):
+    if sample == 'MuEG' and lepton_category == 'mu_ele':
+        return True
+    elif sample == 'DoubleMu' and lepton_category == 'mu_mu':
+        return True
+    elif sample == 'DoubleElectron' and lepton_category == 'ele_ele':
+        return True
+    else:
+        return False
 
-        os.popen('condor_submit make_plots_batch.submit')
-        print 'Submitting batch jobs for sample: %s... ' % sample
+if __name__ == '__main__':
+    main()
