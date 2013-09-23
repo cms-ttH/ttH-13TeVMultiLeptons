@@ -53,6 +53,8 @@ def run(args, config, samples, project_label):
                 systematics_info = SystematicsInformation(baseline_systematics)
                 systematics_info.edit_systematics_list(sample_info.systematics)
                 for systematic in systematics_info.systematics_list:
+                    print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
+                    
                     systematic_weight_string = systematics_info.dictionary[systematic]['weight_string']
                     source_file_label = systematics_info.dictionary[systematic]['source_file_label']
                     if source_file_label != '':
@@ -73,7 +75,6 @@ def run(args, config, samples, project_label):
                         draw_string_maker.multiply_by_factors(mc_weight_strings)
                         draw_string_maker.multiply_by_factor('%s * %s / %s' % (sample_info.x_section, lumi, sample_info.num_generated))
 
-                    print 'Beginning next loop iteration. Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (jet_tag_category, lepton_category, systematic)
                     for (distribution, parameters) in zip(distributions, plot_parameters):
                         plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, source_file_label)
                         plot = Plot(output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string_maker.draw_string)
@@ -85,8 +86,8 @@ def run(args, config, samples, project_label):
                     source_file.Close() #end systematic
                 output_file.Close() #end jet tag category
 
-                if args.web:
-                    print '\nPlots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label']) 
+        if args.web:
+            print '\nPlots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label']) 
 
 if not args.batch:
     run(args, config, samples, project_label)    
@@ -105,3 +106,4 @@ else:
         condor_submit_file.close()
 
         os.popen('condor_submit make_plots_batch.submit')
+        print 'Submitting batch jobs for sample: %s... ' % sample
