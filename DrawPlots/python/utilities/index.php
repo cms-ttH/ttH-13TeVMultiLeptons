@@ -131,10 +131,9 @@ tr:last-child td:last-child { -moz-border-radius: 0 0 10px 0; -webkit-border-rad
  foreach ($png_files as $file) {
      if (isset($_GET['match']) && !fnmatch('*'.$_GET['match'].'*', $file)) continue;
      echo '<div class="photo-link smoothbox">';
-     echo '<a href="',$file,'" rel="gallery"><img src="',$file,'" style="width: 300px;" /></a>';
      $parts=split("[/\\.]", $file);
-     $pdf_version = $parts[0].".pdf";
-     if (is_file($pdf_version)) { echo '<a href="',$pdf_version,'">',$pdf_version,'</a>'; }
+     $pdf_version = $parts[0].".pdf";     
+     echo '<a href="',$pdf_version,'" rel="gallery"><img src="',$file,'" style="width: 300px;" /></a>';
      echo '</div>';
      
 
