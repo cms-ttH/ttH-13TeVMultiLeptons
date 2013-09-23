@@ -10,7 +10,7 @@ public:
     void setCut(int cut);
     bool passCut();
 
-    int threshold;
+    double threshold;
     double mht;
 };
 
@@ -45,7 +45,7 @@ void MHT::evaluate() {
   branches["mht"].branchVal = mht;
 }
 
-void MHT::setCut(int cut) {
+void MHT::setCut(double cut) {
     threshold = cut;
 }
    
