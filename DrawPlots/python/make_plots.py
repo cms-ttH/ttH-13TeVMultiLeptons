@@ -32,6 +32,7 @@ else:
 def run(args, config, samples, project_label):
     lumi = config['run_parameters']['lumi']
     default_num_bins = config['run_parameters']['default_num_bins']
+    input_trees_directory = config['run_parameters']['input_trees_directory']
     cut_strings = config['cuts'].values() #.values() returns a list of everything after the ':' under the 'cuts' header in the config file
     jet_tag_categories = config['jet_tag_categories'].keys() #.keys() returns a list of everything before the ':' under the 'distributions' header in the config file
     mc_weight_strings = config['mc_weights'].values()
@@ -55,7 +56,7 @@ def run(args, config, samples, project_label):
                     source_file_label = systematics_info.dictionary[systematic]['source_file_label']
                     if source_file_label != '':
                         source_file_label = '_' + source_file_label
-                    source_file_name = 'tree_files/dilSummaryTrees_%s_%s%s_all.root' % (sample, project_label, source_file_label)
+                    source_file_name = '%s/%s_%s%s_all.root' % (input_trees_directory, sample, project_label, source_file_label)
                     if args.file:
                         source_file_name = args.file
                     source_file = ROOT.TFile(source_file_name)
@@ -85,7 +86,7 @@ def run(args, config, samples, project_label):
                 output_file.Close() #end jet tag category
 
                 if args.web:
-                    print '\nPlots will be posted to: http:://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label']) 
+                    print '\nPlots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label']) 
 
 if not args.batch:
     run(args, config, samples, project_label)    
