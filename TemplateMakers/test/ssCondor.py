@@ -21,14 +21,13 @@
 #    2. maximum number of events
 #    3. a name for this group of jobs
 ##########################################
-
 import os
 
 cmssw_base = os.environ['CMSSW_BASE']
 directoryOfLists = cmssw_base + "/src/ttHMultileptonAnalysis/listsForSkims2012_53x_v3_hadoop/"
 #directoryOfLists = cmssw_base + "/src/ttHMultileptonAnalysis/unskimmed_data_lists/"
 
-outputBaseDir = "batchBEAN/"
+outputBaseDir = "batch_trees/"
 
 maxEvents = -1 
 
@@ -117,7 +116,6 @@ if not doAllFiles:
 else :
     firstFile = 0
     lastFile = numFiles-1
-
 
 if len(sys.argv) > 6:
     process.inputs.fileNames.append('file:'+sys.argv[6].strip())

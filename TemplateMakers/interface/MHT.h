@@ -1,19 +1,16 @@
-
 #ifndef _MHT_h
 #define _MHT_h
-
 
 #include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 
 class MHT: public KinematicVariable<double> {
-
 public:
     MHT();
     void evaluate();
     void setCut(int cut);
     bool passCut();
 
-    int threshold;
+    double threshold;
     double mht;
 };
 
@@ -26,13 +23,10 @@ void MHT::evaluate() {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  //--------
-
   BNleptonCollection* tightLeptons = this->blocks->tightLeptonCollection;
   BNjetCollection* selectedJets = this->blocks->jetCollection;
   TLorentzVector object_p4;
   TLorentzVector vector_sum;
-
 
   for (auto& lepton: (*tightLeptons)) {
       object_p4.SetPxPyPzE(lepton->px, lepton->py, lepton->pz, lepton->energy);
@@ -51,7 +45,7 @@ void MHT::evaluate() {
   branches["mht"].branchVal = mht;
 }
 
-void MHT::setCut(int cut) {
+void MHT::setCut(double cut) {
     threshold = cut;
 }
    

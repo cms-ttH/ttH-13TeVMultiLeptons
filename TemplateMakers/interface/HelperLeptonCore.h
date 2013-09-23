@@ -78,7 +78,6 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 
-
 #endif
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
@@ -89,31 +88,21 @@
 // separate so that things are easier to read and separable for
 // other situations
 
-
 class HelperLeptonCore  {
-
 public:
   
   // constructor
   HelperLeptonCore ();
 
   // initialize
-
   BEANhelper *  setupAnalysisParameters (string year, string sampleName) ;
-
-
-  // detect data by sampleName
 
   bool detectData (string sampleName);
   
-  // convert sample name to sample number
-
   int convertSampleNameToNumber (string sampleName);
 
-  
   // setup some PU reweighting flags
   void initializePUReweighting ();
-
 
   // initializeTrigger
   // this may already be in beanhelper
@@ -138,7 +127,6 @@ public:
   bool checkEventCleaning();
 
   bool parseSysTypes();
-  
 
   // Handle the gymnastics of tight and loose collection definitions
   void getTightLoosePreselectedElectrons (electronID::electronID tightID,
@@ -146,7 +134,6 @@ public:
                                   electronID::electronID preselectedID,
                                   BEANFileInterface* selectedCollections);
   
-    // Handle the gymnastics of tight and loose collection definitions
   void getTightLoosePreselectedMuons (muonID::muonID tightID,
                               muonID::muonID looseID,
                               muonID::muonID preselectedID,
@@ -167,19 +154,8 @@ public:
 
   void fillLepCollectionWithSelectedLeptons ( BEANFileInterface * selectedCollections);
 
-  //void checkCollections ();
-  
-  // fill in everything you have
-  //void fillOutputBranches ();
-
-
-
-
-
   //-------------------- Variables
-
   std::string analysisYear;
-
   
   double weight_Xsec;
   int nGen;

@@ -3,19 +3,12 @@
 
 #include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 
-//
-//  Loops over selected leptons and saves the lepMVA value for each.  For now I'm attaching to tree inside the constructor
-//  instead of in a separate function-- I'm not sure we'd ever want this value without saving it. --AW
-//
-
 class HiggsDecayType: public KinematicVariable<int> {
 
 public:
     HelperLeptonCore * myHelper;
-
     HiggsDecayType(HelperLeptonCore *in);
     void evaluate ();
-  
 };
 
 HiggsDecayType::HiggsDecayType (HelperLeptonCore *in): myHelper(in) {
@@ -29,9 +22,8 @@ void HiggsDecayType::evaluate () {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  //--------
   BEANhelper * beanHelper = &(myHelper->bHelp);
-  if (!(myHelper->isData)) {
+  if ((myHelper->sampleName).find("ttH") != std::string::npos) {
       branches["higgs_decay_type"].branchVal = beanHelper->GetHdecayType(*(this->blocks->mcParticleCollection));
   }
 }

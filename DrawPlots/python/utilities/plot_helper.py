@@ -33,7 +33,7 @@ class Plot:
         self.save_image('png', 'pdf')
         afs_base_directory = self.get_afs_base_directory(config)
         afs_directory = afs_base_directory + '/' + config['run_parameters']['label'] + '/' + lepton_category
-        if not os.path.exists(afs_directory):
+        if not os.path.exists(afs_directory): 
             os.makedirs(afs_directory)
             
         from distutils import file_util
@@ -133,30 +133,16 @@ class DrawStringMaker:
             jet_tag_string = 'numJets >= 4 && numMediumBJets == 1'
         elif jet_tag_category == 'ge4jge2t':
             jet_tag_string = 'numJets >= 4 && numMediumBJets >= 2'
-        elif jet_tag_category == 'inclusive':
-            jet_tag_string = ''
         elif jet_tag_category == 'ge4j':
             jet_tag_string = 'numJets>=4'
+        elif jet_tag_category == 'inclusive':
+            pass
         else:
             print 'ERROR [plot_helper.py]: Unrecognized jet tag category. Please update DrawStringMaker::append_jet_tag_category_requirements'
             sys.exit(2)
 
-        self.append_selection_requirement(jet_tag_string)
-
-    def append_lepton_category_requirements(self, lepton_category):
-        if lepton_category == 'mu_mu':
-            lepton_category_string = '(isDoubleMuTriggerPass == 1)'
-        elif lepton_category == 'ele_ele':
-            lepton_category_string = '(isDoubleEleTriggerPass == 1)'
-        elif lepton_category == 'mu_ele':
-            lepton_category_string = '(isMuEGTriggerPass == 1)'
-        elif lepton_category == 'inclusive':
-            lepton_category_string = ''
-        else:
-            print 'ERROR [plot_helper.py]: Unrecognized lepton category.  Please update DrawStringMaker::append_lepton_category_requirements'
-            sys.exit(2)
-            
-        self.append_selection_requirement(lepton_category_string)
+        if jet_tag_category != 'inclusive':
+            self.append_selection_requirement(jet_tag_string)
             
     def multiply_by_factor(self, weight):
         weight = str(weight)
@@ -351,11 +337,23 @@ class SampleInformation:
                         'num_generated': 997191,
                         'systematics': 'all'},                    
 
-            'data_2012_53x': {'is_data': True,
+            'MuEG': {'is_data': True,
                               'x_section': 1,
                               'x_section_error': 0.0,
                               'num_generated': 1,
-                              'systematics': 'none'}
+                              'systematics': 'none'},
+
+            'DoubleMu': {'is_data': True,
+                              'x_section': 1,
+                              'x_section_error': 0.0,
+                              'num_generated': 1,
+                              'systematics': 'none'},
+
+            'DoubleElectron': {'is_data': True,
+                              'x_section': 1,
+                              'x_section_error': 0.0,
+                              'num_generated': 1,
+                              'systematics': 'none'}            
 
             }
 
@@ -375,9 +373,11 @@ class SystematicsInformation:
         self.dictionary = {
             'nominal': {'weight_string': '1', 'source_file_label': ''},
             'JESUp': {'weight_string': '1', 'source_file_label': 'JESUp'},
-            'PUUp': {'weight_string':'(weight_PUup/weight)', 'source_file_label': ''},
+            'weight_PUup': {'weight_string':'(weight_PUup/weight_PU)', 'source_file_label': ''},
+            'weight_PUdown': {'weight_string':'(weight_PUdown/weight_PU)', 'source_file_label': ''},            
             'CSV_HFUp': {'weight_string': 'CSV_HFUp', 'source_file_label': ''},
-            'TopPtDown': {'weight_string': '(1/TopPT_wgt)', 'source_file_label': ''}
+            'topPtWgtDown': {'weight_string': '(1/topPtWgt)', 'source_file_label': ''},
+            'topPtWgtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'source_file_label': ''}            
             }
 
         self.add_systematics(baseline_systematics)

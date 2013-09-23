@@ -16,13 +16,9 @@
 <lib   name="TMVA" />
 <use   name="ttHMultileptonAnalysis/TemplateMakers" />
 <environment>
-#  <bin   file="test_beans_dileptonStudies.C">
-#  </bin>
   <bin   file="helper_dilepton.C">
   </bin>
-  <bin   file="LepJets.C">
-  </bin>
-  <bin   file="twoLepOS.C">
+  <bin   file="osTwoLep.C">
   </bin>
   <bin   file="ssTwoLep.C">
   </bin>
@@ -30,6 +26,4 @@
   </bin>
   <bin file="fourLepton.C">
   </bin>
-#  <bin   file="test_beans_trileptonStudies.C">
-#  </bin>
 </environment>

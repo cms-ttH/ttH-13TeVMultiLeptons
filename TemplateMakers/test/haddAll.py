@@ -1,49 +1,32 @@
 #!/usr/bin/env python
-
 import os
 import sys
-from optparse import OptionParser
-
+from argparse import ArgumentParser 
 
 def checkDirs (inDir) :
-
     if not os.path.exists(inDir):
         os.mkdir(inDir)
-    
-
-
 
 def main ():
+    parser = ArgumentParser(description='Add together trees and move them to the plot making area.')
+    parser.add_argument('project_label', help='Project label')
+    parser.add_argument('-s', '--sumData', action='store_true', default=False, help='sum the data files together')
+    parser.add_argument('-c', '--copyFiles', action='store_true', default=False, help='copy files to treeFile directory')
+    parser.add_argument('-m', '--moveFiles', action='store_true', default=False, help='move files to treeFile directory')
+    parser.add_argument('-n', '--skipHadd', action='store_true', default=False, help ='don\'t hadd stuff, just move/copy it')
 
-    parser = OptionParser(usage="./haddAll.py --sumData --moveFiles  yourLabel")
-    parser.add_option('-s', '--sumData', dest='sumData', action='store_true', default=False, help="sum the data files together")
-    parser.add_option('-c', '--copyFiles', dest='copyFiles', action='store_true', default=False, help="copy files to treeFile directory")
-    parser.add_option('-m', '--moveFiles', dest='moveFiles', action='store_true', default=False, help="move files to treeFile directory")
-    parser.add_option('-n', '--skipHadd', dest='skipHadd', action='store_true', default=False, help ="don't hadd stuff, just move/copy it")
-    #parser.add_option('-y', '--year', dest='year', default = 'NONE', help="specify a year string")
-
-    (options, args) = parser.parse_args()
-
-    if len(args) < 1 :
-        parser.print_help()
-        exit (2)
-
-
-        
-    dirLabel = "%s" % (args[0])
+    args = parser.parse_args()
 
     ####### Hard-coded ouput directory #####
     baseDir = os.environ['CMSSW_BASE']
-    outDir = baseDir +"/src/ttHMultileptonAnalysis/DrawPlots/treeFiles/"
+    outDir = baseDir +"/src/ttHMultileptonAnalysis/DrawPlots/tree_files/"
     
-    print "Directory label %s" % dirLabel
+    print "Directory label %s" % args.project_label
+    print "Running with sumData = %s" % args.sumData
 
-    print "Running with sumData = %s" % options.sumData
-
-
-    if not (options.skipHadd):
+    if not (args.skipHadd):
         print "Hadding everything together"
-        for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (dirLabel)  ).readlines():
+        for iDir in os.popen("find batch_trees -name '*_%s' -type d" % (args.project_label)  ).readlines():
             dirStrip = iDir.strip()
             print "Directory name is %s" % dirStrip
             lsCommand = "ls %s/*.root | grep -v '_all'" % dirStrip
@@ -62,10 +45,8 @@ def main ():
                 print "Copied to create %s" % newName
                 
             else:
-            
                 oldName = listOfFiles[0].strip()
                 newName = oldName.replace('job000', 'all')
-                #newName = newName.replace('.root', '_all.root')
                 haddCommand = "hadd -v 0 -f %s " % (newName)
                 for iFile in listOfFiles[0:]:
                     haddCommand = haddCommand + " " + iFile.strip()
@@ -73,9 +54,7 @@ def main ():
                         print feedback
                 print "Created %s" % newName
     
-    # now do something else
-
-    if (options.sumData):
+    if (args.sumData):
         print "Summing data Files"
         dataNames2011 = {"DoubleElectron":['DoubleElectron_Run2011A-05Aug2011-v1', 
                                        'DoubleElectron_Run2011A-May10ReReco-v1',
@@ -121,14 +100,13 @@ def main ():
                      }
 
         dataNames = dataNames2012_53x
-        print "Data names are..."
-        print dataNames
+        print "Data names are...", dataNames
 
         for (dataCat, listOfNames) in dataNames.iteritems():
             #print "=========Data category is %s=============" % dataCat
             # get a whole list of file names
             matchedDirs = []
-            for iDir in os.popen("find batchBEAN -name '*_%s' -type d" % (dirLabel)  ).readlines():
+            for iDir in os.popen("find batch_trees -name '*_%s' -type d" % (args.project_label)  ).readlines():
                 for iMatch in listOfNames:
                     if iMatch in iDir:
                         print "Directory %s matches name %s" % (iDir,iMatch)
@@ -137,7 +115,7 @@ def main ():
                 #end for each match
             #print "Matching directories are..."
             #print matchedDirs
-            haddCommand = "hadd -v 0 -f dilSummaryTrees_%s_%s_all.root " % (dataCat,dirLabel)
+            haddCommand = "hadd -v 0 -f %s_%s_all.root " % (dataCat,args.project_label)
             for iDir in matchedDirs:
                 #print "Looking at directory %s" % iDir
                 rootFiles = os.popen('ls %s/*_all.root' % iDir).readlines()
@@ -156,23 +134,20 @@ def main ():
             for iFeedback in os.popen(haddCommand).readlines():
                 print iFeedback
             print "-------Done suming data---------"
-            
-            
         
     # make sure the destination exists before sending files
     checkDirs(outDir)
 
-        
-    if (options.copyFiles):
+    if (args.copyFiles):
         print "Now copying results to tree files!"
-        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} %s \;" % (dirLabel, outDir)  ):
+        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} %s \;" % (args.project_label, outDir)  ):
             print iLine
         print "Done copying files"
     # end copy files
 
-    if (options.moveFiles):
+    if (args.moveFiles):
         print "Now moving results to tree files!"
-        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec mv {} %s \;" % (dirLabel, outDir)  ):
+        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec mv {} %s \;" % (args.project_label, outDir)  ):
             print iLine
         print "Done moving files"
     # end move files
