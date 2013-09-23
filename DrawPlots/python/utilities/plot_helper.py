@@ -33,7 +33,7 @@ class Plot:
         self.save_image('png', 'pdf')
         afs_base_directory = self.get_afs_base_directory(config)
         afs_directory = afs_base_directory + '/' + config['run_parameters']['label'] + '/' + lepton_category
-        if not os.path.exists(afs_directory):
+        if not os.path.exists(afs_directory): 
             os.makedirs(afs_directory)
             
         from distutils import file_util
@@ -362,11 +362,11 @@ class SystematicsInformation:
         self.dictionary = {
             'nominal': {'weight_string': '1', 'source_file_label': ''},
             'JESUp': {'weight_string': '1', 'source_file_label': 'JESUp'},
-            'PUup': {'weight_string':'(weight_PUup/weight_PU)', 'source_file_label': ''},
-            'PUdown': {'weight_string':'(weight_PUdown/weight_PU)', 'source_file_label': ''},            
+            'weight_PUup': {'weight_string':'(weight_PUup/weight_PU)', 'source_file_label': ''},
+            'weight_PUdown': {'weight_string':'(weight_PUdown/weight_PU)', 'source_file_label': ''},            
             'CSV_HFUp': {'weight_string': 'CSV_HFUp', 'source_file_label': ''},
-            'TopPtDown': {'weight_string': '(1/topPtWgt)', 'source_file_label': ''},
-            'TopPtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'source_file_label': ''}            
+            'topPtWgtDown': {'weight_string': '(1/topPtWgt)', 'source_file_label': ''},
+            'topPtWgtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'source_file_label': ''}            
             }
 
         self.add_systematics(baseline_systematics)
