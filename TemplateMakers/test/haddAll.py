@@ -47,7 +47,6 @@ def main ():
             else:
                 oldName = listOfFiles[0].strip()
                 newName = oldName.replace('job000', 'all')
-                #newName = newName.replace('.root', '_all.root')
                 haddCommand = "hadd -v 0 -f %s " % (newName)
                 for iFile in listOfFiles[0:]:
                     haddCommand = haddCommand + " " + iFile.strip()
@@ -116,7 +115,7 @@ def main ():
                 #end for each match
             #print "Matching directories are..."
             #print matchedDirs
-            haddCommand = "hadd -v 0 -f dilSummaryTrees_%s_%s_all.root " % (dataCat,args.project_label)
+            haddCommand = "hadd -v 0 -f %s_%s_all.root " % (dataCat,args.project_label)
             for iDir in matchedDirs:
                 #print "Looking at directory %s" % iDir
                 rootFiles = os.popen('ls %s/*_all.root' % iDir).readlines()
