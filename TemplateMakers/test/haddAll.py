@@ -19,7 +19,7 @@ def main ():
 
     ####### Hard-coded ouput directory #####
     baseDir = os.environ['CMSSW_BASE']
-    outDir = baseDir +"/src/ttHMultileptonAnalysis/DrawPlots/treeFiles/"
+    outDir = baseDir +"/src/ttHMultileptonAnalysis/DrawPlots/tree_files/"
     
     print "Directory label %s" % args.project_label
     print "Running with sumData = %s" % args.sumData
