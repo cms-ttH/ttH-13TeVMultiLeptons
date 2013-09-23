@@ -143,7 +143,6 @@ class DrawStringMaker:
 
         if jet_tag_category != 'inclusive':
             self.append_selection_requirement(jet_tag_string)
-
             
     def multiply_by_factor(self, weight):
         weight = str(weight)
@@ -338,11 +337,23 @@ class SampleInformation:
                         'num_generated': 997191,
                         'systematics': 'all'},                    
 
-            'data_2012_53x': {'is_data': True,
+            'MuEG': {'is_data': True,
                               'x_section': 1,
                               'x_section_error': 0.0,
                               'num_generated': 1,
-                              'systematics': 'none'}
+                              'systematics': 'none'},
+
+            'DoubleMu': {'is_data': True,
+                              'x_section': 1,
+                              'x_section_error': 0.0,
+                              'num_generated': 1,
+                              'systematics': 'none'},
+
+            'DoubleElectron': {'is_data': True,
+                              'x_section': 1,
+                              'x_section_error': 0.0,
+                              'num_generated': 1,
+                              'systematics': 'none'}            
 
             }
 
