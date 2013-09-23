@@ -33,7 +33,7 @@ def run(args, config, samples, project_label):
     lumi = config['run_parameters']['lumi']
     default_num_bins = config['run_parameters']['default_num_bins']
     input_trees_directory = config['run_parameters']['input_trees_directory']
-    cut_strings = config['cuts'].values() #.values() returns a list of everything after the ':' under the 'cuts' header in the config file
+    cut_strings = config['common cuts'].values() #.values() returns a list of everything after the ':' under the 'cuts' header in the config file
     jet_tag_categories = config['jet_tag_categories'].keys() #.keys() returns a list of everything before the ':' under the 'distributions' header in the config file
     mc_weight_strings = config['mc_weights'].values()
     baseline_systematics = config['baseline_systematics'].keys()
@@ -44,6 +44,7 @@ def run(args, config, samples, project_label):
         sample_info = SampleInformation(sample)
 
         for lepton_category in lepton_categories:
+            lepton_category_cut_strings = config['%s cuts' % lepton_category].values()
 
             for jet_tag_category in jet_tag_categories:
                 output_file_name = '%s/%s_%s_%s_%s.root' % (lepton_category, lepton_category, jet_tag_category, sample, project_label)
@@ -64,8 +65,8 @@ def run(args, config, samples, project_label):
 
                     draw_string_maker = DrawStringMaker()
                     draw_string_maker.append_selection_requirements(cut_strings)
+                    draw_string_maker.append_selection_requirements(lepton_category_cut_strings)                    
                     draw_string_maker.append_jet_tag_category_requirements(jet_tag_category)
-                    draw_string_maker.append_lepton_category_requirements(lepton_category)
                     if not args.no_weights:
                         draw_string_maker.multiply_by_factor(systematic_weight_string)
                     if not sample_info.is_data and not args.no_weights:
@@ -75,8 +76,7 @@ def run(args, config, samples, project_label):
                     print 'Beginning next loop iteration. Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (jet_tag_category, lepton_category, systematic)
                     for (distribution, parameters) in zip(distributions, plot_parameters):
                         plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, source_file_label)
-#                        plot = Plot(output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string_maker.draw_string)
-                        plot = Plot(output_file, tree, distribution, plot_name, default_num_bins, parameters, "")                        
+                        plot = Plot(output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string_maker.draw_string)
                         if args.pdf:
                             plot.save_image('pdf')
                         if args.web:

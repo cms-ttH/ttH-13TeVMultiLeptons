@@ -133,30 +133,17 @@ class DrawStringMaker:
             jet_tag_string = 'numJets >= 4 && numMediumBJets == 1'
         elif jet_tag_category == 'ge4jge2t':
             jet_tag_string = 'numJets >= 4 && numMediumBJets >= 2'
-        elif jet_tag_category == 'inclusive':
-            jet_tag_string = ''
         elif jet_tag_category == 'ge4j':
             jet_tag_string = 'numJets>=4'
+        elif jet_tag_category == 'inclusive':
+            pass
         else:
             print 'ERROR [plot_helper.py]: Unrecognized jet tag category. Please update DrawStringMaker::append_jet_tag_category_requirements'
             sys.exit(2)
 
-        self.append_selection_requirement(jet_tag_string)
+        if jet_tag_category != 'inclusive':
+            self.append_selection_requirement(jet_tag_string)
 
-    def append_lepton_category_requirements(self, lepton_category):
-        if lepton_category == 'mu_mu':
-            lepton_category_string = '(isDoubleMuTriggerPass == 1)'
-        elif lepton_category == 'ele_ele':
-            lepton_category_string = '(isDoubleEleTriggerPass == 1)'
-        elif lepton_category == 'mu_ele':
-            lepton_category_string = '(isMuEGTriggerPass == 1)'
-        elif lepton_category == 'inclusive':
-            lepton_category_string = ''
-        else:
-            print 'ERROR [plot_helper.py]: Unrecognized lepton category.  Please update DrawStringMaker::append_lepton_category_requirements'
-            sys.exit(2)
-            
-        self.append_selection_requirement(lepton_category_string)
             
     def multiply_by_factor(self, weight):
         weight = str(weight)
