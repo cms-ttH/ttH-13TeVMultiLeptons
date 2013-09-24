@@ -109,8 +109,9 @@ public:
   void initializeTrigger ();
 
   // setup several  BN pointers
-  BEANFileInterface * initializeInputCollections (fwlite::ChainEvent & ev, bool isLepMVA);
+    //  BEANFileInterface * initializeInputCollections (fwlite::ChainEvent & ev, bool isLepMVA);
 
+  void initializeInputCollections (fwlite::ChainEvent & ev, bool isLepMVA, BEANFileInterface& rawCollections);
   // do some MC calculations
   void initializeGenInfo ();
 

@@ -7,7 +7,7 @@ class MHT: public KinematicVariable<double> {
 public:
     MHT();
     void evaluate();
-    void setCut(int cut);
+    void setCut(double cut);
     bool passCut();
 
     double threshold;

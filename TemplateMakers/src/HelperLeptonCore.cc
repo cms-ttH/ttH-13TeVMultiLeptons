@@ -269,7 +269,7 @@ int HelperLeptonCore::convertSampleNameToNumber (string sampleName ) {
 }
 
   // setup several  BN pointers
-BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainEvent & ev, bool isLepMVA) {
+void HelperLeptonCore::initializeInputCollections (fwlite::ChainEvent& ev, bool isLepMVA, BEANFileInterface & collections) {
   // Each handle for a collection must be de-referenced to get the collection
   // Then you can store a pointer to the collection in a BEANFileInterface
   // then return a pointer to the BEANFileInterface for other folks to use.
@@ -277,17 +277,17 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
   //------   Event 
   h_event.getByLabel(ev,"BNproducer");
   events = *h_event;
-  rawCollections.eventCollection = &events;
+  collections.eventCollection = &events;
 
   //------ MC particles 
   h_mcparticles.getByLabel(ev,"BNproducer","MCstatus3");
   mcparticles = *h_mcparticles;
-  rawCollections.mcParticleCollection = &mcparticles;
+  collections.mcParticleCollection = &mcparticles;
 
   //----- hlt
   h_hlt.getByLabel(ev,"BNproducer","HLT");
   hltInfo = *h_hlt;
-  rawCollections.hltCollection = &hltInfo;
+  collections.hltCollection = &hltInfo;
 
   //------- Muons
   if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
@@ -296,12 +296,11 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
     } else {
       h_muons.getByLabel(ev, "BNproducer", "selectedPatMuonsLoosePFlow");
     }
-    
   }
   else h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsLoosePFlow");
 
   muonsRaw = *h_muons;
-  rawCollections.rawMuonCollection = &muonsRaw;
+  collections.rawMuonCollection = &muonsRaw;
 
   //-----  Electrons
   if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
@@ -312,33 +311,33 @@ BEANFileInterface * HelperLeptonCore::initializeInputCollections (fwlite::ChainE
     }
   }
   else h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
-  electronsRaw = * h_electrons;
-  rawCollections.rawElectronCollection = &electronsRaw;
+  electronsRaw = *h_electrons;
+  collections.rawElectronCollection = &electronsRaw;
 
   //-----  Jets 
   h_pfjets.getByLabel(ev,"BNproducer","selectedPatJetsPFlow");
   pfjets = *h_pfjets; 
-  rawCollections.jetCollection = &pfjets;
+  collections.jetCollection = &pfjets;
 
   //----- MET
   if ( analysisYear == "2011" ) h_pfmets.getByLabel(ev,"BNproducer","patMETsTypeIPFlow");
   else if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) h_pfmets.getByLabel(ev,"BNproducer","patMETsPFlow");
-  pfmets = * h_pfmets;
-  rawCollections.metCollection = &pfmets;
+  pfmets = *h_pfmets;
+  collections.metCollection = &pfmets;
 
   // ----- Primary Vertices
   h_pvs.getByLabel(ev,"BNproducer","offlinePrimaryVertices");
   pvs = *h_pvs;
-  rawCollections.primaryVertexCollection = &pvs;
+  collections.primaryVertexCollection = &pvs;
 
   // careful, not defined in every sample
   if (analysisYear == "2012_53x" && isLepMVA) {
     h_lepMvaJets.getByLabel(ev, "BNproducer", "patJetsAK5PF");
     lepMvaJets = *h_lepMvaJets;
-    rawCollections.jetsForLepMVACollection = & lepMvaJets;
+    collections.jetsForLepMVACollection = &lepMvaJets;
   }
 
-  return & rawCollections;
+  rawCollections = collections;
 }
 
 void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID tightID, electronID::electronID looseID, electronID::electronID preselectedID, BEANFileInterface * selectedCollections) {
@@ -379,7 +378,6 @@ void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, mu
   selectedCollections->tightLooseMuonCollection = &muonsTightLoose;
   selectedCollections->loosePreselectedMuonCollection = &muonsLoosePreselected;
   selectedCollections->tightLoosePreselectedMuonCollection = &muonsTightLoosePreselected;
-
 }
 
 
@@ -401,7 +399,6 @@ void HelperLeptonCore::getTightCorrectedJets (double ptCut,
     tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'M');
     jetsMediumCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
     selectedCollections->jetCollectionMediumCSV = &jetsMediumCSV;    
-
 }
 
 BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets (double ptCut,

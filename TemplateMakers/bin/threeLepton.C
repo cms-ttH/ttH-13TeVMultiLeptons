@@ -1,7 +1,5 @@
-
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
-
 
 ///-------------- Kinematic Variables ------------------
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/EveryVariable.h"
@@ -15,11 +13,7 @@
 #include "Reflex/Member.h"
 #include "Reflex/Kernel.h"
 
-
-
-
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
-
   unsigned numTightMuons = inputCollections->tightMuonCollection->size();
   unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
   unsigned numTightElectrons = inputCollections->tightElectronCollection->size();
@@ -35,25 +29,17 @@ bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
     passLeptonCut = true;
 
   return passLeptonCut;
-
 }
-
-
 
 void loadTTH125Files (vector<string> & target ) {
-
   //----- version 3 skims have better configurations
   target.push_back("file:/hadoop/users/awoodard/BEAN_53xOn53x_V04_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_53xOn53x_V04_CV02/d821efbc3befd142036a29052ef27c00/output_1_2_AHw.root");                   
-
 }
-
-
 
 // use this function to figure out how to
 // setup the job
 // for now, it is just a hack to make testing easy
 JobParameters parseJobOptions (int argc, char** argv) {
-
   JobParameters myConfig;
 
   myConfig.outputFileName = "ntuple_toolTest.root";
@@ -63,13 +49,9 @@ JobParameters parseJobOptions (int argc, char** argv) {
   loadTTH125Files(myConfig.inputFileNames);
   
   return myConfig;
-
 }
 
-
-
 int main (int argc, char** argv) {
-
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
   //gSystem->Load("libNtupleMakerBEANmaker.so");
@@ -85,17 +67,8 @@ int main (int argc, char** argv) {
 
   TTree * summaryTree = new TTree("summaryTree", "Summary Event Values");
 
-
-  //vector<string> fileNames;
-  //                   file:/hadoop/users/awoodard/2012_53x_BEAN_GTV7G_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_GTV7G_V01_CV04/d821efbc3befd142036a29052ef27c00/output_10_2_3LV.root
-  //fileNames.push_back("file:/hadoop/users/awoodard/2012_53x_BEAN_GTV7G_skims/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_skimDilep_BEAN_GTV7G_V01_CV04/d821efbc3befd142036a29052ef27c00/output_10_2_3LV.root");
-
-
-  
   fwlite::ChainEvent ev(myConfig.inputFileNames);
 
-
-  // the lepton helper  
   HelperLeptonCore lepHelper;
 
   // setup the analysis 
@@ -115,14 +88,10 @@ int main (int argc, char** argv) {
   electronID::electronID electronLooseID = electronID::electronSideLooseMVA;
   electronID::electronID electronPreselectedID = electronID::electronSide;
   
-
-  
   // declare your kinematic variables that you want
   // to be written out into the tree
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
-
-  
 
    NumJets myNjets;
    myNjets.setCut(2); // parameter is keep events with jets  >= num
@@ -164,12 +133,6 @@ int main (int argc, char** argv) {
    MassLepLep mll;
    kinVars.push_back(&mll);
 
-   
-   
-
-
-  
-
   GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonPt);
 
@@ -209,6 +172,8 @@ int main (int argc, char** argv) {
   int numEventsPassCuts = 0;
 
   int printEvery = 1000;
+
+  BEANFileInterface selectedCollections;
   
   for (ev.toBegin(); !ev.atEnd(); ++ev){
     numEvents++;
@@ -221,26 +186,17 @@ int main (int argc, char** argv) {
     
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
     
-    BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, true);
-
-    // make a shallow copy
-    // update pointer as you make new collections
-    BEANFileInterface selectedCollections = (*rawCollections);
-
-
+    lepHelper.initializeInputCollections(ev, true, selectedCollections);
 
     /////////////////////////////////////////////////////////////
     //
     //    Apply object ids
     //   
-    //
     //////////////////////////////////////////////////////////////
-
 
     //------------    Jets
     if (debug > 9) cout << "Getting jets "  << endl;
 	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
-
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
@@ -250,19 +206,15 @@ int main (int argc, char** argv) {
     if (debug > 9) cout << "Getting muons "  << endl;
     lepHelper.getTightLoosePreselectedMuons(muonTightID, muonLooseID, muonPreselectedID, &selectedCollections);
 
-
     //----------    MET
     if (debug > 9) cout << "Getting met "  << endl;
     lepHelper.getCorrectedMet(&selectedCollections);
 
 
     //--------- fill up the lepton collections
-
     if (debug >9) cout << "Filling lepton collections" << endl;
     lepHelper.fillLepCollectionWithSelectedLeptons(&selectedCollections);
     
-    
-
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
@@ -271,15 +223,8 @@ int main (int argc, char** argv) {
       
       (*iVar)->reset();
       (*iVar)->assignCollections(&selectedCollections);
-      
     }
 
-
-
-    // There are several ways to define a selection
-    // One way is with a kinematic varaible,
-    // Another way is with a function that is a cut
-        
     bool passAllCuts = true;
 
     if (debug > 9) cout << "Checking cuts "  << endl;
