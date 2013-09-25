@@ -18,7 +18,8 @@ class Plot:
         self.plot_name = plot_name
 
         if plot_type == 'TH1F':
-            self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
+#            self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
+            self.plot = ROOT.TH1F(plot_name, plot_name[:plot_name.find('_')]+title, num_bins, x_min, x_max)            
             tree.Project(self.plot_name, distribution, draw_string)
         else:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
@@ -226,22 +227,22 @@ class SampleInformation:
                              'systematics': 'all'},
 
             'ttbarW': {'is_data': False,
-                       'x_section': 0.000249, #0.000163*1.5,
+                       'x_section': 0.000232, #0.000163*1.5,
                        'x_section_error': 0.2*0.000249,
                        'num_generated':  195396,
                        'systematics': 'all'},                    
 
             'ttbarZ': {'is_data': False,
-                    'x_section': 0.000208,#0.000136*1.5,
-                    'x_section_error': 0.2*0.000208,
-                    'num_generated':  209512,
-                    'systematics': 'all'},                    
+                       'x_section': 0.000208,#0.000136*1.5,
+                       'x_section_error': 0.2*0.000208,
+                       'num_generated':  209512,
+                       'systematics': 'all'},                    
 
             'ttbarWW': {'is_data': False,
-                     'x_section': 0.000002037,#0.000136*1.5,
-                     'x_section_error': 0.2*0.000002037,
-                     'num_generated':  216867,
-                     'systematics': 'all'},                    
+                        'x_section': 0.000002037,#0.000136*1.5,
+                        'x_section_error': 0.2*0.000002037,
+                        'num_generated':  216867,
+                        'systematics': 'all'},                    
 
             'tttt': {'is_data': False,
                      'x_section': 0.0000000001,#0.000000716,
@@ -303,23 +304,23 @@ class SampleInformation:
                       'num_generated':  6912438+1362471,
                       'systematics': 'all'},                    
 
-            'ttH_110': {'is_data': False,
-                        'x_section': 0.0001887,
-                        'x_section_error': 0.0,
-                        'num_generated': 975341,
-                        'systematics': 'all'},                    
+            'ttH110': {'is_data': False,
+                       'x_section': 0.0001887,
+                       'x_section_error': 0.0,
+                       'num_generated': 975341,
+                       'systematics': 'all'},                    
 
-            'ttH_115': {'is_data': False,
-                        'x_section': 0.0001663,
-                        'x_section_error': 0.0,
-                        'num_generated': 995188,
-                        'systematics': 'all'},                    
+            'ttH115': {'is_data': False,
+                       'x_section': 0.0001663,
+                       'x_section_error': 0.0,
+                       'num_generated': 995188,
+                       'systematics': 'all'},                    
 
-            'ttH_120': {'is_data': False,
-                        'x_section': 0.000147,
-                        'x_section_error': 0.0,
-                        'num_generated': 996773,
-                        'systematics': 'all'},
+            'ttH120': {'is_data': False,
+                       'x_section': 0.000147,
+                       'x_section_error': 0.0,
+                       'num_generated': 996773,
+                       'systematics': 'all'},
 
             'ttH125': {'is_data': False,
                        'x_section': 0.0001302,
@@ -327,23 +328,23 @@ class SampleInformation:
                        'num_generated': 992997,
                        'systematics': 'all'},
 
-            'ttH_130': {'is_data': False,
-                        'x_section': 0.0001157,
-                        'x_section_error': 0.0,
-                        'num_generated': 931369,
-                        'systematics': 'all'},                    
+            'ttH130': {'is_data': False,
+                       'x_section': 0.0001157,
+                       'x_section_error': 0.0,
+                       'num_generated': 931369,
+                       'systematics': 'all'},                    
 
-            'ttH_135': {'is_data': False,
-                        'x_section': 0.0001031,
-                        'x_section_error': 0.0,
-                        'num_generated': 993975,
-                        'systematics': 'all'},                    
+            'ttH135': {'is_data': False,
+                       'x_section': 0.0001031,
+                       'x_section_error': 0.0,
+                       'num_generated': 993975,
+                       'systematics': 'all'},                    
 
-            'ttH_140': {'is_data': False,
-                        'x_section': 0.00009207,
-                        'x_section_error': 0.0,
-                        'num_generated': 997191,
-                        'systematics': 'all'},                    
+            'ttH140': {'is_data': False,
+                       'x_section': 0.00009207,
+                       'x_section_error': 0.0,
+                       'num_generated': 997191,
+                       'systematics': 'all'},                    
 
             'MuEG': {'is_data': True,
                               'x_section': 1,
