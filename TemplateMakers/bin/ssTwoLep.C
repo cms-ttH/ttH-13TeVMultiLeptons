@@ -210,6 +210,14 @@ int main (int argc, char** argv) {
   HiggsDecayType myHiggsDecayType(&lepHelper);
   kinVars.push_back(&myHiggsDecayType);
 
+  TwoObjectMass<BNmuonCollection,BNjetCollection> myMassMuonJet(&(selectedCollections.tightMuonCollection), "tight_muons_by_pt", 2,
+                                                                &(selectedCollections.jetCollection), "jets_by_pt", 4);
+  kinVars.push_back(&myMassMuonJet);
+
+  TwoObjectMassLepton<BNjetCollection> myMassLepJet(&(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 2,
+                                                    &(selectedCollections.jetCollection), "jets_by_pt", 4);
+  kinVars.push_back(&myMassLepJet);
+
   LepTrackCharges myLepTrackCharges(2);
   kinVars.push_back(&myLepTrackCharges);
   myLepTrackCharges.setCut("SS");
