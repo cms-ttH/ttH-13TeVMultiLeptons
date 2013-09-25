@@ -39,14 +39,14 @@ def main():
     ## you won't need to prefix your root objects with ROOT
     ## Done with imports
     for lepton_category in lepton_categories:
+        print '\n\nStarting lepton category %s...\n' % lepton_category
         for jet_tag_category in jet_tag_categories:
+            print 'Starting jet tag category %s...' % jet_tag_category
             for distribution in distributions:
-                print ""
-                print lepton_category+"  "+jet_tag_category+"  "+distribution
+                print 'Drawing distribution: %s with jet selection printing name: %s' %  (distribution, jet_tag_categories[jet_tag_category])
                 drawStackPlot (lepton_category, jet_tag_category, distribution)
 
 def drawStackPlot (lepton_category, jet_tag_category, distribution):
-    print "drawing distribution %s with jet selection printing name: %s" % (distribution, jet_tag_categories[jet_tag_category])
     myStack = THStack("theStack", "")
 
     legForStack = makeLegend()
@@ -63,7 +63,7 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
     histoStorageList = {}
     MCSum = 0.0
     signalSum = 0.0
-    dataSum = 0
+    dataSum = 0.0
         
     ## Draw the background sample histograms, put in legend
     for sample in background_samples:
@@ -73,11 +73,12 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
 
             if (systematic == "nominal"):
                 iHist = origHist.Clone("stack")
+                print 'sample: ', sample, ' integral: ', iHist.Integral()
                 MCSum += iHist.Integral()
                 sample_info = plot_helper.SampleInformation(sample)
                 xsec_frac_error = sample_info.x_section / sample_info.x_section_error
                 myStack.Add(iHist, "hist")
-                legForStack.AddEntry(iHist, background_samples[sample][0]+" ("+str(round(MCSum,1))+")", "f")
+                legForStack.AddEntry(iHist, background_samples[sample][0]+" ("+str(round(iHist.Integral(),1))+")", "f")
 
     ## Draw the signal sample histogram(s), put in legend
     for sample in signal_samples:
@@ -93,10 +94,10 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
                 
         signalSum = iSig.Integral()
 
-        if ( signalSum > 0 and signal_samples[sample][6] == "norm" ):
+        if ( signalSum > 0 and signal_samples[sample][5] == "norm" ):
             iSig.Scale(MCSum/signalSum)
         elif ( signalSum > 0 ):
-            iSig.Scale(signal_samples[distribution][6])
+            iSig.Scale(signal_samples[sample][5])
 
         if ( signal_samples[sample][4] == "stack" ):
             myStack.Add(iSig, "hist")
@@ -251,9 +252,6 @@ def getHist( distribution, systematic, sample, lepton_category, jet_tag_category
     else:
         namePlusCycle = "%s_%s;1" % (sample+"_"+lepton_category+"_"+jet_tag_category+"_"+distribution, systematic)
 
-    print in_out_files['input_file_location']+lepton_category+"/"+lepton_category+"_"+jet_tag_category+"_"+sample+"_"+in_out_files['input_file_label']+".root"
-    print namePlusCycle
-                
     rootFile = TFile(in_out_files['input_file_location']+lepton_category+"/"+lepton_category+"_"+jet_tag_category+"_"+sample+"_"+in_out_files['input_file_label']+".root")
     
     targetHist = rootFile.Get(namePlusCycle).Clone()
@@ -318,7 +316,7 @@ def makeInfoStrings( lepton_category, jet_tag_category ):
     selectionInfoLatex.SetTextFont(cosmetics['selection_text_font'])
     selectionInfoLatex.SetTextSize(cosmetics['selection_text_size'])
 
-    SFInfo = str(signal_samples[signal_sample_keys[0]][1])+" x "+str(signal_samples[signal_sample_keys[0]][6])
+    SFInfo = str(signal_samples[signal_sample_keys[0]][1])+" x "+str(signal_samples[signal_sample_keys[0]][5])
     SFInfoLatex = TLatex()
     SFInfoLatex.SetNDC()
     SFInfoLatex.SetTextFont(cosmetics['SF_text_font'])
