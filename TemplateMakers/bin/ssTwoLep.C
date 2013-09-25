@@ -29,7 +29,7 @@ bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
   bool passTwoLepton = false;
 
   //  if (numTightMuons ==2 || numTightElectrons==2 || (numTightMuons==1 && numTightElectrons==1))
-  if (numAllLeptons >=2)
+  if (numAllLeptons >= 2)
       passTwoLepton = true;
 
   return passTwoLepton;
@@ -55,13 +55,13 @@ void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLe
     return;
   }
 
-  if (numTightElectrons ==2 ) {
+  if (numTightElectrons == 2 ) {
     TwoElectron = 1;
     return;
   }
 
   if ( numTightElectrons ==1 && numTightMuons==1 ) {
-    MuonElectron =1;
+    MuonElectron = 1;
     return;
     
   }
@@ -70,7 +70,6 @@ void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLe
 void safetyCheckJobOptions (int argc, char** argv) {
   std::cout << "--->Num argments provided at command line...  " << argc << std::endl;
   if (argc < 2) {
-
     std::cout << "Usage: " << std::endl
               << argv[0] << " jobParams.py " << " sampleName " 
               << std::endl;
@@ -78,16 +77,12 @@ void safetyCheckJobOptions (int argc, char** argv) {
     std::cout << "You provided " << argc
               << " arguments, which is less than 2, quitting"
               << endl;
-    
     exit (3);
   }
       
   return;
 }
 
-// use this function to figure out how to
-// setup the job
-// for now, it is just a hack to make testing easy
 JobParameters parseJobOptions (int argc, char** argv) {
   JobParameters myConfig;
   safetyCheckJobOptions (argc, argv);
@@ -147,84 +142,80 @@ int main (int argc, char** argv) {
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
 
-   // This is a hack, so that we can specify which collection to use before it is initialized inside the
-   // event loop. After initialization, ptrToSelectedCollections is set to point at selectedCollections.
-   BEANFileInterface * ptrToSelectedCollections = new BEANFileInterface;
+  BEANFileInterface selectedCollections;
+
+  GenericCollectionSizeVariable<BNjetCollection> numJets(&(selectedCollections.jetCollection), "numJets");
+  kinVars.push_back(&numJets);
+  numJets.setCut(2);
+  cutVars.push_back(&numJets); 
+
+  GenericCollectionSizeVariable<BNjetCollection> numLooseBJets(&(selectedCollections.jetCollectionLooseCSV), "numLooseBJets");
+  kinVars.push_back(&numLooseBJets);
+
+  GenericCollectionSizeVariable<BNjetCollection> numMediumBJets(&(selectedCollections.jetCollectionMediumCSV), "numMediumBJets");
+  kinVars.push_back(&numMediumBJets);   
    
-   GenericCollectionSizeVariable<BNjetCollection> numJets(&(ptrToSelectedCollections->jetCollection), "numJets");
-   kinVars.push_back(&numJets);
-   numJets.setCut(2);
-   cutVars.push_back(&numJets); 
+  GenericCollectionSizeVariable<BNleptonCollection> numAllLeptons(&(selectedCollections.tightLoosePreselectedLeptonCollection), "numAllLeptons");
+  kinVars.push_back(&numAllLeptons);
 
-   GenericCollectionSizeVariable<BNjetCollection> numLooseBJets(&(ptrToSelectedCollections->jetCollectionLooseCSV), "numLooseBJets");
-   kinVars.push_back(&numLooseBJets);
+  GenericCollectionSizeVariable<BNmuonCollection> numTightMuons(&(selectedCollections.tightMuonCollection), "numTightMuons");
+  kinVars.push_back(&numTightMuons);
 
-   GenericCollectionSizeVariable<BNjetCollection> numMediumBJets(&(ptrToSelectedCollections->jetCollectionMediumCSV), "numMediumBJets");
-   kinVars.push_back(&numMediumBJets);   
-   
-   GenericCollectionSizeVariable<BNleptonCollection> numAllLeptons(&(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection), "numAllLeptons");
-   kinVars.push_back(&numAllLeptons);
+  GenericCollectionSizeVariable<BNelectronCollection> numTightElectrons(&(selectedCollections.tightElectronCollection), "numTightElectrons");
+  kinVars.push_back(&numTightElectrons);
 
-   GenericCollectionSizeVariable<BNmuonCollection> numTightMuons(&(ptrToSelectedCollections->tightMuonCollection), "numTightMuons");
-   kinVars.push_back(&numTightMuons);
+  // CSV weights don't exist for jets with a pt < 30
+  //   CSVWeights myCSV(&lepHelper);
+  //   kinVars.push_back(&myCSV);
 
-   GenericCollectionSizeVariable<BNelectronCollection> numTightElectrons(&(ptrToSelectedCollections->tightElectronCollection), "numTightElectrons");
-   kinVars.push_back(&numTightElectrons);
+  PUWeights myPU(&lepHelper);
+  kinVars.push_back(&myPU);
 
-   // CSV weights don't exist for jets
-   // with a pt < 30
-   // 
-   //   CSVWeights myCSV(&lepHelper);
-   //   kinVars.push_back(&myCSV);
+  TopPtWeights myTopPt(&lepHelper);
+  kinVars.push_back(&myTopPt);
 
-   PUWeights myPU(&lepHelper);
-   kinVars.push_back(&myPU);
+  XsecWeight myXsec (&lepHelper);
+  kinVars.push_back(&myXsec);
 
-   TopPtWeights myTopPt(&lepHelper);
-   kinVars.push_back(&myTopPt);
+  LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
+  kinVars.push_back(&myLepSF);
 
-   XsecWeight myXsec (&lepHelper);
-   kinVars.push_back(&myXsec);
+  LeptonTriggerScaleFactors myLepTrig( &lepHelper);
+  kinVars.push_back(&myLepTrig);
 
-   LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
-   kinVars.push_back(&myLepSF);
+  CleanEventVars myClean (&lepHelper);
+  kinVars.push_back(&myClean);
 
-   LeptonTriggerScaleFactors myLepTrig( &lepHelper);
-   kinVars.push_back(&myLepTrig);
+  CheckTwoLepTrigger checkTrig (&lepHelper);
+  kinVars.push_back(&checkTrig);
 
-   CleanEventVars myClean (&lepHelper);
-   kinVars.push_back(&myClean);
+  MassLepLep mll;
+  kinVars.push_back(&mll);
 
-   CheckTwoLepTrigger checkTrig (&lepHelper);
-   kinVars.push_back(&checkTrig);
+  // 6 integers: tight, loose, preselected,
+  // tightLoose, loosePreselected, and
+  // tightLoosePreselected - AWB
+  LepMVAs myLepMVAs(&lepHelper, 2, 2, 2, 0, 0, 3);
+  kinVars.push_back(&myLepMVAs);
 
-   MassLepLep mll;
-   kinVars.push_back(&mll);
+  MHT myMHT;
+  kinVars.push_back(&myMHT);
 
-   // 6 integers: tight, loose, preselected,
-   // tightLoose, loosePreselected, and
-   // tightLoosePreselected - AWB
-   LepMVAs myLepMVAs(&lepHelper, 2, 2, 2, 0, 0, 3);
-   kinVars.push_back(&myLepMVAs);
+  SumLep1Lep2MetPt suml1l2metPts;
+  kinVars.push_back(&suml1l2metPts);
 
-   MHT myMHT;
-   kinVars.push_back(&myMHT);
+  DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
+  kinVars.push_back(&myDBCorrectedRelIsoDR04s);
 
-   SumLep1Lep2MetPt suml1l2metPts;
-   kinVars.push_back(&suml1l2metPts);
+  HiggsDecayType myHiggsDecayType(&lepHelper);
+  kinVars.push_back(&myHiggsDecayType);
 
-   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
-   kinVars.push_back(&myDBCorrectedRelIsoDR04s);
+  LepTrackCharges myLepTrackCharges(2);
+  kinVars.push_back(&myLepTrackCharges);
+  myLepTrackCharges.setCut("SS");
+  cutVars.push_back(&myLepTrackCharges);
 
-   HiggsDecayType myHiggsDecayType(&lepHelper);
-   kinVars.push_back(&myHiggsDecayType);
-
-//    LepTrackCharges myLepTrackCharges(2);
-//    kinVars.push_back(&myLepTrackCharges);
-//    myLepTrackCharges.setCut("SS");
-//    cutVars.push_back(&myLepTrackCharges);
-
-  CERNTightCharges myCERNTightCharges(&(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection), "CERN_tight_charge", "all_leptons_by_pt", 2);
+  CERNTightCharges myCERNTightCharges(&(selectedCollections.tightLoosePreselectedLeptonCollection), "CERN_tight_charge", "all_leptons_by_pt", 2);
   kinVars.push_back(&myCERNTightCharges);
   myCERNTightCharges.setCut("pass");
 
@@ -237,97 +228,97 @@ int main (int argc, char** argv) {
   summaryTree->Branch("MuonElectron", &MuonElectron);
 
   ////////// all leptons //////////
-  GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection), "pt", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection), "pt", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonPt);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonTkPT(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection), "tkPT", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonTkPT(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection), "tkPT", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonTkPT);
   
-  GenericCollectionMember<double, BNleptonCollection> allLeptonEta(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection), "eta", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonEta(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection), "eta", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonEta);
 
-  GenericCollectionMember<int, BNleptonCollection> allLeptonIsMuon(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection), "isMuon", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNleptonCollection> allLeptonIsMuon(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection), "isMuon", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonIsMuon);
 
-  GenericCollectionMember<int, BNleptonCollection> allLeptonIsElectron(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection), "isElectron", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNleptonCollection> allLeptonIsElectron(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection), "isElectron", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonIsElectron);
 
-  GenericCollectionMember<int, BNleptonCollection> allLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection), "tkCharge", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNleptonCollection> allLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection), "tkCharge", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonTkCharge);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonD0(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection),  "correctedD0Vertex", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonD0(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),  "correctedD0Vertex", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonD0);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonDZ(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection),  "correctedDZ", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonDZ(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),  "correctedDZ", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonDZ);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonImpactParameter(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection),  "IP", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonImpactParameter(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),  "IP", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonImpactParameter);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonImpactParameterError(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection),  "IPError", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonImpactParameterError(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),  "IPError", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonImpactParameterError);
 
-  GenericCollectionMember<double, BNleptonCollection> allLeptonPhi(Reflex::Type::ByName("BNlepton"), &(ptrToSelectedCollections->tightLoosePreselectedLeptonCollection),  "phi", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  GenericCollectionMember<double, BNleptonCollection> allLeptonPhi(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),  "phi", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonPhi);    
   
   ////////// all muons //////////
-//   GenericCollectionMember<double, BNmuonCollection> allMuonSamPT(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "samPT", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+//   GenericCollectionMember<double, BNmuonCollection> allMuonSamPT(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection), "samPT", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
 //   kinVars.push_back(&allMuonSamPT);
 
-//   GenericCollectionMember<double, BNmuonCollection> allMuonComPT(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "comPT", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+//   GenericCollectionMember<double, BNmuonCollection> allMuonComPT(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection), "comPT", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
 //   kinVars.push_back(&allMuonComPT);  
 
-  GenericCollectionMember<int, BNmuonCollection> allMuonPFmuon(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "isPFMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNmuonCollection> allMuonPFmuon(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection), "isPFMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allMuonPFmuon);
   
-  GenericCollectionMember<int, BNmuonCollection> allMuonGlobalMuon(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection),  "isGlobalMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNmuonCollection> allMuonGlobalMuon(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection),  "isGlobalMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allMuonGlobalMuon);
 
-  GenericCollectionMember<int, BNmuonCollection> allMuonTrackerMuon(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection),  "isTrackerMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  GenericCollectionMember<int, BNmuonCollection> allMuonTrackerMuon(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection),  "isTrackerMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allMuonTrackerMuon);
 
-  GenericCollectionMember<double, BNmuonCollection> tightMuonPt(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "pt", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericCollectionMember<double, BNmuonCollection> tightMuonPt(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection), "pt", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&tightMuonPt);
 
-  GenericCollectionMember<double, BNmuonCollection> tightMuonEta(Reflex::Type::ByName("BNmuon"), &(ptrToSelectedCollections->tightLoosePreselectedMuonCollection), "eta", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericCollectionMember<double, BNmuonCollection> tightMuonEta(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection), "eta", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&tightMuonEta);
 
   ////////// all electrons //////////
-  GenericCollectionMember<int, BNelectronCollection> allElectronNumberOfExpectedInnerHits(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightLoosePreselectedElectronCollection), "numberOfExpectedInnerHits", "all_electrons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
+  GenericCollectionMember<int, BNelectronCollection> allElectronNumberOfExpectedInnerHits(Reflex::Type::ByName("BNelectron"), &(selectedCollections.tightLoosePreselectedElectronCollection), "numberOfExpectedInnerHits", "all_electrons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
   kinVars.push_back(&allElectronNumberOfExpectedInnerHits);
 
-  GenericCollectionMember<int, BNelectronCollection> allElectronPassConvVeto(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightLoosePreselectedElectronCollection), "passConvVeto", "all_electrons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
+  GenericCollectionMember<int, BNelectronCollection> allElectronPassConvVeto(Reflex::Type::ByName("BNelectron"), &(selectedCollections.tightLoosePreselectedElectronCollection), "passConvVeto", "all_electrons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
   kinVars.push_back(&allElectronPassConvVeto);  
 
   ////////// tight electrons //////////
-  GenericCollectionMember<double, BNelectronCollection> tightElectronEta(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightElectronCollection), "eta", "tight_electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericCollectionMember<double, BNelectronCollection> tightElectronEta(Reflex::Type::ByName("BNelectron"), &(selectedCollections.tightElectronCollection), "eta", "tight_electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&tightElectronEta);  
 
-  GenericCollectionMember<double, BNelectronCollection> tightElectronPt(Reflex::Type::ByName("BNelectron"), &(ptrToSelectedCollections->tightElectronCollection), "pt", "tight_electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  GenericCollectionMember<double, BNelectronCollection> tightElectronPt(Reflex::Type::ByName("BNelectron"), &(selectedCollections.tightElectronCollection), "pt", "tight_electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&tightElectronPt);  
 
   ////////// all jets //////////
-  GenericCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "pt", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  GenericCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"), &(selectedCollections.jetCollection), "pt", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetPt);
 
-  GenericCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "eta", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  GenericCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"), &(selectedCollections.jetCollection), "eta", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetEta);
 
-  GenericCollectionMember<double, BNjetCollection> allJetPhi(Reflex::Type::ByName("BNjet"), &(ptrToSelectedCollections->jetCollection), "phi", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  GenericCollectionMember<double, BNjetCollection> allJetPhi(Reflex::Type::ByName("BNjet"), &(selectedCollections.jetCollection), "phi", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetPhi);  
 
-  GenericCollectionMember<double, BNjetCollection> allJetCSV(Reflex::Type::ByName("BNjet"),  &(ptrToSelectedCollections->jetCollection), "btagCombinedSecVertex", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
+  GenericCollectionMember<double, BNjetCollection> allJetCSV(Reflex::Type::ByName("BNjet"),  &(selectedCollections.jetCollection), "btagCombinedSecVertex", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
   kinVars.push_back(&allJetCSV);
 
   ////////// met ////////// 
-  GenericCollectionMember<double, BNmetCollection> metPt(Reflex::Type::ByName("BNmet"),  &(ptrToSelectedCollections->metCollection), "pt", "met",  KinematicVariableConstants::FLOAT_INIT, 1);
+  GenericCollectionMember<double, BNmetCollection> metPt(Reflex::Type::ByName("BNmet"),  &(selectedCollections.metCollection), "pt", "met",  KinematicVariableConstants::FLOAT_INIT, 1);
   kinVars.push_back(&metPt);
 
   ////////// event info ////////// 
-  GenericCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"), &(ptrToSelectedCollections->eventCollection), "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
+  GenericCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"), &(selectedCollections.eventCollection), "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
   kinVars.push_back(&runNumber);
 
-  GenericCollectionMember<unsigned, BNeventCollection> lumiBlock(Reflex::Type::ByName("BNevent"), &(ptrToSelectedCollections->eventCollection), "lumi", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
+  GenericCollectionMember<unsigned, BNeventCollection> lumiBlock(Reflex::Type::ByName("BNevent"), &(selectedCollections.eventCollection), "lumi", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
   kinVars.push_back(&lumiBlock);
 
   // this is a long inside BNevent
@@ -335,7 +326,6 @@ int main (int argc, char** argv) {
   // needs to be Long64_t 
   GenericEventCollectionMember<Long64_t, BNeventCollection> eventNumber(Reflex::Type::ByName("BNevent"),  "evt", "eventInfo",  KinematicVariableConstants::INT_INIT, 1);
   kinVars.push_back(&eventNumber);
-  // hook up the variables
 
   MetLD myMetLD(&myMHT, &metPt);
   kinVars.push_back(&myMetLD);
@@ -352,7 +342,7 @@ int main (int argc, char** argv) {
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
   int printEvery = 1000;
-  
+
   for (ev.toBegin(); !ev.atEnd(); ++ev){
     numEvents++;
 
@@ -363,17 +353,12 @@ int main (int argc, char** argv) {
 
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
     
-    BEANFileInterface * rawCollections = lepHelper.initializeInputCollections(ev, true);
-
-    // make a shallow copy
-    // update pointer as you make new collections
-    BEANFileInterface selectedCollections = (*rawCollections);
+    lepHelper.initializeInputCollections(ev, true, selectedCollections);
 
     /////////////////////////////////////////////////////////////
     //
     //    Apply object ids
     //   
-    //
     //////////////////////////////////////////////////////////////
 
     //------------  Electrons
@@ -398,8 +383,6 @@ int main (int argc, char** argv) {
     if (debug > 9) cout << "Getting jets "  << endl;
 	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
 
-    *ptrToSelectedCollections = selectedCollections;
-
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
@@ -411,14 +394,6 @@ int main (int argc, char** argv) {
       
     }
 
-    TwoMuon = 0;
-    TwoElectron = 0;
-    MuonElectron = 0;
-
-    // There are several ways to define a selection
-    // One way is with a kinematic varaible,
-    // Another way is with a function that is a cut
-        
     bool passAllCuts = true;
 
     if (debug > 9) cout << "Checking cuts "  << endl;

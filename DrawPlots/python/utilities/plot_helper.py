@@ -2,6 +2,14 @@
 import os, sys
 import ROOT
 
+def get_data_sample_name(lepton_category):
+    if lepton_category == 'mu_ele':
+        return 'MuEG'
+    elif lepton_category == 'mu_mu':
+        return 'DoubleMu'
+    elif lepton_category == 'ele_ele':
+        return 'DoubleElectron'
+
 class Plot:
     def __init__(self, output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string):
         (plot_type, title, num_bins, x_min, x_max) = parameters
@@ -156,80 +164,80 @@ class DrawStringMaker:
 class SampleInformation:
     def __init__(self, sample):
         dictionary = {
-            'WW': {'is_data' : False,
+            'ww': {'is_data' : False,
                    'x_section': 0.0548, #0.0571,
                    'x_section_error': 0.0015,
                    'num_generated': 9955089,
-                   'systematics': 'all+TopPtDown'},
+                   'systematics': 'all'},
 
-            'WZ': {'is_data' : False,
+            'wz': {'is_data' : False,
                    'x_section': 0.0323,
                    'x_section_error': 0.0007,
                    'num_generated':  9931257,
                    'systematics': 'all'},
 
-            'ZZ': {'is_data': False,
+            'zz': {'is_data': False,
                    'x_section': 0.0077,#0.00826,
                    'x_section_error': 0.00015,
                    'num_generated':  9755621,
                    'systematics': 'all'},
 
-            'WWW': {'is_data': False,
+            'www': {'is_data': False,
                     'x_section': 0.00008217,#0.0571,
                     'x_section_error': 0.00008217*0.0015/0.0548,
                     'num_generated': 220040,
                     'systematics': 'all'},
             
-            'WWZ': {'is_data': False,
+            'wwz': {'is_data': False,
                     'x_section': 0.0000633,#0.0571,
                     'x_section_error': 0.0000633*0.0015/0.0548,
                     'num_generated': 221576,
                     'systematics': 'all'},
 
-            'WZZ': {'is_data': False, 
+            'wzz': {'is_data': False, 
                     # 		 'x_section': 0.00001922,#0.0571,
                     'x_section': 0.0000001,
                     'x_section_error': 0.00001922*0.0015/0.0548,
                     'num_generated': 219835,
                     'systematics': 'all'},                    
 
-            'ZZZ': {'is_data': False,
+            'zzz': {'is_data': False,
                     'x_section': 0.000004587,#0.0571,
                     'x_section_error': 0.000004587*0.0015/0.0548,
                     'num_generated': 224519,
                     'systematics': 'all'},                                        
 
-            'WJets': {'is_data': False,
+            'wjets': {'is_data': False,
                       'x_section': 36.257,
                       'x_section_error': 1.558,
                       'num_generated':  57536319,
                       'systematics': 'all'},                                                              
 
-            'ZJets': {'is_data': False,
+            'zjets': {'is_data': False,
                       'x_section': 3.5057,
                       'x_section_error': 0.132,
                       'num_generated':	30072710,
                       'systematics': 'all'},
             
-            'ZJets_M10-50': {'is_data': False,
+            'zjets_lowmass': {'is_data': False,
                              'x_section': 14.7, #0.860,
                              'x_section_error': 0.132*0.86/3.5057,
                              'num_generated': 37828841,
                              'systematics': 'all'},
 
-            'ttW': {'is_data': False,
-                    'x_section': 0.000249, #0.000163*1.5,
-                    'x_section_error': 0.2*0.000249,
-                    'num_generated':  195396,
-                    'systematics': 'all'},                    
+            'ttbarW': {'is_data': False,
+                       'x_section': 0.000249, #0.000163*1.5,
+                       'x_section_error': 0.2*0.000249,
+                       'num_generated':  195396,
+                       'systematics': 'all'},                    
 
-            'ttZ': {'is_data': False,
+            'ttbarZ': {'is_data': False,
                     'x_section': 0.000208,#0.000136*1.5,
                     'x_section_error': 0.2*0.000208,
                     'num_generated':  209512,
                     'systematics': 'all'},                    
 
-            'ttWW': {'is_data': False,
+            'ttbarWW': {'is_data': False,
                      'x_section': 0.000002037,#0.000136*1.5,
                      'x_section_error': 0.2*0.000002037,
                      'num_generated':  216867,
@@ -289,11 +297,11 @@ class SampleInformation:
                      'num_generated':  6912438+1362471,
                      'systematics': 'all'},                    
 
-            'tt': {'is_data': False,
-                   'x_section': 0.2458, #0.225197,
-                   'x_section_error': 0.024,
-                   'num_generated':  6912438+1362471,
-                   'systematics': 'all'},                    
+            'ttbar': {'is_data': False,
+                      'x_section': 0.2458, #0.225197,
+                      'x_section_error': 0.024,
+                      'num_generated':  6912438+1362471,
+                      'systematics': 'all'},                    
 
             'ttH_110': {'is_data': False,
                         'x_section': 0.0001887,
