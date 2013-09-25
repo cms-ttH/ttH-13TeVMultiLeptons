@@ -74,9 +74,10 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
             if (systematic == "nominal"):
                 iHist = origHist.Clone("stack")
                 MCSum += iHist.Integral()
-                xsec_frac_error = background_samples[sample][1]/background_samples[sample][0]
+                sample_info = plot_helper.SampleInformation(sample)
+                xsec_frac_error = sample_info.x_section / sample_info.x_section_error
                 myStack.Add(iHist, "hist")
-                legForStack.AddEntry(iHist, background_samples[sample][2]+" ("+str(round(MCSum,1))+")", "f")
+                legForStack.AddEntry(iHist, background_samples[sample][0]+" ("+str(round(MCSum,1))+")", "f")
 
     ## Draw the signal sample histogram(s), put in legend
     for sample in signal_samples:
@@ -273,8 +274,8 @@ def getHist( distribution, systematic, sample, lepton_category, jet_tag_category
         targetHist.SetMarkerSize(cosmetics['data_marker_size'])
 
     elif ( sample in background_samples ):
-        targetHist.SetLineColor(getattr(ROOT,background_samples[sample][3]))
-        targetHist.SetFillColor(getattr(ROOT,background_samples[sample][3]))
+        targetHist.SetLineColor(getattr(ROOT,background_samples[sample][1]))
+        targetHist.SetFillColor(getattr(ROOT,background_samples[sample][1]))
         targetHist.SetFillStyle(cosmetics['background_fill_style'])
                 
     elif ( sample in signal_samples ):
