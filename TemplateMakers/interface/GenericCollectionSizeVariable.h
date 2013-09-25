@@ -1,4 +1,3 @@
-
 #ifndef _GenericCollectionSizeVariable_h
 #define _GenericCollectionSizeVariable_h
 
@@ -9,13 +8,13 @@ template <class collectionType>
 class GenericCollectionSizeVariable: public KinematicVariable<int> {
 
 public:
-    collectionType **selCollection;
+    collectionType ** selectedCollection;
     int threshold;
     string branch_name;
     bool evaluatedThisEvent;
     unsigned int resetVal;
 
-  GenericCollectionSizeVariable(collectionType **input_selCollection, string input_branch_name);
+    GenericCollectionSizeVariable(collectionType ** selColl, string input_branch_name);
     void reset();
     void evaluate();
     bool passCut();
@@ -23,15 +22,14 @@ public:
 };
 
 template<class collectionType>
-GenericCollectionSizeVariable<collectionType>::GenericCollectionSizeVariable(collectionType **input_selCollection, string input_branch_name):
-  selCollection(input_selCollection),
-  branch_name(input_branch_name)
-{
-  
-  branches[branch_name] = BranchInfo<int>(branch_name);
-  resetVal = KinematicVariableConstants::INT_INIT;
+GenericCollectionSizeVariable<collectionType>::GenericCollectionSizeVariable(collectionType ** selColl, string input_branch_name):
+    selectedCollection(selColl),
+    branch_name(input_branch_name) {
 
-  reset();
+    branches[branch_name] = BranchInfo<int>(branch_name);
+    resetVal = KinematicVariableConstants::INT_INIT;
+
+    reset();
 }
 
 template<class collectionType>
@@ -45,7 +43,7 @@ void GenericCollectionSizeVariable<collectionType>::evaluate() {
   if (evaluatedThisEvent) return;
   evaluatedThisEvent = true;
   
-  branches[branch_name].branchVal = (*selCollection)->size();
+  branches[branch_name].branchVal = (*selectedCollection)->size();
     
 }
 

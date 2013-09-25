@@ -1,4 +1,3 @@
-
 #ifndef _GenericCollectionMemberBase_h
 #define _GenericCollectionMemberBase_h
 
@@ -9,14 +8,10 @@
 #include "Reflex/Member.h"
 #include "Reflex/Kernel.h"
 
-
 template <class branchDataType, class collectionType> 
 class GenericCollectionMemberBase: public KinematicVariable<branchDataType> {
 
-
 public:
-
-
   // for this class, it makes sense to have the variables
   // in an order and to overide the usual usage
   // the collection is a vector, and you want your data
@@ -27,22 +22,14 @@ public:
 
   Reflex::Object inputObject;
   void * rInstance;
-
   Reflex::Type myClass;
   
-  
   bool evaluatedThisEvent;
-
   string memberName;
   string storePrefix;
-
-  //string collectionName;
-
   branchDataType threshold;
-  //branchDataType resetVal;
 
   int maxObjInColl;
-
 
   // at this time, no sensible default exists
   // GenericCollectionMemberBase();

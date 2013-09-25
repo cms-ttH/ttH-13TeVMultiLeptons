@@ -36,8 +36,7 @@ class GenericCollectionMember<branchDataType, BNleptonCollection>: public Generi
 public:
     BNleptonCollection ** selectedCollection;
     GenericCollectionMember(Reflex::Type rType, BNleptonCollection **selectedCollection, string mem, string storePrefix,  branchDataType defval, int max=1);
-    virtual void evaluate () ;
-
+    virtual void evaluate ();
 
 };
 
