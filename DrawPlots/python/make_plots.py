@@ -1,22 +1,22 @@
 #!/usr/bin/env python
 import os
 from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
-from ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper import *
+import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
 from argparse import ArgumentParser
 import ROOT
 
+parser = ArgumentParser(description='Make plots from summary trees.')
+parser.add_argument('config_file_name', help='Configuration file to process.')
+parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
+parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
+parser.add_argument('-w', '--web', action='store_true', help='Post each plot to the user\'s AFS space.')
+parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
+parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
+parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
+
+args = parser.parse_args()
+
 def main():
-    parser = ArgumentParser(description='Make plots from summary trees.')
-    parser.add_argument('config_file_name', help='Configuration file to process.')
-    parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
-    parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
-    parser.add_argument('-w', '--web', action='store_true', help='Post each plot to the user\'s AFS space.')
-    parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
-    parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
-    parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
-
-    args = parser.parse_args()
-
     config = ConfigParser()
     config.read(args.config_file_name)
     project_label = config['run_parameters']['label']    
@@ -29,7 +29,7 @@ def main():
         samples = args.sample
     else:
         samples = config['samples'].keys()
-
+    
     if not args.batch:
         run(args, config, samples)    
     else:
@@ -48,7 +48,7 @@ def main():
             condor_submit_file.close()
 
             os.popen('condor_submit make_plots_batch.submit')
-            print 'Submitting batch jobs for sample: %s... ' % sample
+            print '\nSubmitting batch jobs for sample: %s... ' % sample
 
 def run(args, config, samples):
     project_label = config['run_parameters']['label']
@@ -64,10 +64,10 @@ def run(args, config, samples):
     plot_parameters = config['distributions'].values()
 
     for sample in samples:
-        sample_info = SampleInformation(sample)
+        sample_info = plot_helper.SampleInformation(sample)
 
         for lepton_category in lepton_categories:
-            if sample_info.is_data and not does_data_sample_match_lepton_category(lepton_category, sample):
+            if sample_info.is_data and not plot_helper.get_data_sample_name(lepton_category) == sample:
                     continue
             lepton_category_cut_strings = config['%s cuts' % lepton_category].values()
 
@@ -75,7 +75,7 @@ def run(args, config, samples):
                 output_file_name = '%s/%s_%s_%s_%s.root' % (lepton_category, lepton_category, jet_tag_category, sample, project_label)
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
-                systematics_info = SystematicsInformation(baseline_systematics)
+                systematics_info = plot_helper.SystematicsInformation(baseline_systematics)
                 systematics_info.edit_systematics_list(sample_info.systematics)
                 for systematic in systematics_info.systematics_list:
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
@@ -90,19 +90,20 @@ def run(args, config, samples):
                     source_file = ROOT.TFile(source_file_name)
                     tree = source_file.Get('summaryTree')
 
-                    draw_string_maker = DrawStringMaker()
+                    draw_string_maker = plot_helper.DrawStringMaker()
                     draw_string_maker.append_selection_requirements(cut_strings)
                     draw_string_maker.append_selection_requirements(lepton_category_cut_strings)                    
                     draw_string_maker.append_jet_tag_category_requirements(jet_tag_category)
-                    if not args.no_weights:
-                        draw_string_maker.multiply_by_factor(systematic_weight_string)
+
                     if not sample_info.is_data and not args.no_weights:
+                        draw_string_maker.multiply_by_factor(systematic_weight_string)                        
                         draw_string_maker.multiply_by_factors(mc_weight_strings)
-                        draw_string_maker.multiply_by_factor('%s * %s / %s' % (sample_info.x_section, lumi, sample_info.num_generated))
 
                     for (distribution, parameters) in zip(distributions, plot_parameters):
                         plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, source_file_label)
-                        plot = Plot(output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string_maker.draw_string)
+                        plot = plot_helper.Plot(output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string_maker.draw_string)
+                        if not sample_info.is_data:
+                            plot.plot.Scale(sample_info.x_section * lumi * plot.plot.GetEntries() / sample_info.num_generated)
                         if args.pdf:
                             plot.save_image('pdf')
                         if args.web:
@@ -111,18 +112,8 @@ def run(args, config, samples):
                     source_file.Close() #end systematic
                 output_file.Close() #end jet tag category
 
-        if args.web:
-            print '\nPlots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label'])
-
-def does_data_sample_match_lepton_category(lepton_category, sample):
-    if sample == 'MuEG' and lepton_category == 'mu_ele':
-        return True
-    elif sample == 'DoubleMu' and lepton_category == 'mu_mu':
-        return True
-    elif sample == 'DoubleElectron' and lepton_category == 'ele_ele':
-        return True
-    else:
-        return False
+    if args.web:
+        print '\nPlots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label'])
 
 if __name__ == '__main__':
     main()
