@@ -239,7 +239,7 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
         try:
             afs_base_directory = in_out_files['afs_base_directory']
         except:
-            afs_base_directory = plot_helper.get_afs_base_directory('input_file_label')
+            afs_base_directory = plot_helper.get_afs_base_directory()
             in_out_files['afs_base_directory'] = afs_base_directory
 
         www_plot_directory = '%s/stack_plots/%s/%s_%s/' % (afs_base_directory, in_out_files['input_file_label'], lepton_category, jet_tag_category)

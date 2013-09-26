@@ -4,13 +4,11 @@ import ROOT
 import string
 from distutils import file_util
 
-def get_afs_base_directory(config_heading):
+def get_afs_base_directory():
     import subprocess
-    print "\n\nDid not find an afs_base_directory defined in the configuration file.  Looking for it now (this can take a minute)..."
     process = subprocess.Popen('ls -d /afs/nd.edu/user*/%s/www' % os.environ['USER'], stdout=subprocess.PIPE, shell=True)
     output, error = process.communicate()
     afs_base_directory = output.strip()
-    print "Found it! To skip this step next time, add the following line under the ['%s'] heading in your configuration file: \n afs_base_directory: %s \n\n" % (config_heading, afs_base_directory)
 
     return afs_base_directory 
             
@@ -71,7 +69,7 @@ class Plot:
         try:
             afs_base_directory = config['run_parameters']['afs_base_directory']
         except:
-            afs_base_directory = get_afs_base_directory('run_parameters')
+            afs_base_directory = get_afs_base_directory()
             config['run_parameters']['afs_base_directory'] = afs_base_directory
             
         self.save_image('png', 'pdf')
