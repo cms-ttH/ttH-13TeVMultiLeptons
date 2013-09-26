@@ -1,21 +1,25 @@
 #!/usr/bin/env python
-## Import some potential useful things
-import sys, ConfigParser, os, string, commands, time
+import os, sys
+import ConfigParser
+from argparse import ArgumentParser
 import math
-from optparse import OptionParser
 from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
 import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
-from ROOT import * 
-gROOT.SetBatch()
+
+parser = ArgumentParser(description='Make stack plots from histogram files.')
+parser.add_argument('config_file_name', nargs='?', default='stack_plot_configuration.cfg', help='Configuration file to process.')
+parser.add_argument('cosmetics_config_file_name', nargs='?', default='stack_plot_cosmetics.cfg', help='Cosmetics configuration file to process.')
+parser.add_argument('-w', '--web', action='store_true', help='post each plot to the user\'s AFS space')
+args = parser.parse_args()
 
 ## Set up the parser for the .cfg files
 ## config is mostly options that change the substance of what is displayed
 config = ConfigParser()
-config.read("stack_plot_configuration.cfg")
+config.read(args.config_file_name)
 
 ## config_cosmetics is mostly options that change the style of the stack plot
 config_cosmetics = ConfigParser()
-config_cosmetics.read("stack_plot_cosmetics.cfg")
+config_cosmetics.read(args.cosmetics_config_file_name)
 
 ## In addition to itmes, you can just get the keys or values                                            
 #background_samples_keys = config['background_samples'].keys()
@@ -37,7 +41,9 @@ cosmetics = dict(config_cosmetics['cosmetics'].items())
 def main():
     ## import the root libraries; with this import
     ## you won't need to prefix your root objects with ROOT
-    ## Done with imports
+    from ROOT import * 
+    gROOT.SetBatch()
+    
     for lepton_category in lepton_categories:
         print '\n\nStarting lepton category %s...\n' % lepton_category
         for jet_tag_category in jet_tag_categories:
@@ -45,6 +51,9 @@ def main():
             for distribution in distributions:
                 print 'Drawing distribution: %s with jet selection printing name: %s' %  (distribution, jet_tag_categories[jet_tag_category])
                 drawStackPlot (lepton_category, jet_tag_category, distribution)
+
+    if args.web:
+        print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], in_out_files['input_file_label'])
 
 def drawStackPlot (lepton_category, jet_tag_category, distribution):
     myStack = THStack("theStack", "")
@@ -73,12 +82,11 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
 
             if (systematic == "nominal"):
                 iHist = origHist.Clone("stack")
-                print 'sample: ', sample, ' integral: ', iHist.Integral()
                 MCSum += iHist.Integral()
                 sample_info = plot_helper.SampleInformation(sample)
                 xsec_frac_error = sample_info.x_section / sample_info.x_section_error
                 myStack.Add(iHist, "hist")
-                legForStack.AddEntry(iHist, background_samples[sample][0]+" ("+str(round(iHist.Integral(),1))+")", "f")
+                legForStack.AddEntry(iHist, '%s (%0.1f)' % (background_samples[sample][0], iHist.Integral()), 'f')
 
     ## Draw the signal sample histogram(s), put in legend
     for sample in signal_samples:
@@ -102,10 +110,10 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
         if ( signal_samples[sample][4] == "stack" ):
             myStack.Add(iSig, "hist")
 
-        if ( signalSum > 0 ):
-            legForStack.AddEntry(iHist, signal_samples[sample][2]+" ("+str(round(signalSum,1))+"x"+str(round(iSig.Integral()/signalSum,1))+")", "l")
+        if (signalSum > 0):
+            legForStack.AddEntry(iHist, '%s (%0.1f x %0.1f)' % (signal_samples[sample][2], signalSum, (iSig.Integral()/signalSum)), "l")
         else:
-            legForStack.AddEntry(iHist, signal_samples[sample][2]+" (0.0x1.0)", "l") 
+            legForStack.AddEntry(iHist, '%s (0.0x1.0)' % signal_samples[sample][2], 'l')
 
     ## Draw the data histogram, put in legend
     if not draw_options['blinded']:
@@ -114,7 +122,7 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
 
         iData = origHist.Clone("data")
         dataSum = iData.Integral()
-        legForStack.AddEntry(iData, "Data ("+str(round(dataSum,0))+")", "lpe")
+        legForStack.AddEntry(iData, "Data (%.0f) " % dataSum, "lpe")
 
     lumi_error = lumi_era['lumi_error']     
     trigSF_error = lumi_era['trig_SF_error']        
@@ -139,7 +147,7 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
     MCErrHist.SetFillStyle(cosmetics['mc_err_fill_style'])
     MCErrHist.SetFillColor(getattr(ROOT,cosmetics['mc_err_fill_color']))
 
-    legForStack.AddEntry(MCErrHist, "Sum MC ("+str(round(MCSum+signalSum,1))+")", "f")
+    legForStack.AddEntry(MCErrHist, "Sum MC (%0.1f) " % (MCSum + signalSum), "f")
 
     plotMax = myStack.GetMaximum()
     if ( iSig ): plotMax = max(plotMax,iSig.GetMaximum())   
@@ -156,19 +164,17 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
     upLin = TPad("upLin", "up", cosmetics['up_lin_x1'], cosmetics['up_lin_y1'], cosmetics['up_lin_x2'], cosmetics['up_lin_y2'])
     downLin =  TPad ("downLin", "down", cosmetics['down_lin_x1'], cosmetics['down_lin_y1'], cosmetics['down_lin_x2'], cosmetics['down_lin_y2'])
 
-    downLin = configureUpDownLin( upLin, downLin )[1]
-    upLin = configureUpDownLin( upLin, downLin )[0]
+    (upLin, downLin) = configureUpDownLin(upLin, downLin)
 
     upLin.Draw()
     downLin.Draw()
 
+    upLin.cd()
     if (draw_options['log_scale']):
-        upLin.cd()
         gPad.SetLogy()
 
-    upLin.cd()
     gPad.SetBottomMargin(cosmetics['pad_bottom_margin'])
-    gPad.Modified()
+#    gPad.Modified()
 
     myStack.Draw()
     ## For some reason can't be done before Draw()
@@ -193,25 +199,24 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
     if (draw_options['draw_legend']): legForStack.Draw()
     myLumiTex.DrawLatex(cosmetics['lumi_text_first'], cosmetics['lumi_text_second'], myLumiString) 
     if draw_options['selection_info']: selectionInfoLatex.DrawLatex(cosmetics['selection_text_first'], cosmetics['selection_text_second'], catInfo)
-    if draw_options['SF_info']:
-        if (dist.find("CFMlpANN") != -1):
-            SFInfoLatex.DrawLatex(cosmetics['SF_info_min'], cosmetics['SF_info_max'], SFInfo)
+#     if draw_options['SF_info']:
+#         if (dist.find("CFMlpANN") != -1):
+#             SFInfoLatex.DrawLatex(cosmetics['SF_info_min'], cosmetics['SF_info_max'], SFInfo)
         
     downLin.cd()
-    gPad.SetTopMargin(cosmetics['pad_top_margin'])
-    gPad.SetTickx()
-    gPad.Modified()
+#     gPad.SetTopMargin(cosmetics['pad_top_margin'])
+#     gPad.SetTickx()
+#     gPad.Modified()
 
-    ratioHistAndErrHist = makeRatioHist(nBins, xMin, xMax, MCErrHist, iData, iSig)
-    ratioErrHist = ratioHistAndErrHist[1]
-    ratioHist = ratioHistAndErrHist[0]
+    (ratioHist, ratioErrHist) = makeRatioHist(nBins, xMin, xMax, MCErrHist, iData, iSig)
 
     ratioHist = configureRatioHist(ratioHist, distribution)
     ratioErrHist = configureRatioErrHist(ratioErrHist)
     
     ratioHist.DrawCopy() 
-    if (not draw_options['blinded']): ratioErrHist.DrawCopy("e2same")                
-    if (not draw_options['blinded']): ratioHist.Draw("sameaxis") 
+    if (not draw_options['blinded']):
+        ratioErrHist.DrawCopy("e2same")
+        ratioHist.Draw("sameaxis") 
 
     ## asymmetrical poisson errors for data in ratio plot
     gRatio = makeDataRatioAsymmetricErrors (nBins, xMin, xMax, ggg, iData, iSig, myStack)
@@ -225,25 +230,21 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
     if not os.path.exists(in_out_files['output_file_location']+lepton_category+"_"+jet_tag_category):
         os.mkdir(in_out_files['output_file_location']+lepton_category+"_"+jet_tag_category)
 
-    plot_name = "%s_%s/%s" % (lepton_category, jet_tag_category, distribution)
+    plot_name = '%s_%s/%s' % (lepton_category, jet_tag_category, distribution)
 
     if (draw_options['save_png']): myCanvasLin.SaveAs(in_out_files['output_file_location']+plot_name+'.png')
     if (draw_options['save_pdf']): myCanvasLin.SaveAs(in_out_files['output_file_location']+plot_name+'.pdf')
 
-    try:
-        afs_base_directory = in_out_files['afs_base_directory']
-    except:
-        afs_base_directory = plot_helper.get_afs_base_directory()
-        in_out_files['afs_base_directory'] = afs_base_directory
-        plot_helper.setup_www_directory(afs_base_directory)
+    if args.web:
+        try:
+            afs_base_directory = in_out_files['afs_base_directory']
+        except:
+            afs_base_directory = plot_helper.get_afs_base_directory('input_file_label')
+            in_out_files['afs_base_directory'] = afs_base_directory
 
-    afs_base_directory += '/' + in_out_files['input_file_label']
-    plot_helper.setup_www_directory(afs_base_directory)
-    www_plot_directory = '%s/%s_%s' % (afs_base_directory, lepton_category, jet_tag_category)
-
-    plot_helper.setup_www_directory(www_plot_directory)
-
-    plot_helper.copy_to_www_area(in_out_files['output_file_location'], www_plot_directory, plot_name, 'stack_plot_configuration.cfg', 'stack_plot_cosmetics.cfg')
+        www_plot_directory = '%s/stack_plots/%s/%s_%s/' % (afs_base_directory, in_out_files['input_file_label'], lepton_category, jet_tag_category)
+        plot_helper.setup_www_directory(www_plot_directory, 3)
+        plot_helper.copy_to_www_area(in_out_files['output_file_location'], www_plot_directory, plot_name, args.config_file_name, args.cosmetics_config_file_name)
 
     gPad.Close()
     upLin.Close()
@@ -251,7 +252,6 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
     myStack.Delete()
     myCanvasLin.Close()
 ## end drawStackPlot
-
 
 ## Gets a single histogram
 def getHist( distribution, systematic, sample, lepton_category, jet_tag_category ):
@@ -266,8 +266,6 @@ def getHist( distribution, systematic, sample, lepton_category, jet_tag_category
 
     rootFile = TFile(in_out_files['input_file_location']+lepton_category+"/"+lepton_category+"_"+jet_tag_category+"_"+sample+"_"+in_out_files['input_file_label']+".root")
 
-    print 'root file: ', in_out_files['input_file_location']+lepton_category+"/"+lepton_category+"_"+jet_tag_category+"_"+sample+"_"+in_out_files['input_file_label']+".root"
-    print 'namePlusCycle: ', namePlusCycle
     targetHist = rootFile.Get(namePlusCycle).Clone()
         
     if (targetHist == None):
@@ -373,6 +371,7 @@ def configureUpDownLin( upLin, downLin ):
 
     upLin.SetTopMargin(cosmetics['up_lin_top_margin'])      
     downLin.SetBottomMargin(cosmetics['down_lin_bottom_margin'])
+    downLin.SetTickx()
 
     upLin.Modified()
     downLin.Modified()
