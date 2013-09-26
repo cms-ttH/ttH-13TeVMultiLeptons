@@ -222,16 +222,28 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
     l = TLine()
     l.DrawLine(xMin,1.,xMax,1.)
 
-    if not os.path.exists(in_out_files['output_file_location']):
-        os.mkdir(in_out_files['output_file_location'])
     if not os.path.exists(in_out_files['output_file_location']+lepton_category+"_"+jet_tag_category):
         os.mkdir(in_out_files['output_file_location']+lepton_category+"_"+jet_tag_category)
 
-    pdfName = "%s%s_%s/%s.pdf" % (in_out_files['output_file_location'], lepton_category, jet_tag_category, distribution)
-    pngName = "%s%s_%s/%s.png" % (in_out_files['output_file_location'], lepton_category, jet_tag_category, distribution)
+    plot_name = "%s_%s/%s" % (lepton_category, jet_tag_category, distribution)
 
-    if (draw_options['save_png']): myCanvasLin.SaveAs(pngName)
-    if (draw_options['save_pdf']): myCanvasLin.SaveAs(pdfName)
+    if (draw_options['save_png']): myCanvasLin.SaveAs(in_out_files['output_file_location']+plot_name+'.png')
+    if (draw_options['save_pdf']): myCanvasLin.SaveAs(in_out_files['output_file_location']+plot_name+'.pdf')
+
+    try:
+        afs_base_directory = in_out_files['afs_base_directory']
+    except:
+        afs_base_directory = plot_helper.get_afs_base_directory()
+        in_out_files['afs_base_directory'] = afs_base_directory
+        plot_helper.setup_www_directory(afs_base_directory)
+
+    afs_base_directory += '/' + in_out_files['input_file_label']
+    plot_helper.setup_www_directory(afs_base_directory)
+    www_plot_directory = '%s/%s_%s' % (afs_base_directory, lepton_category, jet_tag_category)
+
+    plot_helper.setup_www_directory(www_plot_directory)
+
+    plot_helper.copy_to_www_area(in_out_files['output_file_location'], www_plot_directory, plot_name, 'stack_plot_configuration.cfg', 'stack_plot_cosmetics.cfg')
 
     gPad.Close()
     upLin.Close()
@@ -253,7 +265,9 @@ def getHist( distribution, systematic, sample, lepton_category, jet_tag_category
         namePlusCycle = "%s_%s;1" % (sample+"_"+lepton_category+"_"+jet_tag_category+"_"+distribution, systematic)
 
     rootFile = TFile(in_out_files['input_file_location']+lepton_category+"/"+lepton_category+"_"+jet_tag_category+"_"+sample+"_"+in_out_files['input_file_label']+".root")
-    
+
+    print 'root file: ', in_out_files['input_file_location']+lepton_category+"/"+lepton_category+"_"+jet_tag_category+"_"+sample+"_"+in_out_files['input_file_label']+".root"
+    print 'namePlusCycle: ', namePlusCycle
     targetHist = rootFile.Get(namePlusCycle).Clone()
         
     if (targetHist == None):
