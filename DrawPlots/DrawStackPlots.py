@@ -50,190 +50,175 @@ def main():
             print 'Starting jet tag category %s...' % jet_tag_category
             for distribution in distributions:
                 print 'Drawing distribution: %s with jet selection printing name: %s' %  (distribution, jet_tag_categories[jet_tag_category])
-                drawStackPlot (lepton_category, jet_tag_category, distribution)
+                draw_stack_plot (lepton_category, jet_tag_category, distribution)
 
     if args.web:
         print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], in_out_files['input_file_label'])
 
-def drawStackPlot (lepton_category, jet_tag_category, distribution):
-    myStack = THStack("theStack", "")
+def draw_stack_plot (lepton_category, jet_tag_category, distribution):
+    stack_plot = THStack("theStack", "")
 
-    legForStack = makeLegend()
+    stack_plot_legend = make_legend()
     
-    infoStrings = makeInfoStrings( lepton_category, jet_tag_category )
+    (luminosity_info_tex, selection_info_tex, SF_info_tex) = make_info_tex_objects(lepton_category, jet_tag_category)
     
-    SFInfoLatex = infoStrings[5]
-    SFInfo = infoStrings[4]
-    selectionInfoLatex = infoStrings[3]
-    catInfo = infoStrings[2]
-    myLumiTex = infoStrings[1]
-    myLumiString = infoStrings[0]
-
     histoStorageList = {}
-    MCSum = 0.0
-    signalSum = 0.0
-    dataSum = 0.0
+    mc_sum = 0.0
+    signal_sum = 0.0
+    data_sum = 0.0
         
     ## Draw the background sample histograms, put in legend
     for sample in background_samples:
         for systematic in systematics:
-            origHist = getHist( distribution, systematic, sample, lepton_category, jet_tag_category )
-            histoStorageList[sample+"_"+systematic] = origHist.Clone()
+            original_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category)
+            histoStorageList[sample+"_"+systematic] = original_histogram.Clone()
 
-            if (systematic == "nominal"):
-                iHist = origHist.Clone("stack")
-                MCSum += iHist.Integral()
+            if systematic == 'nominal':
+                histogram = original_histogram.Clone('stack')
+                mc_sum += histogram.Integral()
                 sample_info = plot_helper.SampleInformation(sample)
                 xsec_frac_error = sample_info.x_section / sample_info.x_section_error
-                myStack.Add(iHist, "hist")
-                legForStack.AddEntry(iHist, '%s (%0.1f)' % (background_samples[sample][0], iHist.Integral()), 'f')
+                stack_plot.Add(histogram, "hist")
+                stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample][0], histogram.Integral()), 'f')
 
     ## Draw the signal sample histogram(s), put in legend
     for sample in signal_samples:
-        origHist = getHist( distribution, "nominal", sample, lepton_category, jet_tag_category ) 
-        histoStorageList[sample+"_"+systematic] = origHist.Clone()
+        original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category)
+        histoStorageList[sample+"_"+systematic] = original_histogram.Clone()
 
-        if ( signal_samples[sample][4] == "line" ):
-            iSig = origHist.Clone("signal")
-        elif ( signal_samples[sample][4] == "stack" ):
-            iSig = origHist.Clone("stack")
+        if signal_samples[sample][4] == 'line':
+            signal_histogram = original_histogram.Clone('signal')
+        elif signal_samples[sample][4] == 'stack':
+            signal_histogram = original_histogram.Clone('stack')
         else:
-            sys.exit("For signal, must be line or stack")
+            sys.exit('For signal, must be line or stack')
                 
-        signalSum = iSig.Integral()
+        signal_sum = signal_histogram.Integral()
 
-        if ( signalSum > 0 and signal_samples[sample][5] == "norm" ):
-            iSig.Scale(MCSum/signalSum)
-        elif ( signalSum > 0 ):
-            iSig.Scale(signal_samples[sample][5])
+        if (signal_sum > 0 and signal_samples[sample][5] == 'norm'):
+            signal_histogram.Scale(mc_sum/signal_sum)
+        elif (signal_sum > 0):
+            signal_histogram.Scale(signal_samples[sample][5])
 
-        if ( signal_samples[sample][4] == "stack" ):
-            myStack.Add(iSig, "hist")
+        if (signal_samples[sample][4] == 'stack'):
+            stack_plot.Add(signal_histogram, 'hist')
 
-        if (signalSum > 0):
-            legForStack.AddEntry(iHist, '%s (%0.1f x %0.1f)' % (signal_samples[sample][2], signalSum, (iSig.Integral()/signalSum)), "l")
+        if (signal_sum > 0):
+            stack_plot_legend.AddEntry(histogram, '%s (%0.1f x %0.1f)' % (signal_samples[sample][2], signal_sum, (signal_histogram.Integral() / signal_sum)), 'l')
         else:
-            legForStack.AddEntry(iHist, '%s (0.0x1.0)' % signal_samples[sample][2], 'l')
+            stack_plot_legend.AddEntry(histogram, '%s (0.0x1.0)' % signal_samples[sample][2], 'l')
 
     ## Draw the data histogram, put in legend
     if not draw_options['blinded']:
-        origHist = getHist( distribution, systematic, "data", lepton_category, jet_tag_category )
-        histoStorageList['data'] = origHist.Clone()
+        original_histogram = get_histogram(distribution, systematic, 'data', lepton_category, jet_tag_category)
+        histoStorageList['data'] = original_histogram.Clone()
 
-        iData = origHist.Clone("data")
-        dataSum = iData.Integral()
-        legForStack.AddEntry(iData, "Data (%.0f) " % dataSum, "lpe")
+        data_histogram = original_histogram.Clone('data')
+        data_sum = data_histogram.Integral()
+        stack_plot_legend.AddEntry(data_histogram, 'Data (%.0f) ' % data_sum, 'lpe')
 
     lumi_error = lumi_era['lumi_error']     
-    trigSF_error = lumi_era['trig_SF_error']        
-    lumi_trigSF_error = math.sqrt(math.pow(lumi_error,2)+math.pow(trigSF_error,2))
+    trigger_SF_error = lumi_era['trig_SF_error']        
+    lumi_trigger_SF_error = math.sqrt(math.pow(lumi_error,2)+math.pow(trigger_SF_error,2))
 
     try:
-        nBins = myStack.GetStack().Last().GetNbinsX()
-        xMin = myStack.GetStack().Last().GetXaxis().GetXmin()
-        xMax = myStack.GetStack().Last().GetXaxis().GetXmax()
-    except: sys.exit("No histograms in stack.  Quitting.")
+        nBins = stack_plot.GetStack().Last().GetNbinsX()
+        xMin = stack_plot.GetStack().Last().GetXaxis().GetXmin()
+        xMax = stack_plot.GetStack().Last().GetXaxis().GetXmax()
+    except: sys.exit('No histograms in stack.  Quitting.')
 
     # Create a histogram with the error bars for the MC stack
-    MCErrHist = TH1F("MCErrHist", "", nBins, xMin, xMax)
+    mc_error_histogram = TH1F('mc_error_histogram', '', nBins, xMin, xMax)
     for i in range(1, nBins+1):
-        MCErrHist.SetBinContent(i,myStack.GetStack().Last().GetBinContent(i))
-        bin_error_squared = math.pow(lumi_trigSF_error*myStack.GetStack().Last().GetBinContent(i),2)
+        mc_error_histogram.SetBinContent(i,stack_plot.GetStack().Last().GetBinContent(i))
+        bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
         for sample in background_samples:
             for systematic in systematics:
-                bin_error_squared += math.pow(histoStorageList[sample+"_"+systematic].GetBinContent(i) - histoStorageList[sample+"_nominal"].GetBinContent(i),2)
-        MCErrHist.SetBinError(i,math.sqrt(bin_error_squared))
+                bin_error_squared += math.pow(histoStorageList[sample+'_'+systematic].GetBinContent(i) - histoStorageList[sample+'_nominal'].GetBinContent(i), 2)
+        mc_error_histogram.SetBinError(i, math.sqrt(bin_error_squared))
 
-    MCErrHist.SetFillStyle(cosmetics['mc_err_fill_style'])
-    MCErrHist.SetFillColor(getattr(ROOT,cosmetics['mc_err_fill_color']))
+    mc_error_histogram.SetFillStyle(cosmetics['mc_err_fill_style'])
+    mc_error_histogram.SetFillColor(getattr(ROOT,cosmetics['mc_err_fill_color']))
 
-    legForStack.AddEntry(MCErrHist, "Sum MC (%0.1f) " % (MCSum + signalSum), "f")
+    stack_plot_legend.AddEntry(mc_error_histogram, 'Sum MC (%0.1f) ' % (mc_sum + signal_sum), 'f')
 
-    plotMax = myStack.GetMaximum()
-    if ( iSig ): plotMax = max(plotMax,iSig.GetMaximum())   
-    if (not draw_options['blinded']): plotMax = max(plotMax,iData.GetMaximum())
+    plot_max = stack_plot.GetMaximum()
+    if (signal_histogram): plot_max = max(plot_max, signal_histogram.GetMaximum())   
+    if (not draw_options['blinded']): plot_max = max(plot_max, data_histogram.GetMaximum())
 
-    myStack = configureMyStack(myStack, plotMax)
-    myCanvasLin = TCanvas(distribution+"Lin", distribution, cosmetics['canvas_lin_min'], cosmetics['canvas_lin_max'])
+    stack_plot = configure_my_stack(stack_plot, plot_max)
+    canvas = TCanvas(distribution+'Lin', distribution, cosmetics['canvas_min'], cosmetics['canvas_max'])
 
     gStyle.SetPadBorderMode(cosmetics['pad_border_mode'])
     gStyle.SetFrameBorderMode(cosmetics['frame_border_mode'])
 
-    myCanvasLin.cd()
+    top_canvas = TPad('top_canvas', 'up', cosmetics['top_canvas_x1'], cosmetics['top_canvas_y1'], cosmetics['top_canvas_x2'], cosmetics['top_canvas_y2'])
+    bottom_canvas =  TPad ('bottom_canvas', 'down', cosmetics['bottom_canvas_x1'], cosmetics['bottom_canvas_y1'], cosmetics['bottom_canvas_x2'], cosmetics['bottom_canvas_y2'])
 
-    upLin = TPad("upLin", "up", cosmetics['up_lin_x1'], cosmetics['up_lin_y1'], cosmetics['up_lin_x2'], cosmetics['up_lin_y2'])
-    downLin =  TPad ("downLin", "down", cosmetics['down_lin_x1'], cosmetics['down_lin_y1'], cosmetics['down_lin_x2'], cosmetics['down_lin_y2'])
+    (top_canvas, bottom_canvas) = configure_canvases(top_canvas, bottom_canvas)
 
-    (upLin, downLin) = configureUpDownLin(upLin, downLin)
+    top_canvas.Draw()
+    bottom_canvas.Draw()
 
-    upLin.Draw()
-    downLin.Draw()
-
-    upLin.cd()
+    top_canvas.cd()
     if (draw_options['log_scale']):
         gPad.SetLogy()
 
     gPad.SetBottomMargin(cosmetics['pad_bottom_margin'])
-#    gPad.Modified()
 
-    myStack.Draw()
+    stack_plot.Draw()
     ## For some reason can't be done before Draw()
-    myStack.GetYaxis().SetTitleSize(cosmetics['stack_y_axis_title_size']) 
-    myStack.GetYaxis().SetTitleOffset(cosmetics['stack_y_axis_title_offset'])
-
-    MCErrHist.Draw(cosmetics['MCErrHist_draw_style'])
-        
-    iSig.Draw(cosmetics['iSig_draw_style'])
-
+    stack_plot.GetYaxis().SetTitleSize(cosmetics['stack_y_axis_title_size']) 
+    stack_plot.GetYaxis().SetTitleOffset(cosmetics['stack_y_axis_title_offset'])
+    mc_error_histogram.Draw(cosmetics['mc_error_histogram_draw_style'])
+    signal_histogram.Draw(cosmetics['signal_histogram_draw_style'])
+    
     ## asymmetrical poisson errors for data
-    ggg = TGraphAsymmErrors(iData); 
-    ggg = configureDataAsymmetricErrors(ggg)
+    ggg = get_configured_data_asymmetric_errors(data_histogram)
 
     if (not draw_options['blinded']): ggg.Draw(cosmetics['ggg_draw_style']) 
 
     ## calculate the KS test result, put it somewhere
     if (draw_options['KS_test']):
-        ksResult = iData.KolmogorovTest(MCErrHist)
-        myLumiString = myLumiString + " (KS = %0.2f)" % (ksResult)
+        ks_result = data_histogram.KolmogorovTest(mc_error_histogram)
+        luminosity_info_tex.SetTitle('%s (KS = %0.2f)' % (luminosity_info_tex.GetTitle(), ks_result))
 
-    if (draw_options['draw_legend']): legForStack.Draw()
-    myLumiTex.DrawLatex(cosmetics['lumi_text_first'], cosmetics['lumi_text_second'], myLumiString) 
-    if draw_options['selection_info']: selectionInfoLatex.DrawLatex(cosmetics['selection_text_first'], cosmetics['selection_text_second'], catInfo)
-#     if draw_options['SF_info']:
-#         if (dist.find("CFMlpANN") != -1):
-#             SFInfoLatex.DrawLatex(cosmetics['SF_info_min'], cosmetics['SF_info_max'], SFInfo)
+    if draw_options['draw_legend']: stack_plot_legend.Draw()
+
+    luminosity_info_tex.DrawLatex(cosmetics['lumi_text_first'], cosmetics['lumi_text_second'], luminosity_info_tex.GetTitle()) 
+    if draw_options['selection_info']: selection_info_tex.DrawLatex(cosmetics['selection_text_first'], cosmetics['selection_text_second'], selection_info_tex.GetTitle())
+
+    if draw_options['SF_info']:
+        if (dist.find('CFMlpANN') != -1):
+            SF_info_tex.DrawLatex(cosmetics['SF_info_min'], cosmetics['SF_info_max'], SF_info_tex.GetTitle())
         
-    downLin.cd()
-#     gPad.SetTopMargin(cosmetics['pad_top_margin'])
-#     gPad.SetTickx()
-#     gPad.Modified()
+    bottom_canvas.cd()
 
-    (ratioHist, ratioErrHist) = makeRatioHist(nBins, xMin, xMax, MCErrHist, iData, iSig)
+    (ratio_histogram, ratio_error_histogram) = make_ratio_histogram(nBins, xMin, xMax, mc_error_histogram, data_histogram, signal_histogram)
 
-    ratioHist = configureRatioHist(ratioHist, distribution)
-    ratioErrHist = configureRatioErrHist(ratioErrHist)
-    
-    ratioHist.DrawCopy() 
+    ratio_histogram = configure_ratio_histogram(ratio_histogram, distribution)
+    ratio_error_histogram = configure_ratio_error_histogram(ratio_error_histogram)
+    ratio_histogram.DrawCopy() 
     if (not draw_options['blinded']):
-        ratioErrHist.DrawCopy("e2same")
-        ratioHist.Draw("sameaxis") 
+        ratio_error_histogram.DrawCopy('e2same')
+        ratio_histogram.Draw('sameaxis') 
 
     ## asymmetrical poisson errors for data in ratio plot
-    gRatio = makeDataRatioAsymmetricErrors (nBins, xMin, xMax, ggg, iData, iSig, myStack)
-    gRatio = configureDataRatioAsymmetricErrors (gRatio)
+    g_ratio = make_data_ratio_asymmetric_errors(nBins, xMin, xMax, ggg, data_histogram, signal_histogram, stack_plot)
+    g_ratio = configure_data_ratio_asymmetric_errors (g_ratio)
           
-    if (not draw_options['blinded']): gRatio.Draw("psame") 
+    if (not draw_options['blinded']): g_ratio.Draw('psame') 
         
     l = TLine()
-    l.DrawLine(xMin,1.,xMax,1.)
+    l.DrawLine(xMin, 1., xMax, 1.)
 
-    if not os.path.exists(in_out_files['output_file_location']+lepton_category+"_"+jet_tag_category):
-        os.mkdir(in_out_files['output_file_location']+lepton_category+"_"+jet_tag_category)
+    if not os.path.exists(in_out_files['output_file_location']+lepton_category+'_'+jet_tag_category):
+        os.mkdir(in_out_files['output_file_location']+lepton_category+'_'+jet_tag_category)
 
     plot_name = '%s_%s/%s' % (lepton_category, jet_tag_category, distribution)
 
-    if (draw_options['save_png']): myCanvasLin.SaveAs(in_out_files['output_file_location']+plot_name+'.png')
-    if (draw_options['save_pdf']): myCanvasLin.SaveAs(in_out_files['output_file_location']+plot_name+'.pdf')
+    if (draw_options['save_png']): canvas.SaveAs(in_out_files['output_file_location']+plot_name+'.png')
+    if (draw_options['save_pdf']): canvas.SaveAs(in_out_files['output_file_location']+plot_name+'.pdf')
 
     if args.web:
         try:
@@ -247,150 +232,149 @@ def drawStackPlot (lepton_category, jet_tag_category, distribution):
         plot_helper.copy_to_www_area(in_out_files['output_file_location'], www_plot_directory, plot_name, args.config_file_name, args.cosmetics_config_file_name)
 
     gPad.Close()
-    upLin.Close()
-    downLin.Close()
-    myStack.Delete()
-    myCanvasLin.Close()
-## end drawStackPlot
+    top_canvas.Close()
+    bottom_canvas.Close()
+    stack_plot.Delete()
+    canvas.Close()
+## end draw_stack_plot
 
 ## Gets a single histogram
-def getHist( distribution, systematic, sample, lepton_category, jet_tag_category ):
-    targetHist = None
+def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category):
+    histogram = None
     if sample == 'data':
         sample = plot_helper.get_data_sample_name(lepton_category)
 
-    if systematic == "nominal" or sample == 'data':
-        namePlusCycle = "%s;1" % (sample+"_"+lepton_category+"_"+jet_tag_category+"_"+distribution)
+    if systematic == 'nominal' or sample == 'data':
+        name_plus_cycle = '%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution)
     else:
-        namePlusCycle = "%s_%s;1" % (sample+"_"+lepton_category+"_"+jet_tag_category+"_"+distribution, systematic)
+        name_plus_cycle = '%s_%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution, systematic)
 
-    rootFile = TFile(in_out_files['input_file_location']+lepton_category+"/"+lepton_category+"_"+jet_tag_category+"_"+sample+"_"+in_out_files['input_file_label']+".root")
-
-    targetHist = rootFile.Get(namePlusCycle).Clone()
+    root_file = TFile('%s%s/%s_%s_%s_%s.root' % (in_out_files['input_file_location'], lepton_category, lepton_category, jet_tag_category, sample, in_out_files['input_file_label']))
+    histogram = root_file.Get(name_plus_cycle).Clone()
         
-    if (targetHist == None):
-        print "Oops! Error looking for histo %s, exiting..." % (distribution)
+    if not histogram:
+        print 'Oops! Error looking for histo %s, exiting...' % (distribution)
         sys.exit()
 
-    targetHist.UseCurrentStyle() ##What does this do?
-    targetHist.SetDirectory(0) ##Decouples histogram from root file
+#    histogram.UseCurrentStyle() ##What does this do?
+    histogram.SetDirectory(0) ##Decouples histogram from root file
         
-    if ( sample == "MuEG" or sample == "DoubleMu" or sample == "DoubleElectron"):           
-        targetHist.SetLineColor(getattr(ROOT,cosmetics['data_line_color']))
-        targetHist.SetMarkerColor(getattr(ROOT,cosmetics['data_marker_color']))
-        targetHist.SetFillColor(getattr(ROOT,cosmetics['data_fill_color']))
-        targetHist.SetLineWidth(cosmetics['data_line_width'])
-        targetHist.SetMarkerStyle(cosmetics['data_marker_style'])
-        targetHist.SetMarkerSize(cosmetics['data_marker_size'])
+    if (sample == 'MuEG' or sample == 'DoubleMu' or sample == 'DoubleElectron'):           
+        histogram.SetLineColor(getattr(ROOT,cosmetics['data_line_color']))
+        histogram.SetMarkerColor(getattr(ROOT,cosmetics['data_marker_color']))
+        histogram.SetFillColor(getattr(ROOT,cosmetics['data_fill_color']))
+        histogram.SetLineWidth(cosmetics['data_line_width'])
+        histogram.SetMarkerStyle(cosmetics['data_marker_style'])
+        histogram.SetMarkerSize(cosmetics['data_marker_size'])
 
-    elif ( sample in background_samples ):
-        targetHist.SetLineColor(getattr(ROOT,background_samples[sample][1]))
-        targetHist.SetFillColor(getattr(ROOT,background_samples[sample][1]))
-        targetHist.SetFillStyle(cosmetics['background_fill_style'])
+    elif (sample in background_samples):
+        histogram.SetLineColor(getattr(ROOT,background_samples[sample][1]))
+        histogram.SetFillColor(getattr(ROOT,background_samples[sample][1]))
+        histogram.SetFillStyle(cosmetics['background_fill_style'])
                 
-    elif ( sample in signal_samples ):
-        if ( signal_samples[sample][4] == "line" ):
-            targetHist.SetLineColor(getattr(ROOT,signal_samples[sample][3]))
-            targetHist.SetFillColor(getattr(ROOT,signal_samples[sample][3]))
-            targetHist.SetLineWidth(signal_samples[sample][5])
+    elif (sample in signal_samples):
+        if (signal_samples[sample][4] == 'line'):
+            histogram.SetLineColor(getattr(ROOT,signal_samples[sample][3]))
+            histogram.SetFillColor(getattr(ROOT,signal_samples[sample][3]))
+            histogram.SetLineWidth(signal_samples[sample][5])
             
-    elif ( signal_samples[sample][4] == "stack" ):
-        targetHist.SetLineColor(getattr(ROOT,signal_samples[sample][3]))
-        targetHist.SetFillColor(getattr(ROOT,signal_samples[sample][3]))
-        targetHist.SetFillStyle(cosmetics['background_fill_style'])
+    elif (signal_samples[sample][4] == 'stack'):
+        histogram.SetLineColor(getattr(ROOT,signal_samples[sample][3]))
+        histogram.SetFillColor(getattr(ROOT,signal_samples[sample][3]))
+        histogram.SetFillStyle(cosmetics['background_fill_style'])
 
     else:
-        sys.exit("Error - must select either line or stack for signal_sample "+sample+".  Quitting.")
+        sys.exit('Error - must select either line or stack for signal_sample '+sample+'.  Quitting.')
 
-    return targetHist
-## end of getHist
+    return histogram
+## end of get_histogram
 
-def makeLegend():
-    legForStack = TLegend(cosmetics['legend_x1'],cosmetics['legend_y1'],cosmetics['legend_x2'],cosmetics['legend_y2'])
-    legForStack.SetFillColor(getattr(ROOT,cosmetics['legend_fill_color']))
-    legForStack.SetBorderSize(cosmetics['legend_border_size'])
-    legForStack.SetNColumns(cosmetics['legend_n_columns'])
+def make_legend():
+    stack_plot_legend = TLegend(cosmetics['legend_x1'],cosmetics['legend_y1'],cosmetics['legend_x2'],cosmetics['legend_y2'])
+    stack_plot_legend.SetFillColor(getattr(ROOT,cosmetics['legend_fill_color']))
+    stack_plot_legend.SetBorderSize(cosmetics['legend_border_size'])
+    stack_plot_legend.SetNColumns(cosmetics['legend_n_columns'])
     
-    return legForStack
-## end of makeLegend
+    return stack_plot_legend
+## end of make_legend
 
-def makeInfoStrings( lepton_category, jet_tag_category ):
-    myLumiString = lepton_categories[lepton_category]+jet_tag_categories[jet_tag_category]+lumi_era['lumi_era_string']
-    
-    myLumiTex = TLatex()
-    myLumiTex.SetNDC()
-    myLumiTex.SetTextFont(cosmetics['lumi_text_font'])
-    myLumiTex.SetTextSize(cosmetics['lumi_text_size'])
+def make_info_tex_objects(lepton_category, jet_tag_category):
+    luminosity_info_tex = TLatex()
+    luminosity_info_tex.SetNDC()
+    luminosity_info_tex.SetTextFont(cosmetics['lumi_text_font'])
+    luminosity_info_tex.SetTextSize(cosmetics['lumi_text_size'])
+    luminosity_info_tex.SetTitle(lepton_categories[lepton_category]+jet_tag_categories[jet_tag_category]+lumi_era['lumi_era_string'])
 
-    catInfo = lepton_categories[lepton_category]+jet_tag_categories[jet_tag_category]
-    selectionInfoLatex = TLatex()
-    selectionInfoLatex.SetNDC()
-    selectionInfoLatex.SetTextFont(cosmetics['selection_text_font'])
-    selectionInfoLatex.SetTextSize(cosmetics['selection_text_size'])
+    selection_info_tex = TLatex()
+    selection_info_tex.SetNDC()
+    selection_info_tex.SetTextFont(cosmetics['selection_text_font'])
+    selection_info_tex.SetTextSize(cosmetics['selection_text_size'])
+    selection_info_tex.SetTitle(lepton_categories[lepton_category]+jet_tag_categories[jet_tag_category])
 
-    SFInfo = str(signal_samples[signal_sample_keys[0]][1])+" x "+str(signal_samples[signal_sample_keys[0]][5])
-    SFInfoLatex = TLatex()
-    SFInfoLatex.SetNDC()
-    SFInfoLatex.SetTextFont(cosmetics['SF_text_font'])
-    SFInfoLatex.SetTextSize(cosmetics['SF_text_size'])
+    SF_info_tex = TLatex()
+    SF_info_tex.SetNDC()
+    SF_info_tex.SetTextFont(cosmetics['SF_text_font'])
+    SF_info_tex.SetTextSize(cosmetics['SF_text_size'])
+    SF_info_tex.SetTitle(str(signal_samples[signal_sample_keys[0]][1])+' x '+str(signal_samples[signal_sample_keys[0]][5]))
 
-    return myLumiString, myLumiTex, catInfo, selectionInfoLatex, SFInfo, SFInfoLatex
-## end of makeInfoStrings
+    return luminosity_info_tex, selection_info_tex, SF_info_tex
+## end of make_info_tex_objects
 
-def moveExtraIntoHist (hist):
-    """Move over/underflow bins into the histogram"""
+def move_extra_into_hist (histogram):
+    '''Move over/underflow bins into the histogram'''
         
-    numBins = hist.GetNbinsX()
-    hist.SetBinContent(1, hist.GetBinContent(0) + hist.GetBinContent(1))
-    hist.SetBinContent(0,0)
-    hist.SetBinContent(numBins, hist.GetBinContent(numBins) + hist.GetBinContent(numBins+1))
-    hist.SetBinContent(numBins+1, 0)
+    numBins = histogram.GetNbinsX()
+    histogram.SetBinContent(1, histogram.GetBinContent(0) + histogram.GetBinContent(1))
+    histogram.SetBinContent(0,0)
+    histogram.SetBinContent(numBins, histogram.GetBinContent(numBins) + histogram.GetBinContent(numBins+1))
+    histogram.SetBinContent(numBins+1, 0)
         
-    return hist
-## end moveExtraIntoHist()
+    return histogram
+## end move_extra_into_histogram()
 
-def configureMyStack(myStack, plotMax):
-    titleString = "%s;%s;%s" % ("", "", "Events")
-        
-    myStack.SetTitle(titleString)
-    myStack.SetMinimum(cosmetics['stack_minimum'])
-    myStack.SetMaximum(max(cosmetics['stack_lowest_maximum'],plotMax*cosmetics['stack_maximum_factor']))
+def configure_my_stack(stack_plot, plot_max):
+    title_string = '%s;%s;%s' % ('', '', 'Events')
+    stack_plot.SetTitle(title_string)
+    stack_plot.SetMinimum(cosmetics['stack_minimum'])
+    stack_plot.SetMaximum(max(cosmetics['stack_lowest_maximum'],plot_max*cosmetics['stack_maximum_factor']))
     if (draw_options['log_scale']):
-        myStack.SetMinimum(cosmetics['stack_minimum_log_scale'])
-        myStack.SetMaximum(max(cosmetics['stack_lowest_maximum_log_scale'],plotMax*cosmetics['stack_maximum_factor_log_scale'])) 
+        stack_plot.SetMinimum(cosmetics['stack_minimum_log_scale'])
+        stack_plot.SetMaximum(max(cosmetics['stack_lowest_maximum_log_scale'],plot_max*cosmetics['stack_maximum_factor_log_scale'])) 
 
-    return myStack
-## end configureMyStack
+    return stack_plot
+## end configure_my_stack
 
-def configureUpDownLin( upLin, downLin ):
-    upLin.SetLeftMargin(cosmetics['up_lin_left_margin'])
-    downLin.SetLeftMargin(cosmetics['down_lin_left_margin'])
+def configure_canvases(top_canvas, bottom_canvas):
+    top_canvas.SetLeftMargin(cosmetics['top_canvas_left_margin'])
+    bottom_canvas.SetLeftMargin(cosmetics['bottom_canvas_left_margin'])
     
-    upLin.SetRightMargin(cosmetics['up_lin_right_margin'])
-    downLin.SetRightMargin(cosmetics['down_lin_right_margin'])
+    top_canvas.SetRightMargin(cosmetics['top_canvas_right_margin'])
+    bottom_canvas.SetRightMargin(cosmetics['bottom_canvas_right_margin'])
 
-    upLin.SetTopMargin(cosmetics['up_lin_top_margin'])      
-    downLin.SetBottomMargin(cosmetics['down_lin_bottom_margin'])
-    downLin.SetTickx()
+    top_canvas.SetTopMargin(cosmetics['top_canvas_top_margin'])      
+    bottom_canvas.SetBottomMargin(cosmetics['bottom_canvas_bottom_margin'])
+    bottom_canvas.SetTickx()
 
-    upLin.Modified()
-    downLin.Modified()
+    top_canvas.Modified()
+    bottom_canvas.Modified()
                 
-    return upLin, downLin
-## end configureUpDownLin
+    return top_canvas, bottom_canvas
+## end configure_canvases
 
-def configureDataAsymmetricErrors( ggg ):
+def get_configured_data_asymmetric_errors(data_histogram):
+    ggg = TGraphAsymmErrors(data_histogram)
+        
     alpha = 1 - 0.6827
-    NBin = ggg.GetN()
-    for iBin in range(0, NBin):
-        NN = ggg.GetY()[iBin]
-        if (NN==0):
+    num_bins = ggg.GetN()
+    for bin in range(0, num_bins):
+        NN = ggg.GetY()[bin]
+        if NN == 0:
             LOW = 0
         else: 
-            LOW =  Math.gamma_quantile(alpha/2,NN,1.)
-        UP =  Math.gamma_quantile_c(alpha/2,NN+1,1)
-        ggg.SetPointEYlow(iBin, NN-LOW)
-        ggg.SetPointEYhigh(iBin, UP-NN)
+            LOW =  Math.gamma_quantile(alpha/2, NN, 1.)
+        UP =  Math.gamma_quantile_c(alpha/2, NN+1, 1)
+        ggg.SetPointEYlow(bin, NN-LOW)
+        ggg.SetPointEYhigh(bin, UP-NN)
 
     ggg.SetLineColor(getattr(ROOT,cosmetics['ggg_line_color']))
     ggg.SetMarkerStyle(cosmetics['ggg_marker_style'])
@@ -398,120 +382,121 @@ def configureDataAsymmetricErrors( ggg ):
     ggg.SetMarkerSize(cosmetics['ggg_marker_size'])
 
     return ggg
-## end configureRatioHist
+## end configure_ratio_histogram
 
-def makeRatioHist( nBins, xMin, xMax, MCErrHist, iData, iSig ):
-        ratioHist = TH1F("ratioHist", "", nBins, xMin, xMax)
-        ratioErrHist = TH1F("ratioErrHist", "", nBins, xMin, xMax)
+def make_ratio_histogram(nBins, xMin, xMax, mc_error_histogram, data_histogram, signal_histogram):
+        ratio_histogram = TH1F('ratio_histogram', '', nBins, xMin, xMax)
+        ratio_error_histogram = TH1F('ratio_error_histogram', '', nBins, xMin, xMax)
 
         for i in range(1, nBins+1):
-                MCVal = MCErrHist.GetBinContent(i)
-                if (not draw_options['blinded']): DataVal = iData.GetBinContent(i) 
-                if (draw_options['blinded']): DataVal = iSig.GetBinContent(i) 
-                MCErr = MCErrHist.GetBinError(i)
-                if (not draw_options['blinded']): DataErr = iData.GetBinError(i) 
-                if (draw_options['blinded']): DataErr = iSig.GetBinError(i) 
+                mc_value = mc_error_histogram.GetBinContent(i)
+                if (not draw_options['blinded']): data_value = data_histogram.GetBinContent(i) 
+                if (draw_options['blinded']): data_value = signal_histogram.GetBinContent(i) 
+                mc_error = mc_error_histogram.GetBinError(i)
+                if (not draw_options['blinded']): data_error = data_histogram.GetBinError(i) 
+                if (draw_options['blinded']): data_error = signal_histogram.GetBinError(i) 
 
-                if (MCVal !=0 and DataVal !=0):
-                        ratioVal = DataVal/MCVal
-                        ratErr = ratioVal*DataErr/DataVal
-                        ratErrMC = MCErr/MCVal
-                        if ratioVal > 2:
-                                ratioVal = 2
-                elif (MCVal == 0 and DataVal != 0):
-                        ratioVal = 2
-                        ratErr = 2
-                elif (MCVal != 0 and DataVal == 0):
-                        ratErrMC = MCErr/MCVal
-                if (DataVal != 0):
-                        ratioHist.SetBinContent(i,ratioVal)
-                        ratioHist.SetBinError(i,ratErr)
-                if (MCVal != 0):
-                        ratioErrHist.SetBinContent(i,1)
-                        ratioErrHist.SetBinError(i,ratErrMC)
+                if (mc_value !=0 and data_value != 0):
+                        ratio_value = data_value / mc_value
+                        ratio_error = ratio_value * data_error / data_value
+                        ratio_error_mc = mc_error / mc_value
+                        if ratio_value > 2:
+                                ratio_value = 2
+                elif (mc_value == 0 and data_value != 0):
+                        ratio_value = 2
+                        ratio_error = 2
+                elif (mc_value != 0 and data_value == 0):
+                        ratio_error_mc = mc_error / mc_value
+                if data_value != 0:
+                        ratio_histogram.SetBinContent(i, ratio_value)
+                        ratio_histogram.SetBinError(i, ratio_error)
+                if mc_value != 0:
+                        ratio_error_histogram.SetBinContent(i, 1)
+                        ratio_error_histogram.SetBinError(i, ratio_error_mc)
 
-        return ratioHist, ratioErrHist
-## end makeRatioHist
+        return ratio_histogram, ratio_error_histogram
+## end make_ratio_histogram
 
-def configureRatioHist( ratioHist , distribution ):
-    ratioHist.SetMinimum(cosmetics['ratio_hist_min'])
-    ratioHist.SetMaximum(cosmetics['ratio_hist_max'])
-    ratiotitleString = "%s;%s;%s" % ("", distributions[distribution][0], "Data/MC") 
-    ratioHist.SetTitle(ratiotitleString) 
-    ratioHist.GetYaxis().SetTitleSize(cosmetics['ratio_hist_y_axis_title_size'])
-    ratioHist.GetYaxis().SetTitleOffset(cosmetics['ratio_hist_y_axis_title_offset'])
-    ratioHist.GetYaxis().CenterTitle()
-    ratioHist.GetYaxis().SetLabelSize(cosmetics['ratio_hist_y_axis_label_size'])
-    ratioHist.GetYaxis().SetNdivisions(cosmetics['ratio_hist_y_axis_Ndivisions'])
+def configure_ratio_histogram(ratio_histogram , distribution):
+    ratio_histogram.SetStats(kFALSE)
+    ratio_histogram.SetMinimum(cosmetics['ratio_hist_min'])
+    ratio_histogram.SetMaximum(cosmetics['ratio_hist_max'])
+    ratio_title_string = '%s;%s;%s' % ('', distributions[distribution][0], 'Data/MC') 
+    ratio_histogram.SetTitle(ratio_title_string) 
+    ratio_histogram.GetYaxis().SetTitleSize(cosmetics['ratio_hist_y_axis_title_size'])
+    ratio_histogram.GetYaxis().SetTitleOffset(cosmetics['ratio_hist_y_axis_title_offset'])
+    ratio_histogram.GetYaxis().CenterTitle()
+    ratio_histogram.GetYaxis().SetLabelSize(cosmetics['ratio_hist_y_axis_label_size'])
+    ratio_histogram.GetYaxis().SetNdivisions(cosmetics['ratio_hist_y_axis_Ndivisions'])
         
-    ratioHist.GetXaxis().SetLabelSize(cosmetics['ratio_hist_x_axis_label_size']) 
-    ratioHist.GetXaxis().SetLabelOffset(cosmetics['ratio_hist_x_axis_label_offset']) 
-    ratioHist.GetXaxis().SetTitleOffset(cosmetics['ratio_hist_x_axis_title_offset'])
-    ratioHist.GetXaxis().SetTitleSize(cosmetics['ratio_hist_x_axis_title_size']) 
+    ratio_histogram.GetXaxis().SetLabelSize(cosmetics['ratio_hist_x_axis_label_size']) 
+    ratio_histogram.GetXaxis().SetLabelOffset(cosmetics['ratio_hist_x_axis_label_offset']) 
+    ratio_histogram.GetXaxis().SetTitleOffset(cosmetics['ratio_hist_x_axis_title_offset'])
+    ratio_histogram.GetXaxis().SetTitleSize(cosmetics['ratio_hist_x_axis_title_size']) 
 
-    ratioHist.SetLineColor(getattr(ROOT,cosmetics['ratio_hist_line_color']))
-    ratioHist.SetMarkerColor(getattr(ROOT,cosmetics['ratio_hist_marker_color']))     
+    ratio_histogram.SetLineColor(getattr(ROOT,cosmetics['ratio_hist_line_color']))
+    ratio_histogram.SetMarkerColor(getattr(ROOT,cosmetics['ratio_hist_marker_color']))     
 
     if (draw_options['blinded']):
-        ratioHist.SetLineColor(getattr(ROOT,cosmetics['ratio_hist_line_color_blind']))     
-        ratioHist.SetMarkerColor(getattr(ROOT,cosmetics['ratio_hist_marker_color_blind']))
+        ratio_histogram.SetLineColor(getattr(ROOT,cosmetics['ratio_hist_line_color_blind']))     
+        ratio_histogram.SetMarkerColor(getattr(ROOT,cosmetics['ratio_hist_marker_color_blind']))
 
-    return ratioHist
-## end configureRatioHist
+    return ratio_histogram
+## end configure_ratio_histogram
 
-def configureRatioErrHist( ratioErrHist ):
-    ratioErrHist.SetMarkerColor(getattr(ROOT,cosmetics['ratio_err_hist_marker_color']))
-    ratioErrHist.SetFillColor(getattr(ROOT,cosmetics['ratio_err_hist_fill_color']))
+def configure_ratio_error_histogram(ratio_error_histogram):
+    ratio_error_histogram.SetMarkerColor(getattr(ROOT,cosmetics['ratio_err_hist_marker_color']))
+    ratio_error_histogram.SetFillColor(getattr(ROOT,cosmetics['ratio_err_hist_fill_color']))
 
-    return ratioErrHist
-## end configureRatioErrHist
+    return ratio_error_histogram
+## end configure_ratio_error_histogram
         
-def makeDataRatioAsymmetricErrors ( nBins, xMin, xMax, ggg, iData, iSig , myStack ):
-    ratioMax = 2.3
-    gRatio = TGraphAsymmErrors(ggg.GetN())
-    for jBin in range(0, gRatio.GetN()):
-        xPoint = iData.GetBinCenter(jBin+1)
-        xWidth = 0.5*iData.GetBinWidth(jBin+1)
-        yG = ggg.GetY()[jBin]
-        yG_low  = ggg.GetEYlow()[jBin]
-        yG_high = ggg.GetEYhigh()[jBin]
+def make_data_ratio_asymmetric_errors (nBins, xMin, xMax, ggg, data_histogram, signal_histogram , stack_plot):
+    ratio_max = 2.3
+    g_ratio = TGraphAsymmErrors(ggg.GetN())
+    for bin in range(0, g_ratio.GetN()):
+        x_point = data_histogram.GetBinCenter(bin+1)
+        x_width = 0.5*data_histogram.GetBinWidth(bin+1)
+        yG = ggg.GetY()[bin]
+        yG_low  = ggg.GetEYlow()[bin]
+        yG_high = ggg.GetEYhigh()[bin]
         if not draw_options['blinded']:
-            yData = iData.GetBinContent(jBin+1)
+            y_data = data_histogram.GetBinContent(bin+1)
         else:
-            yData = iSig.GetBinContent(jBin+1)
+            y_data = signal_histogram.GetBinContent(bin+1)
                 
-        yBkg = myStack.GetStack().Last().GetBinContent(jBin+1)
+        yBkg = stack_plot.GetStack().Last().GetBinContent(bin+1)
                 
-        if (yBkg>0.):
+        if yBkg > 0.0:
             yG_ratio = yG/yBkg
             yG_ratio_low = yG_low/yBkg
             yG_ratio_high = yG_high/yBkg
         else:
-            yG_ratio = 0.
-            yG_ratio_low = 0.
-            yG_ratio_high = 0.
+            yG_ratio = 0.0
+            yG_ratio_low = 0.0
+            yG_ratio_high = 0.0
                         
-        if (yData>0):
-            gRatio.SetPoint(jBin, xPoint, yG_ratio )
-            gRatio.SetPointEYlow(jBin, yG_ratio_low)
-            gRatio.SetPointEYhigh(jBin, yG_ratio_high)                        
-            gRatio.SetPointEXlow(jBin, xWidth)
-            gRatio.SetPointEXhigh(jBin, xWidth)
+        if y_data > 0:
+            g_ratio.SetPoint(bin, x_point, yG_ratio)
+            g_ratio.SetPointEYlow(bin, yG_ratio_low)
+            g_ratio.SetPointEYhigh(bin, yG_ratio_high)                        
+            g_ratio.SetPointEXlow(bin, x_width)
+            g_ratio.SetPointEXhigh(bin, x_width)
 
-            if (yG_ratio>ratioMax and (yG_ratio - yG_ratio_low) < ratioMax):
-                minner = yG_ratio_low - (yG_ratio - ratioMax-0.0001)
-                gRatio.SetPoint(jBin, xPoint, ratioMax-0.0001 )
-                gRatio.SetPointEYlow(jBin, minner)
+            if (yG_ratio > ratio_max and (yG_ratio - yG_ratio_low) < ratio_max):
+                minner = yG_ratio_low - (yG_ratio - ratio_max - 0.0001)
+                g_ratio.SetPoint(bin, x_point, ratio_max - 0.0001)
+                g_ratio.SetPointEYlow(bin, minner)
 
-    return gRatio
-## end makeDataRatioAsymmetricErrors
+    return g_ratio
+## end make_data_ratio_asymmetric_errors
 
-def configureDataRatioAsymmetricErrors ( gRatio ):
-    gRatio.SetLineColor(getattr(ROOT,cosmetics['gRatio_line_color']))
-    gRatio.SetLineWidth(cosmetics['gRatio_line_width'])
+def configure_data_ratio_asymmetric_errors(g_ratio):
+    g_ratio.SetLineColor(getattr(ROOT,cosmetics['g_ratio_line_color']))
+    g_ratio.SetLineWidth(cosmetics['g_ratio_line_width'])
 
-    return gRatio
-## end configureDataRatioAsymmetricErrors
+    return g_ratio
+## end configure_data_ratio_asymmetric_errors
         
 if __name__ == '__main__':
         main()
