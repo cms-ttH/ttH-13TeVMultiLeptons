@@ -1,29 +1,35 @@
 #!/usr/bin/env python
 import os, sys
 import ROOT
+import string
 from distutils import file_util
 
-def get_afs_base_directory():
+def get_afs_base_directory(config_heading):
     import subprocess
     print "\n\nDid not find an afs_base_directory defined in the configuration file.  Looking for it now (this can take a minute)..."
     process = subprocess.Popen('ls -d /afs/nd.edu/user*/%s/www' % os.environ['USER'], stdout=subprocess.PIPE, shell=True)
     output, error = process.communicate()
     afs_base_directory = output.strip()
-    print "Found it! To skip this step next time, add the following line under the ['run_parameters'] heading in your configuration file: \n afs_base_directory: %s \n\n" % afs_base_directory
+    print "Found it! To skip this step next time, add the following line under the ['%s'] heading in your configuration file: \n afs_base_directory: %s \n\n" % (config_heading, afs_base_directory)
 
     return afs_base_directory 
             
-def copy_to_www_area(local_plot_directory, www_plot_directory, plot_name, *config_file_names):
-    print 'copying to ', www_plot_directory
-    file_util.move_file('%s/%s.png' % (local_plot_directory, plot_name), www_plot_directory)
+def copy_to_www_area(local_plot_directory, www_plot_directory, plot_name, *extra_file_names):
+    file_util.copy_file('%s/%s.png' % (local_plot_directory, plot_name), www_plot_directory)
     file_util.copy_file('%s/%s.pdf' % (local_plot_directory, plot_name), www_plot_directory)
-    for config_file_name in config_file_names:
+
+    for config_file_name in extra_file_names:
         file_util.copy_file('%s' % config_file_name, www_plot_directory)
-    
-def setup_www_directory(directory):
-    if not os.path.exists(directory): 
-        os.makedirs(directory)
-        file_util.copy_file(os.environ['CMSSW_BASE']+'/src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.php', directory)
+
+def setup_www_directory(directory, depth=1):
+    directory_parts = directory.split('/')
+    for level in range(depth):
+        parts_in_current_level = len(directory_parts) - level
+        directory_to_setup = string.join(directory_parts[:parts_in_current_level], '/')
+        if not os.path.exists(directory_to_setup): 
+            os.makedirs(directory_to_setup)
+        if not os.path.exists(directory_to_setup+'/index.php'):
+            file_util.copy_file(os.environ['CMSSW_BASE']+'/src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.php', directory_to_setup)
 
 def get_data_sample_name(lepton_category):
     if lepton_category == 'mu_ele':
@@ -65,15 +71,12 @@ class Plot:
         try:
             afs_base_directory = config['run_parameters']['afs_base_directory']
         except:
-            afs_base_directory = get_afs_base_directory()
+            afs_base_directory = get_afs_base_directory('run_parameters')
             config['run_parameters']['afs_base_directory'] = afs_base_directory
-            setup_www_directory(www_plot_directory)
             
         self.save_image('png', 'pdf')
-        www_project_directory = afs_base_directory + '/' + config['run_parameters']['label']
-        setup_www_directory(www_project_directory)
-        www_plot_directory = www_project_directory + '/' + lepton_category
-        setup_www_directory(www_plot_directory)
+        www_plot_directory = '%s/%s/%s' % (afs_base_directory, config['run_parameters']['label'], lepton_category)
+        setup_www_directory(www_plot_directory, 3)
 
         copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name, config_file_name)        
         
