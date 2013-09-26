@@ -43,26 +43,34 @@ def main():
     ## you won't need to prefix your root objects with ROOT
     from ROOT import * 
     gROOT.SetBatch()
-    
+
+    if args.web:
+        www_plot_directories = []
+        for lepton_category in lepton_categories:
+            for jet_tag_category in jet_tag_categories:
+                www_plot_directories.append('stack_plots/%s/%s_%s/' % (in_out_files['input_file_label'], lepton_category, jet_tag_category))
+
+        plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name, args.cosmetics_config_file_name)
+        print www_plot_directories
+        
     for lepton_category in lepton_categories:
         print '\n\nStarting lepton category %s...\n' % lepton_category
         for jet_tag_category in jet_tag_categories:
             print 'Starting jet tag category %s...' % jet_tag_category
             for distribution in distributions:
                 print 'Drawing distribution: %s with jet selection printing name: %s' %  (distribution, jet_tag_categories[jet_tag_category])
-                draw_stack_plot (lepton_category, jet_tag_category, distribution)
+                draw_stack_plot(lepton_category, jet_tag_category, distribution)
 
     if args.web:
         print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], in_out_files['input_file_label'])
 
 def draw_stack_plot (lepton_category, jet_tag_category, distribution):
     stack_plot = THStack("theStack", "")
-
     stack_plot_legend = make_legend()
     
     (luminosity_info_tex, selection_info_tex, SF_info_tex) = make_info_tex_objects(lepton_category, jet_tag_category)
     
-    histoStorageList = {}
+    histogram_dictionary = {}
     mc_sum = 0.0
     signal_sum = 0.0
     data_sum = 0.0
@@ -71,7 +79,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
     for sample in background_samples:
         for systematic in systematics:
             original_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category)
-            histoStorageList[sample+"_"+systematic] = original_histogram.Clone()
+            histogram_dictionary[sample+"_"+systematic] = original_histogram.Clone()
 
             if systematic == 'nominal':
                 histogram = original_histogram.Clone('stack')
@@ -84,7 +92,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
     ## Draw the signal sample histogram(s), put in legend
     for sample in signal_samples:
         original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category)
-        histoStorageList[sample+"_"+systematic] = original_histogram.Clone()
+        histogram_dictionary[sample+"_"+systematic] = original_histogram.Clone()
 
         if signal_samples[sample][4] == 'line':
             signal_histogram = original_histogram.Clone('signal')
@@ -111,7 +119,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
     ## Draw the data histogram, put in legend
     if not draw_options['blinded']:
         original_histogram = get_histogram(distribution, systematic, 'data', lepton_category, jet_tag_category)
-        histoStorageList['data'] = original_histogram.Clone()
+        histogram_dictionary['data'] = original_histogram.Clone()
 
         data_histogram = original_histogram.Clone('data')
         data_sum = data_histogram.Integral()
@@ -119,7 +127,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
 
     lumi_error = lumi_era['lumi_error']     
     trigger_SF_error = lumi_era['trig_SF_error']        
-    lumi_trigger_SF_error = math.sqrt(math.pow(lumi_error,2)+math.pow(trigger_SF_error,2))
+    lumi_trigger_SF_error = math.sqrt(math.pow(lumi_error, 2)+math.pow(trigger_SF_error, 2))
 
     try:
         nBins = stack_plot.GetStack().Last().GetNbinsX()
@@ -134,7 +142,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
         for sample in background_samples:
             for systematic in systematics:
-                bin_error_squared += math.pow(histoStorageList[sample+'_'+systematic].GetBinContent(i) - histoStorageList[sample+'_nominal'].GetBinContent(i), 2)
+                bin_error_squared += math.pow(histogram_dictionary[sample+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample+'_nominal'].GetBinContent(i), 2)
         mc_error_histogram.SetBinError(i, math.sqrt(bin_error_squared))
 
     mc_error_histogram.SetFillStyle(cosmetics['mc_err_fill_style'])
@@ -228,8 +236,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
             in_out_files['afs_base_directory'] = afs_base_directory
 
         www_plot_directory = '%s/stack_plots/%s/%s_%s/' % (afs_base_directory, in_out_files['input_file_label'], lepton_category, jet_tag_category)
-        plot_helper.setup_www_directory(www_plot_directory, 3)
-        plot_helper.copy_to_www_area(in_out_files['output_file_location'], www_plot_directory, plot_name, args.config_file_name, args.cosmetics_config_file_name)
+        plot_helper.copy_to_www_area(in_out_files['output_file_location'], www_plot_directory, plot_name)
 
     gPad.Close()
     top_canvas.Close()
@@ -244,7 +251,7 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
     if sample == 'data':
         sample = plot_helper.get_data_sample_name(lepton_category)
 
-    if systematic == 'nominal' or sample == 'data':
+    if systematic == 'nominal' or sample == plot_helper.get_data_sample_name(lepton_category):
         name_plus_cycle = '%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution)
     else:
         name_plus_cycle = '%s_%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution, systematic)

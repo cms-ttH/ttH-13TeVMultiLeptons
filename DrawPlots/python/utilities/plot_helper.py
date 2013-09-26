@@ -12,23 +12,38 @@ def get_afs_base_directory():
 
     return afs_base_directory 
             
-def copy_to_www_area(local_plot_directory, www_plot_directory, plot_name, *extra_file_names):
+def copy_to_www_area(local_plot_directory, www_plot_directory, plot_name):
     file_util.copy_file('%s/%s.png' % (local_plot_directory, plot_name), www_plot_directory)
     file_util.copy_file('%s/%s.pdf' % (local_plot_directory, plot_name), www_plot_directory)
 
-    for config_file_name in extra_file_names:
-        file_util.copy_file('%s' % config_file_name, www_plot_directory)
-
-def setup_www_directory(directory, depth=1):
+def make_sure_directories_exist(directories):
+    for directory in directories:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+                        
+def setup_www_directory(directory, depth=1, *extra_files_to_post):
     directory_parts = directory.split('/')
     for level in range(depth):
         parts_in_current_level = len(directory_parts) - level
         directory_to_setup = string.join(directory_parts[:parts_in_current_level], '/')
-        if not os.path.exists(directory_to_setup): 
-            os.makedirs(directory_to_setup)
+        make_sure_directories_exist([directory_to_setup])
+
         if not os.path.exists(directory_to_setup+'/index.php'):
             file_util.copy_file(os.environ['CMSSW_BASE']+'/src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.php', directory_to_setup)
 
+    for file in extra_files_to_post:
+        file_util.copy_file('%s' % file, directory)
+    
+def setup_www_directories(directories, depth=1, *extra_files_to_post):
+    for directory in directories:
+        setup_www_directory(directory, depth, *extra_files_to_post)
+
+def setup_web_posting(directories, depth=4, *extra_files_to_post):
+    afs_base_directory = get_afs_base_directory()
+
+    www_plot_directories = ['%s/%s' % (afs_base_directory, directory) for directory in directories]
+    setup_www_directories(www_plot_directories, depth, *extra_files_to_post)
+        
 def get_data_sample_name(lepton_category):
     if lepton_category == 'mu_ele':
         return 'MuEG'
@@ -65,18 +80,17 @@ class Plot:
         for type in image_types:
             canvas.Print('plot_pdfs/%s.%s' % (self.plot_name, type))
 
-    def post_to_web(self, config_file_name, config, lepton_category):
+    def post_to_web(self, config, lepton_category):
         try:
             afs_base_directory = config['run_parameters']['afs_base_directory']
         except:
             afs_base_directory = get_afs_base_directory()
             config['run_parameters']['afs_base_directory'] = afs_base_directory
-            
+        
         self.save_image('png', 'pdf')
-        www_plot_directory = '%s/%s/%s' % (afs_base_directory, config['run_parameters']['label'], lepton_category)
-        setup_www_directory(www_plot_directory, 3)
 
-        copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name, config_file_name)        
+        www_plot_directory = '%s/%s/%s' % (afs_base_directory, config['run_parameters']['label'], lepton_category)
+        copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name)        
         
     def set_style(self): #later we can add arguments for different style sets if needed
         #ROOT.gStyle.SetOptStat(0)
@@ -177,37 +191,43 @@ class DrawStringMaker:
 class SampleInformation:
     def __init__(self, sample):
         dictionary = {
-            'ww': {'is_data' : False,
+            'ww': {'is_data': False,
+                   'is_signal': False,
                    'x_section': 0.0548, #0.0571,
                    'x_section_error': 0.0015,
                    'num_generated': 9955089,
                    'systematics': 'all'},
 
             'wz': {'is_data' : False,
+                   'is_signal': False,
                    'x_section': 0.0323,
                    'x_section_error': 0.0007,
                    'num_generated':  9931257,
                    'systematics': 'all'},
 
             'zz': {'is_data': False,
+                   'is_signal': False,
                    'x_section': 0.0077,#0.00826,
                    'x_section_error': 0.00015,
                    'num_generated':  9755621,
                    'systematics': 'all'},
 
             'www': {'is_data': False,
+                    'is_signal': False,
                     'x_section': 0.00008217,#0.0571,
                     'x_section_error': 0.00008217*0.0015/0.0548,
                     'num_generated': 220040,
                     'systematics': 'all'},
             
             'wwz': {'is_data': False,
+                    'is_signal': False,
                     'x_section': 0.0000633,#0.0571,
                     'x_section_error': 0.0000633*0.0015/0.0548,
                     'num_generated': 221576,
                     'systematics': 'all'},
 
-            'wzz': {'is_data': False, 
+            'wzz': {'is_data': False,
+                    'is_signal': False,
                     # 		 'x_section': 0.00001922,#0.0571,
                     'x_section': 0.0000001,
                     'x_section_error': 0.00001922*0.0015/0.0548,
@@ -215,171 +235,199 @@ class SampleInformation:
                     'systematics': 'all'},                    
 
             'zzz': {'is_data': False,
+                    'is_signal': False,
                     'x_section': 0.000004587,#0.0571,
                     'x_section_error': 0.000004587*0.0015/0.0548,
                     'num_generated': 224519,
                     'systematics': 'all'},                                        
 
             'wjets': {'is_data': False,
+                      'is_signal': False,
                       'x_section': 36.257,
                       'x_section_error': 1.558,
                       'num_generated':  57536319,
                       'systematics': 'all'},                                                              
 
             'zjets': {'is_data': False,
+                      'is_signal': False,
                       'x_section': 3.5057,
                       'x_section_error': 0.132,
                       'num_generated':	30072710,
                       'systematics': 'all'},
             
             'zjets_lowmass': {'is_data': False,
-                             'x_section': 14.7, #0.860,
-                             'x_section_error': 0.132*0.86/3.5057,
-                             'num_generated': 37828841,
-                             'systematics': 'all'},
+                              'is_signal': False,
+                              'x_section': 14.7, #0.860,
+                              'x_section_error': 0.132*0.86/3.5057,
+                              'num_generated': 37828841,
+                              'systematics': 'all'},
 
             'ttbarW': {'is_data': False,
+                       'is_signal': False,
                        'x_section': 0.000232, #0.000163*1.5,
                        'x_section_error': 0.2*0.000249,
                        'num_generated':  195396,
                        'systematics': 'all'},                    
 
             'ttbarZ': {'is_data': False,
+                       'is_signal': False,
                        'x_section': 0.000208,#0.000136*1.5,
                        'x_section_error': 0.2*0.000208,
                        'num_generated':  209512,
                        'systematics': 'all'},                    
 
             'ttbarWW': {'is_data': False,
+                        'is_signal': False,
                         'x_section': 0.000002037,#0.000136*1.5,
                         'x_section_error': 0.2*0.000002037,
                         'num_generated':  216867,
                         'systematics': 'all'},                    
 
             'tttt': {'is_data': False,
+                     'is_signal': False,
                      'x_section': 0.0000000001,#0.000000716,
                      'x_section_error': 0.2*0.000000716,
                      'num_generated':  99994,
                      'systematics': 'all'},                    
 
             't_s': {'is_data': False,
+                    'is_signal': False,
                     'x_section': 0.00379,
                     'x_section_error': 0.00006*0.00379/(0.00379+0.00176),
                     'num_generated': 259657,
                     'systematics': 'all'},                    
 
             'tbar_s': {'is_data': False,
+                       'is_signal': False,
                        'x_section': 0.00176,
                        'x_section_error': 0.00006*0.00176/(0.00379+0.00176),
                        'num_generated': 139835,
                        'systematics': 'all'},                    
 
             't_t': {'is_data': False,
+                    'is_signal': False,
                     'x_section': 0.0564,
                     'x_section_error': 0.0032*0.0564/(0.0564+0.0307),
                     'num_generated': 3744404,
                     'systematics': 'all'},                    
 
             'tbar_t': {'is_data': False,
+                       'is_signal': False,
                        'x_section': 0.0307,
                        'x_section_error': 0.0032*0.0307/(0.0564+0.0307),
                        'num_generated': 1933504,
                        'systematics': 'all'},                    
 
             't_tW': {'is_data': False,
+                     'is_signal': False,
                      'x_section': 0.0111,
                      'x_section_error': 0.0008*0.0111/0.00106,	  #### 0.00106
                      'num_generated': 496918,
                      'systematics': 'all'},                    
 
             'tbar_tW': {'is_data': False,
+                        'is_signal': False,
                         'x_section': 0.0111,
                         'x_section_error': 0.0008*0.0111/0.00106,	 #### 0.00106
                         'num_generated': 492779,
                         'systematics': 'all'},                    
 
             'ttbb': {'is_data': False,
+                     'is_signal': False,
                      'x_section': 0.2458, #0.225197,
                      'x_section_error': 0.5*0.2458, #0.225197, #0.3*0.225197,
                      'num_generated':  6912438+1362471,
                      'systematics': 'all'},                    
 
             'ttcc': {'is_data': False,
+                     'is_signal': False,
                      'x_section': 0.2458, #0.225197,
                      'x_section_error': 0.3*0.2458, #0.225197,
                      'num_generated':  6912438+1362471,
                      'systematics': 'all'},                    
 
             'ttbar': {'is_data': False,
+                      'is_signal': False,
                       'x_section': 0.2458, #0.225197,
                       'x_section_error': 0.024,
                       'num_generated':  6912438+1362471,
                       'systematics': 'all'},                    
 
             'ttH110': {'is_data': False,
+                       'is_signal': True,
                        'x_section': 0.0001887,
                        'x_section_error': 0.0,
                        'num_generated': 975341,
                        'systematics': 'all'},                    
 
             'ttH115': {'is_data': False,
+                       'is_signal': True,
                        'x_section': 0.0001663,
                        'x_section_error': 0.0,
                        'num_generated': 995188,
                        'systematics': 'all'},                    
 
             'ttH120': {'is_data': False,
+                       'is_signal': True,
                        'x_section': 0.000147,
                        'x_section_error': 0.0,
                        'num_generated': 996773,
                        'systematics': 'all'},
 
             'ttH125': {'is_data': False,
+                       'is_signal': True,
                        'x_section': 0.0001302,
                        'x_section_error': 0.0,
                        'num_generated': 992997,
                        'systematics': 'all'},
 
             'ttH130': {'is_data': False,
+                       'is_signal': True,
                        'x_section': 0.0001157,
                        'x_section_error': 0.0,
                        'num_generated': 931369,
                        'systematics': 'all'},                    
 
             'ttH135': {'is_data': False,
+                       'is_signal': True,
                        'x_section': 0.0001031,
                        'x_section_error': 0.0,
                        'num_generated': 993975,
                        'systematics': 'all'},                    
 
             'ttH140': {'is_data': False,
+                       'is_signal': True,
                        'x_section': 0.00009207,
                        'x_section_error': 0.0,
                        'num_generated': 997191,
                        'systematics': 'all'},                    
 
             'MuEG': {'is_data': True,
-                              'x_section': 1,
-                              'x_section_error': 0.0,
-                              'num_generated': 1,
-                              'systematics': 'none'},
+                     'is_signal': False,
+                     'x_section': 1,
+                     'x_section_error': 0.0,
+                     'num_generated': 1,
+                     'systematics': 'none'},
 
             'DoubleMu': {'is_data': True,
-                              'x_section': 1,
-                              'x_section_error': 0.0,
-                              'num_generated': 1,
-                              'systematics': 'none'},
+                         'is_signal': False,
+                         'x_section': 1,
+                         'x_section_error': 0.0,
+                         'num_generated': 1,
+                         'systematics': 'none'},
 
             'DoubleElectron': {'is_data': True,
-                              'x_section': 1,
-                              'x_section_error': 0.0,
-                              'num_generated': 1,
-                              'systematics': 'none'}            
+                               'is_signal': False,
+                               'x_section': 1,
+                               'x_section_error': 0.0,
+                               'num_generated': 1,
+                               'systematics': 'none'}            
 
             }
 
         self.sample = sample
         self.is_data = dictionary[sample]['is_data']
+        self.is_signal = dictionary[sample]['is_signal']        
         self.x_section = dictionary[sample]['x_section']
         self.x_section_error = dictionary[sample]['x_section_error']
         self.num_generated = dictionary[sample]['num_generated']
@@ -392,13 +440,13 @@ class SystematicsInformation:
     def __init__(self, baseline_systematics=[]):
         self.systematics_list = ['nominal'] 
         self.dictionary = {
-            'nominal': {'weight_string': '1', 'source_file_label': ''},
-            'JESUp': {'weight_string': '1', 'source_file_label': 'JESUp'},
-            'weight_PUup': {'weight_string':'(weight_PUup/weight_PU)', 'source_file_label': ''},
-            'weight_PUdown': {'weight_string':'(weight_PUdown/weight_PU)', 'source_file_label': ''},            
-            'CSV_HFUp': {'weight_string': 'CSV_HFUp', 'source_file_label': ''},
-            'topPtWgtDown': {'weight_string': '(1/topPtWgt)', 'source_file_label': ''},
-            'topPtWgtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'source_file_label': ''}            
+            'nominal': {'weight_string': '1', 'systematic_label': ''},
+            'JESUp': {'weight_string': '1', 'systematic_label': '_JESUp'},
+            'weight_PUup': {'weight_string':'(weight_PUup/weight_PU)', 'systematic_label': '_weight_PUup'},
+            'weight_PUdown': {'weight_string':'(weight_PUdown/weight_PU)', 'systematic_label': '_weight_PUdown'},            
+            'CSV_HFUp': {'weight_string': 'CSV_HFUp', 'systematic_label': '_CSV_HFUp'},
+            'topPtWgtDown': {'weight_string': '(1/topPtWgt)', 'systematic_label': '_topPtWgtDown'},
+            'topPtWgtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'systematic_label': '_topPtWgtUp'}            
             }
 
         self.add_systematics(baseline_systematics)
@@ -410,7 +458,7 @@ class SystematicsInformation:
         if sample_systematics_string == 'none' or sample_systematics_string == 'None':
             self.systematics_list = ['nominal']
         else:
-            systematics_set = set(self.systematics_list) #copy into a set for convenient duplicate removal
+            systematics_set = set(self.systematics_list) #copy into a set for duplicate removal
 
             import re
             systematics_to_add = []
