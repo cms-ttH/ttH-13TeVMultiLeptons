@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 import os, sys
-import ConfigParser
 from argparse import ArgumentParser
 import math
-from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
 import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
+from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddictyamlloader import OrderedDictYAMLLoader
 import yaml
 
 parser = ArgumentParser(description='Make stack plots from histogram files.')
@@ -16,16 +15,18 @@ args = parser.parse_args()
 ## config is mostly options that change the substance of what is displayed
 ## config_cosmetics is mostly options that change the style of the stack plot
 with open(args.config_file_name) as config_file:
-    config = yaml.load(config_file)
+    config = yaml.load(config_file, Loader=OrderedDictYAMLLoader)
 
 with open(args.cosmetics_config_file_name) as cosmetics_file:
     cosmetics = yaml.load(cosmetics_file)
 
 lepton_categories = config['lepton categories']
 jet_tag_categories = config['jet tag categories']
+distributions = config['distributions']
 signal_samples = config['signal samples']
 background_samples = config['background samples']
-distributions = config['distributions']
+if config.has_key('background sample groups'):
+    background_sample_groups = config['background sample groups']
 
 def main():
     ## import the root libraries; with this import
@@ -46,6 +47,7 @@ def main():
 
         for jet_tag_category in jet_tag_categories:
             print 'Starting jet tag category %s...' % jet_tag_category
+
             for distribution in distributions:
                 print 'Drawing distribution: %s with jet selection printing name: %s' %  (distribution, jet_tag_categories[jet_tag_category])
                 draw_stack_plot(lepton_category, jet_tag_category, distribution)
@@ -74,9 +76,28 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
                 histogram = original_histogram.Clone('stack')
                 mc_sum += histogram.Integral()
                 sample_info = plot_helper.SampleInformation(sample)
-                xsec_frac_error = sample_info.x_section / sample_info.x_section_error
+                xsec_frac_error = sample_info.x_section / sample_info.x_section_error #is this being used?
                 stack_plot.Add(histogram, "hist")
                 stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
+
+    # Sum histograms in each sample group, then add summed histos to stack plot and histogram_dictionary
+    if config.has_key('background sample groups'):
+        for sample_group in background_sample_groups:
+            for systematic in config['systematics']:
+                samples_in_group = background_sample_groups[sample_group]['samples']
+                for index, sample in enumerate(samples_in_group):
+                    sample_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category)
+                    if index == 0:
+                        group_histogram = sample_histogram
+                    else:
+                        group_histogram.Add(sample_histogram)
+
+                histogram_dictionary[sample_group+'_'+systematic] = group_histogram.Clone()
+                if systematic == 'nominal':
+                    histogram = group_histogram.Clone('stack')
+                    mc_sum += group_histogram.Integral()
+                    stack_plot.Add(histogram, "hist")
+                    stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_sample_groups[sample_group]['draw name'], group_histogram.Integral()), 'f')
 
     ## Draw the signal sample histogram(s), put in legend
     for sample in signal_samples:
@@ -93,7 +114,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
         signal_sum = signal_histogram.Integral()
 
         if (signal_sum > 0 and signal_samples[sample]['scale'] == 'norm'):
-            signal_histogram.Scale(mc_sum/signal_sum)
+            signal_histogram.Scale(mc_sum / signal_sum)
         elif (signal_sum > 0):
             signal_histogram.Scale(signal_samples[sample]['scale'])
 
@@ -101,9 +122,9 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
             stack_plot.Add(signal_histogram, 'hist')
 
         if (signal_sum > 0):
-            stack_plot_legend.AddEntry(histogram, '%s (%0.1f x %0.1f)' % (signal_samples[sample]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), 'l')
+            stack_plot_legend.AddEntry(signal_histogram, '%s (%0.1f x %0.1f)' % (signal_samples[sample]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), 'l')
         else:
-            stack_plot_legend.AddEntry(histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], 'l')
+            stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], 'l')
 
     ## Draw the data histogram, put in legend
     if not config['blinded']:
@@ -132,6 +153,10 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
         for sample in background_samples:
             for systematic in config['systematics']:
                 bin_error_squared += math.pow(histogram_dictionary[sample+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample+'_nominal'].GetBinContent(i), 2)
+        if config.has_key('background sample groups'):
+            for sample_group in background_sample_groups:
+                for systematic in config['systematics']:
+                    bin_error_squared += math.pow(histogram_dictionary[sample_group+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample+'_nominal'].GetBinContent(i), 2)
         mc_error_histogram.SetBinError(i, math.sqrt(bin_error_squared))
 
     mc_error_histogram.SetFillStyle(cosmetics['mc error fill style'])
@@ -165,15 +190,15 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
 
     stack_plot.Draw()
     ## For some reason can't be done before Draw()
-    stack_plot.GetYaxis().SetTitleSize(cosmetics['stack y axis title size']) 
+    stack_plot.GetYaxis().SetTitleSize(cosmetics['stack y axis title size'])
     stack_plot.GetYaxis().SetTitleOffset(cosmetics['stack y axis title offset'])
     mc_error_histogram.Draw(cosmetics['mc error histogram draw style'])
     signal_histogram.Draw(cosmetics['signal histogram draw style'])
-    
+
     ## asymmetrical poisson errors for data
     ggg = get_configured_data_asymmetric_errors(data_histogram)
 
-    if (not config['blinded']): ggg.Draw(cosmetics['ggg draw style']) 
+    if (not config['blinded']): ggg.Draw(cosmetics['ggg draw style'])
 
     ## calculate the KS test result, put it somewhere
     if (config['KS test']):
@@ -182,30 +207,30 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
 
     if config['draw legend']: stack_plot_legend.Draw()
 
-    luminosity_info_tex.DrawLatex(cosmetics['lumi text first'], cosmetics['lumi text second'], luminosity_info_tex.GetTitle()) 
+    luminosity_info_tex.DrawLatex(cosmetics['lumi text first'], cosmetics['lumi text second'], luminosity_info_tex.GetTitle())
     if config['selection info']: selection_info_tex.DrawLatex(cosmetics['selection text first'], cosmetics['selection text second'], selection_info_tex.GetTitle())
 
     if config['SF info']:
         if (dist.find('CFMlpANN') != -1):
             SF_info_tex.DrawLatex(cosmetics['SF info min'], cosmetics['SF info max'], SF_info_tex.GetTitle())
-        
+
     bottom_canvas.cd()
 
     (ratio_histogram, ratio_error_histogram) = make_ratio_histogram(nBins, xMin, xMax, mc_error_histogram, data_histogram, signal_histogram)
 
     ratio_histogram = configure_ratio_histogram(ratio_histogram, distribution)
     ratio_error_histogram = configure_ratio_error_histogram(ratio_error_histogram)
-    ratio_histogram.DrawCopy() 
+    ratio_histogram.DrawCopy()
     if (not config['blinded']):
         ratio_error_histogram.DrawCopy('e2same')
-        ratio_histogram.Draw('sameaxis') 
+        ratio_histogram.Draw('sameaxis')
 
     ## asymmetrical poisson errors for data in ratio plot
     g_ratio = make_data_ratio_asymmetric_errors(nBins, xMin, xMax, ggg, data_histogram, signal_histogram, stack_plot)
     g_ratio = configure_data_ratio_asymmetric_errors (g_ratio)
-          
-    if (not config['blinded']): g_ratio.Draw('psame') 
-        
+
+    if (not config['blinded']): g_ratio.Draw('psame')
+
     l = TLine()
     l.DrawLine(xMin, 1., xMax, 1.)
 
@@ -245,6 +270,9 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
     else:
         name_plus_cycle = '%s_%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution, systematic)
 
+    print '%s%s/%s_%s_%s_%s.root' % (config['input file location'], lepton_category, lepton_category, jet_tag_category, sample, config['input file label'])
+    print name_plus_cycle
+
     root_file = TFile('%s%s/%s_%s_%s_%s.root' % (config['input file location'], lepton_category, lepton_category, jet_tag_category, sample, config['input file label']))
     histogram = root_file.Get(name_plus_cycle).Clone()
 
@@ -263,24 +291,27 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
         histogram.SetMarkerStyle(cosmetics['data marker style'])
         histogram.SetMarkerSize(cosmetics['data marker size'])
 
-    elif (sample in background_samples):
+    elif sample in background_samples:
         histogram.SetLineColor(getattr(ROOT, background_samples[sample]['color']))
         histogram.SetFillColor(getattr(ROOT, background_samples[sample]['color']))
         histogram.SetFillStyle(cosmetics['background fill style'])
 
-    elif (sample in signal_samples):
-        if (signal_samples[sample]['stack or line'] == 'line'):
-            histogram.SetLineColor(getattr(ROOT,signal_samples[sample][3]))
-            histogram.SetFillColor(getattr(ROOT,signal_samples[sample][3]))
-            histogram.SetLineWidth(signal_samples[sample][5])
-
-    elif (signal_samples[sample][4] == 'stack'):
-        histogram.SetLineColor(getattr(ROOT,signal_samples[sample][3]))
-        histogram.SetFillColor(getattr(ROOT,signal_samples[sample][3]))
+    elif config.has_key('background sample groups') and sample in background_sample_groups:
+        histogram.SetLineColor(getattr(ROOT, background_sample_groups[sample]['color']))
+        histogram.SetFillColor(getattr(ROOT, background_sample_groups[sample]['color']))
         histogram.SetFillStyle(cosmetics['background fill style'])
 
-    else:
-        sys.exit('Error - must select either line or stack for signal_sample '+sample+'.  Quitting.')
+    elif sample in signal_samples:
+        histogram.SetLineColor(getattr(ROOT,signal_samples[sample]['color']))
+        histogram.SetFillColor(getattr(ROOT,signal_samples[sample]['color']))
+
+        if (signal_samples[sample]['stack or line'] == 'line'):
+            print signal_samples[sample]['line width']
+            histogram.SetLineWidth(signal_samples[sample]['line width'])
+        elif (signal_samples[sample]['stack or line'] == 'stack'):
+            histogram.SetFillStyle(cosmetics['background fill style'])
+        else:
+            sys.exit('Error - must select either line or stack for signal_sample '+sample+'.  Quitting.')
 
     return histogram
 ## end of get_histogram
