@@ -56,10 +56,10 @@ class Plot:
     def __init__(self, sample, output_file, tree, distribution, plot_name, parameters, draw_string):
         self.plot_name = plot_name
         (num_bins, x_min, x_max) = parameters['binning']
-        parameters['axis labels'].insert(0, sample) #Insert sample name as title
 
         if parameters['plot type'] == 'TH1F':
-            self.plot = ROOT.TH1F(plot_name, ';'.join(parameters['axis labels']), num_bins, x_min, x_max)
+            title = '%s;%s;%s' % (sample, parameters['axis labels'][0], parameters['axis labels'][1])
+            self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
             tree.Project(self.plot_name, distribution, draw_string)
         else:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
