@@ -2,7 +2,6 @@
 
 See the [ttH twiki](https://twiki.cern.ch/twiki/bin/viewauth/CMS/TTbarHiggs) for instructions to set up your `CMSSW` area.
 See the [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NovaDilWorkflow) for more information about how to use some of these scripts.
-
 [PyYaml](http://pyyaml.org/wiki/PyYAML) is a pre-requisite.  Install it locally after executing `cmsenv`:
 
 	cd /tmp
