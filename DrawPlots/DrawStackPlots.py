@@ -81,12 +81,14 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
                 stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
 
     # Sum histograms in each sample group, then add summed histos to stack plot and histogram_dictionary
+    samples_and_sample_groups = background_samples.keys()
     if config.has_key('background sample groups'):
+        samples_and_sample_groups.extend(background_sample_groups.keys())
         for sample_group in background_sample_groups:
             for systematic in config['systematics']:
                 samples_in_group = background_sample_groups[sample_group]['samples']
                 for index, sample in enumerate(samples_in_group):
-                    sample_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category)
+                    sample_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group)
                     if index == 0:
                         group_histogram = sample_histogram
                     else:
@@ -105,7 +107,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
         histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
 
         if signal_samples[sample]['stack or line'] == 'line':
-            signal_histogram = original_histogram.Clone('signal') #should this be 'line'?
+            signal_histogram = original_histogram.Clone('nostack') #should this be 'line'?
         elif signal_samples[sample]['stack or line'] == 'stack':
             signal_histogram = original_histogram.Clone('stack')
         else:
@@ -118,8 +120,9 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
         elif (signal_sum > 0):
             signal_histogram.Scale(signal_samples[sample]['scale'])
 
-        if (signal_samples[sample]['stack or line'] == 'stack'):
-            stack_plot.Add(signal_histogram, 'hist')
+#still see signal after commenting these lines?!
+#         if (signal_samples[sample]['stack or line'] == 'stack'):
+#             stack_plot.Add(signal_histogram, "hist")
 
         if (signal_sum > 0):
             stack_plot_legend.AddEntry(signal_histogram, '%s (%0.1f x %0.1f)' % (signal_samples[sample]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), 'l')
@@ -150,13 +153,10 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
     for i in range(1, nBins+1):
         mc_error_histogram.SetBinContent(i,stack_plot.GetStack().Last().GetBinContent(i))
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
-        for sample in background_samples:
+        for sample in samples_and_sample_groups:
             for systematic in config['systematics']:
                 bin_error_squared += math.pow(histogram_dictionary[sample+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample+'_nominal'].GetBinContent(i), 2)
-        if config.has_key('background sample groups'):
-            for sample_group in background_sample_groups:
-                for systematic in config['systematics']:
-                    bin_error_squared += math.pow(histogram_dictionary[sample_group+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample+'_nominal'].GetBinContent(i), 2)
+
         mc_error_histogram.SetBinError(i, math.sqrt(bin_error_squared))
 
     mc_error_histogram.SetFillStyle(cosmetics['mc error fill style'])
@@ -260,7 +260,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
 ## end draw_stack_plot
 
 ## Gets a single histogram
-def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category):
+def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group=''):
     histogram = None
     if sample == 'data':
         sample = plot_helper.get_data_sample_name(lepton_category)
@@ -270,9 +270,6 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
     else:
         name_plus_cycle = '%s_%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution, systematic)
 
-    print '%s%s/%s_%s_%s_%s.root' % (config['input file location'], lepton_category, lepton_category, jet_tag_category, sample, config['input file label'])
-    print name_plus_cycle
-
     root_file = TFile('%s%s/%s_%s_%s_%s.root' % (config['input file location'], lepton_category, lepton_category, jet_tag_category, sample, config['input file label']))
     histogram = root_file.Get(name_plus_cycle).Clone()
 
@@ -280,7 +277,6 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
         print 'Oops! Error looking for histo %s, exiting...' % (distribution)
         sys.exit()
 
-#    histogram.UseCurrentStyle() ##What does this do?
     histogram.SetDirectory(0) ##Decouples histogram from root file
 
     if (sample == 'MuEG' or sample == 'DoubleMu' or sample == 'DoubleElectron'):
@@ -291,14 +287,14 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
         histogram.SetMarkerStyle(cosmetics['data marker style'])
         histogram.SetMarkerSize(cosmetics['data marker size'])
 
+    elif config.has_key('background sample groups') and sample_group in background_sample_groups:
+        histogram.SetLineColor(getattr(ROOT, background_sample_groups[sample_group]['color']))
+        histogram.SetFillColor(getattr(ROOT, background_sample_groups[sample_group]['color']))
+        histogram.SetFillStyle(cosmetics['background fill style'])
+
     elif sample in background_samples:
         histogram.SetLineColor(getattr(ROOT, background_samples[sample]['color']))
         histogram.SetFillColor(getattr(ROOT, background_samples[sample]['color']))
-        histogram.SetFillStyle(cosmetics['background fill style'])
-
-    elif config.has_key('background sample groups') and sample in background_sample_groups:
-        histogram.SetLineColor(getattr(ROOT, background_sample_groups[sample]['color']))
-        histogram.SetFillColor(getattr(ROOT, background_sample_groups[sample]['color']))
         histogram.SetFillStyle(cosmetics['background fill style'])
 
     elif sample in signal_samples:
@@ -306,7 +302,6 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
         histogram.SetFillColor(getattr(ROOT,signal_samples[sample]['color']))
 
         if (signal_samples[sample]['stack or line'] == 'line'):
-            print signal_samples[sample]['line width']
             histogram.SetLineWidth(signal_samples[sample]['line width'])
         elif (signal_samples[sample]['stack or line'] == 'stack'):
             histogram.SetFillStyle(cosmetics['background fill style'])
