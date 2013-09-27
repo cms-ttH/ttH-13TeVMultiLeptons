@@ -41,7 +41,10 @@ def main():
         make_plots(args, config, samples, lepton_categories)
 
     if args.web:
-        print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['label'])
+        if args.batch:
+            print '\nFinished submitting jobs.  After they complete, plots will be posted to: http://www.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], config['label'])
+        else:
+            print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['label'])
 
 def make_plots(args, config, samples, lepton_categories):
     for sample in samples:
