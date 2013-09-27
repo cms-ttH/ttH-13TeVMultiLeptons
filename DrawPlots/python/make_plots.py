@@ -5,6 +5,7 @@ from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
 import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
 from argparse import ArgumentParser
 import ROOT
+import yaml
 
 def main():
     parser = ArgumentParser(description='Make plots from summary trees.')
@@ -18,81 +19,70 @@ def main():
     parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
     args = parser.parse_args()
 
-    config = ConfigParser()
-    config.read(args.config_file_name)
+    with open(args.config_file_name) as config_file:
+        config = yaml.load(config_file)
 
-    samples = config['samples'].keys()
+    samples = config['samples']
     if args.sample:
         samples = args.sample
 
-    lepton_categories = config['lepton_categories'].keys()
+    lepton_categories = config['lepton categories']
     if args.lepton_category:
         lepton_categories = args.lepton_category
-        
+
     plot_helper.make_sure_directories_exist(lepton_categories)
     if args.web:
-        www_plot_directories = [config['run_parameters']['label']+'/'+lepton_category for lepton_category in lepton_categories]
+        www_plot_directories = [config['label']+'/'+lepton_category for lepton_category in lepton_categories]
         plot_helper.setup_web_posting(www_plot_directories, 3, args.config_file_name)
-                                      
-    project_label = config['run_parameters']['label']
+
     if args.batch:
-        submit_batch_jobs(samples, lepton_categories, project_label)
+        submit_batch_jobs(config, samples, lepton_categories)
     else:
-        make_plots(args, config, samples, lepton_categories, project_label)
+        make_plots(args, config, samples, lepton_categories)
 
     if args.web:
-        print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['run_parameters']['label'])
+        print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['label'])
 
-def make_plots(args, config, samples, lepton_categories, project_label):
-    lumi = config['run_parameters']['lumi']
-    default_num_bins = config['run_parameters']['default_num_bins']
-    input_trees_directory = config['run_parameters']['input_trees_directory']
-    cut_strings = config['common cuts'].values() #.values() returns a list of everything after the ':' under the 'cuts' header in the config file
-    jet_tag_categories = config['jet_tag_categories'].keys() #.keys() returns a list of everything before the ':' under the 'distributions' header in the config file
-    mc_weight_strings = config['mc_weights'].values()
-    baseline_systematics = config['baseline_systematics'].keys()
-    distributions = config['distributions'].keys()
-    plot_parameters = config['distributions'].values()
-
+def make_plots(args, config, samples, lepton_categories):
     for sample in samples:
         sample_info = plot_helper.SampleInformation(sample)
 
         for lepton_category in lepton_categories:
+            lepton_category_cut_strings = config['%s cuts' % lepton_category].values()
             if sample_info.is_data and not plot_helper.get_data_sample_name(lepton_category) == sample:
                     continue
-            lepton_category_cut_strings = config['%s cuts' % lepton_category].values()
 
-            for jet_tag_category in jet_tag_categories:
-                output_file_name = '%s/%s_%s_%s_%s.root' % (lepton_category, lepton_category, jet_tag_category, sample, project_label)
+            for jet_tag_category in config['jet tag categories']:
+                output_file_name = '%s/%s_%s_%s_%s.root' % (lepton_category, lepton_category, jet_tag_category, sample, config['label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
-                systematics_info = plot_helper.SystematicsInformation(baseline_systematics)
+                systematics_info = plot_helper.SystematicsInformation(config['baseline systematics'])
                 systematics_info.edit_systematics_list(sample_info.systematics)
                 for systematic in systematics_info.systematics_list:
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
-                    
+
                     systematic_weight_string = systematics_info.dictionary[systematic]['weight_string']
                     systematic_label = systematics_info.dictionary[systematic]['systematic_label']
-                    source_file_name = '%s/%s_%s_all.root' % (input_trees_directory, sample, project_label)
+                    source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], sample, config['label'])
                     if args.file:
                         source_file_name = args.file
                     source_file = ROOT.TFile(source_file_name)
                     tree = source_file.Get('summaryTree')
 
                     draw_string_maker = plot_helper.DrawStringMaker()
-                    draw_string_maker.append_selection_requirements(cut_strings)
-                    draw_string_maker.append_selection_requirements(lepton_category_cut_strings)                    
+                    draw_string_maker.append_selection_requirements(config['common cuts'].values())
+                    draw_string_maker.append_selection_requirements(lepton_category_cut_strings)
                     draw_string_maker.append_jet_tag_category_requirements(jet_tag_category)
 
                     if not sample_info.is_data and not args.no_weights:
-                        draw_string_maker.multiply_by_factor(systematic_weight_string)                        
-                        draw_string_maker.multiply_by_factors(mc_weight_strings)
+                        draw_string_maker.multiply_by_factor(systematic_weight_string)
+                        draw_string_maker.multiply_by_factors(config['mc weights'])
 
-                    for (distribution, parameters) in zip(distributions, plot_parameters):
+                    for distribution in config['distributions'].keys():
                         plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, systematic_label)
-                        plot = plot_helper.Plot(output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string_maker.draw_string)
+                        plot = plot_helper.Plot(sample, output_file, tree, distribution, plot_name, config['distributions'][distribution], draw_string_maker.draw_string)
                         if not sample_info.is_data:
-                            plot.plot.Scale(sample_info.x_section * lumi * plot.plot.GetEntries() / sample_info.num_generated)
+                            plot.plot.Scale(sample_info.x_section * config['luminosity'] * plot.plot.GetEntries() / sample_info.num_generated)
                         if args.pdf:
                             plot.save_image('pdf')
                         if args.web:
@@ -101,7 +91,7 @@ def make_plots(args, config, samples, lepton_categories, project_label):
                     source_file.Close() #end systematic
                 output_file.Close() #end jet tag category
 
-def submit_batch_jobs(samples, lepton_categories, project_label):
+def submit_batch_jobs(config, samples, lepton_categories):
     if not os.path.exists('batch_logs'):
         os.makedirs('batch_logs')
 
@@ -109,16 +99,16 @@ def submit_batch_jobs(samples, lepton_categories, project_label):
     for argument in sys.argv[1:]:
         if argument != '-b' and argument != '-batch':
             argument_string += argument + ' '
-                
+
     condor_header = 'universe = vanilla \nexecutable = make_plots.py \nnotification = Never \ngetenv = True \n+IsExpressJob = True'
     for sample in samples:
         for lepton_category in lepton_categories:
             condor_submit_file = open('make_plots_batch.submit', 'w')
             condor_submit_file.write(condor_header)
             condor_submit_file.write('\narguments = -s %s -l %s %s' % (sample, lepton_category, argument_string))
-            condor_submit_file.write('\nlog = batch_logs/%s_%s_%s.log' % (project_label, sample, lepton_category))
-            condor_submit_file.write('\noutput = batch_logs/%s_%s_%s.stdout' % (project_label, sample, lepton_category))
-            condor_submit_file.write('\nerror = batch_logs/%s_%s_%s.stderr' % (project_label, sample, lepton_category))
+            condor_submit_file.write('\nlog = batch_logs/%s_%s_%s.log' % (config['label'], sample, lepton_category))
+            condor_submit_file.write('\noutput = batch_logs/%s_%s_%s.stdout' % (config['label'], sample, lepton_category))
+            condor_submit_file.write('\nerror = batch_logs/%s_%s_%s.stderr' % (config['label'], sample, lepton_category))
             condor_submit_file.write('\nqueue 1')
             condor_submit_file.close()
 

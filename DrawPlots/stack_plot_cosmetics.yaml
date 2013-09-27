@@ -1,0 +1,104 @@
+legend x1: 0.155
+legend y1: 0.77
+legend x2: 0.92
+legend y2: 0.89
+legend fill color: kWhite
+legend border size: 0
+legend n columns: 3
+
+lumi text font: 42
+lumi text size: 0.035
+lumi text first: 0.14
+lumi text second: 0.91
+
+selection text font: 42
+selection text size: 0.05
+selection text first: 0.45
+selection text second: 0.84
+
+SF text font: 42
+SF text size: 0.05
+SF info min: 0.64
+SF info max: 0.77
+SF info: false
+
+mc error fill style: 3654
+mc error fill color: kBlack
+
+stack minimum: 0.001
+stack lowest maximum: 1.001
+stack maximum factor: 1.2
+stack minimum log scale: 0.1
+stack lowest maximum log scale: 1.2
+stack maximum factor log scale: 10.0
+
+pad border mode: 0
+frame border mode: 0
+
+canvas min: 600
+canvas max: 700
+
+top canvas x1: 0.00001
+top canvas y1: 0.30001
+top canvas x2: 0.99999
+top canvas y2: 0.99999
+
+bottom canvas x1: 0.00001
+bottom canvas y1: 0.00001
+bottom canvas x2: 0.99999
+bottom canvas y2: 0.29999
+
+top canvas left margin: 0.11
+bottom canvas left margin: 0.11
+top canvas right margin: 0.05
+bottom canvas right margin: 0.05
+top canvas top margin: 0.1
+bottom canvas bottom margin: 0.3
+
+pad bottom margin: 0.00001
+pad top margin: 0.00001
+
+stack y axis title size: 0.05
+stack y axis title offset: 1.1
+
+mc error histogram draw style: 'e2same'
+signal histogram draw style: 'histsame'
+
+ggg line color: kBlack
+ggg marker style: 20
+ggg line width: 2
+ggg marker size: 1
+ggg draw style: 'psame'
+
+g ratio line color: kBlack
+g ratio line width: 2
+
+ratio hist min: 0.0
+ratio hist max: 2.0
+ratio hist y axis title size: 0.1
+ratio hist y axis title offset: 0.55
+ratio hist y axis label size: 0.1
+ratio hist y axis Ndivisions: 50404
+
+ratio hist x axis title size: 0.14
+ratio hist x axis title offset: 0.92
+ratio hist x axis label size: 0.12
+ratio hist x axis label offset: 0.02
+
+ratio hist line color: kBlack
+ratio hist marker color: kBlack
+
+ratio hist line color blind: kBlue+2
+ratio hist marker color blind: kBlue+2
+
+ratio err hist marker color: kGreen
+ratio err hist fill color: kGreen
+
+data line color: kBlack
+data marker color: kBlack
+data fill color: kBlack
+data line width: 2
+data marker style: 20
+data marker size: 0.5
+
+background fill style: 1001

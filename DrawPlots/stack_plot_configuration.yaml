@@ -1,0 +1,92 @@
+#input and output file names
+input file location: /afs/crc.nd.edu/user/a/awoodard/CMSSW_5_3_11_patch5/src/ttHMultileptonAnalysis/DrawPlots/python/
+input file label: framework_studies_v1
+output file location: pdf/
+
+#drawing options
+skip systematics: false
+draw ratio plot: true
+draw legend: true
+log scale: false
+save png: true
+save pdf: true
+blinded: false
+KS test: false
+selection info : false
+SF info: false
+
+#luminosity and era
+luminosity: 19.5
+luminosity error: 0.044
+trigger SF error: 0.02
+lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
+
+#Samples, ordered bottom-to-top: draw name , color
+background samples:
+    ttbarW:
+        draw name: "t#bar{t}W"
+        color: kGreen
+
+    ttbarZ:
+        draw name: "t#bar{t}Z"
+        color: kViolet
+
+    wz:
+        draw name: "wz"
+        color: kOrange
+
+    zz:
+        draw name: "zz"
+        color: kBlue
+
+#Samples drawn on top: color, "draw name", "stack" or "line" , line width , scaling (1.0, 2.0, "norm" for area-normalized) 
+signal samples:
+    ttH125:
+        draw name: "t#bar{t}H125"
+        color: kRed
+        stack or line: stack
+        line width: 1.0
+        scale: 1.0
+
+#Lepton categories: "draw name"
+lepton categories:
+    mu_mu: " #mu #mu "
+    ele_ele: " e e "
+    mu_ele: " #mu e "
+
+#Jet-tag categories: "draw name"
+jet tag categories:
+    ge4j: " + #geq4 jets"
+    #eq2jeq2t : " + 2 jets + 2 b-tags"
+    #eq3jeq2t : " + 3 jets + 2 b-tags"
+    #ge4jeq2t : " + #geq4 jets + 2 b-tags"
+    #ge3t : " + #geq3 jets + #geq3 b-tags"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - weight_PUup
+    - weight_PUdown
+    - topPtWgtDown
+    - topPtWgtUp
+#     - JESUp
+#     - JESDown
+
+#distribution: [title, underflow, overflow]
+distributions:
+    numJets: [number of jets, false, false]
+    numLooseBJets: [number of loose b-tagged jets, false, false]
+    numMediumBJets: [number of medium b-tagged jets, false, false]
+    sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', false, false]
+    all_leptons_by_pt_1_lepMVA: [First lepton MVA, false, false]
+    all_leptons_by_pt_2_lepMVA: [Second lepton MVA, false, false]
+    all_leptons_by_pt_1_pt: [First lepton pT, 20, false, false]
+    all_leptons_by_pt_2_pt: [Second lepton pT, 20, false, false]
+    all_leptons_by_pt_1_eta: [First lepton pseudorapidity, false, false]
+    jets_by_pt_1_btagCombinedSecVertex: [First jet b-tag discriminant, false, false]
+    jets_by_pt_2_btagCombinedSecVertex: [Second jet b-tag discriminant, false, false]
+    jets_by_pt_3_btagCombinedSecVertex: [Third jet b-tag discriminant, false, false]
+    jets_by_pt_1_pt: [First jet pT, default_num_bins, false, false]
+    jets_by_pt_2_pt: [Second jet pT, default_num_bins, false, false]
+    jets_by_pt_3_pt: [Third jet pT, default_num_bins, false, false]
+

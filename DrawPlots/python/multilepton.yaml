@@ -1,0 +1,154 @@
+label: framework_studies_v1
+luminosity: 19450.0
+input_trees_directory: ../tree_files/
+
+common cuts:
+    lt_three_tight_leptons: '!((all_leptons_by_pt_1_lepMVA > 0.7) && (all_leptons_by_pt_2_lepMVA > 0.7) && (all_leptons_by_pt_3_lepMVA > 0.7))'
+    eq_two_good_leptons: ((numAllLeptons==2) || ((-1.0 <= all_leptons_by_pt_3_lepMVA) && (all_leptons_by_pt_3_lepMVA < 0.7)))
+    cleanup: min_mass_leplep > 12
+    pt_20_10: all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10
+    pt20_20_htllv100: all_leptons_by_pt_2_pt > 20 && ((all_leptons_by_pt_1_pt + all_leptons_by_pt_2_pt + met_pt) > 100)
+    lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
+    same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
+    nJets25_ge_4: numJets>=4
+    2b_loose: (numLooseBJets >= 2 || numMediumBJets >= 1)
+    tight_charge: all_leptons_by_pt_1_CERN_tight_charge && all_leptons_by_pt_2_CERN_tight_charge
+
+ele_ele cuts:
+    ele_ele: all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isElectron
+    conv_veto: all_electrons_by_pt_1_passConvVeto==1 && all_electrons_by_pt_2_passConvVeto==1 && all_electrons_by_pt_1_numberOfExpectedInnerHits==0 && all_electrons_by_pt_2_numberOfExpectedInnerHits==0
+    z_veto: abs(min_mass_leplep-91.2) > 10
+    met_ld: met_ld > 0.2
+    isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
+
+mu_mu cuts:
+    mu_mu: all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isMuon 
+    isDoubleMuTriggerPass: isDoubleMuTriggerPass
+
+mu_ele cuts:
+    mu_ele: (all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isElectron) || (all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isMuon)
+    isMuEGTriggerPass: isMuEGTriggerPass
+
+jet tag categories:
+    - ge4j
+
+lepton categories:
+    - mu_mu
+    - ele_ele
+    - mu_ele
+#    - mu_mu_mu
+
+mc weights:
+    - lepTotalSF
+    - weight_PU
+    - topPtWgt
+
+baseline systematics:
+    - weight_PUup
+    - weight_PUdown
+    - topPtWgtDown
+    - topPtWgtUp
+#    JESUp
+#    CSV_HFUp
+
+samples:
+    - ttH125
+    - ww
+    - wz
+    - zz
+    - ttbarW
+    - ttbarZ
+    - MuEG
+    - DoubleMu
+    - DoubleElectron
+
+aliases:
+    - &default_num_bins 11
+
+distributions:
+    all_leptons_by_pt_1_IP:
+        plot type: TH1F
+        axis labels: ['lepton 1 S_{IP}', Events]
+        binning: [*default_num_bins, -0.1, 0.1]
+
+    all_leptons_by_pt_2_IP:
+        plot type: TH1F
+        axis labels: ['lepton 2 S_{IP}', Events]
+        binning: [*default_num_bins, -0.1, 0.1]
+
+    numJets:
+        plot type: TH1F
+        axis labels: [number of jets, Events]
+        binning: [4, 4, 8]
+
+    numLooseBJets:
+        plot type: TH1F
+        axis labels: [number of loose b-tagged jets, Events]
+        binning: [4, 1, 5]
+
+    numMediumBJets:
+        plot type: TH1F
+        axis labels: [number of medium b-tagged jets, Events]
+        binning: [4, 1, 5]
+
+    sum_lep1pt_lep2pt_met:
+        plot type: TH1F
+        axis labels: ['Sum pT (lepton 1, lepton 2, MET)', Events]
+        binning: [*default_num_bins, 200, 1000]
+
+    all_leptons_by_pt_1_lepMVA:
+        plot type: TH1F
+        axis labels: [First lepton MVA, Events]
+        binning: [*default_num_bins, 0.7, 1.0]
+
+    all_leptons_by_pt_2_lepMVA:
+        plot type: TH1F
+        axis labels: [Second lepton MVA, Events]
+        binning: [*default_num_bins, 0.7, 1.0]
+
+    all_leptons_by_pt_1_pt:
+        plot type: TH1F
+        axis labels: [First lepton pT, Events]
+        binning: [*default_num_bins, 0, 200]
+
+    all_leptons_by_pt_2_pt:
+        plot type: TH1F
+        axis labels: [Second lepton pT, Events]
+        binning: [*default_num_bins, 0, 200]
+
+    all_leptons_by_pt_1_eta:
+        plot type: TH1F
+        axis labels: [First lepton pseudorapidity, Events]
+        binning: [*default_num_bins, -2.5, 2.5]
+
+    jets_by_pt_1_btagCombinedSecVertex:
+        plot type: TH1F
+        axis labels: [First jet b-tag discriminant, Events]
+        binning: [*default_num_bins, 0, 1]
+
+    jets_by_pt_2_btagCombinedSecVertex:
+        plot type: TH1F
+        axis labels: [Second jet b-tag discriminant, Events]
+        binning: [*default_num_bins, 0, 1]
+
+    jets_by_pt_3_btagCombinedSecVertex:
+        plot type: TH1F
+        axis labels: [Third jet b-tag discriminant, Events]
+        binning: [*default_num_bins, 0, 1]
+
+    jets_by_pt_1_pt:
+        plot type: TH1F
+        axis labels: [First jet pT, Events]
+        binning: [*default_num_bins, 20, 300]
+
+    jets_by_pt_2_pt:
+        plot type: TH1F
+        axis labels: [Second jet pT, Events]
+        binning: [*default_num_bins, 20, 250]
+
+    jets_by_pt_3_pt:
+        plot type: TH1F
+        axis labels: [Third jet pT, Events]
+        binning: [*default_num_bins, 20, 200]
+
+

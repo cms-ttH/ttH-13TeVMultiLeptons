@@ -10,8 +10,8 @@ def get_afs_base_directory():
     output, error = process.communicate()
     afs_base_directory = output.strip()
 
-    return afs_base_directory 
-            
+    return afs_base_directory
+
 def copy_to_www_area(local_plot_directory, www_plot_directory, plot_name):
     file_util.copy_file('%s/%s.png' % (local_plot_directory, plot_name), www_plot_directory)
     file_util.copy_file('%s/%s.pdf' % (local_plot_directory, plot_name), www_plot_directory)
@@ -20,7 +20,7 @@ def make_sure_directories_exist(directories):
     for directory in directories:
         if not os.path.exists(directory):
             os.makedirs(directory)
-                        
+
 def setup_www_directory(directory, depth=1, *extra_files_to_post):
     directory_parts = directory.split('/')
     for level in range(depth):
@@ -33,7 +33,7 @@ def setup_www_directory(directory, depth=1, *extra_files_to_post):
 
     for file in extra_files_to_post:
         file_util.copy_file('%s' % file, directory)
-    
+
 def setup_www_directories(directories, depth=1, *extra_files_to_post):
     for directory in directories:
         setup_www_directory(directory, depth, *extra_files_to_post)
@@ -43,7 +43,7 @@ def setup_web_posting(directories, depth=4, *extra_files_to_post):
 
     www_plot_directories = ['%s/%s' % (afs_base_directory, directory) for directory in directories]
     setup_www_directories(www_plot_directories, depth, *extra_files_to_post)
-        
+
 def get_data_sample_name(lepton_category):
     if lepton_category == 'mu_ele':
         return 'MuEG'
@@ -53,22 +53,19 @@ def get_data_sample_name(lepton_category):
         return 'DoubleElectron'
 
 class Plot:
-    def __init__(self, output_file, tree, distribution, plot_name, default_num_bins, parameters, draw_string):
-        (plot_type, title, num_bins, x_min, x_max) = parameters
-        if num_bins == 'default_num_bins':
-            num_bins = int(default_num_bins)
+    def __init__(self, sample, output_file, tree, distribution, plot_name, parameters, draw_string):
         self.plot_name = plot_name
+        (num_bins, x_min, x_max) = parameters['binning']
+        parameters['axis labels'].insert(0, sample) #Insert sample name as title
 
-        if plot_type == 'TH1F':
-#            self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
-            self.plot = ROOT.TH1F(plot_name, plot_name[:plot_name.find('_')]+title, num_bins, x_min, x_max)            
+        if parameters['plot type'] == 'TH1F':
+            self.plot = ROOT.TH1F(plot_name, ';'.join(parameters['axis labels']), num_bins, x_min, x_max)
             tree.Project(self.plot_name, distribution, draw_string)
         else:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
             sys.exit(2)
         self.plot.SetDirectory(output_file)
         output_file.Write('', ROOT.TObject.kOverwrite)
-
 
     def save_image(self, *image_types): #I am choosing for now not to add the option in make_plots to save pngs (though it can be called here), since pdfs look nicer
         if not os.path.exists('plot_pdfs'):
@@ -82,16 +79,16 @@ class Plot:
 
     def post_to_web(self, config, lepton_category):
         try:
-            afs_base_directory = config['run_parameters']['afs_base_directory']
+            afs_base_directory = config['afs_base_directory']
         except:
             afs_base_directory = get_afs_base_directory()
-            config['run_parameters']['afs_base_directory'] = afs_base_directory
-        
+            config['afs_base_directory'] = afs_base_directory
+
         self.save_image('png', 'pdf')
 
-        www_plot_directory = '%s/%s/%s' % (afs_base_directory, config['run_parameters']['label'], lepton_category)
-        copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name)        
-        
+        www_plot_directory = '%s/%s/%s' % (afs_base_directory, config['label'], lepton_category)
+        copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name)
+
     def set_style(self): #later we can add arguments for different style sets if needed
         #ROOT.gStyle.SetOptStat(0)
         ROOT.gStyle.SetPadBorderMode(0)
