@@ -21,33 +21,6 @@ luminosity error: 0.044
 trigger SF error: 0.02
 lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
 
-#Samples, ordered bottom-to-top: draw name , color
-background samples:
-    ttbarW:
-        draw name: "t#bar{t}W"
-        color: kGreen
-
-    ttbarZ:
-        draw name: "t#bar{t}Z"
-        color: kViolet
-
-    wz:
-        draw name: "wz"
-        color: kOrange
-
-    zz:
-        draw name: "zz"
-        color: kBlue
-
-#Samples drawn on top: color, "draw name", "stack" or "line" , line width , scaling (1.0, 2.0, "norm" for area-normalized) 
-signal samples:
-    ttH125:
-        draw name: "t#bar{t}H125"
-        color: kRed
-        stack or line: stack
-        line width: 1.0
-        scale: 1.0
-
 #Lepton categories: "draw name"
 lepton categories:
     mu_mu: " #mu #mu "
@@ -71,6 +44,43 @@ systematics:
     - topPtWgtUp
 #     - JESUp
 #     - JESDown
+
+# Samples drawn on top: color, "draw name", "stack" or "line" , line width , scaling (1.0, 2.0, "norm" for area-normalized) 
+signal samples:
+    ttH125:
+        draw name: "t#bar{t}H125"
+        color: kRed
+        stack or line: stack
+        line width: 2 # must be integer
+        scale: 1.0
+
+#Samples in each group will be added together and appear as a single entry in the stack plot
+background sample groups:
+    Others:
+        draw name: Others
+        color: kBlue
+        samples:
+            - ttbarW #just testing
+            - zz
+            - ttbar
+#            - zzz
+#            - wzz
+#            - www
+#            - ttbarWW
+
+#Samples, ordered bottom-to-top: draw name , color
+background samples: 
+    ttbarW:
+        draw name: "t#bar{t}W"
+        color: kGreen
+
+    ttbarZ:
+        draw name: "t#bar{t}Z"
+        color: kViolet
+
+    wz:
+        draw name: "wz"
+        color: kOrange
 
 #distribution: [title, underflow, overflow]
 distributions:

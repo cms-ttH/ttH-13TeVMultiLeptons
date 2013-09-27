@@ -56,8 +56,13 @@ samples:
     - ww
     - wz
     - zz
+    - zzz
+    - wzz
+    - www
+    - ttbarWW
     - ttbarW
     - ttbarZ
+    - ttbar
     - MuEG
     - DoubleMu
     - DoubleElectron
