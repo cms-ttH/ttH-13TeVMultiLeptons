@@ -3,7 +3,7 @@ import os, sys
 from argparse import ArgumentParser
 import math
 import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
-from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddictyamlloader import OrderedDictYAMLLoader
+from ttHMultileptonAnalysis.DrawPlots.utilities.yamlhelpers import ttHMultileptonYAMLLoader
 import yaml
 
 parser = ArgumentParser(description='Make stack plots from histogram files.')
@@ -15,7 +15,7 @@ args = parser.parse_args()
 ## config is mostly options that change the substance of what is displayed
 ## config_cosmetics is mostly options that change the style of the stack plot
 with open(args.config_file_name) as config_file:
-    config = yaml.load(config_file, Loader=OrderedDictYAMLLoader)
+    config = yaml.load(config_file, Loader=ttHMultileptonYAMLLoader)
 
 with open(args.cosmetics_config_file_name) as cosmetics_file:
     cosmetics = yaml.load(cosmetics_file)

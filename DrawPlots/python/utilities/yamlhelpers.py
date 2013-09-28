@@ -1,3 +1,5 @@
+import ROOT
+import re
 import yaml
 import yaml.constructor
 
@@ -9,16 +11,15 @@ except ImportError:
     # it's available on PyPI
     from ordereddict import OrderedDict
 
-class OrderedDictYAMLLoader(yaml.Loader):
-    """
-    A YAML loader that loads mappings into ordered dictionaries.
-    """
-
+class ttHMultileptonYAMLLoader(yaml.Loader):
     def __init__(self, *args, **kwargs):
         yaml.Loader.__init__(self, *args, **kwargs)
 
         self.add_constructor(u'tag:yaml.org,2002:map', type(self).construct_yaml_map)
         self.add_constructor(u'tag:yaml.org,2002:omap', type(self).construct_yaml_map)
+        self.add_constructor(u'!ROOT', type(self).root_scalar_constructor)
+        self.add_constructor(u'!ROOT:color', type(self).root_color_constructor)        
+        self.add_path_resolver(u'!ROOT:color', ['color'], yaml.ScalarNode)
 
     def construct_yaml_map(self, node):
         data = OrderedDict()
@@ -44,3 +45,20 @@ class OrderedDictYAMLLoader(yaml.Loader):
             value = self.construct_object(value_node, deep=deep)
             mapping[key] = value
         return mapping
+
+    def root_color_constructor(loader, node, deep=False):
+        color_string = loader.construct_scalar(node)
+        parts = re.split('\+|\-', str(color_string), 1)
+        color = getattr(ROOT, parts[0])
+        if '+' in color_string:
+            color += int(parts[1])
+        if '-' in color_string:
+            color -= int(parts[1])
+
+        return color
+
+    def root_scalar_constructor(loader, node, deep=False):
+        value = loader.construct_scalar(node)
+        attribute = getattr(ROOT, value)
+
+        return attribute
