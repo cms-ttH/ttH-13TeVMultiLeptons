@@ -9,7 +9,7 @@ import yaml
 
 def main():
     parser = ArgumentParser(description='Make plots from summary trees.')
-    parser.add_argument('config_file_name', help='Configuration file to process.')
+    parser.add_argument('config_file_name', nargs='?', default='multilepton.yaml', help='Configuration file to process.')
     parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
     parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
     parser.add_argument('-w', '--web', action='store_true', help='Post each plot to the user\'s AFS space.')
@@ -32,8 +32,8 @@ def main():
 
     plot_helper.make_sure_directories_exist(lepton_categories)
     if args.web:
-        www_plot_directories = [config['label']+'/'+lepton_category for lepton_category in lepton_categories]
-        plot_helper.setup_web_posting(www_plot_directories, 3, args.config_file_name)
+        www_plot_directories = ['plots/'+config['label']+'/'+lepton_category for lepton_category in lepton_categories]
+        plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name)
 
     if args.batch:
         submit_batch_jobs(config, samples, lepton_categories)
@@ -42,9 +42,9 @@ def main():
 
     if args.web:
         if args.batch:
-            print '\nFinished submitting jobs.  After they complete, plots will be posted to: http://www.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], config['label'])
+            print '\nFinished submitting jobs.  After they complete, plots will be posted to: http://www.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
         else:
-            print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/%s/' % (os.environ['USER'], config['label'])
+            print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
 
 def make_plots(args, config, samples, lepton_categories):
     for sample in samples:
@@ -83,7 +83,7 @@ def make_plots(args, config, samples, lepton_categories):
 
                     for distribution in config['distributions'].keys():
                         plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, systematic_label)
-                        plot = plot_helper.Plot(sample, output_file, tree, distribution, plot_name, config['distributions'][distribution], draw_string_maker.draw_string)
+                        plot = plot_helper.Plot(sample, output_file, tree, plot_name, config['distributions'][distribution], draw_string_maker.draw_string)
                         if not sample_info.is_data:
                             plot.plot.Scale(sample_info.x_section * config['luminosity'] * plot.plot.GetEntries() / sample_info.num_generated)
                         if args.pdf:

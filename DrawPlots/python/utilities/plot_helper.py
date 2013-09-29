@@ -53,14 +53,14 @@ def get_data_sample_name(lepton_category):
         return 'DoubleElectron'
 
 class Plot:
-    def __init__(self, sample, output_file, tree, distribution, plot_name, parameters, draw_string):
+    def __init__(self, sample, output_file, tree, plot_name, parameters, draw_string):
         self.plot_name = plot_name
         (num_bins, x_min, x_max) = parameters['binning']
 
         if parameters['plot type'] == 'TH1F':
             title = '%s;%s;%s' % (sample, parameters['axis labels'][0], parameters['axis labels'][1])
             self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
-            tree.Project(self.plot_name, distribution, draw_string)
+            tree.Project(self.plot_name, parameters['expression'], draw_string)
         else:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
             sys.exit(2)
@@ -86,7 +86,7 @@ class Plot:
 
         self.save_image('png', 'pdf')
 
-        www_plot_directory = '%s/%s/%s' % (afs_base_directory, config['label'], lepton_category)
+        www_plot_directory = '%s/plots/%s/%s' % (afs_base_directory, config['label'], lepton_category)
         copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name)
 
     def set_style(self): #later we can add arguments for different style sets if needed
