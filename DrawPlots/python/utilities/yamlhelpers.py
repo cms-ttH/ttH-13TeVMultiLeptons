@@ -8,7 +8,6 @@ try:
     from collections import OrderedDict
 except ImportError:
     # try importing the backported drop-in replacement
-    # it's available on PyPI
     from ordereddict import OrderedDict
 
 class ttHMultileptonYAMLLoader(yaml.Loader):
@@ -18,8 +17,9 @@ class ttHMultileptonYAMLLoader(yaml.Loader):
         self.add_constructor(u'tag:yaml.org,2002:map', type(self).construct_yaml_map)
         self.add_constructor(u'tag:yaml.org,2002:omap', type(self).construct_yaml_map)
         self.add_constructor(u'!ROOT', type(self).root_scalar_constructor)
-        self.add_constructor(u'!ROOT:color', type(self).root_color_constructor)        
-        self.add_path_resolver(u'!ROOT:color', ['color'], yaml.ScalarNode)
+        self.add_constructor(u'!ROOT:color', type(self).root_color_constructor)
+        possible_colors = re.compile('.*kWhite.*|.*kBlack.*|.*kGray.*|.*kRed.*|.*kGreen.*|.*kBlue.*|.*kYellow.*|.*kMagenta.*|.*kCyan.*|.*kOrange.*|.*kSpring.*|.*kTeal.*|.*kAzure.*|.*kViolet.*|.*kPink.*')
+        self.add_implicit_resolver(u'!ROOT:color', possible_colors, None)
 
     def construct_yaml_map(self, node):
         data = OrderedDict()

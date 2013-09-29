@@ -18,20 +18,21 @@ with open(args.config_file_name) as config_file:
     config = yaml.load(config_file, Loader=ttHMultileptonYAMLLoader)
 
 with open(args.cosmetics_config_file_name) as cosmetics_file:
-    cosmetics = yaml.load(cosmetics_file)
+    cosmetics = yaml.load(cosmetics_file, Loader=ttHMultileptonYAMLLoader)
 
 lepton_categories = config['lepton categories']
 jet_tag_categories = config['jet tag categories']
 distributions = config['distributions']
 signal_samples = config['signal samples']
 background_samples = config['background samples']
+
 if config.has_key('background sample groups'):
     background_sample_groups = config['background sample groups']
 
 def main():
     ## import the root libraries; with this import
     ## you won't need to prefix your root objects with ROOT
-    from ROOT import * 
+    from ROOT import *
     gROOT.SetBatch()
 
     if args.web:
@@ -160,7 +161,7 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
         mc_error_histogram.SetBinError(i, math.sqrt(bin_error_squared))
 
     mc_error_histogram.SetFillStyle(cosmetics['mc error fill style'])
-    mc_error_histogram.SetFillColor(getattr(ROOT,cosmetics['mc error fill color']))
+    mc_error_histogram.SetFillColor(cosmetics['mc error fill color'])
 
     stack_plot_legend.AddEntry(mc_error_histogram, 'Sum MC (%0.1f) ' % (mc_sum + signal_sum), 'f')
 
@@ -280,26 +281,26 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
     histogram.SetDirectory(0) ##Decouples histogram from root file
 
     if (sample == 'MuEG' or sample == 'DoubleMu' or sample == 'DoubleElectron'):
-        histogram.SetLineColor(getattr(ROOT,cosmetics['data line color']))
-        histogram.SetMarkerColor(getattr(ROOT,cosmetics['data marker color']))
-        histogram.SetFillColor(getattr(ROOT,cosmetics['data fill color']))
+        histogram.SetLineColor(cosmetics['data line color'])
+        histogram.SetMarkerColor(cosmetics['data marker color'])
+        histogram.SetFillColor(cosmetics['data fill color'])
         histogram.SetLineWidth(cosmetics['data line width'])
         histogram.SetMarkerStyle(cosmetics['data marker style'])
         histogram.SetMarkerSize(cosmetics['data marker size'])
 
     elif config.has_key('background sample groups') and sample_group in background_sample_groups:
-        histogram.SetLineColor(getattr(ROOT, background_sample_groups[sample_group]['color']))
-        histogram.SetFillColor(getattr(ROOT, background_sample_groups[sample_group]['color']))
+        histogram.SetLineColor( background_sample_groups[sample_group]['color'])
+        histogram.SetFillColor( background_sample_groups[sample_group]['color'])
         histogram.SetFillStyle(cosmetics['background fill style'])
 
     elif sample in background_samples:
-        histogram.SetLineColor(getattr(ROOT, background_samples[sample]['color']))
-        histogram.SetFillColor(getattr(ROOT, background_samples[sample]['color']))
+        histogram.SetLineColor( background_samples[sample]['color'])
+        histogram.SetFillColor( background_samples[sample]['color'])
         histogram.SetFillStyle(cosmetics['background fill style'])
 
     elif sample in signal_samples:
-        histogram.SetLineColor(getattr(ROOT,signal_samples[sample]['color']))
-        histogram.SetFillColor(getattr(ROOT,signal_samples[sample]['color']))
+        histogram.SetLineColor(signal_samples[sample]['color'])
+        histogram.SetFillColor(signal_samples[sample]['color'])
 
         if (signal_samples[sample]['stack or line'] == 'line'):
             histogram.SetLineWidth(signal_samples[sample]['line width'])
@@ -313,7 +314,7 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
 
 def make_legend():
     stack_plot_legend = TLegend(cosmetics['legend x1'], cosmetics['legend y1'], cosmetics['legend x2'], cosmetics['legend y2'])
-    stack_plot_legend.SetFillColor(getattr(ROOT, cosmetics['legend fill color']))
+    stack_plot_legend.SetFillColor( cosmetics['legend fill color'])
     stack_plot_legend.SetBorderSize(cosmetics['legend border size'])
     stack_plot_legend.SetNColumns(cosmetics['legend n columns'])
 
@@ -399,7 +400,7 @@ def get_configured_data_asymmetric_errors(data_histogram):
         ggg.SetPointEYlow(bin, NN-LOW)
         ggg.SetPointEYhigh(bin, UP-NN)
 
-    ggg.SetLineColor(getattr(ROOT,cosmetics['ggg line color']))
+    ggg.SetLineColor(cosmetics['ggg line color'])
     ggg.SetMarkerStyle(cosmetics['ggg marker style'])
     ggg.SetLineWidth(cosmetics['ggg line width'])
     ggg.SetMarkerSize(cosmetics['ggg marker size'])
@@ -456,19 +457,19 @@ def configure_ratio_histogram(ratio_histogram , distribution):
     ratio_histogram.GetXaxis().SetTitleOffset(cosmetics['ratio hist x axis title offset'])
     ratio_histogram.GetXaxis().SetTitleSize(cosmetics['ratio hist x axis title size'])
 
-    ratio_histogram.SetLineColor(getattr(ROOT,cosmetics['ratio hist line color']))
-    ratio_histogram.SetMarkerColor(getattr(ROOT,cosmetics['ratio hist marker color']))
+    ratio_histogram.SetLineColor(cosmetics['ratio hist line color'])
+    ratio_histogram.SetMarkerColor(cosmetics['ratio hist marker color'])
 
     if (config['blinded']):
-        ratio_histogram.SetLineColor(getattr(ROOT,cosmetics['ratio hist line color blind']))
-        ratio_histogram.SetMarkerColor(getattr(ROOT,cosmetics['ratio hist marker color blind']))
+        ratio_histogram.SetLineColor(cosmetics['ratio hist line color blind'])
+        ratio_histogram.SetMarkerColor(cosmetics['ratio hist marker color blind'])
 
     return ratio_histogram
 ## end configure_ratio_histogram
 
 def configure_ratio_error_histogram(ratio_error_histogram):
-    ratio_error_histogram.SetMarkerColor(getattr(ROOT,cosmetics['ratio err hist marker color']))
-    ratio_error_histogram.SetFillColor(getattr(ROOT,cosmetics['ratio err hist fill color']))
+    ratio_error_histogram.SetMarkerColor(cosmetics['ratio err hist marker color'])
+    ratio_error_histogram.SetFillColor(cosmetics['ratio err hist fill color'])
 
     return ratio_error_histogram
 ## end configure_ratio_error_histogram
@@ -514,7 +515,7 @@ def make_data_ratio_asymmetric_errors (nBins, xMin, xMax, ggg, data_histogram, s
 ## end make_data_ratio_asymmetric_errors
 
 def configure_data_ratio_asymmetric_errors(g_ratio):
-    g_ratio.SetLineColor(getattr(ROOT,cosmetics['g ratio line color']))
+    g_ratio.SetLineColor(cosmetics['g ratio line color'])
     g_ratio.SetLineWidth(cosmetics['g ratio line width'])
 
     return g_ratio

@@ -72,7 +72,7 @@ background sample groups:
 background samples: 
     ttbarW:
         draw name: "t#bar{t}W"
-        color: kGreen
+        color: kGreen+7
 
     ttbarZ:
         draw name: "t#bar{t}Z"
@@ -80,7 +80,7 @@ background samples:
 
     wz:
         draw name: "wz"
-        color: kOrange
+        color: kOrange+10
 
 #distribution: [title, underflow, overflow]
 distributions:
