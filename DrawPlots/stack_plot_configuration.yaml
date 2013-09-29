@@ -45,7 +45,7 @@ systematics:
 #     - JESUp
 #     - JESDown
 
-# Samples drawn on top: color, "draw name", "stack" or "line" , line width , scaling (1.0, 2.0, "norm" for area-normalized) 
+# Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
 signal samples:
     ttH125:
         draw name: "t#bar{t}H125"
@@ -58,29 +58,29 @@ signal samples:
 background sample groups:
     Others:
         draw name: Others
-        color: kBlue
+        color: kBlue-9
         samples:
             - ttbarW #just testing
-            - zz
             - ttbar
+#            - zz
 #            - zzz
 #            - wzz
 #            - www
 #            - ttbarWW
 
-#Samples, ordered bottom-to-top: draw name , color
-background samples: 
+#Samples, ordered bottom-to-top
+background samples:
     ttbarW:
         draw name: "t#bar{t}W"
-        color: kGreen+7
+        color: kCyan
 
     ttbarZ:
         draw name: "t#bar{t}Z"
-        color: kViolet
+        color: kAzure+1
 
     wz:
         draw name: "wz"
-        color: kOrange+10
+        color: kMagenta
 
 #distribution: [title, underflow, overflow]
 distributions:
@@ -88,6 +88,7 @@ distributions:
     numLooseBJets: [number of loose b-tagged jets, false, false]
     numMediumBJets: [number of medium b-tagged jets, false, false]
     sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', false, false]
+    all_leptons_by_pt_1_SIP3D: ['First lepton SIP', false, false]
     all_leptons_by_pt_1_lepMVA: [First lepton MVA, false, false]
     all_leptons_by_pt_2_lepMVA: [Second lepton MVA, false, false]
     all_leptons_by_pt_1_pt: [First lepton pT, 20, false, false]
@@ -96,7 +97,7 @@ distributions:
     jets_by_pt_1_btagCombinedSecVertex: [First jet b-tag discriminant, false, false]
     jets_by_pt_2_btagCombinedSecVertex: [Second jet b-tag discriminant, false, false]
     jets_by_pt_3_btagCombinedSecVertex: [Third jet b-tag discriminant, false, false]
-    jets_by_pt_1_pt: [First jet pT, default_num_bins, false, false]
-    jets_by_pt_2_pt: [Second jet pT, default_num_bins, false, false]
-    jets_by_pt_3_pt: [Third jet pT, default_num_bins, false, false]
+    jets_by_pt_1_pt: [First jet pT, false, false]
+    jets_by_pt_2_pt: [Second jet pT, false, false]
+    jets_by_pt_3_pt: [Third jet pT, false, false]
 

@@ -25,7 +25,6 @@ jet_tag_categories = config['jet tag categories']
 distributions = config['distributions']
 signal_samples = config['signal samples']
 background_samples = config['background samples']
-
 if config.has_key('background sample groups'):
     background_sample_groups = config['background sample groups']
 
@@ -82,19 +81,19 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
                 stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
 
     # Sum histograms in each sample group, then add summed histos to stack plot and histogram_dictionary
-    samples_and_sample_groups = background_samples.keys()
     if config.has_key('background sample groups'):
-        samples_and_sample_groups.extend(background_sample_groups.keys())
-        for sample_group in background_sample_groups:
+        for sample_group in background_sample_groups: # Add samples in each sample group together
             for systematic in config['systematics']:
                 samples_in_group = background_sample_groups[sample_group]['samples']
                 for index, sample in enumerate(samples_in_group):
                     sample_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group)
+                    sample_histogram.Sumw2()
                     if index == 0:
                         group_histogram = sample_histogram
                     else:
                         group_histogram.Add(sample_histogram)
-
+                # Add one entry (the sum of all samples in the group) for each sample group to the
+                # dictionary; the group will be treated as a single sample for subsequent error calculations
                 histogram_dictionary[sample_group+'_'+systematic] = group_histogram.Clone()
                 if systematic == 'nominal':
                     histogram = group_histogram.Clone('stack')
@@ -103,32 +102,29 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
                     stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_sample_groups[sample_group]['draw name'], group_histogram.Integral()), 'f')
 
     ## Draw the signal sample histogram(s), put in legend
+    signal_histogram = None
     for sample in signal_samples:
         original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category)
         histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
 
-        if signal_samples[sample]['stack or line'] == 'line':
-            signal_histogram = original_histogram.Clone('nostack') #should this be 'line'?
-        elif signal_samples[sample]['stack or line'] == 'stack':
-            signal_histogram = original_histogram.Clone('stack')
-        else:
+        signal_histogram = original_histogram.Clone('signal')
+        legend_option = 'l'
+        if signal_samples[sample]['stack or line'] == 'stack':
+            stack_plot.Add(signal_histogram, "hist")
+            legend_option = 'f'
+        elif signal_samples[sample]['stack or line'] != 'line':
             sys.exit('For signal, must be line or stack')
 
         signal_sum = signal_histogram.Integral()
-
         if (signal_sum > 0 and signal_samples[sample]['scale'] == 'norm'):
             signal_histogram.Scale(mc_sum / signal_sum)
         elif (signal_sum > 0):
             signal_histogram.Scale(signal_samples[sample]['scale'])
 
-#still see signal after commenting these lines?!
-#         if (signal_samples[sample]['stack or line'] == 'stack'):
-#             stack_plot.Add(signal_histogram, "hist")
-
         if (signal_sum > 0):
-            stack_plot_legend.AddEntry(signal_histogram, '%s (%0.1f x %0.1f)' % (signal_samples[sample]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), 'l')
+            stack_plot_legend.AddEntry(signal_histogram, '%s (%0.1f x %0.1f)' % (signal_samples[sample]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), legend_option)
         else:
-            stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], 'l')
+            stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], legend_option)
 
     ## Draw the data histogram, put in legend
     if not config['blinded']:
@@ -151,6 +147,9 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
 
     # Create a histogram with the error bars for the MC stack
     mc_error_histogram = TH1F('mc_error_histogram', '', nBins, xMin, xMax)
+    samples_and_sample_groups = background_samples.keys() # Make a list with one entry per sample, and one entry per sample group
+    if config.has_key('background sample groups'):
+        samples_and_sample_groups.extend(background_sample_groups.keys())
     for i in range(1, nBins+1):
         mc_error_histogram.SetBinContent(i,stack_plot.GetStack().Last().GetBinContent(i))
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
@@ -194,7 +193,9 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
     stack_plot.GetYaxis().SetTitleSize(cosmetics['stack y axis title size'])
     stack_plot.GetYaxis().SetTitleOffset(cosmetics['stack y axis title offset'])
     mc_error_histogram.Draw(cosmetics['mc error histogram draw style'])
-    signal_histogram.Draw(cosmetics['signal histogram draw style'])
+    for sample in signal_samples:
+        if config['signal samples'][sample]['stack or line'] == 'line':
+            signal_histogram.Draw(cosmetics['signal histogram draw style'])
 
     ## asymmetrical poisson errors for data
     ggg = get_configured_data_asymmetric_errors(data_histogram)
@@ -271,6 +272,9 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
     else:
         name_plus_cycle = '%s_%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution, systematic)
 
+#     print 'root file name: ', '%s%s/%s_%s_%s_%s.root' % (config['input file location'], lepton_category, lepton_category, jet_tag_category, sample, config['input file label'])
+#     print name_plus_cycle
+
     root_file = TFile('%s%s/%s_%s_%s_%s.root' % (config['input file location'], lepton_category, lepton_category, jet_tag_category, sample, config['input file label']))
     histogram = root_file.Get(name_plus_cycle).Clone()
 
@@ -304,6 +308,7 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
 
         if (signal_samples[sample]['stack or line'] == 'line'):
             histogram.SetLineWidth(signal_samples[sample]['line width'])
+            histogram.SetFillStyle(0)
         elif (signal_samples[sample]['stack or line'] == 'stack'):
             histogram.SetFillStyle(cosmetics['background fill style'])
         else:
