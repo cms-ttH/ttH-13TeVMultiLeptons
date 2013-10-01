@@ -73,12 +73,14 @@ def make_plots(args, config, samples, lepton_categories):
                     tree = source_file.Get('summaryTree')
 
                     draw_string_maker = plot_helper.DrawStringMaker()
-                    draw_string_maker.append_selection_requirements(config['common cuts'].values())
-                    draw_string_maker.append_selection_requirements(lepton_category_cut_strings)
+                    draw_string_maker.append_selection_requirements(config['common cuts'].values(), lepton_category_cut_strings)
                     draw_string_maker.append_jet_tag_category_requirements(jet_tag_category)
 
                     if not sample_info.is_data and not args.no_weights:
                         draw_string_maker.multiply_by_factor(systematic_weight_string)
+                        if 'triggerSF' in config['mc weights']:
+                            matched_SF = draw_string_maker.get_matched_SF(lepton_category)
+                            config['mc weights'] = [matched_SF if x=='triggerSF' else x for x in config['mc weights']]
                         draw_string_maker.multiply_by_factors(config['mc weights'])
 
                     for distribution in config['distributions'].keys():

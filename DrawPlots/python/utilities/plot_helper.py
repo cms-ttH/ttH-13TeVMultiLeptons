@@ -114,11 +114,12 @@ class DrawStringMaker:
         else:
             self.requirements_string += ' && ' + cut_string
 
-        self.update_draw_string()        
+        self.update_draw_string()
 
-    def append_selection_requirements(self, cut_strings): 
-        for cut_string in cut_strings:
-            self.append_selection_requirement(cut_string)
+    def append_selection_requirements(self, *cut_string_lists):
+        for cut_string_list in cut_string_lists:
+            for cut_string in cut_string_list:
+                self.append_selection_requirement(cut_string)
 
     def append_jet_tag_category_requirements(self, jet_tag_category):
         if jet_tag_category == 'ge2t':
@@ -175,7 +176,7 @@ class DrawStringMaker:
 
         if jet_tag_category != 'inclusive':
             self.append_selection_requirement(jet_tag_string)
-            
+
     def multiply_by_factor(self, weight):
         weight = str(weight)
         self.factors_string += ' * ' + weight
@@ -184,6 +185,16 @@ class DrawStringMaker:
     def multiply_by_factors(self, weights):
         for weight in weights:
             self.multiply_by_factor(weight)
+
+    def get_matched_SF(self, lepton_category):
+        if lepton_category == 'mu_mu':
+            matched_SF = 'TwoMuonTriggerSF'
+        elif lepton_category == 'ele_ele':
+            matched_SF = 'TwoElectronTriggerSF'
+        elif lepton_category == 'mu_ele':
+            matched_SF = 'MuonElectronTriggerSF'
+
+        return matched_SF
 
 class SampleInformation:
     def __init__(self, sample):

@@ -1,4 +1,4 @@
-label: framework_studies_v1
+label: framework_studies_v2
 luminosity: 19450.0
 input_trees_directory: ../tree_files/
 
@@ -42,6 +42,9 @@ mc weights:
     - lepTotalSF
     - weight_PU
     - topPtWgt
+    - csvWgtlf
+    - csvWgthf
+#    - triggerSF 
 
 baseline systematics:
     - weight_PUup
