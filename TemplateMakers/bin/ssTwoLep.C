@@ -45,7 +45,7 @@ void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLe
   TwoMuon = 0;
   TwoElectron = 0;
   MuonElectron = 0;
-  
+
   if (!passTwoLepton){
     return;
   }
@@ -63,7 +63,6 @@ void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLe
   if ( numTightElectrons ==1 && numTightMuons==1 ) {
     MuonElectron = 1;
     return;
-    
   }
 }
 
@@ -71,7 +70,7 @@ void safetyCheckJobOptions (int argc, char** argv) {
   std::cout << "--->Num argments provided at command line...  " << argc << std::endl;
   if (argc < 2) {
     std::cout << "Usage: " << std::endl
-              << argv[0] << " jobParams.py " << " sampleName " 
+              << argv[0] << " jobParams.py " << " sampleName "
               << std::endl;
 
     std::cout << "You provided " << argc
@@ -79,7 +78,7 @@ void safetyCheckJobOptions (int argc, char** argv) {
               << endl;
     exit (3);
   }
-      
+
   return;
 }
 
@@ -105,11 +104,11 @@ int main (int argc, char** argv) {
   gSystem->Load( "libFWCoreFWLite" );
   //gSystem->Load("libNtupleMakerBEANmaker.so");
   AutoLibraryLoader::enable();
-  
+
   int debug = 0; // levels of debug, 10 is large
 
   JobParameters myConfig = parseJobOptions(argc, argv);
-  
+
   TFile * outputFile = new TFile (myConfig.outputFileName.c_str(), "RECREATE");
 
   outputFile->cd();
@@ -120,7 +119,7 @@ int main (int argc, char** argv) {
 
   HelperLeptonCore lepHelper;
 
-  // setup the analysis 
+  // setup the analysis
   // it comes from the lepHelper
   BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", myConfig.sampleName);
 
@@ -136,7 +135,7 @@ int main (int argc, char** argv) {
   electronID::electronID electronTightID = electronID::electronSideTightMVA;
   electronID::electronID electronLooseID = electronID::electronSideLooseMVA;
   electronID::electronID electronPreselectedID = electronID::electronSide;
-  
+
   // declare your kinematic variables that you want
   // to be written out into the tree
   vector<ArbitraryVariable*> kinVars;
@@ -147,14 +146,14 @@ int main (int argc, char** argv) {
   GenericCollectionSizeVariable<BNjetCollection> numJets(&(selectedCollections.jetCollection), "numJets");
   kinVars.push_back(&numJets);
   numJets.setCut(2);
-  cutVars.push_back(&numJets); 
+  cutVars.push_back(&numJets);
 
   GenericCollectionSizeVariable<BNjetCollection> numLooseBJets(&(selectedCollections.jetCollectionLooseCSV), "numLooseBJets");
   kinVars.push_back(&numLooseBJets);
 
   GenericCollectionSizeVariable<BNjetCollection> numMediumBJets(&(selectedCollections.jetCollectionMediumCSV), "numMediumBJets");
-  kinVars.push_back(&numMediumBJets);   
-   
+  kinVars.push_back(&numMediumBJets);
+
   GenericCollectionSizeVariable<BNleptonCollection> numAllLeptons(&(selectedCollections.tightLoosePreselectedLeptonCollection), "numAllLeptons");
   kinVars.push_back(&numAllLeptons);
 
@@ -173,14 +172,10 @@ int main (int argc, char** argv) {
   TopPtWeights myTopPt(&lepHelper);
   kinVars.push_back(&myTopPt);
 
-// This is defined at plotting time now.. let's not confuse ourselves with multiple definitions
-//   XsecWeight myXsec (&lepHelper);
-//   kinVars.push_back(&myXsec);
-
   LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
   kinVars.push_back(&myLepSF);
 
-  LeptonTriggerScaleFactors myLepTrig( &lepHelper);
+  SSLeptonTriggerScaleFactors myLepTrig(&lepHelper);
   kinVars.push_back(&myLepTrig);
 
   CleanEventVars myClean (&lepHelper);
@@ -343,7 +338,7 @@ int main (int argc, char** argv) {
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
        iVar != kinVars.end();
        iVar++) {
-    
+
     (*iVar)->attachToTree (summaryTree);
   }
 
@@ -361,19 +356,19 @@ int main (int argc, char** argv) {
       cout << "Processing event.... " << numEvents << endl;
 
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
-    
+
     lepHelper.initializeInputCollections(ev, true, selectedCollections);
 
     /////////////////////////////////////////////////////////////
     //
     //    Apply object ids
-    //   
+    //
     //////////////////////////////////////////////////////////////
 
     //------------  Electrons
     if (debug > 9) cout << "Getting electrons "  << endl;
     lepHelper.getTightLoosePreselectedElectrons(electronTightID, electronLooseID, electronPreselectedID, &selectedCollections);
-    
+
     //-----------    Muons
     if (debug > 9) cout << "Getting muons "  << endl;
     lepHelper.getTightLoosePreselectedMuons(muonTightID, muonLooseID, muonPreselectedID, &selectedCollections);
@@ -388,7 +383,7 @@ int main (int argc, char** argv) {
 
     //------------    Jets
     *(lepHelper.rawCollections.jetCollection) = beanHelper->GetCleanJets(*(lepHelper.rawCollections.jetCollection), *(selectedCollections.tightLoosePreselectedLeptonCollection), 0.5);
-    
+
     if (debug > 9) cout << "Getting jets "  << endl;
 	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
 
@@ -397,16 +392,15 @@ int main (int argc, char** argv) {
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
          iVar != kinVars.end();
          iVar++) {
-      
+
       (*iVar)->reset();
       (*iVar)->assignCollections(&selectedCollections);
-      
     }
 
     bool passAllCuts = true;
 
     if (debug > 9) cout << "Checking cuts "  << endl;
-    
+
     for (vector<ArbitraryVariable*>::iterator iCut = cutVars.begin();
          iCut != cutVars.end();
          iCut++ ) {
@@ -418,36 +412,32 @@ int main (int argc, char** argv) {
 
     // do the lepton cut
     passAllCuts = passAllCuts &&  LeptonCutThisAnalysis(&selectedCollections);
-    
+
     if (!passAllCuts) {
       numEventsFailCuts++;
 
       //!!!!    Skip The event  ///////////////
-      
       continue;
 
     } else {
       numEventsPassCuts++;
     }
-    
-    
+
     // Now  evaluate the vars
     if (debug > 9) cout << "Evaluating vars "  << endl;
 
-    
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
          iVar != kinVars.end();
          iVar++) {
-      
+
       (*iVar)->evaluate();
-      
     }
 
     if (debug > 9) {
       for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
            iVar != kinVars.end();
            iVar++) {
-        
+
         (*iVar)->print();
         cout << endl;
         
