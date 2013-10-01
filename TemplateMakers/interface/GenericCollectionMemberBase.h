@@ -95,7 +95,6 @@ template <class branchDataType, class collectionType>
 void GenericCollectionMemberBase<branchDataType, collectionType>::attachToTree  (TTree * inTree) {
 
   for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
-      cout << "attaching to tree: " << myVars[iVar].branchName << endl;
     inTree->Branch(myVars[iVar].branchName, &myVars[iVar].branchVal);
   }
 }
