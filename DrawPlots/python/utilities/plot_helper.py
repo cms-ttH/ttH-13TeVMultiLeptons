@@ -251,7 +251,7 @@ class SampleInformation:
                       'x_section_error': 0.132,
                       'num_generated':	30072710,
                       'systematics': 'all'},
-            
+
             'zjets_lowmass': {'is_data': False,
                               'is_signal': False,
                               'x_section': 14.7, #0.860,
@@ -263,29 +263,29 @@ class SampleInformation:
                        'is_signal': False,
                        'x_section': 0.000232, #0.000163*1.5,
                        'x_section_error': 0.2*0.000249,
-                       'num_generated':  195396,
-                       'systematics': 'all'},                    
+                       'num_generated':  195196,
+                       'systematics': 'all'},
 
             'ttbarZ': {'is_data': False,
                        'is_signal': False,
                        'x_section': 0.000208,#0.000136*1.5,
                        'x_section_error': 0.2*0.000208,
                        'num_generated':  209512,
-                       'systematics': 'all'},                    
+                       'systematics': 'all'},
 
             'ttbarWW': {'is_data': False,
                         'is_signal': False,
                         'x_section': 0.000002037,#0.000136*1.5,
                         'x_section_error': 0.2*0.000002037,
                         'num_generated':  216867,
-                        'systematics': 'all'},                    
+                        'systematics': 'all'},
 
             'tttt': {'is_data': False,
                      'is_signal': False,
                      'x_section': 0.0000000001,#0.000000716,
                      'x_section_error': 0.2*0.000000716,
                      'num_generated':  99994,
-                     'systematics': 'all'},                    
+                     'systematics': 'all'},
 
             't_s': {'is_data': False,
                     'is_signal': False,
