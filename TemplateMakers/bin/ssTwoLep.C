@@ -172,8 +172,8 @@ int main (int argc, char** argv) {
   TopPtWeights myTopPt(&lepHelper);
   kinVars.push_back(&myTopPt);
 
-  LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
-  kinVars.push_back(&myLepSF);
+  LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
+  kinVars.push_back(&myLepIDAndIsoSF);
 
   SSLeptonTriggerScaleFactors myLepTrig(&lepHelper);
   kinVars.push_back(&myLepTrig);
@@ -266,12 +266,6 @@ int main (int argc, char** argv) {
   kinVars.push_back(&allLeptonGlobalMuon);
 
   ////////// all muons //////////
-//   GenericCollectionMember<double, BNmuonCollection> allMuonSamPT(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection), "samPT", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-//   kinVars.push_back(&allMuonSamPT);
-
-//   GenericCollectionMember<double, BNmuonCollection> allMuonComPT(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection), "comPT", "all_muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-//   kinVars.push_back(&allMuonComPT);
-
   GenericCollectionMember<int, BNmuonCollection> allMuonPFmuon(Reflex::Type::ByName("BNmuon"), &(selectedCollections.tightLoosePreselectedMuonCollection), "isPFMuon", "all_muons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allMuonPFmuon);
 

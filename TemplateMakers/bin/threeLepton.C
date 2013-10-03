@@ -118,8 +118,8 @@ int main (int argc, char** argv) {
 
    // do these definitions work?
    // yes, it it tight and everything else is loose
-   LeptonScaleFactors myLepSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
-   kinVars.push_back(&myLepSF);
+   LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
+   kinVars.push_back(&myLepIDAndIsoSF);
 
    LeptonTriggerScaleFactors myLepTrig( &lepHelper);
    kinVars.push_back(&myLepTrig);
