@@ -451,25 +451,24 @@ void HelperLeptonCore::fillLepCollectionWithSelectedLeptons (BEANFileInterface *
   leptonsPreselected.push_back(*(selectedCollections->preselectedElectronCollection));
   leptonsTightLoose.push_back(*(selectedCollections->tightLooseMuonCollection));
   leptonsTightLoose.push_back(*(selectedCollections->tightLooseElectronCollection));
-  //leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedMuonCollection));
-  //leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedElectronCollection));
+  leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedMuonCollection));
+  leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedElectronCollection));
   leptonsTightLoosePreselected.push_back(*(selectedCollections->tightLoosePreselectedMuonCollection));
   leptonsTightLoosePreselected.push_back(*(selectedCollections->tightLoosePreselectedElectronCollection));
-  
+
   // sort them by pt
   leptonsTight.sort();
   leptonsLoose.sort();
   leptonsPreselected.sort();
   leptonsTightLoose.sort();
-  //leptonsLoosePreselected.sort();
+  leptonsLoosePreselected.sort();
   leptonsTightLoosePreselected.sort();
 
   selectedCollections->tightLeptonCollection = &leptonsTight;
   selectedCollections->looseLeptonCollection = &leptonsLoose;
   selectedCollections->preselectedLeptonCollection = &leptonsPreselected;
   selectedCollections->tightLooseLeptonCollection = &leptonsTightLoose;
-  //selectedCollections->loosePreselectedLeptonCollection = &leptonsLoosePreselected;
+  selectedCollections->loosePreselectedLeptonCollection = &leptonsLoosePreselected;
   selectedCollections->tightLoosePreselectedLeptonCollection = &leptonsTightLoosePreselected;
-
 }
 

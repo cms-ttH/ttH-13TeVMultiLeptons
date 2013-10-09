@@ -1,42 +1,33 @@
-
 #ifndef _CSVWeights_h
 #define _CSVWeights_h
 
-
-
 ///////////////////////////////////////////////////////
 //
-//
-//  Books the 18 variables necessary for 
+//  Books the 18 variables necessary for
 //  producing the proper CSV weights in your jets
 //
 //  Note that the weighting doesn't depend on
-//  which btag cut you make: it applies for all 
+//  which btag cut you make: it applies for all
 //  CSV values.
-//
 //
 ////////////////////////////////////////////////////
 
 class CSVWeights: public KinematicVariable<double> {
 
 public:
-  
   CSVWeights(HelperLeptonCore *in);
-
 
   void evaluate ();
   bool passCut ();
 
   HelperLeptonCore * myHelper;
-
 };
 
 CSVWeights::CSVWeights  (HelperLeptonCore *in) :
   myHelper(in)
 {
-
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
-  
+
   branches["csvWgtlf"] = BranchInfo<double>("csvWgtlf");
   branches["csvWgtlf_HFUp"] = BranchInfo<double>("csvWgtlf_HFUp");
   branches["csvWgtlf_HFDown"] = BranchInfo<double>("csvWgtlf_HFDown");
@@ -45,7 +36,6 @@ CSVWeights::CSVWeights  (HelperLeptonCore *in) :
   branches["csvWgtlf_Stats2Up"] = BranchInfo<double>("csvWgtlf_Stats2Up");
   branches["csvWgtlf_Stats2Down"] = BranchInfo<double>("csvWgtlf_Stats2Down");
 
-  
   branches["csvWgthf"] = BranchInfo<double>("csvWgthf");
   branches["csvWgthf_LFUp"] = BranchInfo<double>("csvWgthf_LFUp");
   branches["csvWgthf_LFDown"] = BranchInfo<double>("csvWgthf_LFDown");
@@ -58,12 +48,9 @@ CSVWeights::CSVWeights  (HelperLeptonCore *in) :
   branches["csvWgtc_Err1Down"] = BranchInfo<double>("csvWgtc_Err1Down");
   branches["csvWgtc_Err2Up"] = BranchInfo<double>("csvWgtc_Err2Up");
   branches["csvWgtc_Err2Down"] = BranchInfo<double>("csvWgtc_Err2Down");
-  
-  
 }
 
 void CSVWeights::evaluate () {
-
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
@@ -90,7 +77,7 @@ void CSVWeights::evaluate () {
   vector<double> csvWgtcErr1down = beanHelper->GetCSVweights( *(myJets), sysType::CSVCErr1down );
   vector<double> csvWgtcErr2up = beanHelper->GetCSVweights( *(myJets), sysType::CSVCErr2up );
   vector<double> csvWgtcErr2down = beanHelper->GetCSVweights( *(myJets), sysType::CSVCErr2down );
-      
+
   branches["csvWgtlf"].branchVal = nominalWeights[1];
   branches["csvWgtlf_HFUp"].branchVal = csvWgtHFup[1];
   branches["csvWgtlf_HFDown"].branchVal = csvWgtHFdown[1];
@@ -99,7 +86,6 @@ void CSVWeights::evaluate () {
   branches["csvWgtlf_Stats2Up"].branchVal = csvWgtLFStats2up[1];
   branches["csvWgtlf_Stats2Down"].branchVal = csvWgtLFStats2down[1];
 
-  
   branches["csvWgthf"].branchVal = nominalWeights[0];
   branches["csvWgthf_LFUp"].branchVal = csvWgtLFup[0];
   branches["csvWgthf_LFDown"].branchVal = csvWgtLFdown[0];
@@ -113,15 +99,11 @@ void CSVWeights::evaluate () {
   branches["csvWgtc_Err2Up"].branchVal = csvWgtcErr2up[2];
   branches["csvWgtc_Err2Down"].branchVal = csvWgtcErr2down[2];
 
-  
-
 }
 
 
 bool CSVWeights::passCut() {
-
   return true;
-
 }
 
 #endif

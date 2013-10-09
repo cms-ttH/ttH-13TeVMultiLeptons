@@ -1,57 +1,167 @@
 #ifndef _GenericCollectionMember_h
 #define _GenericCollectionMember_h
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMemberBase.h"
+#include <functional>
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "Reflex/Object.h"
+#include "Reflex/Type.h"
+#include "Reflex/Member.h"
+#include "Reflex/Kernel.h"
 
+template<typename T>
+T * ptr(T & obj) { return &obj; } //turn reference into pointer!
+
+template<typename T>
+T * ptr(T * obj) { return obj; } //obj is already pointer, return it!
 
 template <class branchDataType, class collectionType>
-class GenericCollectionMember: public GenericCollectionMemberBase<branchDataType, collectionType> {
-
+class GenericCollectionMember: public KinematicVariable<branchDataType> {
 public:
-    collectionType ** selectedCollection;
-    GenericCollectionMember(Reflex::Type rType, collectionType **selectedCollection, string mem, string storePrefix,  branchDataType defval, int max=1);
-    virtual void evaluate () ;
+  vector< BranchInfo<branchDataType> > myVars;
+  collectionType ** selectedCollection;
+  Reflex::Object inputObject;
+  Reflex::Type myClass;
+  bool evaluatedThisEvent;
+  string memberName;
+  string storePrefix;
+  int maxObjInColl;
+  std::function<bool (vector< BranchInfo<branchDataType> > )> cutFunction;
 
+  GenericCollectionMember(Reflex::Type rType, collectionType **selColl, string mem, string storePrefix,  branchDataType defval, int max = 1);
+  void reset ();
+  void attachToTree (TTree * inTree);
+  virtual void evaluate ();// there is already a version of this in the super class
+  bool passCut ();
+  template <typename functionType> void setCut (functionType function);
+  void print ();
+  void listAvailableMembers ();
+  bool checkForMember (Reflex::Type myType);
+  Reflex::Object getBaseObject (Reflex::Object& object, int index);
 };
 
 template <class branchDataType, class collectionType>
-GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember(Reflex::Type rType, collectionType **selCollection, string mem, string storePrefix,  branchDataType defval, int max)
-    : GenericCollectionMemberBase<branchDataType, collectionType>(rType, mem, storePrefix, defval, max) {
-    selectedCollection = selCollection;
+GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember (Reflex::Type rType, collectionType **selColl, string mem, string prefix,  branchDataType defval, int max):
+  myClass(rType),
+  memberName(mem),
+  storePrefix(prefix),
+  maxObjInColl(max)
+{
+  selectedCollection = selColl;
+  this->resetVal = defval;
+  //cout << "Blocks is " << hex << blocks << dec << endl;
+
+  // do this to make sure you get the inherited ones
+  myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);
+
+  if (myClass.Name()=="BNevent" || myClass.Name()=="BNmet") {
+    TString bName = Form("%s_%s", prefix.c_str(), mem.c_str());
+    myVars.push_back(BranchInfo<branchDataType>(bName));
+  } else {
+    for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
+      TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, mem.c_str());
+      myVars.push_back(BranchInfo<branchDataType>(bName));
+    }
+  }
+
+  reset();
+}
+
+template <class branchDataType, class collectionType>
+void GenericCollectionMember<branchDataType, collectionType>::reset () {
+  for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
+    myVars[iVar].branchVal = this->resetVal;
+  }
+  evaluatedThisEvent = false;
+}
+
+template <class branchDataType, class collectionType>
+void GenericCollectionMember<branchDataType, collectionType>::attachToTree  (TTree * inTree) {
+  for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
+    inTree->Branch(myVars[iVar].branchName, &myVars[iVar].branchVal);
+  }
 }
 
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
-    GenericCollectionMemberBase<branchDataType, collectionType>::evaluate (*selectedCollection);
+  if (evaluatedThisEvent ) return;
+  evaluatedThisEvent = true;
 
+  unsigned numObjs = (*selectedCollection)->size();
+  unsigned loopMax = (unsigned(maxObjInColl) < numObjs) ? unsigned(maxObjInColl) : numObjs;
+  for (unsigned iObj = 0; iObj < loopMax; iObj++ ){
+    Reflex::Object object(myClass, ptr((*selectedCollection)->at(iObj)));
+    Reflex::Object baseObject = getBaseObject(object, iObj);
+
+    if (checkForMember(baseObject.TypeOf())) {
+      branchDataType * tempValPtr = (branchDataType*) (baseObject.Get(memberName).Address());
+      myVars[iObj].branchVal = *tempValPtr;
+    }
+  }
 }
 
-
-//Partially specialized BNleptonCollection version, because BNleptonCollections contain pointers to BNmuons or BNelectrons
-template <class branchDataType>
-class GenericCollectionMember<branchDataType, BNleptonCollection>: public GenericCollectionMemberBase<branchDataType, BNleptonCollection> {
-
-public:
-    BNleptonCollection ** selectedCollection;
-    GenericCollectionMember(Reflex::Type rType, BNleptonCollection **selectedCollection, string mem, string storePrefix,  branchDataType defval, int max=1);
-    virtual void evaluate ();
-
-};
-
-template <class branchDataType>
-GenericCollectionMember<branchDataType, BNleptonCollection>::GenericCollectionMember(Reflex::Type rType, BNleptonCollection **selCollection, string mem, string storePrefix,  branchDataType defval, int max)
-   : GenericCollectionMemberBase<branchDataType, BNleptonCollection>(rType, mem, storePrefix, defval, max) {
-     selectedCollection = selCollection;
- }
-
-template <class branchDataType>
-void GenericCollectionMember<branchDataType, BNleptonCollection>::evaluate () {
-    GenericCollectionMemberBase<branchDataType, BNleptonCollection>::evaluateLeptonCollection (*selectedCollection);
-
+template <class branchDataType, class collectionType>
+bool GenericCollectionMember<branchDataType, collectionType>::passCut () {
+  return cutFunction(myVars);
 }
 
+template <class branchDataType, class collectionType>
+template <typename functionType>
+void GenericCollectionMember<branchDataType, collectionType>::setCut (functionType function) {
+  cutFunction = function;
+}
 
+template <class branchDataType, class collectionType>
+void GenericCollectionMember<branchDataType, collectionType>::print () {
+  cout << "Printing GenericCollectionMember .... "
+       << "   memberName " << memberName
+       << "   storePrefix " << storePrefix
+       << "   values:  ";
 
+  for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
+    cout << " [ " << iVar << "] " <<  myVars[iVar].branchVal;
+  }
+  cout << endl;
+}
 
+template <class branchDataType, class collectionType>
+void GenericCollectionMember<branchDataType, collectionType>::listAvailableMembers () {
+  cout << "Data member size  " << myClass.DataMemberSize() << endl;
+
+  for (unsigned iMem = 0;
+       iMem < myClass.DataMemberSize();
+       iMem ++){
+
+    cout << "---Member " << myClass.DataMemberAt(iMem).Name() << endl;
+  }
+}
+
+//If the object is a BNlepton, figure out if it's a muon (electron) and return a new muon (electron) object
+//Otherwise, just return the object
+template <class branchDataType, class collectionType>
+Reflex::Object GenericCollectionMember<branchDataType, collectionType>::getBaseObject (Reflex::Object &object, int index) {
+  if (myClass.Name()=="BNlepton") {
+    Reflex::Type leptonType;
+    int * isMuon = (int*) (object.Get("isMuon").Address());
+    if (*isMuon==1) {
+      leptonType = Reflex::Type::ByName("BNmuon");
+    } else {
+      leptonType = Reflex::Type::ByName("BNelectron");
+    }
+    Reflex::Object baseObject(leptonType, ptr((*selectedCollection)->at(index)));
+    object = baseObject;
+  }
+
+  return object;
+}
+
+template <class branchDataType, class collectionType>
+bool GenericCollectionMember<branchDataType, collectionType>::checkForMember (Reflex::Type classToCheck) {
+  bool hasMember = false;
+  for (unsigned iMem = 0; iMem < classToCheck.DataMemberSize(); iMem ++) {
+    if (classToCheck.DataMemberAt(iMem).Name() == memberName) hasMember = true;
+  }
+  return hasMember;
+}
 
 #endif

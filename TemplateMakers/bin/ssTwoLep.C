@@ -322,7 +322,7 @@ int main (int argc, char** argv) {
   // this is a long inside BNevent
   // just using keyword long won't work
   // needs to be Long64_t 
-  GenericEventCollectionMember<Long64_t, BNeventCollection> eventNumber(Reflex::Type::ByName("BNevent"),  "evt", "eventInfo",  KinematicVariableConstants::INT_INIT, 1);
+  GenericCollectionMember<Long64_t, BNeventCollection> eventNumber(Reflex::Type::ByName("BNevent"),  &(selectedCollections.eventCollection), "evt", "eventInfo",  KinematicVariableConstants::INT_INIT, 1);
   kinVars.push_back(&eventNumber);
 
   MetLD myMetLD(&myMHT, &metPt);
@@ -409,9 +409,7 @@ int main (int argc, char** argv) {
 
     if (!passAllCuts) {
       numEventsFailCuts++;
-
-      //!!!!    Skip The event  ///////////////
-      continue;
+      continue; //!!!!    Skip The event  ///////////////
 
     } else {
       numEventsPassCuts++;
@@ -434,7 +432,6 @@ int main (int argc, char** argv) {
 
         (*iVar)->print();
         cout << endl;
-        
       }
     }
 
