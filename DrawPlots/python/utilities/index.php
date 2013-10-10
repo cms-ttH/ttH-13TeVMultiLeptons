@@ -215,14 +215,15 @@ tr:last-child td:last-child { -moz-border-radius: 0 0 10px 0; -webkit-border-rad
 
  <?php
  foreach ($png_files as $file) {
-     if (isset($_GET['match']) && !fnmatch('*'.$_GET['match'].'*', $file, FNM_CASEFOLD)) continue;
-     echo '<div class="pic photo-link smoothbox" id="' . $file . '">';
-     $parts=preg_split("[/\\.]", $file);
-     $pdf_version = $parts[0].".pdf";     
-     echo '<a href="',$pdf_version,'" rel="gallery"><img src="',$file,'" class="pic"/></a>';
-     echo '</div>';
-     
-
+   if (isset($_GET['match']) && !fnmatch('*'.$_GET['match'].'*', $file, FNM_CASEFOLD))
+     continue;
+   echo '<div class="pic photo-link smoothbox" id="' . $file . '">';
+   $parts=preg_split("[/\\.]", $file);
+   $pdf_version = $parts[0].".pdf";     
+   if (!file_exists($pdf_version))
+     $pdf_version = $file;
+   echo '<a href="',$pdf_version,'" rel="gallery"><img src="',$file,'" class="pic"/></a>';
+   echo '</div>';
  }
  ?>
 </body>
