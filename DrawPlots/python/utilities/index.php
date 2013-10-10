@@ -215,7 +215,7 @@ tr:last-child td:last-child { -moz-border-radius: 0 0 10px 0; -webkit-border-rad
 
  <?php
  foreach ($png_files as $file) {
-     if (isset($_GET['match']) && !fnmatch('*'.$_GET['match'].'*', $file)) continue;
+     if (isset($_GET['match']) && !fnmatch('*'.$_GET['match'].'*', $file, FNM_CASEFOLD)) continue;
      echo '<div class="pic photo-link smoothbox" id="' . $file . '">';
      $parts=preg_split("[/\\.]", $file);
      $pdf_version = $parts[0].".pdf";     
