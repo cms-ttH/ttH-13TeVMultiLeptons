@@ -4,19 +4,21 @@
   <meta charset="UTF-8">
   <title>Directory Contents</title>
 
-<style type="text/css">
-   * {
-    font-family: Ubuntu,sans-serif;   
-	padding:0;
-	margin:0;
-	color: #663300;    
-}
+  <style type="text/css">
+    * {
+      font-family: Ubuntu,sans-serif;   
+      padding:0;
+      margin:0;
+      color: #663300;    
+    }
 
-body {
-	color: #333;
-	padding: 50px;
-	background: #253342;
-}
+    body {
+      color: #333;
+      padding: 50px;
+      background: #253342;
+      width: 88.3%;
+      margin: 0 auto;
+    }
 
 h1 {
 	text-align: left;
@@ -37,12 +39,12 @@ h1 {
 
 .photo-link{ text-align: center; padding:5px; border-radius:0.5em; margin:5px; border:1px solid #ccc; display:block; width:300px; float:left; background: white }                                                       
 
-table {
-	border-collapse: collapse;
-    border-spacing: 0;
-	width: 88.3%;
-	margin: 15px 0;
-}
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      margin: 15px 0;
+    }
 
  th:first-child {
   -moz-border-radius: 10px 0 0 0;
