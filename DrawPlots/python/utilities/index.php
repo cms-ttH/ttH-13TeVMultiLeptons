@@ -95,6 +95,7 @@ tr:last-child td:last-child { -moz-border-radius: 0 0 10px 0; -webkit-border-rad
       </thead>
       <tbody>
       <?php
+      date_default_timezone_set('America/New_York');
 
  $cleaned_items = array_diff(scandir('.'), array('.'), glob("*.pdf"));
  $png_files = glob("*.png");
@@ -131,7 +132,7 @@ tr:last-child td:last-child { -moz-border-radius: 0 0 10px 0; -webkit-border-rad
  foreach ($png_files as $file) {
      if (isset($_GET['match']) && !fnmatch('*'.$_GET['match'].'*', $file)) continue;
      echo '<div class="photo-link smoothbox">';
-     $parts=split("[/\\.]", $file);
+     $parts=preg_split("[/\\.]", $file);
      $pdf_version = $parts[0].".pdf";     
      echo '<a href="',$pdf_version,'" rel="gallery"><img src="',$file,'" style="width: 300px;" /></a>';
      echo '</div>';
