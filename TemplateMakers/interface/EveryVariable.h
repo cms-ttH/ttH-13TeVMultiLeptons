@@ -33,4 +33,5 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HiggsDecayType.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectMass.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/FinalBDT.h"
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericVariable.h"

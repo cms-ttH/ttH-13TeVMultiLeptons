@@ -6,6 +6,7 @@
 #include <typeinfo>
 
 // //Anna's fix to make BNleptonCollection work just like any other collection
+// //Instantiated in _____________.h
 // template<typename ObjectType_temp>
 // ObjectType_temp * ptr(ObjectType_temp & obj) { return &obj; } //turn reference into pointer!
 
@@ -16,6 +17,9 @@ template <class collectionType1, class collectionType2>
 class TwoObjectKinematic: public KinematicVariable<double> {
 
 public:
+  //Store branch values so they are accessible to other classes
+  vector<BranchInfo<double>> myVars;
+  
   //An "abs" prefix on a variable indicates the absolute value of a
   //"pair" variable (e.g. |mass|, |deltaR|), or the absolute value
   //of each element of a non-pair variable (e.g. |eta1| + |eta2|)
@@ -37,12 +41,14 @@ public:
   collectionType2 **selCollection2; //second selected collection
   string branch_name_1; //first selected collection name
   string branch_name_2; //second collected collection name
+  unsigned int min1; //number of first collection objects 
   unsigned int max1; //number of first collection objects 
+  unsigned int min2; //number of second collection objects
   unsigned int max2; //number of second collection objects
   
   TwoObjectKinematic(string input_variable, string input_which_pair, double input_target_value, string input_new_name,
-                collectionType1 **input_selCollection1, string input_branch_name_1, int input_max1,
-                collectionType2 **input_selCollection2, string input_branch_name_2, int input_max2);
+                     collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
+                     collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2);
   
   void evaluate();
   
@@ -51,11 +57,11 @@ public:
 //Template for any collections other than BNlepton and BNmet
 template <class collectionType1, class collectionType2>
 TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string input_variable, string input_which_pair, double input_target_value, string input_new_name,
-                                                                        collectionType1 **input_selCollection1, string input_branch_name_1, int input_max1,
-                                                                        collectionType2 **input_selCollection2, string input_branch_name_2, int input_max2):
+                                                                        collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
+                                                                        collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2):
   variable(input_variable), which_pair(input_which_pair), target_value(input_target_value), new_name(input_new_name),
-  selCollection1(input_selCollection1), branch_name_1(input_branch_name_1),max1(input_max1),
-  selCollection2(input_selCollection2), branch_name_2(input_branch_name_2),max2(input_max2)
+  selCollection1(input_selCollection1), branch_name_1(input_branch_name_1),min1(input_min1),max1(input_max1),
+  selCollection2(input_selCollection2), branch_name_2(input_branch_name_2),min2(input_min2),max2(input_max2)
 {
 
   //Convert target value to integers for branch name
@@ -67,12 +73,14 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
   if (which_pair == "all_pairs" || which_pair == "all_pairs_abs") { 
     for (unsigned int i=0; i<max1; i++) {
       for (unsigned int j=0; j<max2; j++) {
-        //Eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
-        if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || i < j ) {
-          TString bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
-          if (which_pair == "all_pairs_abs") bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
-          if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), i+1, j+2);
-          branches[bName] = BranchInfo<double>(bName);
+        if (i >= min1-1 && j >= min2-1) { //Start branches at min value 
+          //Eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
+          if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || i < j ) {
+            TString bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
+            if (which_pair == "all_pairs_abs") bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
+            if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), i+1, j+2);
+            branches[bName] = BranchInfo<double>(bName);
+          }
         }
       }
     }
@@ -149,8 +157,8 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
     //for (typename collectionType1::const_iterator object1 = (*selCollection1)->begin(); object1 != (*selCollection1)->end(); ++object1) {
     for (unsigned int iObj1 = 0; iObj1 < (*selCollection1)->size(); iObj1++) {
 
-      //Sets max number of objects
-      if ( iObj1 < max1 ) {
+      //Sets min and max number of objects
+      if ( iObj1 >= min1-1 && iObj1 < max1 ) {
         thisValueIterator += 1.0;
         vect1.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,ptr((*selCollection1)->at(iObj1))->eta,ptr((*selCollection1)->at(iObj1))->phi,
                            max(ptr((*selCollection1)->at(iObj1))->energy,ptr((*selCollection1)->at(iObj1))->pt)); //Hack for "energy" of MET
@@ -174,8 +182,8 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
     //for (typename collectionType2::const_iterator object2 = (*selCollection2)->begin(); object2 != (*selCollection2)->end(); ++object2) {
     for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
 
-      //Sets max number of objects, eliminates use of the same object twice 
-      if ( iObj2 < max2 && (typeid(*selCollection1).name() != typeid(*selCollection2).name()
+      //Sets min and max number of objects, eliminates use of the same object twice 
+      if ( iObj2 >= min2-1 && iObj2 < max2 && (typeid(*selCollection1).name() != typeid(*selCollection2).name()
                             || iObj2 >= (*selCollection1)->size() || iObj2 >= max1 ) ) {
         thisValueIterator += 1.0;
         vect2.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,ptr((*selCollection2)->at(iObj2))->eta,ptr((*selCollection2)->at(iObj2))->phi,
@@ -229,8 +237,9 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
     //for (typename collectionType2::const_iterator object2 = (*selCollection2)->begin(); object2 != (*selCollection2)->end(); ++object2) {
     for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
 
-      //Sets max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
-      if (iObj1<max1 && iObj2<max2 && (typeid(*selCollection1).name() != typeid(*selCollection2).name() || iObj1 < iObj2) ) {
+      //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
+      if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 &&
+          (typeid(*selCollection1).name() != typeid(*selCollection2).name() || iObj1 < iObj2) ) {
         thisPairValueIterator += 1.0;
 
         vect1.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,ptr((*selCollection1)->at(iObj1))->eta,ptr((*selCollection1)->at(iObj1))->phi,
@@ -337,9 +346,14 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
           else if ( which_pair != "vector_sum" && usePairValue ) { std::cerr << " No valid entry for variable " << variable << " with which_pair " << which_pair << std::endl; continue; }
           else continue;
         }
-      } // end if (iObj1<max1 && iObj2<max2)
+      } // end if (iObj1>=min1-1 && iObj2>=min2-1 && iObj1<max1 && iObj2<max2)
     } //End loop over object2
   } //End loop over object1
+
+  for ( typename map<TString, BranchInfo<double>>::iterator iBranch = branches.begin();
+        iBranch != branches.end(); iBranch++ ) {
+    myVars.push_back(iBranch->second);
+  }
 
 }
 
