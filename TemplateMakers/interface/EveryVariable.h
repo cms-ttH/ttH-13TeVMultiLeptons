@@ -32,4 +32,5 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/DBCorrectedRelIsoDR04s.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HiggsDecayType.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectMass.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericVariable.h"

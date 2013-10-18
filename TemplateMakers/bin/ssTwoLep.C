@@ -205,13 +205,36 @@ int main (int argc, char** argv) {
   HiggsDecayType myHiggsDecayType(&lepHelper);
   kinVars.push_back(&myHiggsDecayType);
 
-  TwoObjectMass<BNmuonCollection,BNjetCollection> myMassMuonJet(&(selectedCollections.tightMuonCollection), "tight_muons_by_pt", 2,
-                                                                &(selectedCollections.jetCollection), "jets_by_pt", 4);
-  kinVars.push_back(&myMassMuonJet);
+  // AWB Oct 17 - new object functions
+  TwoObjectKinematic<BNmuonCollection,BNjetCollection> myMassMuonJetNew("mass", "all_pairs", -99, "",
+                                                                        &(selectedCollections.tightMuonCollection), "tight_muons_by_pt", 2,
+                                                                        &(selectedCollections.jetCollection), "jets_by_pt", 4);
+  kinVars.push_back(&myMassMuonJetNew);
 
-  TwoObjectMassLepton<BNjetCollection> myMassLepJet(&(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 2,
-                                                    &(selectedCollections.jetCollection), "jets_by_pt", 4);
-  kinVars.push_back(&myMassLepJet);
+  TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMHT_new("pt", "vector_sum", -99, "mht_new",
+                                                                   &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 99,
+                                                                   &(selectedCollections.jetCollection), "jets_by_pt", 99);
+  kinVars.push_back(&myMHT_new);
+  
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMassLepLep_new("mass", "min", -99, "min_mass_leplep_new",
+                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "tight_leptons_by_pt", 99,
+                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "tight_leptons_by_pt", 99);
+  kinVars.push_back(&myMassLepLep_new);
+  
+  TwoObjectKinematic<BNleptonCollection,BNmetCollection> mySumLep1Lep2MetPt_new("pt", "sum", -99, "sum_lep1pt_lep2pt_met_new",
+                                                                             &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 2,
+                                                                             &(selectedCollections.metCollection), "met", 1);
+  kinVars.push_back(&mySumLep1Lep2MetPt_new);
+  
+  TwoObjectKinematic<BNmuonCollection,BNjetCollection> myMassMuonJet100("mass", "closest_to", 100, "muon_jet_mass_closest_to_100",
+                                                                        &(selectedCollections.tightMuonCollection), "tight_muons_by_pt", 2,
+                                                                        &(selectedCollections.jetCollection), "jets_by_pt", 4);
+  kinVars.push_back(&myMassMuonJet100);
+
+//   TwoObjectKinematic<BNleptonCollection,BNmetCollection> myMT_met_lep1("MT", "all_pairs", -99,
+//                                                           &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 1,
+//                                                           &(selectedCollections.metCollection), "met", 1);
+  // AWB Oct 17 - end new object functions
 
   CERNTightCharges myCERNTightCharges(&(selectedCollections.tightLoosePreselectedLeptonCollection), "CERN_tight_charge", "all_leptons_by_pt", 2);
   kinVars.push_back(&myCERNTightCharges);
