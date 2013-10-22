@@ -26,8 +26,6 @@ def main():
     if args.label:
         config['label'] = args.label
 
-    print config['label']
-
     samples = config['samples']
     if args.sample:
         samples = args.sample
