@@ -17,10 +17,16 @@ def main():
     parser.add_argument('-l', '--lepton_category', action='append', help='Run on a single lepton category.  Default is to run on all lepton categories listed in the configuration file.')    
     parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
     parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
+    parser.add_argument('--label', help='Override the label set in the configuration file with LABEL')
     args = parser.parse_args()
 
     with open(args.config_file_name) as config_file:
         config = yaml.load(config_file)
+
+    if args.label:
+        config['label'] = args.label
+
+    print config['label']
 
     samples = config['samples']
     if args.sample:
