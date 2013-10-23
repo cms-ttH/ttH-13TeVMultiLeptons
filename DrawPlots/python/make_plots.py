@@ -46,9 +46,9 @@ def main():
 
     if args.web:
         if args.batch:
-            print '\nFinished submitting jobs.  After they complete, plots will be posted to: http://www.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
+            print '\nFinished submitting jobs.  After they complete, plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
         else:
-            print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
+            print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
 
 def make_plots(args, config, samples, lepton_categories):
     for sample in samples:

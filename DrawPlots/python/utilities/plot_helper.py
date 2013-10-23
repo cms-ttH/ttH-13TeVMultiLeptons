@@ -4,13 +4,13 @@ import ROOT
 import string
 from distutils import file_util
 
-def get_afs_base_directory():
-    import subprocess
-    process = subprocess.Popen('ls -d /afs/nd.edu/user*/%s/www' % os.environ['USER'], stdout=subprocess.PIPE, shell=True)
-    output, error = process.communicate()
-    afs_base_directory = output.strip()
-
-    return afs_base_directory
+def get_www_base_directory():
+    try:
+        www_base_directory = os.environ['HOME']+'/www'
+        return www_base_directory
+    except:
+        print 'Problem accessing your CRC www directory.  Try emailing crcsupport@nd.edu and asking them to create one for you.'
+        sys.exit()
 
 def copy_to_www_area(local_plot_directory, www_plot_directory, plot_name):
     file_util.copy_file('%s/%s.png' % (local_plot_directory, plot_name), www_plot_directory)
@@ -39,9 +39,9 @@ def setup_www_directories(directories, depth=1, *extra_files_to_post):
         setup_www_directory(directory, depth, *extra_files_to_post)
 
 def setup_web_posting(directories, depth=4, *extra_files_to_post):
-    afs_base_directory = get_afs_base_directory()
+    www_base_directory = get_www_base_directory()
 
-    www_plot_directories = ['%s/%s' % (afs_base_directory, directory) for directory in directories]
+    www_plot_directories = ['%s/%s' % (www_base_directory, directory) for directory in directories]
     setup_www_directories(www_plot_directories, depth, *extra_files_to_post)
 
 def get_data_sample_name(lepton_category):
@@ -78,15 +78,11 @@ class Plot:
             canvas.Print('plot_pdfs/%s.%s' % (self.plot_name, type))
 
     def post_to_web(self, config, lepton_category):
-        try:
-            afs_base_directory = config['afs_base_directory']
-        except:
-            afs_base_directory = get_afs_base_directory()
-            config['afs_base_directory'] = afs_base_directory
+        www_base_directory = get_www_base_directory()
 
         self.save_image('png', 'pdf')
 
-        www_plot_directory = '%s/plots/%s/%s' % (afs_base_directory, config['label'], lepton_category)
+        www_plot_directory = '%s/plots/%s/%s' % (www_base_directory, config['label'], lepton_category)
         copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name)
 
     def set_style(self): #later we can add arguments for different style sets if needed

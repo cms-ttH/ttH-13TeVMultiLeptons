@@ -57,7 +57,7 @@ def main():
                 draw_stack_plot(lepton_category, jet_tag_category, distribution)
 
     if args.web:
-        print '\nFinished processing.  Plots will be posted to: http://www.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], config['input file label'])
+        print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], config['input file label'])
 
 def draw_stack_plot (lepton_category, jet_tag_category, distribution):
     stack_plot = THStack("theStack", "")
@@ -249,13 +249,9 @@ def draw_stack_plot (lepton_category, jet_tag_category, distribution):
     if (config['save pdf']): canvas.SaveAs(config['output file location']+plot_name+'.pdf')
 
     if args.web:
-        try:
-            afs_base_directory = config['afs base directory']
-        except:
-            afs_base_directory = plot_helper.get_afs_base_directory()
-            config['afs base directory'] = afs_base_directory
+        www_base_directory = plot_helper.get_www_base_directory()
 
-        www_plot_directory = '%s/stack_plots/%s/%s_%s/' % (afs_base_directory, config['input file label'], lepton_category, jet_tag_category)
+        www_plot_directory = '%s/stack_plots/%s/%s_%s/' % (www_base_directory, config['input file label'], lepton_category, jet_tag_category)
         plot_helper.copy_to_www_area(config['output file location'], www_plot_directory, plot_name)
 
     gPad.Close()
