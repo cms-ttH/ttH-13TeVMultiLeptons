@@ -27,17 +27,17 @@ public:
   
   vector<TMVA::Reader *> reader;
 
-  GenericCollectionMember<double, BNleptonCollection> * allLeptonEta;
-  GenericCollectionMember<double, BNleptonCollection> * allLeptonPt;
+  GenericCollectionMember<double, BNleptonCollection> * tightLeptonEta;
+  GenericCollectionMember<double, BNleptonCollection> * tightLeptonPt;
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * myMHT;
-  TwoObjectKinematic<BNleptonCollection,BNjetCollection> *myMinDrLep2Jet;
+  TwoObjectKinematic<BNleptonCollection,BNjetCollection> *myMinDeltaRLep2Jet;
   TwoObjectKinematic<BNmetCollection,BNleptonCollection> *myMtMetLep;
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> *mySumPt;
 
-  FinalBDT(GenericCollectionMember<double, BNleptonCollection> * input_allLeptonEta,
-           GenericCollectionMember<double, BNleptonCollection> * input_allLeptonPt,
+  FinalBDT(GenericCollectionMember<double, BNleptonCollection> * input_tightLeptonEta,
+           GenericCollectionMember<double, BNleptonCollection> * input_tightLeptonPt,
            TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMHT,
-           TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMinDrLep2Jet,
+           TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMinDeltaRLep2Jet,
            TwoObjectKinematic<BNmetCollection,BNleptonCollection> * input_myMtMetLep,
            TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPt);
 
@@ -45,14 +45,14 @@ public:
 
 };
 
-FinalBDT::FinalBDT(GenericCollectionMember<double, BNleptonCollection> * input_allLeptonEta,
-                   GenericCollectionMember<double, BNleptonCollection> * input_allLeptonPt,
+FinalBDT::FinalBDT(GenericCollectionMember<double, BNleptonCollection> * input_tightLeptonEta,
+                   GenericCollectionMember<double, BNleptonCollection> * input_tightLeptonPt,
                    TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMHT,
-                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMinDrLep2Jet,
+                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMinDeltaRLep2Jet,
                    TwoObjectKinematic<BNmetCollection,BNleptonCollection> * input_myMtMetLep,
                    TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPt):
-  allLeptonEta(input_allLeptonEta), allLeptonPt(input_allLeptonPt), myMHT(input_myMHT),
-  myMinDrLep2Jet(input_myMinDrLep2Jet), myMtMetLep(input_myMtMetLep), mySumPt(input_mySumPt) {
+  tightLeptonEta(input_tightLeptonEta), tightLeptonPt(input_tightLeptonPt), myMHT(input_myMHT),
+  myMinDeltaRLep2Jet(input_myMinDeltaRLep2Jet), myMtMetLep(input_myMtMetLep), mySumPt(input_mySumPt) {
   
   branches["FinalBDT_TwoMuon"] = BranchInfo<double>("FinalBDT_TwoMuon");
   branches["FinalBDT_MuonElectron"] = BranchInfo<double>("FinalBDT_MuonElectron");
@@ -94,20 +94,20 @@ void FinalBDT::evaluate() {
   
   //--------
   
-  allLeptonEta->evaluate();
-  allLeptonPt->evaluate();
+  tightLeptonEta->evaluate();
+  tightLeptonPt->evaluate();
   myMHT->evaluate();
-  myMinDrLep2Jet->evaluate();
+  myMinDeltaRLep2Jet->evaluate();
   myMtMetLep->evaluate();
   mySumPt->evaluate();
   
-  varlep2AbsEta = abs((*allLeptonEta).myVars[1].branchVal); //Get the branch for the second lepton
-  varlep2Pt = (*allLeptonPt).myVars[1].branchVal; //Get the branch for the second lepton
+  varlep2AbsEta = abs((*tightLeptonEta).myVars[1].branchVal); //Get the branch for the second lepton
+  varlep2Pt = (*tightLeptonPt).myVars[1].branchVal; //Get the branch for the second lepton
   varMHT = (*myMHT).myVars[0].branchVal;
-  varmindr_lep2_jet = (*myMinDrLep2Jet).myVars[0].branchVal;
+  varmindr_lep2_jet = (*myMinDeltaRLep2Jet).myVars[0].branchVal;
   varMT_met_lep1 = (*myMtMetLep).myVars[0].branchVal;
   varsum_pt = (*mySumPt).myVars[0].branchVal;
-  
+
   for( unsigned int j = 0 ; j < 3 ; ++j ) {
     
     TMVA::Reader  *tmpReader = reader[j];

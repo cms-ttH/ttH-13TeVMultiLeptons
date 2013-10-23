@@ -93,13 +93,13 @@ int main (int argc, char** argv) {
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
 
-   NumJets myNjets;
-   myNjets.setCut(2); // parameter is keep events with jets  >= num
-   kinVars.push_back(&myNjets); //save it in the tree
-   cutVars.push_back(&myNjets); //also cut on it
+//    NumJets myNjets;
+//    myNjets.setCut(2); // parameter is keep events with jets  >= num
+//    kinVars.push_back(&myNjets); //save it in the tree
+//    cutVars.push_back(&myNjets); //also cut on it
 
-   NumLeptons myNlep;
-   kinVars.push_back(&myNlep);
+//    NumLeptons myNlep;
+//    kinVars.push_back(&myNlep);
 
    // CSV weights don't exist for jets
    // with a pt < 30
@@ -127,8 +127,8 @@ int main (int argc, char** argv) {
    CheckTwoLepTrigger checkTrig (&lepHelper);
    kinVars.push_back(&checkTrig);
 
-   MassLepLep mll;
-   kinVars.push_back(&mll);
+   //MassLepLep mll;
+   //kinVars.push_back(&mll);
 
 //   GenericMuonCollectionMember<double, BNmuonCollection> allMuonPt(Reflex::Type::ByName("BNmuon"),  "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
 //   kinVars.push_back(&allMuonPt);

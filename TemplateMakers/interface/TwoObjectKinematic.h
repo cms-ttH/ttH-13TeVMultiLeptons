@@ -6,13 +6,14 @@
 #include <typeinfo>
 
 // //Anna's fix to make BNleptonCollection work just like any other collection
-// //Instantiated in _____________.h
+// //Template defined in GenericCollectionMember.h 
 // template<typename ObjectType_temp>
 // ObjectType_temp * ptr(ObjectType_temp & obj) { return &obj; } //turn reference into pointer!
 
 // template<typename ObjectType_temp>
 // ObjectType_temp * ptr(ObjectType_temp * obj) { return obj; } //obj is already pointer, return it!
 
+//Takes two collections; may be the same, or different
 template <class collectionType1, class collectionType2>
 class TwoObjectKinematic: public KinematicVariable<double> {
 
@@ -35,16 +36,16 @@ public:
   string which_pair; //all_pairs, max, min, avg, sum, closest_to,
                      //all_pairs_abs, maxAbs, minAbs, avgAbs, sumAbs,
                      //absMax, absMin, absAvg, absSum, vector_sum
-  string new_name; //Replacement name if desired
+  string new_name; //Replacement name if desired, otherwise set to ""
   double target_value; //only matters for closest_to; otherwise, set to -99
   collectionType1 **selCollection1; //first selected collection
   collectionType2 **selCollection2; //second selected collection
   string branch_name_1; //first selected collection name
   string branch_name_2; //second collected collection name
-  unsigned int min1; //number of first collection objects 
-  unsigned int max1; //number of first collection objects 
-  unsigned int min2; //number of second collection objects
-  unsigned int max2; //number of second collection objects
+  unsigned int min1; //first object in the first collection
+  unsigned int max1; //last object in the first collection
+  unsigned int min2; //first object in the second collection 
+  unsigned int max2; //last object in the second collection 
   
   TwoObjectKinematic(string input_variable, string input_which_pair, double input_target_value, string input_new_name,
                      collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
@@ -54,7 +55,6 @@ public:
   
 };
 
-//Template for any collections other than BNlepton and BNmet
 template <class collectionType1, class collectionType2>
 TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string input_variable, string input_which_pair, double input_target_value, string input_new_name,
                                                                         collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
@@ -105,7 +105,6 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
 
 }
 
-//Template for any collections other than BNlepton and BNmet
 template <class collectionType1, class collectionType2>
 void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   if (this->evaluatedThisEvent) return;
@@ -154,7 +153,6 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   //Use individual values
   if ( useValue || which_pair == "vector_sum" ) {
     //Loop over first set of objects alone
-    //for (typename collectionType1::const_iterator object1 = (*selCollection1)->begin(); object1 != (*selCollection1)->end(); ++object1) {
     for (unsigned int iObj1 = 0; iObj1 < (*selCollection1)->size(); iObj1++) {
 
       //Sets min and max number of objects
@@ -166,20 +164,19 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         thisVectorSum += vect1; thisVectorTransverseSum += vect1_transverse;
         
         if ( variable == "pt" ) thisValueSum += vect1.Pt();
-        else if ( variable == "pz" ) thisValueSum += vect1.Pt();
-        else if ( variable == "energy" ) thisValueSum += vect1.Pt();
-        else if ( variable == "eta" ) thisValueSum += vect1.Pt();
-        else if ( variable == "phi" ) thisValueSum += vect1.Pt();
-        else if ( variable == "absPz" ) thisValueSum += vect1.Pt();
-        else if ( variable == "absEta" ) thisValueSum += vect1.Pt();
-        else if ( variable == "absPhi" ) thisValueSum += vect1.Pt();
+        else if ( variable == "pz" ) thisValueSum += vect1.Pz();
+        else if ( variable == "energy" ) thisValueSum += vect1.E();
+        else if ( variable == "eta" ) thisValueSum += vect1.Eta();
+        else if ( variable == "phi" ) thisValueSum += vect1.Phi();
+        else if ( variable == "absPz" ) thisValueSum += abs(vect1.Pz());
+        else if ( variable == "absEta" ) thisValueSum += abs(vect1.Eta());
+        else if ( variable == "absPhi" ) thisValueSum += abs(vect1.Phi());
         else if ( which_pair != "vector_sum" ) { std::cerr << " No valid entry for variable: " << variable << std::endl; continue; }
         else continue;
       }      
-    }
+    }//End loop over iObj1
     
     //Loop over second set of objects alone
-    //for (typename collectionType2::const_iterator object2 = (*selCollection2)->begin(); object2 != (*selCollection2)->end(); ++object2) {
     for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
 
       //Sets min and max number of objects, eliminates use of the same object twice 
@@ -192,13 +189,13 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         thisVectorSum += vect2; thisVectorTransverseSum += vect2_transverse;
         
         if ( variable == "pt" ) thisValueSum += vect2.Pt();
-        else if ( variable == "pz" ) thisValueSum += vect2.Pt();
-        else if ( variable == "energy" ) thisValueSum += vect2.Pt();
-        else if ( variable == "eta" ) thisValueSum += vect2.Pt();
-        else if ( variable == "phi" ) thisValueSum += vect2.Pt();
-        else if ( variable == "absPz" ) thisValueSum += vect2.Pt();
-        else if ( variable == "absEta" ) thisValueSum += vect2.Pt();
-        else if ( variable == "absPhi" ) thisValueSum += vect2.Pt();
+        else if ( variable == "pz" ) thisValueSum += vect2.Pz();
+        else if ( variable == "energy" ) thisValueSum += vect2.E();
+        else if ( variable == "eta" ) thisValueSum += vect2.Eta();
+        else if ( variable == "phi" ) thisValueSum += vect2.Phi();
+        else if ( variable == "absPz" ) thisValueSum += abs(vect2.Pz());
+        else if ( variable == "absEta" ) thisValueSum += abs(vect2.Eta());
+        else if ( variable == "absPhi" ) thisValueSum += abs(vect2.Phi());
         else if ( which_pair != "vector_sum" ) { std::cerr << " No valid entry for variable: " << variable << std::endl; continue; }
         else continue;
       }
@@ -210,8 +207,8 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
 
     if ( which_pair == "avg" ) branches[bName].branchVal = thisValueSum / thisValueIterator;
     else if ( which_pair == "sum" ) branches[bName].branchVal = thisValueSum;
-    else if ( which_pair == "avgAbs" ) branches[bName].branchVal = thisValueSumAbs / thisValueIterator;
-    else if ( which_pair == "sumAbs" ) branches[bName].branchVal = thisValueSumAbs;
+    //else if ( which_pair == "avgAbs" ) branches[bName].branchVal = thisValueSumAbs / thisValueIterator;
+    //else if ( which_pair == "sumAbs" ) branches[bName].branchVal = thisValueSumAbs;
     else if ( which_pair == "absAvg" ) branches[bName].branchVal = abs(thisValueSum) / thisValueIterator;
     else if ( which_pair == "absSum" ) branches[bName].branchVal = abs(thisValueSum);
     else if ( which_pair == "vector_sum" ) {
@@ -349,6 +346,9 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
       } // end if (iObj1>=min1-1 && iObj2>=min2-1 && iObj1<max1 && iObj2<max2)
     } //End loop over object2
   } //End loop over object1
+
+  //Clean out values from last event 
+ myVars.clear();
 
   for ( typename map<TString, BranchInfo<double>>::iterator iBranch = branches.begin();
         iBranch != branches.end(); iBranch++ ) {
