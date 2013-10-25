@@ -91,7 +91,7 @@ def make_histos(args, config, samples, lepton_categories):
                         plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, systematic_label)
                         plot = plot_helper.Plot(sample, output_file, tree, plot_name, config['distributions'][distribution], draw_string_maker.draw_string)
                         if not sample_info.is_data:
-                            plot.plot.Scale(sample_info.x_section * config['luminosity'] * plot.plot.GetEntries() / sample_info.num_generated)
+                            plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
                         if args.pdf:
                             plot.save_image('pdf')
                         if args.web:
