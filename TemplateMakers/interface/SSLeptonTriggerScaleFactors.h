@@ -25,7 +25,6 @@ SSLeptonTriggerScaleFactors::SSLeptonTriggerScaleFactors (HelperLeptonCore *in):
   branches["twoMuonTriggerSF"] = BranchInfo<double>("twoMuonTriggerSF");
   branches["twoElectronTriggerSF"] = BranchInfo<double>("twoElectronTriggerSF");
   branches["muonElectronTriggerSF"] = BranchInfo<double>("muonElectronTriggerSF");
-  branches["triggerSF"] = BranchInfo<double>("triggerSF");
 
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 }
@@ -68,7 +67,6 @@ void SSLeptonTriggerScaleFactors::evaluate () {
   branches["twoMuonTriggerSF"].branchVal = muonSF;
   branches["twoElectronTriggerSF"].branchVal = electronSF;
   branches["muonElectronTriggerSF"].branchVal = muonElectronSF;
-  branches["triggerSF"].branchVal = muonSF * electronSF * muonElectronSF;
 
 }
 

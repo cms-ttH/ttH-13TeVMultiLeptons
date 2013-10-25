@@ -184,11 +184,11 @@ class DrawStringMaker:
 
     def get_matched_SF(self, lepton_category):
         if lepton_category == 'mu_mu':
-            matched_SF = 'TwoMuonTriggerSF'
+            matched_SF = 'twoMuonTriggerSF'
         elif lepton_category == 'ele_ele':
-            matched_SF = 'TwoElectronTriggerSF'
+            matched_SF = 'twoElectronTriggerSF'
         elif lepton_category == 'mu_ele':
-            matched_SF = 'MuonElectronTriggerSF'
+            matched_SF = 'muonElectronTriggerSF'
 
         return matched_SF
 
