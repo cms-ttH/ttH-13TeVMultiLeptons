@@ -44,7 +44,9 @@ mc weights:
     - topPtWgt
     - csvWgtlf
     - csvWgthf
-#    - triggerSF 
+    - triggerSF
+    - lepMVALoose2LepSF
+    - lepMVATight2LepSF
 
 baseline systematics:
     - weight_PUup

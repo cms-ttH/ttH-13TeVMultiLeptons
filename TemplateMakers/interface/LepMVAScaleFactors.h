@@ -32,8 +32,8 @@ LepMVAScaleFactors::LepMVAScaleFactors (int numLeps):
   tightElectron2DSF = (TH2D*)electronFile.Get("LepMVATightSF2D")->Clone();
   tightMuon2DSF = (TH2D*)muonFile.Get("LepMVATightSF2D")->Clone();
 
-  looseBranchName = Form("lepMVALooseSF_%dlep", numLeps);
-  tightBranchName = Form("lepMVATightSF_%dlep", numLeps);
+  looseBranchName = Form("lepMVALoose%dLepSF", numLeps);
+  tightBranchName = Form("lepMVATight%dLepSF", numLeps);
   branches[looseBranchName] = BranchInfo<double>(looseBranchName);
   branches[tightBranchName] = BranchInfo<double>(tightBranchName);
 }
