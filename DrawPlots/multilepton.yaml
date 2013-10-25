@@ -1,6 +1,6 @@
-label: framework_studies_v2
+label: framework_studies_v3
 luminosity: 19450.0
-input_trees_directory: ../tree_files/
+input_trees_directory: tree_files/
 
 common cuts:
     lt_three_tight_leptons: '!((all_leptons_by_pt_1_lepMVA > 0.7) && (all_leptons_by_pt_2_lepMVA > 0.7) && (all_leptons_by_pt_3_lepMVA > 0.7))'
