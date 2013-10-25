@@ -39,7 +39,7 @@ lepton categories:
 #    - mu_mu_mu
 
 mc weights:
-    - lepTotalSF
+    - lepIDAndIsoSF
     - weight_PU
     - topPtWgt
     - csvWgtlf
