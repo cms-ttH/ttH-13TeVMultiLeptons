@@ -60,9 +60,9 @@ background sample groups:
         draw name: Others
         color: kBlue-9
         samples:
-            - ttbarW #just testing
-            - ttbar
-#            - zz
+#            - ttbarW #just testing
+#            - ttbar
+            - zz
 #            - zzz
 #            - wzz
 #            - www
@@ -88,7 +88,7 @@ distributions:
     numLooseBJets: [number of loose b-tagged jets, false, false]
     numMediumBJets: [number of medium b-tagged jets, false, false]
     sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', false, false]
-#    all_leptons_by_pt_1_SIP3D: ['First lepton SIP', false, false]
+    all_leptons_by_pt_1_SIP: ['First lepton SIP', false, false]
     all_leptons_by_pt_1_lepMVA: [First lepton MVA, false, false]
     all_leptons_by_pt_2_lepMVA: [Second lepton MVA, false, false]
     all_leptons_by_pt_1_pt: [First lepton pT, 20, false, false]
