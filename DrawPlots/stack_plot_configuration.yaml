@@ -1,6 +1,6 @@
 #input and output file names
-input file location: /afs/crc.nd.edu/user/a/awoodard/CMSSW_5_3_11_patch5/src/ttHMultileptonAnalysis/DrawPlots/python/
-input file label: framework_studies_v1
+input file location: histos
+input file label: framework_studies_v3
 output file location: pdf/
 
 #drawing options
@@ -88,7 +88,7 @@ distributions:
     numLooseBJets: [number of loose b-tagged jets, false, false]
     numMediumBJets: [number of medium b-tagged jets, false, false]
     sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', false, false]
-    all_leptons_by_pt_1_SIP3D: ['First lepton SIP', false, false]
+#    all_leptons_by_pt_1_SIP3D: ['First lepton SIP', false, false]
     all_leptons_by_pt_1_lepMVA: [First lepton MVA, false, false]
     all_leptons_by_pt_2_lepMVA: [Second lepton MVA, false, false]
     all_leptons_by_pt_1_pt: [First lepton pT, 20, false, false]
