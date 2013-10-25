@@ -10,7 +10,6 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericObjectMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
-//#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericEventCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CSVWeights.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/PUWeights.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TopPtWeights.h"
@@ -28,4 +27,6 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HiggsDecayType.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/FinalBDT.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/LepMVAScaleFactors.h"
+
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericVariable.h"
