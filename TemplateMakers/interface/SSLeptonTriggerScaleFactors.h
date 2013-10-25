@@ -22,9 +22,10 @@ public:
 ///////////////////////////////////////////////////////////////////////
 SSLeptonTriggerScaleFactors::SSLeptonTriggerScaleFactors (HelperLeptonCore *in): myHelper(in) {
 
-  branches["TwoMuonTriggerSF"] = BranchInfo<double>("TwoMuonTriggerSF");
-  branches["TwoElectronTriggerSF"] = BranchInfo<double>("TwoElectronTriggerSF");
-  branches["MuonElectronTriggerSF"] = BranchInfo<double>("MuonElectronTriggerSF");
+  branches["twoMuonTriggerSF"] = BranchInfo<double>("twoMuonTriggerSF");
+  branches["twoElectronTriggerSF"] = BranchInfo<double>("twoElectronTriggerSF");
+  branches["muonElectronTriggerSF"] = BranchInfo<double>("muonElectronTriggerSF");
+  branches["triggerSF"] = BranchInfo<double>("triggerSF");
 
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 }
@@ -35,7 +36,7 @@ void SSLeptonTriggerScaleFactors::evaluate () {
 
   BEANhelper * beanHelper = &(myHelper->bHelp);
 
-  double muonSF = 1.0, electronSF = 1.0, muonElectronSF = 1.0;
+  double muonSF = 1.0, electronSF = 1.0, muonElectronSF = 1.0, triggerSF = 1.0;
 
   unsigned numTightLoosePreselectedMuons = this->blocks->tightLoosePreselectedMuonCollection->size();
   unsigned numTightLoosePreselectedElectrons = this->blocks->tightLoosePreselectedElectronCollection->size();
@@ -64,9 +65,10 @@ void SSLeptonTriggerScaleFactors::evaluate () {
     muonElectronSF = beanHelper->GetMuonEleTriggerSF (bestMuons.at(0), bestElectrons.at(0));
   }
 
-  branches["TwoMuonTriggerSF"].branchVal = muonSF;
-  branches["TwoElectronTriggerSF"].branchVal = electronSF;
-  branches["MuonElectronTriggerSF"].branchVal = muonElectronSF;
+  branches["twoMuonTriggerSF"].branchVal = muonSF;
+  branches["twoElectronTriggerSF"].branchVal = electronSF;
+  branches["muonElectronTriggerSF"].branchVal = muonElectronSF;
+  branches["triggerSF"].branchVal = muonSF * electronSF * muonElectronSF;
 
 }
 
