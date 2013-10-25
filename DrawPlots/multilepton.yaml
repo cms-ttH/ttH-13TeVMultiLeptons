@@ -22,11 +22,11 @@ ele_ele cuts:
     isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
 
 mu_mu cuts:
-    mu_mu: all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isMuon 
+    mu_mu: all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isMuon
     isDoubleMuTriggerPass: isDoubleMuTriggerPass
 
 mu_ele cuts:
-    mu_ele: (all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isElectron) || (all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isMuon)
+    mu_ele: ((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isElectron) || (all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isMuon))
     isMuEGTriggerPass: isMuEGTriggerPass
 
 jet tag categories:
