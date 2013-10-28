@@ -1,11 +1,11 @@
-#ifndef _LepMVAScaleFactors_h
-#define _LepMVAScaleFactors_h
+#ifndef _TightChargeAndLepMVAScaleFactors_h
+#define _TightChargeAndLepMVAScaleFactors_h
 
-class LepMVAScaleFactors: public KinematicVariable<double> {
+class TightChargeAndLepMVAScaleFactors: public KinematicVariable<double> {
 
 public:
-  LepMVAScaleFactors(int numLeps);
-  virtual ~LepMVAScaleFactors();
+  TightChargeAndLepMVAScaleFactors(int numLeps);
+  ~TightChargeAndLepMVAScaleFactors();
   void evaluate();
   double fetch(BNlepton* lepton, TH2D* histo);
 
@@ -15,12 +15,15 @@ public:
   TH2D* looseMuon2DSF;
   TH2D* tightElectron2DSF;
   TH2D* tightMuon2DSF;
+  TH2D* tightChargeElectronSF2D;
+  TH2D* tightChargeMuonSF2D;
   int numLeps;
   TString looseBranchName;
   TString tightBranchName;
+  TString tightChargeBranchName;
 };
 
-LepMVAScaleFactors::LepMVAScaleFactors (int numLeps):
+TightChargeAndLepMVAScaleFactors::TightChargeAndLepMVAScaleFactors (int numLeps):
   electronFile("../data/lepMVA_weights/MVAandTigthChargeSF_ele.root"),
   muonFile("../data/lepMVA_weights/MVAandTigthChargeSF_mu.root"),
   numLeps(numLeps)
@@ -31,38 +34,52 @@ LepMVAScaleFactors::LepMVAScaleFactors (int numLeps):
   looseMuon2DSF = (TH2D*)muonFile.Get("LepMVALooseSF2D")->Clone();
   tightElectron2DSF = (TH2D*)electronFile.Get("LepMVATightSF2D")->Clone();
   tightMuon2DSF = (TH2D*)muonFile.Get("LepMVATightSF2D")->Clone();
+  tightChargeElectronSF2D = (TH2D*)electronFile.Get("TightChargeSF2D")->Clone();
+  tightChargeMuonSF2D = (TH2D*)muonFile.Get("TightChargeSF2D")->Clone();
 
   looseBranchName = Form("lepMVALoose%dLepSF", numLeps);
   tightBranchName = Form("lepMVATight%dLepSF", numLeps);
   branches[looseBranchName] = BranchInfo<double>(looseBranchName);
   branches[tightBranchName] = BranchInfo<double>(tightBranchName);
+  if (numLeps < 4) {
+    tightChargeBranchName = Form("tightCharge%dLepSF", numLeps);
+    branches[tightChargeBranchName] = BranchInfo<double>(tightChargeBranchName);
+  }
 }
 
-void LepMVAScaleFactors::evaluate () {
+void TightChargeAndLepMVAScaleFactors::evaluate () {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
   BNleptonCollection * leptons = this->blocks->tightLoosePreselectedLeptonCollection;
   double totalLooseSF = 1.0;
   double totalTightSF = 1.0;
+  double totalTightChargeSF = 1.0;
   double looseSF = 1.0;
   double tightSF = 1.0;
+  double tightChargeSF = 1.0;
   for (int i=0; i<numLeps; i++) {
     if (leptons->at(i)->isMuon) {
       looseSF = fetch(leptons->at(i), looseMuon2DSF);
       tightSF = fetch(leptons->at(i), tightMuon2DSF);
+      tightChargeSF = fetch(leptons->at(i), tightChargeMuonSF2D);
     } else {
       looseSF = fetch(leptons->at(i), looseElectron2DSF);
       tightSF = fetch(leptons->at(i), tightElectron2DSF);
+      tightChargeSF = fetch(leptons->at(i), tightChargeElectronSF2D);
     }
     totalLooseSF *= looseSF;
     totalTightSF *= tightSF;
+    totalTightChargeSF *= tightChargeSF;
   }
   branches[looseBranchName].branchVal = totalLooseSF;
   branches[tightBranchName].branchVal = totalTightSF;
+  if (numLeps < 4) {
+    branches[tightChargeBranchName].branchVal = totalTightChargeSF;
+  }
 }
 
-double LepMVAScaleFactors::fetch(BNlepton* lepton, TH2D* histo) {
+double TightChargeAndLepMVAScaleFactors::fetch(BNlepton* lepton, TH2D* histo) {
   double minPt = histo->GetXaxis()->GetXmin()+1e-3;
   double maxPt = histo->GetXaxis()->GetXmax()-1e-3;
   double minEta = histo->GetYaxis()->GetXmin()+1e-3;
@@ -78,13 +95,16 @@ double LepMVAScaleFactors::fetch(BNlepton* lepton, TH2D* histo) {
   return SF;
 }
 
-LepMVAScaleFactors::~LepMVAScaleFactors() {
-  electronFile.Close();
-  muonFile.Close();
+TightChargeAndLepMVAScaleFactors::~TightChargeAndLepMVAScaleFactors() {
   delete looseElectron2DSF;
   delete looseMuon2DSF;
   delete tightElectron2DSF;
   delete tightMuon2DSF;
-}
+  delete tightChargeElectronSF2D;
+  delete tightChargeMuonSF2D;
+
+  electronFile.Close();
+  muonFile.Close();
+ }
 
 #endif

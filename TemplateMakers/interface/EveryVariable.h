@@ -27,6 +27,6 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/HiggsDecayType.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/FinalBDT.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/LepMVAScaleFactors.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/TightChargeAndLepMVAScaleFactors.h"
 
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericVariable.h"

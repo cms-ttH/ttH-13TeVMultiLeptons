@@ -178,8 +178,8 @@ int main (int argc, char** argv) {
   SSLeptonTriggerScaleFactors myLepTrig(&lepHelper);
   kinVars.push_back(&myLepTrig);
 
-  LepMVAScaleFactors myLepMVASF(2);
-  kinVars.push_back(&myLepMVASF);
+  TightChargeAndLepMVAScaleFactors myTightChargeAndLepMVASFs(2);
+  kinVars.push_back(&myTightChargeAndLepMVASFs);
 
   CleanEventVars myClean (&lepHelper);
   kinVars.push_back(&myClean);
