@@ -1,172 +1,83 @@
-#ifndef _LepMVA_h
-#define _LepMVA_h
+#ifndef _LepMVAs_h
+#define _LepMVAs_h
 
-#include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h" 
+#include <typeinfo>
 
-//
-//  Loops over selected leptons and saves the lepMVA value for each.  For now I'm attaching to tree inside the constructor
-//  instead of in a separate function-- I'm not sure we'd ever want this value without saving it. --AW
-//
-
+template <class collectionType> 
 class LepMVAs: public KinematicVariable<double> {
-
+  
 public:
-    unsigned int maxLeptonsTight;
-    unsigned int maxLeptonsLoose;
-    unsigned int maxLeptonsPreselected;
-    unsigned int maxLeptonsTightLoose;
-    unsigned int maxLeptonsLoosePreselected;
-    unsigned int maxLeptonsTightLoosePreselected;
-    HelperLeptonCore * myHelper;
+  //Store branch values so they are accessible to other classes
+  vector<BranchInfo<double>> myVars;
+  
+  HelperLeptonCore * myHelper;
+  collectionType **selCollection;
+  string branch_name;
+  unsigned int maxLeptons;
 
-  LepMVAs(HelperLeptonCore *in, int maxTight, int maxLoose, int maxPreselected, int maxTightLoose, int maxLoosePreselected, int maxTightLoosePreselected);
-    void evaluate ();
+  TString branchName;
+
+  LepMVAs(HelperLeptonCore *input_myHelper, collectionType **input_selCollection,
+          string input_branch_name, int input_maxLeptons);
+
+  void evaluate ();
   
 };
 
-LepMVAs::LepMVAs (HelperLeptonCore *in, int maxTight, int maxLoose, int maxPreselected, int maxTightLoose, int maxLoosePreselected, int maxTightLoosePreselected):
-  myHelper(in),
-  maxLeptonsTight(maxTight),
-  maxLeptonsLoose(maxLoose),
-  maxLeptonsPreselected(maxPreselected),
-  maxLeptonsTightLoose(maxTightLoose),
-  maxLeptonsLoosePreselected(maxLoosePreselected),
-  maxLeptonsTightLoosePreselected(maxTightLoosePreselected)
+template <class collectionType>
+LepMVAs<collectionType>::LepMVAs(HelperLeptonCore *input_myHelper, collectionType **input_selCollection,
+                                 string input_branch_name, int input_maxLeptons):
+  myHelper(input_myHelper), selCollection(input_selCollection),
+  branch_name(input_branch_name), maxLeptons(input_maxLeptons)
 {
-    this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
-    
-    for (unsigned int i=0; i<maxLeptonsTight; i++) {
-        TString branchName = Form("tight_leptons_by_pt_%d_lepMVA", i+1);
-        branches[branchName] = BranchInfo<double>(branchName);
-        branches[branchName].branchVal = this->resetVal;
-    }
+  this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
+  
+  for (unsigned int i=0; i<maxLeptons; i++) {
+    branchName = Form("%s_%d_lepMVA", branch_name.c_str(), i+1);
+    branches[branchName] = BranchInfo<double>(branchName);
+    branches[branchName].branchVal = this->resetVal;
+  }
 
-    for (unsigned int i=0; i<maxLeptonsLoose; i++) {
-        TString branchName = Form("loose_leptons_by_pt_%d_lepMVA", i+1);
-        branches[branchName] = BranchInfo<double>(branchName);
-        branches[branchName].branchVal = this->resetVal;
-    }
-
-    for (unsigned int i=0; i<maxLeptonsPreselected; i++) {
-        TString branchName = Form("preselected_leptons_by_pt_%d_lepMVA", i+1);
-        branches[branchName] = BranchInfo<double>(branchName);
-        branches[branchName].branchVal = this->resetVal;
-    }
-
-    for (unsigned int i=0; i<maxLeptonsTightLoose; i++) {
-        TString branchName = Form("tightLoose_leptons_by_pt_%d_lepMVA", i+1);
-        branches[branchName] = BranchInfo<double>(branchName);
-        branches[branchName].branchVal = this->resetVal;
-    }
-
-//     for (unsigned int i=0; i<maxLeptonsLoosePreselected; i++) {
-//         TString branchName = Form("loosePreselected_leptons_by_pt_%d_lepMVA", i+1);
-//         branches[branchName] = BranchInfo<double>(branchName);
-//         branches[branchName].branchVal = this->resetVal;
-//     }
-
-    for (unsigned int i=0; i<maxLeptonsTightLoosePreselected; i++) {
-        TString branchName = Form("all_leptons_by_pt_%d_lepMVA", i+1);
-        branches[branchName] = BranchInfo<double>(branchName);
-        branches[branchName].branchVal = this->resetVal;
-    }
 }
 
-void LepMVAs::evaluate () {
+template <class collectionType>
+void LepMVAs<collectionType>::evaluate () {
 
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
   //--------
 
-  BNleptonCollection * tightLeptons = this->blocks->tightLeptonCollection;
-  BNleptonCollection * looseLeptons = this->blocks->looseLeptonCollection;
-  BNleptonCollection * preselectedLeptons = this->blocks->preselectedLeptonCollection;
-  BNleptonCollection * tightLooseLeptons = this->blocks->tightLooseLeptonCollection;
-  BNleptonCollection * loosePreselectedLeptons = this->blocks->loosePreselectedLeptonCollection;
-  BNleptonCollection * tightLoosePreselectedLeptons = this->blocks->tightLoosePreselectedLeptonCollection;
   BEANhelper * beanHelper = &(myHelper->bHelp);
-  TString branchName;
 
-  unsigned loopMaxTight = (unsigned (maxLeptonsTight) < tightLeptons->size())
-    ? unsigned(maxLeptonsTight) : tightLeptons->size();
-  unsigned loopMaxLoose = (unsigned (maxLeptonsLoose) < looseLeptons->size())
-    ? unsigned(maxLeptonsLoose) : looseLeptons->size();
-  unsigned loopMaxPreselected = (unsigned (maxLeptonsPreselected) < preselectedLeptons->size())
-    ? unsigned(maxLeptonsPreselected) : preselectedLeptons->size();
-  unsigned loopMaxTightLoose = (unsigned (maxLeptonsTightLoose) < tightLooseLeptons->size())
-    ? unsigned(maxLeptonsTightLoose) : tightLooseLeptons->size();
-  unsigned loopMaxLoosePreselected = (unsigned (maxLeptonsLoosePreselected) < loosePreselectedLeptons->size())
-    ? unsigned(maxLeptonsLoosePreselected) : loosePreselectedLeptons->size();
-  unsigned loopMaxTightLoosePreselected = (unsigned (maxLeptonsTightLoosePreselected) < tightLoosePreselectedLeptons->size())
-    ? unsigned(maxLeptonsTightLoosePreselected) : tightLoosePreselectedLeptons->size();
+  for (unsigned int iObj = 0; iObj < (*selCollection)->size(); iObj++) {
+    if ( iObj < maxLeptons ) {
 
-  for (unsigned int i=0; i<loopMaxTight; i++) {
-      BNlepton * iLepton = tightLeptons->at(i);
-      branchName = Form("tight_leptons_by_pt_%d_lepMVA", i+1);
+      branchName = Form("%s_%d_lepMVA", branch_name.c_str(), iObj+1);
+      
+      if ( ptr((*selCollection)->at(iObj))->isElectron ) {
+        branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)ptr((*selCollection)->at(iObj)),
+                                                                       this->blocks->jetsForLepMVACollection);
+      }
+      else if ( ptr((*selCollection)->at(iObj))->isMuon ) {
+        branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)ptr((*selCollection)->at(iObj)),
+                                                                       this->blocks->jetsForLepMVACollection);
+      }
+      
+    }//End if ( iObj < maxLeptons )
+  }//End for iObj
 
-      if (iLepton->isElectron) {
-          branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)iLepton, this->blocks->jetsForLepMVACollection);
-      } else {
-          branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)iLepton, this->blocks->jetsForLepMVACollection);
-      }      
+  //Clean out values from last event
+  myVars.clear();
+
+  for ( typename map<TString, BranchInfo<double>>::iterator iBranch = branches.begin();
+        iBranch != branches.end(); iBranch++ ) {
+    myVars.push_back(iBranch->second);
   }
-
-  for (unsigned int i=0; i<loopMaxLoose; i++) {
-      BNlepton * iLepton = looseLeptons->at(i);
-      branchName = Form("loose_leptons_by_pt_%d_lepMVA", i+1);
-
-      if (iLepton->isElectron) {
-          branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)iLepton, this->blocks->jetsForLepMVACollection);
-      } else {
-          branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)iLepton, this->blocks->jetsForLepMVACollection);
-      }      
-  }
-
-  for (unsigned int i=0; i<loopMaxPreselected; i++) {
-      BNlepton * iLepton = preselectedLeptons->at(i);
-      branchName = Form("preselected_leptons_by_pt_%d_lepMVA", i+1);
-
-      if (iLepton->isElectron) {
-          branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)iLepton, this->blocks->jetsForLepMVACollection);
-      } else {
-          branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)iLepton, this->blocks->jetsForLepMVACollection);
-      }      
-  }
-
-  for (unsigned int i=0; i<loopMaxTightLoose; i++) {
-      BNlepton * iLepton = tightLooseLeptons->at(i);
-      branchName = Form("tightLoose_leptons_by_pt_%d_lepMVA", i+1);
-
-      if (iLepton->isElectron) {
-          branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)iLepton, this->blocks->jetsForLepMVACollection);
-      } else {
-          branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)iLepton, this->blocks->jetsForLepMVACollection);
-      }      
-  }
-
-//   for (unsigned int i=0; i<loopMaxLoosePreselected; i++) {
-//       BNlepton * iLepton = loosePreselectedLeptons->at(i);
-//       branchName = Form("loosePreselected_leptons_by_pt_%d_lepMVA", i+1);
-
-//       if (iLepton->isElectron) {
-//           branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)iLepton, this->blocks->jetsForLepMVACollection);
-//       } else {
-//           branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)iLepton, this->blocks->jetsForLepMVACollection);
-//       }      
-//   }
-
-  for (unsigned int i=0; i<loopMaxTightLoosePreselected; i++) {
-      BNlepton * iLepton = tightLoosePreselectedLeptons->at(i);
-      branchName = Form("all_leptons_by_pt_%d_lepMVA", i+1);
-
-      if (iLepton->isElectron) {
-          branches[branchName].branchVal = beanHelper->GetElectronLepMVA(*(BNelectron*)iLepton, this->blocks->jetsForLepMVACollection);
-      } else {
-          branches[branchName].branchVal = beanHelper->GetMuonLepMVA(*(BNmuon*)iLepton, this->blocks->jetsForLepMVACollection);
-      }      
-  }
-
+  
+      
 }
 
 

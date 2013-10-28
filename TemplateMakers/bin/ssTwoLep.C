@@ -187,15 +187,29 @@ int main (int argc, char** argv) {
   CheckTwoLepTrigger checkTrig (&lepHelper);
   kinVars.push_back(&checkTrig);
 
-  // 6 integers: tight, loose, preselected,
-  // tightLoose, loosePreselected, and
-  // tightLoosePreselected - AWB
-  LepMVAs myLepMVAs(&lepHelper, 2, 2, 2, 0, 0, 3);
-  kinVars.push_back(&myLepMVAs);
+  LepMVAs<BNleptonCollection> myLepMVAs_TightLeptons(&lepHelper, &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 2);
+  kinVars.push_back(&myLepMVAs_TightLeptons);
 
-//   MHT myMHT;
-//   kinVars.push_back(&myMHT);
+  LepMVAs<BNleptonCollection> myLepMVAs_LooseLeptons(&lepHelper, &(selectedCollections.looseLeptonCollection), "loose_leptons_by_pt", 2);
+  kinVars.push_back(&myLepMVAs_LooseLeptons);
 
+  LepMVAs<BNleptonCollection> myLepMVAs_PreselectedLeptons(&lepHelper, &(selectedCollections.preselectedLeptonCollection), "preselected_leptons_by_pt", 2);
+  kinVars.push_back(&myLepMVAs_PreselectedLeptons);
+
+  LepMVAs<BNleptonCollection> myLepMVAs_AllLeptons(&lepHelper, &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 3);
+  kinVars.push_back(&myLepMVAs_AllLeptons);  
+
+  LepMVAs<BNmuonCollection> myLepMVAs_AllMuons(&lepHelper, &(selectedCollections.tightLoosePreselectedMuonCollection), "all_muons_by_pt", 3);
+  kinVars.push_back(&myLepMVAs_AllMuons);
+
+  DataDrivenFR<BNleptonCollection> myDataDrivenFR_AllLeptons(&lepHelper, &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                             2, 0.7, "FR_merged_data", "QF_data_el");
+  kinVars.push_back(&myDataDrivenFR_AllLeptons);
+    
+//   DataDrivenFR<BNmuonCollection> myDataDrivenFR_TightMuons(&lepHelper, &(selectedCollections.tightMuonCollection),
+//                                                              2, 0.7, "FR_merged");
+//   kinVars.push_back(&myDataDrivenFR_TightMuons);
+    
   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
   kinVars.push_back(&myDBCorrectedRelIsoDR04s);
 
