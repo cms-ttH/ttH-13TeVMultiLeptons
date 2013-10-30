@@ -9,7 +9,8 @@ class GenericCollectionSizeVariable: public KinematicVariable<int> {
 
 public:
     collectionType ** selectedCollection;
-    int threshold;
+    int thresholdMin;
+    int thresholdMax;
     string branch_name;
     bool evaluatedThisEvent;
     unsigned int resetVal;
@@ -18,7 +19,8 @@ public:
     void reset();
     void evaluate();
     bool passCut();
-    void setCut(int cut);
+    void setCutMin(int cutMin);
+    void setCutMax(int cutMax);
 };
 
 template<class collectionType>
@@ -28,6 +30,10 @@ GenericCollectionSizeVariable<collectionType>::GenericCollectionSizeVariable(col
 
     branches[branch_name] = BranchInfo<int>(branch_name);
     resetVal = KinematicVariableConstants::INT_INIT;
+
+    //Default threshold values
+    thresholdMin = 0;
+    thresholdMax = 999999;
 
     reset();
 }
@@ -48,15 +54,21 @@ void GenericCollectionSizeVariable<collectionType>::evaluate() {
 }
 
 template<class collectionType>
-void GenericCollectionSizeVariable<collectionType>::setCut(int cut) {
-    threshold = cut;
+void GenericCollectionSizeVariable<collectionType>::setCutMin(int cutMin) {
+    thresholdMin = cutMin;
+}
+
+template<class collectionType>
+void GenericCollectionSizeVariable<collectionType>::setCutMax(int cutMax) {
+    thresholdMax = cutMax;
 }
 
 template<class collectionType>
 bool GenericCollectionSizeVariable<collectionType>::passCut() {
   evaluate();
   
-  if (branches[branch_name].branchVal >= threshold)
+  if (branches[branch_name].branchVal >= thresholdMin
+      && branches[branch_name].branchVal <= thresholdMax)
     return true;
   return false;
   

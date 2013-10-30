@@ -153,8 +153,8 @@ void DataDrivenFR<collectionType>::evaluate() {
     //FR for opposite-sign events with electrons
     if (QF_charge[0] * QF_charge[1] == -1 && FR_SF[0] == 1.0) {
       if (num_electrons == 0) branches["DataDrivenFR"].branchVal = 1.0;
-      if (num_electrons == 1) branches["DataDrivenFR"].branchVal = QF_SF[0];
-      if (num_electrons == 2) branches["DataDrivenFR"].branchVal = QF_SF[0] + QF_SF[1];
+      if (num_electrons == 1) branches["DataDrivenFR"].branchVal = QF_SF[0]; 
+      if (num_electrons == 2) branches["DataDrivenFR"].branchVal = QF_SF[0] + QF_SF[1]; 
     }
   }
 

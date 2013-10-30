@@ -145,7 +145,7 @@ int main (int argc, char** argv) {
 
   GenericCollectionSizeVariable<BNjetCollection> numJets(&(selectedCollections.jetCollection), "numJets");
   kinVars.push_back(&numJets);
-  numJets.setCut(2);
+  numJets.setCutMin(2);
   cutVars.push_back(&numJets);
 
   GenericCollectionSizeVariable<BNjetCollection> numLooseBJets(&(selectedCollections.jetCollectionLooseCSV), "numLooseBJets");
@@ -162,6 +162,18 @@ int main (int argc, char** argv) {
 
   GenericCollectionSizeVariable<BNelectronCollection> numTightElectrons(&(selectedCollections.tightElectronCollection), "numTightElectrons");
   kinVars.push_back(&numTightElectrons);
+
+  GenericCollectionSizeVariable<BNleptonCollection> numTightLeptons(&(selectedCollections.tightLeptonCollection), "numTightLeptons");
+  kinVars.push_back(&numTightLeptons);
+  if (myConfig.sampleName.find("FR_sideband") == std::string::npos) { //All samples except FR_sideband
+    numTightLeptons.setCutMin(2);
+    cutVars.push_back(&numTightLeptons);
+  }
+  else if (myConfig.sampleName.find("FR_sideband") != std::string::npos) { //FR_sideband samples
+    //Cut to require opposite-sign leptons
+    numTightLeptons.setCutMax(1);
+    cutVars.push_back(&numTightLeptons);
+  }
 
   CSVWeights myCSV(&lepHelper);
   kinVars.push_back(&myCSV);
@@ -269,7 +281,6 @@ int main (int argc, char** argv) {
   kinVars.push_back(&mySumPt);
   
   // AWB Oct 17 - end new object functions
-
   CERNTightCharges myCERNTightCharges(&(selectedCollections.tightLoosePreselectedLeptonCollection), "CERN_tight_charge", "all_leptons_by_pt", 2);
   kinVars.push_back(&myCERNTightCharges);
   myCERNTightCharges.setCut("pass");
@@ -306,10 +317,18 @@ int main (int argc, char** argv) {
   GenericCollectionMember<int, BNleptonCollection> allLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
                                                                      "tkCharge", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonTkCharge);
-  //Cut to require same-sign leptons
-  auto tkChargeCut = [] (vector<BranchInfo<int>> vars) { return ((vars[0].branchVal * vars[1].branchVal) > 0); };
-  allLeptonTkCharge.setCut(tkChargeCut);
-  //cutVars.push_back(&allLeptonTkCharge);
+  if (myConfig.sampleName.find("QF_sideband") == std::string::npos) { //All samples except QF_sideband
+    //Cut to require same-sign leptons
+    auto tkChargeCut = [] (vector<BranchInfo<int>> vars) { return ((vars[0].branchVal * vars[1].branchVal) > 0); };
+    allLeptonTkCharge.setCut(tkChargeCut);
+    cutVars.push_back(&allLeptonTkCharge);
+  }
+  else if (myConfig.sampleName.find("QF_sideband") != std::string::npos) { //QF_sideband samples
+    //Cut to require opposite-sign leptons
+    auto tkChargeCut = [] (vector<BranchInfo<int>> vars) { return ((vars[0].branchVal * vars[1].branchVal) < 0); };
+    allLeptonTkCharge.setCut(tkChargeCut);
+    cutVars.push_back(&allLeptonTkCharge);
+  }
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonD0(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
                                                                   "correctedD0Vertex", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
