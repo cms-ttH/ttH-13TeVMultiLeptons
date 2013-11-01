@@ -1,4 +1,4 @@
-label: framework_studies_v3
+label: new_process_v0
 luminosity: 19450.0
 input_trees_directory: tree_files/
 
@@ -8,9 +8,7 @@ common cuts:
     cleanup: min_mass_leplep > 12
     pt_20_10: all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10
     pt20_20_htllv100: all_leptons_by_pt_2_pt > 20 && ((all_leptons_by_pt_1_pt + all_leptons_by_pt_2_pt + met_pt) > 100)
-    lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
-    same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
-    nJets25_ge_4: numJets>=4
+    nJets25_ge_2: numJets>=2
     2b_loose: (numLooseBJets >= 2 || numMediumBJets >= 1)
     tight_charge: all_leptons_by_pt_1_CERN_tight_charge && all_leptons_by_pt_2_CERN_tight_charge
 
@@ -29,16 +27,29 @@ mu_ele cuts:
     mu_ele: ((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isElectron) || (all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isMuon))
     isMuEGTriggerPass: isMuEGTriggerPass
 
+regular selection cuts:
+    lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
+    same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
+
+NP sideband cuts:
+    lep_mva: (all_leptons_by_pt_1_lepMVA < 0.7 || all_leptons_by_pt_2_lepMVA < 0.7)
+    same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
+
+QF sideband cuts:
+    lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
+    same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) < 0)
+
 jet tag categories:
+    - eq3jge1t
     - ge4j
 
 lepton categories:
     - mu_mu
-    - ele_ele
     - mu_ele
+    - ele_ele
 #    - mu_mu_mu
 
-mc weights:
+MC weights:
     - lepIDAndIsoSF
     - weight_PU
     - topPtWgt
@@ -48,13 +59,20 @@ mc weights:
     - lepMVALoose2LepSF
     - lepMVATight2LepSF
 
-baseline systematics:
+sideband weights:
+    - DataDrivenFR
+
+MC systematics:
     - weight_PUup
     - weight_PUdown
     - topPtWgtDown
     - topPtWgtUp
-#    JESUp
-#    CSV_HFUp
+#    - JESUp
+#    - CSV_HFUp
+
+sideband systematics:
+    - 40PercentRateUp
+    - 40PercentRateDown
 
 samples:
     - ttH125
@@ -67,10 +85,15 @@ samples:
 #    - ttbarWW
     - ttbarW
     - ttbarZ
-    - ttbar
-    - MuEG
+#    - ttbar
     - DoubleMu
+    - MuEG
     - DoubleElectron
+    - DoubleMu_NP_sideband
+    - MuEG_NP_sideband
+    - DoubleElectron_NP_sideband
+    - MuEG_QF_sideband
+    - DoubleElectron_QF_sideband
 
 aliases:
     - &default_num_bins 11
@@ -80,7 +103,7 @@ distributions:
         expression: all_leptons_by_pt_1_IP / all_leptons_by_pt_1_IPError
         plot type: TH1F
         axis labels: ['lepton 1 S_{IP}3D', Events]
-        binning: [*default_num_bins, 0.0, 10.0]
+        binning: [*default_num_bins, -10.0, 10.0]
 
     all_leptons_by_pt_1_IP:
         expression: all_leptons_by_pt_1_IP
@@ -104,7 +127,7 @@ distributions:
         expression: numJets
         plot type: TH1F
         axis labels: [number of jets, Events]
-        binning: [4, 4, 8]
+        binning: [5, 3, 8]
 
     numLooseBJets:
         expression: numLooseBJets

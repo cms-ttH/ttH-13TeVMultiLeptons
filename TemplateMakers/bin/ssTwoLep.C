@@ -165,11 +165,13 @@ int main (int argc, char** argv) {
 
   GenericCollectionSizeVariable<BNleptonCollection> numTightLeptons(&(selectedCollections.tightLeptonCollection), "numTightLeptons");
   kinVars.push_back(&numTightLeptons);
-  if (myConfig.sampleName.find("FR_sideband") == std::string::npos) { //All samples except FR_sideband
+  if (myConfig.sampleName.find("NP_sideband") == std::string::npos) { //All samples except NP_sideband
+    std::cout << "Sample is not a sideband" << std::endl;
     numTightLeptons.setCutMin(2);
     cutVars.push_back(&numTightLeptons);
   }
-  else if (myConfig.sampleName.find("FR_sideband") != std::string::npos) { //FR_sideband samples
+  else if (myConfig.sampleName.find("NP_sideband") != std::string::npos) { //NP_sideband samples
+    std::cout << "Sample is a sideband" << std::endl;
     //Cut to require opposite-sign leptons
     numTightLeptons.setCutMax(1);
     cutVars.push_back(&numTightLeptons);

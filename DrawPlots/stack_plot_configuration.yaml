@@ -1,6 +1,6 @@
 #input and output file names
 input file location: histos
-input file label: framework_studies_v3
+input file label: new_process_v0
 output file location: pdf/
 
 #drawing options
@@ -24,12 +24,13 @@ lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
 #Lepton categories: "draw name"
 lepton categories:
     mu_mu: " #mu #mu "
-    ele_ele: " e e "
     mu_ele: " #mu e "
+    ele_ele: " e e "
 
 #Jet-tag categories: "draw name"
 jet tag categories:
     ge4j: " + #geq4 jets"
+    eq3jge1t: " + 3 jets + #geq 1 b-tag"
     #eq2jeq2t : " + 2 jets + 2 b-tags"
     #eq3jeq2t : " + 3 jets + 2 b-tags"
     #ge4jeq2t : " + #geq4 jets + 2 b-tags"
@@ -44,6 +45,12 @@ systematics:
     - topPtWgtUp
 #     - JESUp
 #     - JESDown
+
+sideband systematics:
+    - nominal
+    - 40PercentRateUp
+    - 40PercentRateDown
+
 
 # Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
 signal samples:
@@ -62,6 +69,8 @@ background sample groups:
         samples:
 #            - ttbarW #just testing
 #            - ttbar
+            - ww
+            - wz
             - zz
 #            - zzz
 #            - wzz
@@ -70,17 +79,34 @@ background sample groups:
 
 #Samples, ordered bottom-to-top
 background samples:
-    ttbarW:
-        draw name: "t#bar{t}W"
-        color: kCyan
+    DoubleMu_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+
+    MuEG_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+
+    DoubleElectron_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+
+    MuEG_QF_sideband:
+        draw name: "Charge flip"
+        color: kOrange
+
+    DoubleElectron_QF_sideband:
+        draw name: "Charge flip"
+        color: kOrange
 
     ttbarZ:
         draw name: "t#bar{t}Z"
         color: kAzure+1
 
-    wz:
-        draw name: "wz"
-        color: kMagenta
+    ttbarW:
+        draw name: "t#bar{t}W"
+        color: kCyan
+
 
 #distribution: [title, underflow, overflow]
 distributions:

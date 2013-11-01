@@ -17,22 +17,22 @@ public:
   collectionType **selCollection;
   unsigned int number_of_leptons;
   double working_point;
-  string file_name_FR;
+  string file_name_NP;
   string file_name_QF;
 
-  TFile * weight_file_FR;
+  TFile * weight_file_NP;
   TFile * weight_file_QF;
-  TH2 * FR_tight_mu; //FR for < 2 b-jets
-  TH2 * FR_tight2_mu; //FR for >= 2 b-jets
-  TH2 * FR_tight_el; //FR for < 2 b-jets
-  TH2 * FR_tight2_el; //FR for >= 2 b-jets
-  TH2 * QF_el; //Charge flip FR
-  double FR_SF[6];
-  double QF_SF[6];
+  TH2 * FR_NP_tight_mu; //FR for < 2 b-jets
+  TH2 * FR_NP_tight2_mu; //FR for >= 2 b-jets
+  TH2 * FR_NP_tight_el; //FR for < 2 b-jets
+  TH2 * FR_NP_tight2_el; //FR for >= 2 b-jets
+  TH2 * FR_QF_el; //Charge flip FR
+  double FR_NP[6];
+  double FR_QF[6];
   int QF_charge[6];
   
   DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-               double input_working_point, string input_file_name_FR, string input_file_name_QF);
+               double input_working_point, string input_file_name_NP, string input_file_name_QF);
 
   ~DataDrivenFR();
   
@@ -42,25 +42,25 @@ public:
 
 template <class collectionType> 
 DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-                                           double input_working_point, string input_file_name_FR, string input_file_name_QF):
+                                           double input_working_point, string input_file_name_NP, string input_file_name_QF):
   myHelper(input_myHelper), selCollection(input_selCollection), number_of_leptons(input_number_of_leptons),
-  working_point(input_working_point), file_name_FR(input_file_name_FR), file_name_QF(input_file_name_QF) {
+  working_point(input_working_point), file_name_NP(input_file_name_NP), file_name_QF(input_file_name_QF) {
 
   this->resetVal = 1.0;
   
   branches["DataDrivenFR"] = BranchInfo<double>("DataDrivenFR");
 
   string directory = "../data/fakerate/";
-  TString weight_file_name_FR = Form("%s%s.root", directory.c_str(), file_name_FR.c_str());
-  weight_file_FR = TFile::Open(weight_file_name_FR);
+  TString weight_file_name_NP = Form("%s%s.root", directory.c_str(), file_name_NP.c_str());
+  weight_file_NP = TFile::Open(weight_file_name_NP);
   TString weight_file_name_QF = Form("%s%s.root", directory.c_str(), file_name_QF.c_str());
   weight_file_QF = TFile::Open(weight_file_name_QF);
 
-  FR_tight_mu = (TH2*)weight_file_FR->Get("FR_tight_mu")->Clone();
-  FR_tight2_mu = (TH2*)weight_file_FR->Get("FR_tight2_mu")->Clone();
-  FR_tight_el = (TH2*)weight_file_FR->Get("FR_tight_el")->Clone();
-  FR_tight2_el = (TH2*)weight_file_FR->Get("FR_tight2_el")->Clone();
-  QF_el = (TH2*)weight_file_QF->Get("QF_el_data")->Clone();
+  FR_NP_tight_mu = (TH2*)weight_file_NP->Get("FR_tight_mu")->Clone();
+  FR_NP_tight2_mu = (TH2*)weight_file_NP->Get("FR_tight2_mu")->Clone();
+  FR_NP_tight_el = (TH2*)weight_file_NP->Get("FR_tight_el")->Clone();
+  FR_NP_tight2_el = (TH2*)weight_file_NP->Get("FR_tight2_el")->Clone();
+  FR_QF_el = (TH2*)weight_file_QF->Get("QF_el_data")->Clone();
 
 }
 
@@ -74,8 +74,8 @@ void DataDrivenFR<collectionType>::evaluate() {
 
   BEANhelper * beanHelper = &(myHelper->bHelp);
   
-  FR_SF[0] = 1.0; FR_SF[1] = 1.0; FR_SF[2] = 1.0; FR_SF[3] = 1.0; FR_SF[4] = 1.0; FR_SF[5] = 1.0; 
-  QF_SF[0] = 1.0; QF_SF[1] = 1.0; QF_SF[2] = 1.0; QF_SF[3] = 1.0; QF_SF[4] = 1.0; QF_SF[5] = 1.0; 
+  FR_NP[0] = 1.0; FR_NP[1] = 1.0; FR_NP[2] = 1.0; FR_NP[3] = 1.0; FR_NP[4] = 1.0; FR_NP[5] = 1.0; 
+  FR_QF[0] = 1.0; FR_QF[1] = 1.0; FR_QF[2] = 1.0; FR_QF[3] = 1.0; FR_QF[4] = 1.0; FR_QF[5] = 1.0; 
   QF_charge[0] = 0; QF_charge[1] = 0; QF_charge[2] = 0; QF_charge[3] = 0; QF_charge[4] = 0; QF_charge[5] = 0; 
   int num_fail = 0;
   int num_leptons = 0;
@@ -92,14 +92,14 @@ void DataDrivenFR<collectionType>::evaluate() {
                                            this->blocks->jetsForLepMVACollection) < working_point) {
 
           if (this->blocks->jetCollectionMediumCSV->size() < 2) {
-            int pt_bin  = std::max(1, std::min(FR_tight_mu->GetNbinsX(), FR_tight_mu->GetXaxis()->FindBin(lep_pt)));
-            int eta_bin  = std::max(1, std::min(FR_tight_mu->GetNbinsY(), FR_tight_mu->GetYaxis()->FindBin(lep_eta)));
-            FR_SF[num_fail] = FR_tight_mu->GetBinContent(pt_bin,eta_bin);            
+            int pt_bin  = std::max(1, std::min(FR_NP_tight_mu->GetNbinsX(), FR_NP_tight_mu->GetXaxis()->FindBin(lep_pt)));
+            int eta_bin  = std::max(1, std::min(FR_NP_tight_mu->GetNbinsY(), FR_NP_tight_mu->GetYaxis()->FindBin(lep_eta)));
+            FR_NP[num_fail] = FR_NP_tight_mu->GetBinContent(pt_bin,eta_bin);            
           }
           else {
-            int pt_bin  = std::max(1, std::min(FR_tight2_mu->GetNbinsX(), FR_tight2_mu->GetXaxis()->FindBin(lep_pt)));
-            int eta_bin  = std::max(1, std::min(FR_tight2_mu->GetNbinsY(), FR_tight2_mu->GetYaxis()->FindBin(lep_eta)));
-            FR_SF[num_fail] = FR_tight_mu->GetBinContent(pt_bin,eta_bin);
+            int pt_bin  = std::max(1, std::min(FR_NP_tight2_mu->GetNbinsX(), FR_NP_tight2_mu->GetXaxis()->FindBin(lep_pt)));
+            int eta_bin  = std::max(1, std::min(FR_NP_tight2_mu->GetNbinsY(), FR_NP_tight2_mu->GetYaxis()->FindBin(lep_eta)));
+            FR_NP[num_fail] = FR_NP_tight_mu->GetBinContent(pt_bin,eta_bin);
           } 
           num_fail += 1;
         }
@@ -113,21 +113,21 @@ void DataDrivenFR<collectionType>::evaluate() {
                                            this->blocks->jetsForLepMVACollection) < working_point) {
 
           if (this->blocks->jetCollectionMediumCSV->size() < 2) {
-            int pt_bin  = std::max(1, std::min(FR_tight_el->GetNbinsX(), FR_tight_el->GetXaxis()->FindBin(lep_pt)));
-            int eta_bin  = std::max(1, std::min(FR_tight_el->GetNbinsY(), FR_tight_el->GetYaxis()->FindBin(lep_eta)));
-            FR_SF[num_fail] = FR_tight_el->GetBinContent(pt_bin,eta_bin);
+            int pt_bin  = std::max(1, std::min(FR_NP_tight_el->GetNbinsX(), FR_NP_tight_el->GetXaxis()->FindBin(lep_pt)));
+            int eta_bin  = std::max(1, std::min(FR_NP_tight_el->GetNbinsY(), FR_NP_tight_el->GetYaxis()->FindBin(lep_eta)));
+            FR_NP[num_fail] = FR_NP_tight_el->GetBinContent(pt_bin,eta_bin);
           }
           else {
-            int pt_bin  = std::max(1, std::min(FR_tight2_el->GetNbinsX(), FR_tight2_el->GetXaxis()->FindBin(lep_pt)));
-            int eta_bin  = std::max(1, std::min(FR_tight2_el->GetNbinsY(), FR_tight2_el->GetYaxis()->FindBin(lep_eta)));
-            FR_SF[num_fail] = FR_tight_el->GetBinContent(pt_bin,eta_bin);
+            int pt_bin  = std::max(1, std::min(FR_NP_tight2_el->GetNbinsX(), FR_NP_tight2_el->GetXaxis()->FindBin(lep_pt)));
+            int eta_bin  = std::max(1, std::min(FR_NP_tight2_el->GetNbinsY(), FR_NP_tight2_el->GetYaxis()->FindBin(lep_eta)));
+            FR_NP[num_fail] = FR_NP_tight_el->GetBinContent(pt_bin,eta_bin);
           }
           num_fail += 1;
         }
         else {
-          int pt_bin  = std::max(1, std::min(QF_el->GetNbinsX(), QF_el->GetXaxis()->FindBin(lep_pt)));
-          int eta_bin  = std::max(1, std::min(QF_el->GetNbinsY(), QF_el->GetYaxis()->FindBin(lep_eta)));
-          QF_SF[num_electrons] = QF_el->GetBinContent(pt_bin,eta_bin);
+          int pt_bin  = std::max(1, std::min(FR_QF_el->GetNbinsX(), FR_QF_el->GetXaxis()->FindBin(lep_pt)));
+          int eta_bin  = std::max(1, std::min(FR_QF_el->GetNbinsY(), FR_QF_el->GetYaxis()->FindBin(lep_eta)));
+          FR_QF[num_electrons] = FR_QF_el->GetBinContent(pt_bin,eta_bin);
           QF_charge[num_leptons] = ((BNelectron*)ptr((*selCollection)->at(iObj)))->tkCharge;
           num_electrons += 1;
           num_leptons += 1;
@@ -140,21 +140,21 @@ void DataDrivenFR<collectionType>::evaluate() {
 
   if (number_of_leptons == 2) {
     //FR for events where both leptons fail
-    if (FR_SF[1] != 1.0) {
-      branches["DataDrivenFR"].branchVal = -FR_SF[0]*FR_SF[1]/((1-FR_SF[0])*(1-FR_SF[1]));
+    if (FR_NP[1] != 1.0) {
+      branches["DataDrivenFR"].branchVal = -FR_NP[0]*FR_NP[1]/((1-FR_NP[0])*(1-FR_NP[1]));
     }
     //FR for events where one lepton fails
-    else if (FR_SF[0] != 1.0 ) {
-      branches["DataDrivenFR"].branchVal = FR_SF[0]/(1-FR_SF[0]);
+    else if (FR_NP[0] != 1.0 ) {
+      branches["DataDrivenFR"].branchVal = FR_NP[0]/(1-FR_NP[0]);
     }
     //FR for events where no leptons fail
     else branches["DataDrivenFR"].branchVal = 1.0;
 
     //FR for opposite-sign events with electrons
-    if (QF_charge[0] * QF_charge[1] == -1 && FR_SF[0] == 1.0) {
+    if (QF_charge[0] * QF_charge[1] == -1 && FR_NP[0] == 1.0) {
       if (num_electrons == 0) branches["DataDrivenFR"].branchVal = 1.0;
-      if (num_electrons == 1) branches["DataDrivenFR"].branchVal = QF_SF[0]; 
-      if (num_electrons == 2) branches["DataDrivenFR"].branchVal = QF_SF[0] + QF_SF[1]; 
+      if (num_electrons == 1) branches["DataDrivenFR"].branchVal = FR_QF[0]; 
+      if (num_electrons == 2) branches["DataDrivenFR"].branchVal = FR_QF[0] + FR_QF[1]; 
     }
   }
 
@@ -172,12 +172,12 @@ template <class collectionType>
 DataDrivenFR<collectionType>::~DataDrivenFR() {
 
   //Delete histograms BEFORE closing file
-  delete FR_tight_mu;
-  delete FR_tight2_mu;
-  delete FR_tight_el;
-  delete FR_tight2_el;
-  delete QF_el;
-  weight_file_FR->Close();
+  delete FR_NP_tight_mu;
+  delete FR_NP_tight2_mu;
+  delete FR_NP_tight_el;
+  delete FR_NP_tight2_el;
+  delete FR_QF_el;
+  weight_file_NP->Close();
   weight_file_QF->Close();
 
 }
