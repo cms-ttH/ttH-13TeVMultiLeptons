@@ -282,9 +282,9 @@ int main (int argc, char** argv) {
   kinVars.push_back(&mySumPt);
 
   // AWB Oct 17 - end new object functions
-  CERNTightCharges myCERNTightCharges(&(selectedCollections.tightLoosePreselectedLeptonCollection), "CERN_tight_charge", "all_leptons_by_pt", 2);
-  kinVars.push_back(&myCERNTightCharges);
-  myCERNTightCharges.setCut("pass");
+  TightCharges myTightCharges(&(selectedCollections.tightLoosePreselectedLeptonCollection), "CERN_tight_charge", "all_leptons_by_pt", 2);
+  kinVars.push_back(&myTightCharges);
+  myTightCharges.setCut("pass");
 
   int TwoMuon = 0;
   int TwoElectron = 0;
