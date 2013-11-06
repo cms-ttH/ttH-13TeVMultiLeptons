@@ -168,17 +168,21 @@ int main (int argc, char** argv) {
   if (myConfig.sampleName.find("NP_sideband") == std::string::npos) { //All samples except NP_sideband
     std::cout << "Sample is not a sideband" << std::endl;
     numTightLeptons.setCutMin(2);
-    cutVars.push_back(&numTightLeptons);
   }
   else if (myConfig.sampleName.find("NP_sideband") != std::string::npos) { //NP_sideband samples
     std::cout << "Sample is a sideband" << std::endl;
     //Cut to require opposite-sign leptons
     numTightLeptons.setCutMax(1);
-    cutVars.push_back(&numTightLeptons);
   }
+  cutVars.push_back(&numTightLeptons);
 
   CSVWeights myCSV(&lepHelper);
   kinVars.push_back(&myCSV);
+
+  //Btag POG version
+  vector<pair<string, double>> WPs = {make_pair("CSVT", 0.898), make_pair("CSVM", 0.679), make_pair("CSVL", 0.244)};
+  BTagWeights myBTagWeights(WPs);
+  kinVars.push_back(&myBTagWeights);
 
   PUWeights myPU(&lepHelper);
   kinVars.push_back(&myPU);
@@ -201,36 +205,31 @@ int main (int argc, char** argv) {
   CheckTwoLepTrigger checkTrig (&lepHelper);
   kinVars.push_back(&checkTrig);
 
-  LepMVAs<BNleptonCollection> myLepMVAs_TightLeptons(&lepHelper, &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 2);
-  kinVars.push_back(&myLepMVAs_TightLeptons);
+  LepMVAs<BNleptonCollection> myLepMVAsTightLeptons(&lepHelper, &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 2);
+  kinVars.push_back(&myLepMVAsTightLeptons);
 
-  LepMVAs<BNleptonCollection> myLepMVAs_LooseLeptons(&lepHelper, &(selectedCollections.looseLeptonCollection), "loose_leptons_by_pt", 2);
-  kinVars.push_back(&myLepMVAs_LooseLeptons);
+  LepMVAs<BNleptonCollection> myLepMVAsLooseLeptons(&lepHelper, &(selectedCollections.looseLeptonCollection), "loose_leptons_by_pt", 2);
+  kinVars.push_back(&myLepMVAsLooseLeptons);
 
-  LepMVAs<BNleptonCollection> myLepMVAs_PreselectedLeptons(&lepHelper, &(selectedCollections.preselectedLeptonCollection), "preselected_leptons_by_pt", 2);
-  kinVars.push_back(&myLepMVAs_PreselectedLeptons);
+  LepMVAs<BNleptonCollection> myLepMVAsPreselectedLeptons(&lepHelper, &(selectedCollections.preselectedLeptonCollection), "preselected_leptons_by_pt", 2);
+  kinVars.push_back(&myLepMVAsPreselectedLeptons);
 
-  LepMVAs<BNleptonCollection> myLepMVAs_AllLeptons(&lepHelper, &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 3);
-  kinVars.push_back(&myLepMVAs_AllLeptons);  
+  LepMVAs<BNleptonCollection> myLepMVAsAllLeptons(&lepHelper, &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 3);
+  kinVars.push_back(&myLepMVAsAllLeptons);
 
-  LepMVAs<BNmuonCollection> myLepMVAs_AllMuons(&lepHelper, &(selectedCollections.tightLoosePreselectedMuonCollection), "all_muons_by_pt", 3);
-  kinVars.push_back(&myLepMVAs_AllMuons);
+  LepMVAs<BNmuonCollection> myLepMVAsAllMuons(&lepHelper, &(selectedCollections.tightLoosePreselectedMuonCollection), "all_muons_by_pt", 3);
+  kinVars.push_back(&myLepMVAsAllMuons);
 
-  DataDrivenFR<BNleptonCollection> myDataDrivenFR_AllLeptons(&lepHelper, &(selectedCollections.tightLoosePreselectedLeptonCollection),
+  DataDrivenFR<BNleptonCollection> myDataDrivenFRAllLeptons(&lepHelper, &(selectedCollections.tightLoosePreselectedLeptonCollection),
                                                              2, 0.7, "FR_merged_data", "QF_data_el");
-  kinVars.push_back(&myDataDrivenFR_AllLeptons);
-    
-//   DataDrivenFR<BNmuonCollection> myDataDrivenFR_TightMuons(&lepHelper, &(selectedCollections.tightMuonCollection),
-//                                                              2, 0.7, "FR_merged");
-//   kinVars.push_back(&myDataDrivenFR_TightMuons);
-    
+  kinVars.push_back(&myDataDrivenFRAllLeptons);
+
   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
   kinVars.push_back(&myDBCorrectedRelIsoDR04s);
 
   HiggsDecayType myHiggsDecayType(&lepHelper);
   kinVars.push_back(&myHiggsDecayType);
 
-  // AWB Oct 17 - new object functions
   TwoObjectKinematic<BNmuonCollection,BNjetCollection> myMassMuonJetNew("mass", "all_pairs", -99, "",
                                                                         &(selectedCollections.tightMuonCollection), "tight_muons_by_pt", 1, 2,
                                                                         &(selectedCollections.jetCollection), "jets_by_pt", 1, 4);
@@ -240,17 +239,17 @@ int main (int argc, char** argv) {
                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 2,
                                                                             &(selectedCollections.metCollection), "met", 1, 1);
   kinVars.push_back(&mySumLep1Lep2MetPt);
-  
+
   TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinMassLepLep("mass", "min", -99, "min_mass_leplep",
                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99);
   kinVars.push_back(&myMinMassLepLep);
-  
+
   TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinDeltaRLepLep("deltaR", "min", -99, "min_dR_leplep",
                                                                               &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                                                                               &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99);
   kinVars.push_back(&myMinDeltaRLepLep);
-  
+
   TwoObjectKinematic<BNmuonCollection,BNjetCollection> myMassMuonJet100("mass", "closest_to", 100, "muon_jet_mass_closest_to_100",
                                                                         &(selectedCollections.tightMuonCollection), "tight_muons_by_pt", 1, 2,
                                                                         &(selectedCollections.jetCollection), "jets_by_pt", 1, 4);
@@ -260,28 +259,28 @@ int main (int argc, char** argv) {
                                                                               &(selectedCollections.jetCollectionMediumCSV), "medium_btags_by_pt", 1, 99,
                                                                               &(selectedCollections.jetCollectionMediumCSV), "medium_btags_by_pt", 1, 99);
   kinVars.push_back(&myHiggsLikeDijetMass110);
-  
+
   //Variables for CERN same-sign dilepton BDT
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMHT("pt", "vector_sum", -99, "mht",
                                                                &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 1, 99,
                                                                &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
   kinVars.push_back(&myMHT);
-  
+
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMinDeltaRLep2Jet("deltaR", "min", -99, "mindr_lep2_jet",
                                                                             &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 2, 2,
                                                                             &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
   kinVars.push_back(&myMinDeltaRLep2Jet);
-  
+
   TwoObjectKinematic<BNmetCollection,BNleptonCollection> myMtMetLep("MT", "all_pairs", -99, "",
                                                                     &(selectedCollections.metCollection), "met", 1, 1,
                                                                     &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 1, 2);
   kinVars.push_back(&myMtMetLep);
-  
+
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> mySumPt("pt", "sum", -99, "sum_pt",
                                                                  &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 1, 99,
                                                                  &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
   kinVars.push_back(&mySumPt);
-  
+
   // AWB Oct 17 - end new object functions
   CERNTightCharges myCERNTightCharges(&(selectedCollections.tightLoosePreselectedLeptonCollection), "CERN_tight_charge", "all_leptons_by_pt", 2);
   kinVars.push_back(&myCERNTightCharges);
@@ -323,14 +322,13 @@ int main (int argc, char** argv) {
     //Cut to require same-sign leptons
     auto tkChargeCut = [] (vector<BranchInfo<int>> vars) { return ((vars[0].branchVal * vars[1].branchVal) > 0); };
     allLeptonTkCharge.setCut(tkChargeCut);
-    cutVars.push_back(&allLeptonTkCharge);
   }
   else if (myConfig.sampleName.find("QF_sideband") != std::string::npos) { //QF_sideband samples
     //Cut to require opposite-sign leptons
     auto tkChargeCut = [] (vector<BranchInfo<int>> vars) { return ((vars[0].branchVal * vars[1].branchVal) < 0); };
     allLeptonTkCharge.setCut(tkChargeCut);
-    cutVars.push_back(&allLeptonTkCharge);
   }
+  cutVars.push_back(&allLeptonTkCharge);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonD0(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
                                                                   "correctedD0Vertex", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
@@ -395,7 +393,6 @@ int main (int argc, char** argv) {
   kinVars.push_back(&allElectronPt);
 
   ////////// tight leptons /////////
-
   GenericCollectionMember<double, BNleptonCollection> tightLeptonPt(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLeptonCollection),
                                                                   "pt", "tight_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&tightLeptonPt);
@@ -403,7 +400,6 @@ int main (int argc, char** argv) {
   GenericCollectionMember<double, BNleptonCollection> tightLeptonEta(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLeptonCollection),
                                                                    "eta", "tight_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&tightLeptonEta);
-  
 
   ////////// all jets //////////
   GenericCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"), &(selectedCollections.jetCollection),

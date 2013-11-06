@@ -29,5 +29,6 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/FinalBDT.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TightChargeAndLepMVAScaleFactors.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/DataDrivenFR.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagWeights.h"
 
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericVariable.h"
