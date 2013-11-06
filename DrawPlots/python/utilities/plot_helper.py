@@ -232,7 +232,7 @@ class SampleInformation:
 
             'wzz': {'sample_type': 'MC',
                     'is_signal': False,
-                    # 		 'x_section': 0.00001922,#0.0571,
+                    #        'x_section': 0.00001922,#0.0571,
                     'x_section': 0.0001,
                     'x_section_error': 0.00001922*0.0015/0.0548,
                     'num_generated': 219835,
@@ -256,7 +256,7 @@ class SampleInformation:
                       'is_signal': False,
                       'x_section': 3505.7,
                       'x_section_error': 0.132,
-                      'num_generated':	30072710,
+                      'num_generated':  30072710,
                       'systematics': 'all'},
 
             'zjets_lowmass': {'sample_type': 'MC',
@@ -325,14 +325,14 @@ class SampleInformation:
             't_tW': {'sample_type': 'MC',
                      'is_signal': False,
                      'x_section': 11.1,
-                     'x_section_error': 0.0008*0.0111/0.00106,	  #### 0.00106
+                     'x_section_error': 0.0008*0.0111/0.00106,    #### 0.00106
                      'num_generated': 496918,
                      'systematics': 'all'},                    
 
             'tbar_tW': {'sample_type': 'MC',
                         'is_signal': False,
                         'x_section': 11.1,
-                        'x_section_error': 0.0008*0.0111/0.00106,	 #### 0.00106
+                        'x_section_error': 0.0008*0.0111/0.00106,    #### 0.00106
                         'num_generated': 492779,
                         'systematics': 'all'},                    
 
@@ -486,8 +486,8 @@ class SystematicsInformation:
             'CSV_HFUp': {'weight_string': 'CSV_HFUp', 'systematic_label': '_CSV_HFUp'},
             'topPtWgtDown': {'weight_string': '(1/topPtWgt)', 'systematic_label': '_topPtWgtDown'},
             'topPtWgtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'systematic_label': '_topPtWgtUp'},
-			'40PercentRateUp': {'weight_string': '(1.40)', 'systematic_label': '_40PercentRateUp'},
-			'40PercentRateDown': {'weight_string': '(0.60)', 'systematic_label': '_40PercentRateDown'}
+            '40PercentRateUp': {'weight_string': '(1.40)', 'systematic_label': '_40PercentRateUp'},
+            '40PercentRateDown': {'weight_string': '(0.60)', 'systematic_label': '_40PercentRateDown'}
             }
 
         self.add_systematics(baseline_systematics)
