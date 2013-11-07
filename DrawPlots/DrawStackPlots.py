@@ -71,22 +71,21 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     data_sum = 0.0
 
     ## Draw the background sample histograms, put in legend
+    systematics_by_sample = {}
     for sample in background_samples:
-        try: sample_info = plot_helper.SampleInformation(sample)
+        try: sample_info = plot_helper.SampleInformation(sample, background_samples[sample])
         except:
+            print background_samples[sample]
             print 'sample %s does not exist in plot_helper.py SampleInformation.  Skipping.' % (sample)
             continue
-        
-        if sample_info.sample_type == 'MC': config_systematics = config['systematics']
-        elif 'sideband' in sample_info.sample_type: config_systematics = config['sideband systematics']
-        else:
-            print 'Invalid sample_type %s is neither MC nor sideband' % (sample_info.sample_type)
-            sys.exit()
+
+        systematics = plot_helper.customize_systematics(config['systematics'], sample_info.systematics)
+        systematics_by_sample[sample] = systematics
 
         if 'sideband' in sample_info.sample_type and not plot_helper.get_data_sample_name(lepton_category) in sample:
             continue
-            
-        for systematic in config_systematics:
+
+        for systematic in systematics:
             try:
                 original_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category)
                 histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
@@ -97,7 +96,6 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
             if systematic == 'nominal':
                 histogram = original_histogram.Clone('stack')
                 mc_sum += histogram.Integral()
-#               sample_info = plot_helper.SampleInformation(sample)
                 xsec_frac_error = sample_info.x_section_error / sample_info.x_section #is this being used?
                 stack_plot.Add(histogram, "hist")
                 stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
@@ -105,7 +103,9 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     # Sum histograms in each sample group, then add summed histos to stack plot and histogram_dictionary
     if config.has_key('background sample groups'):
         for sample_group in background_sample_groups: # Add samples in each sample group together
-            for systematic in config['systematics']:
+            systematics = plot_helper.customize_systematics(config['systematics'], background_sample_groups[sample_group]['systematics'])
+            systematics_by_sample[sample_group] = systematics
+            for systematic in systematics:
                 samples_in_group = background_sample_groups[sample_group]['samples']
                 for index, sample in enumerate(samples_in_group):
                     try:
@@ -185,32 +185,14 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
 
     # Create a histogram with the error bars for the MC stack
     mc_error_histogram = TH1F('mc_error_histogram', '', nBins, xMin, xMax)
-    samples_and_sample_groups = background_samples.keys() # Make a list with one entry per sample, and one entry per sample group
-    if config.has_key('background sample groups'):
-        samples_and_sample_groups.extend(background_sample_groups.keys())
     for i in range(1, nBins+1):
         mc_error_histogram.SetBinContent(i,stack_plot.GetStack().Last().GetBinContent(i))
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
-        for sample in samples_and_sample_groups:
-
-            try: sample_info = plot_helper.SampleInformation(sample)
-            except:
-                try: sample_info = plot_helper.SampleInformation(background_sample_groups[sample]['samples'][0])
-                except:
-                    print 'sample %s does not exist in plot_helper.py SampleInformation.  Skipping it...' % (sample)
-                    print 'First sample in group is %s' % (background_sample_groups[sample]['samples'][0])
-                    continue
-        
-            if sample_info.sample_type == 'MC': config_systematics = config['systematics']
-            elif 'sideband' in sample_info.sample_type: config_systematics = config['sideband systematics']
-            else:
-                print 'Invalid sample_type %s is neither MC nor sideband' % (sample_info.sample_type)
-                sys.exit()
-
-            if 'sideband' in sample_info.sample_type and not plot_helper.get_data_sample_name(lepton_category) in sample:
+        for sample, systematics in systematics_by_sample.items(): #systematics_by_sample is a dictionary (keys: samples and sample groups, values: systematics list)
+            if 'sideband' in sample and not plot_helper.get_data_sample_name(lepton_category) in sample:
                 continue
-            
-            for systematic in config_systematics:
+
+            for systematic in systematics:
                 bin_error_squared += math.pow(histogram_dictionary[sample+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample+'_nominal'].GetBinContent(i), 2)
 
         mc_error_histogram.SetBinError(i, math.sqrt(bin_error_squared))

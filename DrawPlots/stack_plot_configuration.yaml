@@ -38,19 +38,10 @@ jet tag categories:
 
 #Systematics used in error bars
 systematics:
-    - nominal
     - weight_PUup
     - weight_PUdown
     - topPtWgtDown
     - topPtWgtUp
-#     - JESUp
-#     - JESDown
-
-sideband systematics:
-    - nominal
-    - 40PercentRateUp
-    - 40PercentRateDown
-
 
 # Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
 signal samples:
@@ -66,46 +57,48 @@ background sample groups:
     Others:
         draw name: Others
         color: kBlue-9
+        systematics: all
         samples:
-#            - ttbarW #just testing
-#            - ttbar
             - ww
             - wz
             - zz
-#            - zzz
-#            - wzz
-#            - www
-#            - ttbarWW
 
 #Samples, ordered bottom-to-top
 background samples:
     DoubleMu_NP_sideband:
         draw name: "Fakes"
         color: kGray
+        systematics: 40PercentRateUp+40PercentRateDown
 
     MuEG_NP_sideband:
         draw name: "Fakes"
         color: kGray
+        systematics: 40PercentRateUp+40PercentRateDown
 
     DoubleElectron_NP_sideband:
         draw name: "Fakes"
         color: kGray
+        systematics: 40PercentRateUp+40PercentRateDown
 
     MuEG_QF_sideband:
         draw name: "Charge flip"
         color: kOrange
+        systematics: 40PercentRateUp+40PercentRateDown
 
     DoubleElectron_QF_sideband:
         draw name: "Charge flip"
         color: kOrange
+        systematics: 40PercentRateUp+40PercentRateDown
 
     ttbarZ:
         draw name: "t#bar{t}Z"
         color: kAzure+1
+        systematics: all
 
     ttbarW:
         draw name: "t#bar{t}W"
         color: kCyan
+        systematics: all
 
 
 #distribution: [title, underflow, overflow]
