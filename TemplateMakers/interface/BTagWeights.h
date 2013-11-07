@@ -141,7 +141,7 @@ double BTagWeights::getSFb(double pT, int systFactor, string WPLabel){
     }
 
     if (systFactor != 0) {
-      for (unsigned int i; i < pTMaxes.size(); i++) {
+      for (unsigned int i=0; i < pTMaxes.size(); i++) {
         if (pTMaxes[i] <= pT) {
           SFb += systFactor*SFbError[i];
           break;
