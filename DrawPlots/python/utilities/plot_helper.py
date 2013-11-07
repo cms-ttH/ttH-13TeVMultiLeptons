@@ -433,7 +433,8 @@ class SampleInformation:
         self.x_section_error = dictionary[sample]['x_section_error']
         self.num_generated = dictionary[sample]['num_generated']
         self.systematics = config['systematics']
-        self.weights = config['weights']
+        if config.has_key('weights'):
+            self.weights = config['weights']
 
 def get_systematic_info(systematic):
     dictionary = {
@@ -457,6 +458,7 @@ def get_systematic_info(systematic):
 #This function takes a list and adds or removes items from it depending on 'customization_string'.
 #It can be used to adapt systematics or weights lists in a sample-specific way.
 def customize_list(item_list, customization_string):
+    customization_string = customization_string.strip()
     if 'all' not in customization_string:
         item_list = []
 
@@ -468,8 +470,9 @@ def customize_list(item_list, customization_string):
     first_item_match = re.search('.*?(?=(\+|\-))', customization_string) #Sorry for the nasty regular expressions.  This gets the first term in customization_string if it's followed by a '+' or '-'
     if first_item_match:
         first_item = first_item_match.group(0).strip()
-        if first_item != 'all' and first_item != '':
-            items_to_add.append(first_item)
+    if first_item != 'all' and first_item != '':
+        items_to_add.append(first_item)
+
     items_to_add.extend([match.strip() for match in re.findall('\+(.\w*)', customization_string)]) #This gets a item_list of all terms that come after a '+' in customization_string
     item_set = item_set.union(set(items_to_add))
 
@@ -477,3 +480,13 @@ def customize_list(item_list, customization_string):
     item_set = item_set.difference(set(items_to_remove))
 
     return list(item_set)
+
+def customize_systematics(systematics, customization_string):
+    customized_systematics = customize_list(systematics, customization_string)
+
+    if 'nominal' not in customized_systematics:
+        customized_systematics.append('nominal')
+
+    return customized_systematics
+
+

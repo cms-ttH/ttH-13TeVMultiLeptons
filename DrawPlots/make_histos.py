@@ -65,7 +65,7 @@ def make_histos(args, config, samples, lepton_categories):
                 output_file_name = 'histos/%s/%s_%s_%s_%s.root' % (lepton_category, lepton_category, jet_tag_category, sample, config['label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
-                systematics_list = plot_helper.customize_list(config['systematics'], sample_info.systematics)
+                systematics_list = plot_helper.customize_systematics(config['systematics'], sample_info.systematics)
                 for systematic in systematics_list:
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
 
