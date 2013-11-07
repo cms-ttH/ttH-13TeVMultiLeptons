@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
-from argparse import ArgumentParser 
+from argparse import ArgumentParser
 
 def checkDirs (inDir) :
     if not os.path.exists(inDir):
@@ -14,13 +14,14 @@ def main ():
     parser.add_argument('-c', '--copyFiles', action='store_true', default=False, help='copy files to treeFile directory')
     parser.add_argument('-m', '--moveFiles', action='store_true', default=False, help='move files to treeFile directory')
     parser.add_argument('-n', '--skipHadd', action='store_true', default=False, help ='don\'t hadd stuff, just move/copy it')
+    parser.add_argument('-l', '--cleanup', action='store_true', default=False, help='when summing data, remove everything except the summed file')
 
     args = parser.parse_args()
 
     ####### Hard-coded ouput directory #####
     baseDir = os.environ['CMSSW_BASE']
     outDir = baseDir +"/src/ttHMultileptonAnalysis/DrawPlots/tree_files/"
-    
+
     print "Directory label %s" % args.project_label
     print "Running with sumData = %s" % args.sumData
 
@@ -35,15 +36,14 @@ def main ():
             #print listOfFiles
             if len(listOfFiles) < 1:
                 print "No root files... skipping %s" % dirStrip
-            elif len(listOfFiles) == 1:             
+            elif len(listOfFiles) == 1:
                 oldName = listOfFiles[0].strip()
                 newName = oldName.replace('job000', 'all')
-                #newName = newName.replace('.root', '_all.root')
-                haddCommand = "cp %s %s" % ( oldName,  newName)
+                haddCommand = "mv %s %s" % ( oldName,  newName)
                 for feedback in os.popen(haddCommand).readlines():
                     newName= newName
-                print "Copied to create %s" % newName
-                
+                print "Created %s" % newName
+
             else:
                 oldName = listOfFiles[0].strip()
                 newName = oldName.replace('job000', 'all')
@@ -53,10 +53,10 @@ def main ():
                 for feedback in os.popen(haddCommand).readlines():
                         print feedback
                 print "Created %s" % newName
-    
+
     if (args.sumData):
         print "Summing data Files"
-        dataNames2011 = {"DoubleElectron":['DoubleElectron_Run2011A-05Aug2011-v1', 
+        dataNames2011 = {"DoubleElectron":['DoubleElectron_Run2011A-05Aug2011-v1',
                                        'DoubleElectron_Run2011A-May10ReReco-v1',
                                        'DoubleElectron_Run2011A-PromptReco-v4',
                                        'DoubleElectron_Run2011A-PromptReco-v6',
@@ -73,11 +73,11 @@ def main ():
                              'MuEG_Run2011B-PromptReco-v1']
                      }
         dataNames2012_52x = {"DoubleElectron":['DoubleElectron_Run2012A',
-                                           'DoubleElectron_Run2012B'],
-                         "DoubleMu":['DoubleMu_Run2012A',
-                                     'DoubleMu_Run2012B'],
-                         "MuEG":['MuEG_Run2012A',
-                                 'MuEG_Run2012B']
+                                               'DoubleElectron_Run2012B'],
+                             "DoubleMu":['DoubleMu_Run2012A',
+                                         'DoubleMu_Run2012B'],
+                             "MuEG":['MuEG_Run2012A',
+                                     'MuEG_Run2012B']
                      }
         dataNames2012_53x = {"DoubleElectron":['DoubleElectron_Run2012A-13Jul2012-v1',
                                                'DoubleElectron_Run2012A-recover-06Aug2012-v1',
@@ -98,73 +98,62 @@ def main ():
                                      'MuEG_Run2012C-24Aug2012-v1',
                                      'MuEG_Run2012D-PromptReco-v1'],
 							 "DoubleElectron_NP_sideband":['DoubleElectron_Run2012A-13Jul2012-v1_NP_sideband',
-                                               'DoubleElectron_Run2012A-recover-06Aug2012-v1_NP_sideband',
-                                               'DoubleElectron_Run2012B-13Jul2012-v1_NP_sideband',
-                                               'DoubleElectron_Run2012C-PromptReco-v2_NP_sideband',
-                                               'DoubleElectron_Run2012C-24Aug2012-v1_NP_sideband',
-                                               'DoubleElectron_Run2012D-PromptReco-v1_NP_sideband'],
+                                                           'DoubleElectron_Run2012A-recover-06Aug2012-v1_NP_sideband',
+                                                           'DoubleElectron_Run2012B-13Jul2012-v1_NP_sideband',
+                                                           'DoubleElectron_Run2012C-PromptReco-v2_NP_sideband',
+                                                           'DoubleElectron_Run2012C-24Aug2012-v1_NP_sideband',
+                                                           'DoubleElectron_Run2012D-PromptReco-v1_NP_sideband'],
                              "DoubleMu_NP_sideband":['DoubleMu_Run2012A-13Jul2012-v1_NP_sideband',
-                                         'DoubleMu_Run2012A-recover-06Aug2012-v1_NP_sideband',
-                                         'DoubleMu_Run2012B-13Jul2012-v4_NP_sideband',
-                                         'DoubleMu_Run2012C-PromptReco-v2_NP_sideband',
-                                         'DoubleMu_Run2012C-24Aug2012-v1_NP_sideband',
-                                         'DoubleMu_Run2012D-PromptReco-v1_NP_sideband'],
+                                                     'DoubleMu_Run2012A-recover-06Aug2012-v1_NP_sideband',
+                                                     'DoubleMu_Run2012B-13Jul2012-v4_NP_sideband',
+                                                     'DoubleMu_Run2012C-PromptReco-v2_NP_sideband',
+                                                     'DoubleMu_Run2012C-24Aug2012-v1_NP_sideband',
+                                                     'DoubleMu_Run2012D-PromptReco-v1_NP_sideband'],
                              "MuEG_NP_sideband":['MuEG_Run2012A-13Jul2012-v1_NP_sideband',
-                                     'MuEG_Run2012A-recover-06Aug2012-v1_NP_sideband',
-                                     'MuEG_Run2012B-13Jul2012-v1_NP_sideband',
-                                     'MuEG_Run2012C-PromptReco-v2_NP_sideband',
-                                     'MuEG_Run2012C-24Aug2012-v1_NP_sideband',
-                                     'MuEG_Run2012D-PromptReco-v1_NP_sideband'],							 
+                                                 'MuEG_Run2012A-recover-06Aug2012-v1_NP_sideband',
+                                                 'MuEG_Run2012B-13Jul2012-v1_NP_sideband',
+                                                 'MuEG_Run2012C-PromptReco-v2_NP_sideband',
+                                                 'MuEG_Run2012C-24Aug2012-v1_NP_sideband',
+                                                 'MuEG_Run2012D-PromptReco-v1_NP_sideband'],
 							 "DoubleElectron_QF_sideband":['DoubleElectron_Run2012A-13Jul2012-v1_QF_sideband',
-                                               'DoubleElectron_Run2012A-recover-06Aug2012-v1_QF_sideband',
-                                               'DoubleElectron_Run2012B-13Jul2012-v1_QF_sideband',
-                                               'DoubleElectron_Run2012C-PromptReco-v2_QF_sideband',
-                                               'DoubleElectron_Run2012C-24Aug2012-v1_QF_sideband',
-                                               'DoubleElectron_Run2012D-PromptReco-v1_QF_sideband'],
+                                                           'DoubleElectron_Run2012A-recover-06Aug2012-v1_QF_sideband',
+                                                           'DoubleElectron_Run2012B-13Jul2012-v1_QF_sideband',
+                                                           'DoubleElectron_Run2012C-PromptReco-v2_QF_sideband',
+                                                           'DoubleElectron_Run2012C-24Aug2012-v1_QF_sideband',
+                                                           'DoubleElectron_Run2012D-PromptReco-v1_QF_sideband'],
                              "MuEG_QF_sideband":['MuEG_Run2012A-13Jul2012-v1_QF_sideband',
-                                     'MuEG_Run2012A-recover-06Aug2012-v1_QF_sideband',
-                                     'MuEG_Run2012B-13Jul2012-v1_QF_sideband',
-                                     'MuEG_Run2012C-PromptReco-v2_QF_sideband',
-                                     'MuEG_Run2012C-24Aug2012-v1_QF_sideband',
-                                     'MuEG_Run2012D-PromptReco-v1_QF_sideband']							 
+                                                 'MuEG_Run2012A-recover-06Aug2012-v1_QF_sideband',
+                                                 'MuEG_Run2012B-13Jul2012-v1_QF_sideband',
+                                                 'MuEG_Run2012C-PromptReco-v2_QF_sideband',
+                                                 'MuEG_Run2012C-24Aug2012-v1_QF_sideband',
+                                                 'MuEG_Run2012D-PromptReco-v1_QF_sideband']
                      }
 
-        dataNames = dataNames2012_53x
-        print "Data names are...", dataNames
+        data_names = dataNames2012_53x
+        print "Data names are...", data_names
 
-        for (dataCat, listOfNames) in dataNames.iteritems():
-            #print "=========Data category is %s=============" % dataCat
-            # get a whole list of file names
-            matchedDirs = []
-            for iDir in os.popen("find batch_trees -name '*_%s' -type d" % (args.project_label)  ).readlines():
-                for iMatch in listOfNames:
-                    if iMatch in iDir:
-                        print "Directory %s matches name %s" % (iDir,iMatch)
-                        matchedDirs.append(iDir.strip())
-                    #end if match
-                #end for each match
-            #print "Matching directories are..."
-            #print matchedDirs
-            haddCommand = "hadd -v 0 -f %s_%s_all.root " % (dataCat,args.project_label)
-            for iDir in matchedDirs:
-                #print "Looking at directory %s" % iDir
-                rootFiles = os.popen('ls %s/*_all.root' % iDir).readlines()
-                if len(rootFiles) > 1:
-                    print "---Too many root files found"
-                    print rootFiles
-                    exit (3)
-                elif len(rootFiles) < 1:
-                    print "---Too few root files found"
-                    exit (4)
-                theRootFile = rootFiles[0].strip()
-                print "Adding file %s " % theRootFile
-                haddCommand = haddCommand + theRootFile + "  "
+        for (data_category, datasets) in data_names.items():
+            dataset_paths = []
+            for dataset in datasets:
+                labeled_dataset = '%s_%s' % (dataset, args.project_label)
+                path = os.path.join('batch_trees', labeled_dataset, '%s_all.root' % labeled_dataset)
+                if os.path.exists(path):
+                    dataset_paths.append(path)
+                else:
+                    print "Could not find requested dataset %s.  It will not be included in the sum %s." % (path, data_category)
+            hadd_command = "hadd -v 0 -f %s_%s_all.root %s" % (data_category, args.project_label, " ".join(dataset_paths))
+
             print ">>>>>>>>>> Running >>>>>>>>>  "
-            print "       %s" % haddCommand
-            for iFeedback in os.popen(haddCommand).readlines():
-                print iFeedback
-            print "-------Done suming data---------"
-        
+            print "       %s" % hadd_command
+            for feedback in os.popen(hadd_command).readlines():
+                print feedback
+            print "-------Done suming data category %s---------" % data_category
+
+            if args.cleanup:
+                rm_command = "rm %s" % " ".join(dataset_paths)
+                for feedback in os.popen(rm_command).readlines():
+                    print feedback
+
     # make sure the destination exists before sending files
     checkDirs(outDir)
 
@@ -186,7 +175,7 @@ def main ():
 
     return
 
-# This allows you to run at the command line    
+# This allows you to run at the command line
 # tells you to call the main function defined above
 if __name__ == '__main__':
     main()
