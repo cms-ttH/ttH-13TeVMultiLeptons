@@ -42,6 +42,8 @@ BTagWeights::BTagWeights(vector<pair<string, double>> requestedWPs):
   branches["csvWeightHFDown"] = BranchInfo<double>("csvWeightHFDown");
   branches["csvWeightLFUp"] = BranchInfo<double>("csvWeightLFUp");
   branches["csvWeightLFDown"] = BranchInfo<double>("csvWeightLFDown");
+
+  fillSFLightFunctions();
 }
 
 void BTagWeights::evaluate () {
@@ -163,6 +165,7 @@ double BTagWeights::getSFLight(BNjet& jet, int systLF, string WPLabel) {
   pair<double, double> etaRange;
   double etaMin, etaMax;
   map<string, TF1*> functions;
+  vector<FunctionSet> WPLightFunctions = SFLightFunctions[WPLabel];
   for (auto& set: SFLightFunctions[WPLabel]) {
     etaRange = set.first;
     etaMin = etaRange.first;
@@ -230,7 +233,7 @@ double BTagWeights::getSF(BNjet& jet, string WPLabel, int systHF, int systLF) {
   if ((flavor != 5) && (flavor != 4)) flavor = 0;
 
   if (flavor > 0) {
-    SF = getSFb(systHF, jet.pt, WPLabel);
+    SF = getSFb(jet.pt, systHF, WPLabel);
   } else {
     SF = getSFLight(jet, systLF, WPLabel);
   }
