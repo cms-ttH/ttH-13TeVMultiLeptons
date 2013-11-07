@@ -36,20 +36,16 @@ def main ():
             #print listOfFiles
             if len(listOfFiles) < 1:
                 print "No root files... skipping %s" % dirStrip
-            elif len(listOfFiles) == 1:
-                oldName = listOfFiles[0].strip()
-                newName = oldName.replace('job000', 'all')
-                haddCommand = "mv %s %s" % ( oldName,  newName)
-                for feedback in os.popen(haddCommand).readlines():
-                    newName= newName
-                print "Created %s" % newName
-
             else:
                 oldName = listOfFiles[0].strip()
-                newName = oldName.replace('job000', 'all')
-                haddCommand = "hadd -v 0 -f %s " % (newName)
-                for iFile in listOfFiles[0:]:
-                    haddCommand = haddCommand + " " + iFile.strip()
+                newName = oldName[:oldName.find('job')+3]+'.root'
+                newName = newName.replace('job', 'all')
+                if len(listOfFiles) == 1:
+                    haddCommand = "cp %s %s" % ( oldName,  newName)
+                else:
+                    haddCommand = "hadd -v 0 -f %s " % (newName)
+                    for iFile in listOfFiles[0:]:
+                        haddCommand = haddCommand + " " + iFile.strip()
                 for feedback in os.popen(haddCommand).readlines():
                         print feedback
                 print "Created %s" % newName
