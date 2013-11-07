@@ -179,8 +179,9 @@ class DrawStringMaker:
         self.update_draw_string()
 
     def multiply_by_factors(self, weights):
-        for weight in weights:
-            self.multiply_by_factor(weight)
+        if len(weights) > 0:
+            for weight in weights:
+                self.multiply_by_factor(weight)
 
     def get_matched_SF(self, lepton_category):
         if lepton_category == 'mu_mu':
@@ -470,7 +471,7 @@ def customize_list(item_list, customization_string):
     first_item_match = re.search('.*?(?=(\+|\-))', customization_string) #Sorry for the nasty regular expressions.  This gets the first term in customization_string if it's followed by a '+' or '-'
     if first_item_match:
         first_item = first_item_match.group(0).strip()
-    if first_item != 'all' and first_item != '':
+    if first_item != 'all' and first_item != '' and first_item != 'none':
         items_to_add.append(first_item)
 
     items_to_add.extend([match.strip() for match in re.findall('\+(.\w*)', customization_string)]) #This gets a item_list of all terms that come after a '+' in customization_string
