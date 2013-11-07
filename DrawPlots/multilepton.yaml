@@ -1,6 +1,6 @@
-label: new_process_v0
+label: new_process_v1
 luminosity: 19450.0
-input_trees_directory: tree_files/
+input_trees_directory: tree_files
 
 common cuts:
     lt_three_tight_leptons: '!((all_leptons_by_pt_1_lepMVA > 0.7) && (all_leptons_by_pt_2_lepMVA > 0.7) && (all_leptons_by_pt_3_lepMVA > 0.7))'
@@ -25,6 +25,7 @@ mu_mu cuts:
 
 mu_ele cuts:
     mu_ele: ((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isElectron) || (all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isMuon))
+    conv_veto: all_electrons_by_pt_1_passConvVeto==1 && all_electrons_by_pt_1_numberOfExpectedInnerHits==0
     isMuEGTriggerPass: isMuEGTriggerPass
 
 regular selection cuts:
