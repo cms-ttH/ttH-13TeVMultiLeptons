@@ -193,274 +193,236 @@ class DrawStringMaker:
         return matched_SF
 
 class SampleInformation:
-    def __init__(self, sample):
+    def __init__(self, sample, config):
         dictionary = {
             'ww': {'sample_type': 'MC',
                    'is_signal': False,
                    'x_section': 54.8, #0.0571,
                    'x_section_error': 0.0015,
-                   'num_generated': 9955089,
-                   'systematics': 'all'},
+                   'num_generated': 9955089},
 
             'wz': {'sample_type': 'MC',
                    'is_signal': False,
                    'x_section': 32.3,
                    'x_section_error': 0.0007,
-                   'num_generated':  9931257,
-                   'systematics': 'all'},
+                   'num_generated':  9931257},
 
             'zz': {'sample_type': 'MC',
                    'is_signal': False,
                    'x_section': 7.7,#0.00826,
                    'x_section_error': 0.00015,
-                   'num_generated':  9755621,
-                   'systematics': 'all'},
+                   'num_generated':  9755621},
 
             'www': {'sample_type': 'MC',
                     'is_signal': False,
                     'x_section': 0.08217,#0.0571,
                     'x_section_error': 0.00008217*0.0015/0.0548,
-                    'num_generated': 220040,
-                    'systematics': 'all'},
+                    'num_generated': 220040},
 
             'wwz': {'sample_type': 'MC',
                     'is_signal': False,
                     'x_section': 0.0633,#0.0571,
                     'x_section_error': 0.0000633*0.0015/0.0548,
-                    'num_generated': 221576,
-                    'systematics': 'all'},
+                    'num_generated': 221576},
 
             'wzz': {'sample_type': 'MC',
                     'is_signal': False,
                     #        'x_section': 0.00001922,#0.0571,
                     'x_section': 0.0001,
                     'x_section_error': 0.00001922*0.0015/0.0548,
-                    'num_generated': 219835,
-                    'systematics': 'all'},
+                    'num_generated': 219835},
 
             'zzz': {'sample_type': 'MC',
                     'is_signal': False,
                     'x_section': 0.004587,#0.0571,
                     'x_section_error': 0.000004587*0.0015/0.0548,
-                    'num_generated': 224519,
-                    'systematics': 'all'},
+                    'num_generated': 224519},
 
             'wjets': {'sample_type': 'MC',
                       'is_signal': False,
                       'x_section': 36257,
                       'x_section_error': 1.558,
-                      'num_generated':  57536319,
-                      'systematics': 'all'},
+                      'num_generated':  57536319},
 
             'zjets': {'sample_type': 'MC',
                       'is_signal': False,
                       'x_section': 3505.7,
                       'x_section_error': 0.132,
-                      'num_generated':  30072710,
-                      'systematics': 'all'},
+                      'num_generated':  30072710},
 
             'zjets_lowmass': {'sample_type': 'MC',
                               'is_signal': False,
                               'x_section': 14702, #0.860,
                               'x_section_error': 0.132*0.86/3.5057,
-                              'num_generated': 37828841,
-                              'systematics': 'all'},
+                              'num_generated': 37828841},
 
             'ttbarW': {'sample_type': 'MC',
                        'is_signal': False,
                        'x_section': 0.232, #0.000163*1.5,
                        'x_section_error': 0.2*0.000249,
-                       'num_generated':  195196,
-                       'systematics': 'all'},
+                       'num_generated':  195196},
 
             'ttbarZ': {'sample_type': 'MC',
                        'is_signal': False,
                        'x_section': 0.208,#0.000136*1.5,
                        'x_section_error': 0.2*0.000208,
-                       'num_generated':  209512,
-                       'systematics': 'all'},
+                       'num_generated':  209512},
 
             'ttbarWW': {'sample_type': 'MC',
                         'is_signal': False,
                         'x_section': 0.002037,#0.000136*1.5,
                         'x_section_error': 0.2*0.000002037,
-                        'num_generated':  216867,
-                        'systematics': 'all'},
+                        'num_generated':  216867},
 
             'tttt': {'sample_type': 'MC',
                      'is_signal': False,
                      'x_section': 0.0000001,#0.000000716,
                      'x_section_error': 0.2*0.000000716,
-                     'num_generated':  99994,
-                     'systematics': 'all'},
+                     'num_generated':  99994},
 
             't_s': {'sample_type': 'MC',
                     'is_signal': False,
                     'x_section': 3.79,
                     'x_section_error': 0.00006*0.00379/(0.00379+0.00176),
-                    'num_generated': 259657,
-                    'systematics': 'all'},
+                    'num_generated': 259657},
 
             'tbar_s': {'sample_type': 'MC',
                        'is_signal': False,
                        'x_section': 1.76,
                        'x_section_error': 0.00006*0.00176/(0.00379+0.00176),
-                       'num_generated': 139835,
-                       'systematics': 'all'},
+                       'num_generated': 139835},
 
             't_t': {'sample_type': 'MC',
                     'is_signal': False,
                     'x_section': 56.4,
                     'x_section_error': 0.0032*0.0564/(0.0564+0.0307),
-                    'num_generated': 3744404,
-                    'systematics': 'all'},
+                    'num_generated': 3744404},
 
             'tbar_t': {'sample_type': 'MC',
                        'is_signal': False,
                        'x_section': 30.7,
                        'x_section_error': 0.0032*0.0307/(0.0564+0.0307),
-                       'num_generated': 1933504,
-                       'systematics': 'all'},
+                       'num_generated': 1933504},
 
             't_tW': {'sample_type': 'MC',
                      'is_signal': False,
                      'x_section': 11.1,
                      'x_section_error': 0.0008*0.0111/0.00106,    #### 0.00106
-                     'num_generated': 496918,
-                     'systematics': 'all'},                    
+                     'num_generated': 496918},
 
             'tbar_tW': {'sample_type': 'MC',
                         'is_signal': False,
                         'x_section': 11.1,
                         'x_section_error': 0.0008*0.0111/0.00106,    #### 0.00106
-                        'num_generated': 492779,
-                        'systematics': 'all'},                    
+                        'num_generated': 492779},
 
             'ttbb': {'sample_type': 'MC',
                      'is_signal': False,
                      'x_section': 245.8, #0.225197,
                      'x_section_error': 0.5*0.2458, #0.225197, #0.3*0.225197,
-                     'num_generated':  6912438+1362471,
-                     'systematics': 'all'},                    
+                     'num_generated':  6912438+1362471},
 
             'ttcc': {'sample_type': 'MC',
                      'is_signal': False,
                      'x_section': 245.8, #0.225197,
                      'x_section_error': 0.3*0.2458, #0.225197,
-                     'num_generated':  6912438+1362471,
-                     'systematics': 'all'},                    
+                     'num_generated':  6912438+1362471},
 
             'ttbar': {'sample_type': 'MC',
                       'is_signal': False,
                       'x_section': 245.8, #0.225197,
                       'x_section_error': 0.024,
-                      'num_generated':  6912438+1362471,
-                      'systematics': 'all'},                    
+                      'num_generated':  6912438+1362471},
 
             'ttH110': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.1887,
                        'x_section_error': 0.0,
-                       'num_generated': 975341,
-                       'systematics': 'all'},                    
+                       'num_generated': 975341},
 
             'ttH115': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.1663,
                        'x_section_error': 0.0,
-                       'num_generated': 995188,
-                       'systematics': 'all'},                    
+                       'num_generated': 995188},
 
             'ttH120': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.147,
                        'x_section_error': 0.0,
-                       'num_generated': 996773,
-                       'systematics': 'all'},
+                       'num_generated': 996773},
 
             'ttH125': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.1302,
                        'x_section_error': 0.0,
-                       'num_generated': 992997,
-                       'systematics': 'all'},
+                       'num_generated': 992997},
 
             'ttH130': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.1157,
                        'x_section_error': 0.0,
-                       'num_generated': 931369,
-                       'systematics': 'all'},
+                       'num_generated': 931369},
 
             'ttH135': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.1031,
                        'x_section_error': 0.0,
-                       'num_generated': 993975,
-                       'systematics': 'all'},
+                       'num_generated': 993975},
 
             'ttH140': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.09207,
                        'x_section_error': 0.0,
-                       'num_generated': 997191,
-                       'systematics': 'all'},
+                       'num_generated': 997191},
 
             'MuEG': {'sample_type': 'data',
                      'is_signal': False,
                      'x_section': 1,
                      'x_section_error': 0.0,
-                     'num_generated': 1,
-                     'systematics': 'none'},
+                     'num_generated': 1},
 
             'DoubleMu': {'sample_type': 'data',
                          'is_signal': False,
                          'x_section': 1,
                          'x_section_error': 0.0,
-                         'num_generated': 1,
-                         'systematics': 'none'},
+                         'num_generated': 1},
 
             'DoubleElectron': {'sample_type': 'data',
                                'is_signal': False,
                                'x_section': 1,
                                'x_section_error': 0.0,
-                               'num_generated': 1,
-                               'systematics': 'none'},
+                               'num_generated': 1},
 
             'MuEG_NP_sideband': {'sample_type': 'NP_sideband',
                      'is_signal': False,
                      'x_section': 1,
                      'x_section_error': 0.0,
-                     'num_generated': 1,
-                     'systematics': 'all'},
+                     'num_generated': 1},
 
             'DoubleMu_NP_sideband': {'sample_type': 'NP_sideband',
                          'is_signal': False,
                          'x_section': 1,
                          'x_section_error': 0.0,
-                         'num_generated': 1,
-                         'systematics': 'all'},
+                         'num_generated': 1},
 
             'DoubleElectron_NP_sideband': {'sample_type': 'NP_sideband',
                                'is_signal': False,
                                'x_section': 1,
                                'x_section_error': 0.0,
-                               'num_generated': 1,
-                               'systematics': 'all'},
+                               'num_generated': 1},
 
             'MuEG_QF_sideband': {'sample_type': 'QF_sideband',
                      'is_signal': False,
                      'x_section': 1,
                      'x_section_error': 0.0,
-                     'num_generated': 1,
-                     'systematics': 'all'},
+                     'num_generated': 1},
 
             'DoubleElectron_QF_sideband': {'sample_type': 'QF_sideband',
                                'is_signal': False,
                                'x_section': 1,
                                'x_section_error': 0.0,
-                               'num_generated': 1,
-                               'systematics': 'all'}
+                               'num_generated': 1}
 
             }
 
@@ -470,49 +432,48 @@ class SampleInformation:
         self.x_section = dictionary[sample]['x_section']
         self.x_section_error = dictionary[sample]['x_section_error']
         self.num_generated = dictionary[sample]['num_generated']
-        self.systematics = dictionary[sample]['systematics']
+        self.systematics = config['systematics']
+        self.weights = config['weights']
 
-"""
-This clunky class is an attempt to provide a way to add sample-specific treatment of systematics
-"""
-class SystematicsInformation:
-    def __init__(self, baseline_systematics=[]):
-        self.systematics_list = ['nominal'] 
-        self.dictionary = {
-            'nominal': {'weight_string': '1', 'systematic_label': ''},
-            'JESUp': {'weight_string': '1', 'systematic_label': '_JESUp'},
-            'weight_PUup': {'weight_string':'(weight_PUup/weight_PU)', 'systematic_label': '_weight_PUup'},
-            'weight_PUdown': {'weight_string':'(weight_PUdown/weight_PU)', 'systematic_label': '_weight_PUdown'},            
-            'CSV_HFUp': {'weight_string': 'CSV_HFUp', 'systematic_label': '_CSV_HFUp'},
-            'topPtWgtDown': {'weight_string': '(1/topPtWgt)', 'systematic_label': '_topPtWgtDown'},
-            'topPtWgtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'systematic_label': '_topPtWgtUp'},
-            '40PercentRateUp': {'weight_string': '(1.40)', 'systematic_label': '_40PercentRateUp'},
-            '40PercentRateDown': {'weight_string': '(0.60)', 'systematic_label': '_40PercentRateDown'}
-            }
+def get_systematic_info(systematic):
+    dictionary = {
+        'nominal': {'weight_string': '1', 'systematic_label': ''},
+        'JESUp': {'weight_string': '1', 'systematic_label': '_JESUp'},
+        'weight_PUup': {'weight_string': '(weight_PUup/weight_PU)', 'systematic_label': '_weight_PUup'},
+        'weight_PUdown': {'weight_string': '(weight_PUdown/weight_PU)', 'systematic_label': '_weight_PUdown'},
+        'csvWeightHFUp': {'weight_string': 'csvWeightHFUp', 'systematic_label': '_csvWeightHFUp'},
+        'csvWeightHFDown': {'weight_string': 'csvWeightHFDown', 'systematic_label': '_csvWeightHFDown'},
+        'csvWeightLFUp': {'weight_string': 'csvWeightLFUp', 'systematic_label': '_csvWeightLFUp'},
+        'csvWeightLFDown': {'weight_string': 'csvWeightLFDown', 'systematic_label': '_csvWeightLFDown'},
+        'CSV_HFUp': {'weight_string': 'CSV_HFUp', 'systematic_label': '_CSV_HFUp'},
+        'topPtWgtDown': {'weight_string': '(1/topPtWgt)', 'systematic_label': '_topPtWgtDown'},
+        'topPtWgtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'systematic_label': '_topPtWgtUp'},
+        '40PercentRateUp': {'weight_string': '(1.40)', 'systematic_label': '_40PercentRateUp'},
+        '40PercentRateDown': {'weight_string': '(0.60)', 'systematic_label': '_40PercentRateDown'}
+        }
 
-        self.add_systematics(baseline_systematics)
+    return (dictionary[systematic]['weight_string'], dictionary[systematic]['systematic_label'])
 
-    def add_systematics(self, systematics_list):
-        self.systematics_list.extend(systematics_list)
-        
-    def edit_systematics_list(self, sample_systematics_string):
-        if sample_systematics_string == 'none' or sample_systematics_string == 'None':
-            self.systematics_list = ['nominal']
-        else:
-            systematics_set = set(self.systematics_list) #copy into a set for duplicate removal
+#This function takes a list and adds or removes items from it depending on 'customization_string'.
+#It can be used to adapt systematics or weights lists in a sample-specific way.
+def customize_list(item_list, customization_string):
+    if 'all' not in customization_string:
+        item_list = []
 
-            import re
-            systematics_to_add = []
-            first_item = sample_systematics_string.strip() #If there is no '+' or '-', there must only be one term
-            first_item_match = re.search('.*?(?=(\+|\-))', sample_systematics_string) #Sorry for the nasty regular expressions.  This gets the first term in sample_systematics_string if it's followed by a '+' or '-'
-            if first_item_match: 
-                first_item = first_item_match.group(0).strip()
-                if first_item != 'all' and first_item != '':
-                    systematics_to_add.append(first_item)
-                systematics_to_add.extend([match.strip() for match in re.findall('\+(.\w*)', sample_systematics_string)]) #This gets a list of all terms that come after a '+' in sample_systematics_string
-                systematics_set = systematics_set.union(set(systematics_to_add))
+    item_set = set(item_list) #copy into a set for duplicate removal
 
-                systematics_to_remove = [match.strip() for match in re.findall('\-(.\w*)', sample_systematics_string)]
-                systematics_set = systematics_set.difference(set(systematics_to_remove))
+    import re
+    items_to_add = []
+    first_item = customization_string.strip() #If there is no '+' or '-', there must only be one term
+    first_item_match = re.search('.*?(?=(\+|\-))', customization_string) #Sorry for the nasty regular expressions.  This gets the first term in customization_string if it's followed by a '+' or '-'
+    if first_item_match:
+        first_item = first_item_match.group(0).strip()
+        if first_item != 'all' and first_item != '':
+            items_to_add.append(first_item)
+    items_to_add.extend([match.strip() for match in re.findall('\+(.\w*)', customization_string)]) #This gets a item_list of all terms that come after a '+' in customization_string
+    item_set = item_set.union(set(items_to_add))
 
-                self.systematics_list = list(systematics_set)
+    items_to_remove = [match.strip() for match in re.findall('\-(.\w*)', customization_string)]
+    item_set = item_set.difference(set(items_to_remove))
+
+    return list(item_set)

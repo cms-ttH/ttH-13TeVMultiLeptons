@@ -13,10 +13,10 @@ def main():
     parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
     parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
     parser.add_argument('-w', '--web', action='store_true', help='Post each plot to the user\'s AFS space.')
-    parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
     parser.add_argument('-l', '--lepton_category', action='append', help='Run on a single lepton category.  Default is to run on all lepton categories listed in the configuration file.')
     parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
     parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
+    parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
     parser.add_argument('--label', help='Override the label set in the configuration file with LABEL')
     args = parser.parse_args()
 
@@ -26,7 +26,7 @@ def main():
     if args.label:
         config['label'] = args.label
 
-    samples = config['samples']
+    samples = config['samples'].keys()
     if args.sample:
         samples = args.sample
 
@@ -52,8 +52,8 @@ def main():
 
 def make_histos(args, config, samples, lepton_categories):
     for sample in samples:
-
-        sample_info = plot_helper.SampleInformation(sample)
+        sample_dict = config['samples'][sample]
+        sample_info = plot_helper.SampleInformation(sample, sample_dict)
 
         for lepton_category in lepton_categories:
             lepton_category_cut_strings = config['%s cuts' % lepton_category].values()
@@ -65,14 +65,11 @@ def make_histos(args, config, samples, lepton_categories):
                 output_file_name = 'histos/%s/%s_%s_%s_%s.root' % (lepton_category, lepton_category, jet_tag_category, sample, config['label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
-                if 'sideband' in sample_info.sample_type: systematics_info = plot_helper.SystematicsInformation(config['sideband systematics'])
-                else: systematics_info = plot_helper.SystematicsInformation(config['MC systematics'])
-                systematics_info.edit_systematics_list(sample_info.systematics)
-                for systematic in systematics_info.systematics_list:
+                systematics_list = plot_helper.customize_list(config['systematics'], sample_info.systematics)
+                for systematic in systematics_list:
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
 
-                    systematic_weight_string = systematics_info.dictionary[systematic]['weight_string']
-                    systematic_label = systematics_info.dictionary[systematic]['systematic_label']
+                    systematic_weight_string, systematic_label = plot_helper.get_systematic_info(systematic)
                     source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], sample, config['label'])
                     if args.file:
                         source_file_name = args.file
@@ -89,18 +86,19 @@ def make_histos(args, config, samples, lepton_categories):
                         draw_string_maker.append_selection_requirements(config['regular selection cuts'].values())
                     draw_string_maker.append_jet_tag_category_requirements(jet_tag_category)
 
-                    if not sample_info.sample_type == 'data' and not args.no_weights:
+                    if not args.no_weights:
                         draw_string_maker.multiply_by_factor(systematic_weight_string)
-                        if 'sideband' in sample_info.sample_type:
-                            draw_string_maker.multiply_by_factors([x for x in config['sideband weights']])
-                        elif sample_info.sample_type == 'MC':
-                            if 'triggerSF' in config['MC weights']:
-                                matched_SF = draw_string_maker.get_matched_SF(lepton_category)
-                                config['MC weights'] = [matched_SF if x=='triggerSF' else x for x in config['MC weights']]
-                            draw_string_maker.multiply_by_factors(config['MC weights'])
-                        else:
-                            print 'Invalid sample_type %s is neither data, sideband, nor MC' % (sample_info.sample_type)
-                            sys.exit()
+                    if sample_info.sample_type == 'MC':
+                        if 'triggerSF' in config['weights']:
+                            matched_SF = draw_string_maker.get_matched_SF(lepton_category)
+                            config['weights'] = [matched_SF if x=='triggerSF' else x for x in config['weights']]
+
+                    weights = plot_helper.customize_list(config['weights'], sample_info.weights)
+                    draw_string_maker.multiply_by_factors(weights)
+
+                    if sample_info.sample_type not in ['MC', 'data'] and 'sideband' not in sample_info.sample_type:
+                        print 'Invalid sample_type %s is neither data, sideband, nor MC' % (sample_info.sample_type)
+                        sys.exit()
 
                     for distribution in config['distributions'].keys():
                         plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, systematic_label)

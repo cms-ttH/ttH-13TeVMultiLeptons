@@ -49,51 +49,74 @@ lepton categories:
     - ele_ele
 #    - mu_mu_mu
 
-MC weights:
+weights:
     - lepIDAndIsoSF
     - weight_PU
     - topPtWgt
-    - csvWgtlf
-    - csvWgthf
+    - csvWeight
     - triggerSF
     - lepMVALoose2LepSF
     - lepMVATight2LepSF
 
-sideband weights:
-    - DataDrivenFR
-
-MC systematics:
+systematics:
     - weight_PUup
     - weight_PUdown
     - topPtWgtDown
     - topPtWgtUp
-#    - JESUp
-#    - CSV_HFUp
+    - csvWeightHFUp
+    - csvWeightHFDown
+    - csvWeightLFUp
+    - csvWeightLFDown
 
-sideband systematics:
-    - 40PercentRateUp
-    - 40PercentRateDown
-
+#weights: all ---> weight by everything in "weights" section above
+#weights: none ---> don't apply any weight
+#weights: all+weight1 ---> weight by everything in the "weights" section above, and also by weight1
+#weights: all+weight1-weight2 ---> weight by everything in the "weights" section above except for weight2, and also by weight1
+#weights: weight1+weight2 ---> weight only by weight1 and weight2
+#same idea for systematics
 samples:
-    - ttH125
-    - ww
-    - wz
-    - zz
-#    - zzz
-#    - wzz
-#    - www
-#    - ttbarWW
-    - ttbarW
-    - ttbarZ
-#    - ttbar
-    - DoubleMu
-    - MuEG
-    - DoubleElectron
-    - DoubleMu_NP_sideband
-    - MuEG_NP_sideband
-    - DoubleElectron_NP_sideband
-    - MuEG_QF_sideband
-    - DoubleElectron_QF_sideband
+    ttH125:
+        weights: all
+        systematics: all
+    ww:
+        weights: all
+        systematics: all
+    wz:
+        weights: all
+        systematics: all
+    zz:
+        weights: all
+        systematics: all
+    ttbarW:
+        weights: all
+        systematics: all
+    ttbarZ:
+        weights: all
+        systematics: all
+    DoubleMu:
+        weights: none
+        systematics: nominal
+    MuEG:
+        weights: none
+        systematics: nominal
+    DoubleElectron:
+        weights: none
+        systematics: nominal
+    DoubleMu_NP_sideband:
+        weights: DataDrivenFR
+        systematics: 40PercentRateUp+40PercentRateDown
+    MuEG_NP_sideband:
+        weights: DataDrivenFR
+        systematics: 40PercentRateUp+40PercentRateDown
+    DoubleElectron_NP_sideband:
+        weights: DataDrivenFR
+        systematics: 40PercentRateUp+40PercentRateDown
+    MuEG_QF_sideband:
+        weights: DataDrivenFR
+        systematics: 40PercentRateUp+40PercentRateDown
+    DoubleElectron_QF_sideband:
+        weights: DataDrivenFR
+        systematics: 40PercentRateUp+40PercentRateDown
 
 aliases:
     - &default_num_bins 11
