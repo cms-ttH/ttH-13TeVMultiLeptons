@@ -230,53 +230,61 @@ int main (int argc, char** argv) {
   HiggsDecayType myHiggsDecayType(&lepHelper);
   kinVars.push_back(&myHiggsDecayType);
 
-  TwoObjectKinematic<BNmuonCollection,BNjetCollection> myMassMuonJetNew("mass", "all_pairs", -99, "",
+  TwoObjectKinematic<BNmuonCollection,BNjetCollection> myMassMuonJetNew("mass", "all_pairs", "",
                                                                         &(selectedCollections.tightMuonCollection), "tight_muons_by_pt", 1, 2,
                                                                         &(selectedCollections.jetCollection), "jets_by_pt", 1, 4);
   kinVars.push_back(&myMassMuonJetNew);
 
-  TwoObjectKinematic<BNleptonCollection,BNmetCollection> mySumLep1Lep2MetPt("pt", "sum", -99, "sum_lep1pt_lep2pt_met",
+  TwoObjectKinematic<BNleptonCollection,BNmetCollection> mySumLep1Lep2MetPt("pt", "sum", "sum_lep1pt_lep2pt_met",
                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 2,
                                                                             &(selectedCollections.metCollection), "met", 1, 1);
   kinVars.push_back(&mySumLep1Lep2MetPt);
 
-  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinMassLepLep("mass", "min", -99, "min_mass_leplep",
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinMassLepLep("mass", "min", "min_mass_leplep",
                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99);
   kinVars.push_back(&myMinMassLepLep);
 
-  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinDeltaRLepLep("deltaR", "min", -99, "min_dR_leplep",
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinMassLepLepSFOS("mass", "min", "min_mass_leplep_SFOS",
+                                                                                &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
+                                                                                &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
+                                                                                -99, "same_flavour", "opposite_sign");
+  kinVars.push_back(&myMinMassLepLepSFOS);
+
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myZLikeMassLepLepSFOS("mass", "closest_to", "ZLike_mass_leplep_SFOS",
+                                                                                  &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
+                                                                                  &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
+                                                                                  91.2, "same_flavour", "opposite_sign");
+  kinVars.push_back(&myZLikeMassLepLepSFOS);  
+  
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinDeltaRLepLep("deltaR", "min", "min_dR_leplep",
                                                                               &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                                                                               &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99);
   kinVars.push_back(&myMinDeltaRLepLep);
 
-  TwoObjectKinematic<BNmuonCollection,BNjetCollection> myMassMuonJet100("mass", "closest_to", 100, "muon_jet_mass_closest_to_100",
-                                                                        &(selectedCollections.tightMuonCollection), "tight_muons_by_pt", 1, 2,
-                                                                        &(selectedCollections.jetCollection), "jets_by_pt", 1, 4);
-  kinVars.push_back(&myMassMuonJet100);
-
-  TwoObjectKinematic<BNjetCollection,BNjetCollection> myHiggsLikeDijetMass110("mass", "closest_to", 110, "higgsLike_dijet_mass",
+  TwoObjectKinematic<BNjetCollection,BNjetCollection> myHiggsLikeDijetMass110("mass", "closest_to", "higgsLike_dijet_mass",
                                                                               &(selectedCollections.jetCollectionMediumCSV), "medium_btags_by_pt", 1, 99,
-                                                                              &(selectedCollections.jetCollectionMediumCSV), "medium_btags_by_pt", 1, 99);
+                                                                              &(selectedCollections.jetCollectionMediumCSV), "medium_btags_by_pt", 1, 99,
+                                                                              110);
   kinVars.push_back(&myHiggsLikeDijetMass110);
 
   //Variables for CERN same-sign dilepton BDT
-  TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMHT("pt", "vector_sum", -99, "mht",
+  TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMHT("pt", "vector_sum", "mht",
                                                                &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 1, 99,
                                                                &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
   kinVars.push_back(&myMHT);
 
-  TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMinDeltaRLep2Jet("deltaR", "min", -99, "mindr_lep2_jet",
+  TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMinDeltaRLep2Jet("deltaR", "min", "mindr_lep2_jet",
                                                                             &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 2, 2,
                                                                             &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
   kinVars.push_back(&myMinDeltaRLep2Jet);
 
-  TwoObjectKinematic<BNmetCollection,BNleptonCollection> myMtMetLep("MT", "all_pairs", -99, "",
+  TwoObjectKinematic<BNmetCollection,BNleptonCollection> myMtMetLep("MT", "all_pairs", "",
                                                                     &(selectedCollections.metCollection), "met", 1, 1,
                                                                     &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 1, 2);
   kinVars.push_back(&myMtMetLep);
 
-  TwoObjectKinematic<BNleptonCollection,BNjetCollection> mySumPt("pt", "sum", -99, "sum_pt",
+  TwoObjectKinematic<BNleptonCollection,BNjetCollection> mySumPt("pt", "sum", "sum_pt",
                                                                  &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 1, 99,
                                                                  &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
   kinVars.push_back(&mySumPt);

@@ -396,9 +396,23 @@ void HelperLeptonCore::getTightCorrectedJets (double ptCut,
     jetsLooseCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
     selectedCollections->jetCollectionLooseCSV = &jetsLooseCSV;
 
+    jetsNotLooseCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsLooseCSV));
+    selectedCollections->jetCollectionNotLooseCSV = &jetsNotLooseCSV;
+    
     tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'M');
     jetsMediumCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
-    selectedCollections->jetCollectionMediumCSV = &jetsMediumCSV;    
+    selectedCollections->jetCollectionMediumCSV = &jetsMediumCSV;
+
+    jetsNotMediumCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsMediumCSV));
+    selectedCollections->jetCollectionNotMediumCSV = &jetsNotMediumCSV;
+    
+    tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'T');
+    jetsTightCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
+    selectedCollections->jetCollectionTightCSV = &jetsTightCSV;
+
+    jetsNotTightCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsTightCSV));
+    selectedCollections->jetCollectionNotTightCSV = &jetsNotTightCSV;
+    
 }
 
 BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets (double ptCut,

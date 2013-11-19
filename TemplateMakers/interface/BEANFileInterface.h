@@ -116,6 +116,10 @@ public:
     jetCollection(0),
     jetCollectionLooseCSV(0),
     jetCollectionMediumCSV(0),
+    jetCollectionTightCSV(0),
+    jetCollectionNotLooseCSV(0),
+    jetCollectionNotMediumCSV(0),
+    jetCollectionNotTightCSV(0),
     mcParticleCollection(0),
     eventCollection(0),
     hltCollection (0),
@@ -158,6 +162,10 @@ public:
   BNjetCollection * jetCollection;
   BNjetCollection * jetCollectionLooseCSV;
   BNjetCollection * jetCollectionMediumCSV;    
+  BNjetCollection * jetCollectionTightCSV;    
+  BNjetCollection * jetCollectionNotLooseCSV;
+  BNjetCollection * jetCollectionNotMediumCSV;    
+  BNjetCollection * jetCollectionNotTightCSV;    
 
   
   BNmcparticleCollection * mcParticleCollection;

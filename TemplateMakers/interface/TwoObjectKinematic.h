@@ -25,7 +25,7 @@ public:
   //"pair" variable (e.g. |mass|, |deltaR|), or the absolute value
   //of each element of a non-pair variable (e.g. |eta1| + |eta2|)
   //A "vect" prefix indicates the sum of vectors (vect1 + vect2)
-  string variable; //mass, MT, deltaR, deltaEta, deltaPhi, absDeltaEta, absDeltaPhi,
+  string variable; //mass, mass, MT, deltaR, deltaEta, deltaPhi, absDeltaEta, absDeltaPhi,
                    //pt, pz, energy, eta, phi, absPz, absEta, absPhi,
                    //vectPt, vectPz, vectEnergy, vectEta, vectPhi
                    //absVectPt, absVectPz, absVectEnergy, absVectEta, absVectPhi
@@ -37,7 +37,6 @@ public:
                      //all_pairs_abs, maxAbs, minAbs, avgAbs, sumAbs,
                      //absMax, absMin, absAvg, absSum, vector_sum
   string new_name; //Replacement name if desired, otherwise set to ""
-  double target_value; //only matters for closest_to; otherwise, set to -99
   collectionType1 **selCollection1; //first selected collection
   collectionType2 **selCollection2; //second selected collection
   string branch_name_1; //first selected collection name
@@ -46,22 +45,28 @@ public:
   unsigned int max1; //last object in the first collection
   unsigned int min2; //first object in the second collection 
   unsigned int max2; //last object in the second collection 
+  double target_value; //only matters for closest_to; otherwise, set to -99
+  string pair_req_1;
+  string pair_req_2;
   
-  TwoObjectKinematic(string input_variable, string input_which_pair, double input_target_value, string input_new_name,
+  TwoObjectKinematic(string input_variable, string input_which_pair, string input_new_name,
                      collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
-                     collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2);
+                     collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
+                     double input_target_value = -99, string input_pair_req_1 = "none", string input_pair_req_2 = "none");
   
   void evaluate();
   
 };
 
 template <class collectionType1, class collectionType2>
-TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string input_variable, string input_which_pair, double input_target_value, string input_new_name,
+TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string input_variable, string input_which_pair, string input_new_name,
                                                                         collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
-                                                                        collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2):
-  variable(input_variable), which_pair(input_which_pair), target_value(input_target_value), new_name(input_new_name),
+                                                                        collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
+                                                                        double input_target_value, string input_pair_req_1, string input_pair_req_2):
+  variable(input_variable), which_pair(input_which_pair), new_name(input_new_name),
   selCollection1(input_selCollection1), branch_name_1(input_branch_name_1),min1(input_min1),max1(input_max1),
-  selCollection2(input_selCollection2), branch_name_2(input_branch_name_2),min2(input_min2),max2(input_max2)
+  selCollection2(input_selCollection2), branch_name_2(input_branch_name_2),min2(input_min2),max2(input_max2),
+  target_value(input_target_value), pair_req_1(input_pair_req_1), pair_req_2(input_pair_req_2)
 {
 
   //Convert target value to integers for branch name
@@ -157,6 +162,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
 
       //Sets min and max number of objects
       if ( iObj1 >= min1-1 && iObj1 < max1 ) {
+
         thisValueIterator += 1.0;
         vect1.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,ptr((*selCollection1)->at(iObj1))->eta,ptr((*selCollection1)->at(iObj1))->phi,
                            max(ptr((*selCollection1)->at(iObj1))->energy,ptr((*selCollection1)->at(iObj1))->pt)); //Hack for "energy" of MET
@@ -237,6 +243,29 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
       //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
       if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 &&
           (typeid(*selCollection1).name() != typeid(*selCollection2).name() || iObj1 < iObj2) ) {
+
+        //Adds requirements to eliminate some pairs of objects
+        if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {          
+          BNlepton* lepton_1 = (BNlepton*)ptr((*selCollection1)->at(iObj1));
+          BNlepton* lepton_2 = (BNlepton*)ptr((*selCollection2)->at(iObj2));
+
+          if ( ( lepton_1->isMuon != 1 && lepton_1->isElectron != 1 ) || ( lepton_2->isMuon != 1 && lepton_2->isElectron != 1 ) ) {
+            std::cout << "Why are we requiring same flavour on non-leptons?" << std::endl;
+          }
+          else if ( lepton_1->isMuon != lepton_2->isMuon == 1 ) continue;          
+        }
+        
+        if ( pair_req_1 == "opposite_sign" || pair_req_2 == "opposite_sign" ) {
+          BNlepton* lepton_1 = (BNlepton*)ptr((*selCollection1)->at(iObj1));
+          BNlepton* lepton_2 = (BNlepton*)ptr((*selCollection2)->at(iObj2));
+          
+          if ( abs(lepton_1->tkCharge) != 1 || abs(lepton_2->tkCharge) != 1 ) {
+            std::cout << "Why are we requiring opposite sign on non-leptons?" << std::endl;
+            continue;
+          }
+          else if ( lepton_1->tkCharge == lepton_2->tkCharge ) continue;          
+        }
+        
         thisPairValueIterator += 1.0;
 
         vect1.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,ptr((*selCollection1)->at(iObj1))->eta,ptr((*selCollection1)->at(iObj1))->phi,
