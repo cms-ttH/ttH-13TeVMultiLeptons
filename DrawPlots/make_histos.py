@@ -105,7 +105,7 @@ def make_histos(args, config, samples, lepton_categories):
                         plot = plot_helper.Plot(sample, output_file, tree, plot_name, config['distributions'][distribution], draw_string_maker.draw_string)
                         if sample_info.sample_type == 'MC':
                             plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
-                            output_file.Write()
+                        output_file.Write()
                         if args.pdf:
                             plot.save_image('pdf')
                         if args.web:
