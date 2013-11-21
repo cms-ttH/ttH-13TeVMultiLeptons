@@ -69,7 +69,6 @@ class Plot:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
             sys.exit(2)
         self.plot.SetDirectory(output_file)
-        output_file.Write('', ROOT.TObject.kOverwrite)
 
     def save_image(self, *image_types): #I am choosing for now not to add the option in make_plots to save pngs (though it can be called here), since pdfs look nicer
         if not os.path.exists('plot_pdfs'):
