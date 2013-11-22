@@ -259,11 +259,11 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
           BNlepton* lepton_1 = (BNlepton*)ptr((*selCollection1)->at(iObj1));
           BNlepton* lepton_2 = (BNlepton*)ptr((*selCollection2)->at(iObj2));
           
-          if ( abs(lepton_1->tkCharge) != 1 || abs(lepton_2->tkCharge) != 1 ) {
+          if ( ( abs(lepton_1->tkCharge) != 1 && lepton_1->tkCharge != -99 ) || ( abs(lepton_2->tkCharge) != 1 && lepton_2->tkCharge != -99 ) ) {
             std::cout << "Why are we requiring opposite sign on non-leptons?" << std::endl;
             continue;
           }
-          else if ( lepton_1->tkCharge == lepton_2->tkCharge ) continue;          
+          else if ( lepton_1->tkCharge + lepton_2->tkCharge != 0 ) continue;          
         }
         
         thisPairValueIterator += 1.0;
