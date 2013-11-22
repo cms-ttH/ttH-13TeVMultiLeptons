@@ -15,6 +15,7 @@ process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
                                                              'file:/store/user/awoodard/TTH_Inclusive_M-125_8TeV_pythia6/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_BEAN_53xOn53x_V04_CV02/3db9488ccafe261bfc4a8ee8a1b60217/ttH_pat2bean_53x_9_1_i3x.root',
                                                              ),
+                            duplicateCheckMode = cms.untracked.string('checkAllFilesOpened')
                             )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
