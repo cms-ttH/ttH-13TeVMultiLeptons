@@ -2,15 +2,17 @@
 import os, sys
 from argparse import ArgumentParser
 import math
+import yaml
 import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
 from ttHMultileptonAnalysis.DrawPlots.utilities.yamlhelpers import ttHMultileptonYAMLLoader
-import yaml
+from ttHMultileptonAnalysis.DrawPlots.utilities.prettytable import PrettyTable
 
 parser = ArgumentParser(description='Make stack plots from histogram files.')
 parser.add_argument('config_file_name', nargs='?', default='stack_plot_configuration.yaml', help='Configuration file to process.')
 parser.add_argument('cosmetics_config_file_name', nargs='?', default='stack_plot_cosmetics.yaml', help='Cosmetics configuration file to process.')
 parser.add_argument('-w', '--web', action='store_true', help='post each plot to the user\'s AFS space')
 parser.add_argument('--label', help='Override the label designated in the configuration file with LABEL')
+parser.add_argument('-y', '--yields', action='store_true', help='print a yield table')
 args = parser.parse_args()
 
 ## config is mostly options that change the substance of what is displayed
@@ -46,6 +48,7 @@ def main():
 
         plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name, args.cosmetics_config_file_name)
 
+    yields = plot_helper.Yields(jet_tag_categories)
     for lepton_category in lepton_categories:
         print '\n\nStarting lepton category %s...\n' % lepton_category
 
@@ -54,12 +57,29 @@ def main():
 
             for distribution in distributions:
                 print 'Drawing distribution: %s with jet selection printing name: %s' %  (distribution, jet_tag_categories[jet_tag_category])
-                draw_stack_plot(lepton_category, jet_tag_category, distribution)
+                yields = draw_stack_plot(lepton_category, jet_tag_category, distribution, yields)
 
     if args.web:
         print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], config['input file label'])
 
-def draw_stack_plot(lepton_category, jet_tag_category, distribution):
+    if args.yields:
+        columns = ['']
+        columns.extend(lepton_categories)
+
+        for jet_tag_category in jet_tag_categories:
+            print "\n\njet tag category: %s" % jet_tag_categories[jet_tag_category]
+            yield_table = PrettyTable(columns)
+            for sample in yields[jet_tag_category]:
+                entry = [sample]
+                for lepton_category in lepton_categories:
+                    if yields[jet_tag_category][sample].has_key(lepton_category):
+                        entry.append(format(yields[jet_tag_category][sample][lepton_category], '.2f'))
+                    else:
+                        entry.append('-')
+                yield_table.add_row(entry)
+            print yield_table
+
+def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
     stack_plot = THStack("theStack", "")
     stack_plot_legend = make_legend()
 
@@ -98,7 +118,8 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
                 mc_sum += histogram.Integral()
                 xsec_frac_error = sample_info.x_section_error / sample_info.x_section #is this being used?
                 stack_plot.Add(histogram, "hist")
-                stack_plot_legend.AddEntry(histogram, '%s (%0.2f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
+                stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
+                yields[jet_tag_category][background_samples[sample]['draw name']][lepton_category] = histogram.Integral(0, histogram.GetNbinsX() + 1)
 
     # Sum histograms in each sample group, then add summed histos to stack plot and histogram_dictionary
     if config.has_key('background sample groups'):
@@ -129,7 +150,8 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
                     histogram = group_histogram.Clone('stack')
                     mc_sum += group_histogram.Integral()
                     stack_plot.Add(histogram, "hist")
-                    stack_plot_legend.AddEntry(histogram, '%s (%0.2f)' % (background_sample_groups[sample_group]['draw name'], group_histogram.Integral()), 'f')
+                    stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_sample_groups[sample_group]['draw name'], group_histogram.Integral()), 'f')
+                    yields[jet_tag_category][background_sample_groups[sample_group]['draw name']][lepton_category] = histogram.Integral(0, histogram.GetNbinsX() + 1)
 
     ## Draw the signal sample histogram(s), put in legend
     signal_histogram = None
@@ -159,6 +181,8 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
         else:
             stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], legend_option)
 
+        yields[jet_tag_category][signal_samples[sample]['draw name']][lepton_category] = signal_histogram.Integral(0, signal_histogram.GetNbinsX() + 1)
+
     ## Draw the data histogram, put in legend
     if not config['blinded']:
         try:
@@ -168,6 +192,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
             data_histogram = original_histogram.Clone('data')
             data_sum = data_histogram.Integral()
             stack_plot_legend.AddEntry(data_histogram, 'Data (%.0f) ' % data_sum, 'lpe')
+            yields[jet_tag_category]['data'][lepton_category] = data_histogram.Integral(0, data_histogram.GetNbinsX() + 1)
         except:
             print """Problem finding distribution %s in file: %s/%s_%s_%s_%s.root. Skipping it...""" % (distribution, os.path.join(config['input file location'], lepton_category), lepton_category, jet_tag_category, sample, config['input file label'])
 
@@ -186,7 +211,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     # Create a histogram with the error bars for the MC stack
     mc_error_histogram = TH1F('mc_error_histogram', '', nBins, xMin, xMax)
     for i in range(1, nBins+1):
-        mc_error_histogram.SetBinContent(i,stack_plot.GetStack().Last().GetBinContent(i))
+        mc_error_histogram.SetBinContent(i, stack_plot.GetStack().Last().GetBinContent(i))
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
         for sample, systematics in systematics_by_sample.items(): #systematics_by_sample is a dictionary (keys: samples and sample groups, values: systematics list)
 
@@ -285,7 +310,6 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
 
     if args.web:
         www_base_directory = plot_helper.get_www_base_directory()
-
         www_plot_directory = '%s/stack_plots/%s/%s_%s/' % (www_base_directory, config['input file label'], lepton_category, jet_tag_category)
         plot_helper.copy_to_www_area(config['output file location'], www_plot_directory, plot_name)
 
@@ -294,6 +318,8 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     bottom_canvas.Close()
     stack_plot.Delete()
     canvas.Close()
+
+    return yields
 ## end draw_stack_plot
 
 ## Gets a single histogram
@@ -303,15 +329,15 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
         sample = plot_helper.get_data_sample_name(lepton_category)
 
     if systematic == 'nominal' or sample == plot_helper.get_data_sample_name(lepton_category):
-        name_plus_cycle = '%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution)
+        name = '%s_%s_%s_%s' % (sample, lepton_category, jet_tag_category, distribution)
     else:
-        name_plus_cycle = '%s_%s_%s_%s_%s;1' % (sample, lepton_category, jet_tag_category, distribution, systematic)
+        name = '%s_%s_%s_%s_%s' % (sample, lepton_category, jet_tag_category, distribution, systematic)
 
     #print 'root file name: %s' % (os.path.join(config['input file location'], lepton_category, '%s_%s_%s_%s.root' % (lepton_category, jet_tag_category, sample, config['input file label'])))
     #print 'histogram name: %s' % (name_plus_cycle)
 
     root_file = TFile(os.path.join(config['input file location'], lepton_category, '%s_%s_%s_%s.root' % (lepton_category, jet_tag_category, sample, config['input file label'])))
-    histogram = root_file.Get(name_plus_cycle).Clone()
+    histogram = root_file.Get(name).Clone()
 
     #print 'Got histogram from file'
 
@@ -386,9 +412,8 @@ def make_info_tex_objects(lepton_category, jet_tag_category):
     return luminosity_info_tex, selection_info_tex, SF_info_tex
 ## end of make_info_tex_objects
 
-def move_extra_into_hist (histogram):
+def move_extra_into_hist(histogram):
     '''Move over/underflow bins into the histogram'''
-
     numBins = histogram.GetNbinsX()
     histogram.SetBinContent(1, histogram.GetBinContent(0) + histogram.GetBinContent(1))
     histogram.SetBinContent(0,0)
@@ -429,14 +454,13 @@ def configure_canvases(top_canvas, bottom_canvas):
 
 def get_configured_data_asymmetric_errors(data_histogram):
     ggg = TGraphAsymmErrors(data_histogram)
-        
     alpha = 1 - 0.6827
     num_bins = ggg.GetN()
     for bin in range(0, num_bins):
         NN = ggg.GetY()[bin]
         if NN == 0:
             LOW = 0
-        else: 
+        else:
             LOW =  Math.gamma_quantile(alpha/2, NN, 1.)
         UP =  Math.gamma_quantile_c(alpha/2, NN+1, 1)
         ggg.SetPointEYlow(bin, NN-LOW)
@@ -516,7 +540,7 @@ def configure_ratio_error_histogram(ratio_error_histogram):
     return ratio_error_histogram
 ## end configure_ratio_error_histogram
 
-def make_data_ratio_asymmetric_errors (nBins, xMin, xMax, ggg, data_histogram, signal_histogram , stack_plot):
+def make_data_ratio_asymmetric_errors(nBins, xMin, xMax, ggg, data_histogram, signal_histogram , stack_plot):
     ratio_max = 2.3
     g_ratio = TGraphAsymmErrors(ggg.GetN())
     for bin in range(0, g_ratio.GetN()):
@@ -540,11 +564,11 @@ def make_data_ratio_asymmetric_errors (nBins, xMin, xMax, ggg, data_histogram, s
             yG_ratio = 0.0
             yG_ratio_low = 0.0
             yG_ratio_high = 0.0
-                        
+
         if y_data > 0:
             g_ratio.SetPoint(bin, x_point, yG_ratio)
             g_ratio.SetPointEYlow(bin, yG_ratio_low)
-            g_ratio.SetPointEYhigh(bin, yG_ratio_high)                        
+            g_ratio.SetPointEYhigh(bin, yG_ratio_high)
             g_ratio.SetPointEXlow(bin, x_width)
             g_ratio.SetPointEXhigh(bin, x_width)
 
@@ -562,6 +586,7 @@ def configure_data_ratio_asymmetric_errors(g_ratio):
 
     return g_ratio
 ## end configure_data_ratio_asymmetric_errors
+
 
 if __name__ == '__main__':
         main()
