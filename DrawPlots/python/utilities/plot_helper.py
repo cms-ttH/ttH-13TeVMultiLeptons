@@ -3,6 +3,7 @@ import os, sys
 import ROOT
 import string
 from distutils import file_util
+import shutil
 
 def get_www_base_directory():
     try:
@@ -21,18 +22,21 @@ def make_sure_directories_exist(directories):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-def setup_www_directory(directory, depth=1, *extra_files_to_post):
-    directory_parts = directory.split('/')
-    for level in range(depth):
-        parts_in_current_level = len(directory_parts) - level
-        directory_to_setup = string.join(directory_parts[:parts_in_current_level], '/')
-        make_sure_directories_exist([directory_to_setup])
+def make_fresh_directory(directory):
+    if os.path.exists(directory):
+        shutil.rmtree(directory)
+    os.makedirs(directory)
 
-        if not os.path.exists(directory_to_setup+'/index.php'):
-            file_util.copy_file(os.environ['CMSSW_BASE']+'/src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.php', directory_to_setup)
+def setup_www_directory(directory, depth=1, *extra_files_to_post):
+    make_fresh_directory(directory)
+    head = directory
+    for level in range(depth):
+        if not os.path.exists(os.path.join(head, '/index.php')):
+            file_util.copy_file(os.path.join(os.environ['CMSSW_BASE'], 'src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.php'), head)
+        head, tail = os.path.split(head)
 
     for file in extra_files_to_post:
-        file_util.copy_file('%s' % file, directory)
+        file_util.copy_file(file, directory)
 
 def setup_www_directories(directories, depth=1, *extra_files_to_post):
     for directory in directories:
@@ -65,7 +69,6 @@ class Plot:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
             sys.exit(2)
         self.plot.SetDirectory(output_file)
-        output_file.Write('', ROOT.TObject.kOverwrite)
 
     def save_image(self, *image_types): #I am choosing for now not to add the option in make_plots to save pngs (though it can be called here), since pdfs look nicer
         if not os.path.exists('plot_pdfs'):
@@ -674,7 +677,7 @@ def get_systematic_info(systematic):
 #It can be used to adapt systematics or weights lists in a sample-specific way.
 def customize_list(item_list, customization_string):
     customization_string = customization_string.strip()
-    if 'all' not in customization_string:
+    if 'all' not in customization_string or not item_list:
         item_list = []
 
     item_set = set(item_list) #copy into a set for duplicate removal

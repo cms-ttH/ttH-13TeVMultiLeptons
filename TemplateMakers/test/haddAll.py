@@ -86,7 +86,8 @@ def main ():
                                          'DoubleMu_Run2012B-13Jul2012-v4',
                                          'DoubleMu_Run2012C-PromptReco-v2',
                                          'DoubleMu_Run2012C-24Aug2012-v1',
-                                         'DoubleMu_Run2012D-PromptReco-v1'],
+                                         'DoubleMu_Run2012D-PromptReco-v1',
+                                         'DoubleMu_Run2012D-16Jan2013-v2'],
                              "MuEG":['MuEG_Run2012A-13Jul2012-v1',
                                      'MuEG_Run2012A-recover-06Aug2012-v1',
                                      'MuEG_Run2012B-13Jul2012-v1',
@@ -104,7 +105,8 @@ def main ():
                                                      'DoubleMu_Run2012B-13Jul2012-v4_NP_sideband',
                                                      'DoubleMu_Run2012C-PromptReco-v2_NP_sideband',
                                                      'DoubleMu_Run2012C-24Aug2012-v1_NP_sideband',
-                                                     'DoubleMu_Run2012D-PromptReco-v1_NP_sideband'],
+                                                     'DoubleMu_Run2012D-PromptReco-v1_NP_sideband',
+                                                     'DoubleMu_Run2012D-16Jan2013-v2_NP_sideband'],
                              "MuEG_NP_sideband":['MuEG_Run2012A-13Jul2012-v1_NP_sideband',
                                                  'MuEG_Run2012A-recover-06Aug2012-v1_NP_sideband',
                                                  'MuEG_Run2012B-13Jul2012-v1_NP_sideband',
@@ -122,7 +124,14 @@ def main ():
                                                  'MuEG_Run2012B-13Jul2012-v1_QF_sideband',
                                                  'MuEG_Run2012C-PromptReco-v2_QF_sideband',
                                                  'MuEG_Run2012C-24Aug2012-v1_QF_sideband',
-                                                 'MuEG_Run2012D-PromptReco-v1_QF_sideband']
+                                                 'MuEG_Run2012D-PromptReco-v1_QF_sideband'],
+                             "DoubleMu_QF_sideband":['DoubleMu_Run2012A-13Jul2012-v1_QF_sideband',
+                                                     'DoubleMu_Run2012A-recover-06Aug2012-v1_QF_sideband',
+                                                     'DoubleMu_Run2012B-13Jul2012-v4_QF_sideband',
+                                                     'DoubleMu_Run2012C-PromptReco-v2_QF_sideband',
+                                                     'DoubleMu_Run2012C-24Aug2012-v1_QF_sideband',
+                                                     'DoubleMu_Run2012D-PromptReco-v1_QF_sideband',
+                                                     'DoubleMu_Run2012D-16Jan2013-v2_QF_sideband'],
                      }
 
         data_names = dataNames2012_53x
