@@ -4,6 +4,7 @@ import ROOT
 import string
 from distutils import file_util
 import shutil
+import collections
 
 def get_www_base_directory():
     try:
@@ -706,5 +707,12 @@ def customize_systematics(systematics, customization_string):
         customized_systematics.append('nominal')
 
     return customized_systematics
+
+class Yields:
+    def __init__(self, jet_tag_categories):
+        for category in jet_tag_categories:
+            self.__dict__[category] = collections.defaultdict(dict)
+    def __getitem__(self, item):
+        return self.__dict__[item]
 
 
