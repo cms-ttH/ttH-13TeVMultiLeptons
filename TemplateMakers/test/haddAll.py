@@ -124,14 +124,7 @@ def main ():
                                                  'MuEG_Run2012B-13Jul2012-v1_QF_sideband',
                                                  'MuEG_Run2012C-PromptReco-v2_QF_sideband',
                                                  'MuEG_Run2012C-24Aug2012-v1_QF_sideband',
-                                                 'MuEG_Run2012D-PromptReco-v1_QF_sideband'],
-                             "DoubleMu_QF_sideband":['DoubleMu_Run2012A-13Jul2012-v1_QF_sideband',
-                                                     'DoubleMu_Run2012A-recover-06Aug2012-v1_QF_sideband',
-                                                     'DoubleMu_Run2012B-13Jul2012-v4_QF_sideband',
-                                                     'DoubleMu_Run2012C-PromptReco-v2_QF_sideband',
-                                                     'DoubleMu_Run2012C-24Aug2012-v1_QF_sideband',
-                                                     'DoubleMu_Run2012D-PromptReco-v1_QF_sideband',
-                                                     'DoubleMu_Run2012D-16Jan2013-v2_QF_sideband'],
+                                                 'MuEG_Run2012D-PromptReco-v1_QF_sideband']
                      }
 
         data_names = dataNames2012_53x
