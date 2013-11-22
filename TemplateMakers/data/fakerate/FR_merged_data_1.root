@@ -1,0 +1,2189 @@
+
+
+
+<!DOCTYPE html>
+<html>
+  <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# githubog: http://ogp.me/ns/fb/githubog#">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>cmg-cmssw/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root at TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1 · cbotta/cmg-cmssw · GitHub</title>
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub" />
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub" />
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-114.png" />
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114.png" />
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-144.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144.png" />
+    <link rel="logo" type="image/svg" href="https://github-media-downloads.s3.amazonaws.com/github-logo.svg" />
+    <meta property="og:image" content="https://github.global.ssl.fastly.net/images/modules/logos_page/Octocat.png">
+    <meta name="hostname" content="github-fe117-cp1-prd.iad.github.net">
+    <meta name="ruby" content="ruby 1.9.3p194-tcs-github-tcmalloc (0e75de19f8) [x86_64-linux]">
+    <link rel="assets" href="https://github.global.ssl.fastly.net/">
+    <link rel="conduit-xhr" href="https://ghconduit.com:25035/">
+    <link rel="xhr-socket" href="/_sockets" />
+    
+
+
+    <meta name="msapplication-TileImage" content="/windows-tile.png" />
+    <meta name="msapplication-TileColor" content="#ffffff" />
+    <meta name="selected-link" value="repo_source" data-pjax-transient />
+    <meta content="collector.githubapp.com" name="octolytics-host" /><meta content="collector-cdn.github.com" name="octolytics-script-host" /><meta content="github" name="octolytics-app-id" /><meta content="814A550A:316C:E98C3:528E39BE" name="octolytics-dimension-request_id" />
+    
+
+    
+    
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <meta content="authenticity_token" name="csrf-param" />
+<meta content="tgvFdq0PvMDFceG1tqkewzQJun0jU0cmUDw9Xdsj+CY=" name="csrf-token" />
+
+    <link href="https://github.global.ssl.fastly.net/assets/github-9c32cb0e21d38269055a33f942ff9ec68a2f8919.css" media="all" rel="stylesheet" type="text/css" />
+    <link href="https://github.global.ssl.fastly.net/assets/github2-b905946d432467f77a4f1a52afc4d8e9d7f876f6.css" media="all" rel="stylesheet" type="text/css" />
+    
+
+    
+
+      <script src="https://github.global.ssl.fastly.net/assets/frameworks-5fa4cc01ae78f8e56d5aa0d6571919ad8c260f1d.js" type="text/javascript"></script>
+      <script src="https://github.global.ssl.fastly.net/assets/github-944d609a02e83a1a446cb0f9ec8ed50f2695cfbd.js" type="text/javascript"></script>
+      
+      <meta http-equiv="x-pjax-version" content="e759f7d38d273c1be676ffabf383ba3b">
+
+        <link data-pjax-transient rel='permalink' href='/cbotta/cmg-cmssw/blob/92efe74d7e2832f855e17cecc2419b5a30d75149/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root'>
+  <meta property="og:title" content="cmg-cmssw"/>
+  <meta property="og:type" content="githubog:gitrepository"/>
+  <meta property="og:url" content="https://github.com/cbotta/cmg-cmssw"/>
+  <meta property="og:image" content="https://github.global.ssl.fastly.net/images/gravatars/gravatar-user-420.png"/>
+  <meta property="og:site_name" content="GitHub"/>
+  <meta property="og:description" content="Contribute to cmg-cmssw development by creating an account on GitHub."/>
+
+  <meta name="description" content="Contribute to cmg-cmssw development by creating an account on GitHub." />
+
+  <meta content="5630229" name="octolytics-dimension-user_id" /><meta content="cbotta" name="octolytics-dimension-user_login" /><meta content="13387419" name="octolytics-dimension-repository_id" /><meta content="cbotta/cmg-cmssw" name="octolytics-dimension-repository_nwo" /><meta content="true" name="octolytics-dimension-repository_public" /><meta content="true" name="octolytics-dimension-repository_is_fork" /><meta content="13088143" name="octolytics-dimension-repository_parent_id" /><meta content="CERN-PH-CMG/cmg-cmssw" name="octolytics-dimension-repository_parent_nwo" /><meta content="13088143" name="octolytics-dimension-repository_network_root_id" /><meta content="CERN-PH-CMG/cmg-cmssw" name="octolytics-dimension-repository_network_root_nwo" />
+  <link href="https://github.com/cbotta/cmg-cmssw/commits/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1.atom" rel="alternate" title="Recent Commits to cmg-cmssw:TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1" type="application/atom+xml" />
+
+  </head>
+
+
+  <body class="logged_out  env-production  vis-public fork page-blob">
+    <div class="wrapper">
+      
+      
+      
+      
+
+
+      
+      <div class="header header-logged-out">
+  <div class="container clearfix">
+
+    <a class="header-logo-wordmark" href="https://github.com/">
+      <span class="mega-octicon octicon-logo-github"></span>
+    </a>
+
+    <div class="header-actions">
+        <a class="button primary" href="/join">Sign up</a>
+      <a class="button signin" href="/login?return_to=%2Fcbotta%2Fcmg-cmssw%2Fblob%2FTTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1%2FCMGTools%2FTTHAnalysis%2Fdata%2Ffakerate%2FFR_merged_data.root">Sign in</a>
+    </div>
+
+    <div class="command-bar js-command-bar  in-repository">
+
+      <ul class="top-nav">
+          <li class="explore"><a href="/explore">Explore</a></li>
+        <li class="features"><a href="/features">Features</a></li>
+          <li class="enterprise"><a href="https://enterprise.github.com/">Enterprise</a></li>
+          <li class="blog"><a href="/blog">Blog</a></li>
+      </ul>
+        <form accept-charset="UTF-8" action="/search" class="command-bar-form" id="top_search_form" method="get">
+
+<input type="text" data-hotkey="/ s" name="q" id="js-command-bar-field" placeholder="Search or type a command" tabindex="1" autocapitalize="off"
+    
+    
+      data-repo="cbotta/cmg-cmssw"
+      data-branch="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1"
+      data-sha="c863f6f76094b0885e29960fe216160503a8c5bb"
+  >
+
+    <input type="hidden" name="nwo" value="cbotta/cmg-cmssw" />
+
+    <div class="select-menu js-menu-container js-select-menu search-context-select-menu">
+      <span class="minibutton select-menu-button js-menu-target">
+        <span class="js-select-button">This repository</span>
+      </span>
+
+      <div class="select-menu-modal-holder js-menu-content js-navigation-container">
+        <div class="select-menu-modal">
+
+          <div class="select-menu-item js-navigation-item js-this-repository-navigation-item selected">
+            <span class="select-menu-item-icon octicon octicon-check"></span>
+            <input type="radio" class="js-search-this-repository" name="search_target" value="repository" checked="checked" />
+            <div class="select-menu-item-text js-select-button-text">This repository</div>
+          </div> <!-- /.select-menu-item -->
+
+          <div class="select-menu-item js-navigation-item js-all-repositories-navigation-item">
+            <span class="select-menu-item-icon octicon octicon-check"></span>
+            <input type="radio" name="search_target" value="global" />
+            <div class="select-menu-item-text js-select-button-text">All repositories</div>
+          </div> <!-- /.select-menu-item -->
+
+        </div>
+      </div>
+    </div>
+
+  <span class="octicon help tooltipped downwards" title="Show command bar help">
+    <span class="octicon octicon-question"></span>
+  </span>
+
+
+  <input type="hidden" name="ref" value="cmdform">
+
+</form>
+    </div>
+
+  </div>
+</div>
+
+
+      
+
+
+          <div class="site" itemscope itemtype="http://schema.org/WebPage">
+    
+    <div class="pagehead repohead instapaper_ignore readability-menu">
+      <div class="container">
+        
+
+<ul class="pagehead-actions">
+
+
+  <li>
+    <a href="/login?return_to=%2Fcbotta%2Fcmg-cmssw"
+    class="minibutton with-count js-toggler-target star-button tooltipped upwards"
+    title="You must be signed in to use this feature" rel="nofollow">
+    <span class="octicon octicon-star"></span>Star
+  </a>
+
+    <a class="social-count js-social-count" href="/cbotta/cmg-cmssw/stargazers">
+      1
+    </a>
+
+  </li>
+
+    <li>
+      <a href="/login?return_to=%2Fcbotta%2Fcmg-cmssw"
+        class="minibutton with-count js-toggler-target fork-button tooltipped upwards"
+        title="You must be signed in to fork a repository" rel="nofollow">
+        <span class="octicon octicon-git-branch"></span>Fork
+      </a>
+      <a href="/cbotta/cmg-cmssw/network" class="social-count">
+        13
+      </a>
+    </li>
+</ul>
+
+        <h1 itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="entry-title public">
+          <span class="repo-label"><span>public</span></span>
+          <span class="mega-octicon octicon-repo"></span>
+          <span class="author">
+            <a href="/cbotta" class="url fn" itemprop="url" rel="author"><span itemprop="title">cbotta</span></a>
+          </span>
+          <span class="repohead-name-divider">/</span>
+          <strong><a href="/cbotta/cmg-cmssw" class="js-current-repository js-repo-home-link">cmg-cmssw</a></strong>
+
+          <span class="page-context-loader">
+            <img alt="Octocat-spinner-32" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+          </span>
+
+            <span class="fork-flag">
+              <span class="text">forked from <a href="/CERN-PH-CMG/cmg-cmssw">CERN-PH-CMG/cmg-cmssw</a></span>
+            </span>
+        </h1>
+      </div><!-- /.container -->
+    </div><!-- /.repohead -->
+
+    
+
+    <div class="container">
+
+      <div class="repository-with-sidebar repo-container  ">
+
+        <div class="repository-sidebar">
+            
+
+<div class="sunken-menu vertical-right repo-nav js-repo-nav js-repository-container-pjax js-octicon-loaders">
+  <div class="sunken-menu-contents">
+    <ul class="sunken-menu-group">
+      <li class="tooltipped leftwards" title="Code">
+        <a href="/cbotta/cmg-cmssw" aria-label="Code" class="selected js-selected-navigation-item sunken-menu-item" data-gotokey="c" data-pjax="true" data-selected-links="repo_source repo_downloads repo_commits repo_tags repo_branches /cbotta/cmg-cmssw">
+          <span class="octicon octicon-code"></span> <span class="full-word">Code</span>
+          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+
+      <li class="tooltipped leftwards" title="Pull Requests"><a href="/cbotta/cmg-cmssw/pulls" aria-label="Pull Requests" class="js-selected-navigation-item sunken-menu-item js-disable-pjax" data-gotokey="p" data-selected-links="repo_pulls /cbotta/cmg-cmssw/pulls">
+            <span class="octicon octicon-git-pull-request"></span> <span class="full-word">Pull Requests</span>
+            <span class='counter'>0</span>
+            <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+
+    </ul>
+    <div class="sunken-menu-separator"></div>
+    <ul class="sunken-menu-group">
+
+      <li class="tooltipped leftwards" title="Pulse">
+        <a href="/cbotta/cmg-cmssw/pulse" aria-label="Pulse" class="js-selected-navigation-item sunken-menu-item" data-pjax="true" data-selected-links="pulse /cbotta/cmg-cmssw/pulse">
+          <span class="octicon octicon-pulse"></span> <span class="full-word">Pulse</span>
+          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+      <li class="tooltipped leftwards" title="Graphs">
+        <a href="/cbotta/cmg-cmssw/graphs" aria-label="Graphs" class="js-selected-navigation-item sunken-menu-item" data-pjax="true" data-selected-links="repo_graphs repo_contributors /cbotta/cmg-cmssw/graphs">
+          <span class="octicon octicon-graph"></span> <span class="full-word">Graphs</span>
+          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+
+      <li class="tooltipped leftwards" title="Network">
+        <a href="/cbotta/cmg-cmssw/network" aria-label="Network" class="js-selected-navigation-item sunken-menu-item js-disable-pjax" data-selected-links="repo_network /cbotta/cmg-cmssw/network">
+          <span class="octicon octicon-git-branch"></span> <span class="full-word">Network</span>
+          <img alt="Octocat-spinner-32" class="mini-loader" height="16" src="https://github.global.ssl.fastly.net/images/spinners/octocat-spinner-32.gif" width="16" />
+</a>      </li>
+    </ul>
+
+
+  </div>
+</div>
+
+            <div class="only-with-full-nav">
+              
+
+  
+
+<div class="clone-url open"
+  data-protocol-type="http"
+  data-url="/users/set_protocol?protocol_selector=http&amp;protocol_type=clone">
+  <h3><strong>HTTPS</strong> clone URL</h3>
+  <div class="clone-url-box">
+    <input type="text" class="clone js-url-field"
+           value="https://github.com/cbotta/cmg-cmssw.git" readonly="readonly">
+
+    <span class="js-zeroclipboard url-box-clippy minibutton zeroclipboard-button" data-clipboard-text="https://github.com/cbotta/cmg-cmssw.git" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
+  </div>
+</div>
+
+  
+
+<div class="clone-url "
+  data-protocol-type="subversion"
+  data-url="/users/set_protocol?protocol_selector=subversion&amp;protocol_type=clone">
+  <h3><strong>Subversion</strong> checkout URL</h3>
+  <div class="clone-url-box">
+    <input type="text" class="clone js-url-field"
+           value="https://github.com/cbotta/cmg-cmssw" readonly="readonly">
+
+    <span class="js-zeroclipboard url-box-clippy minibutton zeroclipboard-button" data-clipboard-text="https://github.com/cbotta/cmg-cmssw" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
+  </div>
+</div>
+
+
+<p class="clone-options">You can clone with
+      <a href="#" class="js-clone-selector" data-protocol="http">HTTPS</a>,
+      or <a href="#" class="js-clone-selector" data-protocol="subversion">Subversion</a>.
+  <span class="octicon help tooltipped upwards" title="Get help on which URL is right for you.">
+    <a href="https://help.github.com/articles/which-remote-url-should-i-use">
+    <span class="octicon octicon-question"></span>
+    </a>
+  </span>
+</p>
+
+
+
+              <a href="/cbotta/cmg-cmssw/archive/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1.zip"
+                 class="minibutton sidebar-button"
+                 title="Download this repository as a zip file"
+                 rel="nofollow">
+                <span class="octicon octicon-cloud-download"></span>
+                Download ZIP
+              </a>
+            </div>
+        </div><!-- /.repository-sidebar -->
+
+        <div id="js-repo-pjax-container" class="repository-content context-loader-container" data-pjax-container>
+          
+
+
+<!-- blob contrib key: blob_contributors:v21:fb7c24dcd2001029439168e5b6e45fa8 -->
+
+<p title="This is a placeholder element" class="js-history-link-replace hidden"></p>
+
+<a href="/cbotta/cmg-cmssw/find/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1" data-pjax data-hotkey="t" class="js-show-file-finder" style="display:none">Show File Finder</a>
+
+<div class="file-navigation">
+  
+
+<div class="select-menu js-menu-container js-select-menu" >
+  <span class="minibutton select-menu-button js-menu-target" data-hotkey="w"
+    data-master-branch="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1"
+    data-ref="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1"
+    role="button" aria-label="Switch branches or tags" tabindex="0">
+    <span class="octicon octicon-git-branch"></span>
+    <i>branch:</i>
+    <span class="js-select-button">TTHAnalysis_CM…</span>
+  </span>
+
+  <div class="select-menu-modal-holder js-menu-content js-navigation-container" data-pjax>
+
+    <div class="select-menu-modal">
+      <div class="select-menu-header">
+        <span class="select-menu-title">Switch branches/tags</span>
+        <span class="octicon octicon-remove-close js-menu-close"></span>
+      </div> <!-- /.select-menu-header -->
+
+      <div class="select-menu-filters">
+        <div class="select-menu-text-filter">
+          <input type="text" aria-label="Filter branches/tags" id="context-commitish-filter-field" class="js-filterable-field js-navigation-enable" placeholder="Filter branches/tags">
+        </div>
+        <div class="select-menu-tabs">
+          <ul>
+            <li class="select-menu-tab">
+              <a href="#" data-tab-filter="branches" class="js-select-menu-tab">Branches</a>
+            </li>
+            <li class="select-menu-tab">
+              <a href="#" data-tab-filter="tags" class="js-select-menu-tab">Tags</a>
+            </li>
+          </ul>
+        </div><!-- /.select-menu-tabs -->
+      </div><!-- /.select-menu-filters -->
+
+      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="branches">
+
+        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
+
+
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/blob/CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMG_PAT_from-CMSSW_5_3_12_patch1"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMG_PAT_from-CMSSW_5_3_12_patch1">CMG_PAT_from-CMSSW_5_3_12_patch1</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/blob/CMSSW_5_3_X/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X">CMSSW_5_3_X</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/blob/PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="PAT_from-CMSSW_5_3_12_patch1"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="PAT_from-CMSSW_5_3_12_patch1">PAT_from-CMSSW_5_3_12_patch1</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/blob/PFSim_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="PFSim_CMG_PAT_from-CMSSW_5_3_12_patch1"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="PFSim_CMG_PAT_from-CMSSW_5_3_12_patch1">PFSim_CMG_PAT_from-CMSSW_5_3_12_patch1</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item selected">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/blob/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1">TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/blob/gittest_mike/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="gittest_mike"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="gittest_mike">gittest_mike</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/blob/master/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="master"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="master">master</a>
+            </div> <!-- /.select-menu-item -->
+        </div>
+
+          <div class="select-menu-no-results">Nothing to show</div>
+      </div> <!-- /.select-menu-list -->
+
+      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="tags">
+        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
+
+
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-07-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-07-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-07-1400">CMSSW_7_0_X_2013-08-07-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-07-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-07-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-07-0200">CMSSW_7_0_X_2013-08-07-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-06-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-06-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-06-1400">CMSSW_7_0_X_2013-08-06-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-06-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-06-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-06-0200">CMSSW_7_0_X_2013-08-06-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-05-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-05-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-05-1400">CMSSW_7_0_X_2013-08-05-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-05-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-05-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-05-0200">CMSSW_7_0_X_2013-08-05-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-04-1700/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-04-1700"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-04-1700">CMSSW_7_0_X_2013-08-04-1700</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-04-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-04-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-04-1400">CMSSW_7_0_X_2013-08-04-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-04-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-04-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-04-0200">CMSSW_7_0_X_2013-08-04-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-03-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-03-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-03-1400">CMSSW_7_0_X_2013-08-03-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-03-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-03-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-03-0200">CMSSW_7_0_X_2013-08-03-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-02-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-02-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-02-1400">CMSSW_7_0_X_2013-08-02-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-02-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-02-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-02-0200">CMSSW_7_0_X_2013-08-02-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-01-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-01-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-01-1400">CMSSW_7_0_X_2013-08-01-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-08-01-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-08-01-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-08-01-0200">CMSSW_7_0_X_2013-08-01-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-31-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-31-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-31-1400">CMSSW_7_0_X_2013-07-31-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-31-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-31-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-31-0200">CMSSW_7_0_X_2013-07-31-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-30-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-30-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-30-1400">CMSSW_7_0_X_2013-07-30-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-30-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-30-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-30-0200">CMSSW_7_0_X_2013-07-30-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-29-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-29-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-29-1400">CMSSW_7_0_X_2013-07-29-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-29-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-29-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-29-0200">CMSSW_7_0_X_2013-07-29-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-28-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-28-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-28-1400">CMSSW_7_0_X_2013-07-28-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-28-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-28-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-28-0200">CMSSW_7_0_X_2013-07-28-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-27-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-27-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-27-1400">CMSSW_7_0_X_2013-07-27-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-27-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-27-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-27-0200">CMSSW_7_0_X_2013-07-27-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-26-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-26-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-26-1400">CMSSW_7_0_X_2013-07-26-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-26-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-26-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-26-0200">CMSSW_7_0_X_2013-07-26-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-25-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-25-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-25-1400">CMSSW_7_0_X_2013-07-25-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-25-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-25-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-25-0200">CMSSW_7_0_X_2013-07-25-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-24-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-24-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-24-1400">CMSSW_7_0_X_2013-07-24-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-24-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-24-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-24-0200">CMSSW_7_0_X_2013-07-24-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-23-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-23-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-23-1400">CMSSW_7_0_X_2013-07-23-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-23-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-23-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-23-0200">CMSSW_7_0_X_2013-07-23-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-22-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-22-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-22-1400">CMSSW_7_0_X_2013-07-22-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-22-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-22-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-22-0200">CMSSW_7_0_X_2013-07-22-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-21-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-21-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-21-1400">CMSSW_7_0_X_2013-07-21-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-21-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-21-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-21-0200">CMSSW_7_0_X_2013-07-21-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-20-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-20-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-20-1400">CMSSW_7_0_X_2013-07-20-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-20-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-20-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-20-0200">CMSSW_7_0_X_2013-07-20-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-19-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-19-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-19-1400">CMSSW_7_0_X_2013-07-19-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-19-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-19-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-19-0200">CMSSW_7_0_X_2013-07-19-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-18-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-18-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-18-1400">CMSSW_7_0_X_2013-07-18-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-18-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-18-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-18-0200">CMSSW_7_0_X_2013-07-18-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-17-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-17-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-17-1400">CMSSW_7_0_X_2013-07-17-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-17-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-17-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-17-0200">CMSSW_7_0_X_2013-07-17-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-16-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-16-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-16-1400">CMSSW_7_0_X_2013-07-16-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-16-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-16-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-16-0200">CMSSW_7_0_X_2013-07-16-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-15-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-15-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-15-1400">CMSSW_7_0_X_2013-07-15-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-15-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-15-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-15-0200">CMSSW_7_0_X_2013-07-15-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-14-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-14-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-14-1400">CMSSW_7_0_X_2013-07-14-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-14-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-14-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-14-0200">CMSSW_7_0_X_2013-07-14-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-13-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-13-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-13-1400">CMSSW_7_0_X_2013-07-13-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-13-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-13-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-13-0200">CMSSW_7_0_X_2013-07-13-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-12-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-12-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-12-1400">CMSSW_7_0_X_2013-07-12-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-12-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-12-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-12-0200">CMSSW_7_0_X_2013-07-12-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-11-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-11-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-11-1400">CMSSW_7_0_X_2013-07-11-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-11-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-11-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-11-0200">CMSSW_7_0_X_2013-07-11-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-10-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-10-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-10-1400">CMSSW_7_0_X_2013-07-10-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-10-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-10-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-10-0200">CMSSW_7_0_X_2013-07-10-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-09-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-09-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-09-1400">CMSSW_7_0_X_2013-07-09-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-09-0900/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-09-0900"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-09-0900">CMSSW_7_0_X_2013-07-09-0900</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-09-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-09-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-09-0200">CMSSW_7_0_X_2013-07-09-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-08-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-08-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-08-1400">CMSSW_7_0_X_2013-07-08-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-08-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-08-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-08-0200">CMSSW_7_0_X_2013-07-08-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-07-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-07-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-07-1400">CMSSW_7_0_X_2013-07-07-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-07-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-07-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-07-0200">CMSSW_7_0_X_2013-07-07-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-06-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-06-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-06-1400">CMSSW_7_0_X_2013-07-06-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-06-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-06-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-06-0200">CMSSW_7_0_X_2013-07-06-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-05-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-05-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-05-1400">CMSSW_7_0_X_2013-07-05-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-05-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-05-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-05-0200">CMSSW_7_0_X_2013-07-05-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-04-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-04-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-04-1400">CMSSW_7_0_X_2013-07-04-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-04-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-04-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-04-0200">CMSSW_7_0_X_2013-07-04-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-03-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-03-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-03-1400">CMSSW_7_0_X_2013-07-03-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-03-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-03-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-03-0200">CMSSW_7_0_X_2013-07-03-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-02-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-02-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-02-1400">CMSSW_7_0_X_2013-07-02-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-02-1100/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-02-1100"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-02-1100">CMSSW_7_0_X_2013-07-02-1100</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-07-02-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-07-02-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-07-02-0200">CMSSW_7_0_X_2013-07-02-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_X_2013-06-26-2200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_X_2013-06-26-2200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_X_2013-06-26-2200">CMSSW_7_0_X_2013-06-26-2200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_0_pre1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_0_pre1"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_0_pre1">CMSSW_7_0_0_pre1</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_7_0_0_pre0/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_7_0_0_pre0"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_7_0_0_pre0">CMSSW_7_0_0_pre0</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-07-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-07-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-07-1400">CMSSW_6_2_X_2013-08-07-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-07-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-07-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-07-0200">CMSSW_6_2_X_2013-08-07-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-06-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-06-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-06-1400">CMSSW_6_2_X_2013-08-06-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-06-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-06-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-06-0200">CMSSW_6_2_X_2013-08-06-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-05-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-05-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-05-1400">CMSSW_6_2_X_2013-08-05-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-05-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-05-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-05-0200">CMSSW_6_2_X_2013-08-05-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-04-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-04-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-04-1400">CMSSW_6_2_X_2013-08-04-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-04-1100/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-04-1100"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-04-1100">CMSSW_6_2_X_2013-08-04-1100</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-03-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-03-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-03-1400">CMSSW_6_2_X_2013-08-03-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-03-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-03-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-03-0200">CMSSW_6_2_X_2013-08-03-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-02-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-02-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-02-1400">CMSSW_6_2_X_2013-08-02-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-02-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-02-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-02-0200">CMSSW_6_2_X_2013-08-02-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-01-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-01-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-01-1400">CMSSW_6_2_X_2013-08-01-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-08-01-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-08-01-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-08-01-0200">CMSSW_6_2_X_2013-08-01-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-31-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-31-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-31-1400">CMSSW_6_2_X_2013-07-31-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-31-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-31-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-31-0200">CMSSW_6_2_X_2013-07-31-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-30-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-30-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-30-1400">CMSSW_6_2_X_2013-07-30-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-30-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-30-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-30-0200">CMSSW_6_2_X_2013-07-30-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-29-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-29-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-29-1400">CMSSW_6_2_X_2013-07-29-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-29-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-29-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-29-0200">CMSSW_6_2_X_2013-07-29-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-28-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-28-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-28-1400">CMSSW_6_2_X_2013-07-28-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-28-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-28-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-28-0200">CMSSW_6_2_X_2013-07-28-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-27-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-27-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-27-1400">CMSSW_6_2_X_2013-07-27-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-27-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-27-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-27-0200">CMSSW_6_2_X_2013-07-27-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-26-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-26-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-26-1400">CMSSW_6_2_X_2013-07-26-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-26-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-26-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-26-0200">CMSSW_6_2_X_2013-07-26-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-25-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-25-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-25-1400">CMSSW_6_2_X_2013-07-25-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-25-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-25-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-25-0200">CMSSW_6_2_X_2013-07-25-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-24-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-24-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-24-1400">CMSSW_6_2_X_2013-07-24-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-24-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-24-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-24-0200">CMSSW_6_2_X_2013-07-24-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-23-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-23-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-23-1400">CMSSW_6_2_X_2013-07-23-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-23-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-23-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-23-0200">CMSSW_6_2_X_2013-07-23-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-22-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-22-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-22-1400">CMSSW_6_2_X_2013-07-22-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-22-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-22-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-22-0200">CMSSW_6_2_X_2013-07-22-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-21-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-21-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-21-1400">CMSSW_6_2_X_2013-07-21-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-21-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-21-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-21-0200">CMSSW_6_2_X_2013-07-21-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-20-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-20-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-20-1400">CMSSW_6_2_X_2013-07-20-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-20-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-20-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-20-0200">CMSSW_6_2_X_2013-07-20-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-19-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-19-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-19-1400">CMSSW_6_2_X_2013-07-19-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-19-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-19-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-19-0200">CMSSW_6_2_X_2013-07-19-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_X_2013-07-18-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_X_2013-07-18-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_X_2013-07-18-1400">CMSSW_6_2_X_2013-07-18-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_0_pre8/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_0_pre8"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_0_pre8">CMSSW_6_2_0_pre8</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_0_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_0_patch1"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_0_patch1">CMSSW_6_2_0_patch1</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_2_0/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_2_0"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_2_0">CMSSW_6_2_0</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_1_X_SLHC_2013-07-21-1300/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_1_X_SLHC_2013-07-21-1300"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_1_X_SLHC_2013-07-21-1300">CMSSW_6_1_X_SLHC_2013-07-21-1300</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_1_X_SLHC_2013-07-21-0100/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_1_X_SLHC_2013-07-21-0100"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_1_X_SLHC_2013-07-21-0100">CMSSW_6_1_X_SLHC_2013-07-21-0100</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_1_X_SLHC_2013-07-20-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_1_X_SLHC_2013-07-20-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_1_X_SLHC_2013-07-20-1400">CMSSW_6_1_X_SLHC_2013-07-20-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_1_2_SLHC8/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_1_2_SLHC8"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_1_2_SLHC8">CMSSW_6_1_2_SLHC8</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_1_2_SLHC7/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_1_2_SLHC7"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_1_2_SLHC7">CMSSW_6_1_2_SLHC7</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_6_1_2_SLHC6_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_6_1_2_SLHC6_patch1"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_6_1_2_SLHC6_patch1">CMSSW_6_1_2_SLHC6_patch1</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-07-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-07-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-07-1400">CMSSW_5_3_X_2013-08-07-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-07-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-07-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-07-0200">CMSSW_5_3_X_2013-08-07-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-06-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-06-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-06-1400">CMSSW_5_3_X_2013-08-06-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-06-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-06-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-06-0200">CMSSW_5_3_X_2013-08-06-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-05-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-05-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-05-1400">CMSSW_5_3_X_2013-08-05-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-05-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-05-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-05-0200">CMSSW_5_3_X_2013-08-05-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-04-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-04-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-04-1400">CMSSW_5_3_X_2013-08-04-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-03-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-03-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-03-1400">CMSSW_5_3_X_2013-08-03-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-03-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-03-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-03-0200">CMSSW_5_3_X_2013-08-03-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-02-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-02-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-02-1400">CMSSW_5_3_X_2013-08-02-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-02-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-02-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-02-0200">CMSSW_5_3_X_2013-08-02-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-01-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-01-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-01-1400">CMSSW_5_3_X_2013-08-01-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-08-01-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-08-01-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-08-01-0200">CMSSW_5_3_X_2013-08-01-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-31-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-31-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-31-1400">CMSSW_5_3_X_2013-07-31-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-31-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-31-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-31-0200">CMSSW_5_3_X_2013-07-31-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-30-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-30-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-30-1400">CMSSW_5_3_X_2013-07-30-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-30-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-30-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-30-0200">CMSSW_5_3_X_2013-07-30-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-29-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-29-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-29-1400">CMSSW_5_3_X_2013-07-29-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-29-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-29-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-29-0200">CMSSW_5_3_X_2013-07-29-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-28-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-28-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-28-1400">CMSSW_5_3_X_2013-07-28-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-28-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-28-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-28-0200">CMSSW_5_3_X_2013-07-28-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-27-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-27-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-27-1400">CMSSW_5_3_X_2013-07-27-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-27-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-27-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-27-0200">CMSSW_5_3_X_2013-07-27-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-26-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-26-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-26-1400">CMSSW_5_3_X_2013-07-26-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-26-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-26-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-26-0200">CMSSW_5_3_X_2013-07-26-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-25-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-25-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-25-1400">CMSSW_5_3_X_2013-07-25-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-25-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-25-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-25-0200">CMSSW_5_3_X_2013-07-25-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-24-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-24-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-24-1400">CMSSW_5_3_X_2013-07-24-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-24-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-24-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-24-0200">CMSSW_5_3_X_2013-07-24-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-23-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-23-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-23-1400">CMSSW_5_3_X_2013-07-23-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-23-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-23-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-23-0200">CMSSW_5_3_X_2013-07-23-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-22-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-22-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-22-1400">CMSSW_5_3_X_2013-07-22-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-22-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-22-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-22-0200">CMSSW_5_3_X_2013-07-22-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-21-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-21-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-21-1400">CMSSW_5_3_X_2013-07-21-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-21-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-21-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-21-0200">CMSSW_5_3_X_2013-07-21-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-20-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-20-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-20-1400">CMSSW_5_3_X_2013-07-20-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-20-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-20-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-20-0200">CMSSW_5_3_X_2013-07-20-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-19-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-19-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-19-1400">CMSSW_5_3_X_2013-07-19-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-19-0200/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-19-0200"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-19-0200">CMSSW_5_3_X_2013-07-19-0200</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-18-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-18-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-18-1400">CMSSW_5_3_X_2013-07-18-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_X_2013-07-16-1400/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_X_2013-07-16-1400"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_X_2013-07-16-1400">CMSSW_5_3_X_2013-07-16-1400</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_11_patch5/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_11_patch5"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_11_patch5">CMSSW_5_3_11_patch5</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_11_patch4/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_11_patch4"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_11_patch4">CMSSW_5_3_11_patch4</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_11_patch3/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_11_patch3"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_11_patch3">CMSSW_5_3_11_patch3</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_11/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_11"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_11">CMSSW_5_3_11</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_5_3_9/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_5_3_9"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_5_3_9">CMSSW_5_3_9</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_4_4_5_patch4/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_4_4_5_patch4"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_4_4_5_patch4">CMSSW_4_4_5_patch4</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_4_4_5_patch3/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_4_4_5_patch3"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_4_4_5_patch3">CMSSW_4_4_5_patch3</a>
+            </div> <!-- /.select-menu-item -->
+            <div class="select-menu-item js-navigation-item ">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="/cbotta/cmg-cmssw/tree/CMSSW_4_1_8_patch13/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root"
+                 data-name="CMSSW_4_1_8_patch13"
+                 data-skip-pjax="true"
+                 rel="nofollow"
+                 class="js-navigation-open select-menu-item-text js-select-button-text css-truncate-target"
+                 title="CMSSW_4_1_8_patch13">CMSSW_4_1_8_patch13</a>
+            </div> <!-- /.select-menu-item -->
+        </div>
+
+        <div class="select-menu-no-results">Nothing to show</div>
+      </div> <!-- /.select-menu-list -->
+
+    </div> <!-- /.select-menu-modal -->
+  </div> <!-- /.select-menu-modal-holder -->
+</div> <!-- /.select-menu -->
+
+  <div class="breadcrumb">
+    <span class='repo-root js-repo-root'><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/cbotta/cmg-cmssw" data-branch="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">cmg-cmssw</span></a></span></span><span class="separator"> / </span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/cbotta/cmg-cmssw/tree/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools" data-branch="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">CMGTools</span></a></span><span class="separator"> / </span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/cbotta/cmg-cmssw/tree/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis" data-branch="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">TTHAnalysis</span></a></span><span class="separator"> / </span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/cbotta/cmg-cmssw/tree/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data" data-branch="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">data</span></a></span><span class="separator"> / </span><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="/cbotta/cmg-cmssw/tree/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data/fakerate" data-branch="TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">fakerate</span></a></span><span class="separator"> / </span><strong class="final-path">FR_merged_data.root</strong> <span class="js-zeroclipboard minibutton zeroclipboard-button" data-clipboard-text="CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root" data-copied-hint="copied!" title="copy to clipboard"><span class="octicon octicon-clippy"></span></span>
+  </div>
+</div>
+
+
+
+  <div class="commit file-history-tease">
+    <img class="main-avatar" height="24" src="https://2.gravatar.com/avatar/491a06fe3a5d50924ccabee960842499?d=https%3A%2F%2Fidenticons.github.com%2Fea5cd5f92c15531a574bc32904edabd5.png&amp;r=x&amp;s=140" width="24" />
+    <span class="author"><a href="/gpetruc" rel="author">gpetruc</a></span>
+    <time class="js-relative-date" datetime="2013-10-07T14:07:04-07:00" title="2013-10-07 14:07:04">October 07, 2013</time>
+    <div class="commit-title">
+        <a href="/cbotta/cmg-cmssw/commit/d70e8a75432e39a025965d5464acccc0628643a2" class="message" data-pjax="true" title="CMGTools/TTHAnalysis">CMGTools/TTHAnalysis</a>
+    </div>
+
+    <div class="participation">
+      <p class="quickstat"><a href="#blob_contributors_box" rel="facebox"><strong>1</strong> contributor</a></p>
+      
+    </div>
+    <div id="blob_contributors_box" style="display:none">
+      <h2 class="facebox-header">Users who have contributed to this file</h2>
+      <ul class="facebox-user-list">
+          <li class="facebox-user-list-item">
+            <img height="24" src="https://2.gravatar.com/avatar/491a06fe3a5d50924ccabee960842499?d=https%3A%2F%2Fidenticons.github.com%2Fea5cd5f92c15531a574bc32904edabd5.png&amp;r=x&amp;s=140" width="24" />
+            <a href="/gpetruc">gpetruc</a>
+          </li>
+      </ul>
+    </div>
+  </div>
+
+<div id="files" class="bubble">
+  <div class="file">
+    <div class="meta">
+      <div class="info">
+        <span class="icon"><b class="octicon octicon-file-text"></b></span>
+        <span class="mode" title="File Mode">file</span>
+        <span>15.342 kb</span>
+      </div>
+      <div class="actions">
+        <div class="button-group">
+          <a href="/cbotta/cmg-cmssw/raw/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root" class="button minibutton " id="raw-url">Raw</a>
+          <a href="/cbotta/cmg-cmssw/commits/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root" class="button minibutton " rel="nofollow">History</a>
+        </div><!-- /.button-group -->
+          <a class="minibutton danger disabled empty-icon tooltipped leftwards" href="#"
+             title="You must be signed in and on a branch to make or propose changes">
+          Delete
+        </a>
+      </div><!-- /.actions -->
+
+    </div>
+        <div class="blob-wrapper data type-text js-blob-data">
+      <div class="image js-image">
+          <a href="/cbotta/cmg-cmssw/blob/TTHAnalysis_CMG_PAT_from-CMSSW_5_3_12_patch1/CMGTools/TTHAnalysis/data/fakerate/FR_merged_data.root?raw=true">View Raw</a>
+      </div>
+  </div>
+
+  </div>
+</div>
+
+<a href="#jump-to-line" rel="facebox[.linejump]" data-hotkey="l" class="js-jump-to-line" style="display:none">Jump to Line</a>
+<div id="jump-to-line" style="display:none">
+  <form accept-charset="UTF-8" class="js-jump-to-line-form">
+    <input class="linejump-input js-jump-to-line-field" type="text" placeholder="Jump to line&hellip;" autofocus>
+    <button type="submit" class="button">Go</button>
+  </form>
+</div>
+
+        </div>
+
+      </div><!-- /.repo-container -->
+      <div class="modal-backdrop"></div>
+    </div><!-- /.container -->
+  </div><!-- /.site -->
+
+
+    </div><!-- /.wrapper -->
+
+      <div class="container">
+  <div class="site-footer">
+    <ul class="site-footer-links right">
+      <li><a href="https://status.github.com/">Status</a></li>
+      <li><a href="http://developer.github.com">API</a></li>
+      <li><a href="http://training.github.com">Training</a></li>
+      <li><a href="http://shop.github.com">Shop</a></li>
+      <li><a href="/blog">Blog</a></li>
+      <li><a href="/about">About</a></li>
+
+    </ul>
+
+    <a href="/">
+      <span class="mega-octicon octicon-mark-github"></span>
+    </a>
+
+    <ul class="site-footer-links">
+      <li>&copy; 2013 <span title="0.03359s from github-fe117-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+        <li><a href="/site/terms">Terms</a></li>
+        <li><a href="/site/privacy">Privacy</a></li>
+        <li><a href="/security">Security</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+  </div><!-- /.site-footer -->
+</div><!-- /.container -->
+
+
+    <div class="fullscreen-overlay js-fullscreen-overlay" id="fullscreen_overlay">
+  <div class="fullscreen-container js-fullscreen-container">
+    <div class="textarea-wrap">
+      <textarea name="fullscreen-contents" id="fullscreen-contents" class="js-fullscreen-contents" placeholder="" data-suggester="fullscreen_suggester"></textarea>
+          <div class="suggester-container">
+              <div class="suggester fullscreen-suggester js-navigation-container" id="fullscreen_suggester"
+                 data-url="/cbotta/cmg-cmssw/suggestions/commit">
+              </div>
+          </div>
+    </div>
+  </div>
+  <div class="fullscreen-sidebar">
+    <a href="#" class="exit-fullscreen js-exit-fullscreen tooltipped leftwards" title="Exit Zen Mode">
+      <span class="mega-octicon octicon-screen-normal"></span>
+    </a>
+    <a href="#" class="theme-switcher js-theme-switcher tooltipped leftwards"
+      title="Switch themes">
+      <span class="octicon octicon-color-mode"></span>
+    </a>
+  </div>
+</div>
+
+
+
+    <div id="ajax-error-message" class="flash flash-error">
+      <span class="octicon octicon-alert"></span>
+      <a href="#" class="octicon octicon-remove-close close ajax-error-dismiss"></a>
+      Something went wrong with that request. Please try again.
+    </div>
+
+  </body>
+</html>
+

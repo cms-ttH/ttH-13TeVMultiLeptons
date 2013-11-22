@@ -98,7 +98,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
                 mc_sum += histogram.Integral()
                 xsec_frac_error = sample_info.x_section_error / sample_info.x_section #is this being used?
                 stack_plot.Add(histogram, "hist")
-                stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
+                stack_plot_legend.AddEntry(histogram, '%s (%0.2f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
 
     # Sum histograms in each sample group, then add summed histos to stack plot and histogram_dictionary
     if config.has_key('background sample groups'):
@@ -129,7 +129,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
                     histogram = group_histogram.Clone('stack')
                     mc_sum += group_histogram.Integral()
                     stack_plot.Add(histogram, "hist")
-                    stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_sample_groups[sample_group]['draw name'], group_histogram.Integral()), 'f')
+                    stack_plot_legend.AddEntry(histogram, '%s (%0.2f)' % (background_sample_groups[sample_group]['draw name'], group_histogram.Integral()), 'f')
 
     ## Draw the signal sample histogram(s), put in legend
     signal_histogram = None
@@ -155,7 +155,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
             signal_histogram.Scale(signal_samples[sample]['scale'])
 
         if (signal_sum > 0):
-            stack_plot_legend.AddEntry(signal_histogram, '%s (%0.1f x %0.1f)' % (signal_samples[sample]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), legend_option)
+            stack_plot_legend.AddEntry(signal_histogram, '%s (%0.2f x %0.2f)' % (signal_samples[sample]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), legend_option)
         else:
             stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], legend_option)
 
@@ -189,6 +189,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
         mc_error_histogram.SetBinContent(i,stack_plot.GetStack().Last().GetBinContent(i))
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
         for sample, systematics in systematics_by_sample.items(): #systematics_by_sample is a dictionary (keys: samples and sample groups, values: systematics list)
+
             if 'sideband' in sample and not plot_helper.get_data_sample_name(lepton_category) in sample:
                 continue
 
@@ -200,7 +201,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     mc_error_histogram.SetFillStyle(cosmetics['mc error fill style'])
     mc_error_histogram.SetFillColor(cosmetics['mc error fill color'])
 
-    stack_plot_legend.AddEntry(mc_error_histogram, 'Sum MC (%0.1f) ' % (mc_sum + signal_sum), 'f')
+    stack_plot_legend.AddEntry(mc_error_histogram, 'Sum MC (%0.2f) ' % (mc_sum + signal_sum), 'f')
 
     plot_max = stack_plot.GetMaximum()
     if (signal_histogram): plot_max = max(plot_max, signal_histogram.GetMaximum())
@@ -274,13 +275,13 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     l = TLine()
     l.DrawLine(xMin, 1., xMax, 1.)
 
-    if not os.path.exists(config['output file location']+lepton_category+'_'+jet_tag_category):
-        os.mkdir(config['output file location']+lepton_category+'_'+jet_tag_category)
+    if not os.path.exists(config['output file location']+'/'+lepton_category+'_'+jet_tag_category):
+        os.mkdir(config['output file location']+'/'+lepton_category+'_'+jet_tag_category)
 
     plot_name = '%s_%s/%s' % (lepton_category, jet_tag_category, distribution)
 
-    if (config['save png']): canvas.SaveAs(config['output file location']+plot_name+'.png')
-    if (config['save pdf']): canvas.SaveAs(config['output file location']+plot_name+'.pdf')
+    if (config['save png']): canvas.SaveAs(config['output file location']+'/'+plot_name+'.png')
+    if (config['save pdf']): canvas.SaveAs(config['output file location']+'/'+plot_name+'.pdf')
 
     if args.web:
         www_base_directory = plot_helper.get_www_base_directory()

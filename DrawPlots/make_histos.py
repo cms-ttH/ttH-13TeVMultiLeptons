@@ -34,7 +34,7 @@ def main():
     if args.lepton_category:
         lepton_categories = args.lepton_category
 
-    plot_helper.make_sure_directories_exist([os.path.join('histos', category) for category in lepton_categories])
+    plot_helper.make_sure_directories_exist([os.path.join(config['output directory'], category) for category in lepton_categories])
     if args.web:
         www_plot_directories = [os.path.join('plots', config['label'], lepton_category) for lepton_category in lepton_categories]
         plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name)
@@ -62,7 +62,7 @@ def make_histos(args, config, samples, lepton_categories):
                     continue
 
             for jet_tag_category in config['jet tag categories']:
-                output_file_name = 'histos/%s/%s_%s_%s_%s.root' % (lepton_category, lepton_category, jet_tag_category, sample, config['label'])
+                output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
                 systematics_list = plot_helper.customize_systematics(config['systematics'], sample_info.systematics)

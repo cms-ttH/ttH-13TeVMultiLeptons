@@ -1,6 +1,7 @@
-label: new_process_v1
+label: new_process_v3
 luminosity: 19450.0
 input_trees_directory: tree_files
+output directory: histos_new_process_v3
 
 common cuts:
     lt_three_tight_leptons: '!((all_leptons_by_pt_1_lepMVA > 0.7) && (all_leptons_by_pt_2_lepMVA > 0.7) && (all_leptons_by_pt_3_lepMVA > 0.7))'
@@ -41,14 +42,13 @@ QF sideband cuts:
     same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) < 0)
 
 jet tag categories:
-    - eq3jge1t
+    - eq3j
     - ge4j
 
 lepton categories:
     - mu_mu
     - mu_ele
     - ele_ele
-#    - mu_mu_mu
 
 weights:
     - lepIDAndIsoSF
@@ -79,21 +79,51 @@ samples:
     ttH125:
         weights: all
         systematics: all
-    ww:
-        weights: all
-        systematics: all
     wz:
         weights: all
         systematics: all
-    zz:
+    zz_llll:
+        weights: all
+        systematics: all
+    www:
+        weights: all
+        systematics: all
+    wwz:
         weights: all
         systematics: all
     ttbarW:
         weights: all
         systematics: all
+    ttbarWW:
+        weights: all
+        systematics: all
     ttbarZ:
         weights: all
         systematics: all
+    ttbarG:
+        weights: all
+        systematics: all
+    #ttbarGStar_ee:
+        #weights: all
+        #systematics: all
+    #ttbarGStar_mm:
+        #weights: all
+        #systematics: all
+    #ttbarGStar_tt:
+        #weights: all
+        #systematics: all
+    tbZ_ll:
+        weights: all
+        systematics: all
+    #WpWpqq:
+        #weights: all
+        #systematics: all
+    #WmWmqq:
+        #weights: all
+        #systematics: all
+    #WWDPI:
+        #weights: all
+        #systematics: all
     DoubleMu:
         weights: none
         systematics: nominal

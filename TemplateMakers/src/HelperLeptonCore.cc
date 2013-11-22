@@ -190,10 +190,10 @@ int HelperLeptonCore::convertSampleNameToNumber (string sampleName ) {
     else if (sampleName == "singlet_tW_jl") sampleNumber = 2664; 
     else if (sampleName == "singlet_tW_ll") sampleNumber = 2634; 
     else if (sampleName == "singletbar_tW") { sampleNumber = 2605;
-      nGen = 492779; Xsec = 11.1; }
-    else if (sampleName == "singletbar_tW_lj") sampleNumber = 2555; 
-    else if (sampleName == "singletbar_tW_jl") sampleNumber = 2565; 
-    else if (sampleName == "singletbar_tW_ll") sampleNumber = 2535; 
+      nGen = 492779; Xsec = 7.87; }
+    else if (sampleName == "singletbar_tW_lj") sampleNumber = 2655; 
+    else if (sampleName == "singletbar_tW_jl") sampleNumber = 2665; 
+    else if (sampleName == "singletbar_tW_ll") sampleNumber = 2635; 
     else if (sampleName == "ww") { sampleNumber = 2700;
       nGen = 9955089; Xsec = 54.8; }
     else if (sampleName == "ww_ll") { sampleNumber = 2700;
@@ -207,17 +207,17 @@ int HelperLeptonCore::convertSampleNameToNumber (string sampleName ) {
     else if (sampleName == "wz") { sampleNumber = 2701;
       nGen = 9931257; Xsec = 32.3; }
     else if (sampleName == "wz_lll") { sampleNumber = 2731;
-      nGen = 1987010; Xsec = 32.3*0.324*0.101; }
+      nGen = 1987010; Xsec = 1.057*1.10; } 
     else if (sampleName == "wz_lljj") { sampleNumber = 2761;
       nGen = 3212461; Xsec = 32.3*0.101*(1-0.324); }
     else if (sampleName == "wz_ljj") { sampleNumber = 2791;
       nGen = 2906320; Xsec = 32.3*0.324*0.699; }
     else if (sampleName == "wzz") { sampleNumber = 2721;
-      nGen = 219835; Xsec = 0.01922; } //AWB doesn't exist in new GT?
+      nGen = 219835; Xsec = 0.01922; } 
     else if (sampleName == "zz") { sampleNumber = 2702;
       nGen = 9755621; Xsec = 7.7; }
     else if (sampleName == "zz_llll") { sampleNumber = 2732;
-      nGen = 4804217; Xsec = 7.7*0.101*0.101; }
+      nGen = 4804217; Xsec = 0.157*1.21; } //why is it not (7.7*0.101*0.101) * 1.21?
     else if (sampleName == "zz_lljj") { sampleNumber = 2762;
       nGen = 1934806; Xsec = 7.7*2*0.101*0.699; }
     else if (sampleName == "zzz") { sampleNumber = 2722;
@@ -227,17 +227,31 @@ int HelperLeptonCore::convertSampleNameToNumber (string sampleName ) {
     else if (sampleName == "ttbarWW") { sampleNumber = 2534;
       nGen = 216867; Xsec = 0.002037; }
     else if (sampleName == "ttbarZ") { sampleNumber = 2523;
-      nGen = 209512; Xsec = 0.208; }
+      nGen = 209512; Xsec = 0.206; }
     else if (sampleName == "ttbarG") { sampleNumber = 2560;
-      nGen = 71405; Xsec = 0.0000001; } //AWB incorrect value
-    else if (sampleName == "ttbarttbar") { sampleNumber = 2525;
-      nGen = 99994; Xsec = 0.000716; } //AWB doesn't exist in new GT?
+      nGen = 71405; Xsec = 1.444*1.8; } 
+    else if (sampleName == "ttbarGStar_ee") { sampleNumber = 2567;
+      nGen = 1; Xsec = 1.5*0.02724*0.104; } //Not yet processed 
+    else if (sampleName == "ttbarGStar_mm") { sampleNumber = 2568;
+      nGen = 1; Xsec = 1.5*0.01233*0.141; } //Not yet processed
+    else if (sampleName == "ttbarGStar_tt") { sampleNumber = 2569;
+      nGen = 1; Xsec = 1.5*0.00133*0.038; } //Not yet processed
+    else if (sampleName == "tttt") { sampleNumber = 2525;
+      nGen = 99994; Xsec = 0.000716; }
+    else if (sampleName == "tbZ_ll") { sampleNumber = 2000;
+      nGen = 148158; Xsec = 0.0114; }
+    else if (sampleName == "WpWpqq") { sampleNumber = 2001;
+      nGen = 1; Xsec = 0.2482; } //Not yet processed
+    else if (sampleName == "WmWmqq") { sampleNumber = 2002;
+      nGen = 1; Xsec = 0.0889; } //Not yet processed
+    else if (sampleName == "WWDPI") { sampleNumber = 2003;
+      nGen = 1; Xsec = 0.5879; } //Not yet processed
     else if (sampleName == "VH_tautau") { sampleNumber = 2915;
-      nGen = 200124; Xsec = 0.07717352; } //AWB doesn't exist in new GT?
+      nGen = 200124; Xsec = 0.07717352; } 
     else if (sampleName == "VH_ZZ") { sampleNumber = 2923;
-      nGen = 500409; Xsec = 0.03223704; } //AWB doesn't exist in new GT?
+      nGen = 500409; Xsec = 0.03223704; } 
     else if (sampleName == "VH_WW") { sampleNumber = 2924;
-      nGen = 200408; Xsec = 0.2625365; } //AWB doesn't exist in new GT?
+      nGen = 200408; Xsec = 0.2625365; } 
     else if (tmpName.Contains("ttH") && analysisYear == "2012_52x") {
       if (tmpName.Contains("FullSim")) sampleNumber = 8120;
       else sampleNumber = 9120;

@@ -164,6 +164,14 @@ class DrawStringMaker:
             jet_tag_string = 'numJets >= 4 && numMediumBJets >= 2'
         elif jet_tag_category == 'ge4j':
             jet_tag_string = 'numJets>=4'
+        elif jet_tag_category == 'ge3j':
+            jet_tag_string = 'numJets>=3'
+        elif jet_tag_category == 'eq3j':
+            jet_tag_string = 'numJets==3'
+        elif jet_tag_category == 'ge2j':
+            jet_tag_string = 'numJets>=2'
+        elif jet_tag_category == 'ge1j':
+            jet_tag_string = 'numJets>=1'
         elif jet_tag_category == 'inclusive':
             pass
         else:
@@ -196,144 +204,350 @@ class DrawStringMaker:
 class SampleInformation:
     def __init__(self, sample, config):
         dictionary = {
+			#ND uses WW_TuneZ2Star, CERN uses WWJetsTo2L2Nu_TuneZ2star with x_section 5.995
             'ww': {'sample_type': 'MC',
                    'is_signal': False,
-                   'x_section': 54.8, #0.0571,
-                   'x_section_error': 0.0015,
-                   'num_generated': 9955089},
+                   'x_section': 54.8, #ND x_sec
+                   'x_section_error': 54.8*0.035, #ND x_sec error
+                   'num_generated': 9955089}, #ND number processed
 
+			#ND uses WZ_TuneZ2star
             'wz': {'sample_type': 'MC',
                    'is_signal': False,
-                   'x_section': 32.3,
-                   'x_section_error': 0.0007,
-                   'num_generated':  9931257},
+                   'x_section': 32.3, #ND x_sec
+                   'x_section_error': 54.8*0.035, #ND x_sec error
+                   'num_generated': 9931257}, #ND number processed
 
+			#CERN uses WZJetsTo3LNu_TuneZ2
+            'wz_lll': {'sample_type': 'MC',
+                   'is_signal': False,
+                   'x_section': 1.057*1.10, #CERN x_sec; equals (32.3*0.324*0.101) * 1.10
+                   'x_section_error': 1.057*1.10*0.2, #CERN x_sec error
+                   'num_generated': 1987010}, #ND number processed
+
+			#ND uses ZZ_TuneZ2star
             'zz': {'sample_type': 'MC',
                    'is_signal': False,
-                   'x_section': 7.7,#0.00826,
-                   'x_section_error': 0.00015,
-                   'num_generated':  9755621},
+                   'x_section': 7.7, #ND x_sec
+                   'x_section_error': 7.7*0.035, #ND x_sec error
+                   'num_generated': 9755621}, #ND number processed
+
+			#ND uses ZZ_TuneZ2star
+            'zz_llll': {'sample_type': 'MC',
+                   'is_signal': False,
+                   'x_section': 0.157*1.21, #CERN x_sec; why is it not (7.7*0.101*0.101) * 1.21
+                   'x_section_error': 0.157*1.21*0.2, #CERN x_sec error
+                   'num_generated': 4804217}, #ND number processed
 
             'www': {'sample_type': 'MC',
                     'is_signal': False,
-                    'x_section': 0.08217,#0.0571,
-                    'x_section_error': 0.00008217*0.0015/0.0548,
-                    'num_generated': 220040},
+                    'x_section': 0.08217, #CERN and ND x_sec
+                    'x_section_error': 0.08217*0.5, #CERN x_sec error
+                    'num_generated': 220040}, #ND number processed
 
             'wwz': {'sample_type': 'MC',
                     'is_signal': False,
-                    'x_section': 0.0633,#0.0571,
-                    'x_section_error': 0.0000633*0.0015/0.0548,
-                    'num_generated': 221576},
+                    'x_section': 0.0633, #CERN and ND x_sec
+                    'x_section_error': 0.0633*0.5, #CERN x_sec error
+                    'num_generated': 221576}, #ND number processed
 
+			#CERN does not use any wzz sample
             'wzz': {'sample_type': 'MC',
                     'is_signal': False,
-                    #        'x_section': 0.00001922,#0.0571,
-                    'x_section': 0.0001,
-                    'x_section_error': 0.00001922*0.0015/0.0548,
-                    'num_generated': 219835},
+                    'x_section': 0.01922, #ND x_sec, straight from PREP
+                    'x_section_error': 0.01922*0.5, #Would be CERN x_sec error
+                    'num_generated': 219317}, #ND number processed 
 
+			#CERN does not use any zzz sample
             'zzz': {'sample_type': 'MC',
                     'is_signal': False,
-                    'x_section': 0.004587,#0.0571,
-                    'x_section_error': 0.000004587*0.0015/0.0548,
-                    'num_generated': 224519},
+                    'x_section': 0.004587, #ND x_sec, straight from PREP
+                    'x_section_error': 0.004587*0.5, #Would be CERN x_sec error
+                    'num_generated': 224519}, #ND number processed
 
+            'WpWpqq': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 0.2482, #CERN x_sec, straight from PREP
+                     'x_section_error': 0.2482*0.5, #Just an unmotivated guess
+                     'num_generated': 1}, #Not yet processed 
+
+            'WmWmqq': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 0.0889, #CERN x_sec, straight from PREP
+                     'x_section_error': 0.0889*0.5, #Just an unmotivated guess
+                     'num_generated': 1}, #Not yet processed 
+
+            'WWDPI': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 0.5879, #CERN x_sec, straight from PREP
+                     'x_section_error': 0.5879*0.5, #Just an unmotivated guess
+                     'num_generated': 1}, #Not yet processed 
+
+			##All wjets, zjets, and ttbar_* samples use ND x_sec, x_sec error, and number processed
             'wjets': {'sample_type': 'MC',
                       'is_signal': False,
-                      'x_section': 36257,
-                      'x_section_error': 1.558,
-                      'num_generated':  57536319},
+                      'x_section': 36257, 
+                      'x_section_error': 36257*0.013, 
+                      'num_generated': 57536319},
+
+            'wjets_0p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 36257, 
+                      'x_section_error': 36257*0.013, 
+                      'num_generated': 57536319},
+
+            'wjets_1p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 6440.4, 
+                      'x_section_error': 6440.4*0.013, 
+                      'num_generated': 23134881},
+
+            'wjets_2p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 2087.2, 
+                      'x_section_error': 2087.2*0.013, 
+                      'num_generated': 33933328},
+
+            'wjets_3p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 619.0, 
+                      'x_section_error': 619.0*0.013, 
+                      'num_generated': 15463420},
+
+            'wjets_4p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 255.2, 
+                      'x_section_error': 255.2*0.013, 
+                      'num_generated': 13365439},
 
             'zjets': {'sample_type': 'MC',
                       'is_signal': False,
+                      'x_section': 3505.7, 
+                      'x_section_error': 3505.7*0.012, 
+                      'num_generated': 30072710}, 
+
+            'zjets_0p': {'sample_type': 'MC',
+                      'is_signal': False,
                       'x_section': 3505.7,
-                      'x_section_error': 0.132,
-                      'num_generated':  30072710},
+                      'x_section_error': 3505.7*0.012,
+                      'num_generated': 30072710},
+
+            'zjets_1p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 666.7,
+                      'x_section_error': 666.7*0.012,
+                      'num_generated': 24032562},
+
+            'zjets_2p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 215.1,
+                      'x_section_error': 215.1*0.012,
+                      'num_generated': 2350806},
+
+            'zjets_3p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 66.07,
+                      'x_section_error': 66.07*0.012,
+                      'num_generated': 10753491},
+
+            'zjets_4p': {'sample_type': 'MC',
+                      'is_signal': False,
+                      'x_section': 27.38,
+                      'x_section_error': 27.38*0.012,
+                      'num_generated': 6370630},
 
             'zjets_lowmass': {'sample_type': 'MC',
                               'is_signal': False,
-                              'x_section': 14702, #0.860,
-                              'x_section_error': 0.132*0.86/3.5057,
+                              'x_section': 14702, #Questionable value ... could be 12460. See email chain with Rachel Yohay, Oct. 24 2013
+                              'x_section_error': 14702*0.012,
                               'num_generated': 37828841},
-
-            'ttbarW': {'sample_type': 'MC',
-                       'is_signal': False,
-                       'x_section': 0.232, #0.000163*1.5,
-                       'x_section_error': 0.2*0.000249,
-                       'num_generated':  195196},
-
-            'ttbarZ': {'sample_type': 'MC',
-                       'is_signal': False,
-                       'x_section': 0.208,#0.000136*1.5,
-                       'x_section_error': 0.2*0.000208,
-                       'num_generated':  209512},
-
-            'ttbarWW': {'sample_type': 'MC',
-                        'is_signal': False,
-                        'x_section': 0.002037,#0.000136*1.5,
-                        'x_section_error': 0.2*0.000002037,
-                        'num_generated':  216867},
-
-            'tttt': {'sample_type': 'MC',
-                     'is_signal': False,
-                     'x_section': 0.0000001,#0.000000716,
-                     'x_section_error': 0.2*0.000000716,
-                     'num_generated':  99994},
-
-            't_s': {'sample_type': 'MC',
-                    'is_signal': False,
-                    'x_section': 3.79,
-                    'x_section_error': 0.00006*0.00379/(0.00379+0.00176),
-                    'num_generated': 259657},
-
-            'tbar_s': {'sample_type': 'MC',
-                       'is_signal': False,
-                       'x_section': 1.76,
-                       'x_section_error': 0.00006*0.00176/(0.00379+0.00176),
-                       'num_generated': 139835},
-
-            't_t': {'sample_type': 'MC',
-                    'is_signal': False,
-                    'x_section': 56.4,
-                    'x_section_error': 0.0032*0.0564/(0.0564+0.0307),
-                    'num_generated': 3744404},
-
-            'tbar_t': {'sample_type': 'MC',
-                       'is_signal': False,
-                       'x_section': 30.7,
-                       'x_section_error': 0.0032*0.0307/(0.0564+0.0307),
-                       'num_generated': 1933504},
-
-            't_tW': {'sample_type': 'MC',
-                     'is_signal': False,
-                     'x_section': 11.1,
-                     'x_section_error': 0.0008*0.0111/0.00106,    #### 0.00106
-                     'num_generated': 496918},
-
-            'tbar_tW': {'sample_type': 'MC',
-                        'is_signal': False,
-                        'x_section': 11.1,
-                        'x_section_error': 0.0008*0.0111/0.00106,    #### 0.00106
-                        'num_generated': 492779},
-
-            'ttbb': {'sample_type': 'MC',
-                     'is_signal': False,
-                     'x_section': 245.8, #0.225197,
-                     'x_section_error': 0.5*0.2458, #0.225197, #0.3*0.225197,
-                     'num_generated':  6912438+1362471},
-
-            'ttcc': {'sample_type': 'MC',
-                     'is_signal': False,
-                     'x_section': 245.8, #0.225197,
-                     'x_section_error': 0.3*0.2458, #0.225197,
-                     'num_generated':  6912438+1362471},
 
             'ttbar': {'sample_type': 'MC',
                       'is_signal': False,
-                      'x_section': 245.8, #0.225197,
-                      'x_section_error': 0.024,
-                      'num_generated':  6912438+1362471},
+                      'x_section': 245.8, 
+                      'x_section_error': 245.8*0.03,
+                      'num_generated': 6912438+1362471},
+
+            'ttbar_cc': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 245.8, 
+                     'x_section_error': 245.8*0.03, 
+                     'num_generated': 6912438+1362471},
+
+            'ttbar_b': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 245.8, 
+                     'x_section_error': 245.8*0.03,
+                     'num_generated': 6912438+1362471},
+
+            'ttbar_bb': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 245.8, 
+                     'x_section_error': 245.8*0.03,
+                     'num_generated': 6912438+1362471},
+
+            'ttbar_jj': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.457*245.8, 
+                       'x_section_error': 0.457*245.8*0.03,
+                       'num_generated': 31111456},
+
+            'ttbar_cc_jj': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.457*245.8, 
+                       'x_section_error': 0.457*245.8*0.03,
+                       'num_generated': 31111456},
+
+            'ttbar_b_jj': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.457*245.8, 
+                       'x_section_error': 0.457*245.8*0.03,
+                       'num_generated': 31111456},
+
+            'ttbar_bb_jj': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.457*245.8, 
+                       'x_section_error': 0.457*245.8*0.03,
+                       'num_generated': 31111456},
+
+            'ttbar_lj': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.438*245.8, 
+                       'x_section_error': 0.438*245.8*0.03,
+                       'num_generated': 25327478},
+
+            'ttbar_cc_lj': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.438*245.8, 
+                       'x_section_error': 0.438*245.8*0.03,
+                       'num_generated': 25327478},
+
+            'ttbar_b_lj': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.438*245.8, 
+                       'x_section_error': 0.438*245.8*0.03,
+                       'num_generated': 25327478},
+
+            'ttbar_bb_lj': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.438*245.8, 
+                       'x_section_error': 0.438*245.8*0.03,
+                       'num_generated': 25327478},
+
+            'ttbar_ll': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.105*245.8, 
+                       'x_section_error': 0.105*245.8*0.03,
+                       'num_generated': 12100452},
+
+            'ttbar_cc_ll': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.105*245.8, 
+                       'x_section_error': 0.105*245.8*0.03,
+                       'num_generated': 12100452},
+
+            'ttbar_b_ll': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.105*245.8, 
+                       'x_section_error': 0.105*245.8*0.03,
+                       'num_generated': 12100452},
+
+            'ttbar_bb_ll': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.105*245.8, 
+                       'x_section_error': 0.105*245.8*0.03,
+                       'num_generated': 12100452},
+
+            'ttbarW': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.249, #CERN and ND x_sec
+                       'x_section_error': 0.249*0.2, #CERN x_sec error; ND x_sec error = 0.249*0.1
+                       'num_generated': 195396}, #ND number processed
+
+            'ttbarZ': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 0.206, #CERN x_sec; ND x_sec error = 0.208
+                       'x_section_error': 0.206*0.2, #CERN x_sec error; ND x_sec error = 0.208*0.11
+                       'num_generated': 209512},
+
+            'ttbarG': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 1.444*1.8, #CERN x_sec; PREP = 1.444
+                       'x_section_error': 1.444*1.8*0.2, #CERN x_sec error? just a guess.
+                       'num_generated': 71405}, #ND number processed
+
+            'ttbarGStar_ee': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 1.5*0.02724*0.104, #CERN x_sec
+                       'x_section_error': 1.5*0.02724*0.104*0.5, #CERN x_sec error
+                       'num_generated': 1}, #Not yet processed
+
+            'ttbarGStar_mm': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 1.5*0.01233*0.141, #CERN x_sec
+                       'x_section_error': 1.5*0.01233*0.141*0.5, #CERN x_sec error
+                       'num_generated': 1}, #Not yet processed
+
+            'ttbarGStar_tt': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 1.5*0.00133*0.038, #CERN x_sec
+                       'x_section_error': 1.5*0.00133*0.038*0.5, #CERN x_sec error
+                       'num_generated': 1}, #Not yet processed
+
+            'ttbarWW': {'sample_type': 'MC',
+                        'is_signal': False,
+                        'x_section': 0.002037, #CERN x_sec
+                        'x_section_error': 0.002037*0.2, #CERN x_sec error
+                        'num_generated': 216867}, #ND number processed
+
+            'tttt': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 0.000716, #ND x_sec, straight from PREP
+                     'x_section_error': 0.000716*0.5, #Just an unmotivated guess
+                     'num_generated': 99994}, #ND number processed 
+
+            'tbZ_ll': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 0.0114, #CERN x_sec; PREP x_sec = 0.0217
+                     'x_section_error': 0.0114*0.5, #Just an unmotivated guess
+                     'num_generated': 148158}, #ND number processed 
+
+			#All single top samples use ND x_sec, x_sec error, and number processed
+            'singlet_s': {'sample_type': 'MC',
+                    'is_signal': False,
+                    'x_section': 3.79,
+                    'x_section_error': 3.79*0.02,
+                    'num_generated': 259657},
+
+            'singletbar_s': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 1.76,
+                       'x_section_error': 1.76*0.02,
+                       'num_generated': 139835},
+
+            'singlet_t': {'sample_type': 'MC',
+                    'is_signal': False,
+                    'x_section': 56.4,
+                    'x_section_error': 56.4*0.02,
+                    'num_generated': 3744404},
+
+            'singletbar_t': {'sample_type': 'MC',
+                       'is_signal': False,
+                       'x_section': 30.7,
+                       'x_section_error': 30.7*0.02,
+                       'num_generated': 1933504},
+
+            'singlet_tW': {'sample_type': 'MC',
+                     'is_signal': False,
+                     'x_section': 11.1,
+                     'x_section_error': 11.1*0.02,
+                     'num_generated': 496918},
+
+            'singletbar_tW': {'sample_type': 'MC',
+                        'is_signal': False,
+                        'x_section': 7.87,
+                        'x_section_error': 7.87*0.02,
+                        'num_generated': 492779},
 
             'ttH110': {'sample_type': 'MC',
                        'is_signal': True,

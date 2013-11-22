@@ -1,7 +1,7 @@
 #input and output file names
-input file location: histos
-input file label: new_process_v0
-output file location: pdf/
+input file location: histos_new_process_v3
+input file label: new_process_v3
+output file location: pdf_new_process_v3
 
 #drawing options
 skip systematics: false
@@ -30,7 +30,7 @@ lepton categories:
 #Jet-tag categories: "draw name"
 jet tag categories:
     ge4j: " + #geq4 jets"
-    eq3jge1t: " + 3 jets + #geq 1 b-tag"
+    eq3j: " + 3 jets"
     #eq2jeq2t : " + 2 jets + 2 b-tags"
     #eq3jeq2t : " + 3 jets + 2 b-tags"
     #ge4jeq2t : " + #geq4 jets + 2 b-tags"
@@ -56,15 +56,43 @@ signal samples:
 background sample groups:
     Others:
         draw name: Others
-        color: kBlue-9
+        color: kSpring+8
         systematics: all
         samples:
-            - ww
-            - wz
-            - zz
+            - tbZ_ll
+            #- WpWpqq
+            #- WmWmqq
+            #- WWDPI
+
+    triboson:
+        draw name: triboson
+        color: kViolet
+        systematics: all
+        samples:
+            - www
+            - wwz
+
+    #ttbarGStar:
+        #draw name: "t#bar{t}G*"
+        #color: kCyan-3
+        #systematics: all
+        #samples:
+            #- ttbarGStar_ee
+            #- ttbarGStar_mm
+            #- ttbarGStar_tt
 
 #Samples, ordered bottom-to-top
 background samples:
+    MuEG_QF_sideband:
+        draw name: "Q flip"
+        color: kGray+1
+        systematics: 40PercentRateUp+40PercentRateDown
+
+    DoubleElectron_QF_sideband:
+        draw name: "Q flip"
+        color: kGray+1
+        systematics: 40PercentRateUp+40PercentRateDown
+
     DoubleMu_NP_sideband:
         draw name: "Fakes"
         color: kGray
@@ -80,24 +108,34 @@ background samples:
         color: kGray
         systematics: 40PercentRateUp+40PercentRateDown
 
-    MuEG_QF_sideband:
-        draw name: "Charge flip"
-        color: kOrange
-        systematics: 40PercentRateUp+40PercentRateDown
+    wz:
+        draw name: "WZ"
+        color: kViolet-4
+        systematics: all
 
-    DoubleElectron_QF_sideband:
-        draw name: "Charge flip"
-        color: kOrange
-        systematics: 40PercentRateUp+40PercentRateDown
+    #zz_llll:
+        #draw name: "ZZ"
+        #color: kAzure-9
+        #systematics: all
+
+    ttbarG:
+        draw name: "t#bar{t}G"
+        color: kGray+3
+        systematics: all
 
     ttbarZ:
         draw name: "t#bar{t}Z"
-        color: kAzure+1
+        color: kSpring+2
         systematics: all
 
     ttbarW:
         draw name: "t#bar{t}W"
-        color: kCyan
+        color: kGreen-5
+        systematics: all
+
+    ttbarWW:
+        draw name: "t#bar{t}WW"
+        color: kBlue-9
         systematics: all
 
 
