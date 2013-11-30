@@ -88,13 +88,12 @@ void DataDrivenFR<collectionType>::evaluate() {
       double lep_eta = abs(ptr((*selCollection)->at(iObj))->eta);
 
       if ( ptr((*selCollection)->at(iObj))->isMuon ) {
-        if ( beanHelper->GetMuonLepMVA(*(BNmuon*)ptr((*selCollection)->at(iObj)),
-                                           this->blocks->jetsForLepMVACollection) < working_point) {
+        if ( beanHelper->GetMuonLepMVA(*(BNmuon*)ptr((*selCollection)->at(iObj))) < working_point) {
 
           if (this->blocks->jetCollectionMediumCSV->size() < 2) {
             int pt_bin  = std::max(1, std::min(FR_NP_tight_mu->GetNbinsX(), FR_NP_tight_mu->GetXaxis()->FindBin(lep_pt)));
             int eta_bin  = std::max(1, std::min(FR_NP_tight_mu->GetNbinsY(), FR_NP_tight_mu->GetYaxis()->FindBin(lep_eta)));
-            FR_NP[num_fail] = FR_NP_tight_mu->GetBinContent(pt_bin,eta_bin);            
+            FR_NP[num_fail] = FR_NP_tight_mu->GetBinContent(pt_bin,eta_bin);
           }
           else {
             int pt_bin  = std::max(1, std::min(FR_NP_tight2_mu->GetNbinsX(), FR_NP_tight2_mu->GetXaxis()->FindBin(lep_pt)));
@@ -109,8 +108,7 @@ void DataDrivenFR<collectionType>::evaluate() {
         }
       }
       else if ( ptr((*selCollection)->at(iObj))->isElectron ) {
-        if ( beanHelper->GetElectronLepMVA(*(BNelectron*)ptr((*selCollection)->at(iObj)),
-                                           this->blocks->jetsForLepMVACollection) < working_point) {
+        if ( beanHelper->GetElectronLepMVA(*(BNelectron*)ptr((*selCollection)->at(iObj))) < working_point) {
 
           if (this->blocks->jetCollectionMediumCSV->size() < 2) {
             int pt_bin  = std::max(1, std::min(FR_NP_tight_el->GetNbinsX(), FR_NP_tight_el->GetXaxis()->FindBin(lep_pt)));

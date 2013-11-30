@@ -1,7 +1,5 @@
-
 #ifndef _HelperLeptonCore_h
 #define _HelperLeptonCore_h
-
 
 #include "TFile.h"
 #include "TChain.h"
@@ -35,9 +33,7 @@
 #include "TSystem.h"
 #include "TStyle.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
-
-//#include "LumiReweightingStandAlone.h"
-//#include "PUConstants.h"
+#include <TRandom3.h>
 
 #if !defined(__CINT__) && !defined(__MAKECINT__)
 
@@ -60,104 +56,76 @@
 #include "BEAN/Collections/interface/BNtrigobj.h"
 #include "BEAN/Collections/interface/BNprimaryvertex.h"
 
-
-// headers for python config processing
-
-//#include "FWCore/PythonParameterSet/interface/PythonProcessDesc.h"
-//#include "FWCore/ParameterSet/interface/ProcessDesc.h"
-//#include "FWCore/ParameterSet/interface/FileInPath.h"
-
 #include "BEAN/BEANmaker/interface/BtagWeight.h"
 #include "BEAN/BEANmaker/interface/BEANhelper.h"
 
 #include "BEAN/BEANmaker/interface/AnglesUtil.h"
 #include "PhysicsTools/Utilities/interface/LumiReweightingStandAlone.h"
-// For MVA reprocessing
-//#include "TMVAGui.C"
-#include "TMVA/Tools.h"
-#include "TMVA/Reader.h"
-#include "TMVA/MethodCuts.h"
 
 #endif
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 
-
-// HelperLeptonCore
-// This is also a TTreeWapper, but we keep the definitions
-// separate so that things are easier to read and separable for
-// other situations
-
 class HelperLeptonCore  {
 public:
-  
-  // constructor
-  HelperLeptonCore ();
-
-  // initialize
-  BEANhelper *  setupAnalysisParameters (string year, string sampleName) ;
-
-  bool detectData (string sampleName);
-  
-  int convertSampleNameToNumber (string sampleName);
-
-  // setup some PU reweighting flags
-  void initializePUReweighting ();
-
-  // initializeTrigger
-  // this may already be in beanhelper
-  void initializeTrigger ();
-
-  // setup several  BN pointers
-    //  BEANFileInterface * initializeInputCollections (fwlite::ChainEvent & ev, bool isLepMVA);
-
-  void initializeInputCollections (fwlite::ChainEvent & ev, bool isLepMVA, BEANFileInterface& rawCollections);
-  // do some MC calculations
-  void initializeGenInfo ();
-
-  // get corrected MET
-  void initializeMet ();
-
-  // determine true and reco pvs for PU reweight
-  void countNumPVs ();
-  
-  // check to see if trigger passed
-  bool isTriggerPassed();
-
-  // check to see if cleaning is ok
-  bool checkEventCleaning();
-
-  bool parseSysTypes();
+  HelperLeptonCore();
+  BEANhelper * setupAnalysisParameters(string year, string sampleName); // initialize
+  bool detectData(string sampleName);
+  int convertSampleNameToNumber(string sampleName);
+  void initializePUReweighting(); // setup some PU reweighting flags
+  void initializeInputCollections(fwlite::ChainEvent & ev, bool isLepMVA, BEANFileInterface& rawCollections);
 
   // Handle the gymnastics of tight and loose collection definitions
-  void getTightLoosePreselectedElectrons (electronID::electronID tightID,
-                                  electronID::electronID looseID,
-                                  electronID::electronID preselectedID,
-                                  BEANFileInterface* selectedCollections);
-  
-  void getTightLoosePreselectedMuons (muonID::muonID tightID,
-                              muonID::muonID looseID,
-                              muonID::muonID preselectedID,
-                              BEANFileInterface* selectedCollections);
+  void getTightLoosePreselectedElectrons(electronID::electronID tightID,
+                                         electronID::electronID looseID,
+                                         electronID::electronID preselectedID,
+                                         BEANFileInterface* selectedCollections);
 
-  void getTightCorrectedJets (double ptCut,
-                              double etaCut,
-                              jetID::jetID tightID,
-                              BEANFileInterface * selectedCollections);
-    
-  BNjetCollection * getCorrectedSelectedJets (double ptCut,
-                                              double etaCut,
-                                              jetID::jetID jetID,
-                                              const char csvWorkingPoint);
-                                 
-  void getCorrectedMet (BEANFileInterface * selectedCollections,
-                        sysType::sysType shift = sysType::NA);
+  void getTightLoosePreselectedMuons(muonID::muonID tightID,
+                                     muonID::muonID looseID,
+                                     muonID::muonID preselectedID,
+                                     BEANFileInterface* selectedCollections);
 
-  void fillLepCollectionWithSelectedLeptons ( BEANFileInterface * selectedCollections);
+  void getTightCorrectedJets(double ptCut,
+                             double etaCut,
+                             jetID::jetID tightID,
+                             BEANFileInterface* selectedCollections);
+
+  BNjetCollection * getCorrectedSelectedJets(double ptCut,
+                                             double etaCut,
+                                             jetID::jetID jetID,
+                                             const char csvWorkingPoint);
+
+  void getCorrectedMet(BEANFileInterface * selectedCollections,
+                       sysType::sysType shift = sysType::NA);
+
+  void fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections);
+
+  bool isFromB(BNmcparticle particle);
+
+  double scaleIPVarsMC(double ipvar, int pdgId, double pt, double eta, int mcMatchId, int mcMatchAny);
+  double scaleSIPMC(double& sip, int& genID, double& pt, int& mcMatchID, int& mcMatchAny, double& eta);
+  double scaleDZMC(double dz, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
+  double scaleDXYMC(double dxy, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
+  double scaleLepJetPtRatioMC(double jetPtRatio, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
+  double scaleLepJetDRMC(double jetDR, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
+
+  template <typename collectionType> void fillMCMatchID(collectionType& collection, const double& maxDR);
+  template <typename collectionType> void fillMCMatchAny(collectionType& collection, const double& maxDR);
+  template <typename collectionType> void fillSIP(collectionType& collection, bool applySmearing);
+  template <typename collectionType> void fillLepJetPtRatio(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing);
+  template <typename collectionType> void fillLepJetDeltaR(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing);
+  template <typename collectionType> void fillLepJetBTagCSV(collectionType& collection, BNjetCollection& jetCollection);
+  template <typename collectionType> void scaleMCCollectionDZ(collectionType& collection);
+  template <typename collectionType> void scaleMCCollectionDXY(collectionType& collection);
+  template <typename particleType> bool isPlausible(particleType particle, const BNmcparticle& mcParticle);
+  template <typename particleType> BNmcparticleCollection getPlausibleParticles(particleType& particle, BNmcparticleCollection * mcParticles);
+
+  TRandom *gSmearer;
 
   //-------------------- Variables
   std::string analysisYear;
-  
+
   double weight_Xsec;
   int nGen;
   float Xsec;
@@ -169,7 +137,6 @@ public:
   string sysType_lep;
   sysType::sysType jetEnergyShift;
   sysType::sysType csvShift;
-  
 
   BEANhelper bHelp;
   BEANFileInterface rawCollections;
@@ -179,7 +146,6 @@ public:
   std::string listOfCollisionDatasets;
   std::string datasetForBEANHelper;
 
-  //branches
   fwlite::Handle<BNeventCollection> h_event;
   BNeventCollection events;
 
@@ -191,21 +157,19 @@ public:
   BNmuonCollection muonsTightLoose;
   BNmuonCollection muonsLoosePreselected;
   BNmuonCollection muonsTightLoosePreselected;
-  
 
   fwlite::Handle<BNmcparticleCollection> h_mcparticles;
   BNmcparticleCollection mcparticles;
-
 
   fwlite::Handle<BNjetCollection> h_pfjets;
   BNjetCollection pfjets;
   BNjetCollection jetsTight;
   BNjetCollection jetsLooseCSV;
-  BNjetCollection jetsMediumCSV;  
-  BNjetCollection jetsTightCSV;  
+  BNjetCollection jetsTightCSV;
   BNjetCollection jetsNotLooseCSV;
-  BNjetCollection jetsNotMediumCSV;  
-  BNjetCollection jetsNotTightCSV;  
+  BNjetCollection jetsNotMediumCSV;
+  BNjetCollection jetsNotTightCSV;
+  BNjetCollection jetsMediumCSV;
 
   fwlite::Handle<BNmetCollection> h_pfmets;
   BNmetCollection pfmets;
@@ -225,7 +189,6 @@ public:
   BNelectronCollection electronsTightLoose;
   BNelectronCollection electronsLoosePreselected;
   BNelectronCollection electronsTightLoosePreselected;
-  
 
   BNleptonCollection leptonsRaw;
   BNleptonCollection leptonsTight;
@@ -235,12 +198,139 @@ public:
   BNleptonCollection leptonsLoosePreselected;
   BNleptonCollection leptonsTightLoosePreselected;
 
-
   fwlite::Handle<BNjetCollection> h_lepMvaJets;
   BNjetCollection lepMvaJets;
-  
-  
+
+//-------------------- Inline functions
+  inline double smearMC(TRandom* gSmearer, double x, double mu, double sigma) {
+    return x + gSmearer->Gaus(mu,sigma);
+  }
+  inline double logSmearMC(TRandom* gSmearer, double x, double mu, double sigma) {
+    return std::exp(std::log(x) + gSmearer->Gaus(mu,sigma));
+  }
+  inline double shiftMC(double x, double delta) {
+    return x + delta;
+  }
+  inline double scaleShiftMC(double x, double scale, double shift) {
+    return x*scale + shift;
+  }
+
 };
 
+//-------------------- Template functions
+template <typename collectionType>
+void HelperLeptonCore::fillMCMatchID(collectionType& collection, const double& maxDR) {
+  BNmcparticleCollection plausibleParticles;
+  BNmcparticle matchedParticle;
+
+  for (auto& object: collection) {
+    plausibleParticles = getPlausibleParticles(object, rawCollections.mcParticleCollection);
+    matchedParticle = bHelp.GetMatchedMCparticle(plausibleParticles, object, maxDR);
+    object.mcMatchID = matchedParticle.id;
+  }
+}
+
+template <typename collectionType>
+void HelperLeptonCore::fillMCMatchAny(collectionType& collection, const double& maxDR) {
+  BNmcparticleCollection plausibleParticles;
+  BNmcparticle matchedParticle;
+
+  for (auto& object: collection) {
+    plausibleParticles = getPlausibleParticles(object, rawCollections.mcParticleCollection);
+    matchedParticle = bHelp.GetMatchedMCparticle(plausibleParticles, object, maxDR);
+    object.mcMatchAny = 1 + int(isFromB(matchedParticle));
+  }
+}
+
+template <typename particleType>
+BNmcparticleCollection HelperLeptonCore::getPlausibleParticles(particleType& particle, BNmcparticleCollection * mcParticles) {
+  BNmcparticleCollection plausibleParticles;
+
+  for (auto mcParticle: *mcParticles) {
+    if (isPlausible(particle, mcParticle)) plausibleParticles.push_back(mcParticle);
+  }
+  return plausibleParticles;
+}
+
+template <typename particleType>
+bool HelperLeptonCore::isPlausible(particleType particle, const BNmcparticle& mcParticle) {
+  if ((abs(particle.genId) == 11) && (abs(mcParticle.id != 11))) return false;
+  if ((abs(particle.genId) == 13) && (abs(mcParticle.id != 13))) return false;
+  double dR = deltaR(particle.eta, particle.phi, mcParticle.eta, mcParticle.phi);
+  if (dR < 0.3) return true;
+  if ((particle.pt < 10) && (abs(particle.genId) == 13) && (mcParticle.id != particle.genId)) return false;
+  if (dR<0.7) return true;
+  if (min(particle.pt, mcParticle.pt) / max(particle.pt, mcParticle.pt) < 0.3) return false;
+  return true;
+}
+
+template <typename collectionType>
+void HelperLeptonCore::fillSIP(collectionType& collection, bool applySmearing) {
+  double sip = -99.0;
+  for (auto& object: collection) {
+    if (object.IP != -99 && object.IPError != -99) sip = object.IP / object.IPError;
+    if (applySmearing) sip = scaleSIPMC(sip, object.genId, object.pt, object.mcMatchID, object.mcMatchAny, object.eta);
+    object.SIP = sip;
+  }
+}
+
+template <typename collectionType>
+void HelperLeptonCore::fillLepJetBTagCSV(collectionType& collection, BNjetCollection& jetCollection) {
+  double jetBTagCSV = 0.0;
+  BNjet matchedJet;
+
+  for (auto& object: collection) {
+    matchedJet = bHelp.GetClosestJet(jetCollection, object, 100.0);
+    if (deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi) <= 0.5) jetBTagCSV = max(matchedJet.btagCombinedSecVertex, 0.0);
+
+    object.jetBTagCSV = jetBTagCSV;
+  }
+}
+
+template <typename collectionType>
+void HelperLeptonCore::fillLepJetPtRatio(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing) {
+  double jetPtRatio = 1.5;
+  BNjet matchedJet;
+
+  for (auto& object: collection) {
+    matchedJet = bHelp.GetClosestJet(jetCollection, object, 100.0);
+    if (deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi) <= 0.5) jetPtRatio = min(object.pt/matchedJet.pt, 1.5);
+    if (applySmearing) jetPtRatio = scaleLepJetPtRatioMC(jetPtRatio, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
+
+    object.jetPtRatio = jetPtRatio;
+  }
+}
+
+template <typename collectionType>
+void HelperLeptonCore::fillLepJetDeltaR(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing) {
+  double jetDeltaR = -99;
+  BNjet matchedJet;
+
+  for (auto& object: collection) {
+    matchedJet = bHelp.GetClosestJet(jetCollection, object, 100.0);
+    jetDeltaR = min(deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi), 0.5);
+    if (applySmearing) jetDeltaR = scaleLepJetDRMC(jetDeltaR, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
+
+    object.jetDeltaR = jetDeltaR;
+  }
+}
+
+template <typename collectionType>
+void HelperLeptonCore::scaleMCCollectionDZ(collectionType& collection) {
+  double dz = -99.0;
+  for (auto& object: collection) {
+    dz = scaleDZMC(object.correctedDZ, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
+    object.correctedDZ = dz;
+  }
+}
+
+template <typename collectionType>
+void HelperLeptonCore::scaleMCCollectionDXY(collectionType& collection) {
+  double dxy = -99.0;
+  for (auto& object: collection) {
+    dxy = scaleDXYMC(object.correctedD0Vertex, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
+    object.correctedD0Vertex = dxy;
+  }
+}
 
 #endif // _HelperLeptonCore_h

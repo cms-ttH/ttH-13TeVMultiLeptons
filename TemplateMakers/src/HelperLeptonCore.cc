@@ -3,15 +3,14 @@
 using namespace std;
 
 // constructor
-HelperLeptonCore::HelperLeptonCore (): rawCollections() {
+HelperLeptonCore::HelperLeptonCore(): rawCollections() {
   verbose = true;
-  
   if (verbose) std::cout << "Inside constructor" << std::endl;
+  gSmearer = new TRandom3(0);
 }
 
 void HelperLeptonCore::initializePUReweighting () {
   listOfCollisionDatasets = "2012A_13July, 2012A_06Aug, 2012B_13July, 2012C_PR, 2012C_24Aug, 2012D_PR";
-
   // this cannot be blank
   // but it is only used for 2011 PU reweighting
   // Options are SingleMu, and ElectronHad
@@ -19,13 +18,13 @@ void HelperLeptonCore::initializePUReweighting () {
 }
 
 
-BEANhelper * HelperLeptonCore::setupAnalysisParameters (string year, string inputName ) {
+BEANhelper * HelperLeptonCore::setupAnalysisParameters(string year, string inputName ) {
   analysisYear = year;
   sampleName = inputName;
 
   detectData (sampleName);
   convertSampleNameToNumber(sampleName);
-  initializePUReweighting(); 
+  initializePUReweighting();
 
   // param 1: the era for your analysis
   // param 2: the type of analysis (DIL most of the time)
@@ -40,7 +39,7 @@ BEANhelper * HelperLeptonCore::setupAnalysisParameters (string year, string inpu
   return &bHelp;
 }
 
-bool HelperLeptonCore::detectData (string sampleName) {
+bool HelperLeptonCore::detectData(string sampleName) {
   isData = false;
   sysType_lep = "MC";
   if (TString(sampleName).Contains("DoubleElectron")
@@ -58,7 +57,7 @@ bool HelperLeptonCore::detectData (string sampleName) {
 }
 
 
-int HelperLeptonCore::convertSampleNameToNumber (string sampleName ) {
+int HelperLeptonCore::convertSampleNameToNumber(string sampleName) {
   sampleNumber = 999999;
   weight_Xsec = 1.0;
   nGen = 1;
@@ -288,12 +287,12 @@ void HelperLeptonCore::initializeInputCollections (fwlite::ChainEvent& ev, bool 
   // Then you can store a pointer to the collection in a BEANFileInterface
   // then return a pointer to the BEANFileInterface for other folks to use.
 
-  //------   Event 
+  //------   Event
   h_event.getByLabel(ev,"BNproducer");
   events = *h_event;
   collections.eventCollection = &events;
 
-  //------ MC particles 
+  //------ MC particles
   h_mcparticles.getByLabel(ev,"BNproducer","MCstatus3");
   mcparticles = *h_mcparticles;
   collections.mcParticleCollection = &mcparticles;
@@ -328,9 +327,9 @@ void HelperLeptonCore::initializeInputCollections (fwlite::ChainEvent& ev, bool 
   electronsRaw = *h_electrons;
   collections.rawElectronCollection = &electronsRaw;
 
-  //-----  Jets 
+  //-----  Jets
   h_pfjets.getByLabel(ev,"BNproducer","selectedPatJetsPFlow");
-  pfjets = *h_pfjets; 
+  pfjets = *h_pfjets;
   collections.jetCollection = &pfjets;
 
   //----- MET
@@ -355,16 +354,14 @@ void HelperLeptonCore::initializeInputCollections (fwlite::ChainEvent& ev, bool 
 }
 
 void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID tightID, electronID::electronID looseID, electronID::electronID preselectedID, BEANFileInterface * selectedCollections) {
-  electronsTight = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), tightID, rawCollections.jetsForLepMVACollection );
-
-  electronsTightLoose = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), looseID, rawCollections.jetsForLepMVACollection );
+  electronsTight = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), tightID);
+  electronsTightLoose = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), looseID);
   electronsLoose = bHelp.GetDifference(electronsTightLoose, electronsTight);
-  
-  electronsTightLoosePreselected = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), preselectedID, rawCollections.jetsForLepMVACollection );
-  electronsPreselected = bHelp.GetDifference(electronsTightLoosePreselected, electronsTightLoose);
 
+  electronsTightLoosePreselected = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), preselectedID);
+  electronsPreselected = bHelp.GetDifference(electronsTightLoosePreselected, electronsTightLoose);
   electronsLoosePreselected = bHelp.GetUnion(electronsLoose, electronsPreselected);
-  
+
   selectedCollections->tightElectronCollection = &electronsTight;
   selectedCollections->looseElectronCollection = &electronsLoose;
   selectedCollections->preselectedElectronCollection = &electronsPreselected;
@@ -376,15 +373,13 @@ void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID
 
 void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, muonID::muonID looseID, muonID::muonID preselectedID, BEANFileInterface * selectedCollections) {
   muonsTight = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), tightID, rawCollections.jetsForLepMVACollection );
- 
-  muonsTightLoose = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), looseID, rawCollections.jetsForLepMVACollection );
+  muonsTightLoose = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), looseID);
   muonsLoose = bHelp.GetDifference(muonsTightLoose, muonsTight);
-  
-  muonsTightLoosePreselected = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), preselectedID, rawCollections.jetsForLepMVACollection );
-  muonsPreselected = bHelp.GetDifference(muonsTightLoosePreselected, muonsTightLoose);
 
+  muonsTightLoosePreselected = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), preselectedID);
+  muonsPreselected = bHelp.GetDifference(muonsTightLoosePreselected, muonsTightLoose);
   muonsLoosePreselected = bHelp.GetUnion(muonsLoose, muonsPreselected);
-  
+
   selectedCollections->tightMuonCollection = &muonsTight;
   selectedCollections->looseMuonCollection = &muonsLoose;
   selectedCollections->preselectedMuonCollection = &muonsPreselected;
@@ -419,14 +414,13 @@ void HelperLeptonCore::getTightCorrectedJets (double ptCut,
 
     jetsNotMediumCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsMediumCSV));
     selectedCollections->jetCollectionNotMediumCSV = &jetsNotMediumCSV;
-    
+
     tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'T');
     jetsTightCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
     selectedCollections->jetCollectionTightCSV = &jetsTightCSV;
 
     jetsNotTightCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsTightCSV));
     selectedCollections->jetCollectionNotTightCSV = &jetsNotTightCSV;
-    
 }
 
 BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets (double ptCut,
@@ -447,7 +441,7 @@ void HelperLeptonCore::getCorrectedMet (BEANFileInterface * selectedCollections,
   // make sure you clear this out
   // before you add something into again
   metCorrected.clear();
-  
+
   //--- Important notice from BEANhelper
   //--- Use unselected jets for correction 
   //--- Use uncorrected jets to correct the met
@@ -456,13 +450,11 @@ void HelperLeptonCore::getCorrectedMet (BEANFileInterface * selectedCollections,
 
   metCorrected.push_back(tmpMet);
 
-  selectedCollections->metCollection = & metCorrected;
-
+  selectedCollections->metCollection = &metCorrected;
 }
 
-void HelperLeptonCore::fillLepCollectionWithSelectedLeptons (BEANFileInterface * selectedCollections) {
-
-  // remove all entires first
+void HelperLeptonCore::fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections) {
+  // remove all entries first
   leptonsTight.clear();
   leptonsLoose.clear();
   leptonsPreselected.clear();
@@ -499,4 +491,115 @@ void HelperLeptonCore::fillLepCollectionWithSelectedLeptons (BEANFileInterface *
   selectedCollections->loosePreselectedLeptonCollection = &leptonsLoosePreselected;
   selectedCollections->tightLoosePreselectedLeptonCollection = &leptonsTightLoosePreselected;
 }
+
+bool HelperLeptonCore::isFromB(BNmcparticle particle) {
+  auto isB = [] (int& id) {return ((id / 1000) == 5 || (id / 100) == 5 || (id == 5));};
+
+  if (isB(particle.motherId)) return true;
+  if (isB(particle.mother0Id)) return true;
+  if (isB(particle.mother1Id)) return true;
+
+  if ((particle.mother0Status == 2) && (isB(particle.grandMother00Id) || isB(particle.grandMother01Id))) return true;
+  if ((particle.mother1Status == 2) && (isB(particle.grandMother10Id) || isB(particle.grandMother11Id))) return true;
+
+  return false;
+}
+
+double HelperLeptonCore::scaleIPVarsMC(double ipvar, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+  if (abs(genID) == 13) {
+    if (mcMatchID > 0 || mcMatchAny <= 1) {
+      return ipvar * (abs(eta) < 1.5 ? 1.04 : 1.10);
+    } else {
+      return ipvar * 0.95;
+    }
+  } else {
+    if (mcMatchID > 0 || mcMatchAny <= 1) {
+      return ipvar * (abs(eta) < 1.479 ? 1.02 : 1.07);
+    } else {
+      return ipvar * 0.95;
+    }
+  }
+}
+
+double HelperLeptonCore::scaleSIPMC(double& sip, int& genID, double& pt, int& mcMatchID, int& mcMatchAny, double& eta) {
+  if (abs(genID) == 11 && (mcMatchID > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+    return logSmearMC(gSmearer, sip, 0.10, 0.2);
+  }
+  return scaleIPVarsMC(sip, genID, pt, eta, mcMatchID, mcMatchAny);
+}
+
+double HelperLeptonCore::scaleDZMC(double dz, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+  if (abs(genID) == 11 && (mcMatchID > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+    return logSmearMC(gSmearer, dz, 0.20, 0.3);
+  }
+  return scaleIPVarsMC(dz, genID, pt, eta, mcMatchID, mcMatchAny);
+}
+
+double HelperLeptonCore::scaleDXYMC(double dxy, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+  if (abs(genID) == 11 && (mcMatchID > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+    return logSmearMC(gSmearer, dxy, 0.07, 0.3);
+  }
+  return scaleIPVarsMC(dxy, genID, pt, eta, mcMatchID, mcMatchAny);
+}
+
+double HelperLeptonCore::scaleLepJetPtRatioMC(double jetPtRatio, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+  if (mcMatchAny >= 2) {
+    if (pt < 15 && jetPtRatio == 1) {
+      if (gSmearer->Rndm() < 0.2) {
+        if (abs(eta) < 1.5) {
+          return gSmearer->Gaus(0.35,0.10);
+        } else {
+          return gSmearer->Gaus(0.47,0.20);
+        }
+      }
+    }
+    if (abs(eta) < 1.5) {
+      return (jetPtRatio == 1.0 ? 1.0 : jetPtRatio * 0.95);
+    } else {
+      // pull closer to central value
+      return (jetPtRatio == 1.0 ? 1.0 : 0.95*jetPtRatio + 0.05*0.45);
+    }
+  }
+  if (abs(eta) < 1.5) {
+    if (jetPtRatio == 1) return 1;
+    return jetPtRatio * 0.98;
+  } else {
+    if (jetPtRatio == 1) return 1;
+    return 0.95*(jetPtRatio*0.972) + 0.05*0.8374; // pull closer to central value
+  }
+}
+
+double HelperLeptonCore::scaleLepJetDRMC(double jetDR, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+  if (jetDR == 0.) return 0.;
+  if (abs(genID) == 13) {
+    if (mcMatchAny >= 2) return jetDR;
+    if (pt > 15) { // muons, high pt
+      if (abs(eta) < 1.5) {
+        return jetDR * 1.01;
+      } else {
+        return log(1 + jetDR * (eta * eta) * 0.95) / (eta * eta); // pull closer to zero
+      }
+    } else { // muons, low pt
+      if (abs(eta) < 1.5) {
+        return jetDR * 1.01;
+      } else if (abs(eta) < 1.9) {
+        return log(1 + jetDR * 0.5) / 0.5;
+      } else {
+        return log(1 + jetDR * 2 * 0.95) / 2;
+      }
+    }
+  } else { // electrons
+    if (mcMatchAny >= 2) return jetDR;
+    //if (pt > 0) { // electrons, any pt for now
+    if (abs(eta) < 1.5) {
+      return jetDR * 1.01;
+    } else if (abs(eta) < 2.0) {
+      return log(1 + jetDR * 0.5) / 0.5;
+    } else {
+      return log(1 + jetDR * 5 * 0.95) / 5;
+    }
+    //}
+  }
+}
+
 
