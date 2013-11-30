@@ -12,7 +12,7 @@ parser.add_argument('config_file_name', nargs='?', default='stack_plot_configura
 parser.add_argument('cosmetics_config_file_name', nargs='?', default='stack_plot_cosmetics.yaml', help='Cosmetics configuration file to process.')
 parser.add_argument('-w', '--web', action='store_true', help='post each plot to the user\'s AFS space')
 parser.add_argument('--label', help='Override the label designated in the configuration file with LABEL')
-parser.add_argument('-y', '--yields', action='store_true', help='print a yield table')
+parser.add_argument('-y', '--yields', action='store_true', default=True, help='print a yield table')
 args = parser.parse_args()
 
 ## config is mostly options that change the substance of what is displayed
