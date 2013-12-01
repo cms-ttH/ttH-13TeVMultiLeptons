@@ -65,6 +65,9 @@
 #endif
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
+#include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include  "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
 
 class HelperLeptonCore  {
 public:
@@ -100,6 +103,9 @@ public:
                        sysType::sysType shift = sysType::NA);
 
   void fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections);
+  void fillZLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections,
+                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS,
+                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_all);
 
   bool isFromB(BNmcparticle particle);
 
@@ -197,6 +203,10 @@ public:
   BNleptonCollection leptonsTightLoose;
   BNleptonCollection leptonsLoosePreselected;
   BNleptonCollection leptonsTightLoosePreselected;
+  BNleptonCollection leptonsTightLooseZ;
+  BNleptonCollection leptonsTightLooseNonZ;
+  BNleptonCollection leptonsTightLoosePreselectedZ;
+  BNleptonCollection leptonsTightLoosePreselectedNonZ;
 
   fwlite::Handle<BNjetCollection> h_lepMvaJets;
   BNjetCollection lepMvaJets;

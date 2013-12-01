@@ -112,6 +112,10 @@ public:
     tightLooseLeptonCollection(0),
     loosePreselectedLeptonCollection(0),
     tightLoosePreselectedLeptonCollection(0),
+    tightLooseZLeptonCollection(0),
+    tightLooseNonZLeptonCollection(0),
+    tightLoosePreselectedZLeptonCollection(0),
+    tightLoosePreselectedNonZLeptonCollection(0),
     metCollection(0),
     jetCollection(0),
     jetCollectionLooseCSV(0),
@@ -156,6 +160,10 @@ public:
   BNleptonCollection *  tightLooseLeptonCollection;
   BNleptonCollection *  loosePreselectedLeptonCollection;
   BNleptonCollection *  tightLoosePreselectedLeptonCollection;
+  BNleptonCollection *  tightLooseZLeptonCollection;
+  BNleptonCollection *  tightLooseNonZLeptonCollection;
+  BNleptonCollection *  tightLoosePreselectedZLeptonCollection;
+  BNleptonCollection *  tightLoosePreselectedNonZLeptonCollection;
 
 
   BNmetCollection *   metCollection;

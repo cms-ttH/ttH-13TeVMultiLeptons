@@ -252,11 +252,27 @@ int main (int argc, char** argv) {
   kinVars.push_back(&myMinMassLepLepSFOS);
 
   TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myZLikeMassLepLepSFOS("mass", "closest_to", "ZLike_mass_leplep_SFOS",
+                                                                                  &(selectedCollections.tightLooseLeptonCollection), "tightLoose_leptons_by_pt", 1, 99,
+                                                                                  &(selectedCollections.tightLooseLeptonCollection), "tightLoose_leptons_by_pt", 1, 99,
+                                                                                  91.2, "same_flavour", "opposite_sign");
+  kinVars.push_back(&myZLikeMassLepLepSFOS);  
+
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myZLikeMassLepLepSFOS_all("mass", "closest_to", "ZLike_mass_leplep_SFOS_all",
                                                                                   &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                                                                                   &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                                                                                   91.2, "same_flavour", "opposite_sign");
-  kinVars.push_back(&myZLikeMassLepLepSFOS);  
-  
+  kinVars.push_back(&myZLikeMassLepLepSFOS_all);  
+
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myZLikePtLepLepSFOS("vectPt", "max", "ZLike_pt_leplep_SFOS",
+                                                                                &(selectedCollections.tightLooseZLeptonCollection), "tightLooseZ_leptons_by_pt", 1, 99,
+                                                                                &(selectedCollections.tightLooseZLeptonCollection), "tightLooseZ_leptons_by_pt", 1, 99);
+  kinVars.push_back(&myZLikePtLepLepSFOS);
+
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myZLikePtLepLepSFOS_all("vectPt", "max", "ZLike_pt_leplep_SFOS_all",
+                                                                                &(selectedCollections.tightLoosePreselectedZLeptonCollection), "tightLoosePreselectedZ_leptons_by_pt", 1, 99,
+                                                                                &(selectedCollections.tightLoosePreselectedZLeptonCollection), "tightLoosePreselectedZ_leptons_by_pt", 1, 99);
+  kinVars.push_back(&myZLikePtLepLepSFOS_all);
+
   TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinDeltaRLepLep("deltaR", "min", "min_dR_leplep",
                                                                               &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                                                                               &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99);
@@ -306,6 +322,14 @@ int main (int argc, char** argv) {
   GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
                                                                   "pt", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonPt);
+
+  GenericCollectionMember<double, BNleptonCollection> tightLooseZLeptonPt(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLooseZLeptonCollection),
+                                                                  "pt", "tightLooseZ_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&tightLooseZLeptonPt);
+
+  GenericCollectionMember<double, BNleptonCollection> tightLooseNonZLeptonPt(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLooseNonZLeptonCollection),
+                                                                  "pt", "tightLooseNonZ_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&tightLooseNonZLeptonPt);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonTkPT(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
                                                                     "tkPT", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
@@ -525,6 +549,7 @@ int main (int argc, char** argv) {
     //--------- fill up the lepton collections
     if (debug >9) cout << "Filling lepton collections" << endl;
     lepHelper.fillLepCollectionWithSelectedLeptons(&selectedCollections);
+    lepHelper.fillZLepCollectionWithSelectedLeptons(&selectedCollections, &myZLikeMassLepLepSFOS, &myZLikeMassLepLepSFOS_all);
 
     //------------    Jets
     *(lepHelper.rawCollections.jetCollection) = beanHelper->GetCleanJets(*(lepHelper.rawCollections.jetCollection), *(selectedCollections.tightLoosePreselectedLeptonCollection), 0.5);

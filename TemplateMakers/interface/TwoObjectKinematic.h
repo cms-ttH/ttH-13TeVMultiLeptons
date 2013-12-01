@@ -83,7 +83,7 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
           if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || i < j ) {
             TString bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
             if (which_pair == "all_pairs_abs") bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
-            if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), i+1, j+2);
+            if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), i+1, j+1);
             branches[bName] = BranchInfo<double>(bName);
           }
         }
