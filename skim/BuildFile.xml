@@ -6,6 +6,7 @@
 <use name="FWCore/Utilities"/>
 <use name="BEAN/Collections"/>
 <use name="BEAN/BEANmaker" />
+<use name="ttHMultileptonAnalysis/TemplateMakers" />
 <use name="root"/>
 
 <flags EDM_PLUGIN="1"/>

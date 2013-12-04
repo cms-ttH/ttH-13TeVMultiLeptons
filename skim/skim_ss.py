@@ -13,8 +13,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 ## Source
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                                             'file:/store/user/awoodard/TTH_Inclusive_M-125_8TeV_pythia6/TTH_Inclusive_M-125_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_BEAN_53xOn53x_V04_CV02/3db9488ccafe261bfc4a8ee8a1b60217/ttH_pat2bean_53x_9_1_i3x.root',
-                                                             ),
+                                                             'file:/store/user/awoodard/WpWpqq_8TeV-madgraph/WpWpqq_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1_BEAN_53xOn53x_V04_CV05/aef873b24881f0c4be68d0911553743c/ttH_pat2bean_53x_5_1_cD0.root'                                                             ),
                             duplicateCheckMode = cms.untracked.string('checkAllFilesOpened')
                             )
 

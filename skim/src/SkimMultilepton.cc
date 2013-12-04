@@ -9,17 +9,19 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "BEAN/BEANmaker/interface/BEANhelper.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 
-class SkimMultilepton : public edm::EDFilter {
+class SkimMultilepton: public edm::EDFilter {
    public:
       explicit SkimMultilepton(const edm::ParameterSet&);
       ~SkimMultilepton();
 
    private:
-      virtual void beginJob() ;
+      virtual void beginJob();
       virtual bool filter(edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
-      
+      virtual void endJob();
+
       virtual bool beginRun(edm::Run&, edm::EventSetup const&);
       virtual bool endRun(edm::Run&, edm::EventSetup const&);
       virtual bool beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
@@ -30,15 +32,16 @@ class SkimMultilepton : public edm::EDFilter {
     edm::InputTag eleSrc_, muoSrc_, lepMvaJetSrc_;
     muonID::muonID muonTightID_, muonLooseID_, muonPreselectedID_;
     electronID::electronID electronTightID_, electronLooseID_, electronPreselectedID_;
-    BEANhelper beanHelper;
-
+  //    BEANhelper beanHelper;
+    HelperLeptonCore lepHelper;
+    BEANFileInterface selectedCollections;
 };
 
 // constructors and destructor
 SkimMultilepton::SkimMultilepton(const edm::ParameterSet& iConfig):
     era_(iConfig.getUntrackedParameter<std::string>("era")),
     lepMvaJetSrc_(iConfig.getUntrackedParameter<edm::InputTag>("lepMvaJetSrc")),
-    eleSrc_(iConfig.getUntrackedParameter<edm::InputTag>("eleSrc")),    
+    eleSrc_(iConfig.getUntrackedParameter<edm::InputTag>("eleSrc")),
     muoSrc_(iConfig.getUntrackedParameter<edm::InputTag>("muoSrc")),
     muonTightID_(muonID::muonSideTightMVA),
     muonLooseID_(muonID::muonSideLooseMVA),
@@ -46,15 +49,16 @@ SkimMultilepton::SkimMultilepton(const edm::ParameterSet& iConfig):
     electronTightID_(electronID::electronSideTightMVA),
     electronLooseID_(electronID::electronSideLooseMVA),
     electronPreselectedID_(electronID::electronSide)
-    
 {
   //now do what ever initialization is needed
- 
+
   //Check to make sure we're not doing anything in consistent
   // need to define an int for the sample... this doesn't matter, so hardcode to ttbar
   int nSample = 2500;
   std::string dataSetName = "ttbar";
-  beanHelper.SetUp(era_, nSample, analysisType::DIL, false, dataSetName, false, true, "all");
+  //  beanHelper.SetUp(era_, nSample, analysisType::DIL, false, dataSetName, false, true, "all");
+
+  BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", "ttbar");
 }
 
 SkimMultilepton::~SkimMultilepton()
@@ -69,10 +73,6 @@ SkimMultilepton::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace std;
   using namespace edm;
-
-  //Check simple event filtering
-  edm::Handle<BNeventCollection> eventHandle;
-  iEvent.getByLabel("BNproducer", eventHandle);
 
   //Check the primary vertex
   edm::Handle<BNprimaryvertexCollection> pvHandle;
@@ -90,44 +90,21 @@ SkimMultilepton::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //If we have no vertex, no point in going further...
   if (numpv == 0) return false;
 
-  //jets
-  edm::Handle<BNjetCollection> lepMvaJetsHandle;
-  iEvent.getByLabel(lepMvaJetSrc_, lepMvaJetsHandle);
-  BNjetCollection const &lepMvaJets = *lepMvaJetsHandle;
-  
-  //muons
-  edm::Handle<BNmuonCollection> muonsHandle;
-  iEvent.getByLabel(muoSrc_, muonsHandle);
-  BNmuonCollection const &muons = *muonsHandle;
+  lepHelper.initializeInputCollections(iEvent, true, selectedCollections);
+  lepHelper.fillSIP(*(lepHelper.rawCollections.rawMuonCollection), false);
+  lepHelper.fillSIP(*(lepHelper.rawCollections.rawElectronCollection), false);
+  lepHelper.fillLepJetPtRatio(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), false);
+  lepHelper.fillLepJetPtRatio(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), false);
+  lepHelper.fillLepJetDeltaR(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), false);
+  lepHelper.fillLepJetDeltaR(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), false);
+  lepHelper.fillLepJetBTagCSV(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection));
+  lepHelper.fillLepJetBTagCSV(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection));
 
-  int numTightMuons = 0, numLooseMuons = 0, numTightLoosePreselectedMuons = 0;
+  lepHelper.getTightLoosePreselectedElectrons(electronTightID_, electronLooseID_, electronPreselectedID_, &selectedCollections);
+  lepHelper.getTightLoosePreselectedMuons(muonTightID_, muonLooseID_, muonPreselectedID_, &selectedCollections);
 
-  BNmuonCollection muonsTight = beanHelper.GetSelectedMuons(muons, muonTightID_, &lepMvaJets);
-  BNmuonCollection muonsTightLoose = beanHelper.GetSelectedMuons(muons, muonLooseID_, &lepMvaJets);
-  BNmuonCollection muonsLoose = beanHelper.GetDifference(muonsTightLoose, muonsTight);
-  
-  BNmuonCollection muonsTightLoosePreselected = beanHelper.GetSelectedMuons(muons, muonPreselectedID_, &lepMvaJets);
-
-  numTightMuons = muonsTight.size();
-  numLooseMuons = muonsLoose.size();
-  numTightLoosePreselectedMuons = muonsTightLoosePreselected.size();
-
-  //electrons
-  edm::Handle<BNelectronCollection> electronsHandle;
-  iEvent.getByLabel(eleSrc_, electronsHandle);
-  BNelectronCollection const &electrons = *electronsHandle;
-
-  int numTightElectrons = 0, numLooseElectrons = 0, numTightLoosePreselectedElectrons = 0;
-
-  BNelectronCollection electronsTight = beanHelper.GetSelectedElectrons(electrons, electronTightID_, &lepMvaJets);
-  BNelectronCollection electronsTightLoose = beanHelper.GetSelectedElectrons(electrons, electronLooseID_, &lepMvaJets);
-  BNelectronCollection electronsLoose = beanHelper.GetDifference(electronsTightLoose, electronsTight);
-  
-  BNelectronCollection electronsTightLoosePreselected = beanHelper.GetSelectedElectrons(electrons, electronPreselectedID_, &lepMvaJets);
-
-  numTightElectrons = electronsTight.size();
-  numLooseElectrons = electronsLoose.size();
-  numTightLoosePreselectedElectrons = electronsTightLoosePreselected.size();  
+  int numTightLoosePreselectedMuons = selectedCollections.tightLoosePreselectedMuonCollection->size();
+  int numTightLoosePreselectedElectrons = selectedCollections.tightLoosePreselectedElectronCollection->size();
 
   if (numTightLoosePreselectedMuons + numTightLoosePreselectedElectrons < 2) return false;
 
@@ -136,39 +113,39 @@ SkimMultilepton::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void 
+void
 SkimMultilepton::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
+void
 SkimMultilepton::endJob() {
 }
 
 // ------------ method called when starting to processes a run  ------------
-bool 
+bool
 SkimMultilepton::beginRun(edm::Run&, edm::EventSetup const&)
-{ 
+{
   return true;
 }
 
 // ------------ method called when ending the processing of a run  ------------
-bool 
+bool
 SkimMultilepton::endRun(edm::Run&, edm::EventSetup const&)
 {
   return true;
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
-bool 
+bool
 SkimMultilepton::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
   return true;
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
-bool 
+bool
 SkimMultilepton::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
   return true;
