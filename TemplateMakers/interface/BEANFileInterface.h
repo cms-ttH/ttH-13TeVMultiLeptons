@@ -70,7 +70,6 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 
-
 ////////////////////////////////////////////////////////
 //
 //  Class description:

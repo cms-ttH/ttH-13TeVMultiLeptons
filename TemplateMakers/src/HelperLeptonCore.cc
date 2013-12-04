@@ -281,36 +281,44 @@ int HelperLeptonCore::convertSampleNameToNumber(string sampleName) {
   return sampleNumber;
 }
 
-  // setup several  BN pointers
-void HelperLeptonCore::initializeInputCollections (fwlite::ChainEvent& ev, bool isLepMVA, BEANFileInterface & collections) {
+void HelperLeptonCore::initializeInputCollections(edm::EventBase& ev, bool isLepMVA, BEANFileInterface& collections) {
   // Each handle for a collection must be de-referenced to get the collection
   // Then you can store a pointer to the collection in a BEANFileInterface
   // then return a pointer to the BEANFileInterface for other folks to use.
 
   //------   Event
-  h_event.getByLabel(ev,"BNproducer");
+  edm::InputTag eventTag("BNproducer");
+  ev.getByLabel(eventTag, h_event);
+
   events = *h_event;
   collections.eventCollection = &events;
 
   //------ MC particles
-  h_mcparticles.getByLabel(ev,"BNproducer","MCstatus3");
+  edm::InputTag mcTag("BNproducer","MCstatus3");
+  ev.getByLabel(mcTag, h_mcparticles);
   mcparticles = *h_mcparticles;
   collections.mcParticleCollection = &mcparticles;
 
   //----- hlt
-  h_hlt.getByLabel(ev,"BNproducer","HLT");
+  edm::InputTag hltTag("BNproducer","HLT");
+  ev.getByLabel(hltTag, h_hlt);
   hltInfo = *h_hlt;
   collections.hltCollection = &hltInfo;
 
   //------- Muons
   if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
     if (!isLepMVA) {
-      h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsPFlow");
+      edm::InputTag muonTag("BNproducer","selectedPatMuonsPFlow"); //It looks like there isn't a way to set an input tag except in the constructor, unless I'm missing something obvious (likely)
+      ev.getByLabel(muonTag, h_muons);
     } else {
-      h_muons.getByLabel(ev, "BNproducer", "selectedPatMuonsLoosePFlow");
+      edm::InputTag muonTag("BNproducer","selectedPatMuonsLoosePFlow");
+      ev.getByLabel(muonTag, h_muons);
     }
   }
-  else h_muons.getByLabel(ev,"BNproducer","selectedPatMuonsLoosePFlow");
+  else {
+    edm::InputTag muonTag("BNproducer","selectedPatMuonsLoosePFlow");
+    ev.getByLabel(muonTag, h_muons);
+  }
 
   muonsRaw = *h_muons;
   collections.rawMuonCollection = &muonsRaw;
@@ -318,34 +326,50 @@ void HelperLeptonCore::initializeInputCollections (fwlite::ChainEvent& ev, bool 
   //-----  Electrons
   if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
     if (!isLepMVA) {
-      h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsPFlow");
+      edm::InputTag electronTag("BNproducer","selectedPatElectronsPFlow");
+      ev.getByLabel(electronTag, h_electrons);
     } else {
-      h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsGSF");
+      edm::InputTag electronTag("BNproducer","selectedPatElectronsGSF");
+      ev.getByLabel(electronTag, h_electrons);
     }
   }
-  else h_electrons.getByLabel(ev,"BNproducer","selectedPatElectronsLoosePFlow");
+  else {
+    edm::InputTag electronTag("BNproducer","selectedPatElectronsLoosePFlow");
+    ev.getByLabel(electronTag, h_electrons);
+  }
+
   electronsRaw = *h_electrons;
   collections.rawElectronCollection = &electronsRaw;
 
   //-----  Jets
-  h_pfjets.getByLabel(ev,"BNproducer","selectedPatJetsPFlow");
+  edm::InputTag jetTag("BNproducer","selectedPatJetsPFlow");
+  ev.getByLabel(jetTag, h_pfjets);
   pfjets = *h_pfjets;
   collections.jetCollection = &pfjets;
 
   //----- MET
-  if ( analysisYear == "2011" ) h_pfmets.getByLabel(ev,"BNproducer","patMETsTypeIPFlow");
-  else if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) h_pfmets.getByLabel(ev,"BNproducer","patMETsPFlow");
+  if (analysisYear == "2011") {
+    edm::InputTag metTag("BNproducer","patMETsTypeIPFlow");
+    ev.getByLabel(metTag, h_pfmets);
+  }
+  else if (analysisYear == "2012_52x" || analysisYear == "2012_53x") {
+    edm::InputTag metTag("BNproducer","patMETsPFlow");
+    ev.getByLabel(metTag, h_pfmets);
+  }
+
   pfmets = *h_pfmets;
   collections.metCollection = &pfmets;
 
   // ----- Primary Vertices
-  h_pvs.getByLabel(ev,"BNproducer","offlinePrimaryVertices");
+  edm::InputTag pvTag("BNproducer","offlinePrimaryVertices");
+  ev.getByLabel(pvTag, h_pvs);
   pvs = *h_pvs;
   collections.primaryVertexCollection = &pvs;
 
   // careful, not defined in every sample
   if (analysisYear == "2012_53x" && isLepMVA) {
-    h_lepMvaJets.getByLabel(ev, "BNproducer", "patJetsAK5PF");
+    edm::InputTag lepMVAJetTag("BNproducer", "patJetsAK5PF");
+    ev.getByLabel(lepMVAJetTag, h_lepMvaJets);
     lepMvaJets = *h_lepMvaJets;
     collections.jetsForLepMVACollection = &lepMvaJets;
   }

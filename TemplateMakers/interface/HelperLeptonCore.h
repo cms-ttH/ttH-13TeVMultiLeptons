@@ -37,9 +37,13 @@
 
 #if !defined(__CINT__) && !defined(__MAKECINT__)
 
+#include "FWCore/Utilities/interface/InputTag.h"
+
 #include "DataFormats/FWLite/interface/Handle.h"
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/FWLite/interface/ChainEvent.h"
+
+#include "FWCore/Framework/interface/Event.h"
 
 //Headers for the data items
 #include "BEAN/Collections/interface/BNelectron.h"
@@ -76,7 +80,7 @@ public:
   bool detectData(string sampleName);
   int convertSampleNameToNumber(string sampleName);
   void initializePUReweighting(); // setup some PU reweighting flags
-  void initializeInputCollections(fwlite::ChainEvent & ev, bool isLepMVA, BEANFileInterface& rawCollections);
+  void initializeInputCollections(edm::EventBase&, bool, BEANFileInterface&);
 
   // Handle the gymnastics of tight and loose collection definitions
   void getTightLoosePreselectedElectrons(electronID::electronID tightID,
@@ -152,10 +156,10 @@ public:
   std::string listOfCollisionDatasets;
   std::string datasetForBEANHelper;
 
-  fwlite::Handle<BNeventCollection> h_event;
+  edm::Handle<BNeventCollection> h_event;
   BNeventCollection events;
 
-  fwlite::Handle<BNmuonCollection> h_muons;
+  edm::Handle<BNmuonCollection> h_muons;
   BNmuonCollection muonsRaw;
   BNmuonCollection muonsTight;
   BNmuonCollection muonsLoose;
@@ -164,10 +168,10 @@ public:
   BNmuonCollection muonsLoosePreselected;
   BNmuonCollection muonsTightLoosePreselected;
 
-  fwlite::Handle<BNmcparticleCollection> h_mcparticles;
+  edm::Handle<BNmcparticleCollection> h_mcparticles;
   BNmcparticleCollection mcparticles;
 
-  fwlite::Handle<BNjetCollection> h_pfjets;
+  edm::Handle<BNjetCollection> h_pfjets;
   BNjetCollection pfjets;
   BNjetCollection jetsTight;
   BNjetCollection jetsLooseCSV;
@@ -177,17 +181,17 @@ public:
   BNjetCollection jetsNotTightCSV;
   BNjetCollection jetsMediumCSV;
 
-  fwlite::Handle<BNmetCollection> h_pfmets;
+  edm::Handle<BNmetCollection> h_pfmets;
   BNmetCollection pfmets;
   BNmetCollection metCorrected;
 
-  fwlite::Handle<BNtriggerCollection> h_hlt;
+  edm::Handle<BNtriggerCollection> h_hlt;
   BNtriggerCollection hltInfo;
 
-  fwlite::Handle<BNprimaryvertexCollection> h_pvs;
+  edm::Handle<BNprimaryvertexCollection> h_pvs;
   BNprimaryvertexCollection pvs;
 
-  fwlite::Handle<BNelectronCollection> h_electrons;
+  edm::Handle<BNelectronCollection> h_electrons;
   BNelectronCollection electronsRaw;
   BNelectronCollection electronsTight;
   BNelectronCollection electronsLoose;
@@ -208,7 +212,7 @@ public:
   BNleptonCollection leptonsTightLoosePreselectedZ;
   BNleptonCollection leptonsTightLoosePreselectedNonZ;
 
-  fwlite::Handle<BNjetCollection> h_lepMvaJets;
+  edm::Handle<BNjetCollection> h_lepMvaJets;
   BNjetCollection lepMvaJets;
 
 //-------------------- Inline functions
