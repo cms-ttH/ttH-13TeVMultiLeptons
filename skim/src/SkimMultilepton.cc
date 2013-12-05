@@ -40,9 +40,6 @@ class SkimMultilepton: public edm::EDFilter {
 // constructors and destructor
 SkimMultilepton::SkimMultilepton(const edm::ParameterSet& iConfig):
     era_(iConfig.getUntrackedParameter<std::string>("era")),
-    lepMvaJetSrc_(iConfig.getUntrackedParameter<edm::InputTag>("lepMvaJetSrc")),
-    eleSrc_(iConfig.getUntrackedParameter<edm::InputTag>("eleSrc")),
-    muoSrc_(iConfig.getUntrackedParameter<edm::InputTag>("muoSrc")),
     muonTightID_(muonID::muonSideTightMVA),
     muonLooseID_(muonID::muonSideLooseMVA),
     muonPreselectedID_(muonID::muonSide),
@@ -58,7 +55,7 @@ SkimMultilepton::SkimMultilepton(const edm::ParameterSet& iConfig):
   std::string dataSetName = "ttbar";
   //  beanHelper.SetUp(era_, nSample, analysisType::DIL, false, dataSetName, false, true, "all");
 
-  BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", "ttbar");
+  lepHelper.setupAnalysisParameters(era_, "ttbar");
 }
 
 SkimMultilepton::~SkimMultilepton()
