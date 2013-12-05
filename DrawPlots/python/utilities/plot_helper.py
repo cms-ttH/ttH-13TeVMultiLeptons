@@ -270,47 +270,47 @@ class SampleInformation:
                     'num_generated': 224519}, #ND number processed
 
             'WpWpqq': {'sample_type': 'MC',
-                     'is_signal': False,
-                     'x_section': 0.2482, #CERN x_sec, straight from PREP
-                     'x_section_error': 0.2482*0.5, #Just an unmotivated guess
-                     'num_generated': 1}, #Not yet processed 
+                       'is_signal': False,
+                       'x_section': 0.2482, #CERN x_sec, straight from PREP
+                       'x_section_error': 0.2482*0.5, #Just an unmotivated guess
+                       'num_generated': 99700},
 
             'WmWmqq': {'sample_type': 'MC',
-                     'is_signal': False,
-                     'x_section': 0.0889, #CERN x_sec, straight from PREP
-                     'x_section_error': 0.0889*0.5, #Just an unmotivated guess
-                     'num_generated': 1}, #Not yet processed 
+                       'is_signal': False,
+                       'x_section': 0.0889, #CERN x_sec, straight from PREP
+                       'x_section_error': 0.0889*0.5, #Just an unmotivated guess
+                       'num_generated': 1}, #Not yet processed
 
             'WWDPI': {'sample_type': 'MC',
-                     'is_signal': False,
-                     'x_section': 0.5879, #CERN x_sec, straight from PREP
-                     'x_section_error': 0.5879*0.5, #Just an unmotivated guess
-                     'num_generated': 1}, #Not yet processed 
+                      'is_signal': False,
+                      'x_section': 0.5879, #CERN x_sec, straight from PREP
+                      'x_section_error': 0.5879*0.5, #Just an unmotivated guess
+                      'num_generated': 833755}, 
 
 			##All wjets, zjets, and ttbar_* samples use ND x_sec, x_sec error, and number processed
             'wjets': {'sample_type': 'MC',
                       'is_signal': False,
-                      'x_section': 36257, 
-                      'x_section_error': 36257*0.013, 
+                      'x_section': 36257,
+                      'x_section_error': 36257*0.013,
                       'num_generated': 57536319},
 
             'wjets_0p': {'sample_type': 'MC',
-                      'is_signal': False,
-                      'x_section': 36257, 
-                      'x_section_error': 36257*0.013, 
-                      'num_generated': 57536319},
+                         'is_signal': False,
+                         'x_section': 36257,
+                         'x_section_error': 36257*0.013,
+                         'num_generated': 57536319},
 
             'wjets_1p': {'sample_type': 'MC',
-                      'is_signal': False,
-                      'x_section': 6440.4, 
-                      'x_section_error': 6440.4*0.013, 
-                      'num_generated': 23134881},
+                         'is_signal': False,
+                         'x_section': 6440.4,
+                         'x_section_error': 6440.4*0.013,
+                         'num_generated': 23134881},
 
             'wjets_2p': {'sample_type': 'MC',
-                      'is_signal': False,
-                      'x_section': 2087.2, 
-                      'x_section_error': 2087.2*0.013, 
-                      'num_generated': 33933328},
+                         'is_signal': False,
+                         'x_section': 2087.2,
+                         'x_section_error': 2087.2*0.013,
+                         'num_generated': 33933328},
 
             'wjets_3p': {'sample_type': 'MC',
                       'is_signal': False,
@@ -481,22 +481,22 @@ class SampleInformation:
                        'num_generated': 71405}, #ND number processed
 
             'ttbarGStar_ee': {'sample_type': 'MC',
-                       'is_signal': False,
-                       'x_section': 1.5*0.02724*0.104, #CERN x_sec
-                       'x_section_error': 1.5*0.02724*0.104*0.5, #CERN x_sec error
-                       'num_generated': 1}, #Not yet processed
+                              'is_signal': False,
+                              'x_section': 1.5*0.02724*0.104, #CERN x_sec
+                              'x_section_error': 1.5*0.02724*0.104*0.5, #CERN x_sec error
+                              'num_generated': 13517},
 
             'ttbarGStar_mm': {'sample_type': 'MC',
                        'is_signal': False,
                        'x_section': 1.5*0.01233*0.141, #CERN x_sec
                        'x_section_error': 1.5*0.01233*0.141*0.5, #CERN x_sec error
-                       'num_generated': 1}, #Not yet processed
+                       'num_generated': 8019},
 
             'ttbarGStar_tt': {'sample_type': 'MC',
                        'is_signal': False,
                        'x_section': 1.5*0.00133*0.038, #CERN x_sec
                        'x_section_error': 1.5*0.00133*0.038*0.5, #CERN x_sec error
-                       'num_generated': 1}, #Not yet processed
+                       'num_generated': 17289},
 
             'ttbarWW': {'sample_type': 'MC',
                         'is_signal': False,

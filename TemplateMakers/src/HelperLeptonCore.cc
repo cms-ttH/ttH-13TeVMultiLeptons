@@ -230,21 +230,21 @@ int HelperLeptonCore::convertSampleNameToNumber(string sampleName) {
     else if (sampleName == "ttbarG") { sampleNumber = 2560;
       nGen = 71405; Xsec = 1.444*1.8; } 
     else if (sampleName == "ttbarGStar_ee") { sampleNumber = 2567;
-      nGen = 1; Xsec = 1.5*0.02724*0.104; } //Not yet processed 
+      nGen = 13517; Xsec = 1.5*0.02724*0.104; } 
     else if (sampleName == "ttbarGStar_mm") { sampleNumber = 2568;
-      nGen = 1; Xsec = 1.5*0.01233*0.141; } //Not yet processed
+      nGen = 8019; Xsec = 1.5*0.01233*0.141; }
     else if (sampleName == "ttbarGStar_tt") { sampleNumber = 2569;
-      nGen = 1; Xsec = 1.5*0.00133*0.038; } //Not yet processed
+      nGen = 17289; Xsec = 1.5*0.00133*0.038; } 
     else if (sampleName == "tttt") { sampleNumber = 2525;
       nGen = 99994; Xsec = 0.000716; }
     else if (sampleName == "tbZ_ll") { sampleNumber = 2000;
       nGen = 148158; Xsec = 0.0114; }
     else if (sampleName == "WpWpqq") { sampleNumber = 2001;
-      nGen = 1; Xsec = 0.2482; } //Not yet processed
+      nGen = 99700; Xsec = 0.2482; }
     else if (sampleName == "WmWmqq") { sampleNumber = 2002;
       nGen = 1; Xsec = 0.0889; } //Not yet processed
     else if (sampleName == "WWDPI") { sampleNumber = 2003;
-      nGen = 1; Xsec = 0.5879; } //Not yet processed
+      nGen = 833755; Xsec = 0.5879; }
     else if (sampleName == "VH_tautau") { sampleNumber = 2915;
       nGen = 200124; Xsec = 0.07717352; } 
     else if (sampleName == "VH_ZZ") { sampleNumber = 2923;
