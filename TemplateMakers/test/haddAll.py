@@ -11,6 +11,7 @@ def main ():
     parser = ArgumentParser(description='Add together trees and move them to the plot making area.')
     parser.add_argument('project_label', help='Project label')
     parser.add_argument('-s', '--sumData', action='store_true', default=False, help='sum the data files together')
+    parser.add_argument('-i', '--makeInclusive', action='store_true', default=False, help='sum all data categories together to make an inclusive file')
     parser.add_argument('-c', '--copyFiles', action='store_true', default=False, help='copy files to treeFile directory')
     parser.add_argument('-m', '--moveFiles', action='store_true', default=False, help='move files to treeFile directory')
     parser.add_argument('-n', '--skipHadd', action='store_true', default=False, help ='don\'t hadd stuff, just move/copy it')
@@ -151,6 +152,18 @@ def main ():
                 rm_command = "rm %s" % " ".join(dataset_paths)
                 for feedback in os.popen(rm_command).readlines():
                     print feedback
+
+    if (args.makeInclusive):
+        non_sideband_dataset_paths = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'sideband' not in f]
+        hadd_command = 'hadd -v 0 -f inclusive_data_%s_all.root ' % args.project_label
+        hadd_command += " ".join(non_sideband_dataset_paths)
+
+        print ">>>>>>>>>> Running >>>>>>>>>  "
+        print "       %s" % hadd_command
+        for feedback in os.popen(hadd_command).readlines():
+            print feedback
+        print "-------Done making inclusive data file ---------"
+
 
     # make sure the destination exists before sending files
     checkDirs(outDir)
