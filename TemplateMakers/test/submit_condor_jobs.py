@@ -5,89 +5,85 @@ import time
 from argparse import ArgumentParser
 
 #------------------- Utility functions -------------
-def getNumLinesInFile (fileName):
+def getNumLinesInFile(fileName):
     theFile = open (fileName, 'r')
     numLines = len(theFile.readlines())
     return numLines
 
 #------------------ Don't fail if directories don't exist ----
-def checkCondorDirs () :
+def checkCondorDirs() :
     if not os.path.exists("batch_trees"):
         os.mkdir("batch_trees")
     if not os.path.exists("batch_trees/condor_logs"):
         os.mkdir("batch_trees/condor_logs")
 
-def getSampleFromListPath (listFileName):
+def getSampleFromListPath(listFileName):
     dir, listFile = os.path.split(listFileName)
     sampleName, extension = os.path.splitext(listFile)
     return sampleName
 
-#-------------- Get all list files, skipping a few 
-def getAllListFiles ( listDirectory ):
+#-------------- Get all list files, skipping a few
+def getAllListFiles(listDirectory):
     returnList = []
 
-    linesFromDir = os.popen("ls -1 %s*.list | grep -v part"%listDirectory)    
+    linesFromDir = os.popen("ls -1 %s*.list | grep -v part" % listDirectory)
     for iLine in linesFromDir:
         cleanLine = iLine.strip()
         returnList.append(cleanLine)
     return returnList
 
-def getListThatMatches (listDirectory, sample) :
+def getListThatMatches(listDirectory, sample) :
     everyList = getAllListFiles(listDirectory)
-    returnList = 'NONE'
+    returnList = None
     for iList in everyList:
         samp = getSampleFromListPath(iList)
         if samp == sample:
             returnList = iList
-    if returnList == 'NONE':
+    if not returnList:
         print "Error, could not find list for sample ", sample
         exit (6)
     return [returnList]
-    
 
-def createCondorSubFileAndSubmit (executable, sample, label, numJobs):
-    condorHeader = "universe = vanilla\n" \
-                   +"executable = {e}\n".format(e=executable) \
-                   +"notification = Never\n" \
-                   +"log = batch_trees/templates_modDilep_newSample.logfile\n" \
-                   +"getenv = True\n"
-    
-    condorJobFile = open ("multiLepBatch.submit", "w")
-    
-    condorJobFile.write(condorHeader)
-    
-    condorJobFile.write( "List = %s\n" % sample)
-    condorJobFile.write( "Label = %s\n" % label)
-    condorJobFile.write( "NJobs = %s\n" % numJobs)
-    condorJobFile.write( "arguments = ssCondor.py $(List) $(Label) $(Process) $(NJobs) \n")
-       
-    condorJobFile.write( "output = batch_trees/condor_logs/condor_$(List)_$(Label)_$(Process).stdout\n")
-    condorJobFile.write( "error = batch_trees/condor_logs/condor_$(List)_$(Label)_$(Process).stderr\n") 
-    condorJobFile.write( "queue $(NJobs)\n")
-    condorJobFile.close()
+def createCondorSubFileAndSubmit(executable, sample, label, numJobs):
+    with open("multiLepBatch.submit", "w") as condorJobFile:
+        contents = ('universe = vanilla\n'
+                    'List = {list}\n'
+                    'executable = {executable}\n'
+                    'notification = Never\n'
+                    'log = batch_trees/multilepton.logfile\n'
+                    'getenv = True\n'
+                    'Label = {label}\n'
+                    'NJobs = {numJobs}\n'
+                    'arguments = ssCondor.py $(List) $(Label) $(Process) $(NJobs)\n'
+                    'output = batch_trees/condor_logs/condor_$(List)_$(Label)_$(Process).stdout\n'
+                    'error = batch_trees/condor_logs/condor_$(List)_$(Label)_$(Process).stderr\n'
+                    'queue $(NJobs)')
+        condorJobFile.write(contents.format(executable=executable,
+                                            list=sample,
+                                            label=label,
+                                            numJobs=numJobs))
+
     print "Trying to submit jobs..."
     print os.popen("condor_submit multiLepBatch.submit").readlines()
 
-        
 def main ():
     parser = ArgumentParser(description='Submit tree-making jobs to the condor queue.')
+    parser.add_argument('executable', help='Executable to run (ssTwoLep, threeLep, etc)')
     parser.add_argument('project_label', help='Project label.')
     parser.add_argument('-o', '--oneSample', help="Run on only this sample")
-        
     args = parser.parse_args()
-    totalJobs = 0
-    
-    checkCondorDirs()
 
+    totalJobs = 0
+    checkCondorDirs()
     baseDir = os.environ['CMSSW_BASE']
     scramArch = os.environ['SCRAM_ARCH']
 
     listDir = baseDir + "/src/ttHMultileptonAnalysis/listsForSkims2012_53x_v3_hadoop/"
-#    listDir = baseDir + "/src/ttHMultileptonAnalysis/unskimmed_data_lists/"    
-    executable = baseDir + "/bin/" + scramArch + "/ssTwoLep"
+#    listDir = baseDir + "/src/ttHMultileptonAnalysis/unskimmed_data_lists/"
+    executable = os.path.join(baseDir, 'bin', scramArch, args.executable)
 
     print "Looking for lists in ", listDir
-    
+
     listsInDir = getAllListFiles(listDir)
 
     if args.oneSample:
@@ -96,19 +92,19 @@ def main ():
         listsToRun = listsInDir
 
     print "Running over the following:\n", listsToRun
-    
+
     for iList in listsToRun:
         sampleName = getSampleFromListPath(iList)
         nJobs = getNumLinesInFile(iList)
 #        nJobs = int(nJobs/10)
         print "Calling create with ", executable, " ", sampleName, " ", args.project_label, " ", nJobs
         createCondorSubFileAndSubmit(executable, sampleName, args.project_label, nJobs)
-        
+
     print "Done with loop over samples"
-            
+
     return
 
-# This allows you to run at the command line    
+# This allows you to run at the command line
 # tells you to call the main function defined above
 if __name__ == '__main__':
     main()
