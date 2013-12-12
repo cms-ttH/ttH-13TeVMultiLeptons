@@ -22,34 +22,29 @@
 #    3. a name for this group of jobs
 ##########################################
 import os
+import FWCore.ParameterSet.Config as cms
+import sys
 
 cmssw_base = os.environ['CMSSW_BASE']
 directoryOfLists = cmssw_base + "/src/ttHMultileptonAnalysis/listsForSkims2012_53x_v3_hadoop/"
 #directoryOfLists = cmssw_base + "/src/ttHMultileptonAnalysis/unskimmed_data_lists/"
-
 outputBaseDir = "batch_trees/"
+maxEvents = -1
 
-maxEvents = -1 
-
-# -------------  Imports
-import FWCore.ParameterSet.Config as cms
-import sys
-
-
-# -----------  Define some useful funcitons
-def printHostInfo () :
+# -----------  Define some useful functions
+def printHostInfo():
     host = os.environ['HOST']
     thisDir = os.environ['PWD']
     print "CONDOR: running on host ", host, " in directory ", thisDir
 
-def checkDir (inDir) :
+def checkDir(inDir):
     if not os.path.exists(inDir):
         os.mkdir(inDir)
 
 def printUsage() :
     print "Usage: ", sys.argv[0], " ssCondor.py  sampleName [jobNum totalJobs] [sys]"
 
-def calcBeginEndFileThisJob (totalFiles, totalJobs, thisJob):
+def calcBeginEndFileThisJob(totalFiles, totalJobs, thisJob):
     filesPerJob = totalFiles/totalJobs
     firstFile = thisJob * filesPerJob
     lastFile = firstFile
@@ -59,23 +54,23 @@ def calcBeginEndFileThisJob (totalFiles, totalJobs, thisJob):
         lastFile = totalFiles-1
     else:
         lastFile = firstFile + filesPerJob -1
-        
+
     return (firstFile, lastFile)
 
 #-----------  Set up cms objects as input
-process = cms.Process ("ttH2lss")
+process = cms.Process("ttH2lss")
 process.inputs = cms.PSet(
     fileNames = cms.vstring(),
     maxEvents = cms.int32(maxEvents)
     )
 process.analysis = cms.PSet (
-    sampleName = cms.string("dummy")    
+    sampleName = cms.string("dummy")
     )
 process.outputs = cms.PSet(
     fileName = cms.string("dummy")
     )
 
-#------------ parse arguments 
+#------------ parse arguments
 if len(sys.argv) <= 2 :
     printUsage()
     exit (3)
@@ -90,7 +85,6 @@ if not os.path.exists(sampleList):
     exit(4)
 else :
     print "CONFIG: the list is ", sampleList
-
 
 #-----------  read the list and decide what to run on
 listFile = open(sampleList, 'r')

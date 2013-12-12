@@ -48,6 +48,7 @@ def main():
         if args.batch:
             print '\nFinished submitting jobs.  After they complete, plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
         else:
+            plot_helper.update_indexes(www_plot_directories, 2)
             print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
 
 def make_histos(args, config, samples, lepton_categories):
@@ -56,9 +57,9 @@ def make_histos(args, config, samples, lepton_categories):
         sample_info = plot_helper.SampleInformation(sample, sample_dict)
 
         for lepton_category in lepton_categories:
-            lepton_category_cut_strings = config['%s cuts' % lepton_category].values()
+            lepton_category_cut_strings = config.get('%s cuts' % lepton_category, {}).values()
             if sample_info.sample_type == 'data' or 'sideband' in sample_info.sample_type:
-                if not plot_helper.get_data_sample_name(lepton_category) in sample:
+                if not plot_helper.is_matching_data_sample(lepton_category, sample):
                     continue
 
             for jet_tag_category in config['jet tag categories']:
@@ -79,11 +80,12 @@ def make_histos(args, config, samples, lepton_categories):
                     draw_string_maker = plot_helper.DrawStringMaker()
                     draw_string_maker.append_selection_requirements(config['common cuts'].values(), lepton_category_cut_strings)
                     if sample_info.sample_type == 'NP_sideband':
-                        draw_string_maker.append_selection_requirements(config['NP sideband cuts'].values())
+                        draw_string_maker.append_selection_requirements(config.get('NP sideband cuts', {}).values())
+                        print draw_string_maker.draw_string
                     elif sample_info.sample_type == 'QF_sideband':
-                        draw_string_maker.append_selection_requirements(config['QF sideband cuts'].values())
+                        draw_string_maker.append_selection_requirements(config.get('QF sideband cuts', {}).values())
                     else:
-                        draw_string_maker.append_selection_requirements(config['regular selection cuts'].values())
+                        draw_string_maker.append_selection_requirements(config.get('regular selection cuts', {}).values())
                     draw_string_maker.append_jet_tag_category_requirements(jet_tag_category)
 
                     if not args.no_weights:

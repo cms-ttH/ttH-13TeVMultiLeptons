@@ -89,11 +89,13 @@ def get_data_sample_name(lepton_category):
         return 'DoubleMu'
     elif lepton_category == 'ele_ele':
         return 'DoubleElectron'
-    elif lepton_category == 'inclusive':
+    elif lepton_category == 'inclusive' or lepton_category == '3l':
         return 'inclusive_data'
 
 def is_matching_data_sample(lepton_category, sample):
     if lepton_category == 'inclusive' and 'inclusive' in sample:
+        return True
+    elif lepton_category == '3l' and ('sideband' in sample) or ('inclusive' in sample):
         return True
     elif lepton_category == 'mu_ele' and 'MuEG' in sample:
         return True
@@ -248,7 +250,7 @@ class DrawStringMaker:
             matched_SF = 'twoElectronTriggerSF'
         elif lepton_category == 'mu_ele':
             matched_SF = 'muonElectronTriggerSF'
-        elif lepton_category == 'inclusive':
+        elif lepton_category == 'inclusive' or lepton_category == '3l':
             matched_SF = '1.0'
 
         return matched_SF

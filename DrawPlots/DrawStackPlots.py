@@ -28,6 +28,7 @@ jet_tag_categories = config['jet tag categories']
 distributions = config['distributions']
 signal_samples = config['signal samples']
 background_samples = config['background samples']
+yields = plot_helper.Yields(jet_tag_categories)
 if config.has_key('background sample groups'):
     background_sample_groups = config['background sample groups']
 
@@ -44,11 +45,10 @@ def main():
         www_plot_directories = []
         for lepton_category in lepton_categories:
             for jet_tag_category in jet_tag_categories:
-                www_plot_directories.append('stack_plots/%s/%s_%s/' % (config['input file label'], lepton_category, jet_tag_category))
+                www_plot_directories.append(os.path.join(config['output file location'], config['input file label'], lepton_category, jet_tag_category))
 
         plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name, args.cosmetics_config_file_name)
 
-    yields = plot_helper.Yields(jet_tag_categories)
     for lepton_category in lepton_categories:
         print '\n\nStarting lepton category %s...\n' % lepton_category
 
@@ -57,15 +57,16 @@ def main():
 
             for distribution in distributions:
                 print 'Drawing distribution: %s with jet selection printing name: %s' %  (distribution, jet_tag_categories[jet_tag_category])
-                yields = draw_stack_plot(lepton_category, jet_tag_category, distribution, yields)
+                draw_stack_plot(lepton_category, jet_tag_category, distribution)
 
     if args.web:
-        print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/stack_plots/%s/' % (os.environ['USER'], config['input file label'])
+        plot_helper.update_indexes(www_plot_directories, 5)
+        link_dir = os.path.join(config['output file location'], config['input file label'])
+        print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/%s' % (os.environ['USER'], link_dir)
 
     if args.yields:
         columns = ['']
         columns.extend(lepton_categories)
-
         for jet_tag_category in jet_tag_categories:
             print "\n\njet tag category: %s" % jet_tag_categories[jet_tag_category]
             yield_table = PrettyTable(columns)
@@ -79,7 +80,7 @@ def main():
                 yield_table.add_row(entry)
             print yield_table
 
-def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
+def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     stack_plot = THStack("theStack", "")
     stack_plot_legend = make_legend()
 
@@ -102,16 +103,14 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
         systematics = plot_helper.customize_systematics(config['systematics'], sample_info.systematics)
         systematics_by_sample[sample] = systematics
 
-        if 'sideband' in sample_info.sample_type and not plot_helper.get_data_sample_name(lepton_category) in sample:
+        if 'sideband' in sample_info.sample_type and not plot_helper.is_matching_data_sample(lepton_category, sample):
             continue
 
         for systematic in systematics:
-            try:
-                original_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category)
-                histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
-            except:
-                print """Problem finding distribution %s in file: %s/%s_%s_%s_%s.root. Skipping it...""" % (distribution, os.path.join(config['input file location'], lepton_category), lepton_category, jet_tag_category, sample, config['input file label'])
+            original_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category)
+            if  not original_histogram:
                 continue
+            histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
 
             if systematic == 'nominal':
                 histogram = original_histogram.Clone('stack')
@@ -126,16 +125,15 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
         for sample_group in background_sample_groups: # Add samples in each sample group together
             systematics = plot_helper.customize_systematics(config['systematics'], background_sample_groups[sample_group]['systematics'])
             systematics_by_sample[sample_group] = systematics
+            group_histogram = None
             for systematic in systematics:
                 samples_in_group = background_sample_groups[sample_group]['samples']
                 for index, sample in enumerate(samples_in_group):
-                    try:
-                        sample_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group)
-                    except:
-                        print """Problem finding distribution %s in file: %s/%s_%s_%s_%s.root. Skipping it...""" % (distribution, os.path.join(config['input file location'], lepton_category), lepton_category, jet_tag_category, sample, config['input file label'])
+                    sample_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group)
+                    if not sample_histogram:
                         continue
                     sample_histogram.Sumw2()
-                    if index == 0:
+                    if not group_histogram:
                         group_histogram = sample_histogram
                     else:
                         group_histogram.Add(sample_histogram)
@@ -156,12 +154,11 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
     ## Draw the signal sample histogram(s), put in legend
     signal_histogram = None
     for sample in signal_samples:
-        try:
-            original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category)
-            histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
-        except:
-            print """Problem finding distribution %s in file: %s/%s_%s_%s_%s.root. Skipping it...""" % (distribution, os.path.join(config['input file location'], lepton_category), lepton_category, jet_tag_category, sample, config['input file label'])
+        original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category)
+        if not original_histogram:
             continue
+
+        histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
         signal_histogram = original_histogram.Clone('signal')
         legend_option = 'l'
         if signal_samples[sample]['stack or line'] == 'stack':
@@ -185,16 +182,14 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
 
     ## Draw the data histogram, put in legend
     if not config['blinded']:
-        try:
-            original_histogram = get_histogram(distribution, systematic, 'data', lepton_category, jet_tag_category)
+        original_histogram = get_histogram(distribution, systematic, 'data', lepton_category, jet_tag_category)
+        if original_histogram:
             histogram_dictionary['data'] = original_histogram.Clone()
 
             data_histogram = original_histogram.Clone('data')
             data_sum = data_histogram.Integral()
             stack_plot_legend.AddEntry(data_histogram, 'Data (%.0f) ' % data_sum, 'lpe')
             yields[jet_tag_category]['data'][lepton_category] = data_histogram.Integral(0, data_histogram.GetNbinsX() + 1)
-        except:
-            print """Problem finding distribution %s in file: %s/%s_%s_%s_%s.root. Skipping it...""" % (distribution, os.path.join(config['input file location'], lepton_category), lepton_category, jet_tag_category, sample, config['input file label'])
 
     lumi_error = config['luminosity error']
     trigger_SF_error = config['trigger SF error']
@@ -215,7 +210,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
         for sample, systematics in systematics_by_sample.items(): #systematics_by_sample is a dictionary (keys: samples and sample groups, values: systematics list)
 
-            if 'sideband' in sample and not plot_helper.get_data_sample_name(lepton_category) in sample:
+            if 'sideband' in sample and not plot_helper.is_matching_data_sample(lepton_category, sample):
                 continue
 
             for systematic in systematics:
@@ -227,6 +222,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
     mc_error_histogram.SetFillColor(cosmetics['mc error fill color'])
 
     stack_plot_legend.AddEntry(mc_error_histogram, 'Sum MC (%0.2f) ' % (mc_sum + signal_sum), 'f')
+    yields[jet_tag_category]['Sum MC'][lepton_category] = (mc_sum + signal_sum)
 
     plot_max = stack_plot.GetMaximum()
     if (signal_histogram): plot_max = max(plot_max, signal_histogram.GetMaximum())
@@ -300,8 +296,9 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
     l = TLine()
     l.DrawLine(xMin, 1., xMax, 1.)
 
-    if not os.path.exists(config['output file location']+'/'+lepton_category+'_'+jet_tag_category):
-        os.mkdir(config['output file location']+'/'+lepton_category+'_'+jet_tag_category)
+    output_dir = os.path.join(config['output file location'], lepton_category+'_'+jet_tag_category)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
 
     plot_name = '%s_%s/%s' % (lepton_category, jet_tag_category, distribution)
 
@@ -310,7 +307,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
 
     if args.web:
         www_base_directory = plot_helper.get_www_base_directory()
-        www_plot_directory = '%s/stack_plots/%s/%s_%s/' % (www_base_directory, config['input file label'], lepton_category, jet_tag_category)
+        www_plot_directory = os.path.join(www_base_directory, config['output file location'], config['input file label'], lepton_category, jet_tag_category)
         plot_helper.copy_to_www_area(config['output file location'], www_plot_directory, plot_name)
 
     gPad.Close()
@@ -318,36 +315,36 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution, yields):
     bottom_canvas.Close()
     stack_plot.Delete()
     canvas.Close()
-
-    return yields
 ## end draw_stack_plot
 
-## Gets a single histogram
+## Gets a single histogram.
 def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group=''):
     histogram = None
+    is_data = False
     if sample == 'data':
+        is_data = True
         sample = plot_helper.get_data_sample_name(lepton_category)
 
-    if systematic == 'nominal' or sample == plot_helper.get_data_sample_name(lepton_category):
+    if systematic == 'nominal' or plot_helper.is_matching_data_sample(lepton_category, sample):
         name = '%s_%s_%s_%s' % (sample, lepton_category, jet_tag_category, distribution)
     else:
         name = '%s_%s_%s_%s_%s' % (sample, lepton_category, jet_tag_category, distribution, systematic)
 
-    #print 'root file name: %s' % (os.path.join(config['input file location'], lepton_category, '%s_%s_%s_%s.root' % (lepton_category, jet_tag_category, sample, config['input file label'])))
-    #print 'histogram name: %s' % (name_plus_cycle)
-
-    root_file = TFile(os.path.join(config['input file location'], lepton_category, '%s_%s_%s_%s.root' % (lepton_category, jet_tag_category, sample, config['input file label'])))
-    histogram = root_file.Get(name).Clone()
-
-    #print 'Got histogram from file'
-
-    if not histogram:
-        print 'Oops! Error looking for histo %s, exiting...' % (distribution)
-        sys.exit()
+    file_name = os.path.join(config['input file location'], lepton_category, '%s_%s_%s_%s.root' % (lepton_category, jet_tag_category, sample, config['input file label']))
+    try:
+        root_file = TFile(file_name)
+    except:
+        print 'Problem finding file %s, skipping it...' % file_name
+        return
+    try:
+        histogram = root_file.Get(name).Clone()
+    except:
+        print 'Problem finding %s in file %s, skipping it...' % (name, file_name)
+        return
 
     histogram.SetDirectory(0) ##Decouples histogram from root file
 
-    if (sample == 'MuEG' or sample == 'DoubleMu' or sample == 'DoubleElectron'):
+    if is_data:
         histogram.SetLineColor(cosmetics['data line color'])
         histogram.SetMarkerColor(cosmetics['data marker color'])
         histogram.SetFillColor(cosmetics['data fill color'])
@@ -356,13 +353,13 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
         histogram.SetMarkerSize(cosmetics['data marker size'])
 
     elif config.has_key('background sample groups') and sample_group in background_sample_groups:
-        histogram.SetLineColor( background_sample_groups[sample_group]['color'])
-        histogram.SetFillColor( background_sample_groups[sample_group]['color'])
+        histogram.SetLineColor(background_sample_groups[sample_group]['color'])
+        histogram.SetFillColor(background_sample_groups[sample_group]['color'])
         histogram.SetFillStyle(cosmetics['background fill style'])
 
     elif sample in background_samples:
-        histogram.SetLineColor( background_samples[sample]['color'])
-        histogram.SetFillColor( background_samples[sample]['color'])
+        histogram.SetLineColor(background_samples[sample]['color'])
+        histogram.SetFillColor(background_samples[sample]['color'])
         histogram.SetFillStyle(cosmetics['background fill style'])
 
     elif sample in signal_samples:
@@ -586,7 +583,6 @@ def configure_data_ratio_asymmetric_errors(g_ratio):
 
     return g_ratio
 ## end configure_data_ratio_asymmetric_errors
-
 
 if __name__ == '__main__':
         main()
