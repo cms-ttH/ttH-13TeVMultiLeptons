@@ -5,6 +5,8 @@ import string
 from distutils import file_util
 import shutil
 import collections
+import glob
+import time
 
 def get_www_base_directory():
     try:
@@ -28,12 +30,43 @@ def make_fresh_directory(directory):
         shutil.rmtree(directory)
     os.makedirs(directory)
 
+def update_indexes(directories, depth=1):
+    www_base_directory = get_www_base_directory()
+    directories = [os.path.join(www_base_directory, directory) for directory in directories]
+    for directory in directories:
+        for level in range(depth):
+            dirs = [i for i in glob.glob('%s/*' % directory) if os.path.isdir(i)]
+            dirs.append('..')
+            dirs.sort()
+            dir_locations = [os.path.basename(i) for i in dirs]
+            dir_names = ['<b>'+os.path.basename(i)+'/</b>' for i in dirs]
+            non_image_items = [i for i in glob.glob('%s/*' % directory) if 'pdf' not in i and 'png' not in i and not os.path.isdir(i)]
+            non_image_items.sort()
+            non_image_item_names = dir_names + [os.path.basename(i) for i in non_image_items]
+            non_image_item_locations = dir_locations + [os.path.basename(i) for i in non_image_items]
+            non_image_mod_times = ['' for i in dirs] + [time.ctime(os.path.getmtime(i)) for i in non_image_items]
+            non_image_items = dirs + non_image_items
+            png_images = [os.path.basename(i) for i in glob.glob('%s/*' % directory) if 'png' in i]
+            pdf_images = [i.replace('.png', '.pdf') for i in png_images]
+            snippet = '<tr><td><a href={location}>{name}</a></td><td>{mod_time}</td></tr>'
+            files_snippet = '\n'.join([snippet.format(location=location, name=name, mod_time=mod_time) for (location, name, mod_time) in zip(non_image_item_locations, non_image_item_names, non_image_mod_times)])
+            snippet = '<div class="pic photo-link smoothbox" id="{png}"><a href="{pdf}" rel="gallery"><img src="{png}" class="pic"/></a></div>'
+            image_snippet = '\n'.join([snippet.format(pdf=pdf, png=png) for (pdf, png) in zip(pdf_images, png_images)])
+            with open(os.path.join(os.environ['CMSSW_BASE'], 'src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.html'), 'r') as f:
+                index = f.read()
+            with open(os.path.join(directory, 'index.html'), 'w') as f:
+                segment = index[index.find("<body>"):] #Have to do this because all of the javascript looks like python formatting statements
+                modified_segment = segment.format(files=files_snippet, images=image_snippet)
+                index = index.replace(segment, modified_segment)
+                f.write(index)
+            directory, tail = os.path.split(directory)
+
 def setup_www_directory(directory, depth=1, *extra_files_to_post):
     make_fresh_directory(directory)
     head = directory
     for level in range(depth):
-        if not os.path.exists(os.path.join(head, '/index.php')):
-            file_util.copy_file(os.path.join(os.environ['CMSSW_BASE'], 'src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.php'), head)
+        if not os.path.exists(os.path.join(head, '/index.html')):
+            file_util.copy_file(os.path.join(os.environ['CMSSW_BASE'], 'src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.html'), head)
         head, tail = os.path.split(head)
 
     for file in extra_files_to_post:
@@ -46,7 +79,7 @@ def setup_www_directories(directories, depth=1, *extra_files_to_post):
 def setup_web_posting(directories, depth=4, *extra_files_to_post):
     www_base_directory = get_www_base_directory()
 
-    www_plot_directories = ['%s/%s' % (www_base_directory, directory) for directory in directories]
+    www_plot_directories = [os.path.join(www_base_directory, directory) for directory in directories]
     setup_www_directories(www_plot_directories, depth, *extra_files_to_post)
 
 def get_data_sample_name(lepton_category):
@@ -56,6 +89,19 @@ def get_data_sample_name(lepton_category):
         return 'DoubleMu'
     elif lepton_category == 'ele_ele':
         return 'DoubleElectron'
+    elif lepton_category == 'inclusive':
+        return 'inclusive_data'
+
+def is_matching_data_sample(lepton_category, sample):
+    if lepton_category == 'inclusive' and 'inclusive' in sample:
+        return True
+    elif lepton_category == 'mu_ele' and 'MuEG' in sample:
+        return True
+    elif lepton_category == 'mu_mu' and 'DoubleMu' in sample:
+        return True
+    elif lepton_category == 'ele_ele' and 'DoubleElectron' in sample:
+        return True
+    return False
 
 class Plot:
     def __init__(self, sample, output_file, tree, plot_name, parameters, draw_string):
@@ -202,6 +248,8 @@ class DrawStringMaker:
             matched_SF = 'twoElectronTriggerSF'
         elif lepton_category == 'mu_ele':
             matched_SF = 'muonElectronTriggerSF'
+        elif lepton_category == 'inclusive':
+            matched_SF = '1.0'
 
         return matched_SF
 
@@ -608,6 +656,12 @@ class SampleInformation:
                          'num_generated': 1},
 
             'DoubleElectron': {'sample_type': 'data',
+                               'is_signal': False,
+                               'x_section': 1,
+                               'x_section_error': 0.0,
+                               'num_generated': 1},
+
+            'inclusive_data': {'sample_type': 'data',
                                'is_signal': False,
                                'x_section': 1,
                                'x_section_error': 0.0,
