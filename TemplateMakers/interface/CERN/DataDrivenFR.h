@@ -19,6 +19,8 @@ public:
   double working_point;
   string file_name_NP;
   string file_name_QF;
+  string branchNameNP;
+  string branchNameQF;
 
   TFile * weight_file_NP;
   TFile * weight_file_QF;
@@ -27,146 +29,117 @@ public:
   TH2 * FR_NP_tight_el; //FR for < 2 b-jets
   TH2 * FR_NP_tight2_el; //FR for >= 2 b-jets
   TH2 * FR_QF_el; //Charge flip FR
-  double FR_NP[6];
   double FR_QF[6];
   int QF_charge[6];
-  
+
   DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-               double input_working_point, string input_file_name_NP, string input_file_name_QF);
-
+               double input_working_point, string label, string input_file_name_NP, string input_file_name_QF);
   ~DataDrivenFR();
-  
   void evaluate();
-
 };
 
-template <class collectionType> 
+template <class collectionType>
 DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-                                           double input_working_point, string input_file_name_NP, string input_file_name_QF):
+                                           double input_working_point, string label, string input_file_name_NP, string input_file_name_QF=0):
   myHelper(input_myHelper), selCollection(input_selCollection), number_of_leptons(input_number_of_leptons),
   working_point(input_working_point), file_name_NP(input_file_name_NP), file_name_QF(input_file_name_QF) {
 
   this->resetVal = 1.0;
-  
-  branches["DataDrivenFR"] = BranchInfo<double>("DataDrivenFR");
+  branchNameNP = Form("DataDrivenFR_NP_%s", label.c_str());
+  branchNameQF = Form("DataDrivenFR_QF_%s", label.c_str());
+  branches[branchNameNP] = BranchInfo<double>(branchNameNP);
+  branches[branchNameQF] = BranchInfo<double>(branchNameQF);
+  branches[branchNameNP].branchVal = 1.0;
+  branches[branchNameQF].branchVal = 1.0;
 
   string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/fakerate/").c_str();
   TString weight_file_name_NP = Form("%s%s.root", directory.c_str(), file_name_NP.c_str());
   weight_file_NP = TFile::Open(weight_file_name_NP);
-  TString weight_file_name_QF = Form("%s%s.root", directory.c_str(), file_name_QF.c_str());
-  weight_file_QF = TFile::Open(weight_file_name_QF);
 
   FR_NP_tight_mu = (TH2*)weight_file_NP->Get("FR_tight_mu")->Clone();
   FR_NP_tight2_mu = (TH2*)weight_file_NP->Get("FR_tight2_mu")->Clone();
   FR_NP_tight_el = (TH2*)weight_file_NP->Get("FR_tight_el")->Clone();
   FR_NP_tight2_el = (TH2*)weight_file_NP->Get("FR_tight2_el")->Clone();
+
+  TString weight_file_name_QF = Form("%s%s.root", directory.c_str(), file_name_QF.c_str());
+  weight_file_QF = TFile::Open(weight_file_name_QF);
   FR_QF_el = (TH2*)weight_file_QF->Get("QF_el_data")->Clone();
 
 }
 
-template <class collectionType> 
+template <class collectionType>
 void DataDrivenFR<collectionType>::evaluate() {
-
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
-  
-  //--------
 
-  BEANhelper * beanHelper = &(myHelper->bHelp);
-  
-  FR_NP[0] = 1.0; FR_NP[1] = 1.0; FR_NP[2] = 1.0; FR_NP[3] = 1.0; FR_NP[4] = 1.0; FR_NP[5] = 1.0; 
-  FR_QF[0] = 1.0; FR_QF[1] = 1.0; FR_QF[2] = 1.0; FR_QF[3] = 1.0; FR_QF[4] = 1.0; FR_QF[5] = 1.0; 
-  QF_charge[0] = 0; QF_charge[1] = 0; QF_charge[2] = 0; QF_charge[3] = 0; QF_charge[4] = 0; QF_charge[5] = 0; 
+  //--------
+  FR_QF[0] = 1.0; FR_QF[1] = 1.0; FR_QF[2] = 1.0; FR_QF[3] = 1.0; FR_QF[4] = 1.0; FR_QF[5] = 1.0;
+  QF_charge[0] = 0; QF_charge[1] = 0; QF_charge[2] = 0; QF_charge[3] = 0; QF_charge[4] = 0; QF_charge[5] = 0;
   int num_fail = 0;
-  int num_leptons = 0;
+  int num_passed_leptons = 0;
   int num_electrons = 0;
+  float weight = -1.0;
+  BEANhelper * beanHelper = &(myHelper->bHelp);
 
   for (unsigned int iObj = 0; iObj < (*selCollection)->size(); iObj++) {
-    if ( iObj < number_of_leptons ) {
+    if (iObj < number_of_leptons) {
 
       double lep_pt = ptr((*selCollection)->at(iObj))->pt;
       double lep_eta = abs(ptr((*selCollection)->at(iObj))->eta);
+      int isElectron = 0;
+      double lep_mva = -99.0;
+      TH2 * FR_NP_histo = 0;
 
-      if ( ptr((*selCollection)->at(iObj))->isMuon ) {
-        if ( beanHelper->GetMuonLepMVA(*(BNmuon*)ptr((*selCollection)->at(iObj))) < working_point) {
-
-          if (this->blocks->jetCollectionMediumCSV->size() < 2) {
-            int pt_bin  = std::max(1, std::min(FR_NP_tight_mu->GetNbinsX(), FR_NP_tight_mu->GetXaxis()->FindBin(lep_pt)));
-            int eta_bin  = std::max(1, std::min(FR_NP_tight_mu->GetNbinsY(), FR_NP_tight_mu->GetYaxis()->FindBin(lep_eta)));
-            FR_NP[num_fail] = FR_NP_tight_mu->GetBinContent(pt_bin,eta_bin);
-          }
-          else {
-            int pt_bin  = std::max(1, std::min(FR_NP_tight2_mu->GetNbinsX(), FR_NP_tight2_mu->GetXaxis()->FindBin(lep_pt)));
-            int eta_bin  = std::max(1, std::min(FR_NP_tight2_mu->GetNbinsY(), FR_NP_tight2_mu->GetYaxis()->FindBin(lep_eta)));
-            FR_NP[num_fail] = FR_NP_tight_mu->GetBinContent(pt_bin,eta_bin);
-          } 
-          num_fail += 1;
-        }
-        else {
-          QF_charge[num_leptons] = ((BNmuon*)ptr((*selCollection)->at(iObj)))->tkCharge;
-          num_leptons += 1;
-        }
+      if (ptr((*selCollection)->at(iObj))->isMuon) {
+        lep_mva = beanHelper->GetMuonLepMVA(*(BNmuon*)ptr((*selCollection)->at(iObj)));
+        FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_mu : FR_NP_tight2_mu;
       }
-      else if ( ptr((*selCollection)->at(iObj))->isElectron ) {
-        if ( beanHelper->GetElectronLepMVA(*(BNelectron*)ptr((*selCollection)->at(iObj))) < working_point) {
-
-          if (this->blocks->jetCollectionMediumCSV->size() < 2) {
-            int pt_bin  = std::max(1, std::min(FR_NP_tight_el->GetNbinsX(), FR_NP_tight_el->GetXaxis()->FindBin(lep_pt)));
-            int eta_bin  = std::max(1, std::min(FR_NP_tight_el->GetNbinsY(), FR_NP_tight_el->GetYaxis()->FindBin(lep_eta)));
-            FR_NP[num_fail] = FR_NP_tight_el->GetBinContent(pt_bin,eta_bin);
-          }
-          else {
-            int pt_bin  = std::max(1, std::min(FR_NP_tight2_el->GetNbinsX(), FR_NP_tight2_el->GetXaxis()->FindBin(lep_pt)));
-            int eta_bin  = std::max(1, std::min(FR_NP_tight2_el->GetNbinsY(), FR_NP_tight2_el->GetYaxis()->FindBin(lep_eta)));
-            FR_NP[num_fail] = FR_NP_tight_el->GetBinContent(pt_bin,eta_bin);
-          }
-          num_fail += 1;
-        }
-        else {
-          int pt_bin  = std::max(1, std::min(FR_QF_el->GetNbinsX(), FR_QF_el->GetXaxis()->FindBin(lep_pt)));
-          int eta_bin  = std::max(1, std::min(FR_QF_el->GetNbinsY(), FR_QF_el->GetYaxis()->FindBin(lep_eta)));
-          FR_QF[num_electrons] = FR_QF_el->GetBinContent(pt_bin,eta_bin);
-          QF_charge[num_leptons] = ((BNelectron*)ptr((*selCollection)->at(iObj)))->tkCharge;
-          num_electrons += 1;
-          num_leptons += 1;
-        }
+      else if (ptr((*selCollection)->at(iObj))->isElectron) {
+        lep_mva = beanHelper->GetElectronLepMVA(*(BNelectron*)ptr((*selCollection)->at(iObj)));
+        FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_el : FR_NP_tight2_el;
+        isElectron = 1;
       }
       else std::cout << "Lepton is neither muon nor electron" << std::endl;
 
+      if (lep_mva < working_point) {
+        int pt_bin  = std::max(1, std::min(FR_NP_histo->GetNbinsX(), FR_NP_histo->GetXaxis()->FindBin(lep_pt)));
+        int eta_bin  = std::max(1, std::min(FR_NP_histo->GetNbinsY(), FR_NP_histo->GetYaxis()->FindBin(lep_eta)));
+        double FR = FR_NP_histo->GetBinContent(pt_bin, eta_bin);
+        weight *= -FR/(1.0-FR);
+      }
+      else {
+        QF_charge[num_passed_leptons] = (ptr((*selCollection)->at(iObj)))->tkCharge;
+        num_passed_leptons += 1;
+        if (isElectron==1) {
+          int pt_bin  = std::max(1, std::min(FR_QF_el->GetNbinsX(), FR_QF_el->GetXaxis()->FindBin(lep_pt)));
+          int eta_bin  = std::max(1, std::min(FR_QF_el->GetNbinsY(), FR_QF_el->GetYaxis()->FindBin(lep_eta)));
+          FR_QF[num_electrons] = FR_QF_el->GetBinContent(pt_bin, eta_bin);
+          QF_charge[num_passed_leptons] = ((BNelectron*)ptr((*selCollection)->at(iObj)))->tkCharge;
+          num_electrons += 1;
+        }
+      }
     } //end if ( iObj < number_of_leptons )
   } //end loop over iObj
 
-  if (number_of_leptons == 2) {
-    //FR for events where both leptons fail
-    if (FR_NP[1] != 1.0) {
-      branches["DataDrivenFR"].branchVal = -FR_NP[0]*FR_NP[1]/((1-FR_NP[0])*(1-FR_NP[1]));
-    }
-    //FR for events where one lepton fails
-    else if (FR_NP[0] != 1.0 ) {
-      branches["DataDrivenFR"].branchVal = FR_NP[0]/(1-FR_NP[0]);
-    }
-    //FR for events where no leptons fail
-    else branches["DataDrivenFR"].branchVal = 1.0;
+  if (weight == -1.0) weight = 1.0;
+  branches[branchNameNP].branchVal = weight;
 
+  if ((number_of_leptons == 2) && (num_passed_leptons == 2) && (QF_charge[0] * QF_charge[1] == -1)) {
     //FR for opposite-sign events with electrons
-    if (QF_charge[0] * QF_charge[1] == -1 && FR_NP[0] == 1.0) {
-      if (num_electrons == 0) branches["DataDrivenFR"].branchVal = 1.0;
-      if (num_electrons == 1) branches["DataDrivenFR"].branchVal = FR_QF[0]; 
-      if (num_electrons == 2) branches["DataDrivenFR"].branchVal = FR_QF[0] + FR_QF[1]; 
-    }
+    if (num_electrons == 0) branches[branchNameQF].branchVal = 1.0;
+    if (num_electrons == 1) branches[branchNameQF].branchVal = FR_QF[0];
+    if (num_electrons == 2) branches[branchNameQF].branchVal = FR_QF[0] + FR_QF[1];
   }
 
   //Clean out values from last event
   myVars.clear();
-  
   for ( typename map<TString, BranchInfo<double>>::iterator iBranch = branches.begin();
         iBranch != branches.end(); iBranch++ ) {
     myVars.push_back(iBranch->second);
   }
-  
 }
 
-template <class collectionType> 
+template <class collectionType>
 DataDrivenFR<collectionType>::~DataDrivenFR() {
 
   //Delete histograms BEFORE closing file
@@ -181,4 +154,4 @@ DataDrivenFR<collectionType>::~DataDrivenFR() {
 }
 
 
-#endif 
+#endif
