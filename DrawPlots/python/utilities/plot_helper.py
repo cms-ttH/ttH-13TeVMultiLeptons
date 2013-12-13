@@ -687,6 +687,12 @@ class SampleInformation:
                                'x_section_error': 0.0,
                                'num_generated': 1},
 
+            'inclusive_NP_sideband': {'sample_type': 'NP_sideband',
+                                      'is_signal':False,
+                                      'x_section': 1,
+                                      'x_section_error': 0.0,
+                                      'num_generated': 1},
+
             'MuEG_QF_sideband': {'sample_type': 'QF_sideband',
                      'is_signal': False,
                      'x_section': 1,
