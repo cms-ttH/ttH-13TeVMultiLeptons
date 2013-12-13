@@ -108,7 +108,8 @@ public:
 
   void fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections);
   void fillZLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections,
-                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS,
+                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tight,
+                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tightLoose,
                                              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_all);
 
   bool isFromB(BNmcparticle particle);
@@ -207,6 +208,8 @@ public:
   BNleptonCollection leptonsTightLoose;
   BNleptonCollection leptonsLoosePreselected;
   BNleptonCollection leptonsTightLoosePreselected;
+  BNleptonCollection leptonsTightZ;
+  BNleptonCollection leptonsTightNonZ;
   BNleptonCollection leptonsTightLooseZ;
   BNleptonCollection leptonsTightLooseNonZ;
   BNleptonCollection leptonsTightLoosePreselectedZ;
@@ -217,18 +220,22 @@ public:
 
 //-------------------- Inline functions
   inline double smearMC(TRandom* gSmearer, double x, double mu, double sigma) {
-    return x + gSmearer->Gaus(mu,sigma);
+    if (x == 0) return gSmearer->Gaus(mu,sigma);
+    else return (x/abs(x))*(abs(x) + gSmearer->Gaus(mu,sigma));
   }
   inline double logSmearMC(TRandom* gSmearer, double x, double mu, double sigma) {
-    return std::exp(std::log(x) + gSmearer->Gaus(mu,sigma));
+    if (x == 0) return std::exp(gSmearer->Gaus(mu,sigma));
+    else return (x/abs(x))*std::exp(std::log(abs(x)) + gSmearer->Gaus(mu,sigma));
   }
   inline double shiftMC(double x, double delta) {
-    return x + delta;
+    if (x == 0) return delta;
+    else return (x/abs(x))*(abs(x) + delta);
   }
   inline double scaleShiftMC(double x, double scale, double shift) {
-    return x*scale + shift;
+    if (x == 0) return shift;
+    else return (x/abs(x))*(abs(x)*scale + shift);
   }
-
+  
 };
 
 //-------------------- Template functions

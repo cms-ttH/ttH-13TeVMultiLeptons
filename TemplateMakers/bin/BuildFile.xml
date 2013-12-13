@@ -24,4 +24,6 @@
   </bin>
   <bin file="fourLepton.C">
   </bin>
+  <bin   file="ttV.C">
+  </bin>
 </environment>

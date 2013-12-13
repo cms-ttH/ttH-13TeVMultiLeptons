@@ -70,6 +70,7 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 
+
 ////////////////////////////////////////////////////////
 //
 //  Class description:
@@ -111,6 +112,8 @@ public:
     tightLooseLeptonCollection(0),
     loosePreselectedLeptonCollection(0),
     tightLoosePreselectedLeptonCollection(0),
+    tightZLeptonCollection(0),
+    tightNonZLeptonCollection(0),
     tightLooseZLeptonCollection(0),
     tightLooseNonZLeptonCollection(0),
     tightLoosePreselectedZLeptonCollection(0),
@@ -159,11 +162,12 @@ public:
   BNleptonCollection *  tightLooseLeptonCollection;
   BNleptonCollection *  loosePreselectedLeptonCollection;
   BNleptonCollection *  tightLoosePreselectedLeptonCollection;
+  BNleptonCollection *  tightZLeptonCollection;
+  BNleptonCollection *  tightNonZLeptonCollection;
   BNleptonCollection *  tightLooseZLeptonCollection;
   BNleptonCollection *  tightLooseNonZLeptonCollection;
   BNleptonCollection *  tightLoosePreselectedZLeptonCollection;
   BNleptonCollection *  tightLoosePreselectedNonZLeptonCollection;
-
 
   BNmetCollection *   metCollection;
   BNjetCollection * jetCollection;

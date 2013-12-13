@@ -517,33 +517,55 @@ void HelperLeptonCore::fillLepCollectionWithSelectedLeptons(BEANFileInterface * 
 }
 
 void HelperLeptonCore::fillZLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections,
-                                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS,
+                                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tight,
+                                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tightLoose,
                                                              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_all) {
 
+  leptonsTightZ.clear();
+  leptonsTightNonZ.clear();
   leptonsTightLooseZ.clear();
   leptonsTightLooseNonZ.clear();
   leptonsTightLoosePreselectedZ.clear();
   leptonsTightLoosePreselectedNonZ.clear();
 
   //Leptons from Z decay and not from Z decay
-  myZLikeMassLepLepSFOS->reset();
-  myZLikeMassLepLepSFOS->evaluate();
+  myZLikeMassLepLepSFOS_tight->reset();
+  myZLikeMassLepLepSFOS_tight->evaluate();
+  myZLikeMassLepLepSFOS_tightLoose->reset();
+  myZLikeMassLepLepSFOS_tightLoose->evaluate();
   myZLikeMassLepLepSFOS_all->reset();
   myZLikeMassLepLepSFOS_all->evaluate();
-  float ZLikeMassLepLepSFOS = (*myZLikeMassLepLepSFOS).myVars[0].branchVal;
+  float ZLikeMassLepLepSFOS_tight = (*myZLikeMassLepLepSFOS_tight).myVars[0].branchVal;
+  float ZLikeMassLepLepSFOS_tightLoose = (*myZLikeMassLepLepSFOS_tightLoose).myVars[0].branchVal;
   float ZLikeMassLepLepSFOS_all = (*myZLikeMassLepLepSFOS_all).myVars[0].branchVal;
   TLorentzVector vect1;
   TLorentzVector vect2;
   TLorentzVector vect12;
   bool NonZ;
 
+  for (auto& lepton1: leptonsTight) {
+    NonZ = true;
+    for (auto& lepton2: leptonsTight) {
+      vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
+      vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
+      vect12 = vect1 + vect2;
+      if ( abs ( 1 - abs( vect12.M() / ZLikeMassLepLepSFOS_tight ) ) < 0.001 ) {
+        leptonsTightZ.push_back(lepton1);
+        NonZ = false;
+      }
+    }
+    if ( NonZ ) {
+      leptonsTightNonZ.push_back(lepton1);
+    }
+  }
+  
   for (auto& lepton1: leptonsTightLoose) {
     NonZ = true;
     for (auto& lepton2: leptonsTightLoose) {
       vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
       vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
       vect12 = vect1 + vect2;
-      if ( abs ( 1 - abs( vect12.M() / ZLikeMassLepLepSFOS ) ) < 0.001 ) {
+      if ( abs ( 1 - abs( vect12.M() / ZLikeMassLepLepSFOS_tightLoose ) ) < 0.001 ) {
         leptonsTightLooseZ.push_back(lepton1);
         NonZ = false;
       }
@@ -569,11 +591,15 @@ void HelperLeptonCore::fillZLepCollectionWithSelectedLeptons(BEANFileInterface *
     }
   }
 
+  leptonsTightZ.sort();
+  leptonsTightNonZ.sort();
   leptonsTightLooseZ.sort();
   leptonsTightLooseNonZ.sort();
   leptonsTightLoosePreselectedZ.sort();
   leptonsTightLoosePreselectedNonZ.sort();
 
+  selectedCollections->tightZLeptonCollection = &leptonsTightZ;
+  selectedCollections->tightNonZLeptonCollection = &leptonsTightNonZ;
   selectedCollections->tightLooseZLeptonCollection = &leptonsTightLooseZ;
   selectedCollections->tightLooseNonZLeptonCollection = &leptonsTightLooseNonZ;
   selectedCollections->tightLoosePreselectedZLeptonCollection = &leptonsTightLoosePreselectedZ;
@@ -582,7 +608,7 @@ void HelperLeptonCore::fillZLepCollectionWithSelectedLeptons(BEANFileInterface *
 }
 
 bool HelperLeptonCore::isFromB(BNmcparticle particle) {
-  auto isB = [] (int& id) {return ((id / 1000) == 5 || (id / 100) == 5 || (id == 5));};
+  auto isB = [] (int& id) {return ((abs(id) / 1000) == 5 || (abs(id) / 100) == 5 || (abs(id) == 5));};
 
   if (isB(particle.motherId)) return true;
   if (isB(particle.mother0Id)) return true;
@@ -596,13 +622,13 @@ bool HelperLeptonCore::isFromB(BNmcparticle particle) {
 
 double HelperLeptonCore::scaleIPVarsMC(double ipvar, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
   if (abs(genID) == 13) {
-    if (mcMatchID > 0 || mcMatchAny <= 1) {
+    if (mcMatchID != -99 || mcMatchAny <= 1) {
       return ipvar * (abs(eta) < 1.5 ? 1.04 : 1.10);
     } else {
       return ipvar * 0.95;
     }
   } else {
-    if (mcMatchID > 0 || mcMatchAny <= 1) {
+    if (mcMatchID != -99 || mcMatchAny <= 1) {
       return ipvar * (abs(eta) < 1.479 ? 1.02 : 1.07);
     } else {
       return ipvar * 0.95;
@@ -611,21 +637,21 @@ double HelperLeptonCore::scaleIPVarsMC(double ipvar, int genID, double pt, doubl
 }
 
 double HelperLeptonCore::scaleSIPMC(double& sip, int& genID, double& pt, int& mcMatchID, int& mcMatchAny, double& eta) {
-  if (abs(genID) == 11 && (mcMatchID > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+  if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
     return logSmearMC(gSmearer, sip, 0.10, 0.2);
   }
   return scaleIPVarsMC(sip, genID, pt, eta, mcMatchID, mcMatchAny);
 }
 
 double HelperLeptonCore::scaleDZMC(double dz, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
-  if (abs(genID) == 11 && (mcMatchID > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+  if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
     return logSmearMC(gSmearer, dz, 0.20, 0.3);
   }
   return scaleIPVarsMC(dz, genID, pt, eta, mcMatchID, mcMatchAny);
 }
 
 double HelperLeptonCore::scaleDXYMC(double dxy, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
-  if (abs(genID) == 11 && (mcMatchID > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+  if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
     return logSmearMC(gSmearer, dxy, 0.07, 0.3);
   }
   return scaleIPVarsMC(dxy, genID, pt, eta, mcMatchID, mcMatchAny);
