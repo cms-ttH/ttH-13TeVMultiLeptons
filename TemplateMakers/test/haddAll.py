@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import ROOT
 from argparse import ArgumentParser
 
 def checkDirs (inDir) :
@@ -8,10 +9,10 @@ def checkDirs (inDir) :
         os.mkdir(inDir)
 
 def main ():
-    parser = ArgumentParser(description='Add together trees and move them to the plot making area.')
-    parser.add_argument('project_label', help='Project label')
+    parser = ArgumentParser(description='add together trees and move them to the plot making area')
+    parser.add_argument('project_label', help='project label')
     parser.add_argument('-s', '--sumData', action='store_true', default=False, help='sum the data files together')
-    parser.add_argument('-i', '--makeInclusive', action='store_true', default=False, help='sum all data categories together to make an inclusive file')
+    parser.add_argument('-i', '--makeInclusive', action='store_true', default=False, help='sum all data categories together, removing duplicates, to make an inclusive file')
     parser.add_argument('-c', '--copyFiles', action='store_true', default=False, help='copy files to treeFile directory')
     parser.add_argument('-m', '--moveFiles', action='store_true', default=False, help='move files to treeFile directory')
     parser.add_argument('-n', '--skipHadd', action='store_true', default=False, help ='don\'t hadd stuff, just move/copy it')
@@ -140,13 +141,13 @@ def main ():
                     dataset_paths.append(path)
                 else:
                     print "Could not find requested dataset %s.  It will not be included in the sum %s." % (path, data_category)
-            hadd_command = "hadd -v 0 -f %s_%s_all.root %s" % (data_category, args.project_label, " ".join(dataset_paths))
 
+            hadd_command = "hadd -v 0 -f %s_%s_all.root %s" % (data_category, args.project_label, " ".join(dataset_paths))
             print ">>>>>>>>>> Running >>>>>>>>>  "
             print "       %s" % hadd_command
             for feedback in os.popen(hadd_command).readlines():
                 print feedback
-            print "-------Done suming data category %s---------" % data_category
+            print "-------Done summing data category %s---------" % data_category
 
             if args.cleanup:
                 rm_command = "rm %s" % " ".join(dataset_paths)
@@ -154,16 +155,13 @@ def main ():
                     print feedback
 
     if (args.makeInclusive):
-        non_sideband_dataset_paths = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'sideband' not in f]
-        hadd_command = 'hadd -v 0 -f inclusive_data_%s_all.root ' % args.project_label
-        hadd_command += " ".join(non_sideband_dataset_paths)
+        inclusive_data = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'sideband' not in f]
+        inclusive_NP_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'NP_sideband' in f]
+        inclusive_QF_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'QF_sideband' in f]
 
-        print ">>>>>>>>>> Running >>>>>>>>>  "
-        print "       %s" % hadd_command
-        for feedback in os.popen(hadd_command).readlines():
-            print feedback
-        print "-------Done making inclusive data file ---------"
-
+        merge_trees_without_duplicates(inclusive_data, 'inclusive_data_%s_all.root' % args.project_label)
+        merge_trees_without_duplicates(inclusive_NP_sideband, 'inclusive_NP_sideband_%s_all.root' % args.project_label)
+        merge_trees_without_duplicates(inclusive_QF_sideband, 'inclusive_QF_sideband_%s_all.root' % args.project_label)
 
     # make sure the destination exists before sending files
     checkDirs(outDir)
@@ -185,6 +183,28 @@ def main ():
     print "-----Done------"
 
     return
+
+def merge_trees_without_duplicates(files, output):
+    merged_events = []
+    merged_tree = None
+    merged_tree_file = ROOT.TFile(output, 'RECREATE')
+    for file in files:
+        print 'Merging %s...' % file
+        tree_file = ROOT.TFile(file)
+        tree = tree_file.Get('summaryTree')
+        if not merged_tree:
+            merged_tree = tree.CloneTree(0)
+            merged_tree.SetDirectory(merged_tree_file)
+        for entry in tree:
+            event = (entry.eventInfo_evt, entry.eventInfo_lumi, entry.eventInfo_run)
+            if not event in merged_events:
+                merged_events.append(event)
+                merged_tree.Fill()
+        merged_tree_file.Write()
+        tree_file.Close()
+
+    print 'Done merging, merged tree is written to %s\n' % output
+    merged_tree_file.Close()
 
 # This allows you to run at the command line
 # tells you to call the main function defined above
