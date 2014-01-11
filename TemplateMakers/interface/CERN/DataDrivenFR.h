@@ -53,7 +53,7 @@ DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *input_myHelper, col
   branches[branchNameNP].branchVal = 1.0;
   branches[branchNameQF].branchVal = 1.0;
 
-  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/fakerate/").c_str();
+  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/fakerate/").c_str();
   TString weight_file_name_NP = Form("%s%s.root", directory.c_str(), file_name_NP.c_str());
   weight_file_NP = TFile::Open(weight_file_name_NP);
 
@@ -77,7 +77,7 @@ void DataDrivenFR<collectionType>::evaluate() {
   //--------
   FR_QF[0] = 1.0; FR_QF[1] = 1.0; FR_QF[2] = 1.0; FR_QF[3] = 1.0; FR_QF[4] = 1.0; FR_QF[5] = 1.0;
   QF_charge[0] = 0; QF_charge[1] = 0; QF_charge[2] = 0; QF_charge[3] = 0; QF_charge[4] = 0; QF_charge[5] = 0;
-  int num_fail = 0;
+  //int num_fail = 0;
   int num_passed_leptons = 0;
   int num_electrons = 0;
   float weight = -1.0;

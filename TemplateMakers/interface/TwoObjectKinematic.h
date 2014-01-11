@@ -125,9 +125,9 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  double thisValue = KinematicVariableConstants::DOUBLE_INIT; //Values of each individual object
+  //double thisValue = KinematicVariableConstants::DOUBLE_INIT; //Values of each individual object
   double thisValueSum = 0.0; //Sum over each object value
-  double thisValueSumAbs = 0.0; //Sum over absolute value of each object value
+  //double thisValueSumAbs = 0.0; //Sum over absolute value of each object value
   double thisValueIterator = 0.0; //Counting the total number of individual objects
   double thisValueCounter = 0.0; //Counting the total number of individual objects passing some criteria
 
@@ -269,7 +269,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
           if ( ( lepton_1->isMuon != 1 && lepton_1->isElectron != 1 ) || ( lepton_2->isMuon != 1 && lepton_2->isElectron != 1 ) ) {
             std::cout << "Why are we requiring same flavour on non-leptons?" << std::endl;
           }
-          else if ( lepton_1->isMuon != lepton_2->isMuon == 1 ) continue;          
+          else if ( lepton_1->isMuon != lepton_2->isMuon ) continue;          
         }
         
         if ( pair_req_1 == "opposite_sign" || pair_req_2 == "opposite_sign" ) {

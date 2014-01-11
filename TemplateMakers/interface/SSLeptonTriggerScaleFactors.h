@@ -35,11 +35,12 @@ void SSLeptonTriggerScaleFactors::evaluate () {
 
   BEANhelper * beanHelper = &(myHelper->bHelp);
 
-  double muonSF = 1.0, electronSF = 1.0, muonElectronSF = 1.0, triggerSF = 1.0;
+  double muonSF = 1.0, electronSF = 1.0, muonElectronSF = 1.0;
+  //double triggerSF = 1.0;
 
   unsigned numTightLoosePreselectedMuons = this->blocks->tightLoosePreselectedMuonCollection->size();
   unsigned numTightLoosePreselectedElectrons = this->blocks->tightLoosePreselectedElectronCollection->size();
-  unsigned numTightLoosePreselectedLeptons = this->blocks->tightLoosePreselectedLeptonCollection->size();
+  //unsigned numTightLoosePreselectedLeptons = this->blocks->tightLoosePreselectedLeptonCollection->size();
 
   // I'm creating a new collection because tightLoosePreselected is sorted by pT
   BNmuonCollection bestMuons;

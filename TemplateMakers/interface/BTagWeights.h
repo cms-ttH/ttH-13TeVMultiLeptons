@@ -248,7 +248,7 @@ double BTagWeights::getWeight(int systHF, int systLF) {
   double SF = 1.0;
   double previousSF = 1.0;
   double CSVRequirement;
-  double previousCSVRequirement;
+  //double previousCSVRequirement;
   string WPLabel;
   string previousWPLabel;
   double efficiency;
@@ -274,7 +274,7 @@ double BTagWeights::getWeight(int systHF, int systLF) {
 
         if (i>0) {
           previousWPLabel = WPs[i-1].first;
-          previousCSVRequirement = WPs[i-1].second;
+          //previousCSVRequirement = WPs[i-1].second;
           previousEfficiency = getEfficiency(jet, previousWPLabel);
           previousSF = getSF(jet, previousWPLabel, mySystHF, systLF);
           numerator *= max(0.0, SF*efficiency - previousSF*previousEfficiency);

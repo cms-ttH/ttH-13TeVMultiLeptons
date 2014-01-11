@@ -19,18 +19,20 @@
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
-  //Collection definitions set by muonID::muonID and electronID::electronID inside main function
-  unsigned numTightMuons = inputCollections->tightMuonCollection->size();
-  unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
-  unsigned numTightElectrons = inputCollections->tightElectronCollection->size();
-  unsigned numLooseElectrons = inputCollections->looseElectronCollection->size();
-  unsigned numAllLeptons = inputCollections->tightLoosePreselectedLeptonCollection->size();
 
   bool passTwoLepton = false;
 
-  //  if (numTightMuons ==2 || numTightElectrons==2 || (numTightMuons==1 && numTightElectrons==1))
+  //Collection definitions set by muonID::muonID and electronID::electronID inside main function
+//   unsigned numTightMuons = inputCollections->tightMuonCollection->size();
+//   unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
+//   unsigned numTightElectrons = inputCollections->tightElectronCollection->size();
+//   unsigned numLooseElectrons = inputCollections->looseElectronCollection->size();
+//   if (numTightMuons ==2 || numTightElectrons==2 || (numTightMuons==1 && numTightElectrons==1))
+//     passTwoLepton = true;
+
+  unsigned numAllLeptons = inputCollections->tightLoosePreselectedLeptonCollection->size();
   if (numAllLeptons >= 2)
-      passTwoLepton = true;
+    passTwoLepton = true;
 
   return passTwoLepton;
 }
