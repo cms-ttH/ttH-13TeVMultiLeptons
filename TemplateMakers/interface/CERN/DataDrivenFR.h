@@ -21,6 +21,7 @@ public:
   string file_name_QF;
   string branchNameNP;
   string branchNameQF;
+  string label;
 
   TFile * weight_file_NP;
   TFile * weight_file_QF;
@@ -33,20 +34,20 @@ public:
   int QF_charge[6];
 
   DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-               double input_working_point, string label, string input_file_name_NP, string input_file_name_QF);
+               double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label);
   ~DataDrivenFR();
   void evaluate();
 };
 
 template <class collectionType>
 DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-                                           double input_working_point, string label, string input_file_name_NP, string input_file_name_QF=0):
+                                           double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label = ""):
   myHelper(input_myHelper), selCollection(input_selCollection), number_of_leptons(input_number_of_leptons),
-  working_point(input_working_point), file_name_NP(input_file_name_NP), file_name_QF(input_file_name_QF) {
+  working_point(input_working_point), file_name_NP(input_file_name_NP), file_name_QF(input_file_name_QF),label(input_label) {
 
   this->resetVal = 1.0;
-  branchNameNP = Form("DataDrivenFR_NP_%s", label.c_str());
-  branchNameQF = Form("DataDrivenFR_QF_%s", label.c_str());
+  branchNameNP = Form("DataDrivenFR_NP%s", label.c_str());
+  branchNameQF = Form("DataDrivenFR_QF%s", label.c_str());
   branches[branchNameNP] = BranchInfo<double>(branchNameNP);
   branches[branchNameQF] = BranchInfo<double>(branchNameQF);
   branches[branchNameNP].branchVal = 1.0;
@@ -64,6 +65,7 @@ DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *input_myHelper, col
   TString weight_file_name_QF = Form("%s%s.root", directory.c_str(), file_name_QF.c_str());
   weight_file_QF = TFile::Open(weight_file_name_QF);
   FR_QF_el = (TH2*)weight_file_QF->Get("QF_el_data")->Clone();
+
 
 }
 

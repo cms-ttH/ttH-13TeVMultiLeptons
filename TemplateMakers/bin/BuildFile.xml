@@ -26,4 +26,6 @@
   </bin>
   <bin   file="ttV.C">
   </bin>
+  <bin   file="osTwoLep.C">
+  </bin>
 </environment>

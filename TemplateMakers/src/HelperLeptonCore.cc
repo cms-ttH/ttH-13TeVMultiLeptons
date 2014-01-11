@@ -382,7 +382,8 @@ void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID
   electronsTightLoose = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), looseID);
   electronsLoose = bHelp.GetDifference(electronsTightLoose, electronsTight);
 
-  electronsTightLoosePreselected = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), preselectedID);
+  if ( preselectedID==electronID::electronNoCuts ) electronsTightLoosePreselected = *(rawCollections.rawElectronCollection);
+  else electronsTightLoosePreselected = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), preselectedID);
   electronsPreselected = bHelp.GetDifference(electronsTightLoosePreselected, electronsTightLoose);
   electronsLoosePreselected = bHelp.GetUnion(electronsLoose, electronsPreselected);
 
@@ -400,7 +401,8 @@ void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, mu
   muonsTightLoose = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), looseID);
   muonsLoose = bHelp.GetDifference(muonsTightLoose, muonsTight);
 
-  muonsTightLoosePreselected = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), preselectedID);
+  if ( preselectedID==muonID::muonNoCuts ) muonsTightLoosePreselected = *(rawCollections.rawMuonCollection);
+  else muonsTightLoosePreselected = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), preselectedID);
   muonsPreselected = bHelp.GetDifference(muonsTightLoosePreselected, muonsTightLoose);
   muonsLoosePreselected = bHelp.GetUnion(muonsLoose, muonsPreselected);
 

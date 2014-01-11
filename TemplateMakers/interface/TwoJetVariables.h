@@ -1,21 +1,11 @@
-#ifndef _TwoObjectKinematic_h
-#define _TwoObjectKinematic_h
+#ifndef _TwoJetVariables_h
+#define _TwoJetVariables_h
 
 #include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
-#include <typeinfo>
 
-// //Anna's fix to make BNleptonCollection work just like any other collection
-// //Template defined in GenericCollectionMember.h 
-// template<typename ObjectType_temp>
-// ObjectType_temp * ptr(ObjectType_temp & obj) { return &obj; } //turn reference into pointer!
-
-// template<typename ObjectType_temp>
-// ObjectType_temp * ptr(ObjectType_temp * obj) { return obj; } //obj is already pointer, return it!
-
-//Takes two collections; may be the same, or different
-template <class collectionType1, class collectionType2>
-class TwoObjectKinematic: public KinematicVariable<double> {
+//Takes two jet collections; may be the same, or different
+class TwoJetVariables: public KinematicVariable<double> {
 
 public:
   //Store branch values so they are accessible to other classes
@@ -28,43 +18,43 @@ public:
   string variable; //mass, mass, MT, deltaR, deltaEta, deltaPhi, absDeltaEta, absDeltaPhi,
                    //pt, pz, energy, eta, phi, absPz, absEta, absPhi,
                    //vectPt, vectPz, vectEnergy, vectEta, vectPhi
-                   //absVectPt, absVectPz, absVectEnergy, absVectEta, absVectPhi
+                   //absVectPt, absVectPz, absVectEnergy, absVectEta, absVectPhi,
+                   //CSV
   //An "abs" suffix indicates the absolute value of each variable as a whole,
   //e.g. sum ( |a1+a2| + |b1+b2| + |c1+c2| ...)
   //An "abs" prefix indicates the absolute value of the final output,
   //e.g. | sum ( (a1+a2) + (b1+b2) + (c1+c2) ...)
   string which_pair; //all_pairs, max, min, avg, sum, closest_to, second_closest_to,
                      //all_pairs_abs, maxAbs, minAbs, avgAbs, sumAbs,
-                     //absMax, absMin, absAvg, absSum, vector_sum,
+                     //absMax, absMin, absAvg, absSum, vector_sum
                      //num_within
   string new_name; //Replacement name if desired, otherwise set to ""
-  collectionType1 **selCollection1; //first selected collection
-  collectionType2 **selCollection2; //second selected collection
+  BNjetCollection **selCollection1; //first selected collection
+  BNjetCollection **selCollection2; //second selected collection
   string branch_name_1; //first selected collection name
   string branch_name_2; //second collected collection name
   unsigned int min1; //first object in the first collection
   unsigned int max1; //last object in the first collection
   unsigned int min2; //first object in the second collection 
   unsigned int max2; //last object in the second collection 
-  double target_value; //only matters for closest_to, second_closest_to, and num_within; otherwise set to -99
+  double target_value; //only matters for closest_to, second_closest_to, and num_within; otherwise, set to -99
   string pair_req_1;
   string pair_req_2;
-  double within_value; 
+  double within_value;
   
-  TwoObjectKinematic(string input_variable, string input_which_pair, string input_new_name,
-                     collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
-                     collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
-                     double input_target_value = -99, string input_pair_req_1 = "none", string input_pair_req_2 = "none", double input_within_value = -99);
+  TwoJetVariables(string input_variable, string input_which_pair, string input_new_name,
+                  BNjetCollection **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
+                  BNjetCollection **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
+                  double input_target_value = -99, string input_pair_req_1 = "none", string input_pair_req_2 = "none", double input_within_value = -99);
   
   void evaluate();
   
 };
 
-template <class collectionType1, class collectionType2>
-TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string input_variable, string input_which_pair, string input_new_name,
-                                                                        collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
-                                                                        collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
-                                                                        double input_target_value, string input_pair_req_1, string input_pair_req_2, double input_within_value):
+TwoJetVariables::TwoJetVariables(string input_variable, string input_which_pair, string input_new_name,
+                                 BNjetCollection **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
+                                 BNjetCollection **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
+                                 double input_target_value, string input_pair_req_1, string input_pair_req_2, double input_within_value):
   variable(input_variable), which_pair(input_which_pair), new_name(input_new_name),
   selCollection1(input_selCollection1), branch_name_1(input_branch_name_1), min1(input_min1), max1(input_max1),
   selCollection2(input_selCollection2), branch_name_2(input_branch_name_2), min2(input_min2), max2(input_max2),
@@ -76,7 +66,7 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
   int target_value_fraction = static_cast<int>(target_value*10)%10;
   int within_value_whole = floor(within_value);
   int within_value_fraction = static_cast<int>(within_value*10)%10;
-
+  
   // --Create the branches--
   //Creates branches for each pair of objects
   if (which_pair == "all_pairs" || which_pair == "all_pairs_abs") { 
@@ -105,9 +95,9 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
                          target_value_whole, target_value_fraction, variable.c_str()); 
     branches[bName] = BranchInfo<double>(bName);
   }
-  else if (which_pair == "num_within") { 
+  else if (which_pair == "num_within") {
     TString bName = Form("%s_%s_%s_%dp%d_of_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
-                         within_value_whole, within_value_fraction, target_value_whole, target_value_fraction, variable.c_str()); 
+                         within_value_whole, within_value_fraction, target_value_whole, target_value_fraction, variable.c_str());
     branches[bName] = BranchInfo<double>(bName);
   }
   //Creates a branch for the pair of objects
@@ -120,8 +110,7 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
 
 }
 
-template <class collectionType1, class collectionType2>
-void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
+void TwoJetVariables::evaluate() {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
@@ -136,9 +125,9 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   double thisPairValueSumAbs = 0.0; //Sum over absolute value of each object pair
   double thisPairValueIterator = 0.0; //Conting the total number of distinct pairs
   double thisPairValueCounter = 0.0; //Conting the total number of distinct pairs passing some criteria
-
+  
   double thisPairValue2 = KinematicVariableConstants::DOUBLE_INIT; //For saving pair values from previous iterations
-
+  
   TLorentzVector thisVectorSum(0.,0.,0.,0.); //Sum of vectors of individual objects
   TLorentzVector thisVectorTransverse(0.,0.,0.,0.); //Transverse vectors of individual objects
   TLorentzVector thisVectorTransverseSum(0.,0.,0.,0.); //Sum of transverse vectors of individual objects
@@ -157,12 +146,13 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   int within_value_whole = floor(within_value);
   int within_value_fraction = static_cast<int>(within_value*10)%10;
 
-  bool useValue = 0; //Use individual values for sum, average, and num_within calculations
+  bool useValue = 0; //Use individual values for sum and average calculations
   if ( variable == "pt" || variable == "pz" || variable == "energy" || variable == "eta" || variable == "phi" ||
-       variable == "absPz" || variable == "absEta" || variable == "absPhi") {
+       variable == "absPz" || variable == "absEta" || variable == "absPhi" ||
+       variable == "CSV") {
     useValue = 1;
   }
-  bool usePairValue = 0; //Use pair values for sum, average, and num_within calculations
+  bool usePairValue = 0; //Use pair values for sum and average calculations
   if ( variable == "mass" || variable == "MT" || variable == "deltaR" || variable == "deltaEta" || variable == "deltaPhi" ||
        variable == "absDeltaEta" || variable == "absDeltaPhi" || variable == "vectPt" || variable == "vectPz" ||
        variable == "vectEnergy" || variable == "vectEta" || variable == "vectPhi" || variable == "absVectPhi" ||
@@ -193,6 +183,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         else if ( variable == "absPz" ) { thisValueSum += abs(vect1.Pz()); thisValueCounter += 1.0*( abs(vect1.Pz() - target_value) < within_value ); }
         else if ( variable == "absEta" ) { thisValueSum += abs(vect1.Eta()); thisValueCounter += 1.0*( abs(vect1.Eta() - target_value) < within_value ); }
         else if ( variable == "absPhi" ) { thisValueSum += abs(vect1.Phi()); thisValueCounter += 1.0*( abs(vect1.Phi() - target_value) < within_value ); }
+        else if ( variable == "CSV" ) { thisValueSum += max(ptr((*selCollection1)->at(iObj1))->btagCombinedSecVertex,0.0); thisValueCounter += 1.0*( abs(max(ptr((*selCollection1)->at(iObj1))->btagCombinedSecVertex,0.0) - target_value) < within_value ); }
         else if ( which_pair != "vector_sum" ) { std::cerr << " No valid entry for variable: " << variable << std::endl; continue; }
         else continue;
       }      
@@ -218,6 +209,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         else if ( variable == "absPz" ) { thisValueSum += abs(vect2.Pz()); thisValueCounter += 1.0*( abs(vect2.Pz() - target_value) < within_value ); }
         else if ( variable == "absEta" ) { thisValueSum += abs(vect2.Eta()); thisValueCounter += 1.0*( abs(vect2.Eta() - target_value) < within_value ); }
         else if ( variable == "absPhi" ) { thisValueSum += abs(vect2.Phi()); thisValueCounter += 1.0*( abs(vect2.Phi() - target_value) < within_value ); }
+        else if ( variable == "CSV" ) { thisValueSum += max(ptr((*selCollection2)->at(iObj2))->btagCombinedSecVertex,0.0); thisValueCounter += 1.0*( abs(max(ptr((*selCollection2)->at(iObj2))->btagCombinedSecVertex,0.0) - target_value) < within_value ); }
         else if ( which_pair != "vector_sum" ) { std::cerr << " No valid entry for variable: " << variable << std::endl; continue; }
         else continue;
       }
@@ -251,10 +243,10 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   } //End if ( useValue || which_pair == "vector_sum" )
   
   //Loop over pairs of objects
-  //for (typename collectionType1::const_iterator object1 = (*selCollection1)->begin(); object1 != (*selCollection1)->end(); ++object1) {
+  //for (typename BNjetCollection::const_iterator object1 = (*selCollection1)->begin(); object1 != (*selCollection1)->end(); ++object1) {
   for (unsigned int iObj1 = 0; iObj1 < (*selCollection1)->size(); iObj1++) {
 
-    //for (typename collectionType2::const_iterator object2 = (*selCollection2)->begin(); object2 != (*selCollection2)->end(); ++object2) {
+    //for (typename BNjetCollection::const_iterator object2 = (*selCollection2)->begin(); object2 != (*selCollection2)->end(); ++object2) {
     for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
 
       //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
@@ -317,6 +309,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         else if ( variable == "absVectPz" ) thisPairValue = abs(vect12.Pz());
         else if ( variable == "absVectEta" ) thisPairValue = abs(vect12.Eta());
         else if ( variable == "absVectPhi" ) thisPairValue = abs(vect12.Phi());
+        else if ( variable == "CSV" ) thisPairValue = max(ptr((*selCollection1)->at(iObj1))->btagCombinedSecVertex,0.0) + max(ptr((*selCollection2)->at(iObj2))->btagCombinedSecVertex,0.0);
         else { std::cerr << " No valid entry for variable: " << variable << std::endl; continue; }
 
         thisPairValueSum += thisPairValue;
@@ -363,7 +356,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
           TString bName = Form("%s_%s_%s_%dp%d_of_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
                                within_value_whole, within_value_fraction, target_value_whole, target_value_fraction, variable.c_str());
           if (new_name.length() > 0) bName = Form("%s", new_name.c_str());
-
+          
           if ( abs(thisPairValue - target_value) < within_value ) thisPairValueCounter += 1.0;
           branches[bName].branchVal = thisPairValueCounter;
         }

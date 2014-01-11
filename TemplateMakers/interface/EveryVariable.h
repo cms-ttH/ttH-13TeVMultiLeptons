@@ -30,4 +30,8 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CERN/TightChargeAndLepMVAScaleFactors.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CERN/DataDrivenFR.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagWeights.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/NOVa/BTagShapeWeights.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/PassZmask.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoJetVariables.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/NOVa/FinalBDT_OS_2012.h"
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericVariable.h"

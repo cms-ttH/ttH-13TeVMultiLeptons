@@ -74,7 +74,7 @@ FinalBDT::FinalBDT(GenericCollectionMember<double, BNleptonCollection> * input_t
     reader[j]->AddVariable( "MT_met_lep1", &varMT_met_lep1 );
     reader[j]->AddVariable( "sum_pt", &varsum_pt );
 
-    TString dir = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/BDT_weights/").c_str();
+    TString dir = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/BDT_weights/").c_str();
     TString label = catList[j];
     TString file_name = "TMVAClassification_BDTG.weights.xml";
     //TString file_name = "TMVAClassification_CFMlpANN.weights.xml";

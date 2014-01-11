@@ -24,8 +24,8 @@ public:
 };
 
 TightChargeAndLepMVAScaleFactors::TightChargeAndLepMVAScaleFactors (int numLeps):
-  electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/lepMVA_weights/MVAandTightChargeSF_ele.root").c_str()),
-  muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/lepMVA_weights/MVAandTightChargeSF_mu.root").c_str()),
+  electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_ele.root").c_str()),
+  muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_mu.root").c_str()),
   numLeps(numLeps)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;

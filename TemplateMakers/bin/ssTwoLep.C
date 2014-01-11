@@ -348,7 +348,7 @@ int main (int argc, char** argv) {
   cutVars.push_back(&allLeptonTkCharge);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonSIP(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
-                                                                   "SIP", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+                                                                   "SIP", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonSIP);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonD0(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
