@@ -39,11 +39,11 @@ public:
                      //num_within
   string new_name; //Replacement name if desired, otherwise set to ""
   collectionType1 **selCollection1; //first selected collection
-  collectionType2 **selCollection2; //second selected collection
   string branch_name_1; //first selected collection name
-  string branch_name_2; //second collected collection name
   unsigned int min1; //first object in the first collection
   unsigned int max1; //last object in the first collection
+  collectionType2 **selCollection2; //second selected collection
+  string branch_name_2; //second collected collection name
   unsigned int min2; //first object in the second collection 
   unsigned int max2; //last object in the second collection 
   double target_value; //only matters for closest_to, second_closest_to, and num_within; otherwise set to -99

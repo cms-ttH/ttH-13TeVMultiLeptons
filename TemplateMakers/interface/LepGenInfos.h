@@ -11,13 +11,13 @@
 class LepGenInfos: public KinematicVariable<double> {
 
 public:
+    HelperLeptonCore * myHelper;
     unsigned int maxLeptonsTight;
     unsigned int maxLeptonsLoose;
     unsigned int maxLeptonsPreselected;
     unsigned int maxLeptonsTightLoose;
     unsigned int maxLeptonsLoosePreselected;
     unsigned int maxLeptonsTightLoosePreselected;
-    HelperLeptonCore * myHelper;
 
   LepGenInfos(HelperLeptonCore *in, int maxTight, int maxLoose, int maxPreselected, int maxTightLoose, int maxLoosePreselected, int maxTightLoosePreselected);
     void evaluate ();

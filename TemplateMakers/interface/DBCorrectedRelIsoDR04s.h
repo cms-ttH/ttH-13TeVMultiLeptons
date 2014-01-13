@@ -11,8 +11,8 @@
 class DBCorrectedRelIsoDR04s: public KinematicVariable<double> {
 
 public:
-    unsigned int maxLeptons;
     HelperLeptonCore * myHelper;
+    unsigned int maxLeptons;
 
     DBCorrectedRelIsoDR04s(HelperLeptonCore *in, int max);
     void evaluate ();

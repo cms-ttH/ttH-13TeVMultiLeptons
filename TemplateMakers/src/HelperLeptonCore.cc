@@ -453,10 +453,11 @@ BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets (double ptCut,
                                                  double etaCut,
                                                  jetID::jetID jetID,
                                                  const char csvWorkingPoint) {
+  sortedCorrSelJets.clear();
 
   BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);
-  BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, jetID, csvWorkingPoint) ;
-  BNjetCollection sortedCorrSelJets = bHelp.GetSortedByPt(tmpCorrSelJets);
+  BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, jetID, csvWorkingPoint);
+  sortedCorrSelJets = bHelp.GetSortedByPt(tmpCorrSelJets);
 
   return &sortedCorrSelJets;
 

@@ -173,6 +173,7 @@ public:
   BNmcparticleCollection mcparticles;
 
   edm::Handle<BNjetCollection> h_pfjets;
+  BNjetCollection sortedCorrSelJets;
   BNjetCollection pfjets;
   BNjetCollection jetsTight;
   BNjetCollection jetsLooseCSV;

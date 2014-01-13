@@ -40,9 +40,9 @@ bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
 void LeptonVarsThisAnalysis(BEANFileInterface * inputCollections, bool passTwoLepton, int & TwoMuon, int & TwoElectron, int & MuonElectron) {
   //Collection definitions set by muonID::muonID and electronID::electronID inside main function
   unsigned numTightMuons = inputCollections->tightMuonCollection->size();
-  unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
+  //unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
   unsigned numTightElectrons = inputCollections->tightElectronCollection->size();
-  unsigned numLooseElectrons = inputCollections->looseElectronCollection->size();
+  //unsigned numLooseElectrons = inputCollections->looseElectronCollection->size();
 
   TwoMuon = 0;
   TwoElectron = 0;

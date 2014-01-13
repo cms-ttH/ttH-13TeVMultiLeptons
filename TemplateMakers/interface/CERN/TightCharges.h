@@ -7,9 +7,9 @@ class TightCharges: public KinematicVariable<int> {
 
 public:
   BNleptonCollection **selCollection;
-  unsigned int max_leptons;
   string mem;
   string storePrefix;
+  unsigned int max_leptons;
   string CERNTightChargeCut;
   unsigned int loopMax;
 
