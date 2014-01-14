@@ -52,84 +52,85 @@ def main ():
                         print feedback
                 print "Created %s" % newName
 
+    dataNames2011 = {"DoubleElectron":['DoubleElectron_Run2011A-05Aug2011-v1',
+                                   'DoubleElectron_Run2011A-May10ReReco-v1',
+                                   'DoubleElectron_Run2011A-PromptReco-v4',
+                                   'DoubleElectron_Run2011A-PromptReco-v6',
+                                   'DoubleElectron_Run2011B-PromptReco-v1'],
+                 "DoubleMu":['DoubleMu_Run2011A-05Aug2011-v1',
+                             'DoubleMu_Run2011A-May10ReReco-v1',
+                             'DoubleMu_Run2011A-PromptReco-v4',
+                             'DoubleMu_Run2011A-PromptReco-v6',
+                             'DoubleMu_Run2011B-PromptReco-v1'],
+                 "MuEG":['MuEG_Run2011A-05Aug2011-v1',
+                         'MuEG_Run2011A-May10ReReco-v1',
+                         'MuEG_Run2011A-PromptReco-v4',
+                         'MuEG_Run2011A-PromptReco-v6',
+                         'MuEG_Run2011B-PromptReco-v1']
+                 }
+    dataNames2012_52x = {"DoubleElectron":['DoubleElectron_Run2012A',
+                                           'DoubleElectron_Run2012B'],
+                         "DoubleMu":['DoubleMu_Run2012A',
+                                     'DoubleMu_Run2012B'],
+                         "MuEG":['MuEG_Run2012A',
+                                 'MuEG_Run2012B']
+                 }
+    dataNames2012_53x = {"DoubleElectron":['DoubleElectron_Run2012A-13Jul2012-v1',
+                                           'DoubleElectron_Run2012A-recover-06Aug2012-v1',
+                                           'DoubleElectron_Run2012B-13Jul2012-v1',
+                                           'DoubleElectron_Run2012C-PromptReco-v2',
+                                           'DoubleElectron_Run2012C-24Aug2012-v1',
+                                           'DoubleElectron_Run2012D-PromptReco-v1'],
+                         "DoubleMu":['DoubleMu_Run2012A-13Jul2012-v1',
+                                     'DoubleMu_Run2012A-recover-06Aug2012-v1',
+                                     'DoubleMu_Run2012B-13Jul2012-v4',
+                                     'DoubleMu_Run2012C-PromptReco-v2',
+                                     'DoubleMu_Run2012C-24Aug2012-v1',
+                                     'DoubleMu_Run2012D-PromptReco-v1',
+                                     'DoubleMu_Run2012D-16Jan2013-v2'],
+                         "MuEG":['MuEG_Run2012A-13Jul2012-v1',
+                                 'MuEG_Run2012A-recover-06Aug2012-v1',
+                                 'MuEG_Run2012B-13Jul2012-v1',
+                                 'MuEG_Run2012C-PromptReco-v2',
+                                 'MuEG_Run2012C-24Aug2012-v1',
+                                 'MuEG_Run2012D-PromptReco-v1'],
+                         "DoubleElectron_NP_sideband":['DoubleElectron_Run2012A-13Jul2012-v1_NP_sideband',
+                                                       'DoubleElectron_Run2012A-recover-06Aug2012-v1_NP_sideband',
+                                                       'DoubleElectron_Run2012B-13Jul2012-v1_NP_sideband',
+                                                       'DoubleElectron_Run2012C-PromptReco-v2_NP_sideband',
+                                                       'DoubleElectron_Run2012C-24Aug2012-v1_NP_sideband',
+                                                       'DoubleElectron_Run2012D-PromptReco-v1_NP_sideband'],
+                         "DoubleMu_NP_sideband":['DoubleMu_Run2012A-13Jul2012-v1_NP_sideband',
+                                                 'DoubleMu_Run2012A-recover-06Aug2012-v1_NP_sideband',
+                                                 'DoubleMu_Run2012B-13Jul2012-v4_NP_sideband',
+                                                 'DoubleMu_Run2012C-PromptReco-v2_NP_sideband',
+                                                 'DoubleMu_Run2012C-24Aug2012-v1_NP_sideband',
+                                                 'DoubleMu_Run2012D-PromptReco-v1_NP_sideband',
+                                                 'DoubleMu_Run2012D-16Jan2013-v2_NP_sideband'],
+                         "MuEG_NP_sideband":['MuEG_Run2012A-13Jul2012-v1_NP_sideband',
+                                             'MuEG_Run2012A-recover-06Aug2012-v1_NP_sideband',
+                                             'MuEG_Run2012B-13Jul2012-v1_NP_sideband',
+                                             'MuEG_Run2012C-PromptReco-v2_NP_sideband',
+                                             'MuEG_Run2012C-24Aug2012-v1_NP_sideband',
+                                             'MuEG_Run2012D-PromptReco-v1_NP_sideband'],
+                         "DoubleElectron_QF_sideband":['DoubleElectron_Run2012A-13Jul2012-v1_QF_sideband',
+                                                       'DoubleElectron_Run2012A-recover-06Aug2012-v1_QF_sideband',
+                                                       'DoubleElectron_Run2012B-13Jul2012-v1_QF_sideband',
+                                                       'DoubleElectron_Run2012C-PromptReco-v2_QF_sideband',
+                                                       'DoubleElectron_Run2012C-24Aug2012-v1_QF_sideband',
+                                                       'DoubleElectron_Run2012D-PromptReco-v1_QF_sideband'],
+                         "MuEG_QF_sideband":['MuEG_Run2012A-13Jul2012-v1_QF_sideband',
+                                             'MuEG_Run2012A-recover-06Aug2012-v1_QF_sideband',
+                                             'MuEG_Run2012B-13Jul2012-v1_QF_sideband',
+                                             'MuEG_Run2012C-PromptReco-v2_QF_sideband',
+                                             'MuEG_Run2012C-24Aug2012-v1_QF_sideband',
+                                             'MuEG_Run2012D-PromptReco-v1_QF_sideband']
+                 }
+
+    data_names = dataNames2012_53x
+
     if (args.sumData):
         print "Summing data Files"
-        dataNames2011 = {"DoubleElectron":['DoubleElectron_Run2011A-05Aug2011-v1',
-                                       'DoubleElectron_Run2011A-May10ReReco-v1',
-                                       'DoubleElectron_Run2011A-PromptReco-v4',
-                                       'DoubleElectron_Run2011A-PromptReco-v6',
-                                       'DoubleElectron_Run2011B-PromptReco-v1'],
-                     "DoubleMu":['DoubleMu_Run2011A-05Aug2011-v1',
-                                 'DoubleMu_Run2011A-May10ReReco-v1',
-                                 'DoubleMu_Run2011A-PromptReco-v4',
-                                 'DoubleMu_Run2011A-PromptReco-v6',
-                                 'DoubleMu_Run2011B-PromptReco-v1'],
-                     "MuEG":['MuEG_Run2011A-05Aug2011-v1',
-                             'MuEG_Run2011A-May10ReReco-v1',
-                             'MuEG_Run2011A-PromptReco-v4',
-                             'MuEG_Run2011A-PromptReco-v6',
-                             'MuEG_Run2011B-PromptReco-v1']
-                     }
-        dataNames2012_52x = {"DoubleElectron":['DoubleElectron_Run2012A',
-                                               'DoubleElectron_Run2012B'],
-                             "DoubleMu":['DoubleMu_Run2012A',
-                                         'DoubleMu_Run2012B'],
-                             "MuEG":['MuEG_Run2012A',
-                                     'MuEG_Run2012B']
-                     }
-        dataNames2012_53x = {"DoubleElectron":['DoubleElectron_Run2012A-13Jul2012-v1',
-                                               'DoubleElectron_Run2012A-recover-06Aug2012-v1',
-                                               'DoubleElectron_Run2012B-13Jul2012-v1',
-                                               'DoubleElectron_Run2012C-PromptReco-v2',
-                                               'DoubleElectron_Run2012C-24Aug2012-v1',
-                                               'DoubleElectron_Run2012D-PromptReco-v1'],
-                             "DoubleMu":['DoubleMu_Run2012A-13Jul2012-v1',
-                                         'DoubleMu_Run2012A-recover-06Aug2012-v1',
-                                         'DoubleMu_Run2012B-13Jul2012-v4',
-                                         'DoubleMu_Run2012C-PromptReco-v2',
-                                         'DoubleMu_Run2012C-24Aug2012-v1',
-                                         'DoubleMu_Run2012D-PromptReco-v1',
-                                         'DoubleMu_Run2012D-16Jan2013-v2'],
-                             "MuEG":['MuEG_Run2012A-13Jul2012-v1',
-                                     'MuEG_Run2012A-recover-06Aug2012-v1',
-                                     'MuEG_Run2012B-13Jul2012-v1',
-                                     'MuEG_Run2012C-PromptReco-v2',
-                                     'MuEG_Run2012C-24Aug2012-v1',
-                                     'MuEG_Run2012D-PromptReco-v1'],
-							 "DoubleElectron_NP_sideband":['DoubleElectron_Run2012A-13Jul2012-v1_NP_sideband',
-                                                           'DoubleElectron_Run2012A-recover-06Aug2012-v1_NP_sideband',
-                                                           'DoubleElectron_Run2012B-13Jul2012-v1_NP_sideband',
-                                                           'DoubleElectron_Run2012C-PromptReco-v2_NP_sideband',
-                                                           'DoubleElectron_Run2012C-24Aug2012-v1_NP_sideband',
-                                                           'DoubleElectron_Run2012D-PromptReco-v1_NP_sideband'],
-                             "DoubleMu_NP_sideband":['DoubleMu_Run2012A-13Jul2012-v1_NP_sideband',
-                                                     'DoubleMu_Run2012A-recover-06Aug2012-v1_NP_sideband',
-                                                     'DoubleMu_Run2012B-13Jul2012-v4_NP_sideband',
-                                                     'DoubleMu_Run2012C-PromptReco-v2_NP_sideband',
-                                                     'DoubleMu_Run2012C-24Aug2012-v1_NP_sideband',
-                                                     'DoubleMu_Run2012D-PromptReco-v1_NP_sideband',
-                                                     'DoubleMu_Run2012D-16Jan2013-v2_NP_sideband'],
-                             "MuEG_NP_sideband":['MuEG_Run2012A-13Jul2012-v1_NP_sideband',
-                                                 'MuEG_Run2012A-recover-06Aug2012-v1_NP_sideband',
-                                                 'MuEG_Run2012B-13Jul2012-v1_NP_sideband',
-                                                 'MuEG_Run2012C-PromptReco-v2_NP_sideband',
-                                                 'MuEG_Run2012C-24Aug2012-v1_NP_sideband',
-                                                 'MuEG_Run2012D-PromptReco-v1_NP_sideband'],
-							 "DoubleElectron_QF_sideband":['DoubleElectron_Run2012A-13Jul2012-v1_QF_sideband',
-                                                           'DoubleElectron_Run2012A-recover-06Aug2012-v1_QF_sideband',
-                                                           'DoubleElectron_Run2012B-13Jul2012-v1_QF_sideband',
-                                                           'DoubleElectron_Run2012C-PromptReco-v2_QF_sideband',
-                                                           'DoubleElectron_Run2012C-24Aug2012-v1_QF_sideband',
-                                                           'DoubleElectron_Run2012D-PromptReco-v1_QF_sideband'],
-                             "MuEG_QF_sideband":['MuEG_Run2012A-13Jul2012-v1_QF_sideband',
-                                                 'MuEG_Run2012A-recover-06Aug2012-v1_QF_sideband',
-                                                 'MuEG_Run2012B-13Jul2012-v1_QF_sideband',
-                                                 'MuEG_Run2012C-PromptReco-v2_QF_sideband',
-                                                 'MuEG_Run2012C-24Aug2012-v1_QF_sideband',
-                                                 'MuEG_Run2012D-PromptReco-v1_QF_sideband']
-                     }
-
-        data_names = dataNames2012_53x
         print "Data names are...", data_names
 
         for (data_category, datasets) in data_names.items():
@@ -157,11 +158,9 @@ def main ():
     if (args.makeInclusive):
         inclusive_data = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'sideband' not in f]
         inclusive_NP_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'NP_sideband' in f]
-        inclusive_QF_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'QF_sideband' in f]
 
         merge_trees_without_duplicates(inclusive_data, 'inclusive_data_%s_all.root' % args.project_label)
         merge_trees_without_duplicates(inclusive_NP_sideband, 'inclusive_NP_sideband_%s_all.root' % args.project_label)
-        merge_trees_without_duplicates(inclusive_QF_sideband, 'inclusive_QF_sideband_%s_all.root' % args.project_label)
 
     # make sure the destination exists before sending files
     checkDirs(outDir)
@@ -186,25 +185,53 @@ def main ():
 
 def merge_trees_without_duplicates(files, output):
     merged_events = []
-    merged_tree = None
     merged_tree_file = ROOT.TFile(output, 'RECREATE')
-    for file in files:
-        print 'Merging %s...' % file
-        tree_file = ROOT.TFile(file)
-        tree = tree_file.Get('summaryTree')
-        if not merged_tree:
-            merged_tree = tree.CloneTree(0)
-            merged_tree.SetDirectory(merged_tree_file)
-        for entry in tree:
-            event = (entry.eventInfo_evt, entry.eventInfo_lumi, entry.eventInfo_run)
-            if not event in merged_events:
-                merged_events.append(event)
-                merged_tree.Fill()
-        merged_tree_file.Write()
-        tree_file.Close()
+
+    hadd_command = "hadd -v 0 -f %s %s" % (output.replace('.root', '_with_duplicates.root'), ' '.join(files))
+    print ">>>>>>>>>> Running >>>>>>>>>  "
+    print "       %s" % hadd_command
+    for feedback in os.popen(hadd_command).readlines():
+        print feedback
+    print "-------Done making merged files with duplicates---------"
+
+    print 'Making merged file without duplicates...'
+    tree_file = ROOT.TFile(output.replace('.root', '_with_duplicates.root'))
+    tree = tree_file.Get('summaryTree')
+    merged_tree = tree.CloneTree(0)
+    merged_tree.SetDirectory(merged_tree_file)
+    for entry in tree:
+        event = (entry.eventInfo_evt, entry.eventInfo_lumi, entry.eventInfo_run)
+        if not event in merged_events:
+            merged_events.append(event)
+            merged_tree.Fill()
+
+    merged_tree_file.Write()
+    merged_tree_file.Close()
+    tree_file.Close()
 
     print 'Done merging, merged tree is written to %s\n' % output
-    merged_tree_file.Close()
+
+
+#     merged_events = []
+#     merged_tree = None
+#     merged_tree_file = ROOT.TFile(output, 'RECREATE')
+#     for file in files:
+#         print 'Merging %s...' % file
+#         tree_file = ROOT.TFile(file)
+#         tree = tree_file.Get('summaryTree')
+#         if not merged_tree:
+#             merged_tree = tree.CloneTree(0)
+#             merged_tree.SetDirectory(merged_tree_file)
+#         for entry in tree:
+#             event = (entry.eventInfo_evt, entry.eventInfo_lumi, entry.eventInfo_run)
+#             if not event in merged_events:
+#                 merged_events.append(event)
+#                 merged_tree.Fill()
+#         merged_tree_file.Write()
+#         tree_file.Close()        
+
+#     print 'Done merging, merged tree is written to %s\n' % output
+#     merged_tree_file.Close()
 
 # This allows you to run at the command line
 # tells you to call the main function defined above
