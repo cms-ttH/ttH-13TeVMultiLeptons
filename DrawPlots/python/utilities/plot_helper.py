@@ -8,6 +8,12 @@ import collections
 import glob
 import time
 
+def append_integral_histo(config):
+    if not config['distributions'].has_key('integral_histo'):
+        config['distributions']['integral_histo'] = {'axis labels': ['isCleanEvent', 'Events'], 'expression': 'isCleanEvent', 'plot type': 'TH1F', 'binning': [2, 0, 2]}
+
+    return config
+
 def get_jet_tag_category_requirements(jet_tag_category):
     jet_tag_string = ''
     if jet_tag_category == 'ge2t':

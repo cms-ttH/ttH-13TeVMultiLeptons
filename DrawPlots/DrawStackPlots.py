@@ -26,6 +26,8 @@ with open(args.cosmetics_config_file_name) as cosmetics_file:
 lepton_categories = config['lepton categories']
 jet_tag_categories = config['jet tag categories']
 distributions = config['distributions']
+if args.yields:
+    distributions['integral_histo'] = ['isCleanEvent', False, False]
 signal_samples = config['signal samples']
 background_samples = config['background samples']
 yields = plot_helper.Yields(jet_tag_categories)
@@ -58,6 +60,9 @@ def main():
             for distribution in distributions:
                 print 'Drawing distribution: %s with jet selection printing name: %s' %  (distribution, jet_tag_categories[jet_tag_category])
                 draw_stack_plot(lepton_category, jet_tag_category, distribution)
+
+            if args.yields:
+                draw_stack_plot(lepton_category, jet_tag_category, 'integral_histo')
 
     if args.web:
         plot_helper.update_indexes(config['output file location'])
@@ -200,7 +205,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
         xMin = stack_plot.GetStack().Last().GetXaxis().GetXmin()
         xMax = stack_plot.GetStack().Last().GetXaxis().GetXmax()
     except:
-        print 'No histograms in stack for distribution %s.  Continuing to the next one...'
+        print 'No histograms in stack for distribution %s.  Skipping it and continuing on...' % distribution
         return
 
     # Create a histogram with the error bars for the MC stack
@@ -421,8 +426,7 @@ def move_extra_into_hist(histogram):
 ## end move_extra_into_histogram()
 
 def configure_my_stack(stack_plot, plot_max):
-    title_string = ';;%s' % 'Events'
-    stack_plot.SetTitle(title_string)
+    stack_plot.SetTitle(';;Events')
     stack_plot.SetMinimum(cosmetics['stack minimum'])
     stack_plot.SetMaximum(max(cosmetics['stack lowest maximum'], plot_max * cosmetics['stack maximum factor']))
     if (config['log scale']):

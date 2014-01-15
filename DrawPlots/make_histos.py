@@ -102,6 +102,7 @@ def make_histos(args, config, samples, lepton_categories):
                         print 'Invalid sample_type %s is neither data, sideband, nor MC' % (sample_info.sample_type)
                         sys.exit()
 
+                    config = plot_helper.append_integral_histo(config)
                     for distribution in config['distributions'].keys():
                         plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, systematic_label)
                         plot = plot_helper.Plot(sample, output_file, tree, plot_name, config['distributions'][distribution], draw_string_maker.draw_string)
