@@ -26,8 +26,12 @@ import FWCore.ParameterSet.Config as cms
 import sys
 
 cmssw_base = os.environ['CMSSW_BASE']
-directoryOfLists = cmssw_base + "/src/ttHMultileptonAnalysis/listsForSkims2012_53x_v3_hadoop/"
-#directoryOfLists = cmssw_base + "/src/ttHMultileptonAnalysis/unskimmed_data_lists/"
+#scramArch = os.environ['SCRAM_ARCH'] #This returns the wrong value: slc5_amd64_gcc434 rather than slc5_amd64_gcc462
+try: #For running with submit_condor_jobs
+    thisDir = open(sys.argv[0].split('slc5_amd64_gcc462/',1)[1] + '_lists.txt').read().splitlines()[0]
+except: #For running without submit_condor_jobs
+    thisDir = open(sys.argv[0] + '_lists.txt').read().splitlines()[0]
+directoryOfLists = cmssw_base + thisDir
 outputBaseDir = "batch_trees/"
 maxEvents = -1
 

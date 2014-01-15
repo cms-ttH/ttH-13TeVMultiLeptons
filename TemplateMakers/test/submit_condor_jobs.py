@@ -32,8 +32,17 @@ def getAllListFiles(listDirectory):
         returnList.append(cleanLine)
     return returnList
 
-def getListThatMatches(listDirectory, sample) :
-    everyList = getAllListFiles(listDirectory)
+def getSelectedListFiles(listDirectory, executable):
+    returnList = []
+
+    linesFromFile = open(executable + '_lists.txt').read().splitlines()[2:]
+    
+    for iLine in linesFromFile:
+        cleanLine = iLine.strip()
+        returnList.append(listDirectory+cleanLine+'.list')
+    return returnList
+
+def getListThatMatches(everyList, sample) :
     returnList = None
     for iList in everyList:
         samp = getSampleFromListPath(iList)
@@ -73,21 +82,25 @@ def main ():
     parser.add_argument('-o', '--oneSample', help="Run on only this sample")
     args = parser.parse_args()
 
+    print 'args.executable: ' + args.executable
+
     totalJobs = 0
     checkCondorDirs()
     baseDir = os.environ['CMSSW_BASE']
     scramArch = os.environ['SCRAM_ARCH']
 
-    listDir = baseDir + "/src/ttHMultileptonAnalysis/listsForSkims2012_53x_v3_hadoop/"
-#    listDir = baseDir + "/src/ttHMultileptonAnalysis/unskimmed_data_lists/"
+    thisDir = open(args.executable + '_lists.txt').read().splitlines()[0] 
+    listDir = baseDir + thisDir
+
     executable = os.path.join(baseDir, 'bin', scramArch, args.executable)
 
     print "Looking for lists in ", listDir
 
-    listsInDir = getAllListFiles(listDir)
+    listsInDir = getSelectedListFiles(listDir, args.executable)
+#     listsInDir = getAllListFiles(listDir)
 
     if args.oneSample:
-        listsToRun = getListThatMatches(listDir, args.oneSample)
+        listsToRun = getListThatMatches(listsInDir, args.oneSample)
     else :
         listsToRun = listsInDir
 
