@@ -57,7 +57,7 @@ CheckTwoLepTrigger::CheckTwoLepTrigger (HelperLeptonCore * in):
     doubleMuonTriggerNames.insert("HLT_Mu17_Mu8_v");
     doubleMuonTriggerNames.insert("HLT_Mu17_TkMu8_v");
     doubleEleTriggerNames.insert("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
-
+    doubleEleTriggerNames.insert("HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v");
     muonEleTriggerNames.insert("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     muonEleTriggerNames.insert("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     //     mc_hlt_MET_trigger_collection.push_back("HLT_DiCentralPFJet30_PFMET80_BTagCSV07_v");

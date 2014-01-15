@@ -18,8 +18,11 @@ class ttHMultileptonYAMLLoader(yaml.Loader):
         self.add_constructor(u'tag:yaml.org,2002:omap', type(self).construct_yaml_map)
         self.add_constructor(u'!ROOT', type(self).root_scalar_constructor)
         self.add_constructor(u'!ROOT:color', type(self).root_color_constructor)
+        self.add_constructor(u'!ROOT:rgb_color', type(self).root_rgb_color_constructor)
         possible_colors = re.compile('.*kWhite.*|.*kBlack.*|.*kGray.*|.*kRed.*|.*kGreen.*|.*kBlue.*|.*kYellow.*|.*kMagenta.*|.*kCyan.*|.*kOrange.*|.*kSpring.*|.*kTeal.*|.*kAzure.*|.*kViolet.*|.*kPink.*')
+        possible_rgb_colors = re.compile('r\D*?([\d]*)\D*?g\D*?([\d]*)\D*?b\D*?([\d]*)', re.I) #something of form r55, g55, b55 (not case or space sensitive)
         self.add_implicit_resolver(u'!ROOT:color', possible_colors, None)
+        self.add_implicit_resolver(u'!ROOT:rgb_color', possible_rgb_colors, None)
 
     def construct_yaml_map(self, node):
         data = OrderedDict()
@@ -47,15 +50,27 @@ class ttHMultileptonYAMLLoader(yaml.Loader):
         return mapping
 
     def root_color_constructor(loader, node, deep=False):
-        color_string = loader.construct_scalar(node)
-        parts = re.split('\+|\-', str(color_string), 1)
+        input = loader.construct_scalar(node)
+        parts = re.split('\+|\-', str(input), 1)
         color = getattr(ROOT, parts[0])
-        if '+' in color_string:
+        if '+' in input:
             color += int(parts[1])
-        if '-' in color_string:
+        if '-' in input:
             color -= int(parts[1])
 
         return color
+
+    def root_rgb_color_constructor(loader, node, deep=False):
+        input = loader.construct_scalar(node)
+        pattern = re.compile('r\D*?([\d]*)\D*?g\D*?([\d]*)\D*?b\D*?([\d]*)', re.I)
+        result = pattern.match(str(input))
+        r, g, b = result.group(1, 2, 3)
+        color = ROOT.TColor(1000, int(r), int(g), int(b), "")
+
+        return color.GetNumber()
+
+#        color = ROOT.TColor()
+#        color.SetRGB(int(r), int(g), int(b))
 
     def root_scalar_constructor(loader, node, deep=False):
         value = loader.construct_scalar(node)

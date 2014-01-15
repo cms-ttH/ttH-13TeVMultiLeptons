@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 import os
-from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
+#from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
 import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
 from argparse import ArgumentParser
 import ROOT
@@ -48,7 +48,7 @@ def main():
         if args.batch:
             print '\nFinished submitting jobs.  After they complete, plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
         else:
-            plot_helper.update_indexes(www_plot_directories, 2)
+            plot_helper.update_indexes(config['output directory'])
             print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
 
 def make_histos(args, config, samples, lepton_categories):

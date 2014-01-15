@@ -8,6 +8,67 @@ import collections
 import glob
 import time
 
+def get_jet_tag_category_requirements(jet_tag_category):
+    jet_tag_string = ''
+    if jet_tag_category == 'ge2t':
+        jet_tag_string = ' numJets >= 2 && numMediumBJets >= 2'
+    elif jet_tag_category == 'eq2jeq2t':
+        jet_tag_string = ' numJets == 2 && numMediumBJets == 2'
+    elif jet_tag_category == 'eq3jeq2t':
+        jet_tag_string = ' numJets == 3 && numMediumBJets == 2'
+    elif jet_tag_category == 'ge4jeq2t':
+        jet_tag_string = ' numJets >= 4 && numMediumBJets == 2'
+    elif jet_tag_category == 'ge3t':
+        jet_tag_string = ' numJets >= 3 && numMediumBJets >= 3'
+    elif jet_tag_category == 'eq3jeq3t':
+        jet_tag_string = ' numJets == 3 && numMediumBJets ==3'
+    elif jet_tag_category == 'ge4jeq3t':
+        jet_tag_string = ' numJets >= 4 && numMediumBJets == 3'
+    elif jet_tag_category == 'ge4jge3t':
+        jet_tag_string = ' numJets >= 4 && numMediumBJets >= 3'
+    elif jet_tag_category == 'ge4t':
+        jet_tag_string = ' numJets >= 4 && numMediumBJets >= 4'
+    elif jet_tag_category == 'eq0j':
+        jet_tag_string = ' numJets == 0 && numMediumBJets == 0'
+    elif jet_tag_category == 'eq1jeq0t':
+        jet_tag_string = ' numJets == 1 && numMediumBJets == 0'
+    elif jet_tag_category == 'eq1jeq1t':
+        jet_tag_string = ' numJets == 1 && numMediumBJets == 1'
+    elif jet_tag_category == 'eq2jge0t':
+        jet_tag_string = ' numJets == 2 && numMediumBJets >= 0'
+    elif jet_tag_category == 'eq2jeq0t':
+        jet_tag_string = ' numJets == 2 && numMediumBJets == 0'
+    elif jet_tag_category == 'eq2jge1t':
+        jet_tag_string = ' numJets == 2 && numMediumBJets >= 1'
+    elif jet_tag_category == 'eq2jeq1t':
+        jet_tag_string = ' numJets == 2 && numMediumBJets == 1'
+    elif jet_tag_category == 'eq3jeq0t':
+        jet_tag_string = ' numJets == 3 && numMediumBJets == 0'
+    elif jet_tag_category == 'eq3jge1t':
+        jet_tag_string = ' numJets == 3 && numMediumBJets >= 1'
+    elif jet_tag_category == 'eq3jeq1t':
+        jet_tag_string = ' numJets == 3 && numMediumBJets == 1'
+    elif jet_tag_category == 'eq3jge2t':
+        jet_tag_string = 'numJets == 3 && numMediumBJets >= 2'
+    elif jet_tag_category == 'ge4jeq1t':
+        jet_tag_string = 'numJets >= 4 && numMediumBJets == 1'
+    elif jet_tag_category == 'ge4jge2t':
+        jet_tag_string = 'numJets >= 4 && numMediumBJets >= 2'
+    elif jet_tag_category == 'ge4j':
+        jet_tag_string = 'numJets>=4'
+    elif jet_tag_category == 'ge3j':
+        jet_tag_string = 'numJets>=3'
+    elif jet_tag_category == 'eq3j':
+        jet_tag_string = 'numJets==3'
+    elif jet_tag_category == 'ge2j':
+        jet_tag_string = 'numJets>=2'
+    elif jet_tag_category == 'ge1j':
+        jet_tag_string = 'numJets>=1'
+    else:
+        print 'ERROR [plot_helper.py]: Unrecognized jet tag category. Please update DrawStringMaker::append_jet_tag_category_requirements'
+        sys.exit(2)
+    return jet_tag_string
+
 def get_www_base_directory():
     try:
         www_base_directory = os.environ['HOME']+'/www'
@@ -30,36 +91,32 @@ def make_fresh_directory(directory):
         shutil.rmtree(directory)
     os.makedirs(directory)
 
-def update_indexes(directories, depth=1):
+def update_indexes(directory):
     www_base_directory = get_www_base_directory()
-    directories = [os.path.join(www_base_directory, directory) for directory in directories]
-    for directory in directories:
-        for level in range(depth):
-            dirs = [i for i in glob.glob('%s/*' % directory) if os.path.isdir(i)]
-            dirs.append('..')
-            dirs.sort()
-            dir_locations = [os.path.basename(i) for i in dirs]
-            dir_names = ['<b>'+os.path.basename(i)+'/</b>' for i in dirs]
-            non_image_items = [i for i in glob.glob('%s/*' % directory) if 'pdf' not in i and 'png' not in i and not os.path.isdir(i)]
-            non_image_items.sort()
-            non_image_item_names = dir_names + [os.path.basename(i) for i in non_image_items]
-            non_image_item_locations = dir_locations + [os.path.basename(i) for i in non_image_items]
-            non_image_mod_times = ['' for i in dirs] + [time.ctime(os.path.getmtime(i)) for i in non_image_items]
-            non_image_items = dirs + non_image_items
-            png_images = [os.path.basename(i) for i in glob.glob('%s/*' % directory) if 'png' in i]
-            pdf_images = [i.replace('.png', '.pdf') for i in png_images]
-            snippet = '<tr><td><a href={location}>{name}</a></td><td>{mod_time}</td></tr>'
-            files_snippet = '\n'.join([snippet.format(location=location, name=name, mod_time=mod_time) for (location, name, mod_time) in zip(non_image_item_locations, non_image_item_names, non_image_mod_times)])
-            snippet = '<div class="pic photo-link smoothbox" id="{png}"><a href="{pdf}" rel="gallery"><img src="{png}" class="pic"/></a></div>'
-            image_snippet = '\n'.join([snippet.format(pdf=pdf, png=png) for (pdf, png) in zip(pdf_images, png_images)])
-            with open(os.path.join(os.environ['CMSSW_BASE'], 'src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.html'), 'r') as f:
-                index = f.read()
-            with open(os.path.join(directory, 'index.html'), 'w') as f:
-                segment = index[index.find("<body>"):] #Have to do this because all of the javascript looks like python formatting statements
-                modified_segment = segment.format(files=files_snippet, images=image_snippet)
-                index = index.replace(segment, modified_segment)
-                f.write(index)
-            directory, tail = os.path.split(directory)
+    directory = os.path.join(www_base_directory, directory)
+    for root, dirs, files in os.walk(directory):
+        current_dirs = dirs + ['..']
+        current_dirs.sort()
+        dir_names = ['<b>%s/</b>' % i for i in current_dirs]
+        non_image_items = [file for file in files if 'pdf' not in file and 'png' not in file]
+        non_image_items.sort()
+        non_image_item_paths = [os.path.join(root, i) for i in non_image_items]
+        non_image_item_names = dir_names + non_image_items
+        non_image_item_locations = current_dirs + non_image_items
+        non_image_mod_times = ['' for i in current_dirs] + [time.ctime(os.path.getmtime(i)) for i in non_image_item_paths]
+        png_images = [f for f in files if 'png' in f]
+        pdf_images = [f.replace('.png', '.pdf') for f in png_images]
+        snippet = '<tr><td><a href={location}>{name}</a></td><td>{mod_time}</td></tr>'
+        files_snippet = '\n'.join([snippet.format(location=location, name=name, mod_time=mod_time) for (location, name, mod_time) in zip(non_image_item_locations, non_image_item_names, non_image_mod_times)])
+        snippet = '<div class="pic photo-link smoothbox" id="{png}"><a href="{pdf}" rel="gallery"><img src="{png}" class="pic"/></a></div>'
+        image_snippet = '\n'.join([snippet.format(pdf=pdf, png=png) for (pdf, png) in zip(pdf_images, png_images)])
+        with open(os.path.join(os.environ['CMSSW_BASE'], 'src/ttHMultileptonAnalysis/DrawPlots/python/utilities/index.html'), 'r') as f:
+            index = f.read()
+        with open(os.path.join(root, 'index.html'), 'w') as f:
+            segment = index[index.find("<body>"):] #Have to do this because all of the javascript looks like python formatting statements
+            modified_segment = segment.format(files=files_snippet, images=image_snippet)
+            index = index.replace(segment, modified_segment)
+            f.write(index)
 
 def setup_www_directory(directory, depth=1, *extra_files_to_post):
     make_fresh_directory(directory)
@@ -170,66 +227,7 @@ class DrawStringMaker:
                 self.append_selection_requirement(cut_string)
 
     def append_jet_tag_category_requirements(self, jet_tag_category):
-        if jet_tag_category == 'ge2t':
-            jet_tag_string = ' numJets >= 2 && numMediumBJets >= 2'
-        elif jet_tag_category == 'eq2jeq2t':
-            jet_tag_string = ' numJets == 2 && numMediumBJets == 2'
-        elif jet_tag_category == 'eq3jeq2t':
-            jet_tag_string = ' numJets == 3 && numMediumBJets == 2'
-        elif jet_tag_category == 'ge4jeq2t':
-            jet_tag_string = ' numJets >= 4 && numMediumBJets == 2'
-        elif jet_tag_category == 'ge3t':
-            jet_tag_string = ' numJets >= 3 && numMediumBJets >= 3'
-        elif jet_tag_category == 'eq3jeq3t':
-            jet_tag_string = ' numJets == 3 && numMediumBJets ==3'
-        elif jet_tag_category == 'ge4jeq3t':
-            jet_tag_string = ' numJets >= 4 && numMediumBJets == 3'
-        elif jet_tag_category == 'ge4jge3t':
-            jet_tag_string = ' numJets >= 4 && numMediumBJets >= 3'
-        elif jet_tag_category == 'ge4t':
-            jet_tag_string = ' numJets >= 4 && numMediumBJets >= 4'
-        elif jet_tag_category == 'eq0j':
-            jet_tag_string = ' numJets == 0 && numMediumBJets == 0'
-        elif jet_tag_category == 'eq1jeq0t':
-            jet_tag_string = ' numJets == 1 && numMediumBJets == 0'
-        elif jet_tag_category == 'eq1jeq1t':
-            jet_tag_string = ' numJets == 1 && numMediumBJets == 1'
-        elif jet_tag_category == 'eq2jge0t':
-            jet_tag_string = ' numJets == 2 && numMediumBJets >= 0'
-        elif jet_tag_category == 'eq2jeq0t':
-            jet_tag_string = ' numJets == 2 && numMediumBJets == 0'
-        elif jet_tag_category == 'eq2jge1t':
-            jet_tag_string = ' numJets == 2 && numMediumBJets >= 1'
-        elif jet_tag_category == 'eq2jeq1t':
-            jet_tag_string = ' numJets == 2 && numMediumBJets == 1'
-        elif jet_tag_category == 'eq3jeq0t':
-            jet_tag_string = ' numJets == 3 && numMediumBJets == 0'
-        elif jet_tag_category == 'eq3jge1t':
-            jet_tag_string = ' numJets == 3 && numMediumBJets >= 1'
-        elif jet_tag_category == 'eq3jeq1t':
-            jet_tag_string = ' numJets == 3 && numMediumBJets == 1'
-        elif jet_tag_category == 'eq3jge2t':
-            jet_tag_string = 'numJets == 3 && numMediumBJets >= 2'
-        elif jet_tag_category == 'ge4jeq1t':
-            jet_tag_string = 'numJets >= 4 && numMediumBJets == 1'
-        elif jet_tag_category == 'ge4jge2t':
-            jet_tag_string = 'numJets >= 4 && numMediumBJets >= 2'
-        elif jet_tag_category == 'ge4j':
-            jet_tag_string = 'numJets>=4'
-        elif jet_tag_category == 'ge3j':
-            jet_tag_string = 'numJets>=3'
-        elif jet_tag_category == 'eq3j':
-            jet_tag_string = 'numJets==3'
-        elif jet_tag_category == 'ge2j':
-            jet_tag_string = 'numJets>=2'
-        elif jet_tag_category == 'ge1j':
-            jet_tag_string = 'numJets>=1'
-        elif jet_tag_category == 'inclusive':
-            pass
-        else:
-            print 'ERROR [plot_helper.py]: Unrecognized jet tag category. Please update DrawStringMaker::append_jet_tag_category_requirements'
-            sys.exit(2)
-
+        jet_tag_string = get_jet_tag_category_requirements(jet_tag_category)
         if jet_tag_category != 'inclusive':
             self.append_selection_requirement(jet_tag_string)
 

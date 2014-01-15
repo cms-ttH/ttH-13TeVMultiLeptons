@@ -60,7 +60,7 @@ def main():
                 draw_stack_plot(lepton_category, jet_tag_category, distribution)
 
     if args.web:
-        plot_helper.update_indexes(www_plot_directories, 5)
+        plot_helper.update_indexes(config['output file location'])
         link_dir = os.path.join(config['output file location'], config['input file label'])
         print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/%s' % (os.environ['USER'], link_dir)
 

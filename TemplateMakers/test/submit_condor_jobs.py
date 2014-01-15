@@ -53,7 +53,7 @@ def getListThatMatches(everyList, sample) :
         exit (6)
     return [returnList]
 
-def createCondorSubFileAndSubmit(executable, sample, label, numJobs):
+def createCondorSubFileAndSubmit(executable, sample, label, numJobs, wait):
     with open("multiLepBatch.submit", "w") as condorJobFile:
         contents = ('universe = vanilla\n'
                     'List = {list}\n'
@@ -73,6 +73,8 @@ def createCondorSubFileAndSubmit(executable, sample, label, numJobs):
                                             numJobs=numJobs))
 
     print "Trying to submit jobs..."
+    if wait:
+        time.sleep(wait)
     print os.popen("condor_submit multiLepBatch.submit").readlines()
 
 def main ():
@@ -80,6 +82,7 @@ def main ():
     parser.add_argument('executable', help='Executable to run (ssTwoLep, threeLep, etc)')
     parser.add_argument('project_label', help='Project label.')
     parser.add_argument('-o', '--oneSample', help="Run on only this sample")
+    parser.add_argument('-w', '--wait', help='Add a wait time between submitting jobs')
     args = parser.parse_args()
 
     print 'args.executable: ' + args.executable
@@ -111,7 +114,7 @@ def main ():
         nJobs = getNumLinesInFile(iList)
 #        nJobs = int(nJobs/10)
         print "Calling create with ", executable, " ", sampleName, " ", args.project_label, " ", nJobs
-        createCondorSubFileAndSubmit(executable, sampleName, args.project_label, nJobs)
+        createCondorSubFileAndSubmit(executable, sampleName, args.project_label, nJobs, float(args.wait))
 
     print "Done with loop over samples"
 
