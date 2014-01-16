@@ -69,15 +69,17 @@
 #endif
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
-#include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include  "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
 
 class HelperLeptonCore  {
 public:
   HelperLeptonCore();
+
   BEANhelper * setupAnalysisParameters(string year, string sampleName); // initialize
-  bool detectData(string sampleName);
+  void detectData(string sampleName);
   int convertSampleNameToNumber(string sampleName);
   void initializePUReweighting(); // setup some PU reweighting flags
   void initializeInputCollections(edm::EventBase&, bool, BEANFileInterface&);
@@ -144,13 +146,15 @@ public:
   string sampleName;
 
   bool isData;
+  string dataset;
 
-  string sysType_lep;
   sysType::sysType jetEnergyShift;
   sysType::sysType csvShift;
 
   BEANhelper bHelp;
   BEANFileInterface rawCollections;
+
+  JobParameters config;
 
   bool verbose;
 
