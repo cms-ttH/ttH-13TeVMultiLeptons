@@ -1,0 +1,30 @@
+all_leptons_by_pt_1_lepMVA : LepGood1_mva
+all_leptons_by_pt_2_lepMVA : LepGood2_mva
+all_leptons_by_pt_1_pt : LepGood1_pt
+all_leptons_by_pt_2_pt : LepGood2_pt
+all_leptons_by_pt_1_CERN_tight_charge : LepGood1_tightCharge
+all_leptons_by_pt_2_CERN_tight_charge : LepGood2_tightCharge
+all_leptons_by_pt_1_isElectron : (abs(LepGood1_pdgId) == 11)
+all_leptons_by_pt_2_isElectron : (abs(LepGood2_pdgId) == 11)
+all_leptons_by_pt_1_isMuon : (abs(LepGood1_pdgId) == 13)
+all_leptons_by_pt_2_isMuon : (abs(LepGood2_pdgId) == 13)
+all_leptons_by_pt_1_passConvVeto : LepGood1_convVeto
+all_leptons_by_pt_2_passConvVeto : LepGood2_convVeto
+all_leptons_by_pt_1_numberOfExpectedInnerHits : LepGood1_innerHits
+all_leptons_by_pt_2_numberOfExpectedInnerHits : LepGood2_innerHits
+all_leptons_by_pt_1_tkCharge : LepGood1_charge
+all_leptons_by_pt_2_tkCharge : LepGood2_charge
+numAllLeptons : nLepGood
+min_mass_leplep : minMllAFAS
+met_pt : met
+numJets : nJet25
+numLooseBJets : nBJetLoose25
+numMediumBJets : nBJetMedium25
+isDoubleMuTriggerPass : 
+isDoubleElectronTriggerPass
+isMuEGTriggerPass
+met_ld : (met*0.00397 + mhtJet25*0.00265)
+
+eventInfo_evt : evt
+eventInfo_lumi : lumi
+eventInfo_run : run
