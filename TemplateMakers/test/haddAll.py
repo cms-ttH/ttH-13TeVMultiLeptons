@@ -12,7 +12,8 @@ def main ():
     parser = ArgumentParser(description='add together trees and move them to the plot making area')
     parser.add_argument('project_label', help='project label')
     parser.add_argument('-s', '--sumData', action='store_true', default=False, help='sum the data files together')
-    parser.add_argument('-i', '--makeInclusive', action='store_true', default=False, help='sum all data categories together, removing duplicates, to make an inclusive file')
+    parser.add_argument('-i', '--makeInclusive', action='store_true', default=False, help='sum all data categories together to make an inclusive data file')
+    parser.add_argument('-r', '--removeDuplicates', action='store_true', default=False, help='remove duplicates when making inclusive file')
     parser.add_argument('-c', '--copyFiles', action='store_true', default=False, help='copy files to treeFile directory')
     parser.add_argument('-m', '--moveFiles', action='store_true', default=False, help='move files to treeFile directory')
     parser.add_argument('-n', '--skipHadd', action='store_true', default=False, help ='don\'t hadd stuff, just move/copy it')
@@ -155,26 +156,33 @@ def main ():
                 for feedback in os.popen(rm_command).readlines():
                     print feedback
 
-    if (args.makeInclusive):
+    if args.makeInclusive:
         inclusive_data = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'sideband' not in f]
         inclusive_NP_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'NP_sideband' in f]
+        inclusive_QF_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'QF_sideband' in f]
 
-        merge_trees_without_duplicates(inclusive_data, 'inclusive_data_%s_all.root' % args.project_label)
-        merge_trees_without_duplicates(inclusive_NP_sideband, 'inclusive_NP_sideband_%s_all.root' % args.project_label)
+        merge_trees(inclusive_data, 'inclusive_data_%s_all.root' % args.project_label)
+        merge_trees(inclusive_NP_sideband, 'inclusive_NP_sideband_%s_all.root' % args.project_label)
+        merge_trees(inclusive_QF_sideband, 'inclusive_QF_sideband_%s_all.root' % args.project_label)
+
+        if args.removeDuplicates:
+            remove_duplicates('inclusive_data_%s_all.root' % args.project_label)
+            remove_duplicates('inclusive_NP_sideband_%s_all.root' % args.project_label)
+            remove_duplicates('inclusive_QF_sideband_%s_all.root' % args.project_label)
 
     # make sure the destination exists before sending files
     checkDirs(outDir)
 
     if (args.copyFiles):
         print "Now copying results to tree files!"
-        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} %s \;" % (args.project_label, outDir)  ):
+        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec cp {} %s \;" % (args.project_label, outDir)):
             print iLine
         print "Done copying files"
     # end copy files
 
     if (args.moveFiles):
         print "Now moving results to tree files!"
-        for iLine in os.popen ("find . -wholename '*%s*_all.root' -exec mv {} %s \;" % (args.project_label, outDir)  ):
+        for iLine in os.popen("find . -wholename '*%s*_all.root' -exec mv {} %s \;" % (args.project_label, outDir)):
             print iLine
         print "Done moving files"
     # end move files
@@ -183,55 +191,35 @@ def main ():
 
     return
 
-def merge_trees_without_duplicates(files, output):
-    merged_events = []
-    merged_tree_file = ROOT.TFile(output, 'RECREATE')
-
-    hadd_command = "hadd -v 0 -f %s %s" % (output.replace('.root', '_with_duplicates.root'), ' '.join(files))
+def merge_trees(files, output):
+    hadd_command = "hadd -v 0 -f %s %s" % (output, ' '.join(files))
     print ">>>>>>>>>> Running >>>>>>>>>  "
     print "       %s" % hadd_command
     for feedback in os.popen(hadd_command).readlines():
         print feedback
-    print "-------Done making merged files with duplicates---------"
+    print "-------Done making inclusive files---------"
 
-    print 'Making merged file without duplicates...'
-    tree_file = ROOT.TFile(output.replace('.root', '_with_duplicates.root'))
+def remove_duplicates(file):
+    deduplicated_events = []
+    output = file.replace('.root', '_without_duplicates_all.root')
+    deduplicated_tree_file = ROOT.TFile(output, 'RECREATE')
+
+    print 'Removing duplicates...'
+    tree_file = ROOT.TFile(file)
     tree = tree_file.Get('summaryTree')
-    merged_tree = tree.CloneTree(0)
-    merged_tree.SetDirectory(merged_tree_file)
+    deduplicated_tree = tree.CloneTree(0)
+    deduplicated_tree.SetDirectory(deduplicated_tree_file)
     for entry in tree:
         event = (entry.eventInfo_evt, entry.eventInfo_lumi, entry.eventInfo_run)
-        if not event in merged_events:
-            merged_events.append(event)
-            merged_tree.Fill()
+        if not event in deduplicated_events:
+            deduplicated_events.append(event)
+            deduplicated_tree.Fill()
 
-    merged_tree_file.Write()
-    merged_tree_file.Close()
+    deduplicated_tree_file.Write()
+    deduplicated_tree_file.Close()
     tree_file.Close()
 
-    print 'Done merging, merged tree is written to %s\n' % output
-
-
-#     merged_events = []
-#     merged_tree = None
-#     merged_tree_file = ROOT.TFile(output, 'RECREATE')
-#     for file in files:
-#         print 'Merging %s...' % file
-#         tree_file = ROOT.TFile(file)
-#         tree = tree_file.Get('summaryTree')
-#         if not merged_tree:
-#             merged_tree = tree.CloneTree(0)
-#             merged_tree.SetDirectory(merged_tree_file)
-#         for entry in tree:
-#             event = (entry.eventInfo_evt, entry.eventInfo_lumi, entry.eventInfo_run)
-#             if not event in merged_events:
-#                 merged_events.append(event)
-#                 merged_tree.Fill()
-#         merged_tree_file.Write()
-#         tree_file.Close()        
-
-#     print 'Done merging, merged tree is written to %s\n' % output
-#     merged_tree_file.Close()
+    print 'Done deduplicating, tree is written to %s\n' % output
 
 # This allows you to run at the command line
 # tells you to call the main function defined above
