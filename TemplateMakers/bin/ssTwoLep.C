@@ -145,6 +145,9 @@ int main (int argc, char** argv) {
 
   BEANFileInterface selectedCollections;
 
+  GenericVariable<string> dataset(lepHelper.dataset, "dataset", "not set");
+  kinVars.push_back(&dataset);
+
   GenericCollectionSizeVariable<BNjetCollection> numJets(&(selectedCollections.jetCollection), "numJets");
   kinVars.push_back(&numJets);
   numJets.setCutMin(2);
