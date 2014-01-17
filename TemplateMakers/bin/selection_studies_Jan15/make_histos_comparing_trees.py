@@ -199,40 +199,57 @@ for event in range(tree_event_list_fail_2.GetN()):
 
 if verbose: temp_tree_2_fail.Scan("run:lumi:evt","","")
 
+cuts_file_label = args.cuts_file_name.replace('.cfg','')
 www_base_directory = plot_helper.get_www_base_directory()
-www_directories = [os.path.join(www_base_directory, 'CERN_ND_comparison', dirName)
+www_directories = [os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, dirName)
 				   for dirName in ['CERN_ND_unique_pass','ND_pass_CERN_fail','CERN_pass_ND_fail'] ] 
-plot_helper.setup_www_directories(www_directories, 1)
+plot_helper.setup_www_directories(www_directories, 1, args.cuts_file_name)
 
-if not os.path.exists('plots_CERN_ND_unique_pass'):
-	os.makedirs('plots_CERN_ND_unique_pass')
-if not os.path.exists('plots_ND_pass_CERN_fail'):
-	os.makedirs('plots_ND_pass_CERN_fail')
-if not os.path.exists('plots_CERN_pass_ND_fail'):
-	os.makedirs('plots_CERN_pass_ND_fail')
+if not os.path.exists(cuts_file_label):
+	os.makedirs(cuts_file_label)
+if not os.path.exists(cuts_file_label+'/plots_CERN_ND_unique_pass'):
+	os.makedirs(cuts_file_label+'/plots_CERN_ND_unique_pass')
+if not os.path.exists(cuts_file_label+'/plots_ND_pass_CERN_fail'):
+	os.makedirs(cuts_file_label+'/plots_ND_pass_CERN_fail')
+if not os.path.exists(cuts_file_label+'/plots_CERN_pass_ND_fail'):
+	os.makedirs(cuts_file_label+'/plots_CERN_pass_ND_fail')
 			
 nBins = 30
 for (ND_hist, CERN_hist) in histos:
 	if verbose: print ND_hist
 
-	xMin_pass_pass = min(temp_tree_1_pass.GetMinimum('%s' % ND_hist),temp_tree_2_pass.GetMinimum('%s' % CERN_hist))
-	xMax_pass_pass = max(temp_tree_1_pass.GetMaximum('%s' % ND_hist),temp_tree_2_pass.GetMaximum('%s' % CERN_hist))
+	nPlus = ND_hist.count('+')
+	ND_hist_sub = ND_hist.split('+')
+	CERN_hist_sub = CERN_hist.split('+')
+
+	xMin_pass_pass = 0
+	xMax_pass_pass = 0
+	xMin_pass_fail = 0
+	xMax_pass_fail = 0
+	xMin_fail_pass = 0
+	xMax_fail_pass = 0
+
+	for i in range (nPlus+1):
+		xMin_pass_pass += min(temp_tree_1_pass.GetMinimum('%s' % ND_hist_sub[i]),temp_tree_2_pass.GetMinimum('%s' % CERN_hist_sub[i]))
+		xMax_pass_pass += max(temp_tree_1_pass.GetMaximum('%s' % ND_hist_sub[i]),temp_tree_2_pass.GetMaximum('%s' % CERN_hist_sub[i]))	
 	xMin_pass_pass -= max( 0.1*(xMax_pass_pass - xMin_pass_pass), 0.1*abs(xMin_pass_pass) )
 	xMax_pass_pass += max( 0.1*(xMax_pass_pass - xMin_pass_pass), 0.1*abs(xMax_pass_pass) )
 	if xMin_pass_pass == 0 and xMax_pass_pass == 0:
 		xMin_pass_pass = -1
 		xMax_pass_pass = 1
 	
-	xMin_pass_fail = min(temp_tree_1_pass.GetMinimum('%s' % ND_hist),temp_tree_2_fail.GetMinimum('%s' % CERN_hist))
-	xMax_pass_fail = max(temp_tree_1_pass.GetMaximum('%s' % ND_hist),temp_tree_2_fail.GetMaximum('%s' % CERN_hist))
+	for i in range (nPlus+1):
+		xMin_pass_fail += min(temp_tree_1_pass.GetMinimum('%s' % ND_hist_sub[i]),temp_tree_2_pass.GetMinimum('%s' % CERN_hist_sub[i]))
+		xMax_pass_fail += max(temp_tree_1_pass.GetMaximum('%s' % ND_hist_sub[i]),temp_tree_2_pass.GetMaximum('%s' % CERN_hist_sub[i]))
 	xMin_pass_fail -= max( 0.1*(xMax_pass_fail - xMin_pass_fail), 0.1*abs(xMin_pass_fail) )
 	xMax_pass_fail += max( 0.1*(xMax_pass_fail - xMin_pass_fail), 0.1*abs(xMax_pass_fail) )
 	if xMin_pass_fail == 0 and xMax_pass_fail == 0:
 		xMin_pass_fail = -1
 		xMax_pass_fail = 1
 	
-	xMin_fail_pass = min(temp_tree_1_fail.GetMinimum('%s' % ND_hist),temp_tree_2_pass.GetMinimum('%s' % CERN_hist))
-	xMax_fail_pass = max(temp_tree_1_fail.GetMaximum('%s' % ND_hist),temp_tree_2_pass.GetMaximum('%s' % CERN_hist))
+	for i in range (nPlus+1):
+		xMin_fail_pass += min(temp_tree_1_pass.GetMinimum('%s' % ND_hist_sub[i]),temp_tree_2_pass.GetMinimum('%s' % CERN_hist_sub[i]))
+		xMax_fail_pass += max(temp_tree_1_pass.GetMaximum('%s' % ND_hist_sub[i]),temp_tree_2_pass.GetMaximum('%s' % CERN_hist_sub[i]))
 	xMin_fail_pass -= max( 0.1*(xMax_fail_pass - xMin_fail_pass), 0.1*abs(xMin_fail_pass) )
 	xMax_fail_pass += max( 0.1*(xMax_fail_pass - xMin_fail_pass), 0.1*abs(xMax_fail_pass) )
 	if xMin_fail_pass == 0 and xMax_fail_pass == 0:
@@ -250,12 +267,21 @@ for (ND_hist, CERN_hist) in histos:
 	temp_tree_1_pass.Draw('%s >> hist_1_pass_pass' % (ND_hist), "", "goff")
 	temp_tree_2_pass.Draw('%s >> hist_2_pass_pass' % (CERN_hist), "", "goff")
 	hist_1_pass_pass.SetMaximum(1.5*max(hist_1_pass_pass.GetMaximum(),hist_2_pass_pass.GetMaximum()))
+	hist_1_pass_pass.SetStats(False)
 	hist_1_pass_pass.Draw()
 	hist_2_pass_pass.Draw("same")	
-	canvas_pass_pass.SaveAs('plots_CERN_ND_unique_pass/%s.png' % (ND_hist))
-	canvas_pass_pass.SaveAs('plots_CERN_ND_unique_pass/%s.pdf' % (ND_hist))
+	legend_pass_pass = ROOT.TLegend(0.15,0.7,0.85,0.85)
+	legend_pass_pass.SetFillColor(ROOT.kWhite)
+	legend_pass_pass.SetBorderSize(0)
+	legend_pass_pass.SetNColumns(1)
+	legend_pass_pass.AddEntry(hist_1_pass_pass, '%s = %0.1f' % (ND_hist,hist_1_pass_pass.Integral()), 'f')
+	legend_pass_pass.AddEntry(hist_2_pass_pass, '%s = %0.1f' % (CERN_hist,hist_2_pass_pass.Integral()), 'f')
+	legend_pass_pass.Draw("same")
+	canvas_pass_pass.SaveAs(cuts_file_label+'/plots_CERN_ND_unique_pass/%s.png' % (ND_hist))
+	canvas_pass_pass.SaveAs(cuts_file_label+'/plots_CERN_ND_unique_pass/%s.pdf' % (ND_hist))
 	hist_1_pass_pass.Delete()
 	hist_2_pass_pass.Delete()
+	legend_pass_pass.Delete()
 
 	canvas_pass_fail = ROOT.TCanvas()
 	canvas_pass_fail.cd()
@@ -268,12 +294,21 @@ for (ND_hist, CERN_hist) in histos:
 	temp_tree_1_pass.Draw('%s >> hist_1_pass_fail' % (ND_hist), "", "goff")
 	temp_tree_2_fail.Draw('%s >> hist_2_pass_fail' % (CERN_hist), "", "goff")
 	hist_1_pass_fail.SetMaximum(1.5*max(hist_1_pass_fail.GetMaximum(),hist_2_pass_fail.GetMaximum()))
+	hist_1_pass_fail.SetStats(False)
 	hist_1_pass_fail.Draw()
 	hist_2_pass_fail.Draw("same")	
-	canvas_pass_fail.SaveAs('plots_ND_pass_CERN_fail/%s.png' % (ND_hist))
-	canvas_pass_fail.SaveAs('plots_ND_pass_CERN_fail/%s.pdf' % (ND_hist))
+	legend_pass_fail = ROOT.TLegend(0.15,0.7,0.85,0.85)
+	legend_pass_fail.SetFillColor(ROOT.kWhite)
+	legend_pass_fail.SetBorderSize(0)
+	legend_pass_fail.SetNColumns(1)
+	legend_pass_fail.AddEntry(hist_1_pass_fail, '%s = %0.1f' % (ND_hist,hist_1_pass_fail.Integral()), 'f')
+	legend_pass_fail.AddEntry(hist_2_pass_fail, '%s = %0.1f' % (CERN_hist,hist_2_pass_fail.Integral()), 'f')
+	legend_pass_fail.Draw("same")
+	canvas_pass_fail.SaveAs(cuts_file_label+'/plots_ND_pass_CERN_fail/%s.png' % (ND_hist))
+	canvas_pass_fail.SaveAs(cuts_file_label+'/plots_ND_pass_CERN_fail/%s.pdf' % (ND_hist))
 	hist_1_pass_fail.Delete()
 	hist_2_pass_fail.Delete()
+	legend_pass_fail.Delete()
 
 	canvas_fail_pass = ROOT.TCanvas()
 	canvas_fail_pass.cd()
@@ -286,16 +321,25 @@ for (ND_hist, CERN_hist) in histos:
 	temp_tree_1_fail.Draw('%s >> hist_1_fail_pass' % (ND_hist), "", "goff")
 	temp_tree_2_pass.Draw('%s >> hist_2_fail_pass' % (CERN_hist), "", "goff")
 	hist_1_fail_pass.SetMaximum(1.5*max(hist_1_fail_pass.GetMaximum(),hist_2_fail_pass.GetMaximum()))
+	hist_1_fail_pass.SetStats(False)
 	hist_1_fail_pass.Draw()
 	hist_2_fail_pass.Draw("same")	
-	canvas_fail_pass.SaveAs('plots_CERN_pass_ND_fail/%s.png' % (ND_hist))
-	canvas_fail_pass.SaveAs('plots_CERN_pass_ND_fail/%s.pdf' % (ND_hist))
+	legend_fail_pass = ROOT.TLegend(0.15,0.7,0.85,0.85)
+	legend_fail_pass.SetFillColor(ROOT.kWhite)
+	legend_fail_pass.SetBorderSize(0)
+	legend_fail_pass.SetNColumns(1)
+	legend_fail_pass.AddEntry(hist_1_fail_pass, '%s = %0.1f' % (ND_hist,hist_1_fail_pass.Integral()), 'f')
+	legend_fail_pass.AddEntry(hist_2_fail_pass, '%s = %0.1f' % (CERN_hist,hist_2_fail_pass.Integral()), 'f')
+	legend_fail_pass.Draw("same")
+	canvas_fail_pass.SaveAs(cuts_file_label+'/plots_CERN_pass_ND_fail/%s.png' % (ND_hist))
+	canvas_fail_pass.SaveAs(cuts_file_label+'/plots_CERN_pass_ND_fail/%s.pdf' % (ND_hist))
 	hist_1_fail_pass.Delete()
 	hist_2_fail_pass.Delete()
+	legend_fail_pass.Delete()
 
-	plot_helper.copy_to_www_area('plots_CERN_ND_unique_pass', os.path.join(www_base_directory, 'CERN_ND_comparison', 'CERN_ND_unique_pass'), ND_hist)
-	plot_helper.copy_to_www_area('plots_ND_pass_CERN_fail', os.path.join(www_base_directory, 'CERN_ND_comparison', 'ND_pass_CERN_fail'), ND_hist)
-	plot_helper.copy_to_www_area('plots_CERN_pass_ND_fail', os.path.join(www_base_directory, 'CERN_ND_comparison', 'CERN_pass_ND_fail'), ND_hist)
+	plot_helper.copy_to_www_area(cuts_file_label+'/plots_CERN_ND_unique_pass', os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, 'CERN_ND_unique_pass'), ND_hist)
+	plot_helper.copy_to_www_area(cuts_file_label+'/plots_ND_pass_CERN_fail', os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, 'ND_pass_CERN_fail'), ND_hist)
+	plot_helper.copy_to_www_area(cuts_file_label+'/plots_CERN_pass_ND_fail', os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, 'CERN_pass_ND_fail'), ND_hist)
 
 plot_helper.update_indexes('.')
 
