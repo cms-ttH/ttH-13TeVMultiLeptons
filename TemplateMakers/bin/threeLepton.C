@@ -186,7 +186,7 @@ int main (int argc, char** argv) {
 
   DataDrivenFR<BNleptonCollection>
   myDataDrivenFRAllLeptons(&lepHelper, &(selectedCollections.tightLoosePreselectedLeptonCollection),
-                           3, 0.7, "FR_merged_data", "QF_data_el");
+                           3, 0.7, "FR_merged_data", "QF_data_el", "3l");
   kinVars.push_back(&myDataDrivenFRAllLeptons);
 
   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
@@ -194,6 +194,11 @@ int main (int argc, char** argv) {
 
   HiggsDecayType myHiggsDecayType(&lepHelper);
   kinVars.push_back(&myHiggsDecayType);
+
+  TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMHT("pt", "vector_sum", "mht",
+                                                               &(selectedCollections.tightLeptonCollection), "tight_leptons_by_pt", 1, 99,
+                                                               &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMHT);
 
   TwoObjectKinematic<BNmuonCollection, BNjetCollection>
   myMassMuonJetNew("mass", "all_pairs", "", &(selectedCollections.tightMuonCollection),
@@ -227,11 +232,11 @@ int main (int argc, char** argv) {
   kinVars.push_back(&myMinMassLepLepSFOS);
 
   TwoObjectKinematic<BNleptonCollection,BNleptonCollection>
-  myZLikeMassLepLepSFOS("mass", "closest_to", "ZLike_mass_leplep_SFOS",
-                        &(selectedCollections.tightLooseLeptonCollection), "tightLoose_leptons_by_pt", 1, 99,
-                        &(selectedCollections.tightLooseLeptonCollection), "tightLoose_leptons_by_pt", 1, 99,
-                        91.2, "same_flavour", "opposite_sign");
-  kinVars.push_back(&myZLikeMassLepLepSFOS);
+  myZLikeMassLepLepSFOSTightLoose("mass", "closest_to", "ZLike_mass_leplep_SFOS_tightLoose",
+                                  &(selectedCollections.tightLooseLeptonCollection), "tightLoose_leptons_by_pt", 1, 99,
+                                  &(selectedCollections.tightLooseLeptonCollection), "tightLoose_leptons_by_pt", 1, 99,
+                                  91.2, "same_flavour", "opposite_sign");
+  kinVars.push_back(&myZLikeMassLepLepSFOSTightLoose);
 
   TwoObjectKinematic<BNleptonCollection,BNleptonCollection>
   myZLikeMassLepLepSFOSAll("mass", "closest_to", "ZLike_mass_leplep_SFOS_all",
