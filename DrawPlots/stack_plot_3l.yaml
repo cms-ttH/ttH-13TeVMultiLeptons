@@ -1,0 +1,143 @@
+#input and output file names
+input file location: histos_pv4
+input file label: 3l_v9
+output file location: stack_plots_pva
+
+#drawing options
+skip systematics: true
+draw ratio plot: true
+draw legend: true
+log scale: false
+save png: true
+save pdf: true
+blinded: false
+KS test: false
+selection info : false
+SF info: false
+
+#luminosity and era
+luminosity: 19.5
+luminosity error: 0.044
+trigger SF error: 0.02
+lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
+
+#Lepton categories: "draw name"
+lepton categories:
+    3l: 3l
+    mu_mu: " #mu #mu "
+    ele_ele: " e e "
+    mu_ele: "#mu e"
+
+#Jet-tag categories: "draw name"
+jet tag categories:
+    ge2j: " + #geq2 jets"
+#    ge4j: " + #geq4 jets"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - weight_PUup
+    - weight_PUdown
+    - topPtWgtDown
+    - topPtWgtUp
+
+# Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
+signal samples:
+    ttH125:
+        draw name: "t#bar{t}H125"
+        color: kPink+7
+        stack or line: stack
+        line width: 2 # must be integer
+        scale: 1.0
+
+#Samples in each sample list will be added together and appear as a single entry in the stack plot; ordered bottom-to-top
+background samples:
+    ttbarW:
+        draw name: "t#bar{t}W"
+        color: kCyan-3
+        systematics: all
+        samples: [ttbarW]
+    ttbarZ:
+        draw name: "t#bar{t}Z/G*"
+        color: kGray+1
+        systematics: all
+        samples: [ttbarGStar_ee, ttbarGStar_tt, ttbarZ] #ttbarGStar_mm
+    ttbarWW:
+        draw name: "t#bar{t}WW"
+        color: kCyan+3
+        systematics: all
+        samples: [ttbarWW]
+    ttbarG:
+        draw name: "t#bar{t}G"
+        color: kTeal-7
+        systematics: all
+        samples: [ttbarG]
+    wz:
+        draw name: "WZ"
+        color: kAzure-8
+        systematics: all
+        samples: [wz]
+    zz_llll:
+        draw name: "ZZ"
+        color: kAzure-9
+        systematics: all
+        samples: [zz_llll]
+    rare sm:
+        draw name: "rare SM bkg"
+        color: kMagenta-6
+        systematics: all
+        samples: [tbZ_ll, WpWpqq] #, WmWmqq, WWDPI]
+    triboson:
+        draw name: "triboson"
+        color: kViolet
+        systematics: all
+        samples: [www, wwz]
+    inclusive_NP_sideband:
+        draw name: "non-prompt"
+        color: kBlue-1
+        systematics: 40PercentRateUp+40PercentRateDown
+        samples: [inclusive_NP_sideband]
+
+
+#kGray+1
+#kMagenta-6
+#kSpring+2
+#kSpring+8
+
+#distribution: [title, underflow, overflow]
+distributions:
+    numTightElectrons: [number of tight electrons, false, false]
+    numTightMuons: [number of tight muons, false, false]
+    numJets: [number of jets, false, false]
+    numLooseBJets: [number of loose b-tagged jets, false, false]
+    numMediumBJets: [number of medium b-tagged jets, false, false]
+    all_leptons_by_pt_1_pt: [First lepton pT, false, false]
+    all_leptons_by_pt_2_pt: [Second lepton pT, false, false]
+    all_leptons_by_pt_3_pt: [Third lepton pT, false, false]
+    all_leptons_by_pt_1_eta: [First lepton eta, false, false]
+    all_leptons_by_pt_2_eta: [Second lepton eta, false, false]
+    all_leptons_by_pt_3_eta: [Third lepton eta, false, false]
+    all_leptons_by_pt_1_lepMVA: [First lepton lepMVA, false, false]
+    all_leptons_by_pt_2_lepMVA: [Second lepton lepMVA, false, false]
+    all_leptons_by_pt_3_lepMVA: [Third lepton lepMVA, false, false]
+    jets_by_pt_1_pt: [First jet pT, false, false]
+    jets_by_pt_2_pt: [Second jet pT, false, false]
+    jets_by_pt_3_pt: [Third jet pT, false, false]
+    min_mass_leplep: [min dilepton mass, false, false]
+#    ZLike_mass_leplep_SFOS: [Z mass SFOS TightLoose, false, false]
+    ZLike_mass_leplep_SFOS_all: [Z mass SFOS all, false, false]
+#    ZLike_pt_leplep_SFOS: [Z pt, false, false]
+#    ZLike_eta_leplep_SFOS: [Z eta, false, false]
+    met_pt: [MET, false, false]
+    mht: [MHT, false, false]
+    met_ld: [MetLD, false, false]
+#    WLike_dijet_mass: [W mass 80, false, false]
+    min_dR_leplep: [min dilepton deltaR, false, false]
+#    sum_jet_pt: [Sum jet pT, false, false]
+    #sum_pt: [Sum pT, false, false]
+    #mass_of_everything_all: [Mass of everything (all), false, false]
+    #mass_of_jets: [Mass of jets, false, false]
+#    maxAbs_deltaEta_leplep: [max dilepton deltaEta, false, false]
+#    min_deltaR_jetjet: [min dijet deltaR, false, false]
+#    maxAbs_deltaEta_jetjet: [maxAbs_deltaEta_jetjet, false, false]
+

@@ -28,11 +28,9 @@ jet_tag_categories = config['jet tag categories']
 distributions = config['distributions']
 if args.yields:
     distributions['integral_histo'] = ['isCleanEvent', False, False]
-signal_samples = config['signal samples']
-background_samples = config['background samples']
+signal_samples = config.get('signal samples', [])
+background_samples = config.get('background samples', [])
 yields = plot_helper.Yields(jet_tag_categories)
-if config.has_key('background sample groups'):
-    background_sample_groups = config['background sample groups']
 
 def main():
     ## import the root libraries; with this import
@@ -96,65 +94,38 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     signal_sum = 0.0
     data_sum = 0.0
 
-    ## Draw the background sample histograms, put in legend
     systematics_by_sample = {}
-    for sample in background_samples:
-        try: sample_info = plot_helper.SampleInformation(sample, background_samples[sample])
-        except:
-            print background_samples[sample]
-            print 'sample %s does not exist in plot_helper.py SampleInformation.  Skipping.' % (sample)
-            continue
-
-        systematics = plot_helper.customize_systematics(config['systematics'], sample_info.systematics)
-        systematics_by_sample[sample] = systematics
-
-        if 'sideband' in sample_info.sample_type and not plot_helper.is_matching_data_sample(lepton_category, sample):
-            continue
-
+    # Sum histograms in each sample group, then add summed histos to stack plot, legend, and histogram_dictionary
+    for sample_group in background_samples: # Add samples in each sample group together
+        systematics = plot_helper.customize_systematics(config['systematics'], background_samples[sample_group]['systematics'])
+        systematics_by_sample[sample_group] = systematics
+        group_histogram = None
         for systematic in systematics:
-            original_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category)
-            if  not original_histogram:
-                continue
-            histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
-
-            if systematic == 'nominal':
-                histogram = original_histogram.Clone('stack')
-                mc_sum += histogram.Integral()
-                xsec_frac_error = sample_info.x_section_error / sample_info.x_section #is this being used?
-                stack_plot.Add(histogram, "hist")
-                stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
-                yields[jet_tag_category][background_samples[sample]['draw name']][lepton_category] = histogram.Integral()
-
-    # Sum histograms in each sample group, then add summed histos to stack plot and histogram_dictionary
-    if config.has_key('background sample groups'):
-        for sample_group in background_sample_groups: # Add samples in each sample group together
-            systematics = plot_helper.customize_systematics(config['systematics'], background_sample_groups[sample_group]['systematics'])
-            systematics_by_sample[sample_group] = systematics
-            group_histogram = None
-            for systematic in systematics:
-                samples_in_group = background_sample_groups[sample_group]['samples']
-                for index, sample in enumerate(samples_in_group):
-                    sample_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group)
-                    if not sample_histogram:
-                        continue
-                    sample_histogram.Sumw2()
-                    if not group_histogram:
-                        group_histogram = sample_histogram
-                    else:
-                        group_histogram.Add(sample_histogram)
-                # Add one entry (the sum of all samples in the group) for each sample group to the
-                # dictionary; the group will be treated as a single sample for subsequent error calculations
-                try:
-                    histogram_dictionary[sample_group+'_'+systematic] = group_histogram.Clone()
-                except:
-                    print 'Problems finding all input files for sample group %s.  Skipping sample group..' % sample_group
+            samples_in_group = background_samples[sample_group]['samples']
+            for index, sample in enumerate(samples_in_group):
+                sample_histogram = get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group)
+                if not sample_histogram:
                     continue
-                if systematic == 'nominal':
-                    histogram = group_histogram.Clone('stack')
-                    mc_sum += histogram.Integral()
-                    stack_plot.Add(histogram, "hist")
-                    stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_sample_groups[sample_group]['draw name'], histogram.Integral()), 'f')
-                    yields[jet_tag_category][background_sample_groups[sample_group]['draw name']][lepton_category] = histogram.Integral()
+                sample_histogram.Sumw2()
+                if not group_histogram:
+                    group_histogram = sample_histogram
+                else:
+                    group_histogram.Add(sample_histogram)
+            # Add one entry (the sum of all samples in the group) for each sample group to the
+            # dictionary; the group will be treated as a single sample for subsequent error calculations
+            try:
+                histogram_dictionary[sample_group+'_'+systematic] = group_histogram.Clone()
+            except:
+                print 'Problems finding any input files for sample group %s.  Skipping sample group..' % sample_group
+                continue
+            if systematic == 'nominal':
+                histogram = group_histogram.Clone('stack')
+                mc_sum += histogram.Integral()
+                stack_plot.Add(histogram, "hist")
+                stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample_group]['draw name'], histogram.Integral()), 'f')
+                yields[jet_tag_category][background_samples[sample_group]['draw name']][lepton_category] = histogram.Integral()
+
+            group_histogram = None
 
     ## Draw the signal sample histogram(s), put in legend
     signal_histogram = None
@@ -356,17 +327,12 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
         histogram.SetMarkerStyle(cosmetics['data marker style'])
         histogram.SetMarkerSize(cosmetics['data marker size'])
 
-    elif config.has_key('background sample groups') and sample_group in background_sample_groups:
-        histogram.SetLineColor(background_sample_groups[sample_group]['color'])
-        histogram.SetFillColor(background_sample_groups[sample_group]['color'])
+    elif config.has_key('background samples') and (sample_group in background_samples):
+        histogram.SetLineColor(background_samples[sample_group]['color'])
+        histogram.SetFillColor(background_samples[sample_group]['color'])
         histogram.SetFillStyle(cosmetics['background fill style'])
 
-    elif sample in background_samples:
-        histogram.SetLineColor(background_samples[sample]['color'])
-        histogram.SetFillColor(background_samples[sample]['color'])
-        histogram.SetFillStyle(cosmetics['background fill style'])
-
-    elif sample in signal_samples:
+    elif config.has_key('signal samples') and (sample in signal_samples):
         histogram.SetLineColor(signal_samples[sample]['color'])
         histogram.SetFillColor(signal_samples[sample]['color'])
 
