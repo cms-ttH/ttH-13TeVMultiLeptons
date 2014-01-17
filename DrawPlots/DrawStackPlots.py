@@ -123,7 +123,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
                 xsec_frac_error = sample_info.x_section_error / sample_info.x_section #is this being used?
                 stack_plot.Add(histogram, "hist")
                 stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample]['draw name'], histogram.Integral()), 'f')
-                yields[jet_tag_category][background_samples[sample]['draw name']][lepton_category] = histogram.Integral(0, histogram.GetNbinsX() + 1)
+                yields[jet_tag_category][background_samples[sample]['draw name']][lepton_category] = histogram.Integral()
 
     # Sum histograms in each sample group, then add summed histos to stack plot and histogram_dictionary
     if config.has_key('background sample groups'):
@@ -151,10 +151,10 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
                     continue
                 if systematic == 'nominal':
                     histogram = group_histogram.Clone('stack')
-                    mc_sum += group_histogram.Integral()
+                    mc_sum += histogram.Integral()
                     stack_plot.Add(histogram, "hist")
-                    stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_sample_groups[sample_group]['draw name'], group_histogram.Integral()), 'f')
-                    yields[jet_tag_category][background_sample_groups[sample_group]['draw name']][lepton_category] = histogram.Integral(0, histogram.GetNbinsX() + 1)
+                    stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_sample_groups[sample_group]['draw name'], histogram.Integral()), 'f')
+                    yields[jet_tag_category][background_sample_groups[sample_group]['draw name']][lepton_category] = histogram.Integral()
 
     ## Draw the signal sample histogram(s), put in legend
     signal_histogram = None
@@ -183,7 +183,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
         else:
             stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], legend_option)
 
-        yields[jet_tag_category][signal_samples[sample]['draw name']][lepton_category] = signal_histogram.Integral(0, signal_histogram.GetNbinsX() + 1)
+        yields[jet_tag_category][signal_samples[sample]['draw name']][lepton_category] = signal_histogram.Integral()
 
     ## Draw the data histogram, put in legend
     if not config['blinded']:
@@ -194,7 +194,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
             data_histogram = original_histogram.Clone('data')
             data_sum = data_histogram.Integral()
             stack_plot_legend.AddEntry(data_histogram, 'Data (%.0f) ' % data_sum, 'lpe')
-            yields[jet_tag_category]['data'][lepton_category] = data_histogram.Integral(0, data_histogram.GetNbinsX() + 1)
+            yields[jet_tag_category]['data'][lepton_category] = data_histogram.Integral()
 
     lumi_error = config['luminosity error']
     trigger_SF_error = config['trigger SF error']
@@ -214,7 +214,6 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
         mc_error_histogram.SetBinContent(i, stack_plot.GetStack().Last().GetBinContent(i))
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
         for sample, systematics in systematics_by_sample.items(): #systematics_by_sample is a dictionary (keys: samples and sample groups, values: systematics list)
-
             if 'sideband' in sample and not plot_helper.is_matching_data_sample(lepton_category, sample):
                 continue
 

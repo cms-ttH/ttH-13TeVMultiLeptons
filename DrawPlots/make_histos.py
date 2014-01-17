@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import os
-#from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
 import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
 from argparse import ArgumentParser
 import ROOT
@@ -36,7 +35,7 @@ def main():
 
     plot_helper.make_sure_directories_exist([os.path.join(config['output directory'], category) for category in lepton_categories])
     if args.web:
-        www_plot_directories = [os.path.join('plots', config['label'], lepton_category) for lepton_category in lepton_categories]
+        www_plot_directories = [os.path.join('plots', config['label'], config['output directory'], lepton_category) for lepton_category in lepton_categories]
         plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name)
 
     if args.batch:
@@ -81,7 +80,6 @@ def make_histos(args, config, samples, lepton_categories):
                     draw_string_maker.append_selection_requirements(config['common cuts'].values(), lepton_category_cut_strings)
                     if sample_info.sample_type == 'NP_sideband':
                         draw_string_maker.append_selection_requirements(config.get('NP sideband cuts', {}).values())
-                        print draw_string_maker.draw_string
                     elif sample_info.sample_type == 'QF_sideband':
                         draw_string_maker.append_selection_requirements(config.get('QF sideband cuts', {}).values())
                     else:
@@ -118,7 +116,7 @@ def make_histos(args, config, samples, lepton_categories):
                 output_file.Close() #end jet tag category
 
 def submit_batch_jobs(config, samples, lepton_categories):
-    plot_helper.make_sure_directories_exist(['batch_logs'])
+    plot_helper.make_sure_directories_exist(['batch_logs/%s' % config['label']])
 
     argument_string = ''
     for argument in sys.argv[1:]:
@@ -131,9 +129,9 @@ def submit_batch_jobs(config, samples, lepton_categories):
             condor_submit_file = open('make_histos_batch.submit', 'w')
             condor_submit_file.write(condor_header)
             condor_submit_file.write('\narguments = -s %s -l %s %s' % (sample, lepton_category, argument_string))
-            condor_submit_file.write('\nlog = batch_logs/%s_%s_%s.log' % (config['label'], sample, lepton_category))
-            condor_submit_file.write('\noutput = batch_logs/%s_%s_%s.stdout' % (config['label'], sample, lepton_category))
-            condor_submit_file.write('\nerror = batch_logs/%s_%s_%s.stderr' % (config['label'], sample, lepton_category))
+            condor_submit_file.write('\nlog = batch_logs/%s/%s_%s_%s.log' % (config['label'], config['label'], sample, lepton_category))
+            condor_submit_file.write('\noutput = batch_logs/%s/%s_%s_%s.stdout' % (config['label'], config['label'], sample, lepton_category))
+            condor_submit_file.write('\nerror = batch_logs/%s/%s_%s_%s.stderr' % (config['label'], config['label'], sample, lepton_category))
             condor_submit_file.write('\nqueue 1')
             condor_submit_file.close()
 

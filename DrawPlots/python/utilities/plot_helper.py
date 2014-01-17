@@ -94,7 +94,10 @@ def make_sure_directories_exist(directories):
 
 def make_fresh_directory(directory):
     if os.path.exists(directory):
-        shutil.rmtree(directory)
+        try:
+            shutil.rmtree(directory)
+        except:
+            pass
     os.makedirs(directory)
 
 def update_indexes(directory):
@@ -139,7 +142,7 @@ def setup_www_directories(directories, depth=1, *extra_files_to_post):
     for directory in directories:
         setup_www_directory(directory, depth, *extra_files_to_post)
 
-def setup_web_posting(directories, depth=4, *extra_files_to_post):
+def setup_web_posting(directories, depth=1, *extra_files_to_post):
     www_base_directory = get_www_base_directory()
 
     www_plot_directories = [os.path.join(www_base_directory, directory) for directory in directories]
@@ -197,7 +200,7 @@ class Plot:
 
         self.save_image('png', 'pdf')
 
-        www_plot_directory = '%s/plots/%s/%s' % (www_base_directory, config['label'], lepton_category)
+        www_plot_directory = '%s/plots/%s/%s/%s' % (www_base_directory, config['label'], config['output directory'], lepton_category)
         copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name)
 
     def set_style(self): #later we can add arguments for different style sets if needed
@@ -262,35 +265,35 @@ class DrawStringMaker:
 class SampleInformation:
     def __init__(self, sample, config):
         dictionary = {
-			#ND uses WW_TuneZ2Star, CERN uses WWJetsTo2L2Nu_TuneZ2star with x_section 5.995
+            #ND uses WW_TuneZ2Star, CERN uses WWJetsTo2L2Nu_TuneZ2star with x_section 5.995
             'ww': {'sample_type': 'MC',
                    'is_signal': False,
                    'x_section': 54.8, #ND x_sec
                    'x_section_error': 54.8*0.035, #ND x_sec error
                    'num_generated': 9955089}, #ND number processed
 
-			#ND uses WZ_TuneZ2star
+            #ND uses WZ_TuneZ2star
             'wz': {'sample_type': 'MC',
                    'is_signal': False,
                    'x_section': 32.3, #ND x_sec
                    'x_section_error': 54.8*0.035, #ND x_sec error
                    'num_generated': 9931257}, #ND number processed
 
-			#CERN uses WZJetsTo3LNu_TuneZ2
+            #CERN uses WZJetsTo3LNu_TuneZ2
             'wz_lll': {'sample_type': 'MC',
                    'is_signal': False,
                    'x_section': 1.057*1.10, #CERN x_sec; equals (32.3*0.324*0.101) * 1.10
                    'x_section_error': 1.057*1.10*0.2, #CERN x_sec error
                    'num_generated': 1987010}, #ND number processed
 
-			#ND uses ZZ_TuneZ2star
+            #ND uses ZZ_TuneZ2star
             'zz': {'sample_type': 'MC',
                    'is_signal': False,
                    'x_section': 7.7, #ND x_sec
                    'x_section_error': 7.7*0.035, #ND x_sec error
                    'num_generated': 9755621}, #ND number processed
 
-			#ND uses ZZ_TuneZ2star
+            #ND uses ZZ_TuneZ2star
             'zz_llll': {'sample_type': 'MC',
                    'is_signal': False,
                    'x_section': 0.157*1.21, #CERN x_sec; why is it not (7.7*0.101*0.101) * 1.21
@@ -309,14 +312,14 @@ class SampleInformation:
                     'x_section_error': 0.0633*0.5, #CERN x_sec error
                     'num_generated': 221576}, #ND number processed
 
-			#CERN does not use any wzz sample
+            #CERN does not use any wzz sample
             'wzz': {'sample_type': 'MC',
                     'is_signal': False,
                     'x_section': 0.01922, #ND x_sec, straight from PREP
                     'x_section_error': 0.01922*0.5, #Would be CERN x_sec error
                     'num_generated': 219317}, #ND number processed 
 
-			#CERN does not use any zzz sample
+            #CERN does not use any zzz sample
             'zzz': {'sample_type': 'MC',
                     'is_signal': False,
                     'x_section': 0.004587, #ND x_sec, straight from PREP
@@ -341,7 +344,7 @@ class SampleInformation:
                       'x_section_error': 0.5879*0.5, #Just an unmotivated guess
                       'num_generated': 833755}, 
 
-			##All wjets, zjets, and ttbar_* samples use ND x_sec, x_sec error, and number processed
+            ##All wjets, zjets, and ttbar_* samples use ND x_sec, x_sec error, and number processed
             'wjets': {'sample_type': 'MC',
                       'is_signal': False,
                       'x_section': 36257,
@@ -570,7 +573,7 @@ class SampleInformation:
                      'x_section_error': 0.0114*0.5, #Just an unmotivated guess
                      'num_generated': 148158}, #ND number processed 
 
-			#All single top samples use ND x_sec, x_sec error, and number processed
+            #All single top samples use ND x_sec, x_sec error, and number processed
             'singlet_s': {'sample_type': 'MC',
                     'is_signal': False,
                     'x_section': 3.79,
