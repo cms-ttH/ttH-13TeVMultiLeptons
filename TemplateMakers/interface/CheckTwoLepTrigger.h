@@ -119,7 +119,7 @@ void CheckTwoLepTrigger::evaluate() {
   branches["isDoubleMuTriggerPass"].branchVal = twoMuonTrigFired ? 1 : 0;
   branches["isDoubleElectronTriggerPass"].branchVal = twoEleTrigFired ? 1 : 0;
   branches["isMuEGTriggerPass"].branchVal = muonEleTrigFired ? 1 : 0;
-  branches["isTripleElectronTriggerPass"].branchVal = muonEleTrigFired ? 1 : 0;
+  branches["isTripleElectronTriggerPass"].branchVal = tripleEleTrigFired ? 1 : 0;
 }
 
 std::string CheckTwoLepTrigger::removeVersion(std::string input) {

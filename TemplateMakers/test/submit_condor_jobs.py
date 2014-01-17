@@ -36,7 +36,7 @@ def getSelectedListFiles(listDirectory, executable):
     returnList = []
 
     linesFromFile = open(executable + '_lists.txt').read().splitlines()[2:]
-    
+
     for iLine in linesFromFile:
         cleanLine = iLine.strip()
         returnList.append(listDirectory+cleanLine+'.list')
@@ -74,7 +74,7 @@ def createCondorSubFileAndSubmit(executable, sample, label, numJobs, wait):
 
     print "Trying to submit jobs..."
     if wait:
-        time.sleep(wait)
+        time.sleep(float(wait))
     print os.popen("condor_submit multiLepBatch.submit").readlines()
 
 def main ():
@@ -114,7 +114,7 @@ def main ():
         nJobs = getNumLinesInFile(iList)
 #        nJobs = int(nJobs/10)
         print "Calling create with ", executable, " ", sampleName, " ", args.project_label, " ", nJobs
-        createCondorSubFileAndSubmit(executable, sampleName, args.project_label, nJobs, float(args.wait))
+        createCondorSubFileAndSubmit(executable, sampleName, args.project_label, nJobs, args.wait)
 
     print "Done with loop over samples"
 

@@ -17,12 +17,11 @@ void HelperLeptonCore::initializePUReweighting () {
   datasetForBEANHelper = "SingleMu";
 }
 
-
-BEANhelper * HelperLeptonCore::setupAnalysisParameters(string year, string inputName ) {
+BEANhelper * HelperLeptonCore::setupAnalysisParameters(string year, string inputName) {
   analysisYear = year;
   sampleName = inputName;
 
-  detectData (sampleName);
+  detectData(sampleName);
   convertSampleNameToNumber(sampleName);
   initializePUReweighting();
 
@@ -34,26 +33,24 @@ BEANhelper * HelperLeptonCore::setupAnalysisParameters(string year, string input
   // param 6: use pf leptons?
   // param 8: list of collision datasets, which much be long
 
-  bHelp.SetUp(analysisYear, sampleNumber, analysisType::DIL, isData, datasetForBEANHelper, false, true,listOfCollisionDatasets);
+  bHelp.SetUp(analysisYear, sampleNumber, analysisType::DIL, isData, datasetForBEANHelper, false, true, listOfCollisionDatasets);
 
   return &bHelp;
 }
 
-bool HelperLeptonCore::detectData(string sampleName) {
+void HelperLeptonCore::detectData(string sampleName) {
   isData = false;
-  sysType_lep = "MC";
-  if (TString(sampleName).Contains("DoubleElectron")
-      || TString(sampleName).Contains("DoubleMu")
-      || TString(sampleName).Contains("MuEG")
-      || TString(sampleName).Contains("MET")) {
+  dataset = "MC";
 
+  if (TString(sampleName).Contains("DoubleElectron")) dataset = "DoubleElectron";
+  if (TString(sampleName).Contains("DoubleMu")) dataset = "DoubleMu";
+  if (TString(sampleName).Contains("MuEG")) dataset = "MuEG";
+  if (TString(sampleName).Contains("MET")) dataset = "MET";
+
+  if (dataset != "MC") {
     std::cout << "CONFIG: DATA detected for sample " << sampleName << std::endl;
-
     isData = true;
-    sysType_lep = "data";
   }
-
-  return isData;
 }
 
 

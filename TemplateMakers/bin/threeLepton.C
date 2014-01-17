@@ -100,6 +100,9 @@ int main (int argc, char** argv) {
 
   BEANFileInterface selectedCollections;
 
+  GenericVariable<string> dataset(lepHelper.dataset, "dataset", "not set");
+  kinVars.push_back(&dataset);
+
   GenericCollectionSizeVariable<BNjetCollection> numJets(&(selectedCollections.jetCollection), "numJets");
   kinVars.push_back(&numJets);
   numJets.setCutMin(2);
@@ -183,7 +186,7 @@ int main (int argc, char** argv) {
 
   DataDrivenFR<BNleptonCollection>
   myDataDrivenFRAllLeptons(&lepHelper, &(selectedCollections.tightLoosePreselectedLeptonCollection),
-                           3, 0.7, "3", "FR_merged_data", "QF_data_el");
+                           3, 0.7, "FR_merged_data", "QF_data_el");
   kinVars.push_back(&myDataDrivenFRAllLeptons);
 
   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
