@@ -28,3 +28,7 @@ met_ld : (met*0.00397 + mhtJet25*0.00265)
 eventInfo_evt : evt
 eventInfo_lumi : lumi
 eventInfo_run : run
+
+jets_by_pt_1_pt : Jet1_pt
+jets_by_pt_1_eta : Jet1_eta
+
