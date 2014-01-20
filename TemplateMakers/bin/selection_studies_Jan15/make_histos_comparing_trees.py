@@ -55,6 +55,10 @@ cuts_1 = config['ND_cuts'].items()
 cuts_2 = config['CERN_cuts'].items()
 histos = config['histos'].items()
 
+cuts_file_label = args.cuts_file_name.replace('.cfg','')
+if not os.path.exists(cuts_file_label):
+	os.makedirs(cuts_file_label)
+
 if verbose: print 'Got cuts'
 
 all_cuts_1 = ROOT.TCut()
@@ -203,32 +207,39 @@ for event in range(tree_event_list_pass_2.GetN()):
 
 #if verbose: temp_tree_2_pass.Scan("run:lumi:evt","","")
 
+ND_not_missing = open(cuts_file_label+'/ND_not_missing.txt', 'w+')
 temp_2b = copy.deepcopy(unique_events_pass_2) #For duplicate removal
 for event in range(tree_event_list_fail_1.GetN()):
 	tree_1_fail.GetEntry(tree_event_list_fail_1.GetEntry(event))
 	if ( (str(tree_1_fail.eventInfo_run), str(tree_1_fail.eventInfo_lumi), str(tree_1_fail.eventInfo_evt)) in temp_2b ):
 		temp_tree_1_fail.Fill()
 		temp_2b.remove( (str(tree_1_fail.eventInfo_run), str(tree_1_fail.eventInfo_lumi), str(tree_1_fail.eventInfo_evt)) )
+		ND_not_missing.write('%s:%s:%s\n' % (str(tree_1_fail.eventInfo_run), str(tree_1_fail.eventInfo_lumi), str(tree_1_fail.eventInfo_evt)) )
+ND_missing = open(cuts_file_label+'/ND_missing.txt', 'w+')
+for event in temp_2b:
+	ND_missing.write('%s:%s:%s\n' % (event[0],event[1],event[2]) )
 
 #if verbose: temp_tree_1_fail.Scan("eventInfo_run:eventInfo_lumi:eventInfo_evt","","")
 
+CERN_not_missing = open(cuts_file_label+'/CERN_not_missing.txt', 'w+')
 temp_1b = copy.deepcopy(unique_events_pass_1) #For duplicate removal
 for event in range(tree_event_list_fail_2.GetN()):
 	tree_2_fail.GetEntry(tree_event_list_fail_2.GetEntry(event))
 	if ( (str(tree_2_fail.run), str(tree_2_fail.lumi), str(tree_2_fail.evt)) in temp_1b ):
 		temp_tree_2_fail.Fill()
 		temp_1b.remove( (str(tree_2_fail.run), str(tree_2_fail.lumi), str(tree_2_fail.evt)) )
+		CERN_not_missing.write('%s:%s:%s\n' % (str(tree_2_fail.run), str(tree_2_fail.lumi), str(tree_2_fail.evt)) )
+CERN_missing = open(cuts_file_label+'/CERN_missing.txt', 'w+')
+for event in temp_1b:
+	CERN_missing.write('%s:%s:%s\n' % (event[0],event[1],event[2]) )
 
 #if verbose: temp_tree_2_fail.Scan("run:lumi:evt","","")
 
-cuts_file_label = args.cuts_file_name.replace('.cfg','')
 www_base_directory = plot_helper.get_www_base_directory()
 www_directories = [os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, dirName)
 				   for dirName in ['CERN_ND_unique_pass','ND_pass_CERN_fail','CERN_pass_ND_fail'] ] 
 plot_helper.setup_www_directories(www_directories, 1, args.cuts_file_name)
 
-if not os.path.exists(cuts_file_label):
-	os.makedirs(cuts_file_label)
 if not os.path.exists(cuts_file_label+'/plots_CERN_ND_unique_pass'):
 	os.makedirs(cuts_file_label+'/plots_CERN_ND_unique_pass')
 if not os.path.exists(cuts_file_label+'/plots_ND_pass_CERN_fail'):
