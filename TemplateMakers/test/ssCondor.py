@@ -45,7 +45,7 @@ def checkDir(inDir):
         os.mkdir(inDir)
 
 def printUsage() :
-    print "Usage: ", sys.argv[0], " ssCondor.py  sampleName [jobNum totalJobs] [sys]"
+    print "Usage: ", sys.argv[0], " ssCondor.py  sampleName jobLabel [jobNum totalJobs] [sys]"
 
 def calcBeginEndFileThisJob(totalFiles, totalJobs, thisJob):
     filesPerJob = totalFiles/totalJobs
