@@ -281,6 +281,59 @@ int main (int argc, char** argv) {
   kinVars.push_back(&myTightCharges);
 
   ////////// all leptons //////////
+  GenericCollectionMember<int, BNleptonCollection> allLeptonNumberOfValidTrackerHitsInnerTrack(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                                               "numberOfValidTrackerHitsInnerTrack", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonNumberOfValidTrackerHitsInnerTrack);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonInnerTkPt(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                         "innerTrackPt", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonInnerTkPt);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonInnerTkPtError(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                              "innerTrackPtError", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonInnerTkPtError);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonNeutralHadronIsoDR04(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                                    "neutralHadronIsoDR04", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonNeutralHadronIsoDR04);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonPhotonIsoDR04(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                             "photonIsoDR04", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonPhotonIsoDR04);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonPUChargedHadronIsoDR04(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                                      "puChargedHadronIsoDR04", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonPUChargedHadronIsoDR04);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonChargedHadronIso(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                                "chargedHadronIso", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonChargedHadronIso);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonJetDeltaR(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                         "jetDeltaR", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonJetDeltaR);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonJetPtRatio(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                          "jetPtRatio", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonJetPtRatio);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonJetBTagCSV(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                          "jetBTagCSV", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonJetBTagCSV);
+
+  GenericCollectionMember<double, BNleptonCollection> allLeptonMvaNonTrigV0(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                            "mvaNonTrigV0", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonMvaNonTrigV0);
+
+  GenericCollectionMember<int, BNleptonCollection> allLeptonNumberOfExpectedInnerHits(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                                      "numberOfExpectedInnerHits", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonNumberOfExpectedInnerHits);
+
+  GenericCollectionMember<int, BNleptonCollection> allLeptonIsGsfCtfScPixChargeConsistent(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                                                                                               "isGsfCtfScPixChargeConsistent", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allLeptonIsGsfCtfScPixChargeConsistent);
+
+
   GenericCollectionMember<double, BNleptonCollection> allLeptonPt(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
                                                                   "pt", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonPt);
@@ -438,16 +491,8 @@ int main (int argc, char** argv) {
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
 
     lepHelper.initializeInputCollections(ev, true, selectedCollections);
+    lepHelper.applyRochesterCorrections(*(lepHelper.rawCollections.rawMuonCollection));
 
-    bool applySmearing = !(lepHelper.isData);
-    lepHelper.fillSIP(*(lepHelper.rawCollections.rawMuonCollection), applySmearing);
-    lepHelper.fillSIP(*(lepHelper.rawCollections.rawElectronCollection), applySmearing);
-    lepHelper.fillLepJetPtRatio(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);
-    lepHelper.fillLepJetPtRatio(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);
-    lepHelper.fillLepJetDeltaR(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);
-    lepHelper.fillLepJetDeltaR(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);
-    lepHelper.fillLepJetBTagCSV(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection));
-    lepHelper.fillLepJetBTagCSV(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection));
     if (!lepHelper.isData) {
       lepHelper.fillMCMatchAny(*(lepHelper.rawCollections.rawMuonCollection), 0.3);
       lepHelper.fillMCMatchAny(*(lepHelper.rawCollections.rawElectronCollection), 0.3);
@@ -459,6 +504,15 @@ int main (int argc, char** argv) {
       lepHelper.scaleMCCollectionDXY(*(lepHelper.rawCollections.rawElectronCollection));
       lepHelper.scaleMCCollectionDXY(*(lepHelper.rawCollections.rawMuonCollection));
     }
+    bool applySmearing = !(lepHelper.isData);
+    lepHelper.fillSIP(*(lepHelper.rawCollections.rawMuonCollection), applySmearing);
+    lepHelper.fillSIP(*(lepHelper.rawCollections.rawElectronCollection), applySmearing);
+    lepHelper.fillLepJetPtRatio(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);
+    lepHelper.fillLepJetPtRatio(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);
+    lepHelper.fillLepJetDeltaR(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);
+    lepHelper.fillLepJetDeltaR(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);
+    lepHelper.fillLepJetBTagCSV(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection));
+    lepHelper.fillLepJetBTagCSV(*(lepHelper.rawCollections.rawElectronCollection), *(lepHelper.rawCollections.jetsForLepMVACollection));
 
     /////////////////////////////////////////////////////////////
     //

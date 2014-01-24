@@ -68,6 +68,7 @@
 
 #endif
 
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/CERN/RochCor2012.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
@@ -133,6 +134,8 @@ public:
   template <typename collectionType> void scaleMCCollectionDXY(collectionType& collection);
   template <typename particleType> bool isPlausible(particleType particle, const BNmcparticle& mcParticle);
   template <typename particleType> BNmcparticleCollection getPlausibleParticles(particleType& particle, BNmcparticleCollection * mcParticles);
+  template <typename collectionType> void applyRochesterCorrections(collectionType& collection);
+  template <typename particleType> BNjet GetClosestJet(const BNjetCollection& jets, const particleType& particle, const double maxDeltaR);
 
   TRandom *gSmearer;
 
@@ -302,14 +305,11 @@ void HelperLeptonCore::fillSIP(collectionType& collection, bool applySmearing) {
 
 template <typename collectionType>
 void HelperLeptonCore::fillLepJetBTagCSV(collectionType& collection, BNjetCollection& jetCollection) {
-  double jetBTagCSV = 0.0;
   BNjet matchedJet;
 
   for (auto& object: collection) {
-    matchedJet = bHelp.GetClosestJet(jetCollection, object, 100.0);
-    if (deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi) <= 0.5) jetBTagCSV = max(matchedJet.btagCombinedSecVertex, 0.0);
-
-    object.jetBTagCSV = jetBTagCSV;
+    matchedJet = GetClosestJet(jetCollection, object, 0.5);
+    object.jetBTagCSV = matchedJet.btagCombinedSecVertex;
   }
 }
 
@@ -319,8 +319,8 @@ void HelperLeptonCore::fillLepJetPtRatio(collectionType& collection, BNjetCollec
   BNjet matchedJet;
 
   for (auto& object: collection) {
-    matchedJet = bHelp.GetClosestJet(jetCollection, object, 100.0);
-    if (deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi) <= 0.5) jetPtRatio = min(object.pt/matchedJet.pt, 1.5);
+    matchedJet = GetClosestJet(jetCollection, object, 0.5);
+    jetPtRatio = object.pt/matchedJet.pt;
     if (applySmearing) jetPtRatio = scaleLepJetPtRatioMC(jetPtRatio, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
 
     object.jetPtRatio = jetPtRatio;
@@ -333,8 +333,8 @@ void HelperLeptonCore::fillLepJetDeltaR(collectionType& collection, BNjetCollect
   BNjet matchedJet;
 
   for (auto& object: collection) {
-    matchedJet = bHelp.GetClosestJet(jetCollection, object, 100.0);
-    jetDeltaR = min(deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi), 0.5);
+    matchedJet = GetClosestJet(jetCollection, object, 0.5);
+    jetDeltaR = deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi);
     if (applySmearing) jetDeltaR = scaleLepJetDRMC(jetDeltaR, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
 
     object.jetDeltaR = jetDeltaR;
@@ -357,6 +357,47 @@ void HelperLeptonCore::scaleMCCollectionDXY(collectionType& collection) {
     dxy = scaleDXYMC(object.correctedD0Vertex, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
     object.correctedD0Vertex = dxy;
   }
+}
+
+template <typename collectionType>
+void HelperLeptonCore::applyRochesterCorrections(collectionType& collection) {
+  RochCor2012 rochesterCorrections2012;
+  TLorentzVector p4;
+
+  for (auto& object: collection) {
+    p4.SetPxPyPzE(object.px, object.py, object.pz, object.energy);
+    if (isData) rochesterCorrections2012.momcor_data(p4, object.tkCharge, 0.0, 0);
+    if (!isData) rochesterCorrections2012.momcor_mc(p4, object.tkCharge, 0.0, 0);
+
+    //std::cout << "uncorrected pt: " << object.pt << "  corrected pt: " << p4.Pt() << std::endl;
+
+    object.px = p4.Px();
+    object.py = p4.Py();
+    object.pz = p4.Pz();
+    object.energy = p4.Energy();
+    object.pt = p4.Pt();
+  }
+}
+
+template <typename particleType>
+BNjet HelperLeptonCore::GetClosestJet(const BNjetCollection& jets, const particleType& object, const double maxDeltaR) {
+  BNjet result;
+  double minDeltaR = 999;
+  for (auto& jet: jets) {
+    double dR = deltaR(jet.eta, jet.phi, object.eta, object.phi);
+    if ((dR <= maxDeltaR) && (dR < minDeltaR)) {
+      result = jet;
+      minDeltaR = dR;
+    }
+  }
+
+  if (minDeltaR == 999) {
+    result.phi = object.phi;
+    result.eta = object.eta;
+    result.pt = object.pt;
+  }
+
+  return result;
 }
 
 #endif // _HelperLeptonCore_h
