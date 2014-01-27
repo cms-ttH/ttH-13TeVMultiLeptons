@@ -34,239 +34,239 @@ histos:
         first tree expression: numAllLeptons
         second tree expression: nLepGood
         axis labels: [number of good leptons, Events]
-        overlay plot binning: [*default_num_bins, 1, 5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     min_mass_leplep_AFAS_all:
         first tree expression: min_mass_leplep_AFAS_all
         second tree expression: minMllAFAS
         axis labels: [min mass leplep (AFAS), Events]
-        overlay plot binning: [*default_num_bins, 40, 140]
-        difference plot binning: [*default_num_bins, -0.4, 0.4]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_pt:
         first tree expression: all_leptons_by_pt_1_pt
         second tree expression: LepGood1_pt
         axis labels: [first lepton pT, Events]
-        overlay plot binning: [*default_num_bins, 0, 400]
-        difference plot binning: [*default_num_bins, -0.5, 0.5]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_2_pt:
         first tree expression: all_leptons_by_pt_2_pt
         second tree expression: LepGood2_pt
         axis labels: [second lepton pT, Events]
-        overlay plot binning: [*default_num_bins, 0, 400]
-        difference plot binning: [*default_num_bins, -0.5, 0.5]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_lepMVA:
         first tree expression: all_leptons_by_pt_1_lepMVA
         second tree expression: LepGood1_mva
         axis labels: [first lepton lepMVA, Events]
-        overlay plot binning: [*default_num_bins, 0.5, 1.0]
-        difference plot binning: [*default_num_bins, -.006, 0.006]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_2_lepMVA:
         first tree expression: all_leptons_by_pt_2_lepMVA
         second tree expression: LepGood3_mva
         axis labels: [second lepton lepMVA, Events]
-        overlay plot binning: [*default_num_bins, 0.5, 1.0]
-        difference plot binning: [*default_num_bins, -.006, 0.006]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_3_lepMVA:
         first tree expression: all_leptons_by_pt_3_lepMVA
         second tree expression: LepGood3_mva
         axis labels: [third lepton lepMVA, Events]
-        overlay plot binning: [*default_num_bins, 0.4, 1.0]
-        difference plot binning: [*default_num_bins, -.006, 0.006]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     lep_assignment:
         first tree expression: (all_leptons_by_pt_1_isMuon*13*all_leptons_by_pt_1_tkCharge + all_leptons_by_pt_1_isElectron*11*all_leptons_by_pt_1_tkCharge)
         second tree expression: LepGood1_pdgId
         axis labels: [lepton assignment, Events]
-        overlay plot binning: [*default_num_bins, -14, 14]
-        difference plot binning: [*default_num_bins, 0, 30]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     ZLike_mass_leplep_SFOS_all:
         first tree expression: ZLike_mass_leplep_SFOS_all
         second tree expression: mZ1
         axis labels: [Z-like mass leplep (SFOS), Events]
-        overlay plot binning: [*default_num_bins, 0, 250]
-        difference plot binning: [*default_num_bins, -0.5, 0.5]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     met_ld:
         first tree expression: (met_pt*0.00397 + mht*0.00265)
         second tree expression: (met*0.00397 + mhtJet25*0.00265)
         axis labels: [met ld, Events]
-        overlay plot binning: [*default_num_bins, 0, 5]
-        difference plot binning: [10, -5, 5]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_passConvVeto:
         first tree expression: all_leptons_by_pt_1_passConvVeto
         second tree expression: LepGood1_convVeto
         axis labels: [first lepton passes conversion veto, Events]
-        overlay plot binning: [103, -100, 3]
-        difference plot binning: [10, -5, 5]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_numberOfExpectedInnerHits:
         first tree expression: all_leptons_by_pt_1_numberOfExpectedInnerHits
         second tree expression: LepGood1_innerHits
         axis labels: [number of expected inner hits, Events]
-        overlay plot binning: [27, -2, 25]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     numJets:
         first tree expression: numJets
         second tree expression: nJet25
         axis labels: [number of jets, Events]
-        overlay plot binning: [5, -0.5, 4.5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     numLooseBJets:
         first tree expression: numLooseBJets
         second tree expression: nBJetLoose25
         axis labels: [number of loose b-jets, Events]
-        overlay plot binning: [5, -0.5, 4.5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     numMediumBJets:
         first tree expression: numMediumBJets
         second tree expression: nBJetMedium25
         axis labels: [number of medium b-jets, Events]
-        overlay plot binning: [5, -0.5, 4.5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_jetDeltaR:
         first tree expression: all_leptons_by_pt_1_jetDeltaR
         second tree expression: LepGood1_jetDR
         axis labels: [first lepton jetDeltaR, Events]
-        overlay plot binning: [*default_num_bins, 0, 0.05]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_2_jetDeltaR:
         first tree expression: all_leptons_by_pt_2_jetDeltaR
         second tree expression: LepGood2_jetDR
         axis labels: [second lepton jetDeltaR, Events]
-        overlay plot binning: [*default_num_bins, 0, 0.5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_3_jetDeltaR:
         first tree expression: all_leptons_by_pt_3_jetDeltaR
         second tree expression: LepGood2_jetDR
         axis labels: [third lepton jetDeltaR, Events]
-        overlay plot binning: [*default_num_bins, 0, 0.5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_jetPtRatio:
         first tree expression: all_leptons_by_pt_1_jetPtRatio
         second tree expression: LepGood1_jetPtRatio
         axis labels: [first lepton jetPtRatio, Events]
-        overlay plot binning: [*default_num_bins, 0.5, 1.5]
-        difference plot binning: [*default_num_bins, -0.01, 0.01]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_2_jetPtRatio:
         first tree expression: all_leptons_by_pt_2_jetPtRatio
         second tree expression: LepGood2_jetPtRatio
         axis labels: [second lepton jetPtRatio, Events]
-        overlay plot binning: [*default_num_bins, 0.5, 1.5]
-        difference plot binning: [*default_num_bins, -0.01, 0.01]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_3_jetPtRatio:
         first tree expression: all_leptons_by_pt_3_jetPtRatio
         second tree expression: LepGood3_jetPtRatio
         axis labels: [third lepton jetPtRatio, Events]
-        overlay plot binning: [*default_num_bins, 0.5, 1.5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_DBCorrectedRelIsoDR04:
         first tree expression: all_leptons_by_pt_1_DBCorrectedRelIsoDR04
         second tree expression: LepGood1_relIso
         axis labels: [number of jets, Events]
-        overlay plot binning: [*default_num_bins, 0.0, 0.5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_jetBTagCSV:
         first tree expression: all_leptons_by_pt_1_jetBTagCSV
         second tree expression: LepGood1_jetBTagCSV
         axis labels: [first lepton jetBTagCSV, Events]
-        overlay plot binning: [*default_num_bins, -1.1, 1.1]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_2_jetBTagCSV:
         first tree expression: all_leptons_by_pt_2_jetBTagCSV
         second tree expression: LepGood2_jetBTagCSV
         axis labels: [second lepton jetBTagCSV, Events]
-        overlay plot binning: [*default_num_bins, -1.1, 1.1]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_3_jetBTagCSV:
         first tree expression: all_leptons_by_pt_3_jetBTagCSV
         second tree expression: LepGood3_jetBTagCSV
         axis labels: [third lepton jetBTagCSV, Events]
-        overlay plot binning: [*default_num_bins, -1.1, 1.1]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_SIP:
         first tree expression: abs(all_leptons_by_pt_1_SIP)
         second tree expression: LepGood1_sip3d
         axis labels: [first lepton SIP, Events]
-        overlay plot binning: [*default_num_bins, 0, 5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_2_SIP:
         first tree expression: abs(all_leptons_by_pt_2_SIP)
         second tree expression: LepGood2_sip3d
         axis labels: [second lepton SIP, Events]
-        overlay plot binning: [*default_num_bins, 0, 5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_3_SIP:
         first tree expression: abs(all_leptons_by_pt_3_SIP)
         second tree expression: LepGood2_sip3d
         axis labels: [third lepton SIP, Events]
-        overlay plot binning: [*default_num_bins, 0, 5]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_correctedD0Vertex:
         first tree expression: all_leptons_by_pt_1_correctedD0Vertex
         second tree expression: LepGood1_dxy
         axis labels: [first lepton dXY, Events]
-        overlay plot binning: [*default_num_bins, -0.001, 0.007]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_correctedD0Vertex:
         first tree expression: all_leptons_by_pt_1_correctedD0Vertex
         second tree expression: LepGood1_dxy
         axis labels: [first lepton dXY, Events]
-        overlay plot binning: [*default_num_bins, 0.0, 0.1]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_correctedD0Vertex:
         first tree expression: all_leptons_by_pt_1_correctedD0Vertex
         second tree expression: LepGood1_dxy
         axis labels: [first lepton dXY, Events]
-        overlay plot binning: [*default_num_bins, 0.0, 0.1]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_1_correctedDZ:
         first tree expression: all_leptons_by_pt_1_correctedDZ
         second tree expression: LepGood1_dz
         axis labels: [first lepton dZ, Events]
-        overlay plot binning: [*default_num_bins, 0.0, 0.01]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_2_correctedDZ:
         first tree expression: all_leptons_by_pt_2_correctedDZ
         second tree expression: LepGood2_dz
         axis labels: [second lepton dZ, Events]
-        overlay plot binning: [*default_num_bins, 0.0, 0.01]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
     all_leptons_by_pt_3_correctedDZ:
         first tree expression: all_leptons_by_pt_3_correctedDZ
         second tree expression: LepGood2_dz
         axis labels: [third lepton dZ, Events]
-        overlay plot binning: [*default_num_bins, 0.0, 0.01]
-        difference plot binning: [*default_num_bins, -1, 1]
+        overlay plot bins: *default_num_bins
+        difference plot bins: *default_num_bins
 
 #all_leptons_by_pt_1_pt+all_leptons_by_pt_2_pt+met_pt: LepGood1_pt+LepGood2_pt+met
 #all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge: LepGood1_charge+LepGood2_charge

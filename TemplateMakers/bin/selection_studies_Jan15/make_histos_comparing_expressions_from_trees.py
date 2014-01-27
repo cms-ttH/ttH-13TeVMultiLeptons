@@ -93,13 +93,13 @@ def main():
         formulas['%s_2_fail' % name] = ROOT.TTreeFormula('%s_2_fail' % name, options['second tree expression'], tree_2_all)
         formulas['%s_2_shared' % name] = ROOT.TTreeFormula('%s_2_shared' % name, options['second tree expression'], tree_2_all)
         title = ';%s;%s' % tuple(options['axis labels'])
-        (num_bins, x_min, x_max) = options['overlay plot binning']
-        histos['%s_1_pass' % name] = ROOT.TH1F('%s_1_pass' % name, title, num_bins, float(x_min), float(x_max))
-        histos['%s_1_fail' % name] = ROOT.TH1F('%s_1_fail' % name, title, num_bins, float(x_min), float(x_max))
-        histos['%s_2_pass' % name] = ROOT.TH1F('%s_2_pass' % name, title, num_bins, float(x_min), float(x_max))
-        histos['%s_2_fail' % name] = ROOT.TH1F('%s_2_fail' % name, title, num_bins, float(x_min), float(x_max))
-        (num_bins, x_min, x_max) = options['difference plot binning']
-        histos['%s_shared' % name] = ROOT.TH1F('%s_shared' % name, title, num_bins, float(x_min), float(x_max))
+        num_bins = options['overlay plot bins']
+        histos['%s_1_pass' % name] = ROOT.TH1F('%s_1_pass' % name, title, num_bins, -0.000001, 0.000001)
+        histos['%s_1_fail' % name] = ROOT.TH1F('%s_1_fail' % name, title, num_bins, -0.000001, 0.000001)
+        histos['%s_2_pass' % name] = ROOT.TH1F('%s_2_pass' % name, title, num_bins, -0.000001, 0.000001)
+        histos['%s_2_fail' % name] = ROOT.TH1F('%s_2_fail' % name, title, num_bins, -0.000001, 0.000001)
+        num_bins = options['difference plot bins']
+        histos['%s_shared' % name] = ROOT.TH1F('%s_shared' % name, title, num_bins, -0.000001, 0.000001)
         for h in histos.values():
             h.SetBit(ROOT.TH1.kCanRebin)
 
