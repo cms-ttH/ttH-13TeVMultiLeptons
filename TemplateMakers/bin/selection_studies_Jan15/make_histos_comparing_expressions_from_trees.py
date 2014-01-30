@@ -84,24 +84,29 @@ def main():
     tree_2_pass.SetEventList(tree_event_list_pass_2)
 
     histos = {}
+    difference_histos = {}
     formulas = {}
     for name, options in config['histos'].items():
-        formulas['%s_1_pass' % name] = ROOT.TTreeFormula('%s_1_pass' % name, options['first tree expression'], tree_1_all)
-        formulas['%s_1_fail' % name] = ROOT.TTreeFormula('%s_1_fail' % name, options['first tree expression'], tree_1_all)
-        formulas['%s_1_shared' % name] = ROOT.TTreeFormula('%s_1_shared' % name, options['first tree expression'], tree_1_all)
-        formulas['%s_2_pass' % name] = ROOT.TTreeFormula('%s_2_pass' % name, options['second tree expression'], tree_2_all)
-        formulas['%s_2_fail' % name] = ROOT.TTreeFormula('%s_2_fail' % name, options['second tree expression'], tree_2_all)
-        formulas['%s_2_shared' % name] = ROOT.TTreeFormula('%s_2_shared' % name, options['second tree expression'], tree_2_all)
+        formulas['%s_1' % name] = ROOT.TTreeFormula('%s_1' % name, options['first tree expression'], tree_1_all)
+        formulas['%s_2' % name] = ROOT.TTreeFormula('%s_2' % name, options['second tree expression'], tree_2_all)
         title = ';%s;%s' % tuple(options['axis labels'])
-        num_bins = options['overlay plot bins']
-        histos['%s_1_pass' % name] = ROOT.TH1F('%s_1_pass' % name, title, num_bins, -0.000001, 0.000001)
-        histos['%s_1_fail' % name] = ROOT.TH1F('%s_1_fail' % name, title, num_bins, -0.000001, 0.000001)
-        histos['%s_2_pass' % name] = ROOT.TH1F('%s_2_pass' % name, title, num_bins, -0.000001, 0.000001)
-        histos['%s_2_fail' % name] = ROOT.TH1F('%s_2_fail' % name, title, num_bins, -0.000001, 0.000001)
-        num_bins = options['difference plot bins']
-        histos['%s_shared' % name] = ROOT.TH1F('%s_shared' % name, title, num_bins, -0.000001, 0.000001)
-        for h in histos.values():
-            h.SetBit(ROOT.TH1.kCanRebin)
+
+        if isinstance(options['overlay plot bins'], list):
+            (num_bins, x_min, x_max) = options['overlay plot bins']
+        else:
+            (num_bins, x_min, x_max) = (options['overlay plot bins'], -0.000001, 0.000001)
+        for key in ['%s_1_pass' % name, '%s_1_fail' % name, '%s_2_pass' % name, '%s_2_fail' % name]:
+            histos[key] = ROOT.TH1F(key, title, num_bins, x_min, x_max)
+            if not isinstance(options['overlay plot bins'], list):
+                histos[key].SetBit(ROOT.TH1.kCanRebin)
+
+        if isinstance(options['difference plot bins'], list):
+            (num_bins, x_min, x_max) = options['difference plot bins']
+        else:
+            (num_bins, x_min, x_max) = (options['difference plot bins'], -0.000001, 0.000001)
+        difference_histos['%s_difference' % name] = ROOT.TH1F('%s_difference' % name, title, num_bins, x_min, x_max)
+        if not isinstance(options['difference plot bins'], list):
+            difference_histos['%s_difference' % name].SetBit(ROOT.TH1.kCanRebin)
 
     with open(cuts_file_label+'/pass_ND_fail_CERN.txt', 'w+') as pass_ND_fail_CERN:
         tree_1_shared_entries_by_run_lumi_event = {}
@@ -115,10 +120,11 @@ def main():
             if event_tuple in events_pass_1_fail_2 and not filled[event_tuple]:
                 pass_ND_fail_CERN.write('%s:%s:%s\n' % event_tuple)
                 for k in config['histos'].keys():
-                    histos['%s_1_pass' % k].Fill(formulas['%s_1_pass' % k].EvalInstance())
+                    histos['%s_1_pass' % k].Fill(formulas['%s_1' % k].EvalInstance())
             if event_tuple in events_fail_1_pass_2 and not filled[event_tuple]:
                 for k in config['histos'].keys():
-                    histos['%s_1_fail' % k].Fill(formulas['%s_1_fail' % k].EvalInstance())
+                    print '%s_1_fail' % k, formulas['%s_1' % k].EvalInstance()
+                    histos['%s_1_fail' % k].Fill(formulas['%s_1' % k].EvalInstance())
             filled[event_tuple] = True
 
 
@@ -131,17 +137,20 @@ def main():
             if event_tuple in events_fail_1_pass_2 and not filled[event_tuple]:
                 fail_ND_pass_CERN.write('%s:%s:%s\n' % event_tuple)
                 for k in config['histos'].keys():
-                    histos['%s_2_pass' % k].Fill(formulas['%s_2_pass' % k].EvalInstance())
+                    histos['%s_2_pass' % k].Fill(formulas['%s_2' % k].EvalInstance())
             if event_tuple in events_pass_1_fail_2 and not filled[event_tuple]:
                 for k in config['histos'].keys():
-                    histos['%s_2_fail' % k].Fill(formulas['%s_2_fail' % k].EvalInstance())
+                    histos['%s_2_fail' % k].Fill(formulas['%s_2' % k].EvalInstance())
             filled[event_tuple] = True
             if event_tuple in common_events and not filled_common[event_tuple]:
                 filled_common[event_tuple] = True
-                tree_event_list_all_1.GetEntry(tree_1_shared_entries_by_run_lumi_event[event_tuple])
+                tree_1_all.GetEntry(tree_1_shared_entries_by_run_lumi_event[event_tuple])
                 for k in config['histos'].keys():
-                    print '%s: [ND]: %f [CERN]: %f [ND-CERN]: %f' % (k, formulas['%s_1_shared' % k].EvalInstance(), formulas['%s_2_shared' % k].EvalInstance(), formulas['%s_1_shared' % k].EvalInstance() - formulas['%s_2_shared' % k].EvalInstance())
-                    histos['%s_shared' % k].Fill(formulas['%s_1_shared' % k].EvalInstance() - formulas['%s_2_shared' % k].EvalInstance())
+                    value_1 = formulas['%s_1' % k].EvalInstance()
+                    value_2 = formulas['%s_2' % k].EvalInstance()
+#                    print '%s: [ND]: %f [CERN]: %f [ND-CERN]: %f' % (k, formulas['%s_1' % k].EvalInstance(), formulas['%s_2' % k].EvalInstance(), formulas['%s_1' % k].EvalInstance() - formulas['%s_2' % k].EvalInstance())
+                    if ((value_1 > -99) and (value_2 > -99)):
+                        difference_histos['%s_difference' % k].Fill(value_1 - value_2)
 
     www_directories = []
     www_base_directory = plot_helper.get_www_base_directory()
@@ -158,32 +167,32 @@ def main():
 
         canvas = ROOT.TCanvas()
         canvas.cd()
-        shared_histo = histos['%s_shared' % k]
-        shared_histo.SetLineColor(ROOT.kViolet)
-        shared_histo.SetLineWidth(2)
-        shared_histo.SetMaximum(1.5 * shared_histo.GetMaximum())
-        shared_histo.SetStats(True)
-        shared_histo.Draw()
+        difference_histo = difference_histos['%s_difference' % k]
+        difference_histo.SetLineColor(ROOT.kViolet)
+        difference_histo.SetLineWidth(4)
+        difference_histo.SetMaximum(1.5 * difference_histo.GetMaximum())
+        difference_histo.SetStats(True)
+        difference_histo.Draw()
         legend_shared = ROOT.TLegend(0.2, 0.70, 0.70, 0.85)
         legend_shared.SetFillColor(ROOT.kWhite)
         legend_shared.SetBorderSize(0)
         legend_shared.SetNColumns(1)
-#         if shared_histo.GetMean() == 0: legend_shared.AddEntry(shared_histo, 'Mean = 0')
-#         else: legend_shared.AddEntry(shared_histo,
-#                                      'Mean = %0.2fe%d' % ( shared_histo.GetMean()*pow(10,-1*math.floor(math.log10(abs(shared_histo.GetMean())))),
-#                                                            int(math.floor(math.log10(abs(shared_histo.GetMean())))) )  )
-#         if shared_histo.GetRMS() == 0: legend_shared.AddEntry(shared_histo, 'RMS = 0')
-#         else: legend_shared.AddEntry(shared_histo,
-#                                      'RMS = %0.2fe%d' % ( shared_histo.GetRMS()*pow(10,-1*math.floor(math.log10(shared_histo.GetRMS()))),
-#                                                           int(math.floor(math.log10(shared_histo.GetRMS()))) )  )
-        legend_shared.AddEntry(shared_histo, 'RMS = %0.3f' % shared_histo.GetRMS(), 'f')
-        legend_shared.AddEntry(shared_histo, 'mean = %0.3f' % shared_histo.GetMean(), 'f')
-        if shared_histo.GetMean() != 0:
-            legend_shared.AddEntry(shared_histo, 'RMS/mean = %0.2f' % (shared_histo.GetRMS()/shared_histo.GetMean()), 'f')
+#         if difference_histo.GetMean() == 0: legend_shared.AddEntry(difference_histo, 'Mean = 0')
+#         else: legend_shared.AddEntry(difference_histo,
+#                                      'Mean = %0.2fe%d' % ( difference_histo.GetMean()*pow(10,-1*math.floor(math.log10(abs(difference_histo.GetMean())))),
+#                                                            int(math.floor(math.log10(abs(difference_histo.GetMean())))) )  )
+#         if difference_histo.GetRMS() == 0: legend_shared.AddEntry(difference_histo, 'RMS = 0')
+#         else: legend_shared.AddEntry(difference_histo,
+#                                      'RMS = %0.2fe%d' % ( difference_histo.GetRMS()*pow(10,-1*math.floor(math.log10(difference_histo.GetRMS()))),
+#                                                           int(math.floor(math.log10(difference_histo.GetRMS()))) )  )
+        legend_shared.AddEntry(difference_histo, 'RMS = %0.3f' % difference_histo.GetRMS(), 'f')
+        legend_shared.AddEntry(difference_histo, 'mean = %0.3f' % difference_histo.GetMean(), 'f')
+        if difference_histo.GetMean() != 0:
+            legend_shared.AddEntry(difference_histo, 'RMS/mean = %0.2f' % (difference_histo.GetRMS()/difference_histo.GetMean()), 'f')
         legend_shared.Draw('same')
         canvas.SaveAs(cuts_file_label+'/CERN_ND_shared/%s.png' % k)
         canvas.SaveAs(cuts_file_label+'/CERN_ND_shared/%s.pdf' % k)
-        del canvas, shared_histo, legend_shared
+        del canvas, difference_histo, legend_shared
 
         for directory in ['CERN_ND_unique_pass', 'ND_pass_CERN_fail', 'CERN_pass_ND_fail', 'CERN_pass_ND_fail', 'CERN_ND_shared']:
             plot_helper.copy_to_www_area(os.path.join(cuts_file_label, directory), os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, directory), k)
@@ -192,10 +201,6 @@ def main():
 
     tree_file_1.Close()
     tree_file_2.Close()
-    #os.remove('output_1_pass.txt')
-    #os.remove('output_2_pass.txt')
-    #os.remove('output_1_fail.txt')
-    #os.remove('output_2_fail.txt')
 
 def get_lists(tree, label, scan_string, cuts):
     tree.GetPlayer().SetScanRedirect(ROOT.kTRUE)
@@ -218,7 +223,7 @@ def overlay_histos(hist_1, label_1, hist_2, label_2, directory, hist_name):
     hist_1.SetLineColor(ROOT.kGreen)
     hist_2.SetLineColor(ROOT.kBlue)
     hist_1.SetLineWidth(4)
-    hist_2.SetLineWidth(4)
+    hist_2.SetLineWidth(2)
 
     canvas = ROOT.TCanvas()
     canvas.cd()
