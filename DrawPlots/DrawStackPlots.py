@@ -59,7 +59,7 @@ def main():
             draw_stack_plot(lepton_category, jet_tag_category, 'integral_histo')
 
     if args.web:
-        plot_helper.update_indexes(.)
+        plot_helper.update_indexes('.')
         link_dir = os.path.join(config['output file location'], config['input file label'])
         print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/%s' % (os.environ['USER'], link_dir)
 
