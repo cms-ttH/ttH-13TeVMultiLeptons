@@ -6,6 +6,7 @@ import yaml
 import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
 from ttHMultileptonAnalysis.DrawPlots.utilities.yamlhelpers import ttHMultileptonYAMLLoader
 from ttHMultileptonAnalysis.DrawPlots.utilities.prettytable import PrettyTable
+from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import DefaultOrderedDict
 
 parser = ArgumentParser(description='Make stack plots from histogram files.')
 parser.add_argument('config_file_name', nargs='?', default='stack_plot_configuration.yaml', help='Configuration file to process.')
@@ -27,6 +28,7 @@ jet_tag_categories = config['jet tag categories']
 distributions = config['distributions']
 distributions['integral_histo'] = ['isCleanEvent', False, False]
 yields = plot_helper.Yields(jet_tag_categories)
+raw_yields = plot_helper.Yields(jet_tag_categories)
 signal_samples = config.get('signal samples', [])
 background_samples = config.get('background samples', [])
 
@@ -63,15 +65,19 @@ def main():
         link_dir = os.path.join(config['output file location'], config['input file label'])
         print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/%s' % (os.environ['USER'], link_dir)
 
-    columns = [''].extend(lepton_categories)
+    print_yield_table(yields, 'final yields', '.2f')
+    print_yield_table(raw_yields, 'raw yields', '.0f')
+
+def print_yield_table(yields, title, precision):
+    columns = ['sample'] + lepton_categories.keys()
     for jet_tag_category in jet_tag_categories:
-        print "\n\njet tag category: %s" % jet_tag_categories[jet_tag_category]
+        print "\n\n%s: (jet tag category %s)" % (title, jet_tag_categories[jet_tag_category])
         yield_table = PrettyTable(columns)
         for sample in yields[jet_tag_category]:
             entry = [sample]
             for lepton_category in lepton_categories:
                 if yields[jet_tag_category][sample].has_key(lepton_category):
-                    entry.append(format(yields[jet_tag_category][sample][lepton_category], '.2f'))
+                    entry.append(format(yields[jet_tag_category][sample][lepton_category], precision))
                 else:
                     entry.append('-')
             yield_table.add_row(entry)
@@ -122,6 +128,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
                 stack_plot.Add(histogram, "hist")
                 stack_plot_legend.AddEntry(histogram, '%s (%0.1f)' % (background_samples[sample_group]['draw name'], histogram.Integral()), 'f')
                 yields[jet_tag_category][background_samples[sample_group]['draw name']][lepton_category] = histogram.Integral()
+                raw_yields[jet_tag_category][background_samples[sample_group]['draw name']][lepton_category] = histogram.GetEntries()
             group_histogram = None
 
     ## Draw the signal sample histogram(s), put in legend
@@ -151,6 +158,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
             stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], legend_option)
 
         yields[jet_tag_category][signal_samples[sample]['draw name']][lepton_category] = signal_histogram.Integral()
+        raw_yields[jet_tag_category][signal_samples[sample]['draw name']][lepton_category] = signal_histogram.GetEntries()
 
     ## Draw the data histogram, put in legend
     if not config['blinded']:
@@ -161,6 +169,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
             data_sum = data_histogram.Integral()
             stack_plot_legend.AddEntry(data_histogram, 'Data (%.0f) ' % data_sum, 'lpe')
             yields[jet_tag_category]['data'][lepton_category] = data_histogram.Integral()
+            raw_yields[jet_tag_category]['data'][lepton_category] = data_histogram.GetEntries()
         except ReferenceError, e:
             print e
 
