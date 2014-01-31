@@ -7,6 +7,7 @@ import shutil
 import collections
 import glob
 import time
+from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import DefaultOrderedDict
 
 def append_integral_histo(config):
     if not config['distributions'].has_key('integral_histo'):
@@ -115,6 +116,8 @@ def update_indexes(directory):
         non_image_mod_times = ['' for i in current_dirs] + [time.ctime(os.path.getmtime(i)) for i in non_image_item_paths]
         png_images = [f for f in files if 'png' in f]
         pdf_images = [f.replace('.png', '.pdf') for f in png_images]
+#         png_images.sort()
+#         pdf_images.sort()
         snippet = '<tr><td><a href={location}>{name}</a></td><td>{mod_time}</td></tr>'
         files_snippet = '\n'.join([snippet.format(location=location, name=name, mod_time=mod_time) for (location, name, mod_time) in zip(non_image_item_locations, non_image_item_names, non_image_mod_times)])
         snippet = '<div class="pic photo-link smoothbox" id="{png}"><a href="{pdf}" rel="gallery"><img src="{png}" class="pic"/></a></div>'
@@ -179,7 +182,10 @@ class Plot:
         if parameters['plot type'] == 'TH1F':
             title = '%s;%s;%s' % (sample, parameters['axis labels'][0], parameters['axis labels'][1])
             self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
-            tree.Project(self.plot_name, parameters['expression'], draw_string)
+            try:
+                tree.Project(self.plot_name, parameters['expression'], draw_string)
+            except AttributeError:
+                raise Exception("Tree is missing!  Exiting...")
         else:
             print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
             sys.exit(2)
@@ -780,7 +786,7 @@ def customize_systematics(systematics, customization_string):
 class Yields:
     def __init__(self, jet_tag_categories):
         for category in jet_tag_categories:
-            self.__dict__[category] = collections.defaultdict(dict)
+            self.__dict__[category] = DefaultOrderedDict(dict)
     def __getitem__(self, item):
         return self.__dict__[item]
 
