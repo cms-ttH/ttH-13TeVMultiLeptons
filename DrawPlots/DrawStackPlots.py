@@ -91,6 +91,8 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     systematics_by_sample = {}
     # Sum histograms in each sample group, then add summed histos to stack plot, legend, and histogram_dictionary
     for sample_group in background_samples: # Add samples in each sample group together
+        if 'sideband' in sample_group and not plot_helper.is_matching_data_sample(lepton_category, sample_group):
+            continue
         systematics = plot_helper.customize_systematics(config['systematics'], background_samples[sample_group]['systematics'])
         systematics_by_sample[sample_group] = systematics
         group_histogram = None
