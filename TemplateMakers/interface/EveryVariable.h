@@ -14,7 +14,6 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/PUWeights.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TopPtWeights.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonIDAndIsoScaleFactors.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/SSLeptonTriggerScaleFactors.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonTriggerScaleFactors.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CleanEventVars.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CheckTwoLepTrigger.h"

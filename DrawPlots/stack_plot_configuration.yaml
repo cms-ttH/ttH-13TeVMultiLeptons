@@ -1,10 +1,10 @@
 #input and output file names
-input file location: histos_new_process_v3
-input file label: new_process_v3
-output file location: pdf_new_process_v3
+input file location: histos_ss_v12
+input file label: ss_v12
+output file location: pdf_ss_v12
 
 #drawing options
-skip systematics: false
+skip systematics: true
 draw ratio plot: true
 draw legend: true
 log scale: false
@@ -38,10 +38,11 @@ jet tag categories:
 
 #Systematics used in error bars
 systematics:
-    - weight_PUup
-    - weight_PUdown
-    - topPtWgtDown
-    - topPtWgtUp
+    - nominal
+    #- weight_PUup
+    #- weight_PUdown
+    #- topPtWgtDown
+    #- topPtWgtUp
 
 # Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
 signal samples:
@@ -52,91 +53,91 @@ signal samples:
         line width: 2 # must be integer
         scale: 1.0
 
-#Samples in each group will be added together and appear as a single entry in the stack plot
-background sample groups:
-    Others:
-        draw name: Others
-        color: kSpring+8
-        systematics: all
-        samples:
-            - tbZ_ll
-            #- WpWpqq
-            #- WmWmqq
-            #- WWDPI
-
-    triboson:
-        draw name: triboson
-        color: kViolet
-        systematics: all
-        samples:
-            - www
-            - wwz
-
-    #ttbarGStar:
-        #draw name: "t#bar{t}G*"
-        #color: kCyan-3
-        #systematics: all
-        #samples:
-            #- ttbarGStar_ee
-            #- ttbarGStar_mm
-            #- ttbarGStar_tt
-
 #Samples, ordered bottom-to-top
 background samples:
     MuEG_QF_sideband:
         draw name: "Q flip"
         color: kGray+1
         systematics: 40PercentRateUp+40PercentRateDown
+        samples: [MuEG_QF_sideband]
 
     DoubleElectron_QF_sideband:
         draw name: "Q flip"
         color: kGray+1
         systematics: 40PercentRateUp+40PercentRateDown
+        samples: [DoubleElectron_QF_sideband]
 
     DoubleMu_NP_sideband:
         draw name: "Fakes"
         color: kGray
         systematics: 40PercentRateUp+40PercentRateDown
+        samples: [DoubleMu_NP_sideband]
 
     MuEG_NP_sideband:
         draw name: "Fakes"
         color: kGray
         systematics: 40PercentRateUp+40PercentRateDown
+        samples: [MuEG_NP_sideband]
 
     DoubleElectron_NP_sideband:
         draw name: "Fakes"
         color: kGray
         systematics: 40PercentRateUp+40PercentRateDown
+        samples: [DoubleElectron_NP_sideband]
+
+    Others:
+        draw name: Others
+        color: kSpring+8
+        systematics: all
+        samples: [tbZ_ll] #WpWpqq, WmWmqq, WWDPI
+
+    triboson:
+        draw name: triboson
+        color: kViolet
+        systematics: all
+        samples: [www, wwz]
+
+    #ttbarGStar:
+        #draw name: "t#bar{t}G*"
+        #color: kCyan-3
+        #systematics: all
+        #samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
 
     wz:
         draw name: "WZ"
         color: kViolet-4
         systematics: all
+        samples: [wz]
 
     #zz_llll:
         #draw name: "ZZ"
         #color: kAzure-9
         #systematics: all
+        #samples: [zz_llll]
 
     ttbarG:
         draw name: "t#bar{t}G"
         color: kGray+3
         systematics: all
+        samples: [ttbarG]
 
     ttbarZ:
         draw name: "t#bar{t}Z"
         color: kSpring+2
         systematics: all
+        samples: [ttbarZ]
 
     ttbarW:
         draw name: "t#bar{t}W"
         color: kGreen-5
         systematics: all
+        samples: [ttbarW]
 
     ttbarWW:
         draw name: "t#bar{t}WW"
         color: kBlue-9
         systematics: all
+        samples: [ttbarWW]
 
 
 #distribution: [title, underflow, overflow]

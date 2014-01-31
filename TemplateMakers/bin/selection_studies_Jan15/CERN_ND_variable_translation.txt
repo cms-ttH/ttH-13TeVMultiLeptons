@@ -32,3 +32,23 @@ eventInfo_run : run
 jets_by_pt_1_pt : Jet1_pt
 jets_by_pt_1_eta : Jet1_eta
 
+all_leptons_by_pt_1_DBCorrectedRelIsoDR04 : LepGood1_relIso
+#all_leptons_by_pt_1_neutralHadronIsoDR04 : LepGood1_
+#all_leptons_by_pt_1_photonIsoDR04 : LepGood1_
+#all_leptons_by_pt_1_puChargedHadronIsoDR04 : LepGood1_
+all_leptons_by_pt_1_chargedHadronIso : LepGood1_chargedIso
+all_leptons_by_pt_1_jetDeltaR : LepGood1_jetDR
+all_leptons_by_pt_1_jetPtRatio : LepGood1_jetPtRatio
+all_leptons_by_pt_1_jetBTagCSV : LepGood1_jetBtagCSV
+all_leptons_by_pt_1_mvaNonTrigV0 : LepGood1_mvaID
+#all_leptons_by_pt_1_IP : LepGood1_
+all_leptons_by_pt_1_IPError : LepGood1_ip3ds
+all_leptons_by_pt_1_SIP : LepGood1_sip3d
+all_leptons_by_pt_1_correctedD0Vertex : LepGood1_dxy
+all_leptons_by_pt_1_correctedDZ : LepGood1_dz
+
+all_leptons_by_pt_1_innerTrackPt : LepGood1_pfpt ?!?
+all_leptons_by_pt_1_innerTrackPtError : LepGood1_
+all_leptons_by_pt_1_isGsfCtfScPixChargeConsistent : LepGood1_eleQ_gsfCtfQ
+
+

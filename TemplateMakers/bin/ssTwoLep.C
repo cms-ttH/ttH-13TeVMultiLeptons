@@ -207,7 +207,7 @@ int main (int argc, char** argv) {
   LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
   kinVars.push_back(&myLepIDAndIsoSF);
 
-  SSLeptonTriggerScaleFactors myLepTrig(&lepHelper);
+  LeptonTriggerScaleFactors myLepTrig(&lepHelper);
   kinVars.push_back(&myLepTrig);
 
   TightChargeAndLepMVAScaleFactors myTightChargeAndLepMVASFs(2);

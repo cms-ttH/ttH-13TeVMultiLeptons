@@ -579,6 +579,36 @@ class SampleInformation:
                      'x_section_error': 0.0114*0.5, #Just an unmotivated guess
                      'num_generated': 148158}, #ND number processed 
 
+            'VH_WW': {'sample_type': 'MC',
+                      'is_signal': False,
+                      #'x_section': 0.7046*0.215, #WH
+                      #'x_section': 0.4153*0.215, #ZH
+                      'x_section': 0.1293*0.215, #ttH125
+                      'x_section_error': 0.0,
+                      #'num_generated': 115855}, #WH
+                      #'num_generated': 62466}, #ZH
+                      'num_generated': 21813}, #ttH125
+            
+            'VH_tautau': {'sample_type': 'MC',
+                          'is_signal': False,
+                          #'x_section': 0.7046*0.0632, #WH
+                          #'x_section': 0.4153*0.0632, #ZH
+                          'x_section': 0.1293*0.0632, #ttH125
+                          'x_section_error': 0.0,
+                          #'num_generated': 104098}, #WH
+                          #'num_generated': 56222}, #ZH
+                          'num_generated': 19580}, #ttH125
+            
+            'VH_ZZ': {'sample_type': 'MC',
+                      'is_signal': False,
+                      #'x_section': 0.7046*0.0264, #WH
+                      #'x_section': 0.4153*0.0264, #ZH
+                      'x_section': 0.1293*0.0264, #ttH125
+                      'x_section_error': 0.0,
+                      #'num_generated': 133079}, #WH
+                      #'num_generated': 276205}, #ZH
+                      'num_generated': 50505}, #ttH125
+            
             #All single top samples use ND x_sec, x_sec error, and number processed
             'singlet_s': {'sample_type': 'MC',
                     'is_signal': False,
