@@ -48,13 +48,13 @@ void TightCharges::evaluate () {
       branchName = Form("%s_%d_%s", storePrefix.c_str(), i+1, mem.c_str());
       if (iLepton->isMuon) {
 //        std::cout << "tkPtErr/tkPt: " << ((BNmuon*) iLepton)->innerTrackPtError / ((BNmuon*) iLepton)->innerTrackPt << std::endl;
-        branches[branchName].branchVal = ( ((BNmuon*) iLepton)->innerTrackPtError / max( ((BNmuon*) iLepton)->innerTrackPt, 1 ) < 0.2 );
+        branches[branchName].branchVal = ( ((BNmuon*) iLepton)->innerTrackPtError / max( ((BNmuon*) iLepton)->innerTrackPt, 1.0 ) < 0.2 );
       }
       else {
 //         std::cout << "isGsfCtfScPixChargeConsistent: " << ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent << std::endl;
 //         std::cout << "numberOfExpectedInnerHits: " << ((BNelectron*) iLepton)->numberOfExpectedInnerHits << std::endl;
 //         std::cout << "passConvVeto: " << ((BNelectron*) iLepton)->passConvVeto << std::endl;
-          branches[branchName].branchVal = ( ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent);                                          
+          branches[branchName].branchVal = ( ((BNelectron*) iLepton)->isGsfCtfScPixChargeConsistent);
       }
   }
 }
