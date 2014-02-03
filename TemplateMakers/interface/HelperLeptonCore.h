@@ -183,6 +183,7 @@ public:
   BNjetCollection sortedCorrSelJets;
   BNjetCollection pfjets;
   BNjetCollection jetsTight;
+  BNjetCollection jetsByCSVTight;
   BNjetCollection jetsLooseCSV;
   BNjetCollection jetsTightCSV;
   BNjetCollection jetsNotLooseCSV;
@@ -193,6 +194,8 @@ public:
   edm::Handle<BNmetCollection> h_pfmets;
   BNmetCollection pfmets;
   BNmetCollection metCorrected;
+  edm::Handle<BNmetCollection> h_pfType1CorrectedMetBN;
+  BNmetCollection metpfType1CorrectedMetBN;
 
   edm::Handle<BNtriggerCollection> h_hlt;
   BNtriggerCollection hltInfo;

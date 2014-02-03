@@ -1,7 +1,5 @@
-
 #ifndef _BEANFileInterface_h
 #define _BEANFileInterface_h
-
 
 #include "TFile.h"
 #include "TChain.h"
@@ -119,7 +117,9 @@ public:
     tightLoosePreselectedZLeptonCollection(0),
     tightLoosePreselectedNonZLeptonCollection(0),
     metCollection(0),
+    metpfType1CorrectedMetBNCollection(0),
     jetCollection(0),
+    jetsByCSVCollection(0),
     jetCollectionLooseCSV(0),
     jetCollectionMediumCSV(0),
     jetCollectionTightCSV(0),
@@ -169,16 +169,18 @@ public:
   BNleptonCollection *  tightLoosePreselectedZLeptonCollection;
   BNleptonCollection *  tightLoosePreselectedNonZLeptonCollection;
 
-  BNmetCollection *   metCollection;
-  BNjetCollection * jetCollection;
-  BNjetCollection * jetCollectionLooseCSV;
-  BNjetCollection * jetCollectionMediumCSV;    
-  BNjetCollection * jetCollectionTightCSV;    
-  BNjetCollection * jetCollectionNotLooseCSV;
-  BNjetCollection * jetCollectionNotMediumCSV;    
-  BNjetCollection * jetCollectionNotTightCSV;    
+  BNmetCollection *  metCollection;
+  BNmetCollection *  metpfType1CorrectedMetBNCollection;
 
-  
+  BNjetCollection * jetCollection;
+  BNjetCollection * jetsByCSVCollection;
+  BNjetCollection * jetCollectionLooseCSV;
+  BNjetCollection * jetCollectionMediumCSV;
+  BNjetCollection * jetCollectionTightCSV;
+  BNjetCollection * jetCollectionNotLooseCSV;
+  BNjetCollection * jetCollectionNotMediumCSV;
+  BNjetCollection * jetCollectionNotTightCSV;
+
   BNmcparticleCollection * mcParticleCollection;
   BNeventCollection * eventCollection;
   BNtriggerCollection * hltCollection;
@@ -186,7 +188,7 @@ public:
 
   // -- only need these for the lepMVA
   BNjetCollection * jetsForLepMVACollection;
-  
+
 
   bool checkJets() {
     if (jetCollection == 0 )

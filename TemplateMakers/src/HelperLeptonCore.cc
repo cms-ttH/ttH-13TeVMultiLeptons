@@ -357,6 +357,11 @@ void HelperLeptonCore::initializeInputCollections(edm::EventBase& ev, bool isLep
   pfmets = *h_pfmets;
   collections.metCollection = &pfmets;
 
+  edm::InputTag metType1Tag("BNproducer","pfType1CorrectedMetBN");
+  ev.getByLabel(metType1Tag, h_pfType1CorrectedMetBN);
+  metpfType1CorrectedMetBN = *h_pfType1CorrectedMetBN;
+  collections.metpfType1CorrectedMetBNCollection = &metpfType1CorrectedMetBN;
+
   // ----- Primary Vertices
   edm::InputTag pvTag("BNproducer","offlinePrimaryVertices");
   ev.getByLabel(pvTag, h_pvs);
@@ -368,6 +373,8 @@ void HelperLeptonCore::initializeInputCollections(edm::EventBase& ev, bool isLep
     edm::InputTag lepMVAJetTag("BNproducer", "patJetsAK5PF");
     ev.getByLabel(lepMVAJetTag, h_lepMvaJets);
     lepMvaJets = *h_lepMvaJets;
+
+    lepMvaJets = bHelp.GetSortedByCSV(lepMvaJets);
     collections.jetsForLepMVACollection = &lepMvaJets;
   }
 
@@ -412,7 +419,6 @@ void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, mu
   selectedCollections->tightLoosePreselectedMuonCollection = &muonsTightLoosePreselected;
 }
 
-
 void HelperLeptonCore::getTightCorrectedJets (double ptCut,
                                               double etaCut,
                                               jetID::jetID tightID,
@@ -424,13 +430,16 @@ void HelperLeptonCore::getTightCorrectedJets (double ptCut,
     jetsTight = bHelp.GetSortedByPt(tmpCorrSelJets);
     selectedCollections->jetCollection = &jetsTight;
 
+    jetsByCSVTight = bHelp.GetSortedByCSV(tmpCorrSelJets);
+    selectedCollections->jetsByCSVCollection = &jetsByCSVTight;
+
     tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'L');
     jetsLooseCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
     selectedCollections->jetCollectionLooseCSV = &jetsLooseCSV;
 
     jetsNotLooseCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsLooseCSV));
     selectedCollections->jetCollectionNotLooseCSV = &jetsNotLooseCSV;
-    
+
     tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'M');
     jetsMediumCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
     selectedCollections->jetCollectionMediumCSV = &jetsMediumCSV;
@@ -467,10 +476,9 @@ void HelperLeptonCore::getCorrectedMet (BEANFileInterface * selectedCollections,
   metCorrected.clear();
 
   //--- Important notice from BEANhelper
-  //--- Use unselected jets for correction 
-  //--- Use uncorrected jets to correct the met
+  //--- Use unselected, uncorrected jets for correction
 
-  BNmet tmpMet = bHelp.GetCorrectedMET( rawCollections.metCollection->at(0), *rawCollections.jetCollection, shift);
+  BNmet tmpMet = bHelp.GetCorrectedMET(rawCollections.metCollection->at(0), *rawCollections.jetCollection, shift);
 
   metCorrected.push_back(tmpMet);
 
