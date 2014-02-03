@@ -28,8 +28,8 @@ with open(args.cuts_file_name) as config_file:
     verbose = config['verbose']
 
 cuts_file_label = args.cuts_file_name.replace('.yaml', '')
-if not os.path.exists(cuts_file_label):
-    os.makedirs(cuts_file_label)
+if not os.path.exists(os.path.join(cuts_file_label, args.sample_1)):
+    os.makedirs(os.path.join(cuts_file_label, args.sample_1))
 
 def main():
     tree_file_1 = ROOT.TFile(os.path.join(config['first tree dir'], '%s_%s_all.root' % (args.sample_1, config['label'])))
@@ -108,7 +108,7 @@ def main():
         if not isinstance(options['difference plot bins'], list):
             difference_histos['%s_difference' % name].SetBit(ROOT.TH1.kCanRebin)
 
-    with open(cuts_file_label+'/pass_ND_fail_CERN.txt', 'w+') as pass_ND_fail_CERN:
+    with open(os.path.join(cuts_file_label, args.sample_1, 'pass_ND_fail_CERN.txt'), 'w+') as pass_ND_fail_CERN:
         tree_1_shared_entries_by_run_lumi_event = {}
         filled = dict.fromkeys(all_events_1, False)
         filled_common = dict.fromkeys(all_events_1, False)
@@ -128,7 +128,7 @@ def main():
             filled[event_tuple] = True
 
 
-    with open(cuts_file_label+'/fail_ND_pass_CERN.txt', 'w+') as fail_ND_pass_CERN:
+    with open(os.path.join(cuts_file_label, args.sample_1, 'fail_ND_pass_CERN.txt'), 'w+') as fail_ND_pass_CERN:
         filled = dict.fromkeys(all_events_2, False)
         filled_common = dict.fromkeys(common_events, False)
         for event in range(tree_event_list_all_2.GetN()):
@@ -140,6 +140,7 @@ def main():
                     histos['%s_2_pass' % k].Fill(formulas['%s_2' % k].EvalInstance())
             if event_tuple in events_pass_1_fail_2 and not filled[event_tuple]:
                 for k in config['histos'].keys():
+                    print k, formulas['%s_2' % k].EvalInstance()
                     histos['%s_2_fail' % k].Fill(formulas['%s_2' % k].EvalInstance())
             filled[event_tuple] = True
             if event_tuple in common_events and not filled_common[event_tuple]:
@@ -155,9 +156,9 @@ def main():
     www_directories = []
     www_base_directory = plot_helper.get_www_base_directory()
     for directory in ['CERN_ND_unique_pass', 'ND_pass_CERN_fail', 'CERN_ND_shared', 'CERN_pass_ND_fail']:
-        www_directories.append(os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, directory))
-        if not os.path.exists(os.path.join(cuts_file_label, directory)):
-            os.makedirs(os.path.join(cuts_file_label, directory))
+        www_directories.append(os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, args.sample_1, directory))
+        if not os.path.exists(os.path.join(cuts_file_label, args.sample_1, directory)):
+            os.makedirs(os.path.join(cuts_file_label, args.sample_1, directory))
     plot_helper.setup_www_directories(www_directories, 1, args.cuts_file_name)
 
     for k in config['histos'].keys():
@@ -177,25 +178,17 @@ def main():
         legend_shared.SetFillColor(ROOT.kWhite)
         legend_shared.SetBorderSize(0)
         legend_shared.SetNColumns(1)
-#         if difference_histo.GetMean() == 0: legend_shared.AddEntry(difference_histo, 'Mean = 0')
-#         else: legend_shared.AddEntry(difference_histo,
-#                                      'Mean = %0.2fe%d' % ( difference_histo.GetMean()*pow(10,-1*math.floor(math.log10(abs(difference_histo.GetMean())))),
-#                                                            int(math.floor(math.log10(abs(difference_histo.GetMean())))) )  )
-#         if difference_histo.GetRMS() == 0: legend_shared.AddEntry(difference_histo, 'RMS = 0')
-#         else: legend_shared.AddEntry(difference_histo,
-#                                      'RMS = %0.2fe%d' % ( difference_histo.GetRMS()*pow(10,-1*math.floor(math.log10(difference_histo.GetRMS()))),
-#                                                           int(math.floor(math.log10(difference_histo.GetRMS()))) )  )
         legend_shared.AddEntry(difference_histo, 'RMS = %0.3f' % difference_histo.GetRMS(), 'f')
         legend_shared.AddEntry(difference_histo, 'mean = %0.3f' % difference_histo.GetMean(), 'f')
         if difference_histo.GetMean() != 0:
             legend_shared.AddEntry(difference_histo, 'RMS/mean = %0.2f' % (difference_histo.GetRMS()/difference_histo.GetMean()), 'f')
         legend_shared.Draw('same')
-        canvas.SaveAs(cuts_file_label+'/CERN_ND_shared/%s.png' % k)
-        canvas.SaveAs(cuts_file_label+'/CERN_ND_shared/%s.pdf' % k)
+        canvas.SaveAs(os.path.join(cuts_file_label, args.sample_1, 'CERN_ND_shared/%s.png' % k))
+        canvas.SaveAs(os.path.join(cuts_file_label, args.sample_1, 'CERN_ND_shared/%s.pdf' % k))
         del canvas, difference_histo, legend_shared
 
         for directory in ['CERN_ND_unique_pass', 'ND_pass_CERN_fail', 'CERN_pass_ND_fail', 'CERN_pass_ND_fail', 'CERN_ND_shared']:
-            plot_helper.copy_to_www_area(os.path.join(cuts_file_label, directory), os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, directory), k)
+            plot_helper.copy_to_www_area(os.path.join(cuts_file_label, args.sample_1, directory), os.path.join(www_base_directory, 'CERN_ND_comparison', cuts_file_label, args.sample_1, directory), k)
 
     plot_helper.update_indexes('.')
 
@@ -225,12 +218,14 @@ def overlay_histos(hist_1, label_1, hist_2, label_2, directory, hist_name):
     hist_1.SetLineWidth(4)
     hist_2.SetLineWidth(2)
 
+    stack_plot = ROOT.THStack(hist_name, ';%s;%s' % (hist_1.GetXaxis().GetTitle(), hist_1.GetYaxis().GetTitle()))
+    stack_plot.Add(hist_1)
+    stack_plot.Add(hist_2)
+
     canvas = ROOT.TCanvas()
     canvas.cd()
-    hist_1.SetMaximum(1.5*max(hist_1.GetMaximum(), hist_2.GetMaximum()))
-    hist_1.SetStats(False)
-    hist_1.Draw()
-    hist_2.Draw('same')
+    stack_plot.Draw('nostack')
+
     legend = ROOT.TLegend(0.2, 0.7, 0.85, 0.85)
     legend.SetFillColor(ROOT.kWhite)
     legend.SetBorderSize(0)
@@ -238,8 +233,8 @@ def overlay_histos(hist_1, label_1, hist_2, label_2, directory, hist_name):
     legend.AddEntry(hist_1, '%s = %0.1f' % (label_1, hist_1.Integral()), 'l')
     legend.AddEntry(hist_2, '%s = %0.1f' % (label_2, hist_2.Integral()), 'l')
     legend.Draw('same')
-    canvas.SaveAs(cuts_file_label+'/%s/%s.png' % (directory, hist_name))
-    canvas.SaveAs(cuts_file_label+'/%s/%s.pdf' % (directory, hist_name))
+    canvas.SaveAs(os.path.join(cuts_file_label, args.sample_1, '%s/%s.png' % (directory, hist_name)))
+    canvas.SaveAs(os.path.join(cuts_file_label, args.sample_1, '%s/%s.pdf' % (directory, hist_name)))
     del canvas, hist_1, hist_2, legend
 
 if __name__ == '__main__':
