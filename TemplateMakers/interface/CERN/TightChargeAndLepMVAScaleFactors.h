@@ -30,12 +30,12 @@ TightChargeAndLepMVAScaleFactors::TightChargeAndLepMVAScaleFactors (int numLeps)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 
-  looseElectron2DSF = (TH2D*)electronFile.Get("LepMVALooseSF2D")->Clone();
-  looseMuon2DSF = (TH2D*)muonFile.Get("LepMVALooseSF2D")->Clone();
-  tightElectron2DSF = (TH2D*)electronFile.Get("LepMVATightSF2D")->Clone();
-  tightMuon2DSF = (TH2D*)muonFile.Get("LepMVATightSF2D")->Clone();
-  tightChargeElectronSF2D = (TH2D*)electronFile.Get("TightChargeSF2D")->Clone();
-  tightChargeMuonSF2D = (TH2D*)muonFile.Get("TightChargeSF2D")->Clone();
+  looseElectron2DSF = (TH2D*)electronFile.Get("LepMVALooseSF2D")->Clone("LepMVALooseSF2D_ele");
+  looseMuon2DSF = (TH2D*)muonFile.Get("LepMVALooseSF2D")->Clone("LepMVALooseSF2D_mu");
+  tightElectron2DSF = (TH2D*)electronFile.Get("LepMVATightSF2D")->Clone("LepMVATightSF2D_ele");
+  tightMuon2DSF = (TH2D*)muonFile.Get("LepMVATightSF2D")->Clone("LepMVATightSF2D_mu");
+  tightChargeElectronSF2D = (TH2D*)electronFile.Get("TightChargeSF2D")->Clone("TightChargeSF2D_ele");
+  tightChargeMuonSF2D = (TH2D*)muonFile.Get("TightChargeSF2D")->Clone("TightChargeSF2D_mu");
 
   looseBranchName = Form("lepMVALoose%dLepSF", numLeps);
   tightBranchName = Form("lepMVATight%dLepSF", numLeps);
