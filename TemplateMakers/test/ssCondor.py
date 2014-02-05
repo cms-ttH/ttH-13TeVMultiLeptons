@@ -42,7 +42,11 @@ def printHostInfo():
 
 def checkDir(inDir):
     if not os.path.exists(inDir):
-        os.mkdir(inDir)
+        try:
+            os.mkdir(inDir)
+        except OSError, e:    #There is a race condition when jobs check if the directory exists; don't fail if a different job
+            if e.errno != 17: #beats you to making the new directory
+                raise
 
 def printUsage() :
     print "Usage: ", sys.argv[0], " ssCondor.py  sampleName jobLabel [jobNum totalJobs] [sys]"
