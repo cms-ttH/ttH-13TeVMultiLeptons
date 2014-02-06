@@ -12,7 +12,7 @@ def main():
     parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
     parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
     parser.add_argument('-w', '--web', action='store_true', help='Post each plot to the user\'s AFS space.')
-    parser.add_argument('-l', '--lepton_category', action='append', help='Run on a single lepton category.  Default is to run on all lepton categories listed in the configuration file.')
+    parser.add_argument('-l', '--lepton_category', help='Run on a single lepton category.  Default is to run on all lepton categories listed in the configuration file.')
     parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
     parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
     parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
@@ -29,9 +29,9 @@ def main():
     if args.sample:
         samples = args.sample
 
-    lepton_categories = config['lepton categories']
+    lepton_categories = config.get('lepton categories')
     if args.lepton_category:
-        lepton_categories = args.lepton_category
+		lepton_categories = {args.lepton_category: lepton_categories[args.lepton_category]}
 
     plot_helper.make_sure_directories_exist([os.path.join(config['output directory'], category) for category in lepton_categories])
     if args.web:
@@ -58,7 +58,7 @@ def make_histos(args, config, samples, lepton_categories):
         for lepton_category in lepton_categories:
             lepton_category_cut_strings = config.get('%s cuts' % lepton_category, {}).values()
             if sample_info.sample_type == 'data' or 'sideband' in sample_info.sample_type:
-                if not plot_helper.is_matching_data_sample(lepton_category, sample):
+                if not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data sample'], sample):
                     continue
 
             for jet_tag_category in config['jet tag categories']:

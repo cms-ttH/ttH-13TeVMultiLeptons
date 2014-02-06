@@ -31,15 +31,13 @@ config = ConfigParser()
 
 if verbose: print 'Parsed'
 
-#tree_file_1 = ROOT.TFile('~abrinke1/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_SS_baseline_Jan13_all.root' % (args.sample_1) )
-#tree_file_1 = ROOT.TFile('~abrinke1/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_SS_baseline_Jan20_SS_3l_ge0j_all.root' % (args.sample_1) )
-#tree_file_1 = ROOT.TFile('~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_ss_v5_all.root' % (args.sample_1) )
-#tree_file_1 = ROOT.TFile('~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_ss_v6_all.root' % (args.sample_1) )
-tree_file_1 = ROOT.TFile('~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_ss_v12_all.root' % (args.sample_1) )
+tree_file_1 = ROOT.TFile('~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_ss_v13_all.root' % (args.sample_1) )
 tree_1_pass = tree_file_1.Get('summaryTree')
 tree_1_fail = tree_file_1.Get('summaryTree')
 tree_1_shared = tree_file_1.Get('summaryTree')
-tree_file_2 = ROOT.TFile('/afs/crc.nd.edu/user/a/abrinke1/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/TemplateMakers/bin/selection_studies_Jan15/CERN_SS_3l_skimmed_trees/TREES_250513_HADD_gpetrucc_%s.root' % (args.sample_2) )
+tree_file_2 = ROOT.TFile('~abrinke1/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/TemplateMakers/bin/selection_studies_Jan15/CERN_SS_3l_skimmed_trees/TREES_250513_HADD_gpetrucc_%s.root' % (args.sample_2) )
+if not (args.sample_2 == 'DoubleMu' or args.sample_2 == 'DoubleElectron' or args.sample_2 == 'MuEG' or args.sample_2 == 'inclusive'):
+    tree_file_2 = ROOT.TFile('~abrinke1/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/TemplateMakers/bin/selection_studies_Jan15/CERN_SS_3l_skimmed_trees/TREES_250513_HADD_gpetrucc_%s_plus_SF.root' % (args.sample_2) )
 tree_2_pass = tree_file_2.Get('ttHLepTreeProducerBase')
 tree_2_fail = tree_file_2.Get('ttHLepTreeProducerBase')
 tree_2_shared = tree_file_2.Get('ttHLepTreeProducerBase')
@@ -419,9 +417,12 @@ for (ND_hist, CERN_hist) in histos:
     canvas_shared_temp.cd()
     hist_1_shared_temp = ROOT.TH1F("hist_1_shared_temp", ND_hist, 100, -100, 100)
     temp_tree_1_shared.Draw('%s >> hist_1_shared_temp' % (shared_var_name), "%s > -97 && %s > -97" % (shared_ND_name, shared_CERN_name), "goff")
+    #temp_tree_1_shared.Draw('(%s)/(max(%s,0.0000000001)) >> hist_1_shared_temp' % (shared_var_name, shared_CERN_name), "%s > -97 && %s > -97" % (shared_ND_name, shared_CERN_name), "goff")
     nBins_shared = 51
     xMin_shared = hist_1_shared_temp.GetMean() - 3*hist_1_shared_temp.GetRMS()
     xMax_shared = hist_1_shared_temp.GetMean() + 3*hist_1_shared_temp.GetRMS()
+    #xMin_shared = hist_1_shared_temp.GetMean() - 0.3*hist_1_shared_temp.GetRMS()
+    #xMax_shared = hist_1_shared_temp.GetMean() + 0.3*hist_1_shared_temp.GetRMS()
     if xMin_shared == xMax_shared:
         xMin_shared -= 1.0
         xMax_shared += 1.0
@@ -548,6 +549,7 @@ for (ND_hist, CERN_hist) in histos:
     hist_1_shared.SetLineColor(ROOT.kViolet)
     hist_1_shared.SetLineWidth(2)
     temp_tree_1_shared.Draw('%s >> hist_1_shared' % (shared_var_name), "", "goff")
+    #temp_tree_1_shared.Draw('(%s)/(max(%s,0.0000000001)) >> hist_1_shared' % (shared_var_name, shared_CERN_name), "", "goff")
     hist_1_shared.SetMaximum(1.5*hist_1_shared.GetMaximum())
     hist_1_shared.SetStats(True)
     hist_1_shared.Draw()

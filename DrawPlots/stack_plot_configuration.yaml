@@ -1,7 +1,7 @@
 #input and output file names
-input file location: histos_ss_v12
-input file label: ss_v12
-output file location: pdf_ss_v12
+input file location: histos_ss_v13
+input file label: ss_v13
+output file location: pdf_ss_v13
 
 #drawing options
 skip systematics: true
@@ -21,11 +21,23 @@ luminosity error: 0.044
 trigger SF error: 0.02
 lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
 
-#Lepton categories: "draw name"
 lepton categories:
-    mu_mu: " #mu #mu "
-    mu_ele: " #mu e "
-    ele_ele: " e e "
+    mu_mu:
+        #data sample: DoubleMu
+        data sample: inclusive_data
+        excluded samples: [inclusive_data_QF_sideband]
+        tex name: " #mu #mu "
+        
+    mu_ele:
+        #data sample: MuEG
+        data sample: inclusive_data
+        excluded samples: []
+        tex name: " #mu e "
+    ele_ele:
+        #data sample: DoubleElectron
+        data sample: inclusive_data
+        excluded samples: []
+        tex name: " e e "
 
 #Jet-tag categories: "draw name"
 jet tag categories:
@@ -55,16 +67,22 @@ signal samples:
 
 #Samples, ordered bottom-to-top
 background samples:
+    inclusive_data_QF_sideband:
+        draw name: "Q flip"
+        color: kGray+1
+        systematics: nominal
+        samples: [inclusive_data_QF_sideband]
+
     MuEG_QF_sideband:
         draw name: "Q flip"
         color: kGray+1
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: nominal
         samples: [MuEG_QF_sideband]
 
     DoubleElectron_QF_sideband:
         draw name: "Q flip"
         color: kGray+1
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: nominal
         samples: [DoubleElectron_QF_sideband]
 
     DoubleMu_NP_sideband:
@@ -72,6 +90,12 @@ background samples:
         color: kGray
         systematics: 40PercentRateUp+40PercentRateDown
         samples: [DoubleMu_NP_sideband]
+
+    inclusive_data_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+        systematics: 40PercentRateUp+40PercentRateDown
+        samples: [inclusive_data_NP_sideband]
 
     MuEG_NP_sideband:
         draw name: "Fakes"
@@ -97,11 +121,11 @@ background samples:
         systematics: all
         samples: [www, wwz]
 
-    #ttbarGStar:
-        #draw name: "t#bar{t}G*"
-        #color: kCyan-3
-        #systematics: all
-        #samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
+    ttbarGStar:
+        draw name: "t#bar{t}G*"
+        color: kCyan-3
+        systematics: all
+        samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
 
     wz:
         draw name: "WZ"
@@ -109,11 +133,11 @@ background samples:
         systematics: all
         samples: [wz]
 
-    #zz_llll:
-        #draw name: "ZZ"
-        #color: kAzure-9
-        #systematics: all
-        #samples: [zz_llll]
+    zz_llll:
+        draw name: "ZZ"
+        color: kAzure-9
+        systematics: all
+        samples: [zz_llll]
 
     ttbarG:
         draw name: "t#bar{t}G"
@@ -143,19 +167,18 @@ background samples:
 #distribution: [title, underflow, overflow]
 distributions:
     numJets: [number of jets, false, false]
-    numLooseBJets: [number of loose b-tagged jets, false, false]
-    numMediumBJets: [number of medium b-tagged jets, false, false]
-    sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', false, false]
-    all_leptons_by_pt_1_SIP: ['First lepton SIP', false, false]
-    all_leptons_by_pt_1_lepMVA: [First lepton MVA, false, false]
-    all_leptons_by_pt_2_lepMVA: [Second lepton MVA, false, false]
-    all_leptons_by_pt_1_pt: [First lepton pT, 20, false, false]
-    all_leptons_by_pt_2_pt: [Second lepton pT, 20, false, false]
-    all_leptons_by_pt_1_eta: [First lepton pseudorapidity, false, false]
-    jets_by_pt_1_btagCombinedSecVertex: [First jet b-tag discriminant, false, false]
-    jets_by_pt_2_btagCombinedSecVertex: [Second jet b-tag discriminant, false, false]
-    jets_by_pt_3_btagCombinedSecVertex: [Third jet b-tag discriminant, false, false]
-    jets_by_pt_1_pt: [First jet pT, false, false]
-    jets_by_pt_2_pt: [Second jet pT, false, false]
-    jets_by_pt_3_pt: [Third jet pT, false, false]
-
+#    numLooseBJets: [number of loose b-tagged jets, false, false]
+#    numMediumBJets: [number of medium b-tagged jets, false, false]
+#    sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', false, false]
+#    all_leptons_by_pt_1_SIP: ['First lepton SIP', false, false]
+#    all_leptons_by_pt_1_lepMVA: [First lepton MVA, false, false]
+#    all_leptons_by_pt_2_lepMVA: [Second lepton MVA, false, false]
+#    all_leptons_by_pt_1_pt: [First lepton pT, 20, false, false]
+#    all_leptons_by_pt_2_pt: [Second lepton pT, 20, false, false]
+#    all_leptons_by_pt_1_eta: [First lepton pseudorapidity, false, false]
+#    jets_by_pt_1_btagCombinedSecVertex: [First jet b-tag discriminant, false, false]
+#    jets_by_pt_2_btagCombinedSecVertex: [Second jet b-tag discriminant, false, false]
+#    jets_by_pt_3_btagCombinedSecVertex: [Third jet b-tag discriminant, false, false]
+#    jets_by_pt_1_pt: [First jet pT, false, false]
+#    jets_by_pt_2_pt: [Second jet pT, false, false]
+#    jets_by_pt_3_pt: [Third jet pT, false, false]

@@ -151,26 +151,16 @@ def setup_web_posting(directories, depth=1, *extra_files_to_post):
     www_plot_directories = [os.path.join(www_base_directory, directory) for directory in directories]
     setup_www_directories(www_plot_directories, depth, *extra_files_to_post)
 
-def get_data_sample_name(lepton_category):
-    if lepton_category == 'mu_ele':
-        return 'MuEG'
-    elif lepton_category == 'mu_mu':
-        return 'DoubleMu'
-    elif lepton_category == 'ele_ele':
-        return 'DoubleElectron'
-    elif lepton_category == 'inclusive' or lepton_category == '3l':
-        return 'inclusive_data'
-
-def is_matching_data_sample(lepton_category, sample):
-    if lepton_category == 'inclusive' and 'inclusive' in sample:
+def is_matching_data_sample(lepton_category_data_sample, sample):
+    if lepton_category_data_sample in sample:
         return True
-    elif lepton_category == '3l' and ('sideband' in sample) or ('inclusive' in sample):
+    elif 'inclusive_data' in lepton_category_data_sample and 'inclusive_data' in sample:
         return True
-    elif lepton_category == 'mu_ele' and 'MuEG' in sample:
+    elif 'DoubleMu' in lepton_category_data_sample and 'DoubleMu' in sample:
         return True
-    elif lepton_category == 'mu_mu' and 'DoubleMu' in sample:
+    elif 'DoubleElectron' in lepton_category_data_sample and 'DoubleElectron' in sample:
         return True
-    elif lepton_category == 'ele_ele' and 'DoubleElectron' in sample:
+    elif 'MuEG' in lepton_category_data_sample and 'MuEG' in sample:
         return True
     return False
 
@@ -730,7 +720,7 @@ class SampleInformation:
                                'x_section_error': 0.0,
                                'num_generated': 1},
 
-            'inclusive_NP_sideband': {'sample_type': 'NP_sideband',
+            'inclusive_data_NP_sideband': {'sample_type': 'NP_sideband',
                                       'is_signal':False,
                                       'x_section': 1,
                                       'x_section_error': 0.0,
@@ -746,8 +736,13 @@ class SampleInformation:
                                'is_signal': False,
                                'x_section': 1,
                                'x_section_error': 0.0,
-                               'num_generated': 1}
+                               'num_generated': 1},
 
+            'inclusive_data_QF_sideband': {'sample_type': 'QF_sideband',
+                                      'is_signal':False,
+                                      'x_section': 1,
+                                      'x_section_error': 0.0,
+                                      'num_generated': 1}
             }
 
         self.sample = sample

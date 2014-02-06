@@ -1,7 +1,7 @@
-label: ss_v12
+label: ss_v13
 luminosity: 19450.0
 input_trees_directory: ~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files
-output directory: histos_ss_v12
+output directory: histos_ss_v13
 
 common cuts:
     lt_three_tight_leptons: '!((all_leptons_by_pt_1_lepMVA > 0.7) && (all_leptons_by_pt_2_lepMVA > 0.7) && (all_leptons_by_pt_3_lepMVA > 0.7))'
@@ -11,6 +11,10 @@ common cuts:
     pt20_20_htllv100: all_leptons_by_pt_2_pt > 20 && ((all_leptons_by_pt_1_pt + all_leptons_by_pt_2_pt + met_pt) > 100)
     nJets25_ge_2: numJets>=2
     2b_loose: (numLooseBJets >= 2 || numMediumBJets >= 1)
+    trigger: '((dataset.length() == 2 && (isDoubleMuTriggerPass || isDoubleElectronTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+              (dataset.length() == 8 && isDoubleMuTriggerPass) ||
+              (dataset.length() == 14 && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass) ) ||
+              (dataset.length() == 4 && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass) )'
 
 ele_ele cuts:
     ele_ele: all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isElectron
@@ -18,19 +22,19 @@ ele_ele cuts:
     z_veto: abs(min_mass_leplep-91.2) > 10
     met_ld: met_ld > 0.2
     electron_tight_charge: all_leptons_by_pt_1_CERN_tight_charge && all_leptons_by_pt_2_CERN_tight_charge
-    isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
+    #isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
 
 mu_mu cuts:
     mu_mu: all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isMuon
-    muon_tight_charge: all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 7 && all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 7
-    isDoubleMuTriggerPass: isDoubleMuTriggerPass
+    muon_tight_charge: all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5 && all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5
+    #isDoubleMuTriggerPass: isDoubleMuTriggerPass
 
 mu_ele cuts:
     mu_ele: ((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isElectron) || (all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isMuon))
     conv_veto: all_electrons_by_pt_1_passConvVeto==1 && all_electrons_by_pt_1_numberOfExpectedInnerHits==0
-    muon_tight_charge: ((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 7) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 7))
+    muon_tight_charge: ((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5))
     electron_tight_charge: ((all_leptons_by_pt_1_isElectron && all_leptons_by_pt_1_CERN_tight_charge) || (all_leptons_by_pt_2_isElectron && all_leptons_by_pt_2_CERN_tight_charge))
-    isMuEGTriggerPass: isMuEGTriggerPass
+    #isMuEGTriggerPass: isMuEGTriggerPass
 
 regular selection cuts:
     lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
@@ -49,9 +53,15 @@ jet tag categories:
     - ge4j
 
 lepton categories:
-    - mu_mu
-    - mu_ele
-    - ele_ele
+    mu_mu:
+        #data sample: DoubleMu
+        data sample: inclusive_data
+    mu_ele:
+        #data sample: MuEG
+        data sample: inclusive_data
+    ele_ele:
+        #data sample: DoubleElectron
+        data sample: inclusive_data
 
 weights:
     - lepIDAndIsoSF
@@ -107,15 +117,15 @@ samples:
     ttbarG:
         weights: all
         systematics: all
-    #ttbarGStar_ee:
-        #weights: all
-        #systematics: all
-    #ttbarGStar_mm:
-        #weights: all
-        #systematics: all
-    #ttbarGStar_tt:
-        #weights: all
-        #systematics: all
+    ttbarGStar_ee:
+        weights: all
+        systematics: all
+    ttbarGStar_mm:
+        weights: all
+        systematics: all
+    ttbarGStar_tt:
+        weights: all
+        systematics: all
     tbZ_ll:
         weights: all
         systematics: all
@@ -128,6 +138,9 @@ samples:
     #WWDPI:
         #weights: all
         #systematics: all
+    inclusive_data:
+        weights: none
+        systematics: nominal
     DoubleMu:
         weights: none
         systematics: nominal
@@ -137,21 +150,27 @@ samples:
     DoubleElectron:
         weights: none
         systematics: nominal
+    inclusive_data_NP_sideband:
+        weights: DataDrivenFR_NP
+        systematics: nominal #40PercentRateUp+40PercentRateDown
     DoubleMu_NP_sideband:
         weights: DataDrivenFR_NP
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: nominal #40PercentRateUp+40PercentRateDown
     MuEG_NP_sideband:
         weights: DataDrivenFR_NP
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: nominal #40PercentRateUp+40PercentRateDown
     DoubleElectron_NP_sideband:
         weights: DataDrivenFR_NP
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: nominal #40PercentRateUp+40PercentRateDown
+    inclusive_data_QF_sideband:
+        weights: DataDrivenFR_QF
+        systematics: nominal
     MuEG_QF_sideband:
         weights: DataDrivenFR_QF
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: nominal
     DoubleElectron_QF_sideband:
         weights: DataDrivenFR_QF
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: nominal
 
 aliases:
     - &default_num_bins 11

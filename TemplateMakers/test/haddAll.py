@@ -158,17 +158,17 @@ def main ():
 
     if args.makeInclusive:
         inclusive_data = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'sideband' not in f]
-        inclusive_NP_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'NP_sideband' in f]
-        inclusive_QF_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'QF_sideband' in f]
+        inclusive_data_NP_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'NP_sideband' in f]
+        inclusive_data_QF_sideband = ['%s_%s_all.root' % (f, args.project_label) for f in data_names.keys() if 'QF_sideband' in f]
 
         merge_trees(inclusive_data, 'inclusive_data_%s_all.root' % args.project_label)
-        merge_trees(inclusive_NP_sideband, 'inclusive_NP_sideband_%s_all.root' % args.project_label)
-        merge_trees(inclusive_QF_sideband, 'inclusive_QF_sideband_%s_all.root' % args.project_label)
+        merge_trees(inclusive_data_NP_sideband, 'inclusive_data_NP_sideband_%s_all.root' % args.project_label)
+        merge_trees(inclusive_data_QF_sideband, 'inclusive_data_QF_sideband_%s_all.root' % args.project_label)
 
         if args.removeDuplicates:
             remove_duplicates('inclusive_data_%s_all.root' % args.project_label)
-            remove_duplicates('inclusive_NP_sideband_%s_all.root' % args.project_label)
-            remove_duplicates('inclusive_QF_sideband_%s_all.root' % args.project_label)
+            remove_duplicates('inclusive_data_NP_sideband_%s_all.root' % args.project_label)
+            remove_duplicates('inclusive_data_QF_sideband_%s_all.root' % args.project_label)
 
     # make sure the destination exists before sending files
     checkDirs(outDir)
