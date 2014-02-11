@@ -242,9 +242,7 @@ class DrawStringMaker:
             self.append_selection_requirement(jet_tag_string)
 
     def multiply_by_factor(self, weight):
-        print 'multiplying by factor ', weight
         self.factors.append(str(weight))
-        print self.factors
 
         self.update_draw_string()
 
