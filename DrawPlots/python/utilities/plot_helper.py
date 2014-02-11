@@ -211,18 +211,23 @@ class Plot:
 
 class DrawStringMaker:
     def __init__(self):
-        self.requirements_string = ''
-        self.factors_string = ''
         self.draw_string = ''
+        self.requirements = []
+        self.factors = []
 
     def update_draw_string(self):
-        self.draw_string = '(' + self.requirements_string + ')' + self.factors_string
+        requirements_string = ' && '.join(self.requirements)
+        factors_string = ' * ' + ' * '.join(self.factors)
+
+        self.draw_string = '(' + requirements_string + ')' + factors_string
+
+    def remove_selection_requirement(self, cut_string):
+        self.requirements.remove(cut_string)
+
+        self.update_draw_string()
 
     def append_selection_requirement(self, cut_string):
-        if (self.requirements_string == ''):
-            self.requirements_string += cut_string
-        else:
-            self.requirements_string += ' && ' + cut_string
+        self.requirements.append(cut_string)
 
         self.update_draw_string()
 
@@ -237,14 +242,15 @@ class DrawStringMaker:
             self.append_selection_requirement(jet_tag_string)
 
     def multiply_by_factor(self, weight):
-        weight = str(weight)
-        self.factors_string += ' * ' + weight
+        print 'multiplying by factor ', weight
+        self.factors.append(str(weight))
+        print self.factors
+
         self.update_draw_string()
 
     def multiply_by_factors(self, weights):
-        if len(weights) > 0:
-            for weight in weights:
-                self.multiply_by_factor(weight)
+        for weight in weights:
+            self.multiply_by_factor(weight)
 
     def get_matched_SF(self, lepton_category):
         if lepton_category == 'mu_mu':
