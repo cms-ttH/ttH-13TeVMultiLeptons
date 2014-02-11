@@ -152,6 +152,10 @@ int main (int argc, char** argv) {
   LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
   kinVars.push_back(&myLepIDAndIsoSF);
 
+  //CERN version
+  RecoIDIsoSIPSFs myRecoIDIsoSIPSFs(3);
+  kinVars.push_back(&myRecoIDIsoSIPSFs);
+
   LeptonTriggerScaleFactors myLepTrig(&lepHelper);
   kinVars.push_back(&myLepTrig);
 

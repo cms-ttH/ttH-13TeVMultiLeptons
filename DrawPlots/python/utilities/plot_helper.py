@@ -769,7 +769,9 @@ def get_systematic_info(systematic):
         'topPtWgtDown': {'weight_string': '(1/topPtWgt)', 'systematic_label': '_topPtWgtDown'},
         'topPtWgtUp': {'weight_string': '(topPtWgtUp/topPtWgt)', 'systematic_label': '_topPtWgtUp'},
         '40PercentRateUp': {'weight_string': '(1.40)', 'systematic_label': '_40PercentRateUp'},
-        '40PercentRateDown': {'weight_string': '(0.60)', 'systematic_label': '_40PercentRateDown'}
+        '40PercentRateDown': {'weight_string': '(0.60)', 'systematic_label': '_40PercentRateDown'},
+        'RecoIDIsoSIPSFDown_3lep': {'weight_string': '(RecoIDIsoSIPSFDown_3lep/RecoIDIsoSIPSF_3lep)', 'systematic_label': '_RecoIDIsoSIPSFDown_3lep'},
+        'RecoIDIsoSIPSFUp_3lep': {'weight_string': '(RecoIDIsoSIPSFUp_3lep/RecoIDIsoSIPSF_3lep)', 'systematic_label': '_RecoIDIsoSIPSFUp_3lep'}
         }
 
     return (dictionary[systematic]['weight_string'], dictionary[systematic]['systematic_label'])

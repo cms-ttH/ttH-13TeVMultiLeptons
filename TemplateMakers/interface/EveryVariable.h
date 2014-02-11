@@ -34,3 +34,4 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoJetVariables.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/NOVa/FinalBDT_OS_2012.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/CERN/RecoIDIsoSIPSFs.h"
