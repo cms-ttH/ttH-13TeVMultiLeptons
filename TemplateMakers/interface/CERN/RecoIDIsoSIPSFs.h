@@ -80,7 +80,7 @@ double RecoIDIsoSIPSFs::fetch(BNlepton* lepton, TH2D* histo) {
   double SF = 1.0;
 
   xBin = std::min(histo->GetXaxis()->FindBin(lepton->pt), histo->GetXaxis()->GetNbins());
-  yBin = std::min(histo->GetYaxis()->FindBin(abs(lepton->eta)), histo->GetXaxis()->GetNbins());
+  yBin = std::min(histo->GetYaxis()->FindBin(abs(lepton->eta)), histo->GetYaxis()->GetNbins());
 
   SF = histo->GetBinContent(xBin, yBin);
 
@@ -91,7 +91,7 @@ double RecoIDIsoSIPSFs::fetchError(BNlepton* lepton, TH2D* histo) {
   double SF = 1.0;
 
   xBin = std::min(histo->GetXaxis()->FindBin(lepton->pt), histo->GetXaxis()->GetNbins());
-  yBin = std::min(histo->GetYaxis()->FindBin(abs(lepton->eta)), histo->GetXaxis()->GetNbins());
+  yBin = std::min(histo->GetYaxis()->FindBin(abs(lepton->eta)), histo->GetYaxis()->GetNbins());
 
   SF = histo->GetBinError(xBin, yBin);
 
