@@ -263,7 +263,7 @@ class DrawStringMaker:
         return matched_SF
 
 class SampleInformation:
-    def __init__(self, sample, config):
+    def __init__(self, sample):
         dictionary = {
             #ND uses WW_TuneZ2Star, CERN uses WWJetsTo2L2Nu_TuneZ2star with x_section 5.995
             'ww': {'sample_type': 'MC',
@@ -281,10 +281,10 @@ class SampleInformation:
 
             #CERN uses WZJetsTo3LNu_TuneZ2
             'wz_lll': {'sample_type': 'MC',
-                   'is_signal': False,
-                   'x_section': 1.057*1.10, #CERN x_sec; equals (32.3*0.324*0.101) * 1.10
-                   'x_section_error': 1.057*1.10*0.2, #CERN x_sec error
-                   'num_generated': 1987010}, #ND number processed
+                       'is_signal': False,
+                       'x_section': 1.057*1.10, #CERN x_sec; equals (32.3*0.324*0.101) * 1.10
+                       'x_section_error': 1.057*1.10*0.2, #CERN x_sec error
+                       'num_generated': 1987010}, #ND number processed
 
             #ND uses ZZ_TuneZ2star
             'zz': {'sample_type': 'MC',
@@ -295,10 +295,10 @@ class SampleInformation:
 
             #ND uses ZZ_TuneZ2star
             'zz_llll': {'sample_type': 'MC',
-                   'is_signal': False,
-                   'x_section': 0.157*1.21, #CERN x_sec; why is it not (7.7*0.101*0.101) * 1.21
-                   'x_section_error': 0.157*1.21*0.2, #CERN x_sec error
-                   'num_generated': 4804217}, #ND number processed
+                        'is_signal': False,
+                        'x_section': 0.157*1.21, #CERN x_sec; why is it not (7.7*0.101*0.101) * 1.21
+                        'x_section_error': 0.157*1.21*0.2, #CERN x_sec error
+                        'num_generated': 4804217}, #ND number processed
 
             'www': {'sample_type': 'MC',
                     'is_signal': False,
@@ -370,16 +370,16 @@ class SampleInformation:
                          'num_generated': 33933328},
 
             'wjets_3p': {'sample_type': 'MC',
-                      'is_signal': False,
-                      'x_section': 619.0, 
-                      'x_section_error': 619.0*0.013, 
-                      'num_generated': 15463420},
+                         'is_signal': False,
+                         'x_section': 619.0, 
+                         'x_section_error': 619.0*0.013, 
+                         'num_generated': 15463420},
 
             'wjets_4p': {'sample_type': 'MC',
-                      'is_signal': False,
-                      'x_section': 255.2, 
-                      'x_section_error': 255.2*0.013, 
-                      'num_generated': 13365439},
+                         'is_signal': False,
+                         'x_section': 255.2, 
+                         'x_section_error': 255.2*0.013, 
+                         'num_generated': 13365439},
 
             'zjets': {'sample_type': 'MC',
                       'is_signal': False,
@@ -719,34 +719,34 @@ class SampleInformation:
                          'num_generated': 1},
 
             'DoubleElectron_NP_sideband': {'sample_type': 'NP_sideband',
-                               'is_signal': False,
-                               'x_section': 1,
-                               'x_section_error': 0.0,
-                               'num_generated': 1},
+                                           'is_signal': False,
+                                           'x_section': 1,
+                                           'x_section_error': 0.0,
+                                           'num_generated': 1},
 
             'inclusive_data_NP_sideband': {'sample_type': 'NP_sideband',
-                                      'is_signal':False,
-                                      'x_section': 1,
-                                      'x_section_error': 0.0,
-                                      'num_generated': 1},
+                                           'is_signal':False,
+                                           'x_section': 1,
+                                           'x_section_error': 0.0,
+                                           'num_generated': 1},
 
             'MuEG_QF_sideband': {'sample_type': 'QF_sideband',
-                     'is_signal': False,
-                     'x_section': 1,
-                     'x_section_error': 0.0,
-                     'num_generated': 1},
+                                 'is_signal': False,
+                                 'x_section': 1,
+                                 'x_section_error': 0.0,
+                                 'num_generated': 1},
 
             'DoubleElectron_QF_sideband': {'sample_type': 'QF_sideband',
-                               'is_signal': False,
-                               'x_section': 1,
-                               'x_section_error': 0.0,
-                               'num_generated': 1},
+                                           'is_signal': False,
+                                           'x_section': 1,
+                                           'x_section_error': 0.0,
+                                           'num_generated': 1},
 
             'inclusive_data_QF_sideband': {'sample_type': 'QF_sideband',
-                                      'is_signal':False,
-                                      'x_section': 1,
-                                      'x_section_error': 0.0,
-                                      'num_generated': 1}
+                                           'is_signal':False,
+                                           'x_section': 1,
+                                           'x_section_error': 0.0,
+                                           'num_generated': 1}
             }
 
         self.sample = sample
@@ -755,9 +755,6 @@ class SampleInformation:
         self.x_section = dictionary[sample]['x_section']
         self.x_section_error = dictionary[sample]['x_section_error']
         self.num_generated = dictionary[sample]['num_generated']
-        self.systematics = config['systematics']
-        if config.has_key('weights'):
-            self.weights = config['weights']
 
 def get_systematic_info(systematic):
     dictionary = {

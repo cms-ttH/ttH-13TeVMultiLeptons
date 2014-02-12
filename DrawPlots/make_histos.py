@@ -52,8 +52,7 @@ def main():
 
 def make_histos(args, config, samples, lepton_categories):
     for sample in samples:
-        sample_dict = config['samples'][sample]
-        sample_info = plot_helper.SampleInformation(sample, sample_dict)
+        sample_info = plot_helper.SampleInformation(sample)
 
         for lepton_category in lepton_categories:
             lepton_category_cut_strings = config.get('%s cuts' % lepton_category, {}).values()
@@ -65,7 +64,7 @@ def make_histos(args, config, samples, lepton_categories):
                 output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
-                systematics_list = plot_helper.customize_systematics(config['systematics'], sample_info.systematics)
+                systematics_list = plot_helper.customize_systematics(config['systematics'], config['samples'][sample].get('systematics', 'all'))
                 for systematic in systematics_list:
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
 
@@ -93,7 +92,7 @@ def make_histos(args, config, samples, lepton_categories):
                             matched_SF = draw_string_maker.get_matched_SF(lepton_category)
                             config['weights'] = [matched_SF if x=='triggerSF' else x for x in config['weights']]
 
-                    weights = plot_helper.customize_list(config['weights'], sample_info.weights)
+                    weights = plot_helper.customize_list(config['weights'], config['samples'][sample].get('weights', 'all'))
                     draw_string_maker.multiply_by_factors(weights)
 
                     if sample_info.sample_type not in ['MC', 'data'] and 'sideband' not in sample_info.sample_type:
