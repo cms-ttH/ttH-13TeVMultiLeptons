@@ -56,6 +56,8 @@ ttbarWW
 ttbarZ
 www
 wwz
+wzz
+zzz
 wz
 wz_lll
 zz_llll

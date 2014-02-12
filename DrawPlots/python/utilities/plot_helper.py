@@ -15,67 +15,6 @@ def append_integral_histo(config):
 
     return config
 
-def get_jet_tag_category_requirements(jet_tag_category):
-    jet_tag_string = ''
-    if jet_tag_category == 'ge2t':
-        jet_tag_string = ' numJets >= 2 && numMediumBJets >= 2'
-    elif jet_tag_category == 'eq2jeq2t':
-        jet_tag_string = ' numJets == 2 && numMediumBJets == 2'
-    elif jet_tag_category == 'eq3jeq2t':
-        jet_tag_string = ' numJets == 3 && numMediumBJets == 2'
-    elif jet_tag_category == 'ge4jeq2t':
-        jet_tag_string = ' numJets >= 4 && numMediumBJets == 2'
-    elif jet_tag_category == 'ge3t':
-        jet_tag_string = ' numJets >= 3 && numMediumBJets >= 3'
-    elif jet_tag_category == 'eq3jeq3t':
-        jet_tag_string = ' numJets == 3 && numMediumBJets ==3'
-    elif jet_tag_category == 'ge4jeq3t':
-        jet_tag_string = ' numJets >= 4 && numMediumBJets == 3'
-    elif jet_tag_category == 'ge4jge3t':
-        jet_tag_string = ' numJets >= 4 && numMediumBJets >= 3'
-    elif jet_tag_category == 'ge4t':
-        jet_tag_string = ' numJets >= 4 && numMediumBJets >= 4'
-    elif jet_tag_category == 'eq0j':
-        jet_tag_string = ' numJets == 0 && numMediumBJets == 0'
-    elif jet_tag_category == 'eq1jeq0t':
-        jet_tag_string = ' numJets == 1 && numMediumBJets == 0'
-    elif jet_tag_category == 'eq1jeq1t':
-        jet_tag_string = ' numJets == 1 && numMediumBJets == 1'
-    elif jet_tag_category == 'eq2jge0t':
-        jet_tag_string = ' numJets == 2 && numMediumBJets >= 0'
-    elif jet_tag_category == 'eq2jeq0t':
-        jet_tag_string = ' numJets == 2 && numMediumBJets == 0'
-    elif jet_tag_category == 'eq2jge1t':
-        jet_tag_string = ' numJets == 2 && numMediumBJets >= 1'
-    elif jet_tag_category == 'eq2jeq1t':
-        jet_tag_string = ' numJets == 2 && numMediumBJets == 1'
-    elif jet_tag_category == 'eq3jeq0t':
-        jet_tag_string = ' numJets == 3 && numMediumBJets == 0'
-    elif jet_tag_category == 'eq3jge1t':
-        jet_tag_string = ' numJets == 3 && numMediumBJets >= 1'
-    elif jet_tag_category == 'eq3jeq1t':
-        jet_tag_string = ' numJets == 3 && numMediumBJets == 1'
-    elif jet_tag_category == 'eq3jge2t':
-        jet_tag_string = 'numJets == 3 && numMediumBJets >= 2'
-    elif jet_tag_category == 'ge4jeq1t':
-        jet_tag_string = 'numJets >= 4 && numMediumBJets == 1'
-    elif jet_tag_category == 'ge4jge2t':
-        jet_tag_string = 'numJets >= 4 && numMediumBJets >= 2'
-    elif jet_tag_category == 'ge4j':
-        jet_tag_string = 'numJets>=4'
-    elif jet_tag_category == 'ge3j':
-        jet_tag_string = 'numJets>=3'
-    elif jet_tag_category == 'eq3j':
-        jet_tag_string = 'numJets==3'
-    elif jet_tag_category == 'ge2j':
-        jet_tag_string = 'numJets>=2'
-    elif jet_tag_category == 'ge1j':
-        jet_tag_string = 'numJets>=1'
-    else:
-        print 'ERROR [plot_helper.py]: Unrecognized jet tag category. Please update DrawStringMaker::append_jet_tag_category_requirements'
-        sys.exit(2)
-    return jet_tag_string
-
 def get_www_base_directory():
     try:
         www_base_directory = os.environ['HOME']+'/www'
@@ -235,11 +174,6 @@ class DrawStringMaker:
         for cut_string_list in cut_string_lists:
             for cut_string in cut_string_list:
                 self.append_selection_requirement(cut_string)
-
-    def append_jet_tag_category_requirements(self, jet_tag_category):
-        jet_tag_string = get_jet_tag_category_requirements(jet_tag_category)
-        if jet_tag_category != 'inclusive':
-            self.append_selection_requirement(jet_tag_string)
 
     def multiply_by_factor(self, weight):
         self.factors.append(str(weight))
@@ -521,8 +455,8 @@ class SampleInformation:
 
             'ttbarW': {'sample_type': 'MC',
                        'is_signal': False,
-                       'x_section': 0.249, #CERN and ND x_sec
-                       'x_section_error': 0.249*0.2, #CERN x_sec error; ND x_sec error = 0.249*0.1
+                       'x_section': 0.208, #New NLO result; old number was 0.249 - AWB Feb 12, 2014
+                       'x_section_error': 0.208*0.2, #CERN x_sec error; ND x_sec error = 0.208*0.1
                        'num_generated': 195396}, #ND number processed
 
             'ttbarZ': {'sample_type': 'MC',
@@ -760,8 +694,9 @@ def get_systematic_info(systematic):
     dictionary = {
         'nominal': {'weight_string': '1', 'systematic_label': ''},
         'JESUp': {'weight_string': '1', 'systematic_label': '_JESUp'},
-        'weight_PUup': {'weight_string': '(weight_PUup/weight_PU)', 'systematic_label': '_weight_PUup'},
-        'weight_PUdown': {'weight_string': '(weight_PUdown/weight_PU)', 'systematic_label': '_weight_PUdown'},
+        'JESDown': {'weight_string': '1', 'systematic_label': '_JESDown'},
+        'weight_PUUp': {'weight_string': '(weight_PUup/weight_PU)', 'systematic_label': '_weight_PUUp'},
+        'weight_PUDown': {'weight_string': '(weight_PUdown/weight_PU)', 'systematic_label': '_weight_PUDown'},
         'csvWeightHFUp': {'weight_string': 'csvWeightHFUp', 'systematic_label': '_csvWeightHFUp'},
         'csvWeightHFDown': {'weight_string': 'csvWeightHFDown', 'systematic_label': '_csvWeightHFDown'},
         'csvWeightLFUp': {'weight_string': 'csvWeightLFUp', 'systematic_label': '_csvWeightLFUp'},

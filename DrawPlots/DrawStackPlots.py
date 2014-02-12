@@ -102,6 +102,8 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
         if 'sideband' in sample_group and not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data sample'], sample_group):
             continue
         systematics = plot_helper.customize_systematics(config['systematics'], background_samples[sample_group]['systematics'])
+        if config['skip systematics']:
+            systematics = ['nominal']
         systematics_by_sample[sample_group] = systematics
         group_histogram = None
         for systematic in systematics:

@@ -33,8 +33,8 @@ PUWeights::PUWeights  (HelperLeptonCore *in) :
 {
 
   branches["weight_PU"] = BranchInfo<double>("weight_PU");
-  branches["weight_PUup"] = BranchInfo<double>("weight_PUup");
-  branches["weight_PUdown"] = BranchInfo<double>("weight_PUdown");
+  branches["weight_PUUp"] = BranchInfo<double>("weight_PUUp");
+  branches["weight_PUDown"] = BranchInfo<double>("weight_PUDown");
 
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
   
@@ -62,7 +62,7 @@ void PUWeights::evaluate () {
   BEANhelper * beanHelper = &(myHelper->bHelp);
 
   // default weight is 1.0
-  double weight_PUnominal = 1.0, weight_PUup = 1.0, weight_PUdown = 1.0;
+  double weight_PUNominal = 1.0, weight_PUUp = 1.0, weight_PUDown = 1.0;
 
   BNevent iEvent = this->blocks->eventCollection->at(0);
 
@@ -76,29 +76,29 @@ void PUWeights::evaluate () {
     // legacy stuff
     if(selectionYearStr == "2011") {
       if ((TString(sampleName).Contains("ttH")) || (sampleName=="ttbarW") || (sampleName=="ttbarZ")) {
-        weight_PUnominal = beanHelper->GetPUweight(numGenPV);
-        weight_PUup = beanHelper->GetPUweightUp(numGenPV);
-        weight_PUdown = beanHelper->GetPUweightDown(numGenPV);
+        weight_PUNominal = beanHelper->GetPUweight(numGenPV);
+        weight_PUUp = beanHelper->GetPUweightUp(numGenPV);
+        weight_PUDown = beanHelper->GetPUweightDown(numGenPV);
       }
       else {
-        weight_PUnominal = beanHelper->GetPUweight(numTruePV);
-        weight_PUup = beanHelper->GetPUweightUp(numTruePV);
-        weight_PUdown = beanHelper->GetPUweightDown(numTruePV);
+        weight_PUNominal = beanHelper->GetPUweight(numTruePV);
+        weight_PUUp = beanHelper->GetPUweightUp(numTruePV);
+        weight_PUDown = beanHelper->GetPUweightDown(numTruePV);
       }
     }
     else if(selectionYearStr == "2012_52x" || selectionYearStr == "2012_53x") {
-      weight_PUnominal = beanHelper->GetPUweight(numTruePV);
-      weight_PUup = beanHelper->GetPUweightUp(numTruePV);
-      weight_PUdown = beanHelper->GetPUweightDown(numTruePV);
+      weight_PUNominal = beanHelper->GetPUweight(numTruePV);
+      weight_PUUp = beanHelper->GetPUweightUp(numTruePV);
+      weight_PUDown = beanHelper->GetPUweightDown(numTruePV);
     }
     else {
       assert (selectionYearStr == "Inside PUWeights.h -- either 2012_52x, 2012_53x, or 2011");
     }
   }
 
-  branches["weight_PU"].branchVal = weight_PUnominal;
-  branches["weight_PUup"].branchVal = weight_PUup;
-  branches["weight_PUdown"].branchVal = weight_PUdown;
+  branches["weight_PU"].branchVal = weight_PUNominal;
+  branches["weight_PUUp"].branchVal = weight_PUUp;
+  branches["weight_PUDown"].branchVal = weight_PUDown;
   
 
 }

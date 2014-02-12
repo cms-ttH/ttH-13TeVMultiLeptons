@@ -204,6 +204,8 @@ int main (int argc, char** argv) {
   TopPtWeights myTopPt(&lepHelper);
   kinVars.push_back(&myTopPt);
 
+  // //Currently, gets ND loose lepton SF; could switch to tight and loose - AWB Feb 12, 2014
+  //LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonID::muonTight, muonID::muonLoose, electronID::electronTight, electronID::electronLoose);
   LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID);
   kinVars.push_back(&myLepIDAndIsoSF);
 

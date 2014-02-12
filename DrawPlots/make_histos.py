@@ -29,9 +29,9 @@ def main():
     if args.sample:
         samples = args.sample
 
-    lepton_categories = config.get('lepton categories')
+    lepton_categories = config['lepton categories']
     if args.lepton_category:
-		lepton_categories = {args.lepton_category: lepton_categories[args.lepton_category]}
+        lepton_categories = {args.lepton_category: lepton_categories[args.lepton_category]}
 
     plot_helper.make_sure_directories_exist([os.path.join(config['output directory'], category) for category in lepton_categories])
     if args.web:
@@ -52,7 +52,11 @@ def main():
 
 def make_histos(args, config, samples, lepton_categories):
     for sample in samples:
-        sample_info = plot_helper.SampleInformation(sample)
+        sample_dict = config['samples'][sample]
+        if sample_dict.get('additional cuts',{}):
+            sample_info = plot_helper.SampleInformation(sample.replace(sample_dict['additional cuts'][0],''))
+        else:
+            sample_info = plot_helper.SampleInformation(sample)
 
         for lepton_category in lepton_categories:
             lepton_category_cut_strings = config.get('%s cuts' % lepton_category, {}).values()
@@ -65,11 +69,16 @@ def make_histos(args, config, samples, lepton_categories):
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
                 systematics_list = plot_helper.customize_systematics(config['systematics'], config['samples'][sample].get('systematics', 'all'))
+                if config['skip systematics']:
+                    systematics_list = ['nominal']
                 for systematic in systematics_list:
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
 
                     systematic_weight_string, systematic_label = plot_helper.get_systematic_info(systematic)
-                    source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], sample, config['label'])
+                    if sample_dict.get('additional cuts',{}):
+                        source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], sample.replace(sample_dict['additional cuts'][0],''), config['label'])
+                    else:
+                        source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], sample, config['label'])
                     if args.file:
                         source_file_name = args.file
                     source_file = ROOT.TFile(source_file_name)
@@ -83,7 +92,9 @@ def make_histos(args, config, samples, lepton_categories):
                         draw_string_maker.append_selection_requirements(config.get('QF sideband cuts', {}).values())
                     else:
                         draw_string_maker.append_selection_requirements(config.get('regular selection cuts', {}).values())
-                    draw_string_maker.append_jet_tag_category_requirements(jet_tag_category)
+                    draw_string_maker.append_selection_requirement(config['jet tag categories'][jet_tag_category])
+                    if (sample_dict.get('additional cuts',{})):
+                        draw_string_maker.append_selection_requirement(sample_dict['additional cuts'][1])
 
                     if not args.no_weights:
                         draw_string_maker.multiply_by_factor(systematic_weight_string)

@@ -1,7 +1,7 @@
 #input and output file names
-input file location: histos_ss_v13
-input file label: ss_v13
-output file location: pdf_ss_v13
+input file location: histos_ss_v15
+input file label: ss_v15
+output file location: pdf_ss_v15
 
 #drawing options
 skip systematics: true
@@ -51,11 +51,15 @@ jet tag categories:
 #Systematics used in error bars
 systematics:
     - nominal
-    #- weight_PUup
-    #- weight_PUdown
-    #- topPtWgtDown
-    #- topPtWgtUp
-
+    - weight_PUup
+    - weight_PUdown
+    - topPtWgtDown
+    - topPtWgtUp
+    - csvWeightHFUp
+    - csvWeightHFDown
+    - csvWeightLFUp
+    - csvWeightLFDown
+                                    
 # Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
 signal samples:
     ttH125:
@@ -110,16 +114,10 @@ background samples:
         samples: [DoubleElectron_NP_sideband]
 
     Others:
-        draw name: Others
+        draw name: "Rare SM"
         color: kSpring+8
         systematics: all
-        samples: [tbZ_ll] #WpWpqq, WmWmqq, WWDPI
-
-    triboson:
-        draw name: triboson
-        color: kViolet
-        systematics: all
-        samples: [www, wwz]
+        samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
 
     ttbarGStar:
         draw name: "t#bar{t}G*"
@@ -127,11 +125,11 @@ background samples:
         systematics: all
         samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
 
-    wz:
+    wz_lll:
         draw name: "WZ"
         color: kViolet-4
         systematics: all
-        samples: [wz]
+        samples: [wz_lll]
 
     zz_llll:
         draw name: "ZZ"
@@ -166,19 +164,28 @@ background samples:
 
 #distribution: [title, underflow, overflow]
 distributions:
-    numJets: [number of jets, false, false]
-#    numLooseBJets: [number of loose b-tagged jets, false, false]
-#    numMediumBJets: [number of medium b-tagged jets, false, false]
-#    sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', false, false]
-#    all_leptons_by_pt_1_SIP: ['First lepton SIP', false, false]
-#    all_leptons_by_pt_1_lepMVA: [First lepton MVA, false, false]
-#    all_leptons_by_pt_2_lepMVA: [Second lepton MVA, false, false]
-#    all_leptons_by_pt_1_pt: [First lepton pT, 20, false, false]
-#    all_leptons_by_pt_2_pt: [Second lepton pT, 20, false, false]
-#    all_leptons_by_pt_1_eta: [First lepton pseudorapidity, false, false]
-#    jets_by_pt_1_btagCombinedSecVertex: [First jet b-tag discriminant, false, false]
-#    jets_by_pt_2_btagCombinedSecVertex: [Second jet b-tag discriminant, false, false]
-#    jets_by_pt_3_btagCombinedSecVertex: [Third jet b-tag discriminant, false, false]
-#    jets_by_pt_1_pt: [First jet pT, false, false]
-#    jets_by_pt_2_pt: [Second jet pT, false, false]
-#    jets_by_pt_3_pt: [Third jet pT, false, false]
+    numJets: ['number of jets', true, true]
+    numLooseBJets: ['number of loose b-tagged jets', true, true]
+    numMediumBJets: ['number of medium b-tagged jets', true, true]
+    sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', true, true]
+    mht: ['MHT', true, true]
+    mindr_lep2_jet: ['min dR (lepton 2, jet)', true, true]
+    met_1_all_leptons_by_pt_1_MT: ['MT (lepton 1, MET)', true, true]
+    met_1_all_leptons_by_pt_2_MT: ['MT (lepton 2, MET)', true, true]
+    sum_pt: ['Sum pT (leptons, jets)', true, true]
+    FinalBDT: ['BDT output', true, true]
+    FinalBDT_pos: ['BDT output, positive charge', false, false]
+    FinalBDT_neg: ['BDT output, negative charge', false, false]
+#     all_leptons_by_pt_1_SIP: ['First lepton SIP', true, true]
+#     all_leptons_by_pt_1_lepMVA: ['First lepton MVA', true, true]
+#     all_leptons_by_pt_2_lepMVA: ['Second lepton MVA', true, true]
+    all_leptons_by_pt_1_pt: ['First lepton pT', 20, true, true]
+    all_leptons_by_pt_2_pt: ['Second lepton pT', 20, true, true]
+    all_leptons_by_pt_1_eta: ['First lepton pseudorapidity', true, true]
+    all_leptons_by_pt_2_eta: ['Second lepton pseudorapidity', true, true]
+#     jets_by_pt_1_btagCombinedSecVertex: ['First jet b-tag discriminant', true, true]
+#     jets_by_pt_2_btagCombinedSecVertex: ['Second jet b-tag discriminant', true, true]
+#     jets_by_pt_3_btagCombinedSecVertex: ['Third jet b-tag discriminant', true, true]
+#     jets_by_pt_1_pt: ['First jet pT', true, true]
+#     jets_by_pt_2_pt: ['Second jet pT', true, true]
+#     jets_by_pt_3_pt: ['Third jet pT', true, true]

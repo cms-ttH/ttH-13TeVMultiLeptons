@@ -31,7 +31,7 @@ config = ConfigParser()
 
 if verbose: print 'Parsed'
 
-tree_file_1 = ROOT.TFile('~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_ss_v13_all.root' % (args.sample_1) )
+tree_file_1 = ROOT.TFile('~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_ss_v15_all.root' % (args.sample_1) )
 tree_1_pass = tree_file_1.Get('summaryTree')
 tree_1_fail = tree_file_1.Get('summaryTree')
 tree_1_shared = tree_file_1.Get('summaryTree')
