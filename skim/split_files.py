@@ -51,5 +51,5 @@ for file in files:
             skip_events += args.max_events
             os.remove('cfg.py')
 
-        print 'File %s has been split into % files with no more than % events each. To remove the original file, use: \nrm %s' % (file, index, max_events, file)
+        print 'File %s has been split into % files with no more than % events each. To remove the original file, use: \nrm %s' % (file, index, args.max_events, file)
 
