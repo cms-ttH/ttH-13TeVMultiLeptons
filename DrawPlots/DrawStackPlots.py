@@ -99,7 +99,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     for sample_group in background_samples: # Add samples in each sample group together
         if sample_group in lepton_categories[lepton_category]['excluded samples']:
             continue            
-        if 'sideband' in sample_group and not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data sample'], sample_group):
+        if 'sideband' in sample_group and not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data samples'], sample_group):
             continue
         systematics = plot_helper.customize_systematics(config['systematics'], background_samples[sample_group]['systematics'])
         if config['skip systematics']:
@@ -136,46 +136,65 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
             group_histogram = None
 
     ## Draw the signal sample histogram(s), put in legend
-    for sample in signal_samples:
-        try:
-            original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category)
-        except Exception, e:
-            print e
-            continue
-        histogram_dictionary[sample+'_'+systematic] = original_histogram.Clone()
-        signal_histogram = original_histogram.Clone('signal')
+    for sample_group in signal_samples:
+        group_histogram = None
+        samples_in_group = signal_samples[sample_group]['samples']
+        for index, sample in enumerate(samples_in_group):
+            try:
+                original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category, sample_group)
+            except Exception, e:
+                print e
+                continue
+            original_histogram.Sumw2()
+            if not group_histogram:
+                group_histogram = original_histogram
+            else:
+                group_histogram.Add(original_histogram)
+        ##Why do we only have nominal? - AWB Feb 13, 2014
+        histogram_dictionary[sample_group+'_'+'nominal'] = group_histogram.Clone()
+        signal_histogram = group_histogram.Clone('signal')
         legend_option = 'l'
-        if signal_samples[sample]['stack or line'] == 'stack':
+        if signal_samples[sample_group]['stack or line'] == 'stack':
             stack_plot.Add(signal_histogram, "hist")
             legend_option = 'f'
-        elif signal_samples[sample]['stack or line'] != 'line':
+        elif signal_samples[sample_group]['stack or line'] != 'line':
             sys.exit('For signal, must be line or stack')
 
         signal_sum = signal_histogram.Integral()
-        if (signal_sum > 0 and signal_samples[sample]['scale'] == 'norm'):
+        if (signal_sum > 0 and signal_samples[sample_group]['scale'] == 'norm'):
             signal_histogram.Scale(mc_sum / signal_sum)
         elif (signal_sum > 0):
-            signal_histogram.Scale(signal_samples[sample]['scale'])
+            signal_histogram.Scale(signal_samples[sample_group]['scale'])
         if (signal_sum > 0):
-            stack_plot_legend.AddEntry(signal_histogram, '%s (%0.2f x %0.2f)' % (signal_samples[sample]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), legend_option)
+            stack_plot_legend.AddEntry(signal_histogram, '%s (%0.2f x %0.2f)' % (signal_samples[sample_group]['draw name'], signal_sum, (signal_histogram.Integral() / signal_sum)), legend_option)
         else:
-            stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample]['draw name'], legend_option)
+            stack_plot_legend.AddEntry(signal_histogram, '%s (0.0x1.0)' % signal_samples[sample_group]['draw name'], legend_option)
 
-        yields[jet_tag_category][signal_samples[sample]['draw name']][lepton_category] = signal_histogram.Integral()
-        raw_yields[jet_tag_category][signal_samples[sample]['draw name']][lepton_category] = signal_histogram.GetEntries()
+        yields[jet_tag_category][signal_samples[sample_group]['draw name']][lepton_category] = signal_histogram.Integral()
+        raw_yields[jet_tag_category][signal_samples[sample_group]['draw name']][lepton_category] = signal_histogram.GetEntries()
 
     ## Draw the data histogram, put in legend
     if not config['blinded']:
-        try:
-            original_histogram = get_histogram(distribution, systematic, 'data', lepton_category, jet_tag_category)
-            histogram_dictionary['data'] = original_histogram.Clone()
-            data_histogram = original_histogram.Clone('data')
-            data_sum = data_histogram.Integral()
-            stack_plot_legend.AddEntry(data_histogram, 'Data (%.0f) ' % data_sum, 'lpe')
-            yields[jet_tag_category]['data'][lepton_category] = data_histogram.Integral()
-            raw_yields[jet_tag_category]['data'][lepton_category] = data_histogram.GetEntries()
-        except ReferenceError, e:
-            print e
+        group_histogram = None
+        samples_in_group = config['lepton categories'][lepton_category]['data samples']
+        for index, sample in enumerate(samples_in_group):
+            try:
+                original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category, 'data')
+            except Exception, e:
+                print e
+                continue
+            original_histogram.Sumw2()
+            if not group_histogram:
+                group_histogram = original_histogram
+            else:
+                group_histogram.Add(original_histogram)
+
+        histogram_dictionary['data'] = group_histogram.Clone()
+        data_histogram = group_histogram.Clone('data')
+        data_sum = data_histogram.Integral()
+        stack_plot_legend.AddEntry(data_histogram, 'Data (%.0f) ' % data_sum, 'lpe')
+        yields[jet_tag_category]['data'][lepton_category] = data_histogram.Integral()
+        raw_yields[jet_tag_category]['data'][lepton_category] = data_histogram.GetEntries()
 
     lumi_error = config['luminosity error']
     trigger_SF_error = config['trigger SF error']
@@ -194,13 +213,13 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     for i in range(1, nBins+1):
         mc_error_histogram.SetBinContent(i, stack_plot.GetStack().Last().GetBinContent(i))
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
-        for sample, systematics in systematics_by_sample.items(): #systematics_by_sample is a dictionary (keys: samples and sample groups, values: systematics list)
+        for sample_group, systematics in systematics_by_sample.items(): #systematics_by_sample is a dictionary (keys: samples and sample groups, values: systematics list)
             if sample_group in lepton_categories[lepton_category]['excluded samples']:
                 continue            
-            if 'sideband' in sample and not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data sample'], sample):
+            if 'sideband' in sample_group and not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data samples'], sample_group):
                 continue
             for systematic in systematics:
-                bin_error_squared += math.pow(histogram_dictionary[sample+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample+'_nominal'].GetBinContent(i), 2)
+                bin_error_squared += math.pow(histogram_dictionary[sample_group+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample_group+'_nominal'].GetBinContent(i), 2)
 
         mc_error_histogram.SetBinError(i, math.sqrt(bin_error_squared))
 
@@ -236,8 +255,8 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     stack_plot.GetYaxis().SetTitleSize(cosmetics['stack y axis title size'])
     stack_plot.GetYaxis().SetTitleOffset(cosmetics['stack y axis title offset'])
     mc_error_histogram.Draw(cosmetics['mc error histogram draw style'])
-    for sample in signal_samples:
-        if config['signal samples'][sample]['stack or line'] == 'line':
+    for sample_group in signal_samples:
+        if config['signal samples'][sample_group]['stack or line'] == 'line':
             signal_histogram.Draw(cosmetics['signal histogram draw style'])
 
     ## asymmetrical poisson errors for data
@@ -304,11 +323,9 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
 ## Gets a single histogram.
 def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_category, sample_group=''):
     histogram = None
-    if sample == 'data':
-        sample = lepton_categories[lepton_category]['data sample']
 
     name = '%s_%s_%s_%s_%s' % (sample, lepton_category, jet_tag_category, distribution, systematic)
-    if systematic == 'nominal' or plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data sample'], sample):
+    if systematic == 'nominal' or plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data samples'], sample_group):
         name = '%s_%s_%s_%s' % (sample, lepton_category, jet_tag_category, distribution)
 
     file_name = os.path.join(config['input file location'], lepton_category, '%s_%s_%s_%s.root' % (lepton_category, jet_tag_category, sample, config['input file label']))
@@ -323,7 +340,12 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
 
     histogram.SetDirectory(0) ##Decouples histogram from root file
 
-    if sample == 'data':
+    if distributions[distribution][1]:
+        histogram = move_underflow_into_hist(histogram)
+    if distributions[distribution][2]:
+        histogram = move_overflow_into_hist(histogram)
+
+    if sample_group == 'data':
         histogram.SetLineColor(cosmetics['data line color'])
         histogram.SetMarkerColor(cosmetics['data marker color'])
         histogram.SetFillColor(cosmetics['data fill color'])
@@ -334,16 +356,16 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
         histogram.SetLineColor(background_samples[sample_group]['color'])
         histogram.SetFillColor(background_samples[sample_group]['color'])
         histogram.SetFillStyle(cosmetics['background fill style'])
-    elif config.has_key('signal samples') and (sample in signal_samples):
-        histogram.SetLineColor(signal_samples[sample]['color'])
-        histogram.SetFillColor(signal_samples[sample]['color'])
-        if (signal_samples[sample]['stack or line'] == 'line'):
-            histogram.SetLineWidth(signal_samples[sample]['line width'])
+    elif config.has_key('signal samples') and (sample_group in signal_samples):
+        histogram.SetLineColor(signal_samples[sample_group]['color'])
+        histogram.SetFillColor(signal_samples[sample_group]['color'])
+        if (signal_samples[sample_group]['stack or line'] == 'line'):
+            histogram.SetLineWidth(signal_samples[sample_group]['line width'])
             histogram.SetFillStyle(0)
-        elif (signal_samples[sample]['stack or line'] == 'stack'):
+        elif (signal_samples[sample_group]['stack or line'] == 'stack'):
             histogram.SetFillStyle(cosmetics['background fill style'])
         else:
-            raise Exception('Error-- must select either line or stack for signal_sample '+sample+'.  Quitting.')
+            raise Exception('Error-- must select either line or stack for signal_sample '+sample_group+'.  Quitting.')
 
     return histogram
 ## end of get_histogram
@@ -374,7 +396,7 @@ def make_info_tex_objects(lepton_category, jet_tag_category):
     SF_info_tex.SetNDC()
     SF_info_tex.SetTextFont(cosmetics['SF text font'])
     SF_info_tex.SetTextSize(cosmetics['SF text size'])
-    SF_strings = ['%s x %s' % (signal_samples[sample]['draw name'], signal_samples[sample]['scale']) for sample in signal_samples]
+    SF_strings = ['%s x %s' % (signal_samples[sample_group]['draw name'], signal_samples[sample_group]['scale']) for sample_group in signal_samples]
     SF_info_tex.SetTitle(', '.join(SF_strings))
 
     return luminosity_info_tex, selection_info_tex, SF_info_tex
@@ -390,6 +412,24 @@ def move_extra_into_hist(histogram):
 
     return histogram
 ## end move_extra_into_histogram()
+
+def move_underflow_into_hist(histogram):
+    '''Move underflow bins into the histogram'''
+    num_bins = histogram.GetNbinsX()
+    histogram.SetBinContent(1, histogram.GetBinContent(0) + histogram.GetBinContent(1))
+    histogram.SetBinContent(0,0)
+
+    return histogram
+## end move_underflow_into_histogram()
+
+def move_overflow_into_hist(histogram):
+    '''Move overflow bins into the histogram'''
+    num_bins = histogram.GetNbinsX()
+    histogram.SetBinContent(num_bins, histogram.GetBinContent(num_bins) + histogram.GetBinContent(num_bins+1))
+    histogram.SetBinContent(num_bins+1, 0)
+
+    return histogram
+## end move_overflow_into_histogram()
 
 def configure_stack(stack_plot, plot_max):
     stack_plot.SetTitle(';;Events')

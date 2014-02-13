@@ -62,14 +62,14 @@ jet tag categories:
 
 lepton categories:
     mu_mu:
-        #data sample: DoubleMu
-        data sample: inclusive_data
+        #data samples: [DoubleMu]
+        data samples: [inclusive_data]
     mu_ele:
-        #data sample: MuEG
-        data sample: inclusive_data
+        #data samples: [MuEG]
+        data samples: [inclusive_data]
     ele_ele:
-        #data sample: DoubleElectron
-        data sample: inclusive_data
+        #data samples: [DoubleElectron]
+        data samples: [inclusive_data]
 
 weights:
     - RecoIDIsoSIPSF_2lep #CERN lepton SF

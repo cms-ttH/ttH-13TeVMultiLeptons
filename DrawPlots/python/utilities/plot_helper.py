@@ -90,17 +90,18 @@ def setup_web_posting(directories, depth=1, *extra_files_to_post):
     www_plot_directories = [os.path.join(www_base_directory, directory) for directory in directories]
     setup_www_directories(www_plot_directories, depth, *extra_files_to_post)
 
-def is_matching_data_sample(lepton_category_data_sample, sample):
-    if lepton_category_data_sample in sample:
-        return True
-    elif 'inclusive_data' in lepton_category_data_sample and 'inclusive_data' in sample:
-        return True
-    elif 'DoubleMu' in lepton_category_data_sample and 'DoubleMu' in sample:
-        return True
-    elif 'DoubleElectron' in lepton_category_data_sample and 'DoubleElectron' in sample:
-        return True
-    elif 'MuEG' in lepton_category_data_sample and 'MuEG' in sample:
-        return True
+def is_matching_data_sample(lepton_category_data_samples, sample):
+    for data_sample in lepton_category_data_samples:
+        if data_sample in sample:
+            return True
+        elif 'inclusive_data' in data_sample and 'inclusive_data' in sample:
+            return True
+        elif 'DoubleMu' in data_sample and 'DoubleMu' in sample:
+            return True
+        elif 'DoubleElectron' in data_sample and 'DoubleElectron' in sample:
+            return True
+        elif 'MuEG' in data_sample and 'MuEG' in sample:
+            return True
     return False
 
 class Plot:
@@ -511,31 +512,37 @@ class SampleInformation:
                       'is_signal': False,
                       #'x_section': 0.7046*0.215, #WH
                       #'x_section': 0.4153*0.215, #ZH
-                      'x_section': 0.1293*0.215, #ttH125
+                      #'x_section': 0.1293*0.215, #ttH125
+                      'x_section': 0.5516*0.215, #Approx inclusive
                       'x_section_error': 0.0,
                       #'num_generated': 115855}, #WH
                       #'num_generated': 62466}, #ZH
-                      'num_generated': 21813}, #ttH125
+                      #'num_generated': 21813}, #ttH125
+                      'num_generated': 200134}, #Approx inclusive
             
             'VH_tautau': {'sample_type': 'MC',
                           'is_signal': False,
                           #'x_section': 0.7046*0.0632, #WH
                           #'x_section': 0.4153*0.0632, #ZH
-                          'x_section': 0.1293*0.0632, #ttH125
+                          #'x_section': 0.1293*0.0632, #ttH125
+                          'x_section': 0.5516*0.0632, #Approx inclusive
                           'x_section_error': 0.0,
                           #'num_generated': 104098}, #WH
                           #'num_generated': 56222}, #ZH
-                          'num_generated': 19580}, #ttH125
+                          #'num_generated': 19580}, #ttH125
+                          'num_generated': 179900}, #Approx inclusive
             
             'VH_ZZ': {'sample_type': 'MC',
                       'is_signal': False,
                       #'x_section': 0.7046*0.0264, #WH
                       #'x_section': 0.4153*0.0264, #ZH
-                      'x_section': 0.1293*0.0264, #ttH125
+                      #'x_section': 0.1293*0.0264, #ttH125
+                      'x_section': 0.4676*0.0264, #Approx inclusive
                       'x_section_error': 0.0,
                       #'num_generated': 133079}, #WH
                       #'num_generated': 276205}, #ZH
-                      'num_generated': 50505}, #ttH125
+                      #'num_generated': 50505}, #ttH125
+                      'num_generated': 459789}, #Approx inclusive
             
             #All single top samples use ND x_sec, x_sec error, and number processed
             'singlet_s': {'sample_type': 'MC',

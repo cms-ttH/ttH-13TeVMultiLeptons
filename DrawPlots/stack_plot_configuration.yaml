@@ -24,18 +24,18 @@ lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
 lepton categories:
     mu_mu:
         #data sample: DoubleMu
-        data sample: inclusive_data
+        data samples: [inclusive_data]
         excluded samples: [inclusive_data_QF_sideband]
         tex name: " #mu #mu "
         
     mu_ele:
         #data sample: MuEG
-        data sample: inclusive_data
+        data samples: [inclusive_data]
         excluded samples: []
         tex name: " #mu e "
     ele_ele:
         #data sample: DoubleElectron
-        data sample: inclusive_data
+        data samples: [inclusive_data]
         excluded samples: []
         tex name: " e e "
 
@@ -65,6 +65,7 @@ signal samples:
     ttH125:
         draw name: "t#bar{t}H125"
         color: kRed
+        samples: [ttH125]
         stack or line: stack
         line width: 2 # must be integer
         scale: 1.0
