@@ -61,7 +61,7 @@ def make_histos(args, config, samples, lepton_categories):
         for lepton_category in lepton_categories:
             lepton_category_cut_strings = config.get('%s cuts' % lepton_category, {}).values()
             if sample_info.sample_type == 'data' or 'sideband' in sample_info.sample_type:
-                if not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data sample'], sample):
+                if not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data samples'], sample):
                     continue
 
             for jet_tag_category in config['jet tag categories']:
