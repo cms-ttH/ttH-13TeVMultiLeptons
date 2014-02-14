@@ -93,6 +93,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     mc_sum = 0.0
     signal_sum = 0.0
     data_sum = 0.0
+    all_signals = 0.0
 
     systematics_by_sample = {}
     # Sum histograms in each sample group, then add summed histos to stack plot, legend, and histogram_dictionary
@@ -172,6 +173,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
 
         yields[jet_tag_category][signal_samples[sample_group]['draw name']][lepton_category] = signal_histogram.Integral()
         raw_yields[jet_tag_category][signal_samples[sample_group]['draw name']][lepton_category] = signal_histogram.GetEntries()
+        all_signals += signal_sum
 
     ## Draw the data histogram, put in legend
     if not config['blinded']:
@@ -228,7 +230,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
 
     stack_plot_legend.AddEntry(mc_error_histogram, 'Sum MC (%0.2f) ' % (mc_sum + signal_sum), 'f')
     yields[jet_tag_category]['all backgrounds'][lepton_category] = mc_sum
-    yields[jet_tag_category]['all signals'][lepton_category] = signal_sum
+    yields[jet_tag_category]['all signals'][lepton_category] = all_signals
 
     plot_max = stack_plot.GetMaximum()
     if signal_histogram: plot_max = max(plot_max, signal_histogram.GetMaximum())
