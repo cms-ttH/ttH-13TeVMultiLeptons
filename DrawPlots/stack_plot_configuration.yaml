@@ -27,7 +27,7 @@ lepton categories:
         data samples: [inclusive_data]
         excluded samples: [inclusive_data_QF_sideband]
         tex name: " #mu #mu "
-        
+
     mu_ele:
         #data sample: MuEG
         data samples: [inclusive_data]
@@ -59,8 +59,8 @@ systematics:
     - csvWeightHFDown
     - csvWeightLFUp
     - csvWeightLFDown
-                                    
-# Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
+
+# Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized)
 signal samples:
     ttH125:
         draw name: "t#bar{t}H125"
@@ -93,75 +93,66 @@ background samples:
     DoubleMu_NP_sideband:
         draw name: "Fakes"
         color: kGray
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: [40PercentRateUp, 40PercentRateDown]
         samples: [DoubleMu_NP_sideband]
 
     inclusive_data_NP_sideband:
         draw name: "Fakes"
         color: kGray
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: [40PercentRateUp, 40PercentRateDown]
         samples: [inclusive_data_NP_sideband]
 
     MuEG_NP_sideband:
         draw name: "Fakes"
         color: kGray
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: [40PercentRateUp, 40PercentRateDown]
         samples: [MuEG_NP_sideband]
 
     DoubleElectron_NP_sideband:
         draw name: "Fakes"
         color: kGray
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: [40PercentRateUp, 40PercentRateDown]
         samples: [DoubleElectron_NP_sideband]
 
     Others:
         draw name: "Rare SM"
         color: kSpring+8
-        systematics: all
         samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
 
     ttbarGStar:
         draw name: "t#bar{t}G*"
         color: kCyan-3
-        systematics: all
         samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
 
     wz_lll:
         draw name: "WZ"
         color: kViolet-4
-        systematics: all
         samples: [wz_lll]
 
     zz_llll:
         draw name: "ZZ"
         color: kAzure-9
-        systematics: all
         samples: [zz_llll]
 
     ttbarG:
         draw name: "t#bar{t}G"
         color: kGray+3
-        systematics: all
         samples: [ttbarG]
 
     ttbarZ:
         draw name: "t#bar{t}Z"
         color: kSpring+2
-        systematics: all
         samples: [ttbarZ]
 
     ttbarW:
         draw name: "t#bar{t}W"
         color: kGreen-5
-        systematics: all
         samples: [ttbarW]
 
     ttbarWW:
         draw name: "t#bar{t}WW"
         color: kBlue-9
-        systematics: all
         samples: [ttbarWW]
-
 
 #distribution: [title, underflow, overflow]
 distributions:

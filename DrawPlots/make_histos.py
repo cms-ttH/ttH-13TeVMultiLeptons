@@ -15,7 +15,7 @@ def main():
     parser.add_argument('-l', '--lepton_category', help='Run on a single lepton category.  Default is to run on all lepton categories listed in the configuration file.')
     parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
     parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
-    parser.add_argument('-s', '--sample', action='append', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
+    parser.add_argument('-s', '--sample', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
     parser.add_argument('--label', help='Override the label set in the configuration file with LABEL')
     args = parser.parse_args()
 
@@ -25,9 +25,10 @@ def main():
     if args.label:
         config['label'] = args.label
 
-    samples = config['samples'].keys()
+    #use common systematics and weight as default for all samples
+    config['samples'] = dict((k, v if v else {'systematics':'common', 'weights':'common'}) for k, v in config['samples'].items())
     if args.sample:
-        samples = args.sample
+        config['samples'] = dict(((k, v) for k, v in config['samples'].items() if k == args.sample))
 
     lepton_categories = config['lepton categories']
     if args.lepton_category:
@@ -39,9 +40,9 @@ def main():
         plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name)
 
     if args.batch:
-        submit_batch_jobs(config, samples, lepton_categories)
+        submit_batch_jobs(config, config['samples'], lepton_categories)
     else:
-        make_histos(args, config, samples, lepton_categories)
+        make_histos(args, config, config['samples'], lepton_categories)
 
     if args.web:
         if args.batch:
@@ -51,12 +52,12 @@ def main():
             print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
 
 def make_histos(args, config, samples, lepton_categories):
-    for sample in samples:
-        sample_dict = config['samples'][sample]
-        if sample_dict.get('additional cuts',{}):
-            sample_info = plot_helper.SampleInformation(sample.replace(sample_dict['additional cuts'][0],''))
-        else:
-            sample_info = plot_helper.SampleInformation(sample)
+    for sample, sample_dict in samples.items():
+        additional_cuts = ''
+        sample_tag = ''
+        if sample_dict.get('additional cuts'):
+            sample_tag, additional_cuts = sample_dict['additional cuts']
+        sample_info = plot_helper.SampleInformation(sample.replace(sample_tag, ''))
 
         for lepton_category in lepton_categories:
             lepton_category_cut_strings = config.get('%s cuts' % lepton_category, {}).values()
@@ -68,47 +69,40 @@ def make_histos(args, config, samples, lepton_categories):
                 output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
-                systematics_list = plot_helper.customize_systematics(config['systematics'], config['samples'][sample].get('systematics', 'all'))
+                systematics_list = plot_helper.customize_systematics(config['systematics'], sample_dict.get('systematics', 'common'))
                 if config['skip systematics']:
                     systematics_list = ['nominal']
                 for systematic in systematics_list:
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
 
                     systematic_weight_string, systematic_label = plot_helper.get_systematic_info(systematic)
-                    if sample_dict.get('additional cuts',{}):
-                        source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], sample.replace(sample_dict['additional cuts'][0],''), config['label'])
-                    else:
-                        source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], sample, config['label'])
+                    source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], sample.replace(sample_tag,''), config['label'])
                     if args.file:
                         source_file_name = args.file
                     source_file = ROOT.TFile(source_file_name)
                     tree = source_file.Get('summaryTree')
 
                     draw_string_maker = plot_helper.DrawStringMaker()
-                    draw_string_maker.append_selection_requirements(config['common cuts'].values(), lepton_category_cut_strings)
+                    draw_string_maker.append_selection_requirements(config['common cuts'].values(),
+                                                                    lepton_category_cut_strings,
+                                                                    [config['jet tag categories'][jet_tag_category]],
+                                                                    [additional_cuts]) #additional_cuts is empty by default
                     if sample_info.sample_type == 'NP_sideband':
                         draw_string_maker.append_selection_requirements(config.get('NP sideband cuts', {}).values())
                     elif sample_info.sample_type == 'QF_sideband':
                         draw_string_maker.append_selection_requirements(config.get('QF sideband cuts', {}).values())
                     else:
                         draw_string_maker.append_selection_requirements(config.get('regular selection cuts', {}).values())
-                    draw_string_maker.append_selection_requirement(config['jet tag categories'][jet_tag_category])
-                    if (sample_dict.get('additional cuts',{})):
-                        draw_string_maker.append_selection_requirement(sample_dict['additional cuts'][1])
 
                     if not args.no_weights:
-                        draw_string_maker.multiply_by_factor(systematic_weight_string)
-                    if sample_info.sample_type == 'MC':
-                        if 'triggerSF' in config['weights']:
+                        if sample_info.sample_type == 'MC' and 'triggerSF' in config['weights']:
                             matched_SF = draw_string_maker.get_matched_SF(lepton_category)
                             config['weights'] = [matched_SF if x=='triggerSF' else x for x in config['weights']]
-
-                    weights = plot_helper.customize_list(config['weights'], config['samples'][sample].get('weights', 'all'))
-                    draw_string_maker.multiply_by_factors(weights)
+                        weights = plot_helper.customize_list(config['weights'], sample_dict.get('weights', 'common'))
+                        draw_string_maker.multiply_by_factors(weights, systematic_weight_string)
 
                     if sample_info.sample_type not in ['MC', 'data'] and 'sideband' not in sample_info.sample_type:
-                        print 'Invalid sample_type %s is neither data, sideband, nor MC' % (sample_info.sample_type)
-                        sys.exit()
+                        sys.exit('Invalid sample_type must be data, sideband, or MC' % (sample_info.sample_type))
 
                     config = plot_helper.append_integral_histo(config)
                     for distribution in config['distributions'].keys():

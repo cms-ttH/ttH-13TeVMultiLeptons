@@ -93,73 +93,37 @@ systematics:
     - csvWeightLFUp
     - csvWeightLFDown
 
-#weights: all ---> weight by everything in "weights" section above
-#weights: none ---> don't apply any weight
-#weights: all+weight1 ---> weight by everything in the "weights" section above, and also by weight1
-#weights: all+weight1-weight2 ---> weight by everything in the "weights" section above except for weight2, and also by weight1
-#weights: weight1+weight2 ---> weight only by weight1 and weight2
-#same idea for systematics
+
+# Samples can indicate customized weights (default is common), systematics (default is common), and additional cuts (default is none).
+# If an entry is missing, the default will be used. Options for weight/systematic customization are:
+# none, common (use all listed in the common entry above), or a list.  Example: assume the common weights are weight1 and weight2.
+# weights: common               --> weights = [weight1, weight2]
+# weights: [common, weight3]    --> weights = [weight1, weight2, weight3]
+# weights: [weight3]            --> weights = [weight3]
+
 samples:
+    wz_lll:
+    zz_llll:
+    www:
+    wwz:
+    ttbarW:
+    ttbarWW:
+    ttbarZ:
+    ttbarG:
+    ttbarGStar_ee:
+    ttbarGStar_mm:
+    ttbarGStar_tt:
+    tbZ_ll:
+    WpWpqq:
+    WmWmqq:
+    WWDPI:
     ttH125:
-        weights: all
-        systematics: all
     ttH125_tt:
-        weights: all
-        systematics: all
         additional cuts: ['_tt', higgs_decay_type == 4]
     ttH125_WW:
-        weights: all
-        systematics: all
         additional cuts: ['_WW', higgs_decay_type == 2]
     ttH125_ZZ:
-        weights: all
-        systematics: all
         additional cuts: ['_ZZ', higgs_decay_type == 3]
-    wz_lll:
-        weights: all
-        systematics: all
-    zz_llll:
-        weights: all
-        systematics: all
-    www:
-        weights: all
-        systematics: all
-    wwz:
-        weights: all
-        systematics: all
-    ttbarW:
-        weights: all
-        systematics: all
-    ttbarWW:
-        weights: all
-        systematics: all
-    ttbarZ:
-        weights: all
-        systematics: all
-    ttbarG:
-        weights: all
-        systematics: all
-    ttbarGStar_ee:
-        weights: all
-        systematics: all
-    ttbarGStar_mm:
-        weights: all
-        systematics: all
-    ttbarGStar_tt:
-        weights: all
-        systematics: all
-    tbZ_ll:
-        weights: all
-        systematics: all
-    WpWpqq:
-        weights: all
-        systematics: all
-    WmWmqq:
-        weights: all
-        systematics: all
-    WWDPI:
-        weights: all
-        systematics: all
     inclusive_data:
         weights: none
         systematics: nominal
@@ -174,16 +138,16 @@ samples:
         systematics: nominal
     inclusive_data_NP_sideband:
         weights: DataDrivenFR_NP
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: [40PercentRateUp, 40PercentRateDown]
     DoubleMu_NP_sideband:
         weights: DataDrivenFR_NP
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: [40PercentRateUp, 40PercentRateDown]
     MuEG_NP_sideband:
         weights: DataDrivenFR_NP
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: [40PercentRateUp, 40PercentRateDown]
     DoubleElectron_NP_sideband:
         weights: DataDrivenFR_NP
-        systematics: 40PercentRateUp+40PercentRateDown
+        systematics: [40PercentRateUp, 40PercentRateDown]
     inclusive_data_QF_sideband:
         weights: DataDrivenFR_QF
         systematics: nominal

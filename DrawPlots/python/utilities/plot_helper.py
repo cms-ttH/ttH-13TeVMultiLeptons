@@ -7,6 +7,7 @@ import shutil
 import collections
 import glob
 import time
+import itertools
 from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import DefaultOrderedDict
 
 def append_integral_histo(config):
@@ -109,9 +110,11 @@ class Plot:
         self.plot_name = plot_name
         (num_bins, x_min, x_max) = parameters['binning']
 
-        if parameters['plot type'] == 'TH1F':
+        if parameters.get('plot type', 'TH1F') == 'TH1F':
             title = '%s;%s;%s' % (sample, parameters['axis labels'][0], parameters['axis labels'][1])
             self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
+            if parameters.get('can rebin'):
+                self.plot.SetBit(ROOT.TH1.kCanRebin)
             try:
                 tree.Project(self.plot_name, parameters['expression'], draw_string)
             except AttributeError:
@@ -167,21 +170,23 @@ class DrawStringMaker:
         self.update_draw_string()
 
     def append_selection_requirement(self, cut_string):
-        self.requirements.append(cut_string)
+        if cut_string != '':
+            self.requirements.append(cut_string)
 
         self.update_draw_string()
 
     def append_selection_requirements(self, *cut_string_lists):
-        for cut_string_list in cut_string_lists:
-            for cut_string in cut_string_list:
-                self.append_selection_requirement(cut_string)
+        cut_string_list = list(itertools.chain(*cut_string_lists))
+        for cut_string in cut_string_list:
+            self.append_selection_requirement(cut_string)
 
     def multiply_by_factor(self, weight):
         self.factors.append(str(weight))
 
         self.update_draw_string()
 
-    def multiply_by_factors(self, weights):
+    def multiply_by_factors(self, *weights):
+        weights = list(itertools.chain(*weights))
         for weight in weights:
             self.multiply_by_factor(weight)
 
@@ -719,32 +724,6 @@ def get_systematic_info(systematic):
 
     return (dictionary[systematic]['weight_string'], dictionary[systematic]['systematic_label'])
 
-#This function takes a list and adds or removes items from it depending on 'customization_string'.
-#It can be used to adapt systematics or weights lists in a sample-specific way.
-def customize_list(item_list, customization_string):
-    customization_string = customization_string.strip()
-    if 'all' not in customization_string or not item_list:
-        item_list = []
-
-    item_set = set(item_list) #copy into a set for duplicate removal
-
-    import re
-    items_to_add = []
-    first_item = customization_string.strip() #If there is no '+' or '-', there must only be one term
-    first_item_match = re.search('.*?(?=(\+|\-))', customization_string) #Sorry for the nasty regular expressions.  This gets the first term in customization_string if it's followed by a '+' or '-'
-    if first_item_match:
-        first_item = first_item_match.group(0).strip()
-    if first_item != 'all' and first_item != '' and first_item != 'none':
-        items_to_add.append(first_item)
-
-    items_to_add.extend([match.strip() for match in re.findall('\+(.\w*)', customization_string)]) #This gets a item_list of all terms that come after a '+' in customization_string
-    item_set = item_set.union(set(items_to_add))
-
-    items_to_remove = [match.strip() for match in re.findall('\-(.\w*)', customization_string)]
-    item_set = item_set.difference(set(items_to_remove))
-
-    return list(item_set)
-
 def customize_systematics(systematics, customization_string):
     customized_systematics = customize_list(systematics, customization_string)
 
@@ -752,6 +731,21 @@ def customize_systematics(systematics, customization_string):
         customized_systematics.append('nominal')
 
     return customized_systematics
+
+def customize_list(common_list, customization_list):
+    if customization_list == 'common':
+        customized_list = common_list
+    elif customization_list == 'none':
+        customized_list = []
+    elif 'common' in customization_list:
+        customization_list.remove('common')
+        customized_list = list(set(common_list+customization_list))
+    elif isinstance(customization_list, str):
+        customized_list = [customization_list]
+    else:
+        customized_list = customization_list
+
+    return customized_list
 
 class Yields:
     def __init__(self, jet_tag_categories):
