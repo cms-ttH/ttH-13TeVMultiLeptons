@@ -98,7 +98,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     systematics_by_sample = {}
     # Sum histograms in each sample group, then add summed histos to stack plot, legend, and histogram_dictionary
     for sample_group in background_samples: # Add samples in each sample group together
-        if sample_group in lepton_categories[lepton_category]['excluded samples']:
+        if sample_group in lepton_categories[lepton_category].get('excluded samples', []):
             continue
         if 'sideband' in sample_group and not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data samples'], sample_group):
             continue
@@ -178,7 +178,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
     ## Draw the data histogram, put in legend
     if not config['blinded']:
         group_histogram = None
-        samples_in_group = config['lepton categories'][lepton_category]['data samples']
+        samples_in_group = config['lepton categories'][lepton_category].get('data samples', [])
         for sample in samples_in_group:
             try:
                 original_histogram = get_histogram(distribution, 'nominal', sample, lepton_category, jet_tag_category, 'data')
@@ -216,9 +216,9 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
         mc_error_histogram.SetBinContent(i, stack_plot.GetStack().Last().GetBinContent(i))
         bin_error_squared = math.pow(lumi_trigger_SF_error * stack_plot.GetStack().Last().GetBinContent(i), 2)
         for sample_group, systematics in systematics_by_sample.items(): #systematics_by_sample is a dictionary (keys: samples and sample groups, values: systematics list)
-            if sample_group in lepton_categories[lepton_category]['excluded samples']:
+            if sample_group in lepton_categories[lepton_category].get('excluded samples', []):
                 continue
-            if 'sideband' in sample_group and not plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data samples'], sample_group):
+            if 'sideband' in sample_group and not plot_helper.is_matching_data_sample(lepton_categories[lepton_category].get('data samples', []), sample_group):
                 continue
             for systematic in systematics:
                 bin_error_squared += math.pow(histogram_dictionary[sample_group+'_'+systematic].GetBinContent(i) - histogram_dictionary[sample_group+'_nominal'].GetBinContent(i), 2)
@@ -341,6 +341,8 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
 
     histogram.SetDirectory(0) ##Decouples histogram from root file
 
+    if distributions[distribution][0] == '':
+        distributions[distribution][0] = histogram.GetXaxis().GetTitle()
     if distributions[distribution][1]:
         histogram = move_underflow_into_hist(histogram)
     if distributions[distribution][2]:
