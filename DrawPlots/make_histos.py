@@ -13,6 +13,7 @@ def main():
     parser.add_argument('-p', '--pdf', action='store_true', help='Save a PDF of each plot. Default is not to save a PDF.')
     parser.add_argument('-w', '--web', action='store_true', help='Post each plot to the user\'s AFS space.')
     parser.add_argument('-l', '--lepton_category', help='Run on a single lepton category.  Default is to run on all lepton categories listed in the configuration file.')
+    parser.add_argument('-j', '--jet_tag_category', help='Run on a single jet tag category.  Default is to run on all jet tag categories listed in the configuration file.')
     parser.add_argument('-n', '--no_weights', action='store_true', help='Don\'t apply any normalization or weights.')
     parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
     parser.add_argument('-s', '--sample', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
@@ -26,13 +27,17 @@ def main():
         config['label'] = args.label
 
     #use common systematics and weight as default for all samples
-    config['samples'] = dict((k, v if v else {'systematics':'common', 'weights':'common'}) for k, v in config['samples'].items())
+    samples = dict((k, v if v else {'systematics':'common', 'weights':'common'}) for k, v in config['samples'].items())
     if args.sample:
-        config['samples'] = dict(((k, v) for k, v in config['samples'].items() if k == args.sample))
+        samples = dict(((k, v) for k, v in samples.items() if k == args.sample))
 
-    lepton_categories = config['lepton categories']
+    jet_tag_categories = config['jet tag categories']
+    if args.jet_tag_category:
+        jet_tag_categories = dict(((k, v) for k, v in config['jet tag categories'].items() if k == args.jet_tag_category))
+
+    lepton_categories = config['lepton categories'].keys()
     if args.lepton_category:
-        lepton_categories = {args.lepton_category: lepton_categories[args.lepton_category]}
+        lepton_categories = [args.lepton_category]
 
     plot_helper.make_sure_directories_exist([os.path.join(config['output directory'], category) for category in lepton_categories])
     if args.web:
@@ -40,9 +45,9 @@ def main():
         plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name)
 
     if args.batch:
-        submit_batch_jobs(config, config['samples'], lepton_categories)
+        submit_batch_jobs(config, samples, lepton_categories, jet_tag_categories)
     else:
-        make_histos(args, config, config['samples'], lepton_categories)
+        make_histos(args, config, samples, lepton_categories, jet_tag_categories)
 
     if args.web:
         if args.batch:
@@ -51,19 +56,21 @@ def main():
             plot_helper.update_indexes(config['output directory'])
             print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
 
-def make_histos(args, config, samples, lepton_categories):
+def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
     for sample, sample_dict in samples.items():
         tree_sample = sample_dict.get('tree sample', sample)
         additional_cuts = sample_dict.get('additional cuts', [])
         sample_info = plot_helper.SampleInformation(tree_sample)
 
-        for lepton_category, lepton_dict in lepton_categories.items():
-            lepton_category_cut_strings = lepton_dict.get('cuts', {}).values()
+        for lepton_category in lepton_categories:
+            lepton_category_cut_strings = config['lepton categories'][lepton_category].get('cuts', {}).values()
+            if lepton_category == 'inclusive':
+                lepton_category_cut_strings = ['('+' || '.join(['('+' && '.join(lepton_dict.get('cuts').values())+')' for lepton_dict in config['lepton categories'].values() if lepton_dict.get('cuts')])+')']
             if sample_info.sample_type == 'data' or 'sideband' in sample_info.sample_type:
-                if not plot_helper.is_matching_data_sample(lepton_dict['data samples'], sample):
+                if not plot_helper.is_matching_data_sample(config['lepton categories'][lepton_category]['data samples'], sample):
                     continue
 
-            for jet_tag_category in config['jet tag categories']:
+            for jet_tag_category, jet_tag_category_cut_string in jet_tag_categories.items():
                 output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
@@ -83,7 +90,7 @@ def make_histos(args, config, samples, lepton_categories):
                     draw_string_maker = plot_helper.DrawStringMaker()
                     draw_string_maker.append_selection_requirements(config['common cuts'].values(),
                                                                     lepton_category_cut_strings,
-                                                                    [config['jet tag categories'][jet_tag_category]],
+                                                                    [jet_tag_category_cut_string],
                                                                     additional_cuts) #additional_cuts is empty by default
                     if sample_info.sample_type == 'NP_sideband':
                         draw_string_maker.append_selection_requirements(config.get('NP sideband cuts', {}).values())
@@ -117,28 +124,26 @@ def make_histos(args, config, samples, lepton_categories):
                     source_file.Close() #end systematic
                 output_file.Close() #end jet tag category
 
-def submit_batch_jobs(config, samples, lepton_categories):
+def submit_batch_jobs(config, samples, lepton_categories, jet_tag_categories):
     plot_helper.make_sure_directories_exist(['batch_logs/%s' % config['label']])
 
-    argument_string = ''
-    for argument in sys.argv[1:]:
-        if argument != '-b' and argument != '-batch':
-            argument_string += argument + ' '
+    argument_string = ' '.join([a for a in sys.argv[1:] if a != '-b' and a != '-batch'])
 
     condor_header = 'universe = vanilla \nexecutable = make_histos.py \nnotification = Never \ngetenv = True \n+IsExpressJob = True'
     for sample in samples:
         for lepton_category in lepton_categories:
-            condor_submit_file = open('make_histos_batch.submit', 'w')
-            condor_submit_file.write(condor_header)
-            condor_submit_file.write('\narguments = -s %s -l %s %s' % (sample, lepton_category, argument_string))
-            condor_submit_file.write('\nlog = batch_logs/%s/%s_%s_%s.log' % (config['label'], config['label'], sample, lepton_category))
-            condor_submit_file.write('\noutput = batch_logs/%s/%s_%s_%s.stdout' % (config['label'], config['label'], sample, lepton_category))
-            condor_submit_file.write('\nerror = batch_logs/%s/%s_%s_%s.stderr' % (config['label'], config['label'], sample, lepton_category))
-            condor_submit_file.write('\nqueue 1')
-            condor_submit_file.close()
+            for jet_tag_category in jet_tag_categories:
+                condor_submit_file = open('make_histos_batch.submit', 'w')
+                condor_submit_file.write(condor_header)
+                condor_submit_file.write('\narguments = -s %s -l %s -j %s %s' % (sample, lepton_category, jet_tag_category, argument_string))
+                condor_submit_file.write('\nlog = batch_logs/%s/%s_%s_%s_%s.log' % (config['label'], config['label'], sample, jet_tag_category, lepton_category))
+                condor_submit_file.write('\noutput = batch_logs/%s/%s_%s_%s_%s.stdout' % (config['label'], config['label'], sample, jet_tag_category, lepton_category))
+                condor_submit_file.write('\nerror = batch_logs/%s/%s_%s_%s_%s.stderr' % (config['label'], config['label'], sample, jet_tag_category, lepton_category))
+                condor_submit_file.write('\nqueue 1')
+                condor_submit_file.close()
 
-            os.popen('condor_submit make_histos_batch.submit')
-            print '\nSubmitting batch jobs for sample %s, lepton category %s... ' % (sample, lepton_category)
+                os.popen('condor_submit make_histos_batch.submit')
+                print '\nSubmitting batch jobs for sample %s, lepton category %s, jet tag category %s... ' % (sample, lepton_category, jet_tag_category)
 
 if __name__ == '__main__':
     main()
