@@ -316,7 +316,8 @@ def get_group_histogram(distribution, systematic, samples_in_group, lepton_categ
                 group_histogram = sample_histogram
             else:
                 group_histogram.Add(sample_histogram)
-        except:
+        except Exception, e:
+            print e
             continue
 
     return group_histogram
