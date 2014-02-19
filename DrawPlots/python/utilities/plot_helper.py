@@ -191,13 +191,13 @@ class DrawStringMaker:
             self.multiply_by_factor(weight)
 
     def get_matched_SF(self, lepton_category):
-        if lepton_category == 'mu_mu':
+        if 'mu_mu' in lepton_category:
             matched_SF = 'twoMuonTriggerSF'
-        elif lepton_category == 'ele_ele':
+        elif 'ele_ele' in lepton_category:
             matched_SF = 'twoElectronTriggerSF'
-        elif lepton_category == 'mu_ele':
+        elif 'mu_ele' in lepton_category:
             matched_SF = 'muonElectronTriggerSF'
-        elif lepton_category == 'inclusive' or lepton_category == '3l':
+        elif 'inclusive' in lepton_category or '3l' in lepton_category or '4l' in lepton_category:
             matched_SF = '1.0'
 
         return matched_SF
@@ -518,36 +518,36 @@ class SampleInformation:
                       #'x_section': 0.7046*0.215, #WH
                       #'x_section': 0.4153*0.215, #ZH
                       #'x_section': 0.1293*0.215, #ttH125
-                      'x_section': 0.5516*0.215, #Approx inclusive
+                      'x_section': (0.7046+0.4153+0.1293)*0.215, #Approx inclusive
                       'x_section_error': 0.0,
                       #'num_generated': 115855}, #WH
                       #'num_generated': 62466}, #ZH
                       #'num_generated': 21813}, #ttH125
-                      'num_generated': 200134}, #Approx inclusive
+                      'num_generated': (115855+62466+21813)}, #Approx inclusive
             
             'VH_tautau': {'sample_type': 'MC',
                           'is_signal': False,
                           #'x_section': 0.7046*0.0632, #WH
                           #'x_section': 0.4153*0.0632, #ZH
                           #'x_section': 0.1293*0.0632, #ttH125
-                          'x_section': 0.5516*0.0632, #Approx inclusive
+                          'x_section': (0.7046+0.4153+0.1293)*0.0632, #Approx inclusive
                           'x_section_error': 0.0,
                           #'num_generated': 104098}, #WH
                           #'num_generated': 56222}, #ZH
                           #'num_generated': 19580}, #ttH125
-                          'num_generated': 179900}, #Approx inclusive
+                          'num_generated': (104098+56222+19580)}, #Approx inclusive
             
             'VH_ZZ': {'sample_type': 'MC',
                       'is_signal': False,
                       #'x_section': 0.7046*0.0264, #WH
                       #'x_section': 0.4153*0.0264, #ZH
                       #'x_section': 0.1293*0.0264, #ttH125
-                      'x_section': 0.4676*0.0264, #Approx inclusive
+                      'x_section': (0.7046+0.4153+0.1293)*0.0264, #Approx inclusive
                       'x_section_error': 0.0,
                       #'num_generated': 133079}, #WH
                       #'num_generated': 276205}, #ZH
                       #'num_generated': 50505}, #ttH125
-                      'num_generated': 459789}, #Approx inclusive
+                      'num_generated': (133079+276205+50505)}, #Approx inclusive
             
             #All single top samples use ND x_sec, x_sec error, and number processed
             'singlet_s': {'sample_type': 'MC',

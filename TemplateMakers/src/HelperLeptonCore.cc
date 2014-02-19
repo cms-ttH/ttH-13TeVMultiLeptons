@@ -338,6 +338,13 @@ void HelperLeptonCore::initializeInputCollections(edm::EventBase& ev, bool isLep
   electronsRaw = *h_electrons;
   collections.rawElectronCollection = &electronsRaw;
 
+  //-----  Taus
+  edm::InputTag tauTag("BNproducer","selectedPatTausPFlow");
+  ev.getByLabel(tauTag, h_taus);
+
+  tausRaw = *h_taus;
+  collections.rawTauCollection = &tausRaw;
+
   //-----  Jets
   edm::InputTag jetTag("BNproducer","selectedPatJetsPFlow");
   ev.getByLabel(jetTag, h_pfjets);
@@ -483,6 +490,26 @@ void HelperLeptonCore::getCorrectedMet (BEANFileInterface * selectedCollections,
   metCorrected.push_back(tmpMet);
 
   selectedCollections->metCollection = &metCorrected;
+}
+
+void HelperLeptonCore::getTightLoosePreselectedTaus (tauID::tauID tightID, tauID::tauID looseID, tauID::tauID preselectedID, BEANFileInterface * selectedCollections) {
+  tausTight = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), tightID);
+  tausTightLoose = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), looseID);
+  tausLoose = bHelp.GetDifference(tausTightLoose, tausTight);
+
+  //if ( preselectedID==tauID::tauNoCuts ) tausTightLoosePreselected = *(rawCollections.rawTauCollection);
+  //else tausTightLoosePreselected = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), preselectedID);
+  tausTightLoosePreselected = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), preselectedID);
+  tausPreselected = bHelp.GetDifference(tausTightLoosePreselected, tausTightLoose);
+  tausLoosePreselected = bHelp.GetUnion(tausLoose, tausPreselected);
+
+  selectedCollections->tightTauCollection = &tausTight;
+  selectedCollections->looseTauCollection = &tausLoose;
+  selectedCollections->preselectedTauCollection = &tausPreselected;
+
+  selectedCollections->tightLooseTauCollection = &tausTightLoose;
+  selectedCollections->loosePreselectedTauCollection = &tausLoosePreselected;
+  selectedCollections->tightLoosePreselectedTauCollection = &tausTightLoosePreselected;
 }
 
 void HelperLeptonCore::fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections) {

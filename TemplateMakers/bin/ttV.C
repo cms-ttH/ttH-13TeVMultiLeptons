@@ -299,7 +299,7 @@ int main (int argc, char** argv) {
                                                                &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
   kinVars.push_back(&myMHT);
   
-//   TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMinDeltaRLep2Jet("deltaR", "min", "mindr_lep2_jet",
+//   TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMinDeltaRLep2Jet("deltaR", "min", "min_deltaR_lep2_jet",
 //                                                                             &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 2, 2,
 //                                                                             &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
 //   kinVars.push_back(&myMinDeltaRLep2Jet);
@@ -522,7 +522,7 @@ int main (int argc, char** argv) {
   int numEvents = 0;
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
-  int printEvery = 10000;
+  int printEvery = 1000;
 
   for (ev.toBegin(); !ev.atEnd(); ++ev){
     numEvents++;
@@ -537,8 +537,6 @@ int main (int argc, char** argv) {
     lepHelper.initializeInputCollections(ev, true, selectedCollections);
     lepHelper.applyRochesterCorrections(*(lepHelper.rawCollections.rawMuonCollection));
 
-    bool applySmearing = !(lepHelper.isData);
-    //bool applySmearing = false;
     if (!lepHelper.isData) {
       lepHelper.fillMCMatchAny(*(lepHelper.rawCollections.rawMuonCollection), 0.3);
       lepHelper.fillMCMatchAny(*(lepHelper.rawCollections.rawElectronCollection), 0.3);
@@ -550,6 +548,7 @@ int main (int argc, char** argv) {
       lepHelper.scaleMCCollectionDXY(*(lepHelper.rawCollections.rawElectronCollection));
       lepHelper.scaleMCCollectionDXY(*(lepHelper.rawCollections.rawMuonCollection));
     }
+    bool applySmearing = !(lepHelper.isData);
     lepHelper.fillSIP(*(lepHelper.rawCollections.rawMuonCollection), applySmearing);
     lepHelper.fillSIP(*(lepHelper.rawCollections.rawElectronCollection), applySmearing);
     lepHelper.fillLepJetPtRatio(*(lepHelper.rawCollections.rawMuonCollection), *(lepHelper.rawCollections.jetsForLepMVACollection), applySmearing);

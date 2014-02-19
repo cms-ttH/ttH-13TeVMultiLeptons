@@ -13,6 +13,13 @@
 #include "Reflex/Member.h"
 #include "Reflex/Kernel.h"
 
+void getNumExtraPartons(BEANhelper * beanHelper, BEANFileInterface selectedCollections, int & numExtraPartons) {
+
+  numExtraPartons = beanHelper->GetNumExtraPartons(*(selectedCollections.mcParticleCollection));
+
+  return;
+}
+
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections ) {
   unsigned numTightMuons = inputCollections->tightMuonCollection->size();
   unsigned numLooseMuons = inputCollections->looseMuonCollection->size();
@@ -140,6 +147,9 @@ int main (int argc, char** argv) {
 
 //   GenericJetCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"),  "eta", "jet_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
 //   kinVars.push_back(&allJetEta);
+
+   int numExtraPartons = -99;
+   summaryTree->Branch("numExtraPartons", &numExtraPartons);
 
 //   GenericEventCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"),  "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
 //   kinVars.push_back(&runNumber);
@@ -271,6 +281,16 @@ int main (int argc, char** argv) {
     }
 
     //LeptonVarsThisAnalysis(&selectedCollections, LeptonCutThisAnalysis(&selectedCollections), TwoMuon, TwoElectron, MuonElectron);
+
+    getNumExtraPartons(beanHelper, selectedCollections, numExtraPartons);
+    if (myConfig.sampleName.find("_0p") != std::string::npos) { //0 parton samples
+      //Cut to require 0 partons
+      if (numExtraPartons != 0) {
+        numEventsFailCuts++;
+        numEventsPassCuts--;
+        continue;
+      }
+    }
 
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();

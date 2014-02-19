@@ -116,6 +116,13 @@ public:
     tightLooseNonZLeptonCollection(0),
     tightLoosePreselectedZLeptonCollection(0),
     tightLoosePreselectedNonZLeptonCollection(0),
+    rawTauCollection(0),
+    tightTauCollection(0),
+    looseTauCollection(0),
+    preselectedTauCollection(0),
+    tightLooseTauCollection(0),
+    loosePreselectedTauCollection(0),
+    tightLoosePreselectedTauCollection(0),
     metCollection(0),
     metpfType1CorrectedMetBNCollection(0),
     jetCollection(0),
@@ -168,6 +175,14 @@ public:
   BNleptonCollection *  tightLooseNonZLeptonCollection;
   BNleptonCollection *  tightLoosePreselectedZLeptonCollection;
   BNleptonCollection *  tightLoosePreselectedNonZLeptonCollection;
+
+  BNtauCollection *  rawTauCollection;
+  BNtauCollection *  tightTauCollection;
+  BNtauCollection *  looseTauCollection;
+  BNtauCollection *  preselectedTauCollection;
+  BNtauCollection *  tightLooseTauCollection;
+  BNtauCollection *  loosePreselectedTauCollection;
+  BNtauCollection *  tightLoosePreselectedTauCollection;
 
   BNmetCollection *  metCollection;
   BNmetCollection *  metpfType1CorrectedMetBNCollection;
@@ -280,10 +295,52 @@ public:
     return true;
   };
   
+  bool checkRawTaus() {
+    if (rawTauCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkTightTaus() {
+    if (tightTauCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkLooseTaus() {
+    if (looseTauCollection == 0)
+      return false;
+    return true;
+  };
+
+  bool checkPreselectedTaus() {
+    if (preselectedTauCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkTightLooseTaus() {
+    if (tightLooseTauCollection == 0 )
+      return false;
+    return true;
+  };
+  
+  bool checkLoosePreselectedTaus() {
+    if (loosePreselectedTauCollection == 0)
+      return false;
+    return true;
+  };
+
+  bool checkTightLoosePreselectedTaus() {
+    if (tightLoosePreselectedTauCollection == 0 )
+      return false;
+    return true;
+  };
+  
 
   void print () {
 
-    cout << "BEANFileIterface.print() ............." << endl
+    cout << "BEANFileInterface.print() ............." << endl
          << "    rawMuonCollection " << rawMuonCollection << endl
          << "    tightMuonCollection " << tightMuonCollection << endl
          << "    looseMuonCollection " << looseMuonCollection << endl
@@ -292,6 +349,10 @@ public:
          << "    tightElectronCollection " << tightElectronCollection << endl
          << "    looseElectronCollection " << looseElectronCollection << endl
          << "    preselectedElectronCollection " << preselectedElectronCollection << endl
+         << "    rawTauCollection " << rawTauCollection << endl
+         << "    tightTauCollection " << tightTauCollection << endl
+         << "    looseTauCollection " << looseTauCollection << endl
+         << "    preselectedTauCollection " << preselectedTauCollection << endl
          << "    metCollection " << metCollection << endl
          << "    jetCollection " << jetCollection << endl
          << "    mcParticleCollection " << mcParticleCollection << endl

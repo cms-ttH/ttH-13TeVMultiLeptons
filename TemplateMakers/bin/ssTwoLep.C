@@ -18,6 +18,13 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
+void getNumExtraPartons(BEANhelper * beanHelper, BEANFileInterface selectedCollections, int & numExtraPartons) {
+
+  numExtraPartons = beanHelper->GetNumExtraPartons(*(selectedCollections.mcParticleCollection));
+
+  return;
+}
+
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
 
   bool passTwoLepton = false;
@@ -137,6 +144,9 @@ int main (int argc, char** argv) {
   electronID::electronID electronTightID = electronID::electronSideTightMVA;
   electronID::electronID electronLooseID = electronID::electronSideLooseMVA;
   electronID::electronID electronPreselectedID = electronID::electronSide;
+  tauID::tauID tauTightID = tauID::tauMedium;
+  tauID::tauID tauLooseID = tauID::tauVLoose;
+  tauID::tauID tauPreselectedID = tauID::tauNonIso;
 
   // declare your kinematic variables that you want
   // to be written out into the tree
@@ -189,6 +199,15 @@ int main (int argc, char** argv) {
     numTightLeptons.setCutMin(0);
   }
   cutVars.push_back(&numTightLeptons);
+
+  GenericCollectionSizeVariable<BNtauCollection> numAllTaus(&(selectedCollections.tightLoosePreselectedTauCollection), "numAllTaus");
+  kinVars.push_back(&numAllTaus);
+
+  GenericCollectionSizeVariable<BNtauCollection> numTightLooseTaus(&(selectedCollections.tightLooseTauCollection), "numTightLooseTaus");
+  kinVars.push_back(&numTightLooseTaus);
+
+  GenericCollectionSizeVariable<BNtauCollection> numTightTaus(&(selectedCollections.tightTauCollection), "numTightTaus");
+  kinVars.push_back(&numTightTaus);
 
   CSVWeights myCSV(&lepHelper);
   kinVars.push_back(&myCSV);
@@ -288,6 +307,18 @@ int main (int argc, char** argv) {
                           &(selectedCollections.jetCollectionMediumCSV), "medium_btags_by_pt", 1, 99, 110);
   kinVars.push_back(&myHiggsLikeDijetMass110);
 
+  TwoObjectKinematic<BNtauCollection, BNjetCollection>
+  myMinDeltaRTau1Jet("deltaR", "min", "min_deltaR_tau1_jet",
+                     &(selectedCollections.tightLoosePreselectedTauCollection), "all_taus_by_pt", 1, 1,
+                     &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRTau1Jet);
+
+  TwoObjectKinematic<BNtauCollection, BNleptonCollection>
+  myMassTau1Leptons("mass", "all_pairs", "",
+                     &(selectedCollections.tightLoosePreselectedTauCollection), "all_taus_by_pt", 1, 1,
+                    &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 2);
+  kinVars.push_back(&myMassTau1Leptons);
+
   //Variables for CERN same-sign dilepton BDT
   TwoObjectKinematic<BNleptonCollection, BNjetCollection>
   myMHT("pt", "vector_sum", "mht",
@@ -296,10 +327,22 @@ int main (int argc, char** argv) {
   kinVars.push_back(&myMHT);
 
   TwoObjectKinematic<BNleptonCollection, BNjetCollection>
-  myMinDeltaRLep2Jet("deltaR", "min", "mindr_lep2_jet",
+  myMinDeltaRLep1Jet("deltaR", "min", "min_deltaR_lep1_jet",
+                     &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 1,
+                     &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRLep1Jet);
+
+  TwoObjectKinematic<BNleptonCollection, BNjetCollection>
+  myMinDeltaRLep2Jet("deltaR", "min", "min_deltaR_lep2_jet",
                      &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 2, 2,
                      &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
   kinVars.push_back(&myMinDeltaRLep2Jet);
+
+  TwoObjectKinematic<BNleptonCollection, BNjetCollection>
+  myMinDeltaRLep3Jet("deltaR", "min", "mindr_lep3_jet",
+                     &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 3, 3,
+                     &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRLep3Jet);
 
   TwoObjectKinematic<BNmetCollection, BNleptonCollection>
   myMtMetLep("MT", "all_pairs", "",
@@ -507,6 +550,15 @@ int main (int argc, char** argv) {
                                                                    "eta", "tight_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&tightLeptonEta);
 
+  ////////// all taus //////////
+  GenericCollectionMember<double, BNtauCollection> allTauPt(Reflex::Type::ByName("BNtau"), &(selectedCollections.tightLoosePreselectedTauCollection),
+                                                                      "pt", "all_taus_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allTauPt);
+
+  GenericCollectionMember<double, BNtauCollection> allTauEta(Reflex::Type::ByName("BNtau"), &(selectedCollections.tightLoosePreselectedTauCollection),
+                                                                       "eta", "all_taus_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allTauEta);
+
   ////////// all jets //////////
   GenericCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"), &(selectedCollections.jetCollection),
                                                             "pt", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 6);
@@ -593,6 +645,9 @@ int main (int argc, char** argv) {
 //   met6d(Reflex::Type::ByName("BNmet"), &(selectedCollections.metpfType1CorrectedMetBNCollection),
 //        "pfT1jet10pt", "metpfType1CorrectedMetBN",  KinematicVariableConstants::FLOAT_INIT, 1);
 //   kinVars.push_back(&met6d);
+
+  int numExtraPartons = -99;
+  summaryTree->Branch("numExtraPartons", &numExtraPartons);
 
   ////////// event info //////////
   GenericCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"), &(selectedCollections.eventCollection),
@@ -692,6 +747,10 @@ int main (int argc, char** argv) {
     if (debug > 9) cout << "Getting jets "  << endl;
 	lepHelper.getTightCorrectedJets(25.0, 2.4, jetID::jetLoose, &selectedCollections);
 
+    //------------    Taus
+    if (debug > 9) cout << "Getting taus "  << endl;
+    lepHelper.getTightLoosePreselectedTaus(tauTightID, tauLooseID, tauPreselectedID, &selectedCollections);
+
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
@@ -747,6 +806,16 @@ int main (int argc, char** argv) {
     }
 
     LeptonVarsThisAnalysis(&selectedCollections, LeptonCutThisAnalysis(&selectedCollections), TwoMuon, TwoElectron, MuonElectron);
+
+    getNumExtraPartons(beanHelper, selectedCollections, numExtraPartons);
+    if (myConfig.sampleName.find("_0p") != std::string::npos) { //0 parton samples
+      //Cut to require 0 partons
+      if (numExtraPartons != 0) {
+        numEventsFailCuts++;
+        numEventsPassCuts--;
+        continue;
+      }
+    }
 
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();

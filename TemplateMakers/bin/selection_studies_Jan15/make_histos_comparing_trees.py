@@ -32,6 +32,7 @@ config = ConfigParser()
 if verbose: print 'Parsed'
 
 tree_file_1 = ROOT.TFile('~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_ss_v15_all.root' % (args.sample_1) )
+#tree_file_1 = ROOT.TFile('~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files/%s_3l_v23_all.root' % (args.sample_1) )
 tree_1_pass = tree_file_1.Get('summaryTree')
 tree_1_fail = tree_file_1.Get('summaryTree')
 tree_1_shared = tree_file_1.Get('summaryTree')
@@ -379,8 +380,8 @@ for (ND_hist, CERN_hist) in histos:
     nBins_fail_pass = int(round((xMax_fail_pass-xMin_fail_pass)*pow(10,1-mag_fail_pass),-1))
 
     for i in range (nPlus+1):
-        xMin_shared_overlay += min(temp_tree_1_pass.GetMinimum('%s' % ND_hist_sub[i]),temp_tree_2_pass.GetMinimum('%s' % CERN_hist_sub[i]))
-        xMax_shared_overlay += max(temp_tree_1_pass.GetMaximum('%s' % ND_hist_sub[i]),temp_tree_2_pass.GetMaximum('%s' % CERN_hist_sub[i]))    
+        xMin_shared_overlay += min(temp_tree_1_shared.GetMinimum('%s' % ND_hist_sub[i]),temp_tree_2_shared.GetMinimum('%s' % CERN_hist_sub[i]))
+        xMax_shared_overlay += max(temp_tree_1_shared.GetMaximum('%s' % ND_hist_sub[i]),temp_tree_2_shared.GetMaximum('%s' % CERN_hist_sub[i]))
     if xMax_shared_overlay - xMin_shared_overlay == 0:
         xMin_shared_overlay -= 1
         xMax_shared_overlay += 1

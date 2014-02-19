@@ -162,29 +162,10 @@ aliases:
     - &default_num_bins 11
 
 distributions:
-#     all_leptons_by_pt_1_SIP:
-#         expression: all_leptons_by_pt_1_IP / all_leptons_by_pt_1_IPError
-#         plot type: TH1F
-#         axis labels: ['lepton 1 S_{IP}3D', Events]
-#         binning: [*default_num_bins, -10.0, 10.0]
-
-#     all_leptons_by_pt_1_IP:
-#         expression: all_leptons_by_pt_1_IP
-#         plot type: TH1F
-#         axis labels: ['lepton 1 IP', Events]
-#         binning: [*default_num_bins, -0.1, 0.1]
-
-#     all_leptons_by_pt_1_IPError:
-#         expression: all_leptons_by_pt_1_IPError
-#         plot type: TH1F
-#         axis labels: ['lepton 1 IP error', Events]
-#         binning: [*default_num_bins, 0.0, 0.05]
-
-#     all_leptons_by_pt_2_IP:
-#         expression: all_leptons_by_pt_2_IP
-#         plot type: TH1F
-#         axis labels: ['lepton 2 IP', Events]
-#         binning: [*default_num_bins, -0.1, 0.1]
+    numAllLeptons:
+        expression: numAllLeptons
+        axis labels: [number of preselected leptons, Events]
+        binning: [3, 1.5, 4.5]
 
     numJets:
         expression: numJets
@@ -248,61 +229,71 @@ distributions:
 
 #     all_leptons_by_pt_1_lepMVA:
 #         expression: all_leptons_by_pt_1_lepMVA
-#         plot type: TH1F
 #         axis labels: [First lepton MVA, Events]
 #         binning: [*default_num_bins, 0.7, 1.0]
 
 #     all_leptons_by_pt_2_lepMVA:
 #         expression: all_leptons_by_pt_2_lepMVA
-#         plot type: TH1F
 #         axis labels: [Second lepton MVA, Events]
 #         binning: [*default_num_bins, 0.7, 1.0]
 
     all_leptons_by_pt_1_pt:
         expression: all_leptons_by_pt_1_pt
-        plot type: TH1F
         axis labels: [First lepton pT, Events]
         binning: [*default_num_bins, 20, 220]
 
     all_leptons_by_pt_2_pt:
         expression: all_leptons_by_pt_2_pt
-        plot type: TH1F
         axis labels: [Second lepton pT, Events]
         binning: [*default_num_bins, 20, 120]
 
     all_leptons_by_pt_1_eta:
         expression: abs(all_leptons_by_pt_1_eta)
-        plot type: TH1F
         axis labels: [First lepton pseudorapidity, Events]
         binning: [*default_num_bins, 0, 2.5]
 
     all_leptons_by_pt_2_eta:
         expression: abs(all_leptons_by_pt_2_eta)
-        plot type: TH1F
         axis labels: [Second lepton pseudorapidity, Events]
         binning: [*default_num_bins, 0, 2.5]
 
+    all_leptons_by_pt_1_SIP:
+        expression: abs(all_leptons_by_pt_1_SIP)
+        axis labels: ['lepton 1 S_{IP}3D', Events]
+        binning: [*default_num_bins, 0, 5]
+        
+    all_leptons_by_pt_2_SIP:
+        expression: abs(all_leptons_by_pt_2_SIP)
+        axis labels: ['lepton 2 S_{IP}3D', Events]
+        binning: [*default_num_bins, 0, 5]
+        
+    all_leptons_by_pt_1_jetBTagCSV:
+        expression: all_leptons_by_pt_1_jetBTagCSV
+        axis labels: ['lepton 1 jetBTagCSV', Events]
+        binning: [*default_num_bins, 0, 1]
+        
+    all_leptons_by_pt_2_jetBTagCSV:
+        expression: all_leptons_by_pt_2_jetBTagCSV
+        axis labels: ['lepton 2 jetBTagCSV', Events]
+        binning: [*default_num_bins, 0, 1]
+
 #     jets_by_CSV_1_btagCombinedSecVertex:
 #         expression: jets_by_CSV_1_btagCombinedSecVertex
-#         plot type: TH1F
 #         axis labels: [First jet b-tag discriminant, Events]
 #         binning: [*default_num_bins, 0, 1]
 
 #     jets_by_CSV_4_btagCombinedSecVertex:
 #         expression: jets_by_CSV_4_btagCombinedSecVertex
-#         plot type: TH1F
 #         axis labels: [Fourth jet b-tag discriminant, Events]
 #         binning: [*default_num_bins, 0, 1]
 
 #     jets_by_pt_1_pt:
 #         expression: jets_by_pt_1_pt
-#         plot type: TH1F
 #         axis labels: [First jet pT, Events]
 #         binning: [*default_num_bins, 20, 300]
 
 #     jets_by_pt_4_pt:
 #         expression: jets_by_pt_4_pt
-#         plot type: TH1F
 #         axis labels: [Fourth jet pT, Events]
 #         binning: [*default_num_bins, 20, 120]
 

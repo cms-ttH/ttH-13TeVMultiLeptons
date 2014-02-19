@@ -51,8 +51,8 @@ jet tag categories:
 #Systematics used in error bars
 systematics:
     - nominal
-    - weight_PUup
-    - weight_PUdown
+    - weight_PUUp
+    - weight_PUDown
     - topPtWgtDown
     - topPtWgtUp
     - csvWeightHFUp
@@ -156,6 +156,7 @@ background samples:
 
 #distribution: [title, underflow, overflow]
 distributions:
+    numAllLeptons: ['number of preselected leptons', true, true]
     numJets: ['number of jets', true, true]
     numLooseBJets: ['number of loose b-tagged jets', true, true]
     numMediumBJets: ['number of medium b-tagged jets', true, true]
@@ -168,13 +169,16 @@ distributions:
     FinalBDT: ['BDT output', true, true]
     FinalBDT_pos: ['BDT output, positive charge', false, false]
     FinalBDT_neg: ['BDT output, negative charge', false, false]
-#     all_leptons_by_pt_1_SIP: ['First lepton SIP', true, true]
 #     all_leptons_by_pt_1_lepMVA: ['First lepton MVA', true, true]
 #     all_leptons_by_pt_2_lepMVA: ['Second lepton MVA', true, true]
     all_leptons_by_pt_1_pt: ['First lepton pT', 20, true, true]
     all_leptons_by_pt_2_pt: ['Second lepton pT', 20, true, true]
     all_leptons_by_pt_1_eta: ['First lepton pseudorapidity', true, true]
     all_leptons_by_pt_2_eta: ['Second lepton pseudorapidity', true, true]
+    all_leptons_by_pt_1_SIP: ['First lepton SIP', true, true]
+    all_leptons_by_pt_2_SIP: ['Second lepton SIP', true, true]
+    all_leptons_by_pt_1_jetBTagCSV: ['First lepton jetBtagCSV', true, true]
+    all_leptons_by_pt_2_jetBTagCSV: ['Second lepton jetBtagCSV', true, true]
 #     jets_by_pt_1_btagCombinedSecVertex: ['First jet b-tag discriminant', true, true]
 #     jets_by_pt_2_btagCombinedSecVertex: ['Second jet b-tag discriminant', true, true]
 #     jets_by_pt_3_btagCombinedSecVertex: ['Third jet b-tag discriminant', true, true]

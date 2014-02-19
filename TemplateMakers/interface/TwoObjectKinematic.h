@@ -125,11 +125,15 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  //double thisValue = KinematicVariableConstants::DOUBLE_INIT; //Values of each individual object
+  double thisValue = KinematicVariableConstants::DOUBLE_INIT; //Values of each individual object
   double thisValueSum = 0.0; //Sum over each object value
   //double thisValueSumAbs = 0.0; //Sum over absolute value of each object value
   double thisValueIterator = 0.0; //Counting the total number of individual objects
   double thisValueCounter = 0.0; //Counting the total number of individual objects passing some criteria
+  double thisValueMax = KinematicVariableConstants::DOUBLE_INIT; //Max of each object value
+  //double thisValueMaxAbs = KinematicVariableConstants::DOUBLE_INIT; //Max of absolute value of each object value
+  double thisValueMin = KinematicVariableConstants::DOUBLE_INIT; //Min of each object value
+  //double thisValueMinAbs = KinematicVariableConstants::DOUBLE_INIT; //Min of absolute value of each object value
 
   double thisPairValue = KinematicVariableConstants::DOUBLE_INIT; //Values of each pair of objects
   double thisPairValueSum = 0.0; //Sum over value of each object pair
@@ -185,16 +189,21 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         vect1_transverse.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,0.0,ptr((*selCollection1)->at(iObj1))->phi,ptr((*selCollection1)->at(iObj1))->pt);
         thisVectorSum += vect1; thisVectorTransverseSum += vect1_transverse;
         
-        if ( variable == "pt" ) { thisValueSum += vect1.Pt(); thisValueCounter += 1.0*( abs(vect1.Pt() - target_value) < within_value ); }
-        else if ( variable == "pz" ) { thisValueSum += vect1.Pz(); thisValueCounter += 1.0*( abs(vect1.Pz() - target_value) < within_value ); }
-        else if ( variable == "energy" ) { thisValueSum += vect1.E(); thisValueCounter += 1.0*( abs(vect1.E() - target_value) < within_value ); }
-        else if ( variable == "eta" ) { thisValueSum += vect1.Eta(); thisValueCounter += 1.0*( abs(vect1.Eta() - target_value) < within_value ); }
-        else if ( variable == "phi" ) { thisValueSum += vect1.Phi(); thisValueCounter += 1.0*( abs(vect1.Phi() - target_value) < within_value ); }
-        else if ( variable == "absPz" ) { thisValueSum += abs(vect1.Pz()); thisValueCounter += 1.0*( abs(vect1.Pz() - target_value) < within_value ); }
-        else if ( variable == "absEta" ) { thisValueSum += abs(vect1.Eta()); thisValueCounter += 1.0*( abs(vect1.Eta() - target_value) < within_value ); }
-        else if ( variable == "absPhi" ) { thisValueSum += abs(vect1.Phi()); thisValueCounter += 1.0*( abs(vect1.Phi() - target_value) < within_value ); }
+        if ( variable == "pt" ) { thisValue = vect1.Pt(); thisValueCounter += 1.0*( abs(vect1.Pt() - target_value) < within_value ); }
+        else if ( variable == "pz" ) { thisValue = vect1.Pz(); thisValueCounter += 1.0*( abs(vect1.Pz() - target_value) < within_value ); }
+        else if ( variable == "energy" ) { thisValue = vect1.E(); thisValueCounter += 1.0*( abs(vect1.E() - target_value) < within_value ); }
+        else if ( variable == "eta" ) { thisValue = vect1.Eta(); thisValueCounter += 1.0*( abs(vect1.Eta() - target_value) < within_value ); }
+        else if ( variable == "phi" ) { thisValue = vect1.Phi(); thisValueCounter += 1.0*( abs(vect1.Phi() - target_value) < within_value ); }
+        else if ( variable == "absPz" ) { thisValue = abs(vect1.Pz()); thisValueCounter += 1.0*( abs(vect1.Pz() - target_value) < within_value ); }
+        else if ( variable == "absEta" ) { thisValue = abs(vect1.Eta()); thisValueCounter += 1.0*( abs(vect1.Eta() - target_value) < within_value ); }
+        else if ( variable == "absPhi" ) { thisValue = abs(vect1.Phi()); thisValueCounter += 1.0*( abs(vect1.Phi() - target_value) < within_value ); }
         else if ( which_pair != "vector_sum" ) { std::cerr << " No valid entry for variable: " << variable << std::endl; continue; }
         else continue;
+        thisValueSum += thisValue;
+        if (thisValueMax == KinematicVariableConstants::DOUBLE_INIT) thisValueMax = thisValue;
+        else thisValueMax = max(thisValue, thisValueMax);
+        if (thisValueMin == KinematicVariableConstants::DOUBLE_INIT) thisValueMin = thisValue;
+        else thisValueMin = min(thisValue, thisValueMin);
       }      
     }//End loop over iObj1
     
@@ -210,16 +219,21 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         vect2_transverse.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,0.0,ptr((*selCollection2)->at(iObj2))->phi,ptr((*selCollection2)->at(iObj2))->pt);
         thisVectorSum += vect2; thisVectorTransverseSum += vect2_transverse;
         
-        if ( variable == "pt" ) { thisValueSum += vect2.Pt(); thisValueCounter += 1.0*( abs(vect2.Pt() - target_value) < within_value ); }
-        else if ( variable == "pz" ) { thisValueSum += vect2.Pz(); thisValueCounter += 1.0*( abs(vect2.Pz() - target_value) < within_value ); }
-        else if ( variable == "energy" ) { thisValueSum += vect2.E(); thisValueCounter += 1.0*( abs(vect2.E() - target_value) < within_value ); }
-        else if ( variable == "eta" ) { thisValueSum += vect2.Eta(); thisValueCounter += 1.0*( abs(vect2.Eta() - target_value) < within_value ); }
-        else if ( variable == "phi" ) { thisValueSum += vect2.Phi(); thisValueCounter += 1.0*( abs(vect2.Phi() - target_value) < within_value ); }
-        else if ( variable == "absPz" ) { thisValueSum += abs(vect2.Pz()); thisValueCounter += 1.0*( abs(vect2.Pz() - target_value) < within_value ); }
-        else if ( variable == "absEta" ) { thisValueSum += abs(vect2.Eta()); thisValueCounter += 1.0*( abs(vect2.Eta() - target_value) < within_value ); }
-        else if ( variable == "absPhi" ) { thisValueSum += abs(vect2.Phi()); thisValueCounter += 1.0*( abs(vect2.Phi() - target_value) < within_value ); }
+        if ( variable == "pt" ) { thisValue = vect2.Pt(); thisValueCounter += 1.0*( abs(vect2.Pt() - target_value) < within_value ); }
+        else if ( variable == "pz" ) { thisValue = vect2.Pz(); thisValueCounter += 1.0*( abs(vect2.Pz() - target_value) < within_value ); }
+        else if ( variable == "energy" ) { thisValue = vect2.E(); thisValueCounter += 1.0*( abs(vect2.E() - target_value) < within_value ); }
+        else if ( variable == "eta" ) { thisValue = vect2.Eta(); thisValueCounter += 1.0*( abs(vect2.Eta() - target_value) < within_value ); }
+        else if ( variable == "phi" ) { thisValue = vect2.Phi(); thisValueCounter += 1.0*( abs(vect2.Phi() - target_value) < within_value ); }
+        else if ( variable == "absPz" ) { thisValue = abs(vect2.Pz()); thisValueCounter += 1.0*( abs(vect2.Pz() - target_value) < within_value ); }
+        else if ( variable == "absEta" ) { thisValue = abs(vect2.Eta()); thisValueCounter += 1.0*( abs(vect2.Eta() - target_value) < within_value ); }
+        else if ( variable == "absPhi" ) { thisValue = abs(vect2.Phi()); thisValueCounter += 1.0*( abs(vect2.Phi() - target_value) < within_value ); }
         else if ( which_pair != "vector_sum" ) { std::cerr << " No valid entry for variable: " << variable << std::endl; continue; }
         else continue;
+        thisValueSum += thisValue;
+        if (thisValueMax == KinematicVariableConstants::DOUBLE_INIT) thisValueMax = thisValue;
+        else thisValueMax = max(thisValue, thisValueMax);
+        if (thisValueMin == KinematicVariableConstants::DOUBLE_INIT) thisValueMin = thisValue;
+        else thisValueMin = min(thisValue, thisValueMin);
       }
     }  
 
@@ -229,6 +243,8 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
 
     if ( which_pair == "avg" ) branches[bName].branchVal = thisValueSum / thisValueIterator;
     else if ( which_pair == "sum" ) branches[bName].branchVal = thisValueSum;
+    else if ( which_pair == "max" ) branches[bName].branchVal = thisValueMax;
+    else if ( which_pair == "min" ) branches[bName].branchVal = thisValueMin;
     //else if ( which_pair == "avgAbs" ) branches[bName].branchVal = thisValueSumAbs / thisValueIterator;
     //else if ( which_pair == "sumAbs" ) branches[bName].branchVal = thisValueSumAbs;
     else if ( which_pair == "absAvg" ) branches[bName].branchVal = abs(thisValueSum) / thisValueIterator;
@@ -247,7 +263,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
       else std::cerr << " No valid entry for variable in vector_sum" << std::endl;
     }
     else if ( which_pair == "num_within" && useValue ) branches[bName].branchVal = thisValueCounter;
-    else std::cerr << " No valid entry for which_pair: " << which_pair << std::endl; 
+    else std::cerr << " No valid entry for which_pair: " << which_pair << " with variable: " << variable << std::endl; 
   } //End if ( useValue || which_pair == "vector_sum" )
   
   //Loop over pairs of objects

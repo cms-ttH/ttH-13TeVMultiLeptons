@@ -54,6 +54,7 @@
 #include "BEAN/Collections/interface/BNmuon.h"
 #include "BEAN/Collections/interface/BNphoton.h"
 #include "BEAN/Collections/interface/BNsupercluster.h"
+#include "BEAN/Collections/interface/BNtau.h"
 #include "BEAN/Collections/interface/BNtrack.h"
 #include "BEAN/Collections/interface/BNtrigger.h"
 #include "BEAN/Collections/interface/BNskimbits.h"
@@ -95,6 +96,11 @@ public:
                                      muonID::muonID looseID,
                                      muonID::muonID preselectedID,
                                      BEANFileInterface* selectedCollections);
+
+  void getTightLoosePreselectedTaus(tauID::tauID tightID,
+                                         tauID::tauID looseID,
+                                         tauID::tauID preselectedID,
+                                         BEANFileInterface* selectedCollections);
 
   void getTightCorrectedJets(double ptCut,
                              double etaCut,
@@ -225,6 +231,15 @@ public:
   BNleptonCollection leptonsTightLooseNonZ;
   BNleptonCollection leptonsTightLoosePreselectedZ;
   BNleptonCollection leptonsTightLoosePreselectedNonZ;
+
+  edm::Handle<BNtauCollection> h_taus;
+  BNtauCollection tausRaw;
+  BNtauCollection tausTight;
+  BNtauCollection tausLoose;
+  BNtauCollection tausPreselected;
+  BNtauCollection tausTightLoose;
+  BNtauCollection tausLoosePreselected;
+  BNtauCollection tausTightLoosePreselected;
 
   edm::Handle<BNjetCollection> h_lepMvaJets;
   BNjetCollection lepMvaJets;

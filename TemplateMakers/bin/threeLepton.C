@@ -18,6 +18,13 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
+void getNumExtraPartons(BEANhelper * beanHelper, BEANFileInterface selectedCollections, int & numExtraPartons) {
+
+  numExtraPartons = beanHelper->GetNumExtraPartons(*(selectedCollections.mcParticleCollection));
+
+  return;
+}
+
 bool LeptonCutThisAnalysis (BEANFileInterface * inputCollections) {
   unsigned numTightLoosePreselectedLeptons = inputCollections->tightLoosePreselectedLeptonCollection->size();
 
@@ -265,6 +272,25 @@ int main (int argc, char** argv) {
   TightCharges myTightCharges(&(selectedCollections.tightLoosePreselectedLeptonCollection), "CERN_tight_charge", "all_leptons_by_pt", 2);
   kinVars.push_back(&myTightCharges);
 
+  TwoObjectKinematic<BNleptonCollection, BNjetCollection>
+  myMinDeltaRLep1Jet("deltaR", "min", "min_deltaR_lep1_jet",
+                       &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 1,
+                       &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRLep1Jet);
+
+  TwoObjectKinematic<BNleptonCollection, BNjetCollection>
+  myMinDeltaRLep2Jet("deltaR", "min", "min_deltaR_lep2_jet",
+                       &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 2, 2,
+                       &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRLep2Jet);
+
+  TwoObjectKinematic<BNleptonCollection, BNjetCollection>
+  myMinDeltaRLep3Jet("deltaR", "min", "min_deltaR_lep3_jet",
+                       &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 3, 3,
+                       &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRLep3Jet);
+
+  
   ////////// all leptons //////////
   GenericCollectionMember<int, BNleptonCollection> allLeptonNumberOfValidTrackerHitsInnerTrack(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
                                                                                                "numberOfValidTrackerHitsInnerTrack", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
@@ -348,7 +374,7 @@ int main (int argc, char** argv) {
   kinVars.push_back(&allLeptonCharge);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonSIP(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
-                                                                   "SIP", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+                                                                   "SIP", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonSIP);
 
   GenericCollectionMember<double, BNleptonCollection> allLeptonD0(Reflex::Type::ByName("BNlepton"), &(selectedCollections.tightLoosePreselectedLeptonCollection),
@@ -416,6 +442,9 @@ int main (int argc, char** argv) {
   GenericCollectionMember<double, BNmetCollection> metPt(Reflex::Type::ByName("BNmet"),  &(selectedCollections.metCollection),
                                                          "pt", "met",  KinematicVariableConstants::FLOAT_INIT, 1);
   kinVars.push_back(&metPt);
+
+  int numExtraPartons = -99;
+  summaryTree->Branch("numExtraPartons", &numExtraPartons);
 
   ////////// event info //////////
   GenericCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"), &(selectedCollections.eventCollection),
@@ -559,6 +588,16 @@ int main (int argc, char** argv) {
 
         (*iVar)->print();
         cout << endl;
+      }
+    }
+
+    getNumExtraPartons(beanHelper, selectedCollections, numExtraPartons);
+    if (myConfig.sampleName.find("_0p") != std::string::npos) { //0 parton samples
+      //Cut to require 0 partons
+      if (numExtraPartons != 0) {
+        numEventsFailCuts++;
+        numEventsPassCuts--;
+        continue;
       }
     }
 
