@@ -32,7 +32,7 @@ except: #For running without submit_condor_jobs
     thisDir = open(sys.argv[0] + '_lists.txt').read().splitlines()[0]
 directoryOfLists = cmssw_base + thisDir
 outputBaseDir = "batch_trees/"
-maxEvents = 10000
+maxEvents = -1
 
 # -----------  Define some useful functions
 def printHostInfo():
