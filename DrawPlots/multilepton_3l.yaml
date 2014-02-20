@@ -1,0 +1,239 @@
+label: 3l_v24
+output label: m_v1
+luminosity: 19600.0
+input_trees_directory: ~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files
+output directory: histos_m_v1
+
+#options
+skip systematics: true
+
+#cuts
+common cuts:
+    trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleMuTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+              (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+              (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+              (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+    3_leptons: numAllLeptons == 3
+    cleanup: min_mass_leplep_AFAS_all > 12
+    lepton_pt: all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10
+    conv veto: ((all_leptons_by_pt_1_isMuon || (all_leptons_by_pt_1_passConvVeto > 0 && all_leptons_by_pt_1_numberOfExpectedInnerHits == 0)) &&
+                (all_leptons_by_pt_2_isMuon || (all_leptons_by_pt_2_passConvVeto > 0 && all_leptons_by_pt_2_numberOfExpectedInnerHits == 0)) &&
+                (all_leptons_by_pt_3_isMuon || (all_leptons_by_pt_3_passConvVeto > 0 && all_leptons_by_pt_3_numberOfExpectedInnerHits == 0)))
+    z_veto: abs(ZLike_mass_leplep_SFOS_all-91.2) > 10
+    met_ld: (numJets >= 4 || ((met_pt*0.00397 + mht*0.00265) > (0.2 + 0.1*(ZLike_mass_leplep_SFOS_all > 0))))
+    lep_mva: numTightLeptons >= 3
+
+jet tag categories:
+    ge4j2blor1bm: numJets >= 4 && (numLooseBJets >= 2 || numMediumBJets >= 1)
+    ge2j2blor1bm: numJets >= 2 && (numLooseBJets >= 2 || numMediumBJets >= 1)
+    ge2j1bl: numJets >= 4 && numLooseBJets >= 1
+    ge4j1bl: numJets >= 4 && numLooseBJets >= 1
+
+aliases:
+    - &default_num_bins 11
+
+lepton categories:
+    3l:
+        data samples: [inclusive_data]
+
+weights:
+    - RecoIDIsoSIPSF_3lep #CERN lepton SF
+    #- lepIDAndIsoSF #ND lepton SF
+    - weight_PU
+    - topPtWgt
+    - csvWeight
+    #- lepMVALoose2LepSF
+    - lepMVATight3LepSF
+
+systematics:
+    - nominal
+#     - weight_PUUp
+#     - weight_PUDown
+#     - topPtWgtDown
+#     - topPtWgtUp
+#     - csvWeightHFUp
+#     - csvWeightHFDown
+#     - csvWeightLFUp
+#     - csvWeightLFDown
+
+samples:
+    ttH125:
+    ttH125_np:
+        tree sample: ttH125
+        weights: ['common', 'exp(-0.567588+.00491286*higgs_1_pt)']
+    ttH125_tt_np:
+        tree sample: ttH125
+        weights: ['common', 'exp(-0.567588+.00491286*higgs_1_pt)']
+        additional cuts: [higgs_decay_type == 4]
+    ttH125_WW_np:
+        tree sample: ttH125
+        weights: ['common', 'exp(-0.567588+.00491286*higgs_1_pt)']
+        additional cuts: [higgs_decay_type == 2]
+    ttH125_ZZ_np:
+        tree sample: ttH125
+        weights: ['common', 'exp(-0.567588+.00491286*higgs_1_pt)']
+        additional cuts: [higgs_decay_type == 3]
+    ttH125_tt:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 4]
+    ttH125_WW:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 2]
+    ttH125_ZZ:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 3]
+    wz_lll:
+    zz_llll:
+    www:
+    wwz:
+    ttbarW:
+    ttbarWW:
+    ttbarZ:
+    ttbarG:
+    ttbarGStar_ee:
+    ttbarGStar_mm:
+    ttbarGStar_tt:
+    tbZ_ll:
+    WpWpqq:
+    WmWmqq:
+    WWDPI:
+    inclusive_data:
+        weights: none
+        systematics: nominal
+    inclusive_data_NP_sideband:
+        cuts to remove: ['numTightLeptons >= 3']
+        additional cuts: ['numTightLeptons <= 3']
+        weights: DataDrivenFR_NP3l
+        systematics: [40PercentRateUp, 40PercentRateDown]
+    inclusive_data_QF_sideband:
+        weights: 0 #making empty histos to simplify hadding
+        systematics: nominal
+
+distributions:
+    higgs_pt:
+        expression: higgs_1_pt
+        axis labels: ['higgs p_{T}', Events]
+        binning: [*default_num_bins, 0, 1000]
+    numJets:
+        expression: numJets
+        axis labels: [number of jets, Events]
+        binning: [5, 2.5, 7.5]
+    numLooseBJets:
+        expression: numLooseBJets
+        axis labels: [number of loose b-tagged jets, Events]
+        binning: [5, 0.5, 5.5]
+    numMediumBJets:
+        expression: numMediumBJets
+        axis labels: [number of medium b-tagged jets, Events]
+        binning: [5, -0.5, 4.5]
+    sum_lep1pt_lep2pt_met:
+        expression: sum_lep1pt_lep2pt_met
+        axis labels: ['Sum pT (lepton 1, lepton 2, MET)', Events]
+        binning: [*default_num_bins, 100, 1200]
+    mht:
+        expression: mht
+        axis labels: ['MHT', Events]
+        binning: [*default_num_bins, 0, 600]
+    min_dr_lep2_jet:
+        expression: min_dR_lep2_jet
+        axis labels: ['min dR (lepton 2, jet)', Events]
+        binning: [*default_num_bins, 0, 4]
+    met_1_all_leptons_by_pt_1_MT:
+        expression: met_1_all_leptons_by_pt_1_MT
+        axis labels: ['MT (lepton 1, MET)', Events]
+        binning: [*default_num_bins, 0, 600]
+    met_1_all_leptons_by_pt_2_MT:
+        expression: met_1_all_leptons_by_pt_2_MT
+        axis labels: ['MT (lepton 2, MET)', Events]
+        binning: [*default_num_bins, 0, 600]
+    sum_pt:
+        expression: sum_pt
+        axis labels: ['Sum pT (leptons, jets)', Events]
+        binning: [*default_num_bins, 200, 700]
+    all_leptons_by_pt_1_lepMVA:
+        expression: all_leptons_by_pt_1_lepMVA
+        axis labels: [First lepton MVA, Events]
+        binning: [*default_num_bins, 0.7, 1.0]
+    all_leptons_by_pt_2_lepMVA:
+        expression: all_leptons_by_pt_2_lepMVA
+        axis labels: [Second lepton MVA, Events]
+        binning: [*default_num_bins, 0.7, 1.0]
+    all_leptons_by_pt_1_pt:
+        expression: all_leptons_by_pt_1_pt
+        axis labels: [First lepton pT, Events]
+        binning: [*default_num_bins, 20, 350]
+    all_leptons_by_pt_2_pt:
+        expression: all_leptons_by_pt_2_pt
+        axis labels: [Second lepton pT, Events]
+        binning: [*default_num_bins, 20, 250]
+    higgsLike_dijet_mass:
+        expression: higgsLike_dijet_mass
+        axis labels: [higgs-like di-jet mass, Events]
+        binning: [*default_num_bins, 20, 500]
+    min_dR_leplep:
+        expression: min_dR_leplep
+        axis labels: ['min #Delta R (lep lep)', Events]
+        binning: [*default_num_bins, 0, 5]
+    sum_weighted_abs_dPhi_bjet_met:
+        expression: sum_weighted_abs_dPhi_bjet_met
+        axis labels: ['#sum_{b-jets} jet p_{T} x |#Delta#phi_{MET-jet}|', Events]
+        binning: [*default_num_bins, 0, 700]
+    min_weighted_dR_lep1_b_jet:
+        expression: min_weighted_dR_lep1_b_jet
+        axis labels: ['Min [lep1 p_{T} x #Delta R_{lep1, b]', Events]
+        binning: [*default_num_bins, 0, 600]
+    sum_weighted_abs_dPhi_lep_met:
+        expression: sum_weighted_abs_dPhi_lep_met
+        axis labels: ['#sum_{preselected leps} lep p_{T} x |#Delta#phi_{MET-lep}|', Events]
+        binning: [*default_num_bins, 0, 600]
+#     all_leptons_by_pt_1_SIP:
+#         expression: all_leptons_by_pt_1_IP / all_leptons_by_pt_1_IPError
+#         axis labels: ['lepton 1 S_{IP}3D', Events]
+#         binning: [*default_num_bins, -10.0, 10.0]
+
+#     all_leptons_by_pt_1_IP:
+#         expression: all_leptons_by_pt_1_IP
+#         axis labels: ['lepton 1 IP', Events]
+#         binning: [*default_num_bins, -0.1, 0.1]
+
+#     all_leptons_by_pt_1_IPError:
+#         expression: all_leptons_by_pt_1_IPError
+#         axis labels: ['lepton 1 IP error', Events]
+#         binning: [*default_num_bins, 0.0, 0.05]
+
+#     all_leptons_by_pt_2_IP:
+#         expression: all_leptons_by_pt_2_IP
+#         axis labels: ['lepton 2 IP', Events]
+#         binning: [*default_num_bins, -0.1, 0.1]
+
+#     all_leptons_by_pt_1_eta:
+#         expression: abs(all_leptons_by_pt_1_eta)
+#         axis labels: [First lepton pseudorapidity, Events]
+#         binning: [*default_num_bins, 0, 2.5]
+
+#     all_leptons_by_pt_2_eta:
+#         expression: abs(all_leptons_by_pt_2_eta)
+#         axis labels: [Second lepton pseudorapidity, Events]
+#         binning: [*default_num_bins, 0, 2.5]
+
+#     jets_by_CSV_1_btagCombinedSecVertex:
+#         expression: jets_by_CSV_1_btagCombinedSecVertex
+#         axis labels: [First jet b-tag discriminant, Events]
+#         binning: [*default_num_bins, 0, 1]
+
+#     jets_by_CSV_4_btagCombinedSecVertex:
+#         expression: jets_by_CSV_4_btagCombinedSecVertex
+#         axis labels: [Fourth jet b-tag discriminant, Events]
+#         binning: [*default_num_bins, 0, 1]
+
+#     jets_by_pt_1_pt:
+#         expression: jets_by_pt_1_pt
+#         axis labels: [First jet pT, Events]
+#         binning: [*default_num_bins, 20, 300]
+
+#     jets_by_pt_4_pt:
+#         expression: jets_by_pt_4_pt
+#         axis labels: [Fourth jet pT, Events]
+#         binning: [*default_num_bins, 20, 120]
+
+
