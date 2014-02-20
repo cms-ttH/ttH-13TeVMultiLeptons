@@ -1,4 +1,5 @@
 label: ss_v15
+output label: ss_v15
 luminosity: 19450.0
 input_trees_directory: ~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files
 output directory: histos_ss_v15
@@ -19,18 +20,8 @@ common cuts:
               (dataset.length() == 8 && isDoubleMuTriggerPass) ||
               (dataset.length() == 14 && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass) ) ||
               (dataset.length() == 4 && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass) )'
-
-regular selection cuts:
     lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
     same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
-
-NP sideband cuts:
-    lep_mva: (all_leptons_by_pt_1_lepMVA < 0.7 || all_leptons_by_pt_2_lepMVA < 0.7)
-    same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
-
-QF sideband cuts:
-    lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
-    same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) < 0)
 
 jet tag categories:
     eq3j: numJets == 3
@@ -91,8 +82,9 @@ systematics:
     - csvWeightLFDown
 
 
-# Samples can indicate customized weights (default is common), systematics (default is common), and additional cuts (default is none).
-# If an entry is missing, the default will be used. Options for weight/systematic customization are:
+# Samples can indicate customized weights (default is common), systematics (default is common), additional cuts (default is none), and
+# cuts to remove (default is none), and tree sample (default is same as sample name.) If an entry is missing, the default will be used.
+# Options for weight/systematic customization are:
 # none, common (use all listed in the common entry above), or a list.  Example: assume the common weights are weight1 and weight2.
 # weights: common               --> weights = [weight1, weight2]
 # weights: [common, weight3]    --> weights = [weight1, weight2, weight3]
@@ -137,6 +129,8 @@ samples:
 #         weights: none
 #         systematics: nominal
     inclusive_data_NP_sideband:
+        additional cuts: ['(all_leptons_by_pt_1_lepMVA < 0.7 || all_leptons_by_pt_2_lepMVA < 0.7)']
+        cuts to remove: ['all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7']
         weights: DataDrivenFR_NP
         systematics: [40PercentRateUp, 40PercentRateDown]
 #     DoubleMu_NP_sideband:
@@ -149,6 +143,8 @@ samples:
 #         weights: DataDrivenFR_NP
 #         systematics: [40PercentRateUp, 40PercentRateDown]
     inclusive_data_QF_sideband:
+        additional cuts: ['((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) < 0)']
+        cuts to remove: ['((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)']
         weights: DataDrivenFR_QF
         systematics: nominal
 #     MuEG_QF_sideband:

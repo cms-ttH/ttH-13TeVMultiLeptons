@@ -60,6 +60,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
     for sample, sample_dict in samples.items():
         tree_sample = sample_dict.get('tree sample', sample)
         additional_cuts = sample_dict.get('additional cuts', [])
+        cuts_to_remove = sample_dict.get('cuts to remove', [])
         sample_info = plot_helper.SampleInformation(tree_sample)
 
         for lepton_category in lepton_categories:
@@ -71,7 +72,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                     continue
 
             for jet_tag_category, jet_tag_category_cut_string in jet_tag_categories.items():
-                output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['label'])
+                output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['output label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
                 systematics_list = plot_helper.customize_systematics(config['systematics'], sample_dict.get('systematics', 'common'))
@@ -92,12 +93,8 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                                                                     lepton_category_cut_strings,
                                                                     [jet_tag_category_cut_string],
                                                                     additional_cuts) #additional_cuts is empty by default
-                    if sample_info.sample_type == 'NP_sideband':
-                        draw_string_maker.append_selection_requirements(config.get('NP sideband cuts', {}).values())
-                    elif sample_info.sample_type == 'QF_sideband':
-                        draw_string_maker.append_selection_requirements(config.get('QF sideband cuts', {}).values())
-                    else:
-                        draw_string_maker.append_selection_requirements(config.get('regular selection cuts', {}).values())
+
+                    draw_string_maker.remove_selection_requirements(cuts_to_remove)
 
                     if not args.no_weights:
                         if sample_info.sample_type == 'MC' and 'triggerSF' in config['weights']:
@@ -111,7 +108,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
 
                     config = plot_helper.append_integral_histo(config)
                     for distribution in config['distributions'].keys():
-                        plot_name = '%s_%s_%s_%s%s' % (sample, lepton_category, jet_tag_category, distribution, systematic_label)
+                        plot_name = '%s%s' % (distribution, systematic_label)
                         plot = plot_helper.Plot(sample, output_file, tree, plot_name, config['distributions'][distribution], draw_string_maker.draw_string)
                         if sample_info.sample_type == 'MC':
                             plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)

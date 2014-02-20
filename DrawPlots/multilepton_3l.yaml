@@ -106,7 +106,7 @@ samples:
         weights: DataDrivenFR_NP3l
         systematics: [40PercentRateUp, 40PercentRateDown]
     inclusive_data_QF_sideband:
-        weights: 0 #making empty histos to simplify hadding
+        weights: '0' #making empty histos to simplify hadding
         systematics: nominal
 
 distributions:
