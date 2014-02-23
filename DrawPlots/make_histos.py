@@ -7,6 +7,7 @@ import ROOT
 import yaml
 
 def main():
+    ROOT.gROOT.SetBatch(1)
     parser = ArgumentParser(description='Make plots from summary trees.')
     parser.add_argument('config_file_name', nargs='?', default='multilepton.yaml', help='Configuration file to process.')
     parser.add_argument('-b', '--batch', action='store_true', help='Batch mode: this submits one sample per condor job.')
@@ -71,7 +72,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                 if not plot_helper.is_matching_data_sample(config['lepton categories'][lepton_category]['data samples'], sample):
                     continue
 
-            for jet_tag_category, jet_tag_category_cut_string in jet_tag_categories.items():
+            for jet_tag_category, jet_tag_category_cut_strings in jet_tag_categories.items():
                 output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['output label'])
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
@@ -91,7 +92,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                     draw_string_maker = plot_helper.DrawStringMaker()
                     draw_string_maker.append_selection_requirements(config['common cuts'].values(),
                                                                     lepton_category_cut_strings,
-                                                                    [jet_tag_category_cut_string],
+                                                                    jet_tag_category_cut_strings,
                                                                     additional_cuts) #additional_cuts is empty by default
 
                     draw_string_maker.remove_selection_requirements(cuts_to_remove)
@@ -107,9 +108,12 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                         sys.exit('Invalid sample_type must be data, sideband, or MC' % (sample_info.sample_type))
 
                     config = plot_helper.append_integral_histo(config)
-                    for distribution in config['distributions'].keys():
+                    for distribution, parameters in config['distributions'].items():
+                        if sample not in parameters.get('samples', [sample]):
+                            continue
+                        draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
                         plot_name = '%s%s' % (distribution, systematic_label)
-                        plot = plot_helper.Plot(sample, output_file, tree, plot_name, config['distributions'][distribution], draw_string_maker.draw_string)
+                        plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string)
                         if sample_info.sample_type == 'MC':
                             plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
                         output_file.Write()
@@ -126,7 +130,7 @@ def submit_batch_jobs(config, samples, lepton_categories, jet_tag_categories):
 
     argument_string = ' '.join([a for a in sys.argv[1:] if a != '-b' and a != '-batch'])
 
-    condor_header = 'universe = vanilla \nexecutable = make_histos.py \nnotification = Never \ngetenv = True \n+IsExpressJob = True'
+    condor_header = 'universe = vanilla \nexecutable = make_histos.py \nnotification = Never \ngetenv = True \n+IsExpressJob = False'
     for sample in samples:
         for lepton_category in lepton_categories:
             for jet_tag_category in jet_tag_categories:
