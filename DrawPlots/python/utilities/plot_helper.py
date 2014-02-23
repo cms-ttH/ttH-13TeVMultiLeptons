@@ -4,7 +4,6 @@ import ROOT
 import string
 from distutils import file_util
 import shutil
-import collections
 import glob
 import time
 import itertools
@@ -12,7 +11,10 @@ from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import DefaultOrdere
 
 def append_integral_histo(config):
     if not config['distributions'].has_key('integral_histo'):
-        config['distributions']['integral_histo'] = {'axis labels': ['isCleanEvent', 'Events'], 'expression': 'isCleanEvent', 'plot type': 'TH1F', 'binning': [2, 0, 2]}
+        config['distributions']['integral_histo'] = {'axis labels': ['isCleanEvent', 'Events'],
+                                                     'expression': 'isCleanEvent',
+                                                     'plot type': 'TH1F',
+                                                     'binning': [2, 0, 2]}
 
     return config
 
@@ -164,8 +166,10 @@ class DrawStringMaker:
 
         self.draw_string = '(' + requirements_string + ')' + factors_string
 
-    def remove_selection_requirement(self, cut_string):
-        self.requirements.remove(cut_string)
+    def remove_selection_requirements(self, cut_string_list):
+        self.requirements = list(set(self.requirements) - set(cut_string_list))
+        if cut_string_list == ['all']:
+            self.requirements = ['isCleanEvent==1']
 
         self.update_draw_string()
 
@@ -748,10 +752,15 @@ def customize_list(common_list, customization_list):
     return customized_list
 
 class Yields:
-    def __init__(self, jet_tag_categories):
-        for category in jet_tag_categories:
-            self.__dict__[category] = DefaultOrderedDict(dict)
+    def __init__(self, jet_tag_categories, samples):
+        for jet_category in jet_tag_categories:
+            self.__dict__[jet_category] = DefaultOrderedDict(dict)
+            for sample in samples:
+                self.__dict__[jet_category][sample] = {}
+
     def __getitem__(self, item):
         return self.__dict__[item]
 
+    def items(self):
+        return [(jet_category, self.__dict__[jet_category]) for jet_category in self.__dict__.keys()]
 
