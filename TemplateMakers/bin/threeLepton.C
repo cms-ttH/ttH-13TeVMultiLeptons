@@ -127,8 +127,14 @@ int main (int argc, char** argv) {
   GenericCollectionSizeVariable<BNmuonCollection> numTightMuons(&(selectedCollections.tightMuonCollection), "numTightMuons");
   kinVars.push_back(&numTightMuons);
 
+  GenericCollectionSizeVariable<BNmuonCollection> numAllMuons(&(selectedCollections.tightLoosePreselectedMuonCollection), "numAllMuons");
+  kinVars.push_back(&numAllMuons);
+
   GenericCollectionSizeVariable<BNelectronCollection> numTightElectrons(&(selectedCollections.tightElectronCollection), "numTightElectrons");
   kinVars.push_back(&numTightElectrons);
+
+  GenericCollectionSizeVariable<BNelectronCollection> numAllElectrons(&(selectedCollections.tightLoosePreselectedElectronCollection), "numAllElectrons");
+  kinVars.push_back(&numAllElectrons);
 
   GenericCollectionSizeVariable<BNleptonCollection> numTightLeptons(&(selectedCollections.tightLeptonCollection), "numTightLeptons");
   kinVars.push_back(&numTightLeptons);
@@ -218,6 +224,44 @@ int main (int argc, char** argv) {
   kinVars.push_back(&myMinMassLepLep);
 
   TwoObjectKinematic<BNleptonCollection, BNleptonCollection>
+  myMaxMassLepLep("mass", "max", "max_mass_leplep",
+                  &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                  "all_leptons_by_pt", 1, 99,
+                  &(selectedCollections.tightLoosePreselectedLeptonCollection),
+                  "all_leptons_by_pt", 1, 99);
+  kinVars.push_back(&myMaxMassLepLep);
+
+    TwoObjectKinematic<BNleptonCollection,BNleptonCollection>
+  myMinDeltaRLepLep("deltaR", "min", "min_dR_leplep",
+                    &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
+                    &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRLepLep);
+
+  TwoObjectKinematic<BNleptonCollection, BNjetCollection>
+  myMinDeltaRLep2Jet("deltaR", "min", "min_dR_lep2_jet",
+                     &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 2, 2,
+                     &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRLep2Jet);
+
+  TwoObjectKinematic<BNjetCollection, BNmetCollection>
+  mySumWeightedAbsDeltaPhiBJetMet("weightedAbsDeltaPhi", "sum", "sum_weighted_abs_dPhi_bjet_met",
+                                  &(selectedCollections.jetCollectionLooseCSV), "", 1, 99,
+                                  &(selectedCollections.metCollection), "met", 1, 1);
+  kinVars.push_back(&mySumWeightedAbsDeltaPhiBJetMet);
+
+  TwoObjectKinematic<BNleptonCollection, BNjetCollection>
+  myMinWeightedDeltaRLeadingLepBJet("weightedDeltaR", "min", "min_weighted_dR_lep1_b_jet",
+                                    &(selectedCollections.tightLoosePreselectedLeptonCollection), "", 1, 1,
+                                    &(selectedCollections.jetCollectionLooseCSV), "", 1, 99);
+  kinVars.push_back(&myMinWeightedDeltaRLeadingLepBJet);
+
+  TwoObjectKinematic<BNleptonCollection, BNmetCollection>
+  myWeightedDeltaPhiMetLep("weightedAbsDeltaPhi", "sum", "sum_weighted_abs_dPhi_lep_met",
+                           &(selectedCollections.tightLoosePreselectedLeptonCollection), "", 1, 99,
+                           &(selectedCollections.metCollection), "met", 1, 1);
+  kinVars.push_back(&myWeightedDeltaPhiMetLep);
+
+  TwoObjectKinematic<BNleptonCollection, BNleptonCollection>
   myMinMassLepLepAFASAll("mass", "min", "min_mass_leplep_AFAS_all",
                          &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                          &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99, -99);
@@ -249,12 +293,6 @@ int main (int argc, char** argv) {
                            &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
                            &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99, 91.2);
   kinVars.push_back(&myZLikeMassLepLepAFASAll);
-
-  TwoObjectKinematic<BNleptonCollection,BNleptonCollection>
-  myMinDeltaRLepLep("deltaR", "min", "min_dR_leplep",
-                    &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99,
-                    &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 1, 99);
-  kinVars.push_back(&myMinDeltaRLepLep);
 
   TwoObjectKinematic<BNjetCollection,BNjetCollection>
   myHiggsLikeDijetMass110("mass", "closest_to", "higgsLike_dijet_mass",
@@ -455,6 +493,15 @@ int main (int argc, char** argv) {
                                                                  "lumi", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
   kinVars.push_back(&lumiBlock);
 
+  GenericCollectionMember<double, BNmcparticleCollection>
+  higgsPt(Reflex::Type::ByName("BNmcparticle"), &(selectedCollections.mcHiggsParticleCollection),
+          "pt", "higgs", KinematicVariableConstants::FLOAT_INIT, 5);
+  kinVars.push_back(&higgsPt);
+
+  GenericCollectionSizeVariable<BNmcparticleCollection>
+  numHiggsParticles(&(selectedCollections.mcHiggsParticleCollection), "numHiggsParticles");
+  kinVars.push_back(&numHiggsParticles);
+
   // this is a long inside BNevent
   // just using keyword long won't work
   // needs to be Long64_t
@@ -487,6 +534,8 @@ int main (int argc, char** argv) {
 
     lepHelper.initializeInputCollections(ev, true, selectedCollections);
     lepHelper.applyRochesterCorrections(*(lepHelper.rawCollections.rawMuonCollection));
+
+    lepHelper.getHiggsParticles(&selectedCollections);
 
     if (!lepHelper.isData) {
       lepHelper.fillMCMatchAny(*(lepHelper.rawCollections.rawMuonCollection), 0.3);
