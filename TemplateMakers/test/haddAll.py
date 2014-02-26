@@ -18,12 +18,15 @@ def main ():
     parser.add_argument('-m', '--moveFiles', action='store_true', default=False, help='move files to treeFile directory')
     parser.add_argument('-n', '--skipHadd', action='store_true', default=False, help ='don\'t hadd stuff, just move/copy it')
     parser.add_argument('-l', '--cleanup', action='store_true', default=False, help='when summing data, remove everything except the summed file')
+    parser.add_argument('h', '--hadoop', action='store_true', default=False, help='send output to /hadoop/users/USER/tree_files instead of AFS')
 
     args = parser.parse_args()
 
-    ####### Hard-coded ouput directory #####
-    baseDir = os.environ['CMSSW_BASE']
-    outDir = baseDir +"/src/ttHMultileptonAnalysis/DrawPlots/tree_files/"
+    if args.hadoop:
+        outDir = '/hadoop/users/%s/tree_files' % os.environ['USER']
+    else:
+        outDir = '%s/src/ttHMultileptonAnalysis/DrawPlots/tree_files/' % os.environ['CMSSW_BASE']
+
 
     print "Directory label %s" % args.project_label
     print "Running with sumData = %s" % args.sumData
