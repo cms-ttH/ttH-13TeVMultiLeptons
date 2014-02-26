@@ -24,12 +24,12 @@ common cuts:
     same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
 
 jet tag categories:
-    eq3j: numJets == 3
-    #eq3j_pos: numJets == 3 && all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge>0
-    #eq3j_neg: numJets == 3 && all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge<0
-    ge4j: numJets >= 4
-    #ge4j_pos: numJets >= 4 && all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge>0
-    #ge4j_neg: numJets >= 4 && all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge<0
+    eq3j: ['numJets == 3']
+    #eq3j_pos: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge>0']
+    #eq3j_neg: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge<0']
+    ge4j: ['numJets >= 4']
+    #ge4j_pos: ['numJets >= 4', 'all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge>0']
+    #ge4j_neg: '[numJets >= 4', 'all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge<0']
 
 lepton categories:
     mu_mu:
@@ -81,7 +81,6 @@ systematics:
     - csvWeightLFUp
     - csvWeightLFDown
 
-
 # Samples can indicate customized weights (default is common), systematics (default is common), additional cuts (default is none), and
 # cuts to remove (default is none), and tree sample (default is same as sample name.) If an entry is missing, the default will be used.
 # Options for weight/systematic customization are:
@@ -89,7 +88,6 @@ systematics:
 # weights: common               --> weights = [weight1, weight2]
 # weights: [common, weight3]    --> weights = [weight1, weight2, weight3]
 # weights: [weight3]            --> weights = [weight3]
-
 samples:
     wz_lll:
     zz_llll:
