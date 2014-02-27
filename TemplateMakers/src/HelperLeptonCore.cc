@@ -577,52 +577,101 @@ void HelperLeptonCore::fillZLepCollectionWithSelectedLeptons(BEANFileInterface *
   TLorentzVector vect2;
   TLorentzVector vect12;
   bool NonZ;
+  bool noFillZ;
 
-  for (auto& lepton1: leptonsTight) {
-    NonZ = true;
-    for (auto& lepton2: leptonsTight) {
-      vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
-      vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
-      vect12 = vect1 + vect2;
-      if ( abs ( 1 - abs( vect12.M() / ZLikeMassLepLepSFOS_tight ) ) < 0.001 ) {
-        leptonsTightZ.push_back(lepton1);
-        NonZ = false;
-      }
-    }
-    if ( NonZ ) {
+  if (ZLikeMassLepLepSFOS_tight < 0) {
+    for (auto& lepton1: leptonsTight) {
       leptonsTightNonZ.push_back(lepton1);
     }
   }
-  
-  for (auto& lepton1: leptonsTightLoose) {
-    NonZ = true;
-    for (auto& lepton2: leptonsTightLoose) {
-      vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
-      vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
-      vect12 = vect1 + vect2;
-      if ( abs ( 1 - abs( vect12.M() / ZLikeMassLepLepSFOS_tightLoose ) ) < 0.001 ) {
-        leptonsTightLooseZ.push_back(lepton1);
-        NonZ = false;
+  else {
+    noFillZ = true;
+    float mass_tight = -999999.0;
+    for (auto& lepton1: leptonsTight) {
+      NonZ = true;
+      for (auto& lepton2: leptonsTight) {
+        vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
+        vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
+        vect12 = vect1 + vect2;
+        if ( abs(vect12.M() - ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight < 0.00001 ) {
+          leptonsTightZ.push_back(lepton1);
+          NonZ = false;
+          noFillZ = false;
+        }
+        else if (abs(vect12.M() - ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight < 0.01 ) {
+          mass_tight = vect12.M();
+        }
+      }
+      if ( NonZ ) {
+        leptonsTightNonZ.push_back(lepton1);
       }
     }
-    if ( NonZ ) {
-      leptonsTightLooseNonZ.push_back(lepton1);
+    if ( noFillZ ) {
+      std::cout << "Strangeness in fillZLepCollection: " << mass_tight << " , " << ZLikeMassLepLepSFOS_tight << " , " << abs(mass_tight-ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight << std::endl;
     }
   }
 
-  for (auto& lepton1: leptonsTightLoosePreselected) {
-    NonZ = true;
-    for (auto& lepton2: leptonsTightLoosePreselected) {
-      vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
-      vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
-      vect12 = vect1 + vect2;
-      if ( abs ( 1 - abs( vect12.M() / ZLikeMassLepLepSFOS_all ) ) < 0.001 ) {
-        leptonsTightLoosePreselectedZ.push_back(lepton1);
-        NonZ = false;
+  if (ZLikeMassLepLepSFOS_tightLoose < 0) {
+    for (auto& lepton1: leptonsTightLoose) {
+      leptonsTightLooseNonZ.push_back(lepton1);
+    }
+  }
+  else {
+    noFillZ = true;
+    float mass_tightLoose = -999999.0;
+    for (auto& lepton1: leptonsTightLoose) {
+      NonZ = true;
+      for (auto& lepton2: leptonsTightLoose) {
+        vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
+        vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
+        vect12 = vect1 + vect2;
+        if ( abs(vect12.M() - ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose < 0.00001 ) {
+          leptonsTightLooseZ.push_back(lepton1);
+          NonZ = false;
+          noFillZ = false;
+        }
+        else if (abs(vect12.M() - ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose < 0.01 ) {
+          mass_tightLoose = vect12.M();
+        }
+      }
+      if ( NonZ ) {
+        leptonsTightLooseNonZ.push_back(lepton1);
       }
     }
-    if ( NonZ ) {
+    if ( noFillZ ) {
+      std::cout << "Strangeness in fillZLepCollection: " << mass_tightLoose << " , " << ZLikeMassLepLepSFOS_tightLoose << " , " << abs(mass_tightLoose-ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose << std::endl;
+    }
+  }
+
+  if (ZLikeMassLepLepSFOS_all < 0) {
+    for (auto& lepton1: leptonsTightLoosePreselected) {
       leptonsTightLoosePreselectedNonZ.push_back(lepton1);
+    }
+  }
+  else {
+    noFillZ = true;
+    float mass_all = -999999.0;
+    for (auto& lepton1: leptonsTightLoosePreselected) {
+      NonZ = true;
+      for (auto& lepton2: leptonsTightLoosePreselected) {
+        vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
+        vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
+        vect12 = vect1 + vect2;
+        if ( abs(vect12.M() - ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all < 0.00001 ) {
+          leptonsTightLoosePreselectedZ.push_back(lepton1);
+          NonZ = false;
+          noFillZ = false;
+        }
+        else if (abs(vect12.M() - ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all < 0.01 ) {
+          mass_all = vect12.M();
+        }
+      }
+      if ( NonZ ) {
+        leptonsTightLoosePreselectedNonZ.push_back(lepton1);
+      }
+    }
+    if ( noFillZ ) {
+      std::cout << "Strangeness in fillZLepCollection: " << mass_all << " , " << ZLikeMassLepLepSFOS_all << " , " << abs(mass_all-ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all << std::endl;
     }
   }
 

@@ -22,9 +22,16 @@ public:
   string branchNameNP;
   string branchNameQF;
   string label;
+  collectionType **selCollection_2;
+  unsigned int number_of_leptons_2;
+  double working_point_2;
 
   TFile * weight_file_NP;
   TFile * weight_file_QF;
+  TH2 * FR_NP_loose_mu; //FR for < 2 b-jets
+  TH2 * FR_NP_loose2_mu; //FR for >= 2 b-jets
+  TH2 * FR_NP_loose_el; //FR for < 2 b-jets
+  TH2 * FR_NP_loose2_el; //FR for >= 2 b-jets
   TH2 * FR_NP_tight_mu; //FR for < 2 b-jets
   TH2 * FR_NP_tight2_mu; //FR for >= 2 b-jets
   TH2 * FR_NP_tight_el; //FR for < 2 b-jets
@@ -34,16 +41,19 @@ public:
   int QF_charge[6];
 
   DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-               double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label);
+               double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label,
+               collectionType **input_selCollection_2, int input_number_of_leptons_2, double input_working_point_2);
   ~DataDrivenFR();
   void evaluate();
 };
 
 template <class collectionType>
 DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-                                           double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label = ""):
+                                           double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label = "",
+                                           collectionType **input_selCollection_2 = 0, int input_number_of_leptons_2 = 0, double input_working_point_2 = -99.0):
   myHelper(input_myHelper), selCollection(input_selCollection), number_of_leptons(input_number_of_leptons),
-  working_point(input_working_point), file_name_NP(input_file_name_NP), file_name_QF(input_file_name_QF),label(input_label) {
+  working_point(input_working_point), file_name_NP(input_file_name_NP), file_name_QF(input_file_name_QF),label(input_label),
+  selCollection_2(input_selCollection_2), number_of_leptons_2(input_number_of_leptons_2), working_point_2(input_working_point_2) {
 
   this->resetVal = 1.0;
   branchNameNP = Form("DataDrivenFR_NP%s", label.c_str());
@@ -57,6 +67,10 @@ DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *input_myHelper, col
   TString weight_file_name_NP = Form("%s%s.root", directory.c_str(), file_name_NP.c_str());
   weight_file_NP = TFile::Open(weight_file_name_NP);
 
+  FR_NP_loose_mu = (TH2*)weight_file_NP->Get("FR_loose_mu")->Clone();
+  FR_NP_loose2_mu = (TH2*)weight_file_NP->Get("FR_loose2_mu")->Clone();
+  FR_NP_loose_el = (TH2*)weight_file_NP->Get("FR_loose_el")->Clone();
+  FR_NP_loose2_el = (TH2*)weight_file_NP->Get("FR_loose2_el")->Clone();
   FR_NP_tight_mu = (TH2*)weight_file_NP->Get("FR_tight_mu")->Clone();
   FR_NP_tight2_mu = (TH2*)weight_file_NP->Get("FR_tight2_mu")->Clone();
   FR_NP_tight_el = (TH2*)weight_file_NP->Get("FR_tight_el")->Clone();
@@ -94,20 +108,31 @@ void DataDrivenFR<collectionType>::evaluate() {
 
       if (ptr((*selCollection)->at(iObj))->isMuon) {
         lep_mva = beanHelper->GetMuonLepMVA(*(BNmuon*)ptr((*selCollection)->at(iObj)));
-        FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_mu : FR_NP_tight2_mu;
+        if (working_point == 0.7) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_mu : FR_NP_tight2_mu;
+        else if (working_point == -0.3) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_loose_mu : FR_NP_loose2_mu;
+        else std::cout << "Error: invalid lepMVA FR working point = " << working_point << std::endl;
       }
       else if (ptr((*selCollection)->at(iObj))->isElectron) {
         lep_mva = beanHelper->GetElectronLepMVA(*(BNelectron*)ptr((*selCollection)->at(iObj)));
-        FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_el : FR_NP_tight2_el;
+        if (working_point == 0.7) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_el : FR_NP_tight2_el;
+        else if (working_point == -0.3) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_loose_el : FR_NP_loose2_el;
+        else std::cout << "Error: invalid lepMVA FR working point = " << working_point << std::endl;
         isElectron = 1;
       }
-      else std::cout << "Lepton is neither muon nor electron" << std::endl;
+      else std::cout << "Error: lepton is neither muon nor electron" << std::endl;
 
       if (lep_mva < working_point) {
         int pt_bin  = std::max(1, std::min(FR_NP_histo->GetNbinsX(), FR_NP_histo->GetXaxis()->FindBin(lep_pt)));
         int eta_bin  = std::max(1, std::min(FR_NP_histo->GetNbinsY(), FR_NP_histo->GetYaxis()->FindBin(lep_eta)));
         double FR = FR_NP_histo->GetBinContent(pt_bin, eta_bin);
+        while (FR == 0) {
+          if (pt_bin > 50) pt_bin -= 1;
+          else if (pt_bin < 50) pt_bin += 1;
+          FR = FR_NP_histo->GetBinContent(pt_bin, eta_bin);
+          if (pt_bin == 50) std::cout << "Error: pT bin at 50 is empty" << std::endl; continue;
+        }
         weight *= -FR/(1.0-FR);
+        if (weight == 1 || weight == 0) std::cout << "Error: DataDrivenFR weight = " << weight << std::endl;
       }
       else {
         QF_charge[num_passed_leptons] = (ptr((*selCollection)->at(iObj)))->tkCharge;
@@ -123,6 +148,46 @@ void DataDrivenFR<collectionType>::evaluate() {
     } //end if ( iObj < number_of_leptons )
   } //end loop over iObj
 
+  if (number_of_leptons_2 != 0 && working_point_2 != -99.0) {
+    for (unsigned int iObj = 0; iObj < (*selCollection_2)->size(); iObj++) {
+      if (iObj < number_of_leptons_2) {
+
+        double lep_pt = ptr((*selCollection_2)->at(iObj))->pt;
+        double lep_eta = abs(ptr((*selCollection_2)->at(iObj))->eta);
+        double lep_mva = -99.0;
+        TH2 * FR_NP_histo = 0;
+
+        if (ptr((*selCollection_2)->at(iObj))->isMuon) {
+          lep_mva = beanHelper->GetMuonLepMVA(*(BNmuon*)ptr((*selCollection_2)->at(iObj)));
+          if (working_point_2 == 0.7) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_mu : FR_NP_tight2_mu;
+          else if (working_point_2 == -0.3) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_loose_mu : FR_NP_loose2_mu;
+          else std::cout << "Error: invalid lepMVA FR working point = " << working_point_2 << std::endl;
+        }
+        else if (ptr((*selCollection_2)->at(iObj))->isElectron) {
+          lep_mva = beanHelper->GetElectronLepMVA(*(BNelectron*)ptr((*selCollection_2)->at(iObj)));
+          if (working_point_2 == 0.7) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_el : FR_NP_tight2_el;
+          else if (working_point_2 == -0.3) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_loose_el : FR_NP_loose2_el;
+          else std::cout << "Error: invalid lepMVA FR working point = " << working_point_2 << std::endl;
+        }
+        else std::cout << "Error: lepton is neither muon nor electron" << std::endl;
+        
+        if (lep_mva < working_point_2) {
+          int pt_bin  = std::max(1, std::min(FR_NP_histo->GetNbinsX(), FR_NP_histo->GetXaxis()->FindBin(lep_pt)));
+          int eta_bin  = std::max(1, std::min(FR_NP_histo->GetNbinsY(), FR_NP_histo->GetYaxis()->FindBin(lep_eta)));
+          double FR = FR_NP_histo->GetBinContent(pt_bin, eta_bin);
+          while (FR == 0) {
+            if (pt_bin > 50) pt_bin -= 1;
+            else if (pt_bin < 50) pt_bin += 1;
+            FR = FR_NP_histo->GetBinContent(pt_bin, eta_bin);
+            if (pt_bin == 50) std::cout << "Error: pT bin at 50 is empty" << std::endl; continue;
+          }
+          weight *= -FR/(1.0-FR);
+          if (weight == 1 || weight == 0) std::cout << "Error: DataDrivenFR weight = " << weight << std::endl;
+        }
+      } //end if ( iObj < number_of_leptons_2 )
+    } //end loop over iObj
+  } //end if (number_of_leptons_2 != 0 && working_point_2 != -99.0)
+  
   if (weight == -1.0) weight = 1.0;
   branches[branchNameNP].branchVal = weight;
 
@@ -145,6 +210,10 @@ template <class collectionType>
 DataDrivenFR<collectionType>::~DataDrivenFR() {
 
   //Delete histograms BEFORE closing file
+  delete FR_NP_loose_mu;
+  delete FR_NP_loose2_mu;
+  delete FR_NP_loose_el;
+  delete FR_NP_loose2_el;
   delete FR_NP_tight_mu;
   delete FR_NP_tight2_mu;
   delete FR_NP_tight_el;

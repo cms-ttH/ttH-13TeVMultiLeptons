@@ -18,8 +18,6 @@
 <environment>
   <bin   file="ssTwoLep.C">
   </bin>
-  <bin file="threeLepton.C">
-  </bin>
   <bin file="fourLepton.C">
   </bin>
   <bin   file="ttV.C">
