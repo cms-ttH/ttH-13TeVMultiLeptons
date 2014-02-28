@@ -134,6 +134,7 @@ public:
     jetCollectionNotMediumCSV(0),
     jetCollectionNotTightCSV(0),
     mcParticleCollection(0),
+    mcHiggsParticleCollection(0),
     eventCollection(0),
     hltCollection (0),
     primaryVertexCollection(0),
@@ -197,6 +198,7 @@ public:
   BNjetCollection * jetCollectionNotTightCSV;
 
   BNmcparticleCollection * mcParticleCollection;
+  BNmcparticleCollection * mcHiggsParticleCollection;
   BNeventCollection * eventCollection;
   BNtriggerCollection * hltCollection;
   BNprimaryvertexCollection * primaryVertexCollection;
