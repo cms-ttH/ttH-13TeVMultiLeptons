@@ -127,7 +127,7 @@ void DataDrivenFRPerLepton<collectionType>::evaluate() {
           int eta_bin  = std::max(1, std::min(FR_QF_el->GetNbinsY(), FR_QF_el->GetYaxis()->FindBin(lep_eta)));
           branches[branchNameQF[iObj]].branchVal = FR_QF_el->GetBinContent(pt_bin, eta_bin);
           if (FR_QF_el->GetBinContent(pt_bin, eta_bin) == 1 || FR_QF_el->GetBinContent(pt_bin, eta_bin) == 0) {
-            std::cout << "SF = " << FR_QF_el->GetBinContent(pt_bin, eta_bin) <<
+            std::cout << "Error: QF SF = " << FR_QF_el->GetBinContent(pt_bin, eta_bin) <<
               ", pt = " << lep_pt << ", eta = " << lep_eta << ", pt_bin = " << pt_bin << ", eta_bin = " << eta_bin << std::endl;
           }
         }

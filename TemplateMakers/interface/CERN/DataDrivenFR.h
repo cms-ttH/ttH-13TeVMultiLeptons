@@ -143,6 +143,10 @@ void DataDrivenFR<collectionType>::evaluate() {
           FR_QF[num_electrons] = FR_QF_el->GetBinContent(pt_bin, eta_bin);
           QF_charge[num_passed_leptons] = ((BNelectron*)ptr((*selCollection)->at(iObj)))->tkCharge;
           num_electrons += 1;
+          if (FR_QF_el->GetBinContent(pt_bin, eta_bin) == 1 || FR_QF_el->GetBinContent(pt_bin, eta_bin) == 0) {
+            std::cout << "Error: QF SF = " << FR_QF_el->GetBinContent(pt_bin, eta_bin) <<
+              ", pt = " << lep_pt << ", eta = " << lep_eta << ", pt_bin = " << pt_bin << ", eta_bin = " << eta_bin << std::endl;
+          }
         }
       }
     } //end if ( iObj < number_of_leptons )

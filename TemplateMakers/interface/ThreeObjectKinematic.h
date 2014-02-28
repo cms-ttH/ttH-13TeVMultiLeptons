@@ -92,7 +92,7 @@ ThreeObjectKinematic<collectionType1,collectionType2, collectionType3>::ThreeObj
   if (which_pair == "all_pairs" || which_pair == "all_pairs_abs") { 
     for (unsigned int i=0; i<max1; i++) {
       for (unsigned int j=0; j<max2; j++) {
-        for (unsigned int k=0; j<max3; k++) {
+        for (unsigned int k=0; k<max3; k++) {
           if (i >= min1-1 && j >= min2-1 && k >= min3-1) { //Start branches at min value 
             //Eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
             if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || i < j ) {
