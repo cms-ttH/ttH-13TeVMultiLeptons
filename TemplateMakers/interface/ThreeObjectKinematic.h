@@ -95,9 +95,9 @@ ThreeObjectKinematic<collectionType1,collectionType2, collectionType3>::ThreeObj
         for (unsigned int k=0; k<max3; k++) {
           if (i >= min1-1 && j >= min2-1 && k >= min3-1) { //Start branches at min value 
             //Eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
-            if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || i < j ) {
-              if ( typeid(*selCollection1).name() != typeid(*selCollection3).name() || i < k ) {
-                if ( typeid(*selCollection2).name() != typeid(*selCollection3).name() || j < k ) {
+            if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || branch_name_1 != branch_name_2 || i < j ) {
+              if ( typeid(*selCollection1).name() != typeid(*selCollection3).name() || branch_name_1 != branch_name_3 || i < k ) {
+                if ( typeid(*selCollection2).name() != typeid(*selCollection3).name() || branch_name_2 != branch_name_3 || j < k ) {
                   TString bName = Form("%s_%d_%s_%d_%s_%d_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, branch_name_3.c_str(), k+1, variable.c_str());
                   if (which_pair == "all_pairs_abs") bName = Form("%s_%d_%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, branch_name_3.c_str(), k+1, variable.c_str());
                   if (new_name.length() > 0) bName = Form("%s_%d_%d_%d", new_name.c_str(), i+1, j+1, k+1);
@@ -231,7 +231,7 @@ void ThreeObjectKinematic<collectionType1,collectionType2,collectionType3>::eval
     for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
 
       //Sets min and max number of objects, eliminates use of the same object twice 
-      if ( iObj2 >= min2-1 && iObj2 < max2 && (typeid(*selCollection1).name() != typeid(*selCollection2).name()
+      if ( iObj2 >= min2-1 && iObj2 < max2 && (typeid(*selCollection1).name() != typeid(*selCollection2).name() || branch_name_1 != branch_name_2
                             || iObj2 >= (*selCollection1)->size() || iObj2 >= max1 ) ) {
         thisValueIterator += 1.0;
         vect2.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,ptr((*selCollection2)->at(iObj2))->eta,ptr((*selCollection2)->at(iObj2))->phi,
@@ -262,8 +262,8 @@ void ThreeObjectKinematic<collectionType1,collectionType2,collectionType3>::eval
 
       //Sets min and max number of objects, eliminates use of the same object twice 
       if ( iObj3 >= min3-1 && iObj3 < max3 &&
-           (typeid(*selCollection1).name() != typeid(*selCollection3).name() || iObj3 >= (*selCollection1)->size() || iObj3 >= max1 ) &&
-           (typeid(*selCollection2).name() != typeid(*selCollection3).name() || iObj3 >= (*selCollection2)->size() || iObj3 >= max2 ) ) {
+           (typeid(*selCollection1).name() != typeid(*selCollection3).name() || branch_name_1 != branch_name_3 || iObj3 >= (*selCollection1)->size() || iObj3 >= max1 ) &&
+           (typeid(*selCollection2).name() != typeid(*selCollection3).name() || branch_name_2 != branch_name_3 || iObj3 >= (*selCollection2)->size() || iObj3 >= max2 ) ) {
         thisValueIterator += 1.0;
         vect3.SetPtEtaPhiE(ptr((*selCollection3)->at(iObj3))->pt,ptr((*selCollection3)->at(iObj3))->eta,ptr((*selCollection3)->at(iObj3))->phi,
                            max(ptr((*selCollection3)->at(iObj3))->energy,ptr((*selCollection3)->at(iObj3))->pt)); //Hack for "energy" of MET
@@ -329,9 +329,9 @@ void ThreeObjectKinematic<collectionType1,collectionType2,collectionType3>::eval
         
         //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
         if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj3 >= min3-1 && iObj1<max1 && iObj2<max2 && iObj3<max3 &&
-            (typeid(*selCollection1).name() != typeid(*selCollection2).name() || iObj1 < iObj2) &&
-            (typeid(*selCollection1).name() != typeid(*selCollection3).name() || iObj1 < iObj3) &&
-            (typeid(*selCollection2).name() != typeid(*selCollection3).name() || iObj2 < iObj3) ) {
+            (typeid(*selCollection1).name() != typeid(*selCollection2).name() || branch_name_1 != branch_name_2 || iObj1 < iObj2) &&
+            (typeid(*selCollection1).name() != typeid(*selCollection3).name() || branch_name_1 != branch_name_3 || iObj1 < iObj3) &&
+            (typeid(*selCollection2).name() != typeid(*selCollection3).name() || branch_name_2 != branch_name_3 || iObj2 < iObj3) ) {
           
           //Adds requirements to eliminate some pairs of objects
           if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {          
@@ -368,8 +368,8 @@ void ThreeObjectKinematic<collectionType1,collectionType2,collectionType3>::eval
           vect1_transverse.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,0.0,ptr((*selCollection1)->at(iObj1))->phi,ptr((*selCollection1)->at(iObj1))->pt);
           vect2_transverse.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,0.0,ptr((*selCollection2)->at(iObj2))->phi,ptr((*selCollection2)->at(iObj2))->pt);
           vect3_transverse.SetPtEtaPhiE(ptr((*selCollection3)->at(iObj3))->pt,0.0,ptr((*selCollection3)->at(iObj3))->phi,ptr((*selCollection3)->at(iObj3))->pt);
-          vect12_transverse = vect1 + vect2;
-          vect123_transverse = vect1 + vect2 + vect3;
+          vect12_transverse = vect1_transverse + vect2_transverse;
+          vect123_transverse = vect1_transverse + vect2_transverse + vect3_transverse;
           
           if ( variable == "mass" ) thisPairValue = vect123.M();
           else if ( variable == "MT" ) thisPairValue = vect123_transverse.M();

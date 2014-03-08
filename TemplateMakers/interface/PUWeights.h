@@ -16,26 +16,29 @@ class PUWeights: public KinematicVariable<double> {
 
 public:
   
-  PUWeights(HelperLeptonCore *in);
+  PUWeights(HelperLeptonCore *in, string input_option_1 = "none");
 
 
   void evaluate ();
   bool passCut ();
 
   HelperLeptonCore * myHelper;
+  string option_1;
 
 };
 
 ///////////////////////////////////////////////////////////////////////
 
-PUWeights::PUWeights  (HelperLeptonCore *in) :
-  myHelper(in)
+PUWeights::PUWeights  (HelperLeptonCore *in, string input_option_1) :
+  myHelper(in), option_1(input_option_1)
 {
 
   branches["weight_PU"] = BranchInfo<double>("weight_PU");
-  branches["weight_PUUp"] = BranchInfo<double>("weight_PUUp");
-  branches["weight_PUDown"] = BranchInfo<double>("weight_PUDown");
-
+  if (option_1 != "skipSyst") {
+    branches["weight_PUUp"] = BranchInfo<double>("weight_PUUp");
+    branches["weight_PUDown"] = BranchInfo<double>("weight_PUDown");
+  }
+  
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
   
 }
@@ -97,9 +100,10 @@ void PUWeights::evaluate () {
   }
 
   branches["weight_PU"].branchVal = weight_PUNominal;
-  branches["weight_PUUp"].branchVal = weight_PUUp;
-  branches["weight_PUDown"].branchVal = weight_PUDown;
-  
+  if (option_1 != "skipSyst") { 
+    branches["weight_PUUp"].branchVal = weight_PUUp;
+    branches["weight_PUDown"].branchVal = weight_PUDown;
+  }
 
 }
 

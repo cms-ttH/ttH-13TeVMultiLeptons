@@ -25,11 +25,11 @@ common cuts:
 
 jet tag categories:
     eq3j: ['numJets == 3']
-    #eq3j_pos: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge>0']
-    #eq3j_neg: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge<0']
+    #eq3j_pos: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge>0']
+    #eq3j_neg: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge<0']
     ge4j: ['numJets >= 4']
-    #ge4j_pos: ['numJets >= 4', 'all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge>0']
-    #ge4j_neg: '[numJets >= 4', 'all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge<0']
+    #ge4j_pos: ['numJets >= 4', 'all_leptons_by_pt_1_tkCharge>0']
+    #ge4j_neg: '[numJets >= 4', 'all_leptons_by_pt_1_tkCharge<0']
 
 lepton categories:
     mu_mu:
@@ -212,12 +212,12 @@ distributions:
         binning: [*default_num_bins, -0.8, 0.8]
 
     FinalBDT_pos:
-        expression: ((all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge>0)*(FinalBDT_TwoMuon*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 2) + FinalBDT_MuonElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 1) + FinalBDT_TwoElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 0))) - 99*(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge<0)
+        expression: ((all_leptons_by_pt_1_tkCharge>0)*(FinalBDT_TwoMuon*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 2) + FinalBDT_MuonElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 1) + FinalBDT_TwoElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 0))) - 99*(all_leptons_by_pt_1_tkCharge<0)
         axis labels: ['BDT output, positive charge', Events]
         binning: [6, -0.8, 0.8]
 
     FinalBDT_neg:
-        expression: ((all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge<0)*(FinalBDT_TwoMuon*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 2) + FinalBDT_MuonElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 1) + FinalBDT_TwoElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 0))) - 99*(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge>0)
+        expression: ((all_leptons_by_pt_1_tkCharge<0)*(FinalBDT_TwoMuon*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 2) + FinalBDT_MuonElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 1) + FinalBDT_TwoElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 0))) - 99*(all_leptons_by_pt_1_tkCharge>0)
         axis labels: ['BDT output, negative charge', Events]
         binning: [4, -0.8, 0.8]
 

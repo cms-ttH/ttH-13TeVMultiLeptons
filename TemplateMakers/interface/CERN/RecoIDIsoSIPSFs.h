@@ -4,7 +4,7 @@
 class RecoIDIsoSIPSFs: public KinematicVariable<double> {
 
 public:
-  RecoIDIsoSIPSFs(int numLeps);
+  RecoIDIsoSIPSFs(int numLeps, string input_option_1 = "none");
   ~RecoIDIsoSIPSFs();
   void evaluate();
   double fetch(BNlepton* lepton, TH2D* histo);
@@ -15,6 +15,7 @@ public:
   TH2D* electronSFHisto;
   TH2D* muonSFHisto;
   int numLeps;
+  string option_1;
   int xBin;
   int yBin;
   TString branchName;
@@ -22,10 +23,10 @@ public:
   TString branchNameDown;
 };
 
-RecoIDIsoSIPSFs::RecoIDIsoSIPSFs(int numLeps):
+RecoIDIsoSIPSFs::RecoIDIsoSIPSFs(int numLeps, string input_option_1):
   electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/eff_ele12.root").c_str()),
   muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/eff_mu12.root").c_str()),
-  numLeps(numLeps)
+  numLeps(numLeps), option_1(input_option_1)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 
@@ -36,9 +37,11 @@ RecoIDIsoSIPSFs::RecoIDIsoSIPSFs(int numLeps):
   branchNameUp = Form("RecoIDIsoSIPSFUp_%dlep", numLeps);
   branchNameDown = Form("RecoIDIsoSIPSFDown_%dlep", numLeps);
   branches[branchName] = BranchInfo<double>(branchName);
-  branches[branchNameUp] = BranchInfo<double>(branchNameUp);
-  branches[branchNameDown] = BranchInfo<double>(branchNameDown);
-
+  if (option_1 != "skipSyst") {
+    branches[branchNameUp] = BranchInfo<double>(branchNameUp);
+    branches[branchNameDown] = BranchInfo<double>(branchNameDown);
+  }
+  
 }
 
 void RecoIDIsoSIPSFs::evaluate() {
@@ -72,8 +75,10 @@ void RecoIDIsoSIPSFs::evaluate() {
   }
 
   branches[branchName].branchVal = totalSF;
-  branches[branchNameUp].branchVal = totalSFUp;
-  branches[branchNameDown].branchVal = totalSFDown;
+  if (option_1 != "skipSyst") {
+    branches[branchNameUp].branchVal = totalSFUp;
+    branches[branchNameDown].branchVal = totalSFDown;
+  }
 }
 
 double RecoIDIsoSIPSFs::fetch(BNlepton* lepton, TH2D* histo) {

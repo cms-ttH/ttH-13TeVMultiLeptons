@@ -13,20 +13,23 @@
 class TopPtWeights: public KinematicVariable<double> {
 
 public:
-  TopPtWeights(HelperLeptonCore *in);
+  TopPtWeights(HelperLeptonCore *in, string input_option_1 = "none");
 
   void evaluate ();
   bool passCut ();
 
   HelperLeptonCore * myHelper;
+  string option_1;
 };
 
 ///////////////////////////////////////////////////////////////////////
-TopPtWeights::TopPtWeights  (HelperLeptonCore *in):
-  myHelper(in)
+TopPtWeights::TopPtWeights  (HelperLeptonCore *in, string input_option_1):
+  myHelper(in), option_1(input_option_1)
 {
   branches["topPtWgt"] = BranchInfo<double>("topPtWgt");
-  branches["topPtWgtUp"] = BranchInfo<double>("topPtWgtUp");
+  if (option_1 != "skipSyst") {
+    branches["topPtWgtUp"] = BranchInfo<double>("topPtWgtUp");
+  }
 
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 }
@@ -41,8 +44,9 @@ void TopPtWeights::evaluate () {
   double weightUp = 2*(weight-1)+1;
 
   branches["topPtWgt"].branchVal = weight;
-  branches["topPtWgtUp"].branchVal = weightUp;
-
+  if (option_1 != "skipSyst") {
+    branches["topPtWgtUp"].branchVal = weightUp;
+  }
   
 
 }

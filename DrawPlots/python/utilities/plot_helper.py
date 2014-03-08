@@ -7,6 +7,7 @@ import shutil
 import glob
 import time
 import itertools
+import numpy
 from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import DefaultOrderedDict
 
 def append_integral_histo(config):
@@ -110,20 +111,28 @@ def is_matching_data_sample(lepton_category_data_samples, sample):
 class Plot:
     def __init__(self, sample, output_file, tree, plot_name, parameters, draw_string):
         self.plot_name = plot_name
-        (num_bins, x_min, x_max) = parameters['binning']
+        title = '%s;%s;%s' % (sample, parameters['axis labels'][0], parameters['axis labels'][1])
+        bins = parameters['binning']
+        if len(bins) == 2 or len(bins) == 4: #Manual binning for 1D or 2D
+            bins[1] = numpy.array(bins[1],numpy.dtype(float))
+        if len(bins) == 4: #Manual binning for 2D
+            bins[3] = numpy.array(bins[3],numpy.dtype(float))
 
         if parameters.get('plot type', 'TH1F') == 'TH1F':
-            title = '%s;%s;%s' % (sample, parameters['axis labels'][0], parameters['axis labels'][1])
-            self.plot = ROOT.TH1F(plot_name, title, num_bins, x_min, x_max)
+            self.plot = ROOT.TH1F(plot_name, title, *bins)
             if parameters.get('can rebin'):
                 self.plot.SetBit(ROOT.TH1.kCanRebin)
-            try:
-                tree.Project(self.plot_name, parameters['expression'], draw_string)
-            except AttributeError:
-                raise Exception("Tree is missing!  Exiting...")
+        elif parameters.get('plot type', 'TH1F') == 'TH2F':
+            self.plot = ROOT.TH2F(plot_name, title, *bins)
+            if parameters.get('can rebin'):
+                self.plot.SetBit(ROOT.TH2.kCanRebin)
         else:
-            print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F histograms.  Please add support for other types if you wish to use them.'
+            print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1F and TH2F histograms.  Please add support for other types if you wish to use them.'
             sys.exit(2)
+        try:
+            tree.Project(self.plot_name, parameters['expression'], draw_string)
+        except AttributeError:
+            raise Exception("Tree is missing!  Exiting...")
         self.plot.SetDirectory(output_file)
 
     def save_image(self, *image_types): #I am choosing for now not to add the option in make_plots to save pngs (though it can be called here), since pdfs look nicer

@@ -102,7 +102,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                             matched_SF = draw_string_maker.get_matched_SF(lepton_category)
                             config['weights'] = [matched_SF if x=='triggerSF' else x for x in config['weights']]
                         weights = plot_helper.customize_list(config['weights'], sample_dict.get('weights', 'common'))
-                        draw_string_maker.multiply_by_factors(weights, systematic_weight_string)
+                        draw_string_maker.multiply_by_factors(weights, [systematic_weight_string])
 
                     if sample_info.sample_type not in ['MC', 'data'] and 'sideband' not in sample_info.sample_type:
                         sys.exit('Invalid sample_type must be data, sideband, or MC' % (sample_info.sample_type))
