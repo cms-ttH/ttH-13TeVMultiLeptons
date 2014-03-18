@@ -68,7 +68,8 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
             lepton_category_cut_strings = config['lepton categories'][lepton_category].get('cuts', {}).values()
             if sample_info.sample_type == 'data' or 'sideband' in sample_info.sample_type:
                 if any([x==sample for x in config['lepton categories'][lepton_category].get('excluded samples', [])]):
-                    continue
+                    config['weights'].append('0') #So we get empty histograms for hadding to get the inclusive category
+                    #continue
                 if not plot_helper.is_matching_data_sample(config['lepton categories'][lepton_category]['data samples'], sample):
                     continue
 
