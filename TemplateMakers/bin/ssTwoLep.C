@@ -183,9 +183,6 @@ int main (int argc, char** argv) {
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
 
-  GenericVariable<string> dataset(lepHelper.dataset, "dataset", "not set");
-  kinVars.push_back(&dataset);
-
   GenericCollectionSizeVariable<BNjetCollection> numJets(&(jets.ptrToItems), "numJets");
   kinVars.push_back(&numJets);
   numJets.setCutMin(2);
@@ -401,10 +398,12 @@ int main (int argc, char** argv) {
   int TwoMuon = 0;
   int TwoElectron = 0;
   int MuonElectron = 0;
+  Char_t *dataset = (Char_t *)lepHelper.dataset.c_str();
 
   summaryTree->Branch("TwoMuon", &TwoMuon);
   summaryTree->Branch("TwoElectron", &TwoElectron);
   summaryTree->Branch("MuonElectron", &MuonElectron);
+  summaryTree->Branch("dataset", (void*)dataset, "dataset/C");
 
   ////////// all leptons //////////
   GenericCollectionMember<int, BNleptonCollection>
