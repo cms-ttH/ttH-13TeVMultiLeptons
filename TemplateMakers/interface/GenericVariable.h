@@ -12,7 +12,7 @@ public:
   branchDataType branchValue;
 
   GenericVariable(branchDataType& bValue, string bName, branchDataType resVal);
-  void evaluate ();
+  void evaluate();
 };
 
 template <class branchDataType>
@@ -21,6 +21,7 @@ GenericVariable<branchDataType>::GenericVariable(branchDataType& bValue, string 
 
   this->resetVal = resVal;
   this->branches[bName] = BranchInfo<branchDataType>(bName);
+  this->branches[bName].branchVal = this->resetVal;
 
   this->reset();
 }
