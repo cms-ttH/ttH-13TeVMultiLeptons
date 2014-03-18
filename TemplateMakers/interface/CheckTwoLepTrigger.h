@@ -5,32 +5,31 @@
 #include <set>
 #include "TRegexp.h"
 
-//
 //  Checks the double lepton triggers
 //  Fills a variable for each class of triggers
 //  Also fills a variable that is an 'or' of
 //  the three classes
-//
 
 class CheckTwoLepTrigger : public KinematicVariable<int> {
 
 public:
-  CheckTwoLepTrigger(HelperLeptonCore * in);
+  CheckTwoLepTrigger(HelperLeptonCore * in, BNtriggerCollection **_hltCollection);
 
   void evaluate();
   bool passCut();
   std::string removeVersion(std::string);
 
   HelperLeptonCore * myHelper;
+  BNtriggerCollection **hltCollection;
   std::set <string> doubleMuonTriggerNames;
   std::set <string> doubleEleTriggerNames;
   std::set <string> muonEleTriggerNames;
   std::set <string> tripleEleTriggerNames;
-
 };
 
-CheckTwoLepTrigger::CheckTwoLepTrigger(HelperLeptonCore * in):
-  myHelper(in)
+CheckTwoLepTrigger::CheckTwoLepTrigger(HelperLeptonCore * in, BNtriggerCollection **_hltCollection):
+  myHelper(in),
+  hltCollection(_hltCollection)
 {
   this->resetVal = KinematicVariableConstants::INT_INIT;
 
@@ -84,8 +83,8 @@ void CheckTwoLepTrigger::evaluate() {
   bool muonEleTrigFired = false;
   bool tripleEleTrigFired = false;
 
-  for (BNtriggerCollection::iterator iTrig = blocks->hltCollection->begin();
-       iTrig != blocks->hltCollection->end();
+  for (BNtriggerCollection::iterator iTrig = (*hltCollection)->begin();
+       iTrig != (*hltCollection)->end();
        iTrig ++) {
 
     std::string trigName = removeVersion(iTrig->name);

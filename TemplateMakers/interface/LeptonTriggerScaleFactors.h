@@ -12,15 +12,41 @@ class LeptonTriggerScaleFactors: public KinematicVariable<double> {
 
 public:
   // for now you have to specify your selection
-  LeptonTriggerScaleFactors(HelperLeptonCore *in );
+  LeptonTriggerScaleFactors(HelperLeptonCore *in,
+                            BNmuonCollection **_tightMuons,
+                            BNmuonCollection **_looseMuons,
+                            BNmuonCollection **_preselectedMuons,
+                            BNelectronCollection **_tightElectrons,
+                            BNelectronCollection **_looseElectrons,
+                            BNelectronCollection **_preselectedElectrons);
   void evaluate ();
   bool passCut ();
 
   HelperLeptonCore * myHelper;
+  BNmuonCollection **tightMuons;
+  BNmuonCollection **looseMuons;
+  BNmuonCollection **preselectedMuons;
+  BNelectronCollection **tightElectrons;
+  BNelectronCollection **looseElectrons;
+  BNelectronCollection **preselectedElectrons;
 };
 
 ///////////////////////////////////////////////////////////////////////
-LeptonTriggerScaleFactors::LeptonTriggerScaleFactors (HelperLeptonCore *in): myHelper(in) {
+LeptonTriggerScaleFactors::LeptonTriggerScaleFactors (HelperLeptonCore *in,
+                                                      BNmuonCollection **_tightMuons,
+                                                      BNmuonCollection **_looseMuons,
+                                                      BNmuonCollection **_preselectedMuons,
+                                                      BNelectronCollection **_tightElectrons,
+                                                      BNelectronCollection **_looseElectrons,
+                                                      BNelectronCollection **_preselectedElectrons) :
+  myHelper(in),
+  tightMuons(_tightMuons),
+  looseMuons(_looseMuons),
+  preselectedMuons(_preselectedMuons),
+  tightElectrons(_tightElectrons),
+  looseElectrons(_looseElectrons),
+  preselectedElectrons(_preselectedElectrons)
+{
 
   branches["twoMuonTriggerSF"] = BranchInfo<double>("twoMuonTriggerSF");
   branches["twoElectronTriggerSF"] = BranchInfo<double>("twoElectronTriggerSF");
@@ -38,20 +64,20 @@ void LeptonTriggerScaleFactors::evaluate () {
   double muonSF = 1.0, electronSF = 1.0, muonElectronSF = 1.0;
   //double triggerSF = 1.0;
 
-  unsigned numTightLoosePreselectedMuons = this->blocks->tightLoosePreselectedMuonCollection->size();
-  unsigned numTightLoosePreselectedElectrons = this->blocks->tightLoosePreselectedElectronCollection->size();
+  unsigned numTightLoosePreselectedMuons = (*tightMuons)->size()+(*looseMuons)->size()+(*preselectedMuons)->size();
+  unsigned numTightLoosePreselectedElectrons = (*tightElectrons)->size()+(*looseElectrons)->size()+(*preselectedElectrons)->size();
   //unsigned numTightLoosePreselectedLeptons = this->blocks->tightLoosePreselectedLeptonCollection->size();
 
   // I'm creating a new collection because tightLoosePreselected is sorted by pT
   BNmuonCollection bestMuons;
-  bestMuons.insert(bestMuons.end(), this->blocks->tightMuonCollection->begin(), this->blocks->tightMuonCollection->end());
-  bestMuons.insert(bestMuons.end(), this->blocks->looseMuonCollection->begin(), this->blocks->looseMuonCollection->end());
-  bestMuons.insert(bestMuons.end(), this->blocks->preselectedMuonCollection->begin(), this->blocks->preselectedMuonCollection->end());
+  bestMuons.insert(bestMuons.end(), (*tightMuons)->begin(), (*tightMuons)->end());
+  bestMuons.insert(bestMuons.end(), (*looseMuons)->begin(), (*looseMuons)->end());
+  bestMuons.insert(bestMuons.end(), (*preselectedMuons)->begin(), (*preselectedMuons)->end());
 
   BNelectronCollection bestElectrons;
-  bestElectrons.insert(bestElectrons.end(), this->blocks->tightElectronCollection->begin(), this->blocks->tightElectronCollection->end());
-  bestElectrons.insert(bestElectrons.end(), this->blocks->looseElectronCollection->begin(), this->blocks->looseElectronCollection->end());
-  bestElectrons.insert(bestElectrons.end(), this->blocks->preselectedElectronCollection->begin(), this->blocks->preselectedElectronCollection->end());
+  bestElectrons.insert(bestElectrons.end(), (*tightElectrons)->begin(), (*tightElectrons)->end());
+  bestElectrons.insert(bestElectrons.end(), (*looseElectrons)->begin(), (*looseElectrons)->end());
+  bestElectrons.insert(bestElectrons.end(), (*preselectedElectrons)->begin(), (*preselectedElectrons)->end());
 
   if (numTightLoosePreselectedMuons >= 2) {
     muonSF = beanHelper->GetDoubleMuonTriggerSF(bestMuons.at(0), bestMuons.at(1));

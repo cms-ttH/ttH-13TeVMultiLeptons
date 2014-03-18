@@ -26,7 +26,7 @@ mc error fill style: 3654
 mc error fill color: kBlack
 
 stack minimum: 0.001
-stack lowest maximum: 1.001
+stack lowest maximum: 0.5
 stack maximum factor: 1.2
 stack minimum log scale: 0.1
 stack lowest maximum log scale: 1.2
@@ -88,8 +88,8 @@ ratio hist x axis label offset: 0.02
 ratio hist line color: kBlack
 ratio hist marker color: kBlack
 
-ratio hist line color blind: kBlue+2
-ratio hist marker color blind: kBlue+2
+ratio hist line color blind: kRed
+ratio hist marker color blind: kRed
 
 ratio err hist marker color: kGreen
 ratio err hist fill color: kGreen

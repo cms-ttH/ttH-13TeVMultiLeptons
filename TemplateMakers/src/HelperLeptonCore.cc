@@ -408,7 +408,7 @@ void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID
 }
 
 void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, muonID::muonID looseID, muonID::muonID preselectedID, BEANFileInterface * selectedCollections) {
-  muonsTight = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), tightID, rawCollections.jetsForLepMVACollection );
+  muonsTight = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), tightID);
   muonsTightLoose = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), looseID);
   muonsLoose = bHelp.GetDifference(muonsTightLoose, muonsTight);
 
@@ -460,12 +460,13 @@ void HelperLeptonCore::getTightCorrectedJets (double ptCut,
 
     jetsNotTightCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsTightCSV));
     selectedCollections->jetCollectionNotTightCSV = &jetsNotTightCSV;
+
 }
 
-BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets (double ptCut,
-                                                 double etaCut,
-                                                 jetID::jetID jetID,
-                                                 const char csvWorkingPoint) {
+BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets(double ptCut,
+                                                             double etaCut,
+                                                             jetID::jetID jetID,
+                                                             const char csvWorkingPoint) {
   sortedCorrSelJets.clear();
 
   BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);

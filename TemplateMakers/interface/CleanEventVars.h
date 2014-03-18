@@ -1,4 +1,3 @@
-
 #ifndef _CleanEventVars_h
 #define _CleanEventVars_h
 
@@ -21,39 +20,42 @@
 class CleanEventVars: public KinematicVariable<int> {
 
 public:
-  
-  CleanEventVars(HelperLeptonCore * in);
+
+  CleanEventVars(HelperLeptonCore * in, BNeventCollection **_events, BNprimaryvertexCollection **_primaryVertexes);
 
   void evaluate ();
   bool passCut ();
   void reset();
   //void setCut () ;
 
-  int calculateNumGoodPVs (BNprimaryvertexCollection * pvCol);
+  int calculateNumGoodPVs(BNprimaryvertexCollection * pvCol);
 
-  // Not stored, but calculated 
+  // Not stored, but calculated
   bool passGoodVertex;
   bool passFilterOutScraping;
-  bool passHBHENoiseFilter;  
+  bool passHBHENoiseFilter;
   bool isData;
-  
+
   HelperLeptonCore * myHelper;
+  BNeventCollection **events;
+  BNprimaryvertexCollection **primaryVertexes;
 
   static constexpr float minNDOF = 4;
   static constexpr float maxAbsZ = 24;
   static constexpr float maxd0 = 2.;
 
-  
 };
 
-CleanEventVars::CleanEventVars  (HelperLeptonCore *in ):
-  myHelper(in)
+CleanEventVars::CleanEventVars(HelperLeptonCore *in, BNeventCollection **_events, BNprimaryvertexCollection **_primaryVertexes) :
+  myHelper(in),
+  events(_events),
+  primaryVertexes(_primaryVertexes)
 {
 
   branches["isCleanEvent"] = BranchInfo<int>("isCleanEvent");
 
   this->resetVal = KinematicVariableConstants::INT_INIT;
-  
+
 }
 
 void CleanEventVars::evaluate () {
@@ -74,20 +76,18 @@ void CleanEventVars::evaluate () {
 
   } else {
 
-    BNevent & myEvent = blocks->eventCollection->at(0);
-    
-    int numPV = calculateNumGoodPVs(blocks->primaryVertexCollection);
+    BNevent & myEvent = (*events)->at(0);
+
+    int numPV = calculateNumGoodPVs(*primaryVertexes);
     passGoodVertex =  (numPV >0) ? true : false;
 
     passFilterOutScraping = (myEvent.FilterOutScraping==1) ? true : false;
 
     passHBHENoiseFilter = (myEvent.HBHENoiseFilter==1) ? true : false;
-    
+
     branches["isCleanEvent"].branchVal = (passGoodVertex && passFilterOutScraping && passHBHENoiseFilter) ? 1 : 0;
   }
-  
-    
-  
+
 }
 
 void CleanEventVars::reset () {
@@ -96,17 +96,16 @@ void CleanEventVars::reset () {
   passFilterOutScraping = false;
   passHBHENoiseFilter = false;
   isData = false;
-  
-  
+
   // call the parent class reset
   KinematicVariable<int>::reset();
-  
+
 }
 
 bool CleanEventVars::passCut() {
 
   evaluate();
-  
+
   if (branches["isCleanEvent"].branchVal == 1)
     return true;
   return false;
@@ -119,7 +118,7 @@ int CleanEventVars::calculateNumGoodPVs(BNprimaryvertexCollection * pvCol) {
   for (int iPV = 0; iPV < (pvCol->size()); iPV++) {
 
     BNprimaryvertex & thisPV = pvCol->at(iPV);
-    
+
     bool isGood = ( (thisPV.ndof >= minNDOF)
                     && (thisPV.z < maxAbsZ)
                     && (thisPV.rho < maxd0) );
@@ -129,8 +128,7 @@ int CleanEventVars::calculateNumGoodPVs(BNprimaryvertexCollection * pvCol) {
 
   }
   return numGoodPVs;
-  
+
 }
 
-
-#endif 
+#endif

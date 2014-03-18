@@ -28,7 +28,7 @@ def main():
         config['label'] = args.label
 
     #use common systematics and weight as default for all samples
-    samples = dict((k, v if v else {'systematics':'common', 'weights':'common'}) for k, v in config['samples'].items())
+    samples = dict((k, v if v else {'systematics':['common'], 'weights':['common']}) for k, v in config['samples'].items())
     if args.sample:
         samples = dict(((k, v) for k, v in samples.items() if k == args.sample))
 
@@ -66,9 +66,9 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
 
         for lepton_category in lepton_categories:
             lepton_category_cut_strings = config['lepton categories'][lepton_category].get('cuts', {}).values()
-            if lepton_category == 'inclusive':
-                lepton_category_cut_strings = ['('+' || '.join(['('+' && '.join(lepton_dict.get('cuts').values())+')' for lepton_dict in config['lepton categories'].values() if lepton_dict.get('cuts')])+')']
             if sample_info.sample_type == 'data' or 'sideband' in sample_info.sample_type:
+                if any([x==sample for x in config['lepton categories'][lepton_category].get('excluded samples', [])]):
+                    continue
                 if not plot_helper.is_matching_data_sample(config['lepton categories'][lepton_category]['data samples'], sample):
                     continue
 
@@ -101,7 +101,8 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                         if sample_info.sample_type == 'MC' and 'triggerSF' in config['weights']:
                             matched_SF = draw_string_maker.get_matched_SF(lepton_category)
                             config['weights'] = [matched_SF if x=='triggerSF' else x for x in config['weights']]
-                        weights = plot_helper.customize_list(config['weights'], sample_dict.get('weights', 'common'))
+
+                        weights = plot_helper.customize_list(config['weights'], sample_dict.get('weights', ['common']))
                         draw_string_maker.multiply_by_factors(weights, [systematic_weight_string])
 
                     if sample_info.sample_type not in ['MC', 'data'] and 'sideband' not in sample_info.sample_type:
@@ -112,6 +113,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                         if sample not in parameters.get('samples', [sample]):
                             continue
                         draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
+                        draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
                         plot_name = '%s%s' % (distribution, systematic_label)
                         plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string)
                         if sample_info.sample_type == 'MC':

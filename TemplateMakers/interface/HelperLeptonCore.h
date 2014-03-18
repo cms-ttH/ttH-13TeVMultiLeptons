@@ -130,8 +130,8 @@ public:
   double scaleLepJetPtRatioMC(double jetPtRatio, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
   double scaleLepJetDRMC(double jetDR, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
 
-  template <typename collectionType> void fillMCMatchID(collectionType& collection, const double& maxDR);
-  template <typename collectionType> void fillMCMatchAny(collectionType& collection, const double& maxDR);
+  template <typename collectionType> void fillMCMatchID(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR);
+  template <typename collectionType> void fillMCMatchAny(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR);
   template <typename collectionType> void fillSIP(collectionType& collection, bool applySmearing);
   template <typename collectionType> void fillLepJetPtRatio(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing);
   template <typename collectionType> void fillLepJetDeltaR(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing);
@@ -139,7 +139,7 @@ public:
   template <typename collectionType> void scaleMCCollectionDZ(collectionType& collection);
   template <typename collectionType> void scaleMCCollectionDXY(collectionType& collection);
   template <typename particleType> bool isPlausible(particleType particle, const BNmcparticle& mcParticle);
-  template <typename particleType> BNmcparticleCollection getPlausibleParticles(particleType& particle, BNmcparticleCollection * mcParticles);
+  template <typename particleType> BNmcparticleCollection getPlausibleParticles(particleType& particle, BNmcparticleCollection mcParticles);
   template <typename collectionType> void applyRochesterCorrections(collectionType& collection);
   template <typename particleType> BNjet GetClosestJet(const BNjetCollection& jets, const particleType& particle, const double maxDeltaR);
 
@@ -244,6 +244,8 @@ public:
   edm::Handle<BNjetCollection> h_lepMvaJets;
   BNjetCollection lepMvaJets;
 
+  BNmcparticleCollection higgsParticles;
+
 //-------------------- Inline functions
   inline double smearMC(TRandom* gSmearer, double x, double mu, double sigma) {
     if (x == 0) return gSmearer->Gaus(mu,sigma);
@@ -261,39 +263,39 @@ public:
     if (x == 0) return shift;
     else return (x/abs(x))*(abs(x)*scale + shift);
   }
-  
+
 };
 
 //-------------------- Template functions
 template <typename collectionType>
-void HelperLeptonCore::fillMCMatchID(collectionType& collection, const double& maxDR) {
+void HelperLeptonCore::fillMCMatchID(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR) {
   BNmcparticleCollection plausibleParticles;
   BNmcparticle matchedParticle;
 
   for (auto& object: collection) {
-    plausibleParticles = getPlausibleParticles(object, rawCollections.mcParticleCollection);
+    plausibleParticles = getPlausibleParticles(object, mcParticles);
     matchedParticle = bHelp.GetMatchedMCparticle(plausibleParticles, object, maxDR);
     object.mcMatchID = matchedParticle.id;
   }
 }
 
 template <typename collectionType>
-void HelperLeptonCore::fillMCMatchAny(collectionType& collection, const double& maxDR) {
+void HelperLeptonCore::fillMCMatchAny(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR) {
   BNmcparticleCollection plausibleParticles;
   BNmcparticle matchedParticle;
 
   for (auto& object: collection) {
-    plausibleParticles = getPlausibleParticles(object, rawCollections.mcParticleCollection);
+    plausibleParticles = getPlausibleParticles(object, mcParticles);
     matchedParticle = bHelp.GetMatchedMCparticle(plausibleParticles, object, maxDR);
     object.mcMatchAny = 1 + int(isFromB(matchedParticle));
   }
 }
 
 template <typename particleType>
-BNmcparticleCollection HelperLeptonCore::getPlausibleParticles(particleType& particle, BNmcparticleCollection * mcParticles) {
+BNmcparticleCollection HelperLeptonCore::getPlausibleParticles(particleType& particle, BNmcparticleCollection mcParticles) {
   BNmcparticleCollection plausibleParticles;
 
-  for (auto mcParticle: *mcParticles) {
+  for (auto mcParticle: mcParticles) {
     if (isPlausible(particle, mcParticle)) plausibleParticles.push_back(mcParticle);
   }
   return plausibleParticles;

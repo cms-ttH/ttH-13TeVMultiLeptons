@@ -13,10 +13,14 @@ public:
 
   // for now you have to specify your selection
   LeptonIDAndIsoScaleFactors(HelperLeptonCore *in,
-                     muonID::muonID mt,
-                     muonID::muonID ml,
-                     electronID::electronID et,
-                     electronID::electronID el);
+                             muonID::muonID mt,
+                             muonID::muonID ml,
+                             electronID::electronID et,
+                             electronID::electronID el,
+                             BNmuonCollection **tightMuons,
+                             BNmuonCollection **looseMuons,
+                             BNelectronCollection **tightElectrons,
+                             BNelectronCollection **looseElectrons);
   void evaluate ();
 
   HelperLeptonCore * myHelper;
@@ -24,20 +28,32 @@ public:
   muonID::muonID muonLooseID;
   electronID::electronID electronTightID;
   electronID::electronID electronLooseID;
+  BNmuonCollection **tightMuons;
+  BNmuonCollection **looseMuons;
+  BNelectronCollection **tightElectrons;
+  BNelectronCollection **looseElectrons;
 
 };
 
 ///////////////////////////////////////////////////////////////////////
 LeptonIDAndIsoScaleFactors::LeptonIDAndIsoScaleFactors  (HelperLeptonCore *in,
-                                         muonID::muonID mt,
-                                         muonID::muonID ml,
-                                         electronID::electronID et,
-                                         electronID::electronID el):
+                                                         muonID::muonID mt,
+                                                         muonID::muonID ml,
+                                                         electronID::electronID et,
+                                                         electronID::electronID el,
+                                                         BNmuonCollection **tightMuons,
+                                                         BNmuonCollection **looseMuons,
+                                                         BNelectronCollection **tightElectrons,
+                                                         BNelectronCollection **looseElectrons):
   myHelper(in),
   muonTightID(mt),
   muonLooseID(ml),
   electronTightID(et),
-  electronLooseID(el)
+  electronLooseID(el),
+  tightMuons(tightMuons),
+  looseMuons(looseMuons),
+  tightElectrons(tightElectrons),
+  looseElectrons(looseElectrons)
 
 {
 
@@ -54,26 +70,26 @@ void LeptonIDAndIsoScaleFactors::evaluate () {
 
   double IDAndIsoSF = 1.0;
 
-  for (BNmuonCollection::iterator iMuon = this->blocks->tightMuonCollection->begin();
-       iMuon != this->blocks->tightMuonCollection->end();
+  for (BNmuonCollection::iterator iMuon = (*tightMuons)->begin();
+       iMuon != (*tightMuons)->end();
        iMuon ++ ){
     IDAndIsoSF *= beanHelper->GetMuonSF((*iMuon), muonTightID);
   }
 
-  for (BNmuonCollection::iterator iMuon = this->blocks->looseMuonCollection->begin();
-       iMuon != this->blocks->looseMuonCollection->end();
+  for (BNmuonCollection::iterator iMuon = (*looseMuons)->begin();
+       iMuon != (*looseMuons)->end();
        iMuon ++ ){
     IDAndIsoSF *= beanHelper->GetMuonSF((*iMuon), muonLooseID);
   }
 
-  for (BNelectronCollection::iterator iElectron = this->blocks->tightElectronCollection->begin();
-       iElectron != this->blocks->tightElectronCollection->end();
+  for (BNelectronCollection::iterator iElectron = (*tightElectrons)->begin();
+       iElectron != (*tightElectrons)->end();
        iElectron ++ ){
     IDAndIsoSF *= beanHelper->GetElectronSF((*iElectron), electronTightID);
   }
 
-  for (BNelectronCollection::iterator iElectron = this->blocks->looseElectronCollection->begin();
-       iElectron != this->blocks->looseElectronCollection->end();
+  for (BNelectronCollection::iterator iElectron = (*looseElectrons)->begin();
+       iElectron != (*looseElectrons)->end();
        iElectron ++ ){
     IDAndIsoSF *= beanHelper->GetElectronSF((*iElectron), electronLooseID);
   }

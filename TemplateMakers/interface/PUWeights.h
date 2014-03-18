@@ -1,8 +1,5 @@
-
 #ifndef _PUWeights_h
 #define _PUWeights_h
-
-
 
 ///////////////////////////////////////////////////////
 //
@@ -15,32 +12,31 @@
 class PUWeights: public KinematicVariable<double> {
 
 public:
-  
-  PUWeights(HelperLeptonCore *in, string input_option_1 = "none");
+  HelperLeptonCore * myHelper;
+  BNeventCollection **events;
+  string option;
 
-
+  PUWeights(HelperLeptonCore *_myHelper, BNeventCollection** _events, string _option="none");
   void evaluate ();
   bool passCut ();
-
-  HelperLeptonCore * myHelper;
-  string option_1;
 
 };
 
 ///////////////////////////////////////////////////////////////////////
-
-PUWeights::PUWeights  (HelperLeptonCore *in, string input_option_1) :
-  myHelper(in), option_1(input_option_1)
+  PUWeights::PUWeights (HelperLeptonCore *_myHelper, BNeventCollection **_events, string _option) :
+  myHelper(_myHelper),
+  events(_events),
+  option(_option)
 {
 
   branches["weight_PU"] = BranchInfo<double>("weight_PU");
-  if (option_1 != "skipSyst") {
+  if (option != "skipSyst") {
     branches["weight_PUUp"] = BranchInfo<double>("weight_PUUp");
     branches["weight_PUDown"] = BranchInfo<double>("weight_PUDown");
   }
-  
+
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
-  
+
 }
 
 /////////////////////////////////////////////////////////
@@ -49,12 +45,10 @@ PUWeights::PUWeights  (HelperLeptonCore *in, string input_option_1) :
 //   The components from anything other than 2012_53x
 //   remains entirely untested
 //
-//
 ////////////////////////////////////////////////////////
 
-
 void PUWeights::evaluate () {
-  
+
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
@@ -67,11 +61,11 @@ void PUWeights::evaluate () {
   // default weight is 1.0
   double weight_PUNominal = 1.0, weight_PUUp = 1.0, weight_PUDown = 1.0;
 
-  BNevent iEvent = this->blocks->eventCollection->at(0);
+  BNevent iEvent = (*events)->at(0);
 
   double numTruePV = iEvent.numTruePV;
   double numGenPV = iEvent.numGenPV;
-  
+
 
   // data doesn't need a reweight
   if(!isData){
@@ -100,7 +94,7 @@ void PUWeights::evaluate () {
   }
 
   branches["weight_PU"].branchVal = weight_PUNominal;
-  if (option_1 != "skipSyst") { 
+  if (option != "skipSyst") {
     branches["weight_PUUp"].branchVal = weight_PUUp;
     branches["weight_PUDown"].branchVal = weight_PUDown;
   }

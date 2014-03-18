@@ -22,7 +22,7 @@ def main ():
 
     args = parser.parse_args()
 
-    if args.hadoop:
+    if args.doop:
         outDir = '/hadoop/users/%s/tree_files' % os.environ['USER']
     else:
         outDir = '%s/src/ttHMultileptonAnalysis/DrawPlots/tree_files/' % os.environ['CMSSW_BASE']

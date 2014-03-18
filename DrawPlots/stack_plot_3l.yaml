@@ -1,7 +1,7 @@
 #input and output file names
-input file location: histos_pv4
-input file label: 3l_v9
-output file location: stack_plots_pva
+input file location: histos_3l_v22_pv1
+input file label: 3l_v22
+output file location: stacks_3l_v22_pv1
 
 #drawing options
 skip systematics: true
@@ -16,17 +16,19 @@ selection info : false
 SF info: false
 
 #luminosity and era
-luminosity: 19.5
+luminosity: 19.6
 luminosity error: 0.044
 trigger SF error: 0.02
 lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
 
 #Lepton categories: "draw name"
 lepton categories:
-    3l: 3l
-    mu_mu: " #mu #mu "
-    ele_ele: " e e "
-    mu_ele: "#mu e"
+    3l:
+        data samples: [inclusive_data]
+        tex name: "3l"
+#     mu_mu: " #mu #mu "
+#     ele_ele: " e e "
+#     mu_ele: "#mu e"
 
 #Jet-tag categories: "draw name"
 jet tag categories:
@@ -49,6 +51,7 @@ signal samples:
         stack or line: stack
         line width: 2 # must be integer
         scale: 1.0
+        samples: [ttH125]
 
 #Samples in each sample list will be added together and appear as a single entry in the stack plot; ordered bottom-to-top
 background samples:
@@ -76,7 +79,7 @@ background samples:
         draw name: "WZ"
         color: kAzure-8
         systematics: all
-        samples: [wz]
+        samples: [wz_lll]
     zz_llll:
         draw name: "ZZ"
         color: kAzure-9
@@ -92,11 +95,11 @@ background samples:
         color: kViolet
         systematics: all
         samples: [www, wwz]
-    inclusive_NP_sideband:
+    inclusive_data_NP_sideband:
         draw name: "non-prompt"
         color: kBlue-1
         systematics: 40PercentRateUp+40PercentRateDown
-        samples: [inclusive_NP_sideband]
+        samples: [inclusive_data_NP_sideband]
 
 
 #kGray+1
@@ -106,38 +109,38 @@ background samples:
 
 #distribution: [title, underflow, overflow]
 distributions:
-    numTightElectrons: [number of tight electrons, false, false]
-    numTightMuons: [number of tight muons, false, false]
+#     numTightElectrons: [number of tight electrons, false, false]
+#    numTightMuons: [number of tight muons, false, false]
     numJets: [number of jets, false, false]
-    numLooseBJets: [number of loose b-tagged jets, false, false]
-    numMediumBJets: [number of medium b-tagged jets, false, false]
-    all_leptons_by_pt_1_pt: [First lepton pT, false, false]
-    all_leptons_by_pt_2_pt: [Second lepton pT, false, false]
-    all_leptons_by_pt_3_pt: [Third lepton pT, false, false]
-    all_leptons_by_pt_1_eta: [First lepton eta, false, false]
-    all_leptons_by_pt_2_eta: [Second lepton eta, false, false]
-    all_leptons_by_pt_3_eta: [Third lepton eta, false, false]
-    all_leptons_by_pt_1_lepMVA: [First lepton lepMVA, false, false]
-    all_leptons_by_pt_2_lepMVA: [Second lepton lepMVA, false, false]
-    all_leptons_by_pt_3_lepMVA: [Third lepton lepMVA, false, false]
-    jets_by_pt_1_pt: [First jet pT, false, false]
-    jets_by_pt_2_pt: [Second jet pT, false, false]
-    jets_by_pt_3_pt: [Third jet pT, false, false]
-    min_mass_leplep: [min dilepton mass, false, false]
-#    ZLike_mass_leplep_SFOS: [Z mass SFOS TightLoose, false, false]
-    ZLike_mass_leplep_SFOS_all: [Z mass SFOS all, false, false]
-#    ZLike_pt_leplep_SFOS: [Z pt, false, false]
-#    ZLike_eta_leplep_SFOS: [Z eta, false, false]
-    met_pt: [MET, false, false]
-    mht: [MHT, false, false]
-    met_ld: [MetLD, false, false]
-#    WLike_dijet_mass: [W mass 80, false, false]
-    min_dR_leplep: [min dilepton deltaR, false, false]
-#    sum_jet_pt: [Sum jet pT, false, false]
-    #sum_pt: [Sum pT, false, false]
-    #mass_of_everything_all: [Mass of everything (all), false, false]
-    #mass_of_jets: [Mass of jets, false, false]
-#    maxAbs_deltaEta_leplep: [max dilepton deltaEta, false, false]
-#    min_deltaR_jetjet: [min dijet deltaR, false, false]
-#    maxAbs_deltaEta_jetjet: [maxAbs_deltaEta_jetjet, false, false]
+#     numLooseBJets: [number of loose b-tagged jets, false, false]
+#     numMediumBJets: [number of medium b-tagged jets, false, false]
+#     all_leptons_by_pt_1_pt: [First lepton pT, false, false]
+#     all_leptons_by_pt_2_pt: [Second lepton pT, false, false]
+#     all_leptons_by_pt_3_pt: [Third lepton pT, false, false]
+#     all_leptons_by_pt_1_eta: [First lepton eta, false, false]
+#     all_leptons_by_pt_2_eta: [Second lepton eta, false, false]
+#     all_leptons_by_pt_3_eta: [Third lepton eta, false, false]
+#     all_leptons_by_pt_1_lepMVA: [First lepton lepMVA, false, false]
+#     all_leptons_by_pt_2_lepMVA: [Second lepton lepMVA, false, false]
+#     all_leptons_by_pt_3_lepMVA: [Third lepton lepMVA, false, false]
+#     jets_by_pt_1_pt: [First jet pT, false, false]
+#     jets_by_pt_2_pt: [Second jet pT, false, false]
+#     jets_by_pt_3_pt: [Third jet pT, false, false]
+#     min_mass_leplep: [min dilepton mass, false, false]
+# #    ZLike_mass_leplep_SFOS: [Z mass SFOS TightLoose, false, false]
+#     ZLike_mass_leplep_SFOS_all: [Z mass SFOS all, false, false]
+# #    ZLike_pt_leplep_SFOS: [Z pt, false, false]
+# #    ZLike_eta_leplep_SFOS: [Z eta, false, false]
+#     met_pt: [MET, false, false]
+#     mht: [MHT, false, false]
+#     met_ld: [MetLD, false, false]
+# #    WLike_dijet_mass: [W mass 80, false, false]
+#     min_dR_leplep: [min dilepton deltaR, false, false]
+# #    sum_jet_pt: [Sum jet pT, false, false]
+#     #sum_pt: [Sum pT, false, false]
+#     #mass_of_everything_all: [Mass of everything (all), false, false]
+#     #mass_of_jets: [Mass of jets, false, false]
+# #    maxAbs_deltaEta_leplep: [max dilepton deltaEta, false, false]
+# #    min_deltaR_jetjet: [min dijet deltaR, false, false]
+# #    maxAbs_deltaEta_jetjet: [maxAbs_deltaEta_jetjet, false, false]
 

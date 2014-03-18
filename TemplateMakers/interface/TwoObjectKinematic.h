@@ -6,7 +6,7 @@
 #include <typeinfo>
 
 // //Anna's fix to make BNleptonCollection work just like any other collection
-// //Template defined in GenericCollectionMember.h 
+// //Template defined in GenericCollectionMember.h
 // template<typename ObjectType_temp>
 // ObjectType_temp * ptr(ObjectType_temp & obj) { return &obj; } //turn reference into pointer!
 
@@ -44,20 +44,20 @@ public:
   unsigned int max1; //last object in the first collection
   collectionType2 **selCollection2; //second selected collection
   string branch_name_2; //second collected collection name
-  unsigned int min2; //first object in the second collection 
-  unsigned int max2; //last object in the second collection 
+  unsigned int min2; //first object in the second collection
+  unsigned int max2; //last object in the second collection
   double target_value; //only matters for closest_to, second_closest_to, and num_within; otherwise set to -99
   string pair_req_1;
   string pair_req_2;
-  double within_value; 
-  
+  double within_value;
+
   TwoObjectKinematic(string input_variable, string input_which_pair, string input_new_name,
                      collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
                      collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
                      double input_target_value = -99, string input_pair_req_1 = "none", string input_pair_req_2 = "none", double input_within_value = -99);
-  
+
   void evaluate();
-  
+
 };
 
 template <class collectionType1, class collectionType2>
@@ -84,7 +84,7 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
       for (unsigned int j=0; j<max2; j++) {
         if (i >= min1-1 && j >= min2-1) { //Start branches at min value 
           //Eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
-          if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || branch_name_1 != branch_name_2 || i < j ) {
+          if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || i < j ) {
             TString bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
             if (which_pair == "all_pairs_abs") bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
             if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), i+1, j+1);
@@ -146,7 +146,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   TLorentzVector thisVectorSum(0.,0.,0.,0.); //Sum of vectors of individual objects
   TLorentzVector thisVectorTransverse(0.,0.,0.,0.); //Transverse vectors of individual objects
   TLorentzVector thisVectorTransverseSum(0.,0.,0.,0.); //Sum of transverse vectors of individual objects
-  
+
   TLorentzVector vect1; //Vector for first object
   TLorentzVector vect2; //Vector for second object
   TLorentzVector vect12; //Combined vector of two objects
@@ -154,7 +154,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
   TLorentzVector vect1_transverse; //Transverse vector for first object
   TLorentzVector vect2_transverse; //Transverse vector for second object
   TLorentzVector vect12_transverse; //Combined transverse vector of two
-  
+
   //Convert target and within value to integers for branch name
   int target_value_whole = floor(target_value);
   int target_value_fraction = static_cast<int>(target_value*10)%10;
@@ -167,8 +167,8 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
     useValue = 1;
   }
   bool usePairValue = 0; //Use pair values for sum, average, and num_within calculations
-  if ( variable == "mass" || variable == "MT" || variable == "deltaR" || variable == "deltaEta" || variable == "deltaPhi" ||
-       variable == "absDeltaEta" || variable == "absDeltaPhi" || variable == "vectPt" || variable == "vectPz" ||
+  if ( variable == "mass" || variable == "MT" || variable == "deltaR" || variable == "weightedDeltaR" || variable == "deltaEta" || variable == "deltaPhi" ||
+       variable == "absDeltaEta" || variable == "absDeltaPhi" || variable == "weightedAbsDeltaPhi" || variable == "vectPt" || variable == "vectPz" ||
        variable == "vectEnergy" || variable == "vectEta" || variable == "vectPhi" || variable == "absVectPhi" ||
        variable == "absVectPz" || variable == "absVectEnergy" || variable == "absVectEta" || variable == "absVectPhi" ) {
     usePairValue = 1;
@@ -176,19 +176,19 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
 
 
   //Use individual values
-  if ( useValue || which_pair == "vector_sum" ) {
+  if (useValue || which_pair == "vector_sum") {
     //Loop over first set of objects alone
     for (unsigned int iObj1 = 0; iObj1 < (*selCollection1)->size(); iObj1++) {
 
       //Sets min and max number of objects
-      if ( iObj1 >= min1-1 && iObj1 < max1 ) {
+      if (iObj1 >= min1-1 && iObj1 < max1) {
 
         thisValueIterator += 1.0;
         vect1.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,ptr((*selCollection1)->at(iObj1))->eta,ptr((*selCollection1)->at(iObj1))->phi,
                            max(ptr((*selCollection1)->at(iObj1))->energy,ptr((*selCollection1)->at(iObj1))->pt)); //Hack for "energy" of MET
         vect1_transverse.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,0.0,ptr((*selCollection1)->at(iObj1))->phi,ptr((*selCollection1)->at(iObj1))->pt);
         thisVectorSum += vect1; thisVectorTransverseSum += vect1_transverse;
-        
+
         if ( variable == "pt" ) { thisValue = vect1.Pt(); thisValueCounter += 1.0*( abs(vect1.Pt() - target_value) < within_value ); }
         else if ( variable == "pz" ) { thisValue = vect1.Pz(); thisValueCounter += 1.0*( abs(vect1.Pz() - target_value) < within_value ); }
         else if ( variable == "energy" ) { thisValue = vect1.E(); thisValueCounter += 1.0*( abs(vect1.E() - target_value) < within_value ); }
@@ -204,21 +204,22 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         else thisValueMax = max(thisValue, thisValueMax);
         if (thisValueMin == KinematicVariableConstants::DOUBLE_INIT) thisValueMin = thisValue;
         else thisValueMin = min(thisValue, thisValueMin);
-      }      
+      }
+
     }//End loop over iObj1
-    
+
     //Loop over second set of objects alone
     for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
 
-      //Sets min and max number of objects, eliminates use of the same object twice 
-      if ( iObj2 >= min2-1 && iObj2 < max2 && (typeid(*selCollection1).name() != typeid(*selCollection2).name() || branch_name_1 != branch_name_2
+      //Sets min and max number of objects, eliminates use of the same object twice
+      if ( iObj2 >= min2-1 && iObj2 < max2 && (typeid(*selCollection1).name() != typeid(*selCollection2).name()
                             || iObj2 >= (*selCollection1)->size() || iObj2 >= max1 ) ) {
         thisValueIterator += 1.0;
         vect2.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,ptr((*selCollection2)->at(iObj2))->eta,ptr((*selCollection2)->at(iObj2))->phi,
                            max(ptr((*selCollection2)->at(iObj2))->energy,ptr((*selCollection2)->at(iObj2))->pt)); //Hack for "energy" of MET
         vect2_transverse.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,0.0,ptr((*selCollection2)->at(iObj2))->phi,ptr((*selCollection2)->at(iObj2))->pt);
         thisVectorSum += vect2; thisVectorTransverseSum += vect2_transverse;
-        
+
         if ( variable == "pt" ) { thisValue = vect2.Pt(); thisValueCounter += 1.0*( abs(vect2.Pt() - target_value) < within_value ); }
         else if ( variable == "pz" ) { thisValue = vect2.Pz(); thisValueCounter += 1.0*( abs(vect2.Pz() - target_value) < within_value ); }
         else if ( variable == "energy" ) { thisValue = vect2.E(); thisValueCounter += 1.0*( abs(vect2.E() - target_value) < within_value ); }
@@ -235,7 +236,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         if (thisValueMin == KinematicVariableConstants::DOUBLE_INIT) thisValueMin = thisValue;
         else thisValueMin = min(thisValue, thisValueMin);
       }
-    }  
+    }
 
     //Fill the branches
     TString bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
@@ -263,9 +264,11 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
       else std::cerr << " No valid entry for variable in vector_sum" << std::endl;
     }
     else if ( which_pair == "num_within" && useValue ) branches[bName].branchVal = thisValueCounter;
-    else std::cerr << " No valid entry for which_pair: " << which_pair << " with variable: " << variable << std::endl; 
+
+    else std::cerr << " No valid entry for which_pair: " << which_pair << " with variable: " << variable << std::endl;
+
   } //End if ( useValue || which_pair == "vector_sum" )
-  
+
   //Loop over pairs of objects
   //for (typename collectionType1::const_iterator object1 = (*selCollection1)->begin(); object1 != (*selCollection1)->end(); ++object1) {
   for (unsigned int iObj1 = 0; iObj1 < (*selCollection1)->size(); iObj1++) {
@@ -275,30 +278,30 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
 
       //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
       if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 &&
-          (typeid(*selCollection1).name() != typeid(*selCollection2).name() || branch_name_1 != branch_name_2 || iObj1 < iObj2) ) {
+          (typeid(*selCollection1).name() != typeid(*selCollection2).name() || iObj1 < iObj2) ) {
 
         //Adds requirements to eliminate some pairs of objects
-        if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {          
+        if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {
           BNlepton* lepton_1 = (BNlepton*)ptr((*selCollection1)->at(iObj1));
           BNlepton* lepton_2 = (BNlepton*)ptr((*selCollection2)->at(iObj2));
 
           if ( ( lepton_1->isMuon != 1 && lepton_1->isElectron != 1 ) || ( lepton_2->isMuon != 1 && lepton_2->isElectron != 1 ) ) {
             std::cout << "Why are we requiring same flavour on non-leptons?" << std::endl;
           }
-          else if ( lepton_1->isMuon != lepton_2->isMuon ) continue;          
+          else if ( lepton_1->isMuon != lepton_2->isMuon ) continue;
         }
-        
+
         if ( pair_req_1 == "opposite_sign" || pair_req_2 == "opposite_sign" ) {
           BNlepton* lepton_1 = (BNlepton*)ptr((*selCollection1)->at(iObj1));
           BNlepton* lepton_2 = (BNlepton*)ptr((*selCollection2)->at(iObj2));
-          
+
           if ( ( abs(lepton_1->tkCharge) != 1 && lepton_1->tkCharge != -99 ) || ( abs(lepton_2->tkCharge) != 1 && lepton_2->tkCharge != -99 ) ) {
             std::cout << "Why are we requiring opposite sign on non-leptons?" << std::endl;
             continue;
           }
-          else if ( lepton_1->tkCharge + lepton_2->tkCharge != 0 ) continue;          
+          else if ( lepton_1->tkCharge + lepton_2->tkCharge != 0 ) continue;
         }
-        
+
         thisPairValueIterator += 1.0;
 
         vect1.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,ptr((*selCollection1)->at(iObj1))->eta,ptr((*selCollection1)->at(iObj1))->phi,
@@ -308,15 +311,17 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         vect12 = vect1 + vect2;
         vect1_transverse.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,0.0,ptr((*selCollection1)->at(iObj1))->phi,ptr((*selCollection1)->at(iObj1))->pt);
         vect2_transverse.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,0.0,ptr((*selCollection2)->at(iObj2))->phi,ptr((*selCollection2)->at(iObj2))->pt);
-        vect12_transverse = vect1_transverse + vect2_transverse;
+        vect12_transverse = vect1 + vect2;
 
         if ( variable == "mass" ) thisPairValue = vect12.M();
         else if ( variable == "MT" ) thisPairValue = vect12_transverse.M();
         else if ( variable == "deltaR" ) thisPairValue = vect1.DeltaR(vect2);
+        else if ( variable == "weightedDeltaR" ) thisPairValue = abs(vect1.Pt() * vect1.DeltaR(vect2));
         else if ( variable == "deltaEta" ) thisPairValue = vect1.Eta() - vect2.Eta();
         else if ( variable == "deltaPhi" ) thisPairValue = vect1.Phi() - vect2.Phi();
         else if ( variable == "absDeltaEta" ) thisPairValue = abs(vect1.Eta() - vect2.Eta());
         else if ( variable == "absDeltaPhi" ) thisPairValue = abs(vect1.Phi() - vect2.Phi());
+        else if ( variable == "weightedAbsDeltaPhi") thisPairValue = vect1.Pt() * abs(vect1.Phi() - vect2.Phi());
         else if ( variable == "pt" ) thisPairValue = vect1.Pt() + vect2.Pt();
         else if ( variable == "pz" ) thisPairValue = vect1.Pz() + vect2.Pz();
         else if ( variable == "energy" ) thisPairValue = vect1.Energy() + vect2.Energy();
@@ -325,9 +330,9 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         else if ( variable == "absPz" ) thisPairValue = abs(vect1.Pz()) + abs(vect2.Pz());
         else if ( variable == "absEta" ) thisPairValue = abs(vect1.Eta()) + abs(vect2.Eta());
         else if ( variable == "absPhi" ) thisPairValue = abs(vect1.Phi()) + abs(vect2.Phi());
-        else if ( variable == "vectPt" ) thisPairValue = vect12.Pt(); 
-        else if ( variable == "vectPz" ) thisPairValue = vect12.Pz(); 
-        else if ( variable == "vectEnergy" ) thisPairValue = vect12.Energy(); 
+        else if ( variable == "vectPt" ) thisPairValue = vect12.Pt();
+        else if ( variable == "vectPz" ) thisPairValue = vect12.Pz();
+        else if ( variable == "vectEnergy" ) thisPairValue = vect12.Energy();
         else if ( variable == "vectEta" ) thisPairValue = vect12.Eta();
         else if ( variable == "vectPhi" ) thisPairValue = vect12.Phi();
         else if ( variable == "absVectPz" ) thisPairValue = abs(vect12.Pz());
@@ -340,7 +345,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
 
         // --Fill the branches--
         //Fills branches for each pair of objects
-        if ( which_pair == "all_pairs" || which_pair == "all_pairs_abs") { 
+        if (which_pair == "all_pairs" || which_pair == "all_pairs_abs") {
           if ( which_pair == "all_pairs_abs" ) {
             TString bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), iObj1+1, branch_name_2.c_str(), iObj2+1, variable.c_str());
             if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), iObj1+1, iObj2+1);
@@ -387,7 +392,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
         else {
           TString bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
           if (new_name.length() > 0) bName = Form("%s", new_name.c_str());
-          
+
           if ( which_pair == "max" ) {
             if ( thisPairValue > branches[bName].branchVal || branches[bName].branchVal == KinematicVariableConstants::DOUBLE_INIT ) {
               branches[bName].branchVal = thisPairValue;
@@ -398,7 +403,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
               branches[bName].branchVal = thisPairValue;
             }
           }
-          else if ( which_pair == "maxAbs" ) { 
+          else if ( which_pair == "maxAbs" ) {
             if ( abs(thisPairValue) > branches[bName].branchVal || branches[bName].branchVal == KinematicVariableConstants::DOUBLE_INIT ) {
               branches[bName].branchVal = abs(thisPairValue);
             }
@@ -418,7 +423,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
               branches[bName].branchVal = abs(thisPairValue);
             }
           }
-          else if ( which_pair == "avg" && usePairValue ) branches[bName].branchVal = thisPairValueSum / thisPairValueIterator;                                                                                                                      
+          else if ( which_pair == "avg" && usePairValue ) branches[bName].branchVal = thisPairValueSum / thisPairValueIterator;
           else if ( which_pair == "sum" && usePairValue ) branches[bName].branchVal = thisPairValueSum;
           else if ( which_pair == "avgAbs" && usePairValue ) branches[bName].branchVal = thisPairValueSumAbs / thisPairValueIterator;
           else if ( which_pair == "sumAbs" && usePairValue ) branches[bName].branchVal = thisPairValueSumAbs;
@@ -431,14 +436,14 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
     } //End loop over object2
   } //End loop over object1
 
-  //Clean out values from last event 
+  //Clean out values from last event
  myVars.clear();
 
-  for ( typename map<TString, BranchInfo<double>>::iterator iBranch = branches.begin();
-        iBranch != branches.end(); iBranch++ ) {
+  for (typename map<TString, BranchInfo<double>>::iterator iBranch = branches.begin();
+        iBranch != branches.end(); iBranch++) {
     myVars.push_back(iBranch->second);
   }
 
 }
 
-#endif 
+#endif

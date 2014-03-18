@@ -4,18 +4,19 @@
 class RecoIDIsoSIPSFs: public KinematicVariable<double> {
 
 public:
-  RecoIDIsoSIPSFs(int numLeps, string input_option_1 = "none");
+  RecoIDIsoSIPSFs(int numLeps, BNleptonCollection **_tightLoosePreselectedLeptons, string _option="none");
   ~RecoIDIsoSIPSFs();
   void evaluate();
   double fetch(BNlepton* lepton, TH2D* histo);
   double fetchError(BNlepton* lepton, TH2D* histo);
 
+  int numLeps;
+  BNleptonCollection **tightLoosePreselectedLeptons;
   TFile electronFile;
   TFile muonFile;
   TH2D* electronSFHisto;
   TH2D* muonSFHisto;
-  int numLeps;
-  string option_1;
+  string option;
   int xBin;
   int yBin;
   TString branchName;
@@ -23,10 +24,12 @@ public:
   TString branchNameDown;
 };
 
-RecoIDIsoSIPSFs::RecoIDIsoSIPSFs(int numLeps, string input_option_1):
+RecoIDIsoSIPSFs::RecoIDIsoSIPSFs(int _numLeps, BNleptonCollection **_tightLoosePreselectedLeptons, string _option):
+  numLeps(_numLeps),
+  tightLoosePreselectedLeptons(_tightLoosePreselectedLeptons),
   electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/eff_ele12.root").c_str()),
   muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/eff_mu12.root").c_str()),
-  numLeps(numLeps), option_1(input_option_1)
+  option(_option)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 
@@ -37,11 +40,10 @@ RecoIDIsoSIPSFs::RecoIDIsoSIPSFs(int numLeps, string input_option_1):
   branchNameUp = Form("RecoIDIsoSIPSFUp_%dlep", numLeps);
   branchNameDown = Form("RecoIDIsoSIPSFDown_%dlep", numLeps);
   branches[branchName] = BranchInfo<double>(branchName);
-  if (option_1 != "skipSyst") {
+  if (option != "skipSyst") {
     branches[branchNameUp] = BranchInfo<double>(branchNameUp);
     branches[branchNameDown] = BranchInfo<double>(branchNameDown);
   }
-  
 }
 
 void RecoIDIsoSIPSFs::evaluate() {
@@ -55,7 +57,7 @@ void RecoIDIsoSIPSFs::evaluate() {
   double totalSFUp = 1.0;
   double totalSFDown = 1.0;
 
-  BNleptonCollection * leptons = this->blocks->tightLoosePreselectedLeptonCollection;
+  BNleptonCollection * leptons = *tightLoosePreselectedLeptons;
 
   numLeps = std::min(numLeps, int(leptons->size()));
   for (int i=0; i<numLeps; i++) {
@@ -75,7 +77,7 @@ void RecoIDIsoSIPSFs::evaluate() {
   }
 
   branches[branchName].branchVal = totalSF;
-  if (option_1 != "skipSyst") {
+  if (option != "skipSyst") {
     branches[branchNameUp].branchVal = totalSFUp;
     branches[branchNameDown].branchVal = totalSFDown;
   }

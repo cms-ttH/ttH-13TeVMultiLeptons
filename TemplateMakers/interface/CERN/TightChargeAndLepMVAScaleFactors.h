@@ -4,7 +4,7 @@
 class TightChargeAndLepMVAScaleFactors: public KinematicVariable<double> {
 
 public:
-  TightChargeAndLepMVAScaleFactors(int numLeps);
+  TightChargeAndLepMVAScaleFactors(int numLeps, BNleptonCollection **_tightLoosePreselectedLeptons);
   ~TightChargeAndLepMVAScaleFactors();
   void evaluate();
   double fetch(BNlepton* lepton, TH2D* histo);
@@ -17,16 +17,18 @@ public:
   TH2D* tightMuon2DSF;
   TH2D* tightChargeElectronSF2D;
   TH2D* tightChargeMuonSF2D;
-  int numLeps;
+  unsigned numLeps;
   TString looseBranchName;
   TString tightBranchName;
   TString tightChargeBranchName;
+  BNleptonCollection **tightLoosePreselectedLeptons;
 };
 
-TightChargeAndLepMVAScaleFactors::TightChargeAndLepMVAScaleFactors (int numLeps):
+TightChargeAndLepMVAScaleFactors::TightChargeAndLepMVAScaleFactors (int numLeps, BNleptonCollection **_tightLoosePreselectedLeptons):
   electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_ele.root").c_str()),
   muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_mu.root").c_str()),
-  numLeps(numLeps)
+  numLeps(numLeps),
+  tightLoosePreselectedLeptons(_tightLoosePreselectedLeptons)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 
@@ -47,30 +49,36 @@ TightChargeAndLepMVAScaleFactors::TightChargeAndLepMVAScaleFactors (int numLeps)
   }
 }
 
-void TightChargeAndLepMVAScaleFactors::evaluate () {
+void TightChargeAndLepMVAScaleFactors::evaluate() {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  BNleptonCollection * leptons = this->blocks->tightLoosePreselectedLeptonCollection;
+  BNleptonCollection * leptons = *tightLoosePreselectedLeptons;
   double totalLooseSF = 1.0;
   double totalTightSF = 1.0;
   double totalTightChargeSF = 1.0;
   double looseSF = 1.0;
   double tightSF = 1.0;
   double tightChargeSF = 1.0;
-  for (int i=0; i<numLeps; i++) {
-    if (leptons->at(i)->isMuon) {
-      looseSF = fetch(leptons->at(i), looseMuon2DSF);
-      tightSF = fetch(leptons->at(i), tightMuon2DSF);
-      tightChargeSF = fetch(leptons->at(i), tightChargeMuonSF2D);
+  for (unsigned i=0; i<numLeps; i++) {
+    if (i >= leptons->size()) {
+      totalLooseSF *= 0;
+      totalTightSF *= 0;
+      totalTightChargeSF *= 0;
     } else {
-      looseSF = fetch(leptons->at(i), looseElectron2DSF);
-      tightSF = fetch(leptons->at(i), tightElectron2DSF);
-      tightChargeSF = fetch(leptons->at(i), tightChargeElectronSF2D);
-    }
+      if (leptons->at(i)->isMuon) {
+        looseSF = fetch(leptons->at(i), looseMuon2DSF);
+        tightSF = fetch(leptons->at(i), tightMuon2DSF);
+        tightChargeSF = fetch(leptons->at(i), tightChargeMuonSF2D);
+      } else {
+        looseSF = fetch(leptons->at(i), looseElectron2DSF);
+        tightSF = fetch(leptons->at(i), tightElectron2DSF);
+        tightChargeSF = fetch(leptons->at(i), tightChargeElectronSF2D);
+      }
     totalLooseSF *= looseSF;
     totalTightSF *= tightSF;
     totalTightChargeSF *= tightChargeSF;
+    }
   }
   branches[looseBranchName].branchVal = totalLooseSF;
   branches[tightBranchName].branchVal = totalTightSF;

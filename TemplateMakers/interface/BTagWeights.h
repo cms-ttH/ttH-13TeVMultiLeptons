@@ -7,7 +7,14 @@ typedef pair<pair<double, double>, map<string, TF1*>> FunctionSet;
 class BTagWeights: public KinematicVariable<double> {
 
 public:
-  BTagWeights(vector<pair<string, double>> requestedWPs, string input_option_1 = "none");
+  TFile efficiencyHistFile;
+  vector<pair<string, double>> WPs;
+  BNjetCollection** jets;
+  string option;
+  map<pair<string, int>, TH2F*> efficiencyHistos;
+  map<string, vector<FunctionSet>> SFLightFunctions;
+
+  BTagWeights(vector<pair<string, double>> _WPs, BNjetCollection **_jets, string _option="none");
   ~BTagWeights();
   void fillSFLightFunctions();
   double getSFb(double pT, int systFactor, string WPLabel);
@@ -17,17 +24,13 @@ public:
   double getWeight(int systHF, int systLF);
   void evaluate();
 
-  TFile efficiencyHistFile;
-  vector<pair<string, double>> WPs;
-  string option_1;
-  map<pair<string, int>, TH2F*> efficiencyHistos;
-  map<string, vector<FunctionSet>> SFLightFunctions;
-
 };
 
-BTagWeights::BTagWeights(vector<pair<string, double>> requestedWPs, string input_option_1):
+BTagWeights::BTagWeights(vector<pair<string, double>> _WPs, BNjetCollection **_jets, string _option):
   efficiencyHistFile("../data/btag/bTagEff_TTMC.root"),
-  WPs(requestedWPs), option_1(input_option_1)
+  WPs(_WPs),
+  jets(_jets),
+  option(_option)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 
@@ -39,7 +42,7 @@ BTagWeights::BTagWeights(vector<pair<string, double>> requestedWPs, string input
   }
 
   branches["csvWeight"] = BranchInfo<double>("csvWeight");
-  if (option_1 != "skipSyst") {
+  if (option != "skipSyst") {
     branches["csvWeightHFUp"] = BranchInfo<double>("csvWeightHFUp");
     branches["csvWeightHFDown"] = BranchInfo<double>("csvWeightHFDown");
     branches["csvWeightLFUp"] = BranchInfo<double>("csvWeightLFUp");
@@ -54,7 +57,7 @@ void BTagWeights::evaluate () {
 
   //getWeight(systHF, systLF)
   branches["csvWeight"].branchVal = getWeight(0, 0);
-  if (option_1 != "skipSyst") {
+  if (option != "skipSyst") {
     branches["csvWeightHFUp"].branchVal = getWeight(1, 0);
     branches["csvWeightHFDown"].branchVal = getWeight(-1, 0);
     branches["csvWeightLFUp"].branchVal = getWeight(0, 1);
@@ -253,7 +256,6 @@ double BTagWeights::getSF(BNjet& jet, string WPLabel, int systHF, int systLF) {
 }
 
 double BTagWeights::getWeight(int systHF, int systLF) {
-  BNjetCollection * jets = this->blocks->jetCollection;
   double numerator = 1.0;
   double denominator = 1.0;
   double SF = 1.0;
@@ -267,7 +269,7 @@ double BTagWeights::getWeight(int systHF, int systLF) {
   int mySystHF = systHF;
 
   bool tagged = false;
-  for (auto& jet: *jets) {
+  for (auto& jet: *(*jets)) {
     tagged = false;
 
     int flavor = abs(jet.flavour);
