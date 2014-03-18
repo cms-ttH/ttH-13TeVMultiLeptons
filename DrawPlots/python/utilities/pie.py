@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import plot_helper
 from ttHMultileptonAnalysis.DrawPlots.utilities.prettytable import PrettyTable
 
-def make_yield_pie_charts(yields_object, dir, signals):
+def make_yield_pie_charts(yields_object, dir, signals, jet_tag_categories):
     colors = ['#490A3D', '#BD1550', '#E97F02', '#F8CA00', '#8A9B0F', '#FEB89F', '#E23D75', '#5F0D3B', '#742365', '#909A92', '#744F78', '#30091E']
     www_plot_directory = os.path.join(plot_helper.get_www_base_directory(), dir, 'pies')
     plot_helper.make_fresh_directory(www_plot_directory)
@@ -16,12 +16,15 @@ def make_yield_pie_charts(yields_object, dir, signals):
         for sample, sample_dict in jet_cat_dict.items():
             if sample not in ['data', 'all backgrounds', 'all signals']:
                 for lepton_category, entries in sample_dict.items():
-                    yields_dict[jet_tag_category+' '+lepton_category].append(entries)
-                    labels_dict[jet_tag_category+' '+lepton_category].append(sample)
+                    yields_dict[jet_tag_categories[jet_tag_category]+' ('+lepton_category+')'].append(entries)
+                    labels_dict[jet_tag_categories[jet_tag_category]+' ('+lepton_category+')'].append(sample)
 
-    headers = ['category', 'bg yield'] + [x+' yield' for x in signals] + ['signal/bg '+ x for x in signals]
+    headers = ['category', 'bg yield'] + [x.replace('t#bar{t}H125', '')+' yield' for x in signals] + ['s/b '+ x.replace('t#bar{t}H125', '') for x in signals]
     table = PrettyTable(headers)
+    table.align = 'l'
     for (category, labels), yields in zip(labels_dict.items(), yields_dict.values()):
+        if sum(yields) == 0 or 'inclusive' not in category:
+            continue
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.set_position([0.1, 0.1, 0.5, 0.8])
@@ -41,7 +44,7 @@ def make_yield_pie_charts(yields_object, dir, signals):
         background_yields = [x for x, y in zip(yields, labels) if y not in signals]
         signal_yields = [x for x, y in zip(yields, labels) if y in signals]
         bg_sum = sum(background_yields)
-        table.add_row([category, format(bg_sum, '.2f')] + [format(x, '.2f') for x in signal_yields] + [format(x/bg_sum, '.2f') for x in signal_yields])
+        table.add_row([category, format(bg_sum, '.2f')] + [format(x, '.2f') for x in signal_yields] + [format(x/bg_sum, '.3f') for x in signal_yields])
 
     print table.get_string(sortby=headers[-1])
 

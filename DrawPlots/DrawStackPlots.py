@@ -63,15 +63,15 @@ def main():
 
             draw_stack_plot(lepton_category, jet_tag_category, 'integral_histo')
 
-    if args.web:
-        plot_helper.update_indexes('.')
-        print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/%s' % (os.environ['USER'], config['output file location'])
-
     print_yield_table(yields, 'final yields', '.2f')
     print_yield_table(raw_yields, 'raw yields', '.0f')
 
     if args.pie:
-        make_yield_pie_charts(yields, config['output file location'], draw_names(signal_samples))
+        make_yield_pie_charts(yields, config['output file location'], draw_names(signal_samples), jet_tag_categories)
+
+    if args.web:
+        plot_helper.update_indexes('.')
+        print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/%s' % (os.environ['USER'], config['output file location'])
 
 def print_yield_table(yields, title, precision):
     columns = ['sample'] + lepton_categories.keys()
