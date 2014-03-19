@@ -13,6 +13,12 @@
 // template<typename ObjectType_temp>
 // ObjectType_temp * ptr(ObjectType_temp * obj) { return obj; } //obj is already pointer, return it!
 
+template <typename T, typename U> bool sameAddress(T const & a, U const & b)
+{
+  if (&a == &b) return false;
+  return true;
+}
+
 //Takes two collections; may be the same, or different
 template <class collectionType1, class collectionType2>
 class TwoObjectKinematic: public KinematicVariable<double> {
@@ -20,7 +26,7 @@ class TwoObjectKinematic: public KinematicVariable<double> {
 public:
   //Store branch values so they are accessible to other classes
   vector<BranchInfo<double>> myVars;
-  
+
   //An "abs" prefix on a variable indicates the absolute value of a
   //"pair" variable (e.g. |mass|, |deltaR|), or the absolute value
   //of each element of a non-pair variable (e.g. |eta1| + |eta2|)
@@ -79,12 +85,12 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
 
   // --Create the branches--
   //Creates branches for each pair of objects
-  if (which_pair == "all_pairs" || which_pair == "all_pairs_abs") { 
+  if (which_pair == "all_pairs" || which_pair == "all_pairs_abs") {
     for (unsigned int i=0; i<max1; i++) {
       for (unsigned int j=0; j<max2; j++) {
-        if (i >= min1-1 && j >= min2-1) { //Start branches at min value 
-          //Eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
-          if ( typeid(*selCollection1).name() != typeid(*selCollection2).name() || i < j ) {
+        if (i >= min1-1 && j >= min2-1) { //Start branches at min value
+          //Eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1)
+          if ((void*)selCollection1!=selCollection2 || i < j) {
             TString bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
             if (which_pair == "all_pairs_abs") bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
             if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), i+1, j+1);
@@ -98,21 +104,21 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
   else if (new_name.length() > 0) {
     TString bName = Form("%s", new_name.c_str());
     branches[bName] = BranchInfo<double>(bName);
-  }    
+  }
   //Creates a branch for the pair of objects
-  else if (which_pair == "closest_to" || which_pair == "second_closest_to") { 
+  else if (which_pair == "closest_to" || which_pair == "second_closest_to") {
     TString bName = Form("%s_%s_%s_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
-                         target_value_whole, target_value_fraction, variable.c_str()); 
+                         target_value_whole, target_value_fraction, variable.c_str());
     branches[bName] = BranchInfo<double>(bName);
   }
-  else if (which_pair == "num_within") { 
+  else if (which_pair == "num_within") {
     TString bName = Form("%s_%s_%s_%dp%d_of_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
-                         within_value_whole, within_value_fraction, target_value_whole, target_value_fraction, variable.c_str()); 
+                         within_value_whole, within_value_fraction, target_value_whole, target_value_fraction, variable.c_str());
     branches[bName] = BranchInfo<double>(bName);
   }
   //Creates a branch for the pair of objects
   else {
-    TString bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str()); 
+    TString bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
     branches[bName] = BranchInfo<double>(bName);
   }
   //Initializes branch values to default
@@ -121,7 +127,7 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
 }
 
 template <class collectionType1, class collectionType2>
-void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
+void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
@@ -212,8 +218,7 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
     for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
 
       //Sets min and max number of objects, eliminates use of the same object twice
-      if ( iObj2 >= min2-1 && iObj2 < max2 && (typeid(*selCollection1).name() != typeid(*selCollection2).name()
-                            || iObj2 >= (*selCollection1)->size() || iObj2 >= max1 ) ) {
+      if ( iObj2 >= min2-1 && iObj2 < max2 && ((void*)selCollection1!=selCollection2 || iObj2 >= (*selCollection1)->size() || iObj2 >= max1 ) ) {
         thisValueIterator += 1.0;
         vect2.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,ptr((*selCollection2)->at(iObj2))->eta,ptr((*selCollection2)->at(iObj2))->phi,
                            max(ptr((*selCollection2)->at(iObj2))->energy,ptr((*selCollection2)->at(iObj2))->pt)); //Hack for "energy" of MET
@@ -276,9 +281,8 @@ void TwoObjectKinematic<collectionType1,collectionType2>::evaluate() {
     //for (typename collectionType2::const_iterator object2 = (*selCollection2)->begin(); object2 != (*selCollection2)->end(); ++object2) {
     for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
 
-      //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1) 
-      if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 &&
-          (typeid(*selCollection1).name() != typeid(*selCollection2).name() || iObj1 < iObj2) ) {
+      //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1)
+      if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 && ((void*)selCollection1!=selCollection2 || iObj1 < iObj2) ) {
 
         //Adds requirements to eliminate some pairs of objects
         if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {
