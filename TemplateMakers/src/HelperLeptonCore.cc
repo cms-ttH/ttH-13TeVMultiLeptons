@@ -244,6 +244,8 @@ int HelperLeptonCore::convertSampleNameToNumber(string sampleName) {
       nGen = 833755; Xsec = 0.5879; }
     else if (sampleName == "VH_tautau") { sampleNumber = 2915;
       nGen = 200124; Xsec = 0.07717352; } 
+    else if (sampleName == "VH_TauMu") { sampleNumber = 2915; 
+      nGen = 200124; Xsec = 0.07717352; }
     else if (sampleName == "VH_ZZ") { sampleNumber = 2923;
       nGen = 500409; Xsec = 0.03223704; } 
     else if (sampleName == "VH_WW") { sampleNumber = 2924;

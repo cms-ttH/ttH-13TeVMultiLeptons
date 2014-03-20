@@ -315,7 +315,7 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
         vect12 = vect1 + vect2;
         vect1_transverse.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,0.0,ptr((*selCollection1)->at(iObj1))->phi,ptr((*selCollection1)->at(iObj1))->pt);
         vect2_transverse.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,0.0,ptr((*selCollection2)->at(iObj2))->phi,ptr((*selCollection2)->at(iObj2))->pt);
-        vect12_transverse = vect1 + vect2;
+        vect12_transverse = vect1_transverse + vect2_transverse;
 
         if ( variable == "mass" ) thisPairValue = vect12.M();
         else if ( variable == "MT" ) thisPairValue = vect12_transverse.M();

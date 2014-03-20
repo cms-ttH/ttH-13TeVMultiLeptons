@@ -317,6 +317,12 @@ int main (int argc, char** argv) {
   kinVars.push_back(&myMinDeltaRLep1Jet);
 
   TwoObjectKinematic<BNleptonCollection, BNjetCollection>
+  myMinDeltaRLep2Jet("deltaR", "min", "min_deltaR_lep2_jet",
+                       &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 2, 2,
+                       &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDeltaRLep2Jet);
+
+  TwoObjectKinematic<BNleptonCollection, BNjetCollection>
   myMinDeltaRLep3Jet("deltaR", "min", "min_deltaR_lep3_jet",
                        &(selectedCollections.tightLoosePreselectedLeptonCollection), "all_leptons_by_pt", 3, 3,
                        &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);

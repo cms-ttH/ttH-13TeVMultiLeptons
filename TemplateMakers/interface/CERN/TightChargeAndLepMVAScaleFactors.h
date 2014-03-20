@@ -61,6 +61,7 @@ void TightChargeAndLepMVAScaleFactors::evaluate() {
   double tightSF = 1.0;
   double tightChargeSF = 1.0;
   for (unsigned i=0; i<numLeps; i++) {
+    //For an event with 2 lepton, 3-lepton SF = 0
     if (i >= leptons->size()) {
       totalLooseSF *= 0;
       totalTightSF *= 0;

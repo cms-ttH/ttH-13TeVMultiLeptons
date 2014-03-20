@@ -4,7 +4,7 @@
 class TightChargeAndLepMVAScaleFactorsPerLepton: public KinematicVariable<double> {
 
 public:
-  TightChargeAndLepMVAScaleFactorsPerLepton(int numLeps);
+  TightChargeAndLepMVAScaleFactorsPerLepton(int numLeps, BNleptonCollection **_tightLoosePreselectedLeptons);
   ~TightChargeAndLepMVAScaleFactorsPerLepton();
   void evaluate();
   double fetch(BNlepton* lepton, TH2D* histo);
@@ -17,16 +17,18 @@ public:
   TH2D* tightMuon2DSF;
   TH2D* tightChargeElectronSF2D;
   TH2D* tightChargeMuonSF2D;
-  int numLeps;
+  unsigned numLeps;
   TString looseBranchName[6];
   TString tightBranchName[6];
   TString tightChargeBranchName[6];
+  BNleptonCollection **tightLoosePreselectedLeptons;
 };
 
-TightChargeAndLepMVAScaleFactorsPerLepton::TightChargeAndLepMVAScaleFactorsPerLepton (int numLeps):
+TightChargeAndLepMVAScaleFactorsPerLepton::TightChargeAndLepMVAScaleFactorsPerLepton (int numLeps, BNleptonCollection **_tightLoosePreselectedLeptons):
   electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_ele.root").c_str()),
   muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_mu.root").c_str()),
-  numLeps(numLeps)
+  numLeps(numLeps),
+  tightLoosePreselectedLeptons(_tightLoosePreselectedLeptons)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 
@@ -37,7 +39,7 @@ TightChargeAndLepMVAScaleFactorsPerLepton::TightChargeAndLepMVAScaleFactorsPerLe
   tightChargeElectronSF2D = (TH2D*)electronFile.Get("TightChargeSF2D")->Clone("TightChargeSF2D_ele");
   tightChargeMuonSF2D = (TH2D*)muonFile.Get("TightChargeSF2D")->Clone("TightChargeSF2D_mu");
 
-  for (int i=0; i<numLeps; i++) {
+  for (unsigned i=0; i<numLeps; i++) {
     looseBranchName[i] = Form("lepMVALooseSF_Lep%d", i+1);
     tightBranchName[i] = Form("lepMVATightSF_Lep%d", i+1);
     tightChargeBranchName[i] = Form("tightChargeSF_Lep%d", i+1);
@@ -51,7 +53,7 @@ void TightChargeAndLepMVAScaleFactorsPerLepton::evaluate () {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  BNleptonCollection * leptons = this->blocks->tightLoosePreselectedLeptonCollection;
+  BNleptonCollection * leptons = *tightLoosePreselectedLeptons;
   double looseSF = 1.0;
   double tightSF = 1.0;
   double tightChargeSF = 1.0;

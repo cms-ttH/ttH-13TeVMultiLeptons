@@ -38,3 +38,4 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CERN/TightChargeAndLepMVAScaleFactorsPerLepton.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CERN/DataDrivenFRPerLepton.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/ThreeObjectKinematic.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/CERN/FinalBDT_3l.h"
