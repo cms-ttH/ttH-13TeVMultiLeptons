@@ -283,7 +283,7 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
     for (unsigned int iObj2 = 0; iObj2 < (*collection2)->size(); iObj2++) {
 
       //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1)
-      if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 && ((void*)collection1!=collection2 || iObj1 < iObj2) ) {
+      if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 && ((void*)collection1 != collection2 || iObj1 < iObj2) ) {
 
         //Adds requirements to eliminate some pairs of objects
         if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {

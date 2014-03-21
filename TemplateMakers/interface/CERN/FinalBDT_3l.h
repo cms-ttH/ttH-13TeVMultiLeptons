@@ -34,27 +34,27 @@ public:
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * mySumPt;
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * mySumPtCentral;
 
-  FinalBDT_3l(ThreeObjectKinematic<BNjetCollection,BNjetCollection,BNjetCollection> * input_myTopLikeTrijetMass,
-              GenericCollectionSizeVariable<BNjetCollection> * input_numJets,
-              GenericCollectionMember<double, BNjetCollection> * input_allJetByCSVPt,
-              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * input_myMaxLepAbsEta,
-              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * input_myMinDeltaRLepLepAFOS,
-              TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPt,
-              TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPtCentral);
+  FinalBDT_3l(ThreeObjectKinematic<BNjetCollection,BNjetCollection,BNjetCollection> * _myTopLikeTrijetMass,
+              GenericCollectionSizeVariable<BNjetCollection> * _numJets,
+              GenericCollectionMember<double, BNjetCollection> * _allJetByCSVPt,
+              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * _myMaxLepAbsEta,
+              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * _myMinDeltaRLepLepAFOS,
+              TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _mySumPt,
+              TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _mySumPtCentral);
 
   void evaluate();
 
 };
 
-FinalBDT_3l::FinalBDT_3l(ThreeObjectKinematic<BNjetCollection,BNjetCollection,BNjetCollection> * input_myTopLikeTrijetMass,
-                         GenericCollectionSizeVariable<BNjetCollection> * input_numJets,
-                         GenericCollectionMember<double, BNjetCollection> * input_allJetByCSVPt,
-                         TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * input_myMaxLepAbsEta,
-                         TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * input_myMinDeltaRLepLepAFOS,
-                         TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPt,
-                         TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPtCentral):
-  myTopLikeTrijetMass(input_myTopLikeTrijetMass), numJets(input_numJets), allJetByCSVPt(input_allJetByCSVPt), myMaxLepAbsEta(input_myMaxLepAbsEta),
-  myMinDeltaRLepLepAFOS(input_myMinDeltaRLepLepAFOS), mySumPt(input_mySumPt), mySumPtCentral(input_mySumPtCentral) {
+FinalBDT_3l::FinalBDT_3l(ThreeObjectKinematic<BNjetCollection,BNjetCollection,BNjetCollection> * _myTopLikeTrijetMass,
+                         GenericCollectionSizeVariable<BNjetCollection> * _numJets,
+                         GenericCollectionMember<double, BNjetCollection> * _allJetByCSVPt,
+                         TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * _myMaxLepAbsEta,
+                         TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * _myMinDeltaRLepLepAFOS,
+                         TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _mySumPt,
+                         TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _mySumPtCentral):
+  myTopLikeTrijetMass(_myTopLikeTrijetMass), numJets(_numJets), allJetByCSVPt(_allJetByCSVPt), myMaxLepAbsEta(_myMaxLepAbsEta),
+  myMinDeltaRLepLepAFOS(_myMinDeltaRLepLepAFOS), mySumPt(_mySumPt), mySumPtCentral(_mySumPtCentral) {
   
   branches["FinalBDT_ThreeLepton"] = BranchInfo<double>("FinalBDT_ThreeLepton");
 

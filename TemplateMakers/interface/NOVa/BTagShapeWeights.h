@@ -18,17 +18,17 @@ public:
   TString branchNameLF;
   TString branchNameHF;
 
-  BTagShapeWeights(HelperLeptonCore *input_myHelper, BNjetCollection **input_jetCollection,
-          string input_branch_name);
+  BTagShapeWeights(HelperLeptonCore *_myHelper, BNjetCollection **_jetCollection,
+          string _branch_name);
 
   void evaluate ();
   
 };
 
-BTagShapeWeights::BTagShapeWeights(HelperLeptonCore *input_myHelper, BNjetCollection **input_jetCollection,
-                                 string input_branch_name):
-  myHelper(input_myHelper), jetCollection(input_jetCollection),
-  branch_name(input_branch_name)
+BTagShapeWeights::BTagShapeWeights(HelperLeptonCore *_myHelper, BNjetCollection **_jetCollection,
+                                 string _branch_name):
+  myHelper(_myHelper), jetCollection(_jetCollection),
+  branch_name(_branch_name)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 

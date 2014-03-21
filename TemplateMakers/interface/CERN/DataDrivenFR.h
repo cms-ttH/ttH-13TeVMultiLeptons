@@ -41,20 +41,20 @@ public:
   double FR_QF[6];
   int QF_charge[6];
 
-  DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, BNjetCollection **_jets, int input_number_of_leptons,
-               double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label,
-               collectionType **input_selCollection_2, int input_number_of_leptons_2, double input_working_point_2);
+  DataDrivenFR(HelperLeptonCore *_myHelper, collectionType **_selCollection, BNjetCollection **_jets, int _number_of_leptons,
+               double _working_point, string _file_name_NP, string _file_name_QF, string _label,
+               collectionType **_selCollection_2, int _number_of_leptons_2, double _working_point_2);
   ~DataDrivenFR();
   void evaluate();
 };
 
 template <class collectionType>
-DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, BNjetCollection **_jets, int input_number_of_leptons,
-                                           double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label = "",
-                                           collectionType **input_selCollection_2 = 0, int input_number_of_leptons_2 = 0, double input_working_point_2 = -99.0):
-  myHelper(input_myHelper), selCollection(input_selCollection), jets(_jets), number_of_leptons(input_number_of_leptons),
-  working_point(input_working_point), file_name_NP(input_file_name_NP), file_name_QF(input_file_name_QF),label(input_label),
-  selCollection_2(input_selCollection_2), number_of_leptons_2(input_number_of_leptons_2), working_point_2(input_working_point_2) {
+DataDrivenFR<collectionType>::DataDrivenFR(HelperLeptonCore *_myHelper, collectionType **_selCollection, BNjetCollection **_jets, int _number_of_leptons,
+                                           double _working_point, string _file_name_NP, string _file_name_QF, string _label = "",
+                                           collectionType **_selCollection_2 = 0, int _number_of_leptons_2 = 0, double _working_point_2 = -99.0):
+  myHelper(_myHelper), selCollection(_selCollection), jets(_jets), number_of_leptons(_number_of_leptons),
+  working_point(_working_point), file_name_NP(_file_name_NP), file_name_QF(_file_name_QF),label(_label),
+  selCollection_2(_selCollection_2), number_of_leptons_2(_number_of_leptons_2), working_point_2(_working_point_2) {
 
   this->resetVal = 1.0;
   branchNameNP = Form("DataDrivenFR_NP%s", label.c_str());

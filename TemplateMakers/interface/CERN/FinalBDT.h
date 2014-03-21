@@ -35,25 +35,25 @@ public:
   TwoObjectKinematic<BNmetCollection,BNleptonCollection> *myMtMetLep;
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> *mySumPt;
 
-  FinalBDT(GenericCollectionMember<double, BNleptonCollection> * input_allLeptonEta,
-           GenericCollectionMember<double, BNleptonCollection> * input_allLeptonPt,
-           TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMHT,
-           TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMinDeltaRLep2Jet,
-           TwoObjectKinematic<BNmetCollection,BNleptonCollection> * input_myMtMetLep,
-           TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPt);
+  FinalBDT(GenericCollectionMember<double, BNleptonCollection> * _allLeptonEta,
+           GenericCollectionMember<double, BNleptonCollection> * _allLeptonPt,
+           TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMHT,
+           TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMinDeltaRLep2Jet,
+           TwoObjectKinematic<BNmetCollection,BNleptonCollection> * _myMtMetLep,
+           TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _mySumPt);
 
   void evaluate();
 
 };
 
-FinalBDT::FinalBDT(GenericCollectionMember<double, BNleptonCollection> * input_allLeptonEta,
-                   GenericCollectionMember<double, BNleptonCollection> * input_allLeptonPt,
-                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMHT,
-                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMinDeltaRLep2Jet,
-                   TwoObjectKinematic<BNmetCollection,BNleptonCollection> * input_myMtMetLep,
-                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPt):
-  allLeptonEta(input_allLeptonEta), allLeptonPt(input_allLeptonPt), myMHT(input_myMHT),
-  myMinDeltaRLep2Jet(input_myMinDeltaRLep2Jet), myMtMetLep(input_myMtMetLep), mySumPt(input_mySumPt) {
+FinalBDT::FinalBDT(GenericCollectionMember<double, BNleptonCollection> * _allLeptonEta,
+                   GenericCollectionMember<double, BNleptonCollection> * _allLeptonPt,
+                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMHT,
+                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMinDeltaRLep2Jet,
+                   TwoObjectKinematic<BNmetCollection,BNleptonCollection> * _myMtMetLep,
+                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _mySumPt):
+  allLeptonEta(_allLeptonEta), allLeptonPt(_allLeptonPt), myMHT(_myMHT),
+  myMinDeltaRLep2Jet(_myMinDeltaRLep2Jet), myMtMetLep(_myMtMetLep), mySumPt(_mySumPt) {
   
   branches["FinalBDT_TwoMuon"] = BranchInfo<double>("FinalBDT_TwoMuon");
   branches["FinalBDT_MuonElectron"] = BranchInfo<double>("FinalBDT_MuonElectron");

@@ -42,23 +42,23 @@ public:
   string pair_req_2;
   double within_value;
   
-  TwoJetVariables(string input_variable, string input_which_pair, string input_new_name,
-                  BNjetCollection **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
-                  BNjetCollection **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
-                  double input_target_value = -99, string input_pair_req_1 = "none", string input_pair_req_2 = "none", double input_within_value = -99);
+  TwoJetVariables(string _variable, string _which_pair, string _new_name,
+                  BNjetCollection **_selCollection1, string _branch_name_1, int _min1, int _max1,
+                  BNjetCollection **_selCollection2, string _branch_name_2, int _min2, int _max2,
+                  double _target_value = -99, string _pair_req_1 = "none", string _pair_req_2 = "none", double _within_value = -99);
   
   void evaluate();
   
 };
 
-TwoJetVariables::TwoJetVariables(string input_variable, string input_which_pair, string input_new_name,
-                                 BNjetCollection **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
-                                 BNjetCollection **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
-                                 double input_target_value, string input_pair_req_1, string input_pair_req_2, double input_within_value):
-  variable(input_variable), which_pair(input_which_pair), new_name(input_new_name),
-  selCollection1(input_selCollection1), branch_name_1(input_branch_name_1), min1(input_min1), max1(input_max1),
-  selCollection2(input_selCollection2), branch_name_2(input_branch_name_2), min2(input_min2), max2(input_max2),
-  target_value(input_target_value), pair_req_1(input_pair_req_1), pair_req_2(input_pair_req_2), within_value(input_within_value)
+TwoJetVariables::TwoJetVariables(string _variable, string _which_pair, string _new_name,
+                                 BNjetCollection **_selCollection1, string _branch_name_1, int _min1, int _max1,
+                                 BNjetCollection **_selCollection2, string _branch_name_2, int _min2, int _max2,
+                                 double _target_value, string _pair_req_1, string _pair_req_2, double _within_value):
+  variable(_variable), which_pair(_which_pair), new_name(_new_name),
+  selCollection1(_selCollection1), branch_name_1(_branch_name_1), min1(_min1), max1(_max1),
+  selCollection2(_selCollection2), branch_name_2(_branch_name_2), min2(_min2), max2(_max2),
+  target_value(_target_value), pair_req_1(_pair_req_1), pair_req_2(_pair_req_2), within_value(_within_value)
 {
 
   //Convert target and within value to integers for branch name

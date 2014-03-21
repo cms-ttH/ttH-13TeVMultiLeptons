@@ -38,30 +38,30 @@ public:
   TwoObjectKinematic<BNjetCollection,BNjetCollection> * myNumJetsFloat;
   TwoObjectKinematic<BNjetCollection,BNjetCollection> * myNumHiggsLikeDijet15;
   
-  FinalBDT_OS_2012(TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myMinDrJets,
-                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPt,
-                   TwoJetVariables * input_myAvgBtagDiscBtags,
-                   TwoJetVariables * input_myAvgBtagDiscNonBtags,
-                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myHiggsLikeDijetMass,
-                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myHiggsLikeDijetMass2,
-                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myNumJetsFloat,
-                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myNumHiggsLikeDijet15);
+  FinalBDT_OS_2012(TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myMinDrJets,
+                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _mySumPt,
+                   TwoJetVariables * _myAvgBtagDiscBtags,
+                   TwoJetVariables * _myAvgBtagDiscNonBtags,
+                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myHiggsLikeDijetMass,
+                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myHiggsLikeDijetMass2,
+                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myNumJetsFloat,
+                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myNumHiggsLikeDijet15);
 
   void evaluate();
 
 };
 
-FinalBDT_OS_2012::FinalBDT_OS_2012(TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myMinDrJets,
-                                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_mySumPt,
-                                   TwoJetVariables * input_myAvgBtagDiscBtags,
-                                   TwoJetVariables * input_myAvgBtagDiscNonBtags,
-                                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myHiggsLikeDijetMass,
-                                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myHiggsLikeDijetMass2,
-                                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myNumJetsFloat,
-                                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * input_myNumHiggsLikeDijet15):
-  myMinDrJets(input_myMinDrJets), mySumPt(input_mySumPt), myAvgBtagDiscBtags(input_myAvgBtagDiscBtags),
-  myAvgBtagDiscNonBtags(input_myAvgBtagDiscNonBtags), myHiggsLikeDijetMass(input_myHiggsLikeDijetMass),
-  myHiggsLikeDijetMass2(input_myHiggsLikeDijetMass2), myNumJetsFloat(input_myNumJetsFloat), myNumHiggsLikeDijet15(input_myNumHiggsLikeDijet15) {
+FinalBDT_OS_2012::FinalBDT_OS_2012(TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myMinDrJets,
+                                   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _mySumPt,
+                                   TwoJetVariables * _myAvgBtagDiscBtags,
+                                   TwoJetVariables * _myAvgBtagDiscNonBtags,
+                                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myHiggsLikeDijetMass,
+                                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myHiggsLikeDijetMass2,
+                                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myNumJetsFloat,
+                                   TwoObjectKinematic<BNjetCollection,BNjetCollection> * _myNumHiggsLikeDijet15):
+  myMinDrJets(_myMinDrJets), mySumPt(_mySumPt), myAvgBtagDiscBtags(_myAvgBtagDiscBtags),
+  myAvgBtagDiscNonBtags(_myAvgBtagDiscNonBtags), myHiggsLikeDijetMass(_myHiggsLikeDijetMass),
+  myHiggsLikeDijetMass2(_myHiggsLikeDijetMass2), myNumJetsFloat(_myNumJetsFloat), myNumHiggsLikeDijet15(_myNumHiggsLikeDijet15) {
   
   branches["BDT_eq3jeq2t"] = BranchInfo<double>("BDT_eq3jeq2t");
   branches["BDT_ge4jeq2t"] = BranchInfo<double>("BDT_ge4jeq2t");
