@@ -14,7 +14,6 @@ public:
   collectionType items;
   collectionType * ptrToItems;
   std::function<bool (collectionType)> selectionFunction;
-  //std::unique_ptr<collectionType> items(new collectionType);
 
   GenericCollection(BEANhelper * bHelp);
   void initializeRawItems(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
