@@ -1,37 +1,43 @@
 #ifndef _GenericVariable_h
 #define _GenericVariable_h
+#include <functional>
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
 
-template <class branchDataType>
+template <class branchDataType, class collectionType, typename functionType>
 class GenericVariable: public KinematicVariable<branchDataType> {
 
 public:
+  GenericVariable(collectionType **_collection, string&& branchName, branchDataType&& resVal, functionType _function);
+  void evaluate();
+
+  collectionType ** collection;
   string branchName;
   branchDataType branchValue;
+  functionType valueFunction;
 
-  GenericVariable(branchDataType& bValue, string bName, branchDataType resVal);
-  void evaluate();
+
 };
 
-template <class branchDataType>
-GenericVariable<branchDataType>::GenericVariable(branchDataType& bValue, string bName, branchDataType resVal):
-  branchName(bName), branchValue(bValue) {
+template<class branchDataType, class collectionType, typename functionType>
+GenericVariable<branchDataType, collectionType, functionType>::GenericVariable(collectionType **_collection, string&& _branchName, branchDataType&& resVal, functionType _function):
+  collection(_collection), branchName(_branchName), valueFunction(_function) {
 
   this->resetVal = resVal;
-  this->branches[bName] = BranchInfo<branchDataType>(bName);
-  this->branches[bName].branchVal = this->resetVal;
+  this->branches[branchName] = BranchInfo<branchDataType>(branchName);
+  this->branches[branchName].branchVal = this->resetVal;
 
   this->reset();
 }
 
-template <class branchDataType>
-void GenericVariable<branchDataType>::evaluate() {
+template<class branchDataType, class collectionType, typename functionType>
+void GenericVariable<branchDataType, collectionType, functionType>::evaluate() {
   if (this->evaluatedThisEvent) return;
   this->evaluatedThisEvent = true;
 
-  this->branches[branchName].branchVal = branchValue;
+  this->branches[branchName].branchVal = valueFunction(collection);
+
 }
 
 #endif
