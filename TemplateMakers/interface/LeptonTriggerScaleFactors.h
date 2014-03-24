@@ -51,6 +51,7 @@ LeptonTriggerScaleFactors::LeptonTriggerScaleFactors (HelperLeptonCore *in,
   branches["twoMuonTriggerSF"] = BranchInfo<double>("twoMuonTriggerSF");
   branches["twoElectronTriggerSF"] = BranchInfo<double>("twoElectronTriggerSF");
   branches["muonElectronTriggerSF"] = BranchInfo<double>("muonElectronTriggerSF");
+  branches["osTriggerSF"] = BranchInfo<double>("osTriggerSF");
 
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 }
@@ -61,11 +62,14 @@ void LeptonTriggerScaleFactors::evaluate () {
 
   BEANhelper * beanHelper = &(myHelper->bHelp);
 
-  double muonSF = 1.0, electronSF = 1.0, muonElectronSF = 1.0;
+  double muonSF = 1.0, electronSF = 1.0, muonElectronSF = 1.0; double osTwoLepSF = 1.0;
   //double triggerSF = 1.0;
 
   unsigned numTightLoosePreselectedMuons = (*tightMuons)->size()+(*looseMuons)->size()+(*preselectedMuons)->size();
   unsigned numTightLoosePreselectedElectrons = (*tightElectrons)->size()+(*looseElectrons)->size()+(*preselectedElectrons)->size();
+  unsigned numTightLooseMuons = (*tightMuons)->size()+(*looseMuons)->size();
+  unsigned numTightLooseElectrons = (*tightElectrons)->size()+(*looseElectrons)->size();
+
   //unsigned numTightLoosePreselectedLeptons = this->blocks->tightLoosePreselectedLeptonCollection->size();
 
   // I'm creating a new collection because tightLoosePreselected is sorted by pT
@@ -90,10 +94,21 @@ void LeptonTriggerScaleFactors::evaluate () {
   if (numTightLoosePreselectedMuons >=1 && numTightLoosePreselectedElectrons >= 1) {
     muonElectronSF = beanHelper->GetMuonEleTriggerSF (bestMuons.at(0), bestElectrons.at(0));
   }
+  if (numTightLooseMuons == 2 && numTightLooseElectrons == 0) {
+    osTwoLepSF = muonSF;
+  }
+  if (numTightLooseMuons == 0 && numTightLooseElectrons == 2) {
+    osTwoLepSF = electronSF;
+  }
+  if (numTightLooseMuons == 1 && numTightLooseElectrons == 1) {
+    osTwoLepSF = muonElectronSF;
+  }
+  
 
   branches["twoMuonTriggerSF"].branchVal = muonSF;
   branches["twoElectronTriggerSF"].branchVal = electronSF;
   branches["muonElectronTriggerSF"].branchVal = muonElectronSF;
+  branches["osTriggerSF"].branchVal = osTwoLepSF;
 
 }
 
