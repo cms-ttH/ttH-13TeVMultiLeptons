@@ -20,8 +20,6 @@
   </bin>
   <bin file="fourLepton.C">
   </bin>
-  <bin   file="ttV.C">
-  </bin>
   <bin   file="osTwoLep.C">
   </bin>
   <bin   file="csvSF.C">
