@@ -15,38 +15,36 @@
 class CSVWeightsSF: public KinematicVariable<double> {
 
 public:
-  CSVWeightsSF(HelperLeptonCore *in, string input_option_1 = "none");
-
-  void evaluate ();
-  bool passCut ();
-
+  BEANhelper * beanHelper;
+  BNjetCollection **jets;
   HelperLeptonCore * myHelper;
-  string option_1;
+  string option;
+
+  CSVWeightsSF(BEANhelper * beanHelper, BNjetCollection** jets, string _option="none");
+  void evaluate();
+  bool passCut();
+
 };
 
-CSVWeightsSF::CSVWeightsSF  (HelperLeptonCore *in, string input_option_1) :
-  myHelper(in), option_1(input_option_1)
+CSVWeightsSF::CSVWeightsSF(BEANhelper * beanHelper, BNjetCollection **jets, string _option) :
+  beanHelper(beanHelper),
+  jets(jets),
+  option(_option)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 
   branches["csvWgtlf"] = BranchInfo<double>("csvWgtlf");
   branches["csvWgthf"] = BranchInfo<double>("csvWgthf");
-
 }
 
 void CSVWeightsSF::evaluate () {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  BNjetCollection * myJets = this->blocks->jetCollection;
-  BEANhelper * beanHelper = &(myHelper->bHelp);
-
-  vector<double> nominalWeights = beanHelper->GetCSVweights(*(myJets), sysType::NA);
-
+  vector<double> nominalWeights = beanHelper->GetCSVweights(*(*(jets)), sysType::NA);
 
   branches["csvWgtlf"].branchVal = nominalWeights[1];
   branches["csvWgthf"].branchVal = nominalWeights[0];
-
 }
 
 
