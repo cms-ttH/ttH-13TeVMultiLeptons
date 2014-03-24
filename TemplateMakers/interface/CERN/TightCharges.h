@@ -13,17 +13,17 @@ public:
   string CERNTightChargeCut;
   unsigned int loopMax;
 
-  TightCharges(BNleptonCollection **input_selCollection, string input_mem, string input_storePrefix, unsigned int input_max_leptons);
+  TightCharges(BNleptonCollection **_selCollection, string _mem, string _storePrefix, unsigned int _max_leptons);
   void evaluate ();
   void setCut (string cut);
   bool passCut ();
 };
 
-TightCharges::TightCharges (BNleptonCollection **input_selCollection, string input_mem, string input_storePrefix, unsigned int input_max_leptons):
-  selCollection(input_selCollection),
-  mem(input_mem),
-  storePrefix(input_storePrefix),
-  max_leptons(input_max_leptons)
+TightCharges::TightCharges (BNleptonCollection **_selCollection, string _mem, string _storePrefix, unsigned int _max_leptons):
+  selCollection(_selCollection),
+  mem(_mem),
+  storePrefix(_storePrefix),
+  max_leptons(_max_leptons)
 {
     this->resetVal = KinematicVariableConstants::INT_INIT;
 

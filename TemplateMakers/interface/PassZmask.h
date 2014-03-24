@@ -10,9 +10,9 @@ public:
 
   string PassZmaskCut;
   
-  PassZmask(TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * input_myZmass,
-            TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMHT,
-        GenericCollectionMember<double, BNmetCollection> * input_myMet);
+  PassZmask(TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * _myZmass,
+            TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMHT,
+        GenericCollectionMember<double, BNmetCollection> * _myMet);
   void evaluate();
   void setCut (string cut);
   bool passCut ();
@@ -22,10 +22,10 @@ public:
   GenericCollectionMember<double, BNmetCollection> * myMet;
 };
 
-PassZmask::PassZmask(TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * input_myZmass,
-                     TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMHT,
-                     GenericCollectionMember<double, BNmetCollection> * input_myMet):
-  myZmass(input_myZmass), myMHT(input_myMHT), myMet(input_myMet) {
+PassZmask::PassZmask(TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * _myZmass,
+                     TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMHT,
+                     GenericCollectionMember<double, BNmetCollection> * _myMet):
+  myZmass(_myZmass), myMHT(_myMHT), myMet(_myMet) {
   
     branches["PassZmask_mht"] = BranchInfo<int>("PassZmask_mht");
     branches["PassZmask_met"] = BranchInfo<int>("PassZmask_met");

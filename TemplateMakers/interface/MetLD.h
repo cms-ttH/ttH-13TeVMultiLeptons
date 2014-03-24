@@ -7,17 +7,17 @@
 class MetLD: public KinematicVariable<double> {
   
 public:
-  MetLD(TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMHT,
-        GenericCollectionMember<double, BNmetCollection> * input_myMet);
+  MetLD(TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMHT,
+        GenericCollectionMember<double, BNmetCollection> * _myMet);
   void evaluate();
   
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> * myMHT;
   GenericCollectionMember<double, BNmetCollection> * myMet;
 };
 
-MetLD::MetLD(TwoObjectKinematic<BNleptonCollection,BNjetCollection> * input_myMHT,
-             GenericCollectionMember<double, BNmetCollection> * input_myMet):
-  myMHT(input_myMHT), myMet(input_myMet) {
+MetLD::MetLD(TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMHT,
+             GenericCollectionMember<double, BNmetCollection> * _myMet):
+  myMHT(_myMHT), myMet(_myMet) {
   
     branches["met_ld"] = BranchInfo<double>("met_ld");
     

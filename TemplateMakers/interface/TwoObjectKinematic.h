@@ -44,11 +44,11 @@ public:
                      //absMax, absMin, absAvg, absSum, vector_sum,
                      //num_within
   string new_name; //Replacement name if desired, otherwise set to ""
-  collectionType1 **selCollection1; //first selected collection
+  collectionType1 **collection1; //first selected collection
   string branch_name_1; //first selected collection name
   unsigned int min1; //first object in the first collection
   unsigned int max1; //last object in the first collection
-  collectionType2 **selCollection2; //second selected collection
+  collectionType2 **collection2; //second selected collection
   string branch_name_2; //second collected collection name
   unsigned int min2; //first object in the second collection
   unsigned int max2; //last object in the second collection
@@ -56,25 +56,26 @@ public:
   string pair_req_1;
   string pair_req_2;
   double within_value;
+  TString bName;
 
-  TwoObjectKinematic(string input_variable, string input_which_pair, string input_new_name,
-                     collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
-                     collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
-                     double input_target_value = -99, string input_pair_req_1 = "none", string input_pair_req_2 = "none", double input_within_value = -99);
+  TwoObjectKinematic(string _variable, string _which_pair, string _new_name,
+                     collectionType1 **_collection1, string _branch_name_1, int _min1, int _max1,
+                     collectionType2 **_collection2, string _branch_name_2, int _min2, int _max2,
+                     double _target_value = -99, string _pair_req_1 = "none", string _pair_req_2 = "none", double _within_value = -99);
 
   void evaluate();
 
 };
 
 template <class collectionType1, class collectionType2>
-TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string input_variable, string input_which_pair, string input_new_name,
-                                                                        collectionType1 **input_selCollection1, string input_branch_name_1, int input_min1, int input_max1,
-                                                                        collectionType2 **input_selCollection2, string input_branch_name_2, int input_min2, int input_max2,
-                                                                        double input_target_value, string input_pair_req_1, string input_pair_req_2, double input_within_value):
-  variable(input_variable), which_pair(input_which_pair), new_name(input_new_name),
-  selCollection1(input_selCollection1), branch_name_1(input_branch_name_1), min1(input_min1), max1(input_max1),
-  selCollection2(input_selCollection2), branch_name_2(input_branch_name_2), min2(input_min2), max2(input_max2),
-  target_value(input_target_value), pair_req_1(input_pair_req_1), pair_req_2(input_pair_req_2), within_value(input_within_value)
+TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string _variable, string _which_pair, string _new_name,
+                                                                        collectionType1 **_collection1, string _branch_name_1, int _min1, int _max1,
+                                                                        collectionType2 **_collection2, string _branch_name_2, int _min2, int _max2,
+                                                                        double _target_value, string _pair_req_1, string _pair_req_2, double _within_value):
+  variable(_variable), which_pair(_which_pair), new_name(_new_name),
+  collection1(_collection1), branch_name_1(_branch_name_1), min1(_min1), max1(_max1),
+  collection2(_collection2), branch_name_2(_branch_name_2), min2(_min2), max2(_max2),
+  target_value(_target_value), pair_req_1(_pair_req_1), pair_req_2(_pair_req_2), within_value(_within_value)
 {
 
   //Convert target and within value to integers for branch name
@@ -90,8 +91,8 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
       for (unsigned int j=0; j<max2; j++) {
         if (i >= min1-1 && j >= min2-1) { //Start branches at min value
           //Eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1)
-          if ((void*)selCollection1!=selCollection2 || i < j) {
-            TString bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
+          if ((void*)collection1 != collection2 || i < j) {
+            bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
             if (which_pair == "all_pairs_abs") bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), i+1, branch_name_2.c_str(), j+1, variable.c_str());
             if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), i+1, j+1);
             branches[bName] = BranchInfo<double>(bName);
@@ -102,23 +103,23 @@ TwoObjectKinematic<collectionType1,collectionType2>::TwoObjectKinematic(string i
   }
   //If you gave it a new name, use that name
   else if (new_name.length() > 0) {
-    TString bName = Form("%s", new_name.c_str());
+    bName = Form("%s", new_name.c_str());
     branches[bName] = BranchInfo<double>(bName);
   }
   //Creates a branch for the pair of objects
   else if (which_pair == "closest_to" || which_pair == "second_closest_to") {
-    TString bName = Form("%s_%s_%s_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
+    bName = Form("%s_%s_%s_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
                          target_value_whole, target_value_fraction, variable.c_str());
     branches[bName] = BranchInfo<double>(bName);
   }
   else if (which_pair == "num_within") {
-    TString bName = Form("%s_%s_%s_%dp%d_of_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
+    bName = Form("%s_%s_%s_%dp%d_of_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
                          within_value_whole, within_value_fraction, target_value_whole, target_value_fraction, variable.c_str());
     branches[bName] = BranchInfo<double>(bName);
   }
   //Creates a branch for the pair of objects
   else {
-    TString bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
+    bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
     branches[bName] = BranchInfo<double>(bName);
   }
   //Initializes branch values to default
@@ -184,15 +185,15 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
   //Use individual values
   if (useValue || which_pair == "vector_sum") {
     //Loop over first set of objects alone
-    for (unsigned int iObj1 = 0; iObj1 < (*selCollection1)->size(); iObj1++) {
+    for (unsigned int iObj1 = 0; iObj1 < (*collection1)->size(); iObj1++) {
 
       //Sets min and max number of objects
       if (iObj1 >= min1-1 && iObj1 < max1) {
 
         thisValueIterator += 1.0;
-        vect1.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,ptr((*selCollection1)->at(iObj1))->eta,ptr((*selCollection1)->at(iObj1))->phi,
-                           max(ptr((*selCollection1)->at(iObj1))->energy,ptr((*selCollection1)->at(iObj1))->pt)); //Hack for "energy" of MET
-        vect1_transverse.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,0.0,ptr((*selCollection1)->at(iObj1))->phi,ptr((*selCollection1)->at(iObj1))->pt);
+        vect1.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt,ptr((*collection1)->at(iObj1))->eta,ptr((*collection1)->at(iObj1))->phi,
+                           max(ptr((*collection1)->at(iObj1))->energy,ptr((*collection1)->at(iObj1))->pt)); //Hack for "energy" of MET
+        vect1_transverse.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt,0.0,ptr((*collection1)->at(iObj1))->phi,ptr((*collection1)->at(iObj1))->pt);
         thisVectorSum += vect1; thisVectorTransverseSum += vect1_transverse;
 
         if ( variable == "pt" ) { thisValue = vect1.Pt(); thisValueCounter += 1.0*( abs(vect1.Pt() - target_value) < within_value ); }
@@ -215,14 +216,14 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
     }//End loop over iObj1
 
     //Loop over second set of objects alone
-    for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
+    for (unsigned int iObj2 = 0; iObj2 < (*collection2)->size(); iObj2++) {
 
       //Sets min and max number of objects, eliminates use of the same object twice
-      if ( iObj2 >= min2-1 && iObj2 < max2 && ((void*)selCollection1!=selCollection2 || iObj2 >= (*selCollection1)->size() || iObj2 >= max1 ) ) {
+      if ( iObj2 >= min2-1 && iObj2 < max2 && ((void*)collection1 != collection2 || iObj2 >= (*collection1)->size() || iObj2 >= max1 ) ) {
         thisValueIterator += 1.0;
-        vect2.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,ptr((*selCollection2)->at(iObj2))->eta,ptr((*selCollection2)->at(iObj2))->phi,
-                           max(ptr((*selCollection2)->at(iObj2))->energy,ptr((*selCollection2)->at(iObj2))->pt)); //Hack for "energy" of MET
-        vect2_transverse.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,0.0,ptr((*selCollection2)->at(iObj2))->phi,ptr((*selCollection2)->at(iObj2))->pt);
+        vect2.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt,ptr((*collection2)->at(iObj2))->eta,ptr((*collection2)->at(iObj2))->phi,
+                           max(ptr((*collection2)->at(iObj2))->energy,ptr((*collection2)->at(iObj2))->pt)); //Hack for "energy" of MET
+        vect2_transverse.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt,0.0,ptr((*collection2)->at(iObj2))->phi,ptr((*collection2)->at(iObj2))->pt);
         thisVectorSum += vect2; thisVectorTransverseSum += vect2_transverse;
 
         if ( variable == "pt" ) { thisValue = vect2.Pt(); thisValueCounter += 1.0*( abs(vect2.Pt() - target_value) < within_value ); }
@@ -244,7 +245,7 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
     }
 
     //Fill the branches
-    TString bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
+    bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
     if (new_name.length() > 0) bName = Form("%s", new_name.c_str());
 
     if ( which_pair == "avg" ) branches[bName].branchVal = thisValueSum / thisValueIterator;
@@ -275,19 +276,19 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
   } //End if ( useValue || which_pair == "vector_sum" )
 
   //Loop over pairs of objects
-  //for (typename collectionType1::const_iterator object1 = (*selCollection1)->begin(); object1 != (*selCollection1)->end(); ++object1) {
-  for (unsigned int iObj1 = 0; iObj1 < (*selCollection1)->size(); iObj1++) {
+  //for (typename collectionType1::const_iterator object1 = (*collection1)->begin(); object1 != (*collection1)->end(); ++object1) {
+  for (unsigned int iObj1 = 0; iObj1 < (*collection1)->size(); iObj1++) {
 
-    //for (typename collectionType2::const_iterator object2 = (*selCollection2)->begin(); object2 != (*selCollection2)->end(); ++object2) {
-    for (unsigned int iObj2 = 0; iObj2 < (*selCollection2)->size(); iObj2++) {
+    //for (typename collectionType2::const_iterator object2 = (*collection2)->begin(); object2 != (*collection2)->end(); ++object2) {
+    for (unsigned int iObj2 = 0; iObj2 < (*collection2)->size(); iObj2++) {
 
       //Sets min and max number of objects, eliminates pairs of the same object (e.g. jet1_jet1) and redundant pairs (jet1_jet2 and jet2_jet1)
-      if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 && ((void*)selCollection1!=selCollection2 || iObj1 < iObj2) ) {
+      if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 && ((void*)collection1 != collection2 || iObj1 < iObj2) ) {
 
         //Adds requirements to eliminate some pairs of objects
         if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {
-          BNlepton* lepton_1 = (BNlepton*)ptr((*selCollection1)->at(iObj1));
-          BNlepton* lepton_2 = (BNlepton*)ptr((*selCollection2)->at(iObj2));
+          BNlepton* lepton_1 = (BNlepton*)ptr((*collection1)->at(iObj1));
+          BNlepton* lepton_2 = (BNlepton*)ptr((*collection2)->at(iObj2));
 
           if ( ( lepton_1->isMuon != 1 && lepton_1->isElectron != 1 ) || ( lepton_2->isMuon != 1 && lepton_2->isElectron != 1 ) ) {
             std::cout << "Why are we requiring same flavour on non-leptons?" << std::endl;
@@ -296,8 +297,8 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
         }
 
         if ( pair_req_1 == "opposite_sign" || pair_req_2 == "opposite_sign" ) {
-          BNlepton* lepton_1 = (BNlepton*)ptr((*selCollection1)->at(iObj1));
-          BNlepton* lepton_2 = (BNlepton*)ptr((*selCollection2)->at(iObj2));
+          BNlepton* lepton_1 = (BNlepton*)ptr((*collection1)->at(iObj1));
+          BNlepton* lepton_2 = (BNlepton*)ptr((*collection2)->at(iObj2));
 
           if ( ( abs(lepton_1->tkCharge) != 1 && lepton_1->tkCharge != -99 ) || ( abs(lepton_2->tkCharge) != 1 && lepton_2->tkCharge != -99 ) ) {
             std::cout << "Why are we requiring opposite sign on non-leptons?" << std::endl;
@@ -308,14 +309,15 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
 
         thisPairValueIterator += 1.0;
 
-        vect1.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,ptr((*selCollection1)->at(iObj1))->eta,ptr((*selCollection1)->at(iObj1))->phi,
-                           max(ptr((*selCollection1)->at(iObj1))->energy,ptr((*selCollection1)->at(iObj1))->pt)); //Hack for "energy" of MET
-        vect2.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,ptr((*selCollection2)->at(iObj2))->eta,ptr((*selCollection2)->at(iObj2))->phi,
-                           max(ptr((*selCollection2)->at(iObj2))->energy,ptr((*selCollection2)->at(iObj2))->pt)); //Hack for "energy" of MET
+        vect1.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt,ptr((*collection1)->at(iObj1))->eta,ptr((*collection1)->at(iObj1))->phi,
+                           max(ptr((*collection1)->at(iObj1))->energy,ptr((*collection1)->at(iObj1))->pt)); //Hack for "energy" of MET
+        vect2.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt,ptr((*collection2)->at(iObj2))->eta,ptr((*collection2)->at(iObj2))->phi,
+                           max(ptr((*collection2)->at(iObj2))->energy,ptr((*collection2)->at(iObj2))->pt)); //Hack for "energy" of MET
         vect12 = vect1 + vect2;
-        vect1_transverse.SetPtEtaPhiE(ptr((*selCollection1)->at(iObj1))->pt,0.0,ptr((*selCollection1)->at(iObj1))->phi,ptr((*selCollection1)->at(iObj1))->pt);
-        vect2_transverse.SetPtEtaPhiE(ptr((*selCollection2)->at(iObj2))->pt,0.0,ptr((*selCollection2)->at(iObj2))->phi,ptr((*selCollection2)->at(iObj2))->pt);
-        vect12_transverse = vect1 + vect2;
+
+        vect1_transverse.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt,0.0,ptr((*collection1)->at(iObj1))->phi,ptr((*collection1)->at(iObj1))->pt);
+        vect2_transverse.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt,0.0,ptr((*collection2)->at(iObj2))->phi,ptr((*collection2)->at(iObj2))->pt);
+        vect12_transverse = vect1_transverse + vect2_transverse;
 
         if ( variable == "mass" ) thisPairValue = vect12.M();
         else if ( variable == "MT" ) thisPairValue = vect12_transverse.M();
@@ -351,19 +353,19 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
         //Fills branches for each pair of objects
         if (which_pair == "all_pairs" || which_pair == "all_pairs_abs") {
           if ( which_pair == "all_pairs_abs" ) {
-            TString bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), iObj1+1, branch_name_2.c_str(), iObj2+1, variable.c_str());
+            bName = Form("%s_%d_%s_%d_abs_%s", branch_name_1.c_str(), iObj1+1, branch_name_2.c_str(), iObj2+1, variable.c_str());
             if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), iObj1+1, iObj2+1);
             branches[bName].branchVal = abs(thisPairValue);
           }
           else {
-            TString bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), iObj1+1, branch_name_2.c_str(), iObj2+1, variable.c_str());
+            bName = Form("%s_%d_%s_%d_%s", branch_name_1.c_str(), iObj1+1, branch_name_2.c_str(), iObj2+1, variable.c_str());
             if (new_name.length() > 0) bName = Form("%s_%d_%d", new_name.c_str(), iObj1+1, iObj2+1);
             branches[bName].branchVal = thisPairValue;
           }
         }
         //Fills a branch for the pair of objects
         else if ( which_pair == "closest_to" || which_pair == "second_closest_to" ) {
-          TString bName = Form("%s_%s_%s_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), target_value_whole, target_value_fraction, variable.c_str());
+          bName = Form("%s_%s_%s_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), target_value_whole, target_value_fraction, variable.c_str());
           if (new_name.length() > 0) bName = Form("%s", new_name.c_str());
 
           if ( which_pair == "closest_to" ) {
@@ -385,7 +387,7 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
           }
         }
         else if ( which_pair == "num_within" && usePairValue ) {
-          TString bName = Form("%s_%s_%s_%dp%d_of_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
+          bName = Form("%s_%s_%s_%dp%d_of_%dp%d_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(),
                                within_value_whole, within_value_fraction, target_value_whole, target_value_fraction, variable.c_str());
           if (new_name.length() > 0) bName = Form("%s", new_name.c_str());
 
@@ -394,7 +396,7 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
         }
         //Fills a branch for the pair of objects
         else {
-          TString bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
+          bName = Form("%s_%s_%s_%s", branch_name_1.c_str(), branch_name_2.c_str(), which_pair.c_str(), variable.c_str());
           if (new_name.length() > 0) bName = Form("%s", new_name.c_str());
 
           if ( which_pair == "max" ) {

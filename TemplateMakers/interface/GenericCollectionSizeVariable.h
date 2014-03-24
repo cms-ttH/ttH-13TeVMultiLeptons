@@ -15,7 +15,7 @@ public:
     bool evaluatedThisEvent;
     unsigned int resetVal;
 
-    GenericCollectionSizeVariable(collectionType ** selColl, string input_branch_name);
+    GenericCollectionSizeVariable(collectionType ** selColl, string _branch_name);
     void reset();
     void evaluate();
     bool passCut();
@@ -24,9 +24,9 @@ public:
 };
 
 template<class collectionType>
-GenericCollectionSizeVariable<collectionType>::GenericCollectionSizeVariable(collectionType ** selColl, string input_branch_name):
+GenericCollectionSizeVariable<collectionType>::GenericCollectionSizeVariable(collectionType ** selColl, string _branch_name):
     selectedCollection(selColl),
-    branch_name(input_branch_name) {
+    branch_name(_branch_name) {
 
     branches[branch_name] = BranchInfo<int>(branch_name);
     resetVal = KinematicVariableConstants::INT_INIT;

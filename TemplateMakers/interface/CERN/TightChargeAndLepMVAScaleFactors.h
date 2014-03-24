@@ -4,7 +4,7 @@
 class TightChargeAndLepMVAScaleFactors: public KinematicVariable<double> {
 
 public:
-  TightChargeAndLepMVAScaleFactors(int numLeps, BNleptonCollection **_tightLoosePreselectedLeptons);
+  TightChargeAndLepMVAScaleFactors(int _numLeps, BNleptonCollection **_tightLoosePreselectedLeptons);
   ~TightChargeAndLepMVAScaleFactors();
   void evaluate();
   double fetch(BNlepton* lepton, TH2D* histo);
@@ -17,17 +17,17 @@ public:
   TH2D* tightMuon2DSF;
   TH2D* tightChargeElectronSF2D;
   TH2D* tightChargeMuonSF2D;
-  unsigned numLeps;
+  unsigned int numLeps;
   TString looseBranchName;
   TString tightBranchName;
   TString tightChargeBranchName;
   BNleptonCollection **tightLoosePreselectedLeptons;
 };
 
-TightChargeAndLepMVAScaleFactors::TightChargeAndLepMVAScaleFactors (int numLeps, BNleptonCollection **_tightLoosePreselectedLeptons):
+TightChargeAndLepMVAScaleFactors::TightChargeAndLepMVAScaleFactors (int _numLeps, BNleptonCollection **_tightLoosePreselectedLeptons):
   electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_ele.root").c_str()),
   muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_mu.root").c_str()),
-  numLeps(numLeps),
+  numLeps(_numLeps),
   tightLoosePreselectedLeptons(_tightLoosePreselectedLeptons)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
@@ -60,7 +60,8 @@ void TightChargeAndLepMVAScaleFactors::evaluate() {
   double looseSF = 1.0;
   double tightSF = 1.0;
   double tightChargeSF = 1.0;
-  for (unsigned i=0; i<numLeps; i++) {
+  for (unsigned int i=0; i<numLeps; i++) {
+    //For an event with 2 lepton, 3-lepton SF = 0
     if (i >= leptons->size()) {
       totalLooseSF *= 0;
       totalTightSF *= 0;

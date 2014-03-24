@@ -70,7 +70,7 @@ def main():
         make_yield_pie_charts(yields, config['output file location'], draw_names(signal_samples), jet_tag_categories)
 
     if args.web:
-        plot_helper.update_indexes('.')
+        plot_helper.update_indexes(os.path.join(config['output file location'], '..'))
         print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/%s' % (os.environ['USER'], config['output file location'])
 
 def print_yield_table(yields, title, precision):

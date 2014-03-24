@@ -19,18 +19,18 @@ public:
 
   TString branchName;
 
-  LepMVAs(HelperLeptonCore *input_myHelper, collectionType **input_selCollection,
-          string input_branch_name, int input_maxLeptons);
+  LepMVAs(HelperLeptonCore *_myHelper, collectionType **_selCollection,
+          string _branch_name, int _maxLeptons);
 
   void evaluate ();
 
 };
 
 template <class collectionType>
-LepMVAs<collectionType>::LepMVAs(HelperLeptonCore *input_myHelper, collectionType **input_selCollection,
-                                 string input_branch_name, int input_maxLeptons):
-  myHelper(input_myHelper), selCollection(input_selCollection),
-  branch_name(input_branch_name), maxLeptons(input_maxLeptons)
+LepMVAs<collectionType>::LepMVAs(HelperLeptonCore *_myHelper, collectionType **_selCollection,
+                                 string _branch_name, int _maxLeptons):
+  myHelper(_myHelper), selCollection(_selCollection),
+  branch_name(_branch_name), maxLeptons(_maxLeptons)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 

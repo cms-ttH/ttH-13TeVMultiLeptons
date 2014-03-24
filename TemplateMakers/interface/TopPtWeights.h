@@ -19,7 +19,6 @@ public:
 
   TopPtWeights(HelperLeptonCore *_myHelper, BNmcparticleCollection **_mcParticles, string _option="none");
   void evaluate ();
-  bool passCut ();
 };
 
 ///////////////////////////////////////////////////////////////////////
@@ -42,18 +41,14 @@ void TopPtWeights::evaluate() {
 
   BEANhelper * beanHelper = &(myHelper->bHelp);
 
-  double weight = beanHelper->GetTopPtweight( *(*mcParticles));
+  double weight = beanHelper->GetTopPtweight(*(*mcParticles));
   double weightUp = 2*(weight-1)+1;
 
+  branches["topPtWgt"].branchVal = weight;
   if (option != "skipSyst") {
     branches["topPtWgtUp"].branchVal = weightUp;
   }
 }
 
-bool TopPtWeights::passCut() {
-
-  return true;
-
-}
 
 #endif

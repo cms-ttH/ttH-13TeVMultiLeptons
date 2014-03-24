@@ -35,17 +35,17 @@ public:
   TH2 * FR_NP_tight2_el; //FR for >= 2 b-jets
   TH2 * FR_QF_el; //Charge flip FR
 
-  DataDrivenFRPerLepton(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-                        double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label);
+  DataDrivenFRPerLepton(HelperLeptonCore *_myHelper, collectionType **_selCollection, int _number_of_leptons,
+                        double _working_point, string _file_name_NP, string _file_name_QF, string _label);
   ~DataDrivenFRPerLepton();
   void evaluate();
 };
 
 template <class collectionType>
-DataDrivenFRPerLepton<collectionType>::DataDrivenFRPerLepton(HelperLeptonCore *input_myHelper, collectionType **input_selCollection, int input_number_of_leptons,
-                                                             double input_working_point, string input_file_name_NP, string input_file_name_QF, string input_label = ""):
-  myHelper(input_myHelper), selCollection(input_selCollection), number_of_leptons(input_number_of_leptons),
-  working_point(input_working_point), file_name_NP(input_file_name_NP), file_name_QF(input_file_name_QF),label(input_label) {
+DataDrivenFRPerLepton<collectionType>::DataDrivenFRPerLepton(HelperLeptonCore *_myHelper, collectionType **_selCollection, int _number_of_leptons,
+                                                             double _working_point, string _file_name_NP, string _file_name_QF, string _label = ""):
+  myHelper(_myHelper), selCollection(_selCollection), number_of_leptons(_number_of_leptons),
+  working_point(_working_point), file_name_NP(_file_name_NP), file_name_QF(_file_name_QF),label(_label) {
 
   this->resetVal = 1.0;
 
