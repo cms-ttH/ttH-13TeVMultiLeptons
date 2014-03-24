@@ -11,6 +11,7 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericObjectMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CSVWeights.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/CSVWeightsSF.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/PUWeights.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TopPtWeights.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/LeptonIDAndIsoScaleFactors.h"
