@@ -18,6 +18,7 @@ public:
   GenericCollection(BEANhelper * bHelp);
   void initializeRawItems(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
   void initializeRawItems(collectionType collection);
+  void initializeRawItems(std::initializer_list<collectionType> collections);
   void initializeRawItemsSortedByPt(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
   void initializeRawItemsSortedByPt(collectionType collection);
   void initializeRawItemsSortedByCSV(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
@@ -80,6 +81,14 @@ void GenericCollection<collectionType>::initializeRawItems(collectionType collec
   items = rawItems;
 
   ptrToItems = &items;
+}
+
+template<class collectionType>
+void GenericCollection<collectionType>::initializeRawItems(std::initializer_list<collectionType> collections) {
+  reset();
+
+  addUnion(collections);
+
 }
 
 template<class collectionType>
