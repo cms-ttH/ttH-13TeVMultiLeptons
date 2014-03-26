@@ -178,11 +178,68 @@ int main (int argc, char** argv) {
   GenericCollection<BNmcparticleCollection> genHiggsParticles(beanHelper);
   GenericCollection<BNmcparticleCollection> genTopParticles(beanHelper);
   GenericCollection<BNmcparticleCollection> genAntiTopParticles(beanHelper);
+  GenericCollection<BNmcparticleCollection> genTTbarParticles(beanHelper);
 
   // declare the kinematic variables that you want to be written out into the tree
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
 
+  ////////////////////////// corrections, weights, etc
+  CSVWeights myCSV(beanHelper, &(jets.ptrToItems));
+  kinVars.push_back(&myCSV);
+
+  //Btag POG version
+  vector<pair<string, double>> WPs = {make_pair("CSVT", 0.898), make_pair("CSVM", 0.679), make_pair("CSVL", 0.244)};
+  BTagWeights myBTagWeights(WPs, &(jets.ptrToItems));
+  kinVars.push_back(&myBTagWeights);
+
+  PUWeights myPU(&lepHelper, &(events.ptrToItems));
+  kinVars.push_back(&myPU);
+
+  TopPtWeights myTopPt(&lepHelper, &(mcParticles.ptrToItems));
+  kinVars.push_back(&myTopPt);
+
+  //Currently, gets ND loose lepton SF; could switch to tight and loose - AWB Feb 12, 2014
+  //LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonID::muonTight, muonID::muonLoose, electronID::electronTight, electronID::electronLoose);
+  LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID,
+                                             &(tightMuons.ptrToItems), &(looseMuons.ptrToItems),
+                                             &(tightElectrons.ptrToItems), &(looseElectrons.ptrToItems));
+  kinVars.push_back(&myLepIDAndIsoSF);
+
+  //CERN version
+  RecoIDIsoSIPSFs myRecoIDIsoSIPSFs(2, &(tightLoosePreselectedLeptons.ptrToItems));
+  kinVars.push_back(&myRecoIDIsoSIPSFs);
+
+  LeptonTriggerScaleFactors
+  myLepTrig(&lepHelper, &(tightMuons.ptrToItems), &(looseMuons.ptrToItems), &(preselectedMuons.ptrToItems),
+            &(tightElectrons.ptrToItems), &(looseElectrons.ptrToItems), &(preselectedElectrons.ptrToItems));
+  kinVars.push_back(&myLepTrig);
+
+  TightChargeAndLepMVAScaleFactors myTightChargeAndLepMVASFs(2, &(tightLoosePreselectedLeptons.ptrToItems));
+  kinVars.push_back(&myTightChargeAndLepMVASFs);
+
+  CleanEventVars myClean(&lepHelper, &(events.ptrToItems), &(primaryVertexes.ptrToItems));
+  kinVars.push_back(&myClean);
+
+  CheckTwoLepTrigger checkTrig(&lepHelper, &(hltCollection.ptrToItems));
+  kinVars.push_back(&checkTrig);
+
+  DataDrivenFR<BNleptonCollection>
+  myDataDrivenFRAllLeptons(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), &(mediumCSVJets.ptrToItems), 2, 0.7, "FR_merged_data", "QF_data_el");
+  kinVars.push_back(&myDataDrivenFRAllLeptons);
+
+  DataDrivenFR<BNleptonCollection>
+  myDataDrivenFRAllLeptonsLoose(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), &(mediumCSVJets.ptrToItems), 2, -0.3, "FR_merged_data", "QF_data_el", "_Loose");
+  kinVars.push_back(&myDataDrivenFRAllLeptonsLoose);
+
+  HiggsDecayType myHiggsDecayType(&lepHelper, &(mcParticles.ptrToItems));
+  kinVars.push_back(&myHiggsDecayType);
+
+  TightCharges myTightCharges(&(tightLoosePreselectedLeptons.ptrToItems), "CERN_tight_charge", "all_leptons_by_pt", 2);
+  kinVars.push_back(&myTightCharges);
+  //myTightCharges.setCut("pass");
+
+  ////////////////////////// collection sizes
   GenericCollectionSizeVariable<BNjetCollection> numJets(&(jets.ptrToItems), "numJets");
   kinVars.push_back(&numJets);
   numJets.setCutMin(2);
@@ -234,45 +291,7 @@ int main (int argc, char** argv) {
   GenericCollectionSizeVariable<BNtauCollection> numTightTaus(&(tightTaus.ptrToItems), "numTightTaus");
   kinVars.push_back(&numTightTaus);
 
-  CSVWeights myCSV(beanHelper, &(jets.ptrToItems));
-  kinVars.push_back(&myCSV);
-
-  //Btag POG version
-  vector<pair<string, double>> WPs = {make_pair("CSVT", 0.898), make_pair("CSVM", 0.679), make_pair("CSVL", 0.244)};
-  BTagWeights myBTagWeights(WPs, &(jets.ptrToItems));
-  kinVars.push_back(&myBTagWeights);
-
-  PUWeights myPU(&lepHelper, &(events.ptrToItems));
-  kinVars.push_back(&myPU);
-
-  TopPtWeights myTopPt(&lepHelper, &(mcParticles.ptrToItems));
-  kinVars.push_back(&myTopPt);
-
-  //Currently, gets ND loose lepton SF; could switch to tight and loose - AWB Feb 12, 2014
-  //LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonID::muonTight, muonID::muonLoose, electronID::electronTight, electronID::electronLoose);
-  LeptonIDAndIsoScaleFactors myLepIDAndIsoSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID,
-                                             &(tightMuons.ptrToItems), &(looseMuons.ptrToItems),
-                                             &(tightElectrons.ptrToItems), &(looseElectrons.ptrToItems));
-  kinVars.push_back(&myLepIDAndIsoSF);
-
-  //CERN version
-  RecoIDIsoSIPSFs myRecoIDIsoSIPSFs(2, &(tightLoosePreselectedLeptons.ptrToItems));
-  kinVars.push_back(&myRecoIDIsoSIPSFs);
-
-  LeptonTriggerScaleFactors
-  myLepTrig(&lepHelper, &(tightMuons.ptrToItems), &(looseMuons.ptrToItems), &(preselectedMuons.ptrToItems),
-            &(tightElectrons.ptrToItems), &(looseElectrons.ptrToItems), &(preselectedElectrons.ptrToItems));
-  kinVars.push_back(&myLepTrig);
-
-  TightChargeAndLepMVAScaleFactors myTightChargeAndLepMVASFs(2, &(tightLoosePreselectedLeptons.ptrToItems));
-  kinVars.push_back(&myTightChargeAndLepMVASFs);
-
-  CleanEventVars myClean(&lepHelper, &(events.ptrToItems), &(primaryVertexes.ptrToItems));
-  kinVars.push_back(&myClean);
-
-  CheckTwoLepTrigger checkTrig(&lepHelper, &(hltCollection.ptrToItems));
-  kinVars.push_back(&checkTrig);
-
+  ////////////////////////// lep MVAs
   LepMVAs<BNleptonCollection> myLepMVAsTightLeptons(&lepHelper, &(tightLeptons.ptrToItems), "tight_leptons_by_pt", 2);
   kinVars.push_back(&myLepMVAsTightLeptons);
 
@@ -288,20 +307,7 @@ int main (int argc, char** argv) {
   LepMVAs<BNmuonCollection> myLepMVAsAllMuons(&lepHelper, &(tightLoosePreselectedMuons.ptrToItems), "all_muons_by_pt", 3);
   kinVars.push_back(&myLepMVAsAllMuons);
 
-  DataDrivenFR<BNleptonCollection>
-  myDataDrivenFRAllLeptons(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), &(mediumCSVJets.ptrToItems), 2, 0.7, "FR_merged_data", "QF_data_el");
-  kinVars.push_back(&myDataDrivenFRAllLeptons);
-
-  DataDrivenFR<BNleptonCollection>
-  myDataDrivenFRAllLeptonsLoose(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), &(mediumCSVJets.ptrToItems), 2, -0.3, "FR_merged_data", "QF_data_el", "_Loose");
-  kinVars.push_back(&myDataDrivenFRAllLeptonsLoose);
-
-//   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
-//   kinVars.push_back(&myDBCorrectedRelIsoDR04s);
-
-  HiggsDecayType myHiggsDecayType(&lepHelper, &(mcParticles.ptrToItems));
-  kinVars.push_back(&myHiggsDecayType);
-
+  ////////////////////////// composite objects
   TwoObjectKinematic<BNleptonCollection, BNmetCollection>
   mySumLep1Lep2MetPt("pt", "sum", "sum_lep1pt_lep2pt_met",
                      &(tightLoosePreselectedLeptons.ptrToItems), "all_leptons_by_pt", 1, 2,
@@ -390,11 +396,6 @@ int main (int argc, char** argv) {
           &(jets.ptrToItems), "jets_by_pt", 1, 99);
   kinVars.push_back(&mySumPt);
 
-  // AWB Oct 17 - end new object functions
-  TightCharges myTightCharges(&(tightLoosePreselectedLeptons.ptrToItems), "CERN_tight_charge", "all_leptons_by_pt", 2);
-  kinVars.push_back(&myTightCharges);
-  //myTightCharges.setCut("pass");
-
   int TwoMuon = 0;
   int TwoElectron = 0;
   int MuonElectron = 0;
@@ -413,21 +414,6 @@ int main (int argc, char** argv) {
                                               KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allLeptonNumberOfValidTrackerHitsInnerTrack);
 
-//   GenericCollectionMember<double, BNleptonCollection>
-//   allLeptonComPt(Reflex::Type::ByName("BNlepton"),
-//                  &(tightLoosePreselectedLeptons.ptrToItems),
-//                  "comPT",
-//                  "all_leptons_by_pt",
-//                  KinematicVariableConstants::FLOAT_INIT, 4);
-//   kinVars.push_back(&allLeptonComPt);
-
-//   GenericCollectionMember<double, BNleptonCollection>
-//   allLeptonSamPt(Reflex::Type::ByName("BNlepton"),
-//                  &(tightLoosePreselectedLeptons.ptrToItems),
-//                  "samPT",
-//                  "all_leptons_by_pt",
-//                  KinematicVariableConstants::FLOAT_INIT, 4);
-//   kinVars.push_back(&allLeptonSamPt);
 
   GenericCollectionMember<double, BNleptonCollection>
   allLeptonInnerTkPt(Reflex::Type::ByName("BNlepton"),
@@ -439,28 +425,6 @@ int main (int argc, char** argv) {
   allLeptonInnerTkPtError(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
                           "innerTrackPtError", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allLeptonInnerTkPtError);
-
-//   GenericCollectionMember<double, BNleptonCollection>
-//   allLeptonNeutralHadronIsoDR04(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
-//                                 "neutralHadronIsoDR04", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-//   kinVars.push_back(&allLeptonNeutralHadronIsoDR04);
-
-//   GenericCollectionMember<double, BNleptonCollection>
-//   allLeptonPhotonIsoDR04(Reflex::Type::ByName("BNlepton"),
-//                          &(tightLoosePreselectedLeptons.ptrToItems), "photonIsoDR04",
-//                          "all_leptons_by_pt", KinematicVariableConstants::FLOAT_INIT, 4);
-//   kinVars.push_back(&allLeptonPhotonIsoDR04);
-
-//   GenericCollectionMember<double, BNleptonCollection>
-//   allLeptonPUChargedHadronIsoDR04(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
-//                                   "puChargedHadronIsoDR04", "all_leptons_by_pt", KinematicVariableConstants::FLOAT_INIT, 4);
-//   kinVars.push_back(&allLeptonPUChargedHadronIsoDR04);
-
-//   GenericCollectionMember<double, BNleptonCollection>
-//   allLeptonChargedHadronIso(Reflex::Type::ByName("BNlepton"),
-//                             &(tightLoosePreselectedLeptons.ptrToItems),
-//                             "chargedHadronIso", "all_leptons_by_pt", KinematicVariableConstants::FLOAT_INIT, 4);
-//   kinVars.push_back(&allLeptonChargedHadronIso);
 
   GenericCollectionMember<double, BNleptonCollection>
   allLeptonJetDeltaR(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems), "jetDeltaR", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
@@ -896,3 +860,47 @@ int main (int argc, char** argv) {
   outputFile->Write();
   outputFile->Close();
 }
+
+// old variable graveyard
+
+//   GenericCollectionMember<double, BNleptonCollection>
+//   allLeptonComPt(Reflex::Type::ByName("BNlepton"),
+//                  &(tightLoosePreselectedLeptons.ptrToItems),
+//                  "comPT",
+//                  "all_leptons_by_pt",
+//                  KinematicVariableConstants::FLOAT_INIT, 4);
+//   kinVars.push_back(&allLeptonComPt);
+
+//   GenericCollectionMember<double, BNleptonCollection>
+//   allLeptonSamPt(Reflex::Type::ByName("BNlepton"),
+//                  &(tightLoosePreselectedLeptons.ptrToItems),
+//                  "samPT",
+//                  "all_leptons_by_pt",
+//                  KinematicVariableConstants::FLOAT_INIT, 4);
+//   kinVars.push_back(&allLeptonSamPt);
+
+//   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
+//   kinVars.push_back(&myDBCorrectedRelIsoDR04s);
+
+//   GenericCollectionMember<double, BNleptonCollection>
+//   allLeptonNeutralHadronIsoDR04(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
+//                                 "neutralHadronIsoDR04", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+//   kinVars.push_back(&allLeptonNeutralHadronIsoDR04);
+
+//   GenericCollectionMember<double, BNleptonCollection>
+//   allLeptonPhotonIsoDR04(Reflex::Type::ByName("BNlepton"),
+//                          &(tightLoosePreselectedLeptons.ptrToItems), "photonIsoDR04",
+//                          "all_leptons_by_pt", KinematicVariableConstants::FLOAT_INIT, 4);
+//   kinVars.push_back(&allLeptonPhotonIsoDR04);
+
+//   GenericCollectionMember<double, BNleptonCollection>
+//   allLeptonPUChargedHadronIsoDR04(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
+//                                   "puChargedHadronIsoDR04", "all_leptons_by_pt", KinematicVariableConstants::FLOAT_INIT, 4);
+//   kinVars.push_back(&allLeptonPUChargedHadronIsoDR04);
+
+//   GenericCollectionMember<double, BNleptonCollection>
+//   allLeptonChargedHadronIso(Reflex::Type::ByName("BNlepton"),
+//                             &(tightLoosePreselectedLeptons.ptrToItems),
+//                             "chargedHadronIso", "all_leptons_by_pt", KinematicVariableConstants::FLOAT_INIT, 4);
+//   kinVars.push_back(&allLeptonChargedHadronIso);
+

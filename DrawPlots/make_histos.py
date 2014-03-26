@@ -124,8 +124,10 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                             plot.save_image('pdf')
                         if args.web:
                             plot.post_to_web(config, lepton_category)
-
                     source_file.Close() #end systematic
+                config_file = ROOT.TObjString(args.config_file_name)
+                output_file.cd()
+                config_file.Write('config_file')
                 output_file.Close() #end jet tag category
 
 def submit_batch_jobs(config, samples, lepton_categories, jet_tag_categories):
