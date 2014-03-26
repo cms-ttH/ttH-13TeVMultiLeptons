@@ -185,8 +185,8 @@ int main (int argc, char** argv) {
   cutVars.push_back(&numTightLeptons);
 
   // various event weights
-//   CSVWeightsSF myCSV(beanHelper, &(jets.ptrToItems));
-//   kinVars.push_back(&myCSV);
+  CSVWeightsSF myCSV(beanHelper, &(jets.ptrToItems));
+  kinVars.push_back(&myCSV);
 
   PUWeights myPU(&lepHelper, &(events.ptrToItems));
   kinVars.push_back(&myPU);
@@ -353,8 +353,8 @@ int main (int argc, char** argv) {
     //    Initialize collections and apply object ids
     //
     //////////////////////////////////////////////////////////////
-    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsLoosePFlow");
-    tightLoosePreselectedElectrons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatElectronsGSF");
+    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsPFlow");
+    tightLoosePreselectedElectrons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatElectronsPFlow");
 
     tightLoosePreselectedElectrons.keepSelectedParticles(electronPreselectedID);
     tightElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
@@ -392,9 +392,9 @@ int main (int argc, char** argv) {
 
     jets.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJetsPFlow");
     jets.correctRawJets();
-    jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
+    jets.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
     mediumCSVJets.initializeRawItems(jets.rawItems);
-    mediumCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'M');
+    mediumCSVJets.keepSelectedJets(30.0, 2.4, jetID::jetLoose, 'M');
 
     met.initializeRawItems(ev, "BNproducer","patMETsPFlow");
     met.getCorrectedMet(jets);
