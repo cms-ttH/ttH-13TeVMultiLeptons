@@ -17,12 +17,12 @@ public:
 
   GenericCollection(BEANhelper * bHelp);
   void initializeRawItems(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
-  void initializeRawItems(collectionType collection);
+  void initializeRawItems(const collectionType& collection);
   void initializeRawItems(std::initializer_list<collectionType> collections);
   void initializeRawItemsSortedByPt(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
-  void initializeRawItemsSortedByPt(collectionType collection);
+  void initializeRawItemsSortedByPt(const collectionType& collection);
   void initializeRawItemsSortedByCSV(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
-  void initializeRawItemsSortedByCSV(collectionType collection);
+  void initializeRawItemsSortedByCSV(const collectionType& collection);
   template <typename functionType> void keepSelectedParticles(functionType selectionFunction);
   void keepSelectedParticles(electronID::electronID& ID);
   void keepSelectedParticles(muonID::muonID& ID);
@@ -32,13 +32,13 @@ public:
   void addUnion(std::initializer_list<collectionType> collections);
   void pushBack(std::initializer_list<BNelectronCollection> collections);
   void pushBack(std::initializer_list<BNmuonCollection> collections);
-  void pushBack(BNelectronCollection& electrons);
-  void pushBack(BNmuonCollection& muons);
-  void resetAndPushBack(BNelectronCollection& electrons);
-  void resetAndPushBack(BNmuonCollection& muons);
-  void pushBackAndSort(BNelectronCollection& electrons);
-  void pushBackAndSort(BNmuonCollection& muons);
-  void cleanJets(BNleptonCollection& leptons);
+  void pushBack(const BNelectronCollection& electrons);
+  void pushBack(const BNmuonCollection& muons);
+  void resetAndPushBack(const BNelectronCollection& electrons);
+  void resetAndPushBack(const BNmuonCollection& muons);
+  void pushBackAndSort(const BNelectronCollection& electrons);
+  void pushBackAndSort(const BNmuonCollection& muons);
+  void cleanJets(const BNleptonCollection& leptons);
   void correctRawJets();
   void keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP);
   void getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType shift=sysType::NA);
@@ -50,9 +50,7 @@ private:
 };
 
 template<class collectionType>
-GenericCollection<collectionType>::GenericCollection(BEANhelper * bHelp) : bHelp(bHelp) {
-  reset();
-}
+GenericCollection<collectionType>::GenericCollection(BEANhelper * bHelp) : bHelp(bHelp) { }
 
 template<class collectionType>
 void GenericCollection<collectionType>::reset() {
@@ -62,7 +60,6 @@ void GenericCollection<collectionType>::reset() {
 
 template<class collectionType>
 void GenericCollection<collectionType>::initializeRawItems(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance) {
-  reset();
 
   edm::InputTag tag(rawCollectionLabel, rawCollectionInstance);
   edm::Handle<collectionType> handle;
@@ -74,11 +71,10 @@ void GenericCollection<collectionType>::initializeRawItems(edm::EventBase& event
 }
 
 template<class collectionType>
-void GenericCollection<collectionType>::initializeRawItems(collectionType collection) {
-  reset();
+void GenericCollection<collectionType>::initializeRawItems(const collectionType& collection) {
 
   rawItems = collection;
-  items = rawItems;
+  items = collection;
 
   ptrToItems = &items;
 }
@@ -101,12 +97,10 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventB
 }
 
 template<class collectionType>
-void GenericCollection<collectionType>::initializeRawItemsSortedByPt(collectionType collection) {
-  reset();
+void GenericCollection<collectionType>::initializeRawItemsSortedByPt(const collectionType& collection) {
 
   rawItems = collection;
-  items = rawItems;
-  items = bHelp->GetSortedByPt(items);
+  items = bHelp->GetSortedByPt(collection);
 
   ptrToItems = &items;
 }
@@ -121,12 +115,10 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByCSV(edm::Event
 }
 
 template<class collectionType>
-void GenericCollection<collectionType>::initializeRawItemsSortedByCSV(collectionType collection) {
-  reset();
+void GenericCollection<collectionType>::initializeRawItemsSortedByCSV(const collectionType& collection) {
 
   rawItems = collection;
-  rawItems = bHelp->GetSortedByCSV(rawItems);
-  items = rawItems;
+  items = bHelp->GetSortedByCSV(collection);
 
   ptrToItems = &items;
 }
@@ -217,21 +209,21 @@ void GenericCollection<BNleptonCollection>::pushBack(std::initializer_list<BNmuo
 }
 
 template<class BNleptonCollection>
-void GenericCollection<BNleptonCollection>::pushBack(BNelectronCollection& electrons) {
+void GenericCollection<BNleptonCollection>::pushBack(const BNelectronCollection& electrons) {
     items.push_back(electrons);
 
     ptrToItems = &items;
 }
 
 template<class BNleptonCollection>
-void GenericCollection<BNleptonCollection>::pushBack(BNmuonCollection& muons) {
+void GenericCollection<BNleptonCollection>::pushBack(const BNmuonCollection& muons) {
   items.push_back(muons);
 
   ptrToItems = &items;
 }
 
 template<class BNleptonCollection>
-void GenericCollection<BNleptonCollection>::resetAndPushBack(BNelectronCollection& electrons) {
+void GenericCollection<BNleptonCollection>::resetAndPushBack(const BNelectronCollection& electrons) {
   reset();
   items.push_back(electrons);
 
@@ -239,7 +231,7 @@ void GenericCollection<BNleptonCollection>::resetAndPushBack(BNelectronCollectio
 }
 
 template<class BNleptonCollection>
-void GenericCollection<BNleptonCollection>::resetAndPushBack(BNmuonCollection& muons) {
+void GenericCollection<BNleptonCollection>::resetAndPushBack(const BNmuonCollection& muons) {
   reset();
   items.push_back(muons);
 
@@ -247,7 +239,7 @@ void GenericCollection<BNleptonCollection>::resetAndPushBack(BNmuonCollection& m
 }
 
 template<class BNleptonCollection>
-void GenericCollection<BNleptonCollection>::pushBackAndSort(BNelectronCollection& electrons) {
+void GenericCollection<BNleptonCollection>::pushBackAndSort(const BNelectronCollection& electrons) {
   items.push_back(electrons);
   items.sort();
 
@@ -255,7 +247,7 @@ void GenericCollection<BNleptonCollection>::pushBackAndSort(BNelectronCollection
 }
 
 template<class BNleptonCollection>
-void GenericCollection<BNleptonCollection>::pushBackAndSort(BNmuonCollection& muons) {
+void GenericCollection<BNleptonCollection>::pushBackAndSort(const BNmuonCollection& muons) {
   items.push_back(muons);
   items.sort();
 
@@ -263,7 +255,7 @@ void GenericCollection<BNleptonCollection>::pushBackAndSort(BNmuonCollection& mu
 }
 
 template<class BNjetCollection>
-void GenericCollection<BNjetCollection>::cleanJets(BNleptonCollection& leptons) {
+void GenericCollection<BNjetCollection>::cleanJets(const BNleptonCollection& leptons) {
   items = bHelp->GetCleanJets(items, leptons, 0.5);
 
   ptrToItems = &items;
