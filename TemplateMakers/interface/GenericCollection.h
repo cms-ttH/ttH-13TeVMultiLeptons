@@ -32,12 +32,16 @@ public:
   void addUnion(std::initializer_list<collectionType> collections);
   void pushBack(std::initializer_list<BNelectronCollection> collections);
   void pushBack(std::initializer_list<BNmuonCollection> collections);
+  void pushBack(std::initializer_list<BNleptonCollection> collections);
   void pushBack(const BNelectronCollection& electrons);
   void pushBack(const BNmuonCollection& muons);
+  void pushBack(const BNleptonCollection& leptons);
   void resetAndPushBack(const BNelectronCollection& electrons);
   void resetAndPushBack(const BNmuonCollection& muons);
+  void resetAndPushBack(const BNleptonCollection& leptons);
   void pushBackAndSort(const BNelectronCollection& electrons);
   void pushBackAndSort(const BNmuonCollection& muons);
+  void pushBackAndSort(const BNleptonCollection& leptons);
   void cleanJets(const BNleptonCollection& leptons);
   void correctRawJets();
   void keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP);
@@ -50,7 +54,9 @@ private:
 };
 
 template<class collectionType>
-GenericCollection<collectionType>::GenericCollection(BEANhelper * bHelp) : bHelp(bHelp) { }
+GenericCollection<collectionType>::GenericCollection(BEANhelper * bHelp) : bHelp(bHelp) {
+  reset();
+}
 
 template<class collectionType>
 void GenericCollection<collectionType>::reset() {
@@ -60,6 +66,7 @@ void GenericCollection<collectionType>::reset() {
 
 template<class collectionType>
 void GenericCollection<collectionType>::initializeRawItems(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance) {
+  reset();
 
   edm::InputTag tag(rawCollectionLabel, rawCollectionInstance);
   edm::Handle<collectionType> handle;
@@ -72,9 +79,10 @@ void GenericCollection<collectionType>::initializeRawItems(edm::EventBase& event
 
 template<class collectionType>
 void GenericCollection<collectionType>::initializeRawItems(const collectionType& collection) {
+  reset();
 
   rawItems = collection;
-  items = collection;
+  items = rawItems;
 
   ptrToItems = &items;
 }
@@ -89,6 +97,7 @@ void GenericCollection<collectionType>::initializeRawItems(std::initializer_list
 
 template<class collectionType>
 void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance) {
+  reset();
   initializeRawItems(event, rawCollectionLabel, rawCollectionInstance);
 
   items = bHelp->GetSortedByPt(items);
@@ -98,6 +107,7 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventB
 
 template<class collectionType>
 void GenericCollection<collectionType>::initializeRawItemsSortedByPt(const collectionType& collection) {
+  reset();
 
   rawItems = collection;
   items = bHelp->GetSortedByPt(collection);
@@ -107,6 +117,7 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(const colle
 
 template<class collectionType>
 void GenericCollection<collectionType>::initializeRawItemsSortedByCSV(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance) {
+  reset();
   initializeRawItems(event, rawCollectionLabel, rawCollectionInstance);
 
   items = bHelp->GetSortedByCSV(items);
@@ -116,9 +127,11 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByCSV(edm::Event
 
 template<class collectionType>
 void GenericCollection<collectionType>::initializeRawItemsSortedByCSV(const collectionType& collection) {
+  reset();
 
   rawItems = collection;
-  items = bHelp->GetSortedByCSV(collection);
+  rawItems = bHelp->GetSortedByCSV(rawItems);
+  items = rawItems;
 
   ptrToItems = &items;
 }
@@ -208,6 +221,15 @@ void GenericCollection<BNleptonCollection>::pushBack(std::initializer_list<BNmuo
   ptrToItems = &items;
 }
 
+template<class BNcollection>
+void GenericCollection<BNcollection>::pushBack(std::initializer_list<BNleptonCollection> collections) {
+  for (auto& collection: collections) {
+    items.push_back(collection);
+  }
+
+  ptrToItems = &items;
+}
+
 template<class BNleptonCollection>
 void GenericCollection<BNleptonCollection>::pushBack(const BNelectronCollection& electrons) {
     items.push_back(electrons);
@@ -218,6 +240,13 @@ void GenericCollection<BNleptonCollection>::pushBack(const BNelectronCollection&
 template<class BNleptonCollection>
 void GenericCollection<BNleptonCollection>::pushBack(const BNmuonCollection& muons) {
   items.push_back(muons);
+
+  ptrToItems = &items;
+}
+
+template<class BNcollection>
+void GenericCollection<BNcollection>::pushBack(const BNleptonCollection& leptons) {
+  items.push_back(leptons);
 
   ptrToItems = &items;
 }
@@ -238,6 +267,14 @@ void GenericCollection<BNleptonCollection>::resetAndPushBack(const BNmuonCollect
   ptrToItems = &items;
 }
 
+template<class BNcollection>
+void GenericCollection<BNcollection>::resetAndPushBack(const BNleptonCollection& leptons) {
+  reset();
+  items.push_back(leptons);
+
+  ptrToItems = &items;
+}
+
 template<class BNleptonCollection>
 void GenericCollection<BNleptonCollection>::pushBackAndSort(const BNelectronCollection& electrons) {
   items.push_back(electrons);
@@ -249,6 +286,14 @@ void GenericCollection<BNleptonCollection>::pushBackAndSort(const BNelectronColl
 template<class BNleptonCollection>
 void GenericCollection<BNleptonCollection>::pushBackAndSort(const BNmuonCollection& muons) {
   items.push_back(muons);
+  items.sort();
+
+  ptrToItems = &items;
+}
+
+template<class BNcollection>
+void GenericCollection<BNcollection>::pushBackAndSort(const BNleptonCollection& leptons) {
+  items.push_back(leptons);
   items.sort();
 
   ptrToItems = &items;

@@ -1,17 +1,16 @@
 #ifndef _TwoObjectKinematic_h
 #define _TwoObjectKinematic_h
 
-#include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
 #include <typeinfo>
 
 // //Anna's fix to make BNleptonCollection work just like any other collection
-// //Template defined in GenericCollectionMember.h
-// template<typename ObjectType_temp>
-// ObjectType_temp * ptr(ObjectType_temp & obj) { return &obj; } //turn reference into pointer!
-
-// template<typename ObjectType_temp>
-// ObjectType_temp * ptr(ObjectType_temp * obj) { return obj; } //obj is already pointer, return it!
+// //Template defined in BEAN/BEANMaker/BEANmaker/interface/BEANhelper.h
+// template<typename T>
+// T * ptr(T & obj) { return &obj; } //turn reference into pointer!
+// template<typename T>
+// T * ptr(T * obj) { return obj; } //obj is already pointer, return it!
 
 template <typename T, typename U> bool sameAddress(T const & a, U const & b)
 {
@@ -58,12 +57,16 @@ public:
   double within_value;
   TString bName;
 
+  collectionType1 selectedParticles1;
+  collectionType2 selectedParticles2;
+
   TwoObjectKinematic(string _variable, string _which_pair, string _new_name,
                      collectionType1 **_collection1, string _branch_name_1, int _min1, int _max1,
                      collectionType2 **_collection2, string _branch_name_2, int _min2, int _max2,
                      double _target_value = -99, string _pair_req_1 = "none", string _pair_req_2 = "none", double _within_value = -99);
 
   void evaluate();
+  void reset();
 
 };
 
@@ -371,6 +374,10 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
           if ( which_pair == "closest_to" ) {
             if ( abs(thisPairValue - target_value) < abs(branches[bName].branchVal - target_value) ) {
               branches[bName].branchVal = thisPairValue;
+              selectedParticles1.clear();
+              selectedParticles2.clear();
+              selectedParticles1.push_back((*collection1)->at(iObj1));
+              selectedParticles2.push_back((*collection2)->at(iObj2));
             }
           }
           else if ( which_pair == "second_closest_to" ) {
@@ -451,5 +458,15 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
   }
 
 }
+
+template <class collectionType1, class collectionType2>
+void TwoObjectKinematic<collectionType1, collectionType2>::reset() {
+
+  KinematicVariable::reset();
+  selectedParticles1.clear();
+  selectedParticles2.clear();
+
+}
+ 
 
 #endif
