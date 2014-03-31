@@ -401,6 +401,15 @@ int main (int argc, char** argv) {
   int MuonElectron = 0;
   Char_t *dataset = (Char_t *)lepHelper.dataset.c_str();
 
+  int sampleNumber = (int)lepHelper.sampleNumber;
+  double weight_Xsec = (double)lepHelper.weight_Xsec;
+  int nGen = (int)lepHelper.nGen;
+  double Xsec = (double)lepHelper.Xsec;
+  summaryTree->Branch("sampleNumber", &sampleNumber);
+  summaryTree->Branch("weight_Xsec", &weight_Xsec);
+  summaryTree->Branch("nGen", &nGen);
+  summaryTree->Branch("Xsec", &Xsec);
+
   summaryTree->Branch("TwoMuon", &TwoMuon);
   summaryTree->Branch("TwoElectron", &TwoElectron);
   summaryTree->Branch("MuonElectron", &MuonElectron);

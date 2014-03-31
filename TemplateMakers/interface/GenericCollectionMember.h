@@ -9,11 +9,12 @@
 #include "Reflex/Member.h"
 #include "Reflex/Kernel.h"
 
-template<typename T>
-T * ptr(T & obj) { return &obj; } //turn reference into pointer!
-
-template<typename T>
-T * ptr(T * obj) { return obj; } //obj is already pointer, return it!
+// //Anna's fix to make BNleptonCollection work just like any other collection
+// //Template defined in BEAN/BEANMaker/BEANmaker/interface/BEANhelper.h
+// template<typename T>
+// T * ptr(T & obj) { return &obj; } //turn reference into pointer!
+// template<typename T>
+// T * ptr(T * obj) { return obj; } //obj is already pointer, return it!
 
 template <class branchDataType, class collectionType>
 class GenericCollectionMember: public KinematicVariable<branchDataType> {

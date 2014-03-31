@@ -562,6 +562,14 @@ class SampleInformation:
                       #'num_generated': 50505}, #ttH125
                       'num_generated': (133079+276205+50505)}, #Approx inclusive
             
+            'VH_TauMu': {'sample_type': 'MC',
+                          'is_signal': False,
+                          #'x_section': 0.7046*0.0632, #WH
+                          #'x_section': 0.4153*0.0632, #ZH
+                          'x_section': (0.7046+0.4153)*0.0632, #Approx inclusive
+                          'x_section_error': 0.0,
+                          'num_generated': 59000}, #Inclusive
+            
             #All single top samples use ND x_sec, x_sec error, and number processed
             'singlet_s': {'sample_type': 'MC',
                     'is_signal': False,
@@ -720,8 +728,8 @@ def get_systematic_info(systematic):
         'nominal': {'weight_string': '1', 'systematic_label': ''},
         'JESUp': {'weight_string': '1', 'systematic_label': '_JESUp'},
         'JESDown': {'weight_string': '1', 'systematic_label': '_JESDown'},
-        'weight_PUUp': {'weight_string': '(weight_PUup/weight_PU)', 'systematic_label': '_weight_PUUp'},
-        'weight_PUDown': {'weight_string': '(weight_PUdown/weight_PU)', 'systematic_label': '_weight_PUDown'},
+        'weight_PUUp': {'weight_string': '(weight_PUUp/weight_PU)', 'systematic_label': '_weight_PUUp'},
+        'weight_PUDown': {'weight_string': '(weight_PUDown/weight_PU)', 'systematic_label': '_weight_PUDown'},
         'csvWeightHFUp': {'weight_string': 'csvWeightHFUp', 'systematic_label': '_csvWeightHFUp'},
         'csvWeightHFDown': {'weight_string': 'csvWeightHFDown', 'systematic_label': '_csvWeightHFDown'},
         'csvWeightLFUp': {'weight_string': 'csvWeightLFUp', 'systematic_label': '_csvWeightLFUp'},
