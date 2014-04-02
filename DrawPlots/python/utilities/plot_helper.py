@@ -171,9 +171,10 @@ class DrawStringMaker:
 
     def update_draw_string(self):
         requirements_string = ' && '.join(self.requirements)
-        factors_string = ' * ' + ' * '.join(self.factors)
+        self.draw_string = '(' + requirements_string + ')'
 
-        self.draw_string = '(' + requirements_string + ')' + factors_string
+        if len(self.factors) > 0:
+            self.draw_string += ' * ' + ' * '.join(self.factors)
 
     def remove_selection_requirements(self, cut_string_list):
         self.requirements = list(set(self.requirements) - set(cut_string_list))
@@ -754,7 +755,7 @@ def customize_systematics(systematics, customization_string):
     return customized_systematics
 
 def customize_list(common_list, customization_list):
-    if customization_list == 'common':
+    if customization_list == 'common' or customization_list == []:
         customized_list = common_list
     elif customization_list == 'none':
         customized_list = []
