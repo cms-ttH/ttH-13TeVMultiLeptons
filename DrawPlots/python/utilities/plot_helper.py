@@ -632,6 +632,12 @@ class SampleInformation:
                        'x_section_error': 0.0,
                        'num_generated': 992997},
 
+            'ttH125_NP': {'sample_type': 'MC',
+                          'is_signal': True,
+                          'x_section': 0.1302,
+                          'x_section_error': 0.0,
+                          'num_generated': 1531},
+
             'ttH130': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.1157,
