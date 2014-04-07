@@ -1,8 +1,8 @@
-label: testCodeV1
-output label: testCodeV1
+label: ss_v30
+output label: ss_v30
 luminosity: 19450.0
-input_trees_directory: tree_files
-output directory: histos_testCodeV1
+input_trees_directory: /hadoop/users/awoodard/tree_files
+output directory: histos/ss_v30
 
 #options
 skip systematics: true
