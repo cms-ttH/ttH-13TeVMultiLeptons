@@ -22,4 +22,6 @@
   </bin>
   <bin   file="threeLepton.C">
   </bin>
+  <bin   file="ttV.C">
+  </bin>
 </environment>

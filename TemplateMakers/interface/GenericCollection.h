@@ -24,6 +24,7 @@ public:
   void initializeRawItemsSortedByCSV(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
   void initializeRawItemsSortedByCSV(const collectionType& collection);
   template <typename functionType> void keepSelectedParticles(functionType selectionFunction);
+  template <typename functionType, typename paramType> void keepSelectedParticles(functionType selectionFunction, paramType i);
   void keepSelectedParticles(electronID::electronID& ID);
   void keepSelectedParticles(muonID::muonID& ID);
   void keepSelectedParticles(tauID::tauID& ID);
@@ -142,7 +143,21 @@ void GenericCollection<collectionType>::keepSelectedParticles(functionType selec
   collectionType selectedParticles;
 
   for (auto& particle: items) {
-    if (selectionFunction(particle)) selectedParticles.push_back(particle);
+    if (selectionFunction(*(ptr(particle)))) selectedParticles.push_back(particle);
+  }
+
+  items = selectedParticles;
+
+  ptrToItems = &items;
+}
+
+template<class collectionType>
+template<typename functionType, typename paramType>
+void GenericCollection<collectionType>::keepSelectedParticles(functionType selectionFunction, paramType i) {
+  collectionType selectedParticles;
+
+  for (auto& particle: items) {
+    if (selectionFunction(*(ptr(particle)), i)) selectedParticles.push_back(particle);
   }
 
   items = selectedParticles;
@@ -301,7 +316,7 @@ void GenericCollection<BNcollection>::pushBackAndSort(const BNleptonCollection& 
 
 template<class BNjetCollection>
 void GenericCollection<BNjetCollection>::cleanJets(const BNleptonCollection& leptons) {
-  items = bHelp->GetCleanJets(items, leptons, 0.5);
+  rawItems = bHelp->GetCleanJets(rawItems, leptons, 0.5);
 
   ptrToItems = &items;
 }

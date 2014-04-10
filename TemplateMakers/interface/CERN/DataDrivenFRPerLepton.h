@@ -15,6 +15,7 @@ public:
 
   HelperLeptonCore * myHelper;
   collectionType **selCollection;
+  BNjetCollection **jets;
   unsigned int number_of_leptons;
   double working_point;
   string file_name_NP;
@@ -35,16 +36,16 @@ public:
   TH2 * FR_NP_tight2_el; //FR for >= 2 b-jets
   TH2 * FR_QF_el; //Charge flip FR
 
-  DataDrivenFRPerLepton(HelperLeptonCore *_myHelper, collectionType **_selCollection, int _number_of_leptons,
+  DataDrivenFRPerLepton(HelperLeptonCore *_myHelper, collectionType **_selCollection, BNjetCollection **_jets, int _number_of_leptons,
                         double _working_point, string _file_name_NP, string _file_name_QF, string _label);
   ~DataDrivenFRPerLepton();
   void evaluate();
 };
 
 template <class collectionType>
-DataDrivenFRPerLepton<collectionType>::DataDrivenFRPerLepton(HelperLeptonCore *_myHelper, collectionType **_selCollection, int _number_of_leptons,
+DataDrivenFRPerLepton<collectionType>::DataDrivenFRPerLepton(HelperLeptonCore *_myHelper, collectionType **_selCollection, BNjetCollection **_jets, int _number_of_leptons,
                                                              double _working_point, string _file_name_NP, string _file_name_QF, string _label = ""):
-  myHelper(_myHelper), selCollection(_selCollection), number_of_leptons(_number_of_leptons),
+  myHelper(_myHelper), selCollection(_selCollection), jets(_jets), number_of_leptons(_number_of_leptons),
   working_point(_working_point), file_name_NP(_file_name_NP), file_name_QF(_file_name_QF),label(_label) {
 
   this->resetVal = 1.0;
@@ -95,14 +96,14 @@ void DataDrivenFRPerLepton<collectionType>::evaluate() {
 
       if (ptr((*selCollection)->at(iObj))->isMuon) {
         lep_mva = beanHelper->GetMuonLepMVA(*(BNmuon*)ptr((*selCollection)->at(iObj)));
-        if (working_point == 0.7) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_mu : FR_NP_tight2_mu;
-        else if (working_point == -0.3) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_loose_mu : FR_NP_loose2_mu;
+        if (working_point == 0.7) FR_NP_histo = (*jets)->size() < 2 ? FR_NP_tight_mu : FR_NP_tight2_mu;
+        else if (working_point == -0.3) FR_NP_histo = (*jets)->size() < 2 ? FR_NP_loose_mu : FR_NP_loose2_mu;
         else std::cout << "Error: invalid lepMVA FR working point = " << working_point << std::endl;
       }
       else if (ptr((*selCollection)->at(iObj))->isElectron) {
         lep_mva = beanHelper->GetElectronLepMVA(*(BNelectron*)ptr((*selCollection)->at(iObj)));
-        if (working_point == 0.7) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_tight_el : FR_NP_tight2_el;
-        else if (working_point == -0.3) FR_NP_histo = this->blocks->jetCollectionMediumCSV->size() < 2 ? FR_NP_loose_el : FR_NP_loose2_el;
+        if (working_point == 0.7) FR_NP_histo = (*jets)->size() < 2 ? FR_NP_tight_el : FR_NP_tight2_el;
+        else if (working_point == -0.3) FR_NP_histo = (*jets)->size() < 2 ? FR_NP_loose_el : FR_NP_loose2_el;
         else std::cout << "Error: invalid lepMVA FR working point = " << working_point << std::endl;
         isElectron = 1;
       }

@@ -1,0 +1,204 @@
+input file: '../TemplateMakers/test/batch_trees/ttbarZ_test_ttV_match/ttbarZ_test_ttV_match_job000.root'
+output file: './match_ttbarZ_3l.root'
+
+#cuts
+common cuts:
+    three_leptons: numAllLeptons == 3
+    Z_mass: abs(ZLike_mass_leplep_SFOS_all - 91.2) < 10
+    #Z_ll: numLeptonsFromZ == 2
+    lepTop_l: numLeptonsFromW == 1
+    two_jets: numJets >= 2 
+
+distributions:
+    top_jet_CSV:
+        variables: [jetsFromLepTop_1_btagCombinedSecVertex, jetsFromHadTop_1_btagCombinedSecVertex]
+        bkg_vars: [jets_by_pt_XX_btagCombinedSecVertex]
+        num_bkg_vars: [6]
+        min: 0
+        max: 1
+        num bins: 10
+        underflow: true
+        overflow: false
+        bkg_cuts:
+            jet_exists: jets_by_pt_XX_pt > 0
+
+    W_jet_1_CSV:
+        variables: [jetsFromW_by_CSV_1_btagCombinedSecVertex]
+        bkg_vars: [jets_by_pt_XX_btagCombinedSecVertex]
+        num_bkg_vars: [6]
+        min: 0
+        max: 1
+        num bins: 10
+        underflow: true
+        overflow: false
+        cuts:
+            W_jet_ge1: numJetsFromW >= 1
+        bkg_cuts:
+            jet_exists: jets_by_pt_XX_pt > 0
+            
+    W_jet_2_CSV:
+        variables: [jetsFromW_by_CSV_2_btagCombinedSecVertex]
+        bkg_vars: [jets_by_pt_XX_btagCombinedSecVertex]
+        num_bkg_vars: [6]
+        min: 0
+        max: 0.5
+        num bins: 5
+        underflow: true
+        overflow: true
+        cuts:
+            W_jet_eq2: numJetsFromW == 2
+        bkg_cuts:
+            jet_exists: jets_by_pt_XX_pt > 0
+            
+    lepTop_jet_charge:
+        variables: ['jetsFromLepTop_1_charge*leptonsFromW_1_tkCharge']
+        bkg_vars: ['jets_by_pt_XX_charge*leptonsFromW_1_tkCharge']
+        num_bkg_vars: [6]
+        min: -0.6
+        max: 0.6
+        num bins: 6
+        underflow: true
+        overflow: true
+        cuts:
+            W_jet_ge1: numJetsFromLepTop >= 1
+        bkg_cuts:
+            jet_exists: jets_by_pt_XX_pt > 0
+            
+    hadTop_jet_charge:
+        variables: ['jetsFromHadTop_1_charge*leptonsFromW_1_tkCharge']
+        bkg_vars: ['jets_by_pt_XX_charge*leptonsFromW_1_tkCharge']
+        num_bkg_vars: [6]
+        min: -0.6
+        max: 0.6
+        num bins: 6
+        underflow: true
+        overflow: true
+        cuts:
+            W_jet_ge1: numJetsFromHadTop >= 1
+        bkg_cuts:
+            jet_exists: jets_by_pt_XX_pt > 0
+            
+    W_jets_diff_charge:
+        variables: ['abs(jetsFromW_by_CSV_1_charge - jetsFromW_by_CSV_2_charge)']
+        bkg_vars: ['abs(jets_by_pt_XX_charge - jets_by_pt_YY_charge)']
+        num_bkg_vars: [6, 6]
+        min: 0
+        max: 1.4
+        num bins: 7
+        underflow: false
+        overflow: true
+        cuts:
+            W_jet_eq2: numJetsFromW == 2
+        bkg_cuts:
+            jet_XX_exists: jets_by_pt_XX_pt > 0
+            jet_YY_exists: jets_by_pt_YY_pt > 0
+
+    W_jets_diff_jetChargeRelativePtWeighted:
+        variables: ['abs(jetsFromW_by_CSV_1_jetChargeRelativePtWeighted - jetsFromW_by_CSV_2_jetChargeRelativePtWeighted)']
+        bkg_vars: ['abs(jets_by_pt_XX_jetChargeRelativePtWeighted - jets_by_pt_YY_jetChargeRelativePtWeighted)']
+        num_bkg_vars: [6, 6]
+        min: 0
+        max: 1.4
+        num bins: 7
+        underflow: false
+        overflow: true
+        cuts:
+            W_jet_eq2: numJetsFromW == 2
+        bkg_cuts:
+            jet_XX_exists: jets_by_pt_XX_pt > 0
+            jet_YY_exists: jets_by_pt_YY_pt > 0
+
+#     W_MT_met_lep:
+#         variables: [gen_W_MT_met_lep]
+#         min: 0
+#         max: 200
+#         underflow: false
+#         overflow: true
+            
+    W_mass_qq:
+        variables: [gen_W_dijet_mass]
+        bkg_vars: [dijet_mass_XX_YY]
+        num_bkg_vars: [6, 6]
+        min: 55
+        max: 130
+        num bins: 15
+        underflow: true
+        overflow: true
+        cuts:
+            W_jet_eq2: numJetsFromW == 2
+        bkg_cuts:
+            jet_XX_exists: jets_by_pt_XX_pt > 0
+            jet_YY_exists: jets_by_pt_YY_pt > 0
+
+    top_mass_lep_B:
+        variables: [gen_lepTop_mass_lep_b]
+        bkg_vars: [mass_lepFromW_jet_1_XX]
+        num_bkg_vars: [6]
+        min: 0
+        max: 360
+        num bins: 9
+        underflow: false
+        overflow: true
+        cuts:
+            lepTop_b: numJetsFromLepTop == 1
+        bkg_cuts:
+            jet_XX_exists: jets_by_pt_XX_pt > 0
+
+    top_MT_met_lep_B:
+        variables: [gen_lepTop_MT_met_lep_b]
+        bkg_vars: [MT_met_lepFromW_jet_1_1_XX]
+        num_bkg_vars: [6]
+        min: 0
+        max: 400
+        num bins: 10
+        underflow: false
+        overflow: true
+        dependencies: [top_mass_lep_B]
+        num corr bins: 5
+        cuts:
+            lepTop_b: numJetsFromLepTop == 1
+        bkg_cuts:
+            jet_XX_exists: jets_by_pt_XX_pt > 0
+
+    top_mass_b_q:
+        variables: [gen_hadTop_trijet_mass]
+        bkg_vars: [dijet_mass_XX_YY]
+        num_bkg_vars: [6, 6]
+        min: 40
+        max: 220
+        num bins: 18
+        underflow: true
+        overflow: true
+        cuts:
+            hadTop_b: numJetsFromHadTop == 1
+            W_jet_eq1: numJetsFromW == 1
+        bkg_cuts:
+            jet_XX_exists: jets_by_pt_XX_pt > 0
+            jet_YY_exists: jets_by_pt_YY_pt > 0
+            
+    top_mass_b_qq:
+        variables: [gen_hadTop_trijet_mass]
+        bkg_vars: [trijet_mass_XX_YY_ZZ]
+        num_bkg_vars: [6, 6, 6]
+        min: 120
+        max: 250
+        num bins: 13
+        underflow: true
+        overflow: true
+        dependencies: [W_mass_qq]
+        num corr bins: 5
+        cuts:
+            hadTop_b: numJetsFromHadTop == 1
+            W_jet_eq2: numJetsFromW == 2
+        bkg_cuts:
+            jet_XX_exists: jets_by_pt_XX_pt > 0
+            jet_YY_exists: jets_by_pt_YY_pt > 0
+            jet_ZZ_exists: jets_by_pt_ZZ_pt > 0
+            
+special cuts:
+    jetsFromLepTop_1_btagCombinedSecVertex:
+        lepTop_b: numJetsFromLepTop == 1
+    jetsFromHadTop_1_btagCombinedSecVertex:
+        hadTop_b: numJetsFromHadTop == 1
+    
+    
