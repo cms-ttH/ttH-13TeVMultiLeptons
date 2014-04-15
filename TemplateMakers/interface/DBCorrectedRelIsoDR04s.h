@@ -9,43 +9,47 @@
 //
 
 class DBCorrectedRelIsoDR04s: public KinematicVariable<double> {
-
+  
 public:
-    HelperLeptonCore * myHelper;
-    unsigned int maxLeptons;
-
-    DBCorrectedRelIsoDR04s(HelperLeptonCore *in, int max);
-    void evaluate ();
+  HelperLeptonCore * myHelper;
+  BNleptonCollection **leptonsPtr;
+  string label;
+  unsigned int minLeptons;
+  unsigned int maxLeptons;
+  
+  DBCorrectedRelIsoDR04s(HelperLeptonCore *in, BNleptonCollection **_leptonsPtr,
+                         string _label, int min, int max);
+  void evaluate ();
   
 };
 
-DBCorrectedRelIsoDR04s::DBCorrectedRelIsoDR04s (HelperLeptonCore *in, int max): myHelper(in), maxLeptons(max) {
+DBCorrectedRelIsoDR04s::DBCorrectedRelIsoDR04s (HelperLeptonCore *in, BNleptonCollection **_leptonsPtr,
+                                                string _label, int min, int max):
+  myHelper(in), leptonsPtr(_leptonsPtr), label(_label), minLeptons(min), maxLeptons(max) {
     this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
     
-    for (unsigned int i=0; i<maxLeptons; i++) {
-        TString branchName = Form("all_leptons_by_pt_%d_DBCorrectedRelIsoDR04", i+1);
-        branches[branchName] = BranchInfo<double>(branchName);
-        branches[branchName].branchVal = this->resetVal;
+    for (unsigned int i=0; (i+1)>=minLeptons && i<maxLeptons; i++) {
+      TString branchName = Form("%s_%d_DBCorrectedRelIsoDR04", label.c_str(), i+1);
+      branches[branchName] = BranchInfo<double>(branchName);
+      branches[branchName].branchVal = this->resetVal;
     }
 }
 
 void DBCorrectedRelIsoDR04s::evaluate () {
-
+  
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
-
+  
   //--------
 
-  BNleptonCollection * tightLoosePreselectedLeptons = this->blocks->tightLoosePreselectedLeptonCollection;
+  BNleptonCollection * leptons = *leptonsPtr;
   BEANhelper * beanHelper = &(myHelper->bHelp);
   TString branchName;
-
-  unsigned loopMax = (unsigned (maxLeptons) < tightLoosePreselectedLeptons->size()) ? unsigned(maxLeptons) : tightLoosePreselectedLeptons->size();
-
-  for (unsigned int i=0; i<loopMax; i++) {
-      BNlepton * iLepton = tightLoosePreselectedLeptons->at(i);
-      branchName = Form("all_leptons_by_pt_%d_DBCorrectedRelIsoDR04", i+1);
-      branches[branchName].branchVal = beanHelper->GetDBCorrectedRelIsoDR04(*iLepton, 0.5);
+  
+  for (unsigned int i=0; (i+1)>=minLeptons && i<maxLeptons && i<leptons->size(); i++) {
+    BNlepton * iLepton = leptons->at(i);
+    branchName = Form("%s_%d_DBCorrectedRelIsoDR04", label.c_str(), i+1);
+    branches[branchName].branchVal = beanHelper->GetDBCorrectedRelIsoDR04(*iLepton, 0.5);
   }
 }
 

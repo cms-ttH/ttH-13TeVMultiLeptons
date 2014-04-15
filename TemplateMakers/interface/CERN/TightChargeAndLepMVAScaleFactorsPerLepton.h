@@ -4,7 +4,7 @@
 class TightChargeAndLepMVAScaleFactorsPerLepton: public KinematicVariable<double> {
 
 public:
-  TightChargeAndLepMVAScaleFactorsPerLepton(int _numLeps, BNleptonCollection **_tightLoosePreselectedLeptons);
+  TightChargeAndLepMVAScaleFactorsPerLepton(int _numLeps, BNleptonCollection **_leptonsPtr, string _label);
   ~TightChargeAndLepMVAScaleFactorsPerLepton();
   void evaluate();
   double fetch(BNlepton* lepton, TH2D* histo);
@@ -21,15 +21,17 @@ public:
   TString looseBranchName[6];
   TString tightBranchName[6];
   TString tightChargeBranchName[6];
-  BNleptonCollection **tightLoosePreselectedLeptons;
+  BNleptonCollection **leptonsPtr;
+  string label;
 
 };
 
-TightChargeAndLepMVAScaleFactorsPerLepton::TightChargeAndLepMVAScaleFactorsPerLepton (int _numLeps, BNleptonCollection **_tightLoosePreselectedLeptons):
+TightChargeAndLepMVAScaleFactorsPerLepton::TightChargeAndLepMVAScaleFactorsPerLepton (int _numLeps, BNleptonCollection **_leptonsPtr, string _label = ""):
   electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_ele.root").c_str()),
   muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/MVAandTightChargeSF_mu.root").c_str()),
   numLeps(_numLeps),
-  tightLoosePreselectedLeptons(_tightLoosePreselectedLeptons)
+  leptonsPtr(_leptonsPtr),
+  label(_label)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
 
@@ -41,9 +43,9 @@ TightChargeAndLepMVAScaleFactorsPerLepton::TightChargeAndLepMVAScaleFactorsPerLe
   tightChargeMuonSF2D = (TH2D*)muonFile.Get("TightChargeSF2D")->Clone("TightChargeSF2D_mu");
 
   for (unsigned int i=0; i<numLeps; i++) {
-    looseBranchName[i] = Form("lepMVALooseSF_Lep%d", i+1);
-    tightBranchName[i] = Form("lepMVATightSF_Lep%d", i+1);
-    tightChargeBranchName[i] = Form("tightChargeSF_Lep%d", i+1);
+    looseBranchName[i] = Form("lepMVALooseSF%s_Lep%d", label.c_str(), i+1);
+    tightBranchName[i] = Form("lepMVATightSF%s_Lep%d", label.c_str(), i+1);
+    tightChargeBranchName[i] = Form("tightChargeSF%s_Lep%d", label.c_str(), i+1);
     branches[looseBranchName[i]] = BranchInfo<double>(looseBranchName[i]);
     branches[tightBranchName[i]] = BranchInfo<double>(tightBranchName[i]);
     branches[tightChargeBranchName[i]] = BranchInfo<double>(tightChargeBranchName[i]);
@@ -54,11 +56,11 @@ void TightChargeAndLepMVAScaleFactorsPerLepton::evaluate () {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  BNleptonCollection * leptons = *tightLoosePreselectedLeptons;
+  BNleptonCollection * leptons = *leptonsPtr;
   double looseSF = 1.0;
   double tightSF = 1.0;
   double tightChargeSF = 1.0;
-  for (unsigned int i=0; i<numLeps; i++) {
+  for (unsigned int i=0; i<numLeps && i<leptons->size(); i++) {
     if (leptons->at(i)->isMuon) {
       looseSF = fetch(leptons->at(i), looseMuon2DSF);
       tightSF = fetch(leptons->at(i), tightMuon2DSF);

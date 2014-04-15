@@ -153,6 +153,9 @@ int main (int argc, char** argv) {
   GenericCollection<BNleptonCollection> leptonsFromW(beanHelper);
   GenericCollection<BNleptonCollection> leptonsFromZ(beanHelper);
 
+  GenericCollection<BNleptonCollection> leptonsSS(beanHelper);
+  GenericCollection<BNleptonCollection> leptonsOS(beanHelper);
+
   // declare your kinematic variables that you want
   // to be written out into the tree
   vector<ArbitraryVariable*> kinVars;
@@ -222,6 +225,12 @@ int main (int argc, char** argv) {
   GenericCollectionSizeVariable<BNleptonCollection> numLeptonsFromZ(&(leptonsFromZ.ptrToItems), "numLeptonsFromZ");
   kinVars.push_back(&numLeptonsFromZ);
 
+  GenericCollectionSizeVariable<BNleptonCollection> numLeptonsSS(&(leptonsSS.ptrToItems), "numLeptonsSS");
+  kinVars.push_back(&numLeptonsSS);
+
+  GenericCollectionSizeVariable<BNleptonCollection> numLeptonsOS(&(leptonsOS.ptrToItems), "numLeptonsOS");
+  kinVars.push_back(&numLeptonsOS);
+
   GenericCollectionSizeVariable<BNtauCollection> numAllTaus(&(tightLoosePreselectedTaus.ptrToItems), "numAllTaus");
   kinVars.push_back(&numAllTaus);
 
@@ -260,7 +269,7 @@ int main (int argc, char** argv) {
   RecoIDIsoSIPSFs myRecoIDIsoSIPSF3Lep(3, &(tightLoosePreselectedLeptons.ptrToItems));
   kinVars.push_back(&myRecoIDIsoSIPSF3Lep);
 
-  RecoIDIsoSIPSFs myRecoIDIsoSIPSF4Lep(3, &(tightLoosePreselectedLeptons.ptrToItems));
+  RecoIDIsoSIPSFs myRecoIDIsoSIPSF4Lep(4, &(tightLoosePreselectedLeptons.ptrToItems));
   kinVars.push_back(&myRecoIDIsoSIPSF4Lep);
 
   LeptonTriggerScaleFactors myLepTrig(&lepHelper, &(tightMuons.ptrToItems), &(looseMuons.ptrToItems),
@@ -275,8 +284,20 @@ int main (int argc, char** argv) {
   TightChargeAndLepMVAScaleFactors myTightChargeAndLepMVASF4Lep(4, &(tightLoosePreselectedLeptons.ptrToItems));
   kinVars.push_back(&myTightChargeAndLepMVASF4Lep);
 
-  TightChargeAndLepMVAScaleFactorsPerLepton myTightChargeAndLepMVASFPerLepton(3, &(tightLoosePreselectedLeptons.ptrToItems));
+  TightChargeAndLepMVAScaleFactorsPerLepton myTightChargeAndLepMVASFPerLepton(4, &(tightLoosePreselectedLeptons.ptrToItems));
   kinVars.push_back(&myTightChargeAndLepMVASFPerLepton);
+
+  TightChargeAndLepMVAScaleFactorsPerLepton myTightChargeAndLepMVASFPerZLepton(2, &(tightLoosePreselectedZLeptons.ptrToItems), "_Z");
+  kinVars.push_back(&myTightChargeAndLepMVASFPerZLepton);
+
+  TightChargeAndLepMVAScaleFactorsPerLepton myTightChargeAndLepMVASFPerNonZLepton(2, &(tightLoosePreselectedNonZLeptons.ptrToItems), "_nonZ");
+  kinVars.push_back(&myTightChargeAndLepMVASFPerNonZLepton);
+
+  TightChargeAndLepMVAScaleFactorsPerLepton myTightChargeAndLepMVASFPerSSLepton(2, &(leptonsSS.ptrToItems), "_SS");
+  kinVars.push_back(&myTightChargeAndLepMVASFPerSSLepton);
+
+  TightChargeAndLepMVAScaleFactorsPerLepton myTightChargeAndLepMVASFPerOSLepton(1, &(leptonsOS.ptrToItems), "_OS");
+  kinVars.push_back(&myTightChargeAndLepMVASFPerOSLepton);
 
   CleanEventVars myClean(&lepHelper, &(events.ptrToItems), &(primaryVertexes.ptrToItems));
   kinVars.push_back(&myClean);
@@ -293,6 +314,12 @@ int main (int argc, char** argv) {
   LepMVAs<BNleptonCollection> myLepMVAsAllNonZLeptons(&lepHelper, &(tightLoosePreselectedNonZLeptons.ptrToItems), "all_nonZ_leptons_by_pt", 2);
   kinVars.push_back(&myLepMVAsAllNonZLeptons);
 
+  LepMVAs<BNleptonCollection> myLepMVAsAllLeptonsSS(&lepHelper, &(leptonsSS.ptrToItems), "all_SS_leptons_by_pt", 2);
+  kinVars.push_back(&myLepMVAsAllLeptonsSS);
+
+  LepMVAs<BNleptonCollection> myLepMVAsAllLeptonsOS(&lepHelper, &(leptonsOS.ptrToItems), "all_OS_leptons_by_pt", 1);
+  kinVars.push_back(&myLepMVAsAllLeptonsOS);
+
   DataDrivenFR<BNleptonCollection> myDataDrivenFR3Tight(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), &(mediumCSVJets.ptrToItems),
                                                         3, 0.7, "FR_merged_data", "QF_data_el", "_3_tight"); 
   kinVars.push_back(&myDataDrivenFR3Tight);
@@ -302,6 +329,11 @@ int main (int argc, char** argv) {
                                                                    &(tightLoosePreselectedNonZLeptons.ptrToItems), 1, 0.7); 
   kinVars.push_back(&myDataDrivenFR2LooseZ1TightNonZ);
 
+  DataDrivenFR<BNleptonCollection> myDataDrivenFR2TightSS1LooseOS(&lepHelper, &(leptonsSS.ptrToItems), &(mediumCSVJets.ptrToItems),
+                                                                  2, 0.7, "FR_merged_data", "QF_data_el", "_2_tight_SS_1_loose_OS",
+                                                                  &(leptonsOS.ptrToItems), 1, -0.3); 
+  kinVars.push_back(&myDataDrivenFR2TightSS1LooseOS);
+
   DataDrivenFRPerLepton<BNleptonCollection> myDataDrivenFRPerLepton2LooseZ(&lepHelper, &(tightLoosePreselectedZLeptons.ptrToItems), &(mediumCSVJets.ptrToItems),
                                                                    2, -0.3, "FR_merged_data", "QF_data_el", "_2_loose_Z"); 
   kinVars.push_back(&myDataDrivenFRPerLepton2LooseZ);
@@ -309,6 +341,14 @@ int main (int argc, char** argv) {
   DataDrivenFRPerLepton<BNleptonCollection> myDataDrivenFRPerLepton1TightNonZ(&lepHelper, &(tightLoosePreselectedNonZLeptons.ptrToItems), &(mediumCSVJets.ptrToItems),
                                                                    1, 0.7, "FR_merged_data", "QF_data_el", "_1_tight_nonZ"); 
   kinVars.push_back(&myDataDrivenFRPerLepton1TightNonZ);
+  
+  DataDrivenFRPerLepton<BNleptonCollection> myDataDrivenFRPerLepton2TightSS(&lepHelper, &(leptonsSS.ptrToItems), &(mediumCSVJets.ptrToItems),
+                                                                            2, 0.7, "FR_merged_data", "QF_data_el", "_2_tight_SS"); 
+  kinVars.push_back(&myDataDrivenFRPerLepton2TightSS);
+  
+  DataDrivenFRPerLepton<BNleptonCollection> myDataDrivenFRPerLepton1LooseOS(&lepHelper, &(leptonsOS.ptrToItems), &(mediumCSVJets.ptrToItems),
+                                                                            1, -0.3, "FR_merged_data", "QF_data_el", "_1_loose_OS"); 
+  kinVars.push_back(&myDataDrivenFRPerLepton1LooseOS);
   
   DataDrivenFR<BNleptonCollection> myDataDrivenFR3Loose(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), &(mediumCSVJets.ptrToItems),
                                                         3, -0.3, "FR_merged_data", "QF_data_el", "_3_loose");
@@ -318,9 +358,10 @@ int main (int argc, char** argv) {
                                                         4, -0.3, "FR_merged_data", "QF_data_el", "_4_loose");
   kinVars.push_back(&myDataDrivenFR4Loose);
 
-//   //Causes run-time error
-//   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 4);
-//   kinVars.push_back(&myDBCorrectedRelIsoDR04s);
+  //Causes run-time error
+  DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems),
+                                                  "all_leptons_by_pt", 1, 4);
+  kinVars.push_back(&myDBCorrectedRelIsoDR04s);
 
   HiggsDecayType myHiggsDecayType(&lepHelper, &(mcParticles.ptrToItems));
   kinVars.push_back(&myHiggsDecayType);
@@ -440,7 +481,7 @@ int main (int argc, char** argv) {
                       &(jets.ptrToItems), "jets_by_pt", 1, 99);
   kinVars.push_back(&myMassNonZLepJets);
 
-
+  
   // Two lepton kinematics
   TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myMinMassLepLepSFOS("mass", "min", "min_mass_leplep_SFOS",
                                                                                 &(tightLoosePreselectedLeptons.ptrToItems), "all_leptons_by_pt", 1, 99,
@@ -480,6 +521,12 @@ int main (int argc, char** argv) {
                                                                                 &(tightLoosePreselectedZLeptons.ptrToItems), "all_Z_leptons_by_pt", 1, 99,
                                                                                 &(tightLoosePreselectedZLeptons.ptrToItems), "all_Z_leptons_by_pt", 1, 99);
   kinVars.push_back(&myZLikeEtaLepLepSFOSAll);
+
+  TwoObjectKinematic<BNleptonCollection,BNleptonCollection> myZLikeMassLepLepSFOSAll2("mass", "closest_to", "ZLike_mass_leplep_SFOS_all_2",
+                                                                                           &(tightLoosePreselectedNonZLeptons.ptrToItems), "all_nonZ_leptons_by_pt", 1, 99,
+                                                                                           &(tightLoosePreselectedNonZLeptons.ptrToItems), "all_nonZ_leptons_by_pt", 1, 99,
+                                                                                           91.2, "same_flavour", "opposite_sign");
+  kinVars.push_back(&myZLikeMassLepLepSFOSAll2);
 
 //   //Variables for CERN same-sign dilepton BDT
   TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMHT("pt", "vector_sum", "mht",
@@ -561,6 +608,20 @@ int main (int argc, char** argv) {
                            &(jetsFromHadTop.ptrToItems), "jetsFromHadTop", 1, 1);
   kinVars.push_back(&myGenHadTopTrijetMass);
 
+  ThreeObjectKinematic<BNjetCollection,BNjetCollection,BNjetCollection>
+    myGenTTbarQuadjetMass("mass", "vector_sum", "gen_ttbar_quadjet_mass",
+                          &(jetsFromW.ptrToItems), "jetsFromW_by_CSV", 1, 2,
+                          &(jetsFromLepTop.ptrToItems), "jetsFromLepTop", 1, 1,
+                          &(jetsFromHadTop.ptrToItems), "jetsFromHadTop", 1, 1);
+  kinVars.push_back(&myGenTTbarQuadjetMass);
+
+  ThreeObjectKinematic<BNjetCollection,BNjetCollection,BNjetCollection>
+    myGenTTbarQuadjetMT("MT", "vector_sum", "gen_ttbar_quadjet_MT",
+                          &(jetsFromW.ptrToItems), "jetsFromW_by_CSV", 1, 2,
+                          &(jetsFromLepTop.ptrToItems), "jetsFromLepTop", 1, 1,
+                          &(jetsFromHadTop.ptrToItems), "jetsFromHadTop", 1, 1);
+  kinVars.push_back(&myGenTTbarQuadjetMT);
+
   ThreeObjectKinematic<BNmetCollection,BNleptonCollection,BNjetCollection>
     myGenLepTopMtMetLepB("MT", "min", "gen_lepTop_MT_met_lep_b",
                        &(met.ptrToItems), "met", 1, 1,
@@ -587,6 +648,22 @@ int main (int argc, char** argv) {
                   &(jets.ptrToItems), "jets_by_pt", 1, 6);
   kinVars.push_back(&myTrijetMasses);
 
+  FourObjectKinematic<BNjetCollection,BNjetCollection,BNjetCollection,BNjetCollection>
+    myQuadjetMasses("mass", "all_pairs", "quadjet_mass",
+                    &(jets.ptrToItems), "jets_by_pt", 1, 6,
+                    &(jets.ptrToItems), "jets_by_pt", 1, 6,
+                    &(jets.ptrToItems), "jets_by_pt", 1, 6,
+                    &(jets.ptrToItems), "jets_by_pt", 1, 6);
+  kinVars.push_back(&myQuadjetMasses);
+  
+  FourObjectKinematic<BNjetCollection,BNjetCollection,BNjetCollection,BNjetCollection>
+    myQuadjetMTs("MT", "all_pairs", "quadjet_MT",
+                 &(jets.ptrToItems), "jets_by_pt", 1, 6,
+                 &(jets.ptrToItems), "jets_by_pt", 1, 6,
+                 &(jets.ptrToItems), "jets_by_pt", 1, 6,
+                 &(jets.ptrToItems), "jets_by_pt", 1, 6);
+  kinVars.push_back(&myQuadjetMTs);
+  
   TwoObjectKinematic<BNleptonCollection,BNjetCollection>
     myMassLepFromWJet("mass", "all_pairs", "mass_lepFromW_jet",
                       &(leptonsFromW.ptrToItems), "leptonsFromW", 1, 1,
@@ -619,6 +696,14 @@ int main (int argc, char** argv) {
                                                                   "pt", "all_nonZ_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&NonZLeptonPt);
 
+  GenericCollectionMember<double, BNleptonCollection> SSLeptonPt(Reflex::Type::ByName("BNlepton"), &(leptonsSS.ptrToItems),
+                                                                  "pt", "all_SS_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&SSLeptonPt);
+
+  GenericCollectionMember<double, BNleptonCollection> OSLeptonPt(Reflex::Type::ByName("BNlepton"), &(leptonsOS.ptrToItems),
+                                                                  "pt", "all_OS_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 1);
+  kinVars.push_back(&OSLeptonPt);
+
   // eta
   
   GenericCollectionMember<double, BNleptonCollection> LeptonEta(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
@@ -632,6 +717,22 @@ int main (int argc, char** argv) {
   GenericCollectionMember<double, BNleptonCollection> NonZLeptonEta(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedNonZLeptons.ptrToItems),
                                                                   "eta", "all_nonZ_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&NonZLeptonEta);
+
+  GenericCollectionMember<double, BNleptonCollection> SSLeptonEta(Reflex::Type::ByName("BNlepton"), &(leptonsSS.ptrToItems),
+                                                                  "eta", "all_SS_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&SSLeptonEta);
+
+  GenericCollectionMember<double, BNleptonCollection> OSLeptonEta(Reflex::Type::ByName("BNlepton"), &(leptonsOS.ptrToItems),
+                                                                  "eta", "all_OS_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&OSLeptonEta);
+
+  GenericCollectionMember<double, BNleptonCollection> NonZLeptonJetBtagCSV(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedNonZLeptons.ptrToItems),
+                                                                  "jetBtagCSV", "all_nonZ_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&NonZLeptonJetBtagCSV);
+
+  GenericCollectionMember<double, BNleptonCollection> SSLeptonJetBtagCSV(Reflex::Type::ByName("BNlepton"), &(leptonsSS.ptrToItems),
+                                                                  "jetBtagCSV", "all_SS_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&SSLeptonJetBtagCSV);
 
   // isMuon / isElectron
   
@@ -652,6 +753,10 @@ int main (int argc, char** argv) {
   GenericCollectionMember<int, BNleptonCollection> NonZLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedNonZLeptons.ptrToItems),
                                                                   "tkCharge", "all_nonZ_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
   kinVars.push_back(&NonZLeptonTkCharge);
+
+  GenericCollectionMember<int, BNleptonCollection> OSLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(leptonsOS.ptrToItems),
+                                                                  "tkCharge", "all_OS_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
+  kinVars.push_back(&OSLeptonTkCharge);
 
 //   if (myConfig.sampleName.find("QF_sideband") == std::string::npos) { //All samples except QF_sideband
 //     //Cut to require same-sign leptons
@@ -1015,39 +1120,41 @@ int main (int argc, char** argv) {
     tightLoosePreselectedNonZLeptons.initializeRawItems(beanHelper->GetDifference(tightLoosePreselectedLeptons.items, tightLoosePreselectedZLeptons.items));
 
     leptonsFromW.resetAndPushBack(tightLoosePreselectedLeptons.items);
-    auto leptonFromGenW = [] (BNlepton l) { return (abs(l.genMotherId) == 24); };
+    auto leptonFromGenW = [] (BNlepton l) { return (abs(l.genMotherId) == 24 || (abs(l.genMotherId) == 15 && abs(l.genGrandMother00Id) == 24)); };
     leptonsFromW.keepSelectedParticles(leptonFromGenW);
     leptonsFromZ.resetAndPushBack(tightLoosePreselectedLeptons.items);
-    auto leptonFromGenZ = [] (BNlepton l) { return (l.genMotherId == 23); };
+    auto leptonFromGenZ = [] (BNlepton l) { return ((l.genMotherId == 23) || (abs(l.genMotherId) == 15 && abs(l.genGrandMother00Id) == 23)); };
     leptonsFromZ.keepSelectedParticles(leptonFromGenZ);
     
-//     leptonsFromW.resetAndPushBack(tightLoosePreselectedLeptons.items);
-//     auto leptonFromGenW = [] (BNlepton l) { return (abs(l.genMotherId) == 24); };
-//     leptonsFromW.keepSelectedLeptons(leptonFromGenW);
-//     leptonsFromZ.resetAndPushBack(tightLoosePreselectedLeptons.items);
-//     auto leptonFromGenZ = [] (BNlepton l) { return (l.genMotherId == 23); };
-//     leptonsFromZ.keepSelectedLeptons(leptonFromGenZ);
+    int sum_lep_charge = KinematicVariableConstants::INT_INIT;
+    if (tightLoosePreselectedLeptons.items.size() == 3) {
+      sum_lep_charge = tightLoosePreselectedLeptons.items.at(0)->tkCharge+
+        tightLoosePreselectedLeptons.items.at(1)->tkCharge+
+        tightLoosePreselectedLeptons.items.at(2)->tkCharge; }
+
+    //Leptons with the same and opposite charges
+    leptonsSS.resetAndPushBack(tightLoosePreselectedLeptons.items);
+    auto leptonSS = [] (BNlepton l, int i) { return (l.tkCharge == i); };
+    leptonsSS.keepSelectedParticles(leptonSS, sum_lep_charge);
+    leptonsOS.resetAndPushBack(tightLoosePreselectedLeptons.items);
+    auto leptonOS = [] (BNlepton l, int i) { return (l.tkCharge == -1*i); };
+    leptonsOS.keepSelectedParticles(leptonOS, sum_lep_charge);
     
     jetsFromW.initializeRawItems(jetsByCSV.items);
     auto jetFromGenW = [] (BNjet j) { return (abs(j.genPartonMotherId) == 24); };
     jetsFromW.keepSelectedParticles(jetFromGenW);
 
-    int W_lep_charge = KinematicVariableConstants::INT_INIT;
-    if (leptonsFromW.items.size() >= 1) W_lep_charge = leptonsFromW.items.at(0)->tkCharge;
-    
+    int gen_W_lep_charge = KinematicVariableConstants::INT_INIT;
+    if (leptonsFromW.items.size() >= 1) gen_W_lep_charge = leptonsFromW.items.at(0)->tkCharge;
+
     jetsFromLepTop.initializeRawItems(jets.items);
     auto jetFromGenLepTop = [] (BNjet j, int i) { return (j.genPartonMotherId == 6*i); };
-    jetsFromLepTop.keepSelectedParticles(jetFromGenLepTop, W_lep_charge);
+    jetsFromLepTop.keepSelectedParticles(jetFromGenLepTop, gen_W_lep_charge);
     jetsFromHadTop.initializeRawItems(jets.items);
     auto jetFromGenHadTop = [] (BNjet j, int i) { return (j.genPartonMotherId == -6*i); };
-    jetsFromHadTop.keepSelectedParticles(jetFromGenHadTop, W_lep_charge);
+    jetsFromHadTop.keepSelectedParticles(jetFromGenHadTop, gen_W_lep_charge);
 
-//     jetsFromLepTop.initializeRawItems(jets.items);
-//     auto jetFromGenLepTop = [] (BNjet j, int i) { return (j.genPartonMotherId == 6*i); };
-//     jetsFromLepTop.keepSelectedParticlesByInt(jetFromGenLepTop, W_lep_charge);
-//     jetsFromHadTop.initializeRawItems(jets.items);
-//     auto jetFromGenHadTop = [] (BNjet j, int i) { return (j.genPartonMotherId == -6*i); };
-//     jetsFromHadTop.keepSelectedParticlesByInt(jetFromGenHadTop, W_lep_charge);
+
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;

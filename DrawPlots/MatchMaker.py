@@ -82,32 +82,46 @@ def draw_histos(args, config, distribution, tree, output_file):
             #print bkg_sel_string_temp.draw_string
 
             for i in range(config['distributions'][distribution]['num_bkg_vars'][0]):
-                bkg_var_new = bkg_var.replace('_XX', '_'+str(i+1))
-                bkg_sel_string = bkg_sel_string_temp.draw_string.replace('_XX', '_'+str(i+1))
+                bkg_var_new = bkg_var.replace('_WW', '_'+str(i+1))
+                bkg_sel_string = bkg_sel_string_temp.draw_string.replace('_WW', '_'+str(i+1))
                 if len(config['distributions'][distribution]['num_bkg_vars']) == 1:
                     #print str(i+1)+' '+bkg_var_new+': '+bkg_sel_string
                     bkg_sel_strings[var][bkg_var_new] = bkg_sel_string
                 else:
                     for j in range(config['distributions'][distribution]['num_bkg_vars'][1]):
-                        bkg_var_new = bkg_var.replace('_XX', '_'+str(i+1))
-                        bkg_var_new = bkg_var_new.replace('_YY', '_'+str(j+1))
-                        bkg_sel_string = bkg_sel_string_temp.draw_string.replace('_XX', '_'+str(i+1))
-                        bkg_sel_string = bkg_sel_string.replace('_YY', '_'+str(j+1))
+                        bkg_var_new = bkg_var.replace('_WW', '_'+str(i+1))
+                        bkg_var_new = bkg_var_new.replace('_XX', '_'+str(j+1))
+                        bkg_sel_string = bkg_sel_string_temp.draw_string.replace('_WW', '_'+str(i+1))
+                        bkg_sel_string = bkg_sel_string.replace('_XX', '_'+str(j+1))
                         if len(config['distributions'][distribution]['num_bkg_vars']) == 2:
                             if i<j:
                                 #print str(i+1)+' '+str(j+1)+' '+bkg_var_new+': '+bkg_sel_string
                                 bkg_sel_strings[var][bkg_var_new] = bkg_sel_string
                         else:
                             for k in range(config['distributions'][distribution]['num_bkg_vars'][2]):
-                                if i<j and j<k:
-                                    bkg_var_new = bkg_var.replace('_XX', '_'+str(i+1))
-                                    bkg_var_new = bkg_var_new.replace('_YY', '_'+str(j+1))
-                                    bkg_var_new = bkg_var_new.replace('_ZZ', '_'+str(k+1))
-                                    bkg_sel_string = bkg_sel_string_temp.draw_string.replace('_XX', '_'+str(i+1))
-                                    bkg_sel_string = bkg_sel_string.replace('_YY', '_'+str(j+1))
-                                    bkg_sel_string = bkg_sel_string.replace('_ZZ', '_'+str(k+1))
-                                    #print str(i+1)+' '+str(j+1)+' '+str(k+1)+' '+bkg_var_new+': '+bkg_sel_string
-                                    bkg_sel_strings[var][bkg_var_new] = bkg_sel_string
+                                bkg_var_new = bkg_var.replace('_WW', '_'+str(i+1))
+                                bkg_var_new = bkg_var_new.replace('_XX', '_'+str(j+1))
+                                bkg_var_new = bkg_var_new.replace('_YY', '_'+str(k+1))
+                                bkg_sel_string = bkg_sel_string_temp.draw_string.replace('_WW', '_'+str(i+1))
+                                bkg_sel_string = bkg_sel_string.replace('_XX', '_'+str(j+1))
+                                bkg_sel_string = bkg_sel_string.replace('_YY', '_'+str(k+1))
+                                if len(config['distributions'][distribution]['num_bkg_vars']) == 3:
+                                    if i<j and j<k:
+                                        #print str(i+1)+' '+str(j+1)+' '+str(k+1)+' '+bkg_var_new+': '+bkg_sel_string
+                                        bkg_sel_strings[var][bkg_var_new] = bkg_sel_string
+                                else:
+                                    for l in range(config['distributions'][distribution]['num_bkg_vars'][3]):
+                                        if i<j and j<k and k<l:
+                                            bkg_var_new = bkg_var.replace('_WW', '_'+str(i+1))
+                                            bkg_var_new = bkg_var_new.replace('_XX', '_'+str(j+1))
+                                            bkg_var_new = bkg_var_new.replace('_YY', '_'+str(k+1))
+                                            bkg_var_new = bkg_var_new.replace('_ZZ', '_'+str(l+1))
+                                            bkg_sel_string = bkg_sel_string_temp.draw_string.replace('_WW', '_'+str(i+1))
+                                            bkg_sel_string = bkg_sel_string.replace('_XX', '_'+str(j+1))
+                                            bkg_sel_string = bkg_sel_string.replace('_YY', '_'+str(k+1))
+                                            bkg_sel_string = bkg_sel_string.replace('_ZZ', '_'+str(l+1))
+                                            #print str(i+1)+' '+str(j+1)+' '+str(k+1)+' '+bkg_var_new+': '+bkg_sel_string
+                                            bkg_sel_strings[var][bkg_var_new] = bkg_sel_string
 
     ## Draw the signal histograms
     canvas = ROOT.TCanvas('hist '+distribution, 'hist '+distribution)
