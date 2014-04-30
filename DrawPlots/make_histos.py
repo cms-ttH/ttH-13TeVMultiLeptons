@@ -19,6 +19,7 @@ def main():
     parser.add_argument('-f', '--file', help='Run on a single file.  (Must also specify which sample it is with --sample.)')
     parser.add_argument('-s', '--sample', help='Run on a single sample.  Default is to run on all samples listed in the configuration file.')
     parser.add_argument('--label', help='Override the label set in the configuration file with LABEL')
+    parser.add_argument('-lm', '--limits', action='store_true', help='Limit mode: this uses systematics and distributions for limits.')
     args = parser.parse_args()
 
     with open(args.config_file_name) as config_file:
@@ -40,9 +41,13 @@ def main():
     if args.lepton_category:
         lepton_categories = [args.lepton_category]
 
-    plot_helper.make_sure_directories_exist([os.path.join(config['output directory'], category) for category in lepton_categories])
+    output_directory = config['output directory']
+    if args.limits:
+        output_directory = config['limits output directory']
+        
+    plot_helper.make_sure_directories_exist([os.path.join(output_directory, category) for category in lepton_categories])
     if args.web:
-        www_plot_directories = [os.path.join('plots', config['label'], config['output directory'], lepton_category) for lepton_category in lepton_categories]
+        www_plot_directories = [os.path.join('plots', config['label'], output_directory, lepton_category) for lepton_category in lepton_categories]
         plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name)
 
     if args.batch:
@@ -54,7 +59,7 @@ def main():
         if args.batch:
             print '\nFinished submitting jobs.  After they complete, plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
         else:
-            plot_helper.update_indexes(config['output directory'])
+            plot_helper.update_indexes(output_directory)
             print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
 
 def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
@@ -74,12 +79,17 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                     continue
 
             for jet_tag_category, jet_tag_category_cut_strings in jet_tag_categories.items():
+                systematics_list = plot_helper.customize_systematics(config['systematics'], sample_dict.get('systematics', 'common'))
                 output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['output label'])
+                if args.limits:
+                    output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['limits output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['output label'])
+                    if config['limits skip systematics']:
+                        systematics_list = ['nominal']
+                elif config['skip systematics']:
+                    systematics_list = ['nominal']
+
                 output_file = ROOT.TFile(output_file_name, 'RECREATE')
 
-                systematics_list = plot_helper.customize_systematics(config['systematics'], sample_dict.get('systematics', 'common'))
-                if config['skip systematics']:
-                    systematics_list = ['nominal']
                 for systematic in systematics_list:
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
 
@@ -109,7 +119,10 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                         sys.exit('Invalid sample_type must be data, sideband, or MC' % (sample_info.sample_type))
 
                     config = plot_helper.append_integral_histo(config)
-                    for distribution, parameters in config['distributions'].items():
+                    distribution_items = config['distributions'].items()
+                    if args.limits:
+                        distribution_items = config['limits distributions'].items()
+                    for distribution, parameters in distribution_items:
                         if sample not in parameters.get('samples', [sample]):
                             continue
                         draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))

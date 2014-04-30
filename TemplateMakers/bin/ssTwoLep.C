@@ -168,6 +168,7 @@ int main (int argc, char** argv) {
   GenericCollection<BNjetCollection> mediumCSVJets(beanHelper);
   GenericCollection<BNjetCollection> notLooseCSVJets(beanHelper);
   GenericCollection<BNjetCollection> jetsForLepMVA(beanHelper);
+  GenericCollection<BNjetCollection> jetsClosestToLep1(beanHelper);
 
   GenericCollection<BNmetCollection> met(beanHelper);
   GenericCollection<BNprimaryvertexCollection> primaryVertexes(beanHelper);
@@ -250,6 +251,9 @@ int main (int argc, char** argv) {
 
   GenericCollectionSizeVariable<BNjetCollection> numMediumBJets(&(mediumCSVJets.ptrToItems), "numMediumBJets");
   kinVars.push_back(&numMediumBJets);
+
+  GenericCollectionSizeVariable<BNjetCollection> numJetsClosestToLep1(&(jetsClosestToLep1.ptrToItems), "numJetsClosestToLep1");
+  kinVars.push_back(&numJetsClosestToLep1);
 
   GenericCollectionSizeVariable<BNmuonCollection> numAllMuons(&(tightLoosePreselectedMuons.ptrToItems), "numAllMuons");
   kinVars.push_back(&numAllMuons);
@@ -792,6 +796,16 @@ int main (int argc, char** argv) {
     genAntiTopParticles.initializeRawItems(mcParticles.rawItems);
     auto antitopPDGID = [] (BNmcparticle p) { return (p.id == -6); };
 
+    float lep1_eta = KinematicVariableConstants::FLOAT_INIT;
+    float lep1_phi = KinematicVariableConstants::FLOAT_INIT;
+    if (tightLoosePreselectedLeptons.items.size() >= 1) {
+      lep1_eta = tightLoosePreselectedLeptons.items.at(0)->eta;
+      lep1_phi = tightLoosePreselectedLeptons.items.at(0)->phi; }
+    float lep1_jet_deltaR = 0.7;
+    jetsClosestToLep1.initializeRawItems(jets.items);
+    auto jetsClosestToLep1Auto = [] (BNjet j, float x, float y, float z) { return (sqrt( pow(j.eta - x, 2)+pow(j.phi - y,2) ) < z); };
+    jetsClosestToLep1.keepSelectedParticles(jetsClosestToLep1Auto, lep1_eta, lep1_phi, lep1_jet_deltaR);
+    
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();

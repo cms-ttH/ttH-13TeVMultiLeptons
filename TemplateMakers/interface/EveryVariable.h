@@ -42,3 +42,6 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/CERN/FinalBDT_3l.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/MatchTester_ttZ_3l.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/FourObjectKinematic.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/MatchTesterBDT_ttZ_3l.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/NOVa/FinalBDT_ttZ_3l.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/MatchTester_ttW_3l.h"
