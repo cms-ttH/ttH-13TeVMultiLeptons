@@ -135,7 +135,7 @@ int main (int argc, char** argv) {
   electronID::electronID electronLooseID = electronID::electronSideLooseMVA;
   electronID::electronID electronPreselectedID = electronID::electronSide;
   tauID::tauID tauTightID = tauID::tauMedium;
-  tauID::tauID tauLooseID = tauID::tauVLoose;
+  tauID::tauID tauLooseID = tauID::tauLoose;
   tauID::tauID tauPreselectedID = tauID::tauNonIso;
 
   // collections

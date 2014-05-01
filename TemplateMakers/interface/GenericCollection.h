@@ -25,6 +25,7 @@ public:
   void initializeRawItemsSortedByCSV(const collectionType& collection);
   template <typename functionType> void keepSelectedParticles(functionType selectionFunction);
   template <typename functionType, typename paramType> void keepSelectedParticles(functionType selectionFunction, paramType i);
+  template <typename functionType, typename paramType1, typename paramType2> void keepSelectedParticles(functionType selectionFunction, paramType1 i, paramType2 j);
   template <typename functionType, typename paramType1, typename paramType2, typename paramType3> void keepSelectedParticles(functionType selectionFunction, paramType1 i, paramType2 j, paramType3 k);
   void keepSelectedParticles(electronID::electronID& ID);
   void keepSelectedParticles(muonID::muonID& ID);
@@ -45,7 +46,7 @@ public:
   void pushBackAndSort(const BNmuonCollection& muons);
   void pushBackAndSort(const BNleptonCollection& leptons);
   void cleanJets(const BNleptonCollection& leptons, const double drCut);
-  void cleanJets_cPrj(const BNleptonCollection& leptons, const double drCut);
+  void cleanJets_cProj(const BNleptonCollection& leptons, const double drCut);
   void correctRawJets();
   void keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP);
   void getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType shift=sysType::NA);
@@ -160,6 +161,20 @@ void GenericCollection<collectionType>::keepSelectedParticles(functionType selec
 
   for (auto& particle: items) {
     if (selectionFunction(*(ptr(particle)), i)) selectedParticles.push_back(particle);
+  }
+
+  items = selectedParticles;
+
+  ptrToItems = &items;
+}
+
+template<class collectionType>
+template<typename functionType, typename paramType1, typename paramType2>
+void GenericCollection<collectionType>::keepSelectedParticles(functionType selectionFunction, paramType1 i, paramType2 j) {
+  collectionType selectedParticles;
+
+  for (auto& particle: items) {
+    if (selectionFunction(*(ptr(particle)), i, j)) selectedParticles.push_back(particle);
   }
 
   items = selectedParticles;
@@ -337,7 +352,7 @@ void GenericCollection<BNjetCollection>::cleanJets(const BNleptonCollection& lep
 }
 
 template<class BNjetCollection>
-void GenericCollection<BNjetCollection>::cleanJets_cPrj(const BNleptonCollection& leptons, const double drCut = 0.5) {
+void GenericCollection<BNjetCollection>::cleanJets_cProj(const BNleptonCollection& leptons, const double drCut = 0.5) {
   rawItems = bHelp->GetCleanJets_cProj(rawItems, leptons, drCut);
   ptrToItems = &items;
 }

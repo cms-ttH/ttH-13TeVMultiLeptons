@@ -126,7 +126,7 @@ int main (int argc, char** argv) {
   electronID::electronID electronLooseID = electronID::electronLoose;
   electronID::electronID electronPreselectedID = electronID::electronNoCuts;
 //   tauID::tauID tauTightID = tauID::tauMedium;
-//   tauID::tauID tauLooseID = tauID::tauVLoose;
+//   tauID::tauID tauLooseID = tauID::tauLoose;
 //   tauID::tauID tauPreselectedID = tauID::tauNonIso;
 
   // collections
@@ -687,12 +687,12 @@ int main (int argc, char** argv) {
 //     tightLoosePreselectedTaus.keepSelectedParticles(tauPreselectedID);
  
     jets.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJets");
-    jets.cleanJets_cPrj(tightLooseLeptons.items,0.5);
+    jets.cleanJets_cProj(tightLooseLeptons.items,0.5);
     jets.correctRawJets();
     jets.keepSelectedJets(20.0, 2.4, jetID::jetLoose, '-');
 
     jets2.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJets");
-    jets2.cleanJets_cPrj(tightLooseLeptons.items,0.5);
+    jets2.cleanJets_cProj(tightLooseLeptons.items,0.5);
     jets2.correctRawJets();
     jets2.keepSelectedJets(20.0, 2.4, jetID::jetLoose, '-');
 
