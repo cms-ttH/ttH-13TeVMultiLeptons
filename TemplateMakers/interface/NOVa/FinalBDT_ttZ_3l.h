@@ -15,9 +15,6 @@ public:
   //Store branch values so they are accessible to other classes
   vector<BranchInfo<double>> myVars;
   
-  double FinalBDT_ttZ_3l_eq3j;
-  double FinalBDT_ttZ_3l_ge4j;
-
   //Input variables for SS dilepton
   Float_t varnumJets;
   Float_t varnumMediumBJets;
@@ -55,8 +52,7 @@ FinalBDT_ttZ_3l::FinalBDT_ttZ_3l(BNjetCollection **_jets,
 
   //std::cout << "Setting up FinalBDT_ttZ_3l" << std::endl;
   
-  branches["FinalBDT_ttZ_3l_eq3j"] = BranchInfo<double>("FinalBDT_ttZ_3l_eq3j");
-  branches["FinalBDT_ttZ_3l_ge4j"] = BranchInfo<double>("FinalBDT_ttZ_3l_ge4j");
+  branches["FinalBDT_ttZ_3l"] = BranchInfo<double>("FinalBDT_ttZ_3l");
   
   std::vector< TString >catList;
   catList.push_back("eq3j"); //0
@@ -98,21 +94,16 @@ FinalBDT_ttZ_3l::FinalBDT_ttZ_3l(BNjetCollection **_jets,
 
 void FinalBDT_ttZ_3l::evaluate() {
   if (this->evaluatedThisEvent) return;
+  if ((*jets)->size() < 3) return;
   evaluatedThisEvent = true;
 
   //std::cout << "Inside FinalBDT_ttZ_3l::evaluate()" << std::endl;
   
-  //--------
-  
   myMatchTester_ttZ_3l->evaluate();
-  //std::cout << "Evaluated myMatchTester_ttZ_3l" << std::endl;
   myZLikeMassLepLepSFOSAll->evaluate();
-  //std::cout << "Evaluated myZLikeMassLepLepSFOSAll" << std::endl;
-  
   varnumJets = (*jets)->size()*1.0;
-  //std::cout << "Here" << std::endl;
   varnumMediumBJets = (*mediumCSVJets)->size()*1.0;
-  //std::cout << "Here" << std::endl;
+
   std::string branchName = "";
   for (unsigned int ii = 0; ii < (*myMatchTester_ttZ_3l).myVars.size(); ii++) {
     branchName = (*myMatchTester_ttZ_3l).myVars[ii].branchName;
@@ -128,16 +119,16 @@ void FinalBDT_ttZ_3l::evaluate() {
   //std::cout << "Here" << std::endl;
   varZLike_mass_leplep_SFOS_all = (*myZLikeMassLepLepSFOSAll).myVars[0].branchVal;
 
-  //std::cout << "varnumJets: " << varnumJets << std::endl;
-  //std::cout << "varnumMediumBJets: " << varnumMediumBJets << std::endl;
-  //std::cout << "varMatch_ttZ_3l_Bb: " << varMatch_ttZ_3l_Bb << std::endl;
-  //std::cout << "varMatch_ttZ_3l_Bq: " << varMatch_ttZ_3l_Bq << std::endl;
-  //std::cout << "varMatch_ttZ_3l_bq: " << varMatch_ttZ_3l_bq << std::endl;
-  //std::cout << "varMatch_ttZ_3l_Bbq: " << varMatch_ttZ_3l_Bbq << std::endl;
-  //std::cout << "varMatch_ttZ_3l_Bqq: " << varMatch_ttZ_3l_Bqq << std::endl;
-  //std::cout << "varMatch_ttZ_3l_bqq: " << varMatch_ttZ_3l_bqq << std::endl;
-  //std::cout << "varMatch_ttZ_3l_Bbqq: " << varMatch_ttZ_3l_Bbqq << std::endl;
-  //std::cout << "varZLike_mass_leplep_SFOS_all: " << varZLike_mass_leplep_SFOS_all << std::endl;
+//   std::cout << "varnumJets: " << varnumJets << std::endl;
+//   std::cout << "varnumMediumBJets: " << varnumMediumBJets << std::endl;
+//   std::cout << "varMatch_ttZ_3l_Bb: " << varMatch_ttZ_3l_Bb << std::endl;
+//   std::cout << "varMatch_ttZ_3l_Bq: " << varMatch_ttZ_3l_Bq << std::endl;
+//   std::cout << "varMatch_ttZ_3l_bq: " << varMatch_ttZ_3l_bq << std::endl;
+//   std::cout << "varMatch_ttZ_3l_Bbq: " << varMatch_ttZ_3l_Bbq << std::endl;
+//   std::cout << "varMatch_ttZ_3l_Bqq: " << varMatch_ttZ_3l_Bqq << std::endl;
+//   std::cout << "varMatch_ttZ_3l_bqq: " << varMatch_ttZ_3l_bqq << std::endl;
+//   std::cout << "varMatch_ttZ_3l_Bbqq: " << varMatch_ttZ_3l_Bbqq << std::endl;
+//   std::cout << "varZLike_mass_leplep_SFOS_all: " << varZLike_mass_leplep_SFOS_all << std::endl;
 
   for( unsigned int jj = 0 ; jj < 2 ; ++jj ) {
     
@@ -145,15 +136,12 @@ void FinalBDT_ttZ_3l::evaluate() {
     TString mvaName = "BDTG";
     //TString mvaName = "CFMlpANN";
 
-    //TString bName = mvaName + TString("_") + catList[jj];
-    TString bName = "";
-    if (jj==0) bName = "FinalBDT_ttZ_3l_eq3j";
-    if (jj==1) bName = "FinalBDT_ttZ_3l_ge4j";
-    
     TString methodName = mvaName + TString(" method");
     Float_t annOut  = tmpReader->EvaluateMVA( methodName );
-    
-    branches[bName].branchVal = annOut;
+
+    if (jj == 0 && (*jets)->size() == 3) branches["FinalBDT_ttZ_3l"].branchVal = annOut;
+    if (jj == 1 && (*jets)->size() >= 4) branches["FinalBDT_ttZ_3l"].branchVal = annOut;
+
   }
 
   //Clean out values from last event

@@ -7,6 +7,9 @@
 class MetLD: public KinematicVariable<double> {
   
 public:
+  //Store branch values so they are accessible to other classes
+  vector<BranchInfo<double>> myVars;
+  
   MetLD(TwoObjectKinematic<BNleptonCollection,BNjetCollection> * _myMHT,
         GenericCollectionMember<double, BNmetCollection> * _myMet);
   void evaluate();
@@ -38,6 +41,14 @@ void MetLD::evaluate() {
   float met_ld = met * 0.00397 + mht * 0.00265;
 
   branches["met_ld"].branchVal = met_ld;
+
+  //Clean out values from last event
+  myVars.clear();
+  
+  for (typename map<TString, BranchInfo<double>>::iterator iBranch = branches.begin();
+       iBranch != branches.end(); iBranch++) {
+    myVars.push_back(iBranch->second);
+  }
 
 }
 

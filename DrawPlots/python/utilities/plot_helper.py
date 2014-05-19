@@ -252,7 +252,7 @@ class SampleInformation:
                         'is_signal': False,
                         'x_section': 0.157*1.21, #CERN x_sec; why is it not (7.7*0.101*0.101) * 1.21
                         'x_section_error': 0.157*1.21*0.2, #CERN x_sec error
-                        'num_generated': 4804217}, #ND number processed
+                        'num_generated': 4804217*76.0/78.0}, #ND number processed
 
             'www': {'sample_type': 'MC',
                     'is_signal': False,

@@ -1,11 +1,11 @@
-#ifndef _MatchTester_ttZ_3l_h
-#define _MatchTester_ttZ_3l_h
+#ifndef _MatchTester_ttZ_3l_GP_h
+#define _MatchTester_ttZ_3l_GP_h
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
 //#include <typeinfo>
 
-class MatchTester_ttZ_3l: public KinematicVariable<double> {
+class MatchTester_ttZ_3l_GP: public KinematicVariable<double> {
 
 public:
 
@@ -69,94 +69,94 @@ public:
   TH1 * corr_top_MT_met_lep_B_top_mass_lep_B_eq5j;
   TH1 * corr_top_MT_met_lep_B_top_mass_lep_B_ge6j;
 
-  MatchTester_ttZ_3l(BNleptonCollection **_leptons, BNjetCollection **_jets, BNmetCollection **_mets);
-  ~MatchTester_ttZ_3l();
+  MatchTester_ttZ_3l_GP(BNleptonCollection **_leptons, BNjetCollection **_jets, BNmetCollection **_mets);
+  ~MatchTester_ttZ_3l_GP();
   void evaluate();
 };
 
-MatchTester_ttZ_3l::MatchTester_ttZ_3l(BNleptonCollection **_leptons, BNjetCollection **_jets, BNmetCollection **_mets):
+MatchTester_ttZ_3l_GP::MatchTester_ttZ_3l_GP(BNleptonCollection **_leptons, BNjetCollection **_jets, BNmetCollection **_mets):
   leptons(_leptons), jets(_jets), mets(_mets) {
 
-  //std::cout << "Initializing MatchTester_ttZ_3l" << std::endl;
+  //std::cout << "Initializing MatchTester_ttZ_3l_GP" << std::endl;
 
   //this->resetVal = 0.0; //What does this do?
   this->resetVal = KinematicVariableConstants::FLOAT_INIT; //What does this do?
 
-  branches["Match_ttZ_3l_Bb"] = BranchInfo<double>("Match_ttZ_3l_Bb");
-  branches["Match_ttZ_3l_Bq"] = BranchInfo<double>("Match_ttZ_3l_Bq");
-  branches["Match_ttZ_3l_bq"] = BranchInfo<double>("Match_ttZ_3l_bq");
-  branches["Match_ttZ_3l_Bbq"] = BranchInfo<double>("Match_ttZ_3l_Bbq");
-  branches["Match_ttZ_3l_Bqq"] = BranchInfo<double>("Match_ttZ_3l_Bqq");
-  branches["Match_ttZ_3l_bqq"] = BranchInfo<double>("Match_ttZ_3l_bqq");
-  branches["Match_ttZ_3l_Bbqq"] = BranchInfo<double>("Match_ttZ_3l_Bbqq");
+  branches["Match_ttZ_3l_GP_Bb"] = BranchInfo<double>("Match_ttZ_3l_GP_Bb");
+  branches["Match_ttZ_3l_GP_Bq"] = BranchInfo<double>("Match_ttZ_3l_GP_Bq");
+  branches["Match_ttZ_3l_GP_bq"] = BranchInfo<double>("Match_ttZ_3l_GP_bq");
+  branches["Match_ttZ_3l_GP_Bbq"] = BranchInfo<double>("Match_ttZ_3l_GP_Bbq");
+  branches["Match_ttZ_3l_GP_Bqq"] = BranchInfo<double>("Match_ttZ_3l_GP_Bqq");
+  branches["Match_ttZ_3l_GP_bqq"] = BranchInfo<double>("Match_ttZ_3l_GP_bqq");
+  branches["Match_ttZ_3l_GP_Bbqq"] = BranchInfo<double>("Match_ttZ_3l_GP_Bbqq");
 
-  branches["Full_match_ttZ_3l_Bb"] = BranchInfo<double>("Full_match_ttZ_3l_Bb");
-  branches["Full_match_ttZ_3l_Bq"] = BranchInfo<double>("Full_match_ttZ_3l_Bq");
-  branches["Full_match_ttZ_3l_bq"] = BranchInfo<double>("Full_match_ttZ_3l_bq");
-  branches["Full_match_ttZ_3l_Bbq"] = BranchInfo<double>("Full_match_ttZ_3l_Bbq");
-  branches["Full_match_ttZ_3l_Bqq"] = BranchInfo<double>("Full_match_ttZ_3l_Bqq");
-  branches["Full_match_ttZ_3l_bqq"] = BranchInfo<double>("Full_match_ttZ_3l_bqq");
-  branches["Full_match_ttZ_3l_Bbqq"] = BranchInfo<double>("Full_match_ttZ_3l_Bbqq");
+  branches["Full_match_ttZ_3l_GP_Bb"] = BranchInfo<double>("Full_match_ttZ_3l_GP_Bb");
+  branches["Full_match_ttZ_3l_GP_Bq"] = BranchInfo<double>("Full_match_ttZ_3l_GP_Bq");
+  branches["Full_match_ttZ_3l_GP_bq"] = BranchInfo<double>("Full_match_ttZ_3l_GP_bq");
+  branches["Full_match_ttZ_3l_GP_Bbq"] = BranchInfo<double>("Full_match_ttZ_3l_GP_Bbq");
+  branches["Full_match_ttZ_3l_GP_Bqq"] = BranchInfo<double>("Full_match_ttZ_3l_GP_Bqq");
+  branches["Full_match_ttZ_3l_GP_bqq"] = BranchInfo<double>("Full_match_ttZ_3l_GP_bqq");
+  branches["Full_match_ttZ_3l_GP_Bbqq"] = BranchInfo<double>("Full_match_ttZ_3l_GP_Bbqq");
 
-  branches["ttZ_3l_B_CSV"] = BranchInfo<double>("ttZ_3l_B_CSV");
-  branches["ttZ_3l_b_CSV"] = BranchInfo<double>("ttZ_3l_b_CSV");
-  branches["ttZ_3l_q_1_CSV"] = BranchInfo<double>("ttZ_3l_q_1_CSV");
-  branches["ttZ_3l_q_2_CSV"] = BranchInfo<double>("ttZ_3l_q_2_CSV");
-  branches["ttZ_3l_B_charge"] = BranchInfo<double>("ttZ_3l_B_charge");
-  branches["ttZ_3l_b_charge"] = BranchInfo<double>("ttZ_3l_b_charge");
-  branches["ttZ_3l_W_mass_qq"] = BranchInfo<double>("ttZ_3l_W_mass_qq");
-  branches["ttZ_3l_W_sum_charge_qq"] = BranchInfo<double>("ttZ_3l_W_sum_charge_qq");
-  branches["ttZ_3l_top_mass_lep_B"] = BranchInfo<double>("ttZ_3l_top_mass_lep_B");
-  branches["ttZ_3l_top_mass_b_q"] = BranchInfo<double>("ttZ_3l_top_mass_b_q");
-  branches["ttZ_3l_top_mass_b_qq"] = BranchInfo<double>("ttZ_3l_top_mass_b_qq");
-  branches["ttZ_3l_ttbar_2j_MT_mass_ratio_Bb"] = BranchInfo<double>("ttZ_3l_ttbar_2j_MT_mass_ratio_Bb");
-  branches["ttZ_3l_ttbar_2j_MT_mass_ratio_Bq"] = BranchInfo<double>("ttZ_3l_ttbar_2j_MT_mass_ratio_Bq");
-  branches["ttZ_3l_ttbar_2j_MT_mass_ratio_bq"] = BranchInfo<double>("ttZ_3l_ttbar_2j_MT_mass_ratio_bq");
-  branches["ttZ_3l_ttbar_3j_MT_mass_ratio_Bbq"] = BranchInfo<double>("ttZ_3l_ttbar_3j_MT_mass_ratio_Bbq");
-  branches["ttZ_3l_ttbar_3j_MT_mass_ratio_Bqq"] = BranchInfo<double>("ttZ_3l_ttbar_3j_MT_mass_ratio_Bqq");
-  branches["ttZ_3l_ttbar_3j_MT_mass_ratio_bqq"] = BranchInfo<double>("ttZ_3l_ttbar_3j_MT_mass_ratio_bqq");
-  branches["ttZ_3l_ttbar_4j_MT_mass_ratio_Bbqq"] = BranchInfo<double>("ttZ_3l_ttbar_4j_MT_mass_ratio_Bbqq");
+  branches["ttZ_3l_GP_B_CSV"] = BranchInfo<double>("ttZ_3l_GP_B_CSV");
+  branches["ttZ_3l_GP_b_CSV"] = BranchInfo<double>("ttZ_3l_GP_b_CSV");
+  branches["ttZ_3l_GP_q_1_CSV"] = BranchInfo<double>("ttZ_3l_GP_q_1_CSV");
+  branches["ttZ_3l_GP_q_2_CSV"] = BranchInfo<double>("ttZ_3l_GP_q_2_CSV");
+  branches["ttZ_3l_GP_B_charge"] = BranchInfo<double>("ttZ_3l_GP_B_charge");
+  branches["ttZ_3l_GP_b_charge"] = BranchInfo<double>("ttZ_3l_GP_b_charge");
+  branches["ttZ_3l_GP_W_mass_qq"] = BranchInfo<double>("ttZ_3l_GP_W_mass_qq");
+  branches["ttZ_3l_GP_W_sum_charge_qq"] = BranchInfo<double>("ttZ_3l_GP_W_sum_charge_qq");
+  branches["ttZ_3l_GP_top_mass_lep_B"] = BranchInfo<double>("ttZ_3l_GP_top_mass_lep_B");
+  branches["ttZ_3l_GP_top_mass_b_q"] = BranchInfo<double>("ttZ_3l_GP_top_mass_b_q");
+  branches["ttZ_3l_GP_top_mass_b_qq"] = BranchInfo<double>("ttZ_3l_GP_top_mass_b_qq");
+  branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_Bb"] = BranchInfo<double>("ttZ_3l_GP_ttbar_2j_MT_mass_ratio_Bb");
+  branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_Bq"] = BranchInfo<double>("ttZ_3l_GP_ttbar_2j_MT_mass_ratio_Bq");
+  branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_bq"] = BranchInfo<double>("ttZ_3l_GP_ttbar_2j_MT_mass_ratio_bq");
+  branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_Bbq"] = BranchInfo<double>("ttZ_3l_GP_ttbar_3j_MT_mass_ratio_Bbq");
+  branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_Bqq"] = BranchInfo<double>("ttZ_3l_GP_ttbar_3j_MT_mass_ratio_Bqq");
+  branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_bqq"] = BranchInfo<double>("ttZ_3l_GP_ttbar_3j_MT_mass_ratio_bqq");
+  branches["ttZ_3l_GP_ttbar_4j_MT_mass_ratio_Bbqq"] = BranchInfo<double>("ttZ_3l_GP_ttbar_4j_MT_mass_ratio_Bbqq");
 
-  branches["Match_ttZ_3l_Bb"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
-  branches["Match_ttZ_3l_Bq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
-  branches["Match_ttZ_3l_bq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
-  branches["Match_ttZ_3l_Bbq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
-  branches["Match_ttZ_3l_Bqq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
-  branches["Match_ttZ_3l_bqq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
-  branches["Match_ttZ_3l_Bbqq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
+  branches["Match_ttZ_3l_GP_Bb"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
+  branches["Match_ttZ_3l_GP_Bq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
+  branches["Match_ttZ_3l_GP_bq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
+  branches["Match_ttZ_3l_GP_Bbq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
+  branches["Match_ttZ_3l_GP_Bqq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
+  branches["Match_ttZ_3l_GP_bqq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
+  branches["Match_ttZ_3l_GP_Bbqq"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
 
-  branches["Full_match_ttZ_3l_Bb"].branchVal = 0.0; 
-  branches["Full_match_ttZ_3l_Bq"].branchVal = 0.0; 
-  branches["Full_match_ttZ_3l_bq"].branchVal = 0.0; 
-  branches["Full_match_ttZ_3l_Bbq"].branchVal = 0.0; 
-  branches["Full_match_ttZ_3l_Bqq"].branchVal = 0.0; 
-  branches["Full_match_ttZ_3l_bqq"].branchVal = 0.0; 
-  branches["Full_match_ttZ_3l_Bbqq"].branchVal = 0.0; 
+  branches["Full_match_ttZ_3l_GP_Bb"].branchVal = 0.0; 
+  branches["Full_match_ttZ_3l_GP_Bq"].branchVal = 0.0; 
+  branches["Full_match_ttZ_3l_GP_bq"].branchVal = 0.0; 
+  branches["Full_match_ttZ_3l_GP_Bbq"].branchVal = 0.0; 
+  branches["Full_match_ttZ_3l_GP_Bqq"].branchVal = 0.0; 
+  branches["Full_match_ttZ_3l_GP_bqq"].branchVal = 0.0; 
+  branches["Full_match_ttZ_3l_GP_Bbqq"].branchVal = 0.0; 
 
-  branches["ttZ_3l_B_CSV"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
-  branches["ttZ_3l_b_CSV"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_q_1_CSV"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_q_2_CSV"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_B_charge"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_b_charge"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_W_mass_qq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_W_sum_charge_qq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_top_mass_lep_B"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_top_mass_b_q"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_top_mass_b_qq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_ttbar_2j_MT_mass_ratio_Bb"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_ttbar_2j_MT_mass_ratio_Bq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_ttbar_2j_MT_mass_ratio_bq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_ttbar_3j_MT_mass_ratio_Bbq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_ttbar_3j_MT_mass_ratio_Bqq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_ttbar_3j_MT_mass_ratio_bqq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
-  branches["ttZ_3l_ttbar_4j_MT_mass_ratio_Bbqq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_B_CSV"].branchVal = KinematicVariableConstants::FLOAT_INIT; 
+  branches["ttZ_3l_GP_b_CSV"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_q_1_CSV"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_q_2_CSV"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_B_charge"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_b_charge"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_W_mass_qq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_W_sum_charge_qq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_top_mass_lep_B"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_top_mass_b_q"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_top_mass_b_qq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_Bb"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_Bq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_bq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_Bbq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_Bqq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_bqq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
+  branches["ttZ_3l_GP_ttbar_4j_MT_mass_ratio_Bbqq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
 
   //std::cout << "Getting weight file" << std::endl;
   string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVa/matchbox/").c_str();
   //TString weight_file_name = Form("%smatch_ttbarZ_3l.root", directory.c_str());
   //TString weight_file_name = Form("%smatch_ttbar_lj.root", directory.c_str());
-  TString weight_file_name = Form("%smatch_ttbar_lj_by_nJet.root", directory.c_str());
+  TString weight_file_name = Form("%smatch_ttbar_lj_by_nJet_genPresent.root", directory.c_str());
   weight_file = TFile::Open(weight_file_name);
   //std::cout << weight_file_name << std::endl;
 
@@ -228,15 +228,14 @@ MatchTester_ttZ_3l::MatchTester_ttZ_3l(BNleptonCollection **_leptons, BNjetColle
 //   corr_top_MT_met_lep_B_top_mass_lep_B = (TH1*)weight_file->Get("corr_top_MT_met_lep_B_top_mass_lep_B")->Clone();
 //   corr_top_mass_b_qq_W_mass_qq = (TH1*)weight_file->Get("corr_top_mass_b_qq_W_mass_qq")->Clone();
 
-  //std::cout << "Finished initializing MatchTester_ttZ_3l" << std::endl;
+  //std::cout << "Finished initializing MatchTester_ttZ_3l_GP" << std::endl;
 }
 
-void MatchTester_ttZ_3l::evaluate() {
-  //std::cout << "this->evaluatedThisEvent is " << this->evaluatedThisEvent << std::endl;
+void MatchTester_ttZ_3l_GP::evaluate() {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  //std::cout << "Evaluating MatchTester_ttZ_3l with " << (*leptons)->size() << " and " << (*jets)->size() << " jets" << std::endl;
+  //std::cout << "Evaluating MatchTester_ttZ_3l_GP" << std::endl;
   
   if ( (*leptons)->size() != 1) return;
   if ( (*jets)->size() < 2) return;
@@ -407,16 +406,16 @@ void MatchTester_ttZ_3l::evaluate() {
       bin = std::max(1, std::min(corr_top_MT_met_lep_B_top_mass_lep_B->GetNbinsX(), corr_top_MT_met_lep_B_top_mass_lep_B->GetXaxis()->FindBin(top_MT_met_lep_B)) );
       ratio_Bb *= (corr_top_MT_met_lep_B_top_mass_lep_B->GetBinContent(bin));
 
-      if (log(ratio_Bb) > branches["Match_ttZ_3l_Bb"].branchVal) {
-        branches["Match_ttZ_3l_Bb"].branchVal = log(ratio_Bb);
-        branches["Full_match_ttZ_3l_Bb"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
+      if (log(ratio_Bb) > branches["Match_ttZ_3l_GP_Bb"].branchVal) {
+        branches["Match_ttZ_3l_GP_Bb"].branchVal = log(ratio_Bb);
+        branches["Full_match_ttZ_3l_GP_Bb"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
                                                       (*jets)->at(iJet2).genPartonMotherId == -6*lep_charge);
-        branches["ttZ_3l_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
-        branches["ttZ_3l_b_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
-        branches["ttZ_3l_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
-        branches["ttZ_3l_b_charge"].branchVal = lep_charge*(*jets)->at(iJet2).charge;
-        branches["ttZ_3l_top_mass_lep_B"].branchVal = top_mass_lep_B;
-        branches["ttZ_3l_ttbar_2j_MT_mass_ratio_Bb"].branchVal = jet_12_vect_trans.M()/jet_12_vect.M();
+        branches["ttZ_3l_GP_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
+        branches["ttZ_3l_GP_b_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
+        branches["ttZ_3l_GP_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
+        branches["ttZ_3l_GP_b_charge"].branchVal = lep_charge*(*jets)->at(iJet2).charge;
+        branches["ttZ_3l_GP_top_mass_lep_B"].branchVal = top_mass_lep_B;
+        branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_Bb"].branchVal = jet_12_vect_trans.M()/jet_12_vect.M();
       }
       
       //ratio_Bq
@@ -440,15 +439,15 @@ void MatchTester_ttZ_3l::evaluate() {
       bin = std::max(1, std::min(corr_top_MT_met_lep_B_top_mass_lep_B->GetNbinsX(), corr_top_MT_met_lep_B_top_mass_lep_B->GetXaxis()->FindBin(top_MT_met_lep_B)) );
       ratio_Bq *= (corr_top_MT_met_lep_B_top_mass_lep_B->GetBinContent(bin));
 
-      if (log(ratio_Bq) > branches["Match_ttZ_3l_Bq"].branchVal) {
-        branches["Match_ttZ_3l_Bq"].branchVal = log(ratio_Bq);
-        branches["Full_match_ttZ_3l_Bq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
+      if (log(ratio_Bq) > branches["Match_ttZ_3l_GP_Bq"].branchVal) {
+        branches["Match_ttZ_3l_GP_Bq"].branchVal = log(ratio_Bq);
+        branches["Full_match_ttZ_3l_GP_Bq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
                                                       abs((*jets)->at(iJet2).genPartonMotherId) == 24);
-        branches["ttZ_3l_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
-        branches["ttZ_3l_q_1_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
-        branches["ttZ_3l_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
-        branches["ttZ_3l_top_mass_lep_B"].branchVal = top_mass_lep_B;
-        branches["ttZ_3l_ttbar_2j_MT_mass_ratio_Bq"].branchVal = jet_12_vect_trans.M()/jet_12_vect.M();
+        branches["ttZ_3l_GP_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
+        branches["ttZ_3l_GP_q_1_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
+        branches["ttZ_3l_GP_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
+        branches["ttZ_3l_GP_top_mass_lep_B"].branchVal = top_mass_lep_B;
+        branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_Bq"].branchVal = jet_12_vect_trans.M()/jet_12_vect.M();
       }
       
       //ratio_bq
@@ -466,19 +465,19 @@ void MatchTester_ttZ_3l::evaluate() {
       bin = std::max(1, std::min(ratio_ttbar_2j_MT_mass_ratio->GetNbinsX(), ratio_ttbar_2j_MT_mass_ratio->GetXaxis()->FindBin(jet_12_vect_trans.M()/jet_12_vect.M())) );
       ratio_bq *= ratio_ttbar_2j_MT_mass_ratio->GetBinContent(bin);
 
-      if (log(ratio_bq) > branches["Match_ttZ_3l_bq"].branchVal) {
-        branches["Match_ttZ_3l_bq"].branchVal = log(ratio_bq);
-        branches["Full_match_ttZ_3l_bq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == -6*lep_charge &&
+      if (log(ratio_bq) > branches["Match_ttZ_3l_GP_bq"].branchVal) {
+        branches["Match_ttZ_3l_GP_bq"].branchVal = log(ratio_bq);
+        branches["Full_match_ttZ_3l_GP_bq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == -6*lep_charge &&
                                                       abs((*jets)->at(iJet2).genPartonMotherId) == 24);
-        branches["ttZ_3l_b_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
-        branches["ttZ_3l_q_1_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
-        branches["ttZ_3l_b_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
-        branches["ttZ_3l_top_mass_b_q"].branchVal = top_mass_b_q;
-        branches["ttZ_3l_ttbar_2j_MT_mass_ratio_bq"].branchVal = jet_12_vect_trans.M()/jet_12_vect.M();
+        branches["ttZ_3l_GP_b_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
+        branches["ttZ_3l_GP_q_1_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
+        branches["ttZ_3l_GP_b_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
+        branches["ttZ_3l_GP_top_mass_b_q"].branchVal = top_mass_b_q;
+        branches["ttZ_3l_GP_ttbar_2j_MT_mass_ratio_bq"].branchVal = jet_12_vect_trans.M()/jet_12_vect.M();
       }
       
       for (unsigned int iJet3 = 0; iJet3 < (*jets)->size(); iJet3++) {
-        if (iJet3 == iJet1 || iJet3 == iJet2) continue;
+        if (iJet3 == iJet1 || iJet3 == iJet1) continue;
         //std::cout << "iJet3 = " << iJet1 << std::endl;
         jet3_vect.SetPtEtaPhiE((*jets)->at(iJet3).pt, (*jets)->at(iJet3).eta, (*jets)->at(iJet3).phi, (*jets)->at(iJet3).energy);
         jet3_vect_trans.SetPtEtaPhiE((*jets)->at(iJet3).pt, 0, (*jets)->at(iJet3).phi, (*jets)->at(iJet3).pt);
@@ -499,22 +498,19 @@ void MatchTester_ttZ_3l::evaluate() {
         bin = std::max(1, std::min(ratio_ttbar_3j_MT_mass_ratio->GetNbinsX(), ratio_ttbar_3j_MT_mass_ratio->GetXaxis()->FindBin(jet_123_vect_trans.M()/jet_123_vect.M())) );
         ratio_Bbq *= ratio_ttbar_3j_MT_mass_ratio->GetBinContent(bin);
 
-        //std::cout << "Branch Match_ttZ_3l_Bbq = " << branches["Match_ttZ_3l_Bbq"].branchVal << std::endl;
-        //std::cout << "Current Match_ttZ_3l_Bbq = " << log(ratio_Bbq) << std::endl;
-        if (log(ratio_Bbq) > branches["Match_ttZ_3l_Bbq"].branchVal) {
-          branches["Match_ttZ_3l_Bbq"].branchVal = log(ratio_Bbq);
-          //std::cout << "New branch Match_ttZ_3l_Bbq = " << branches["Match_ttZ_3l_Bbq"].branchVal << std::endl;
-          branches["Full_match_ttZ_3l_Bbq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
+        if (log(ratio_Bbq) > branches["Match_ttZ_3l_GP_Bbq"].branchVal) {
+          branches["Match_ttZ_3l_GP_Bbq"].branchVal = log(ratio_Bbq);
+          branches["Full_match_ttZ_3l_GP_Bbq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
                                                          (*jets)->at(iJet2).genPartonMotherId == -6*lep_charge &&
                                                          abs((*jets)->at(iJet3).genPartonMotherId) == 24);
-          branches["ttZ_3l_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
-          branches["ttZ_3l_b_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
-          branches["ttZ_3l_q_1_CSV"].branchVal = (*jets)->at(iJet3).btagCombinedSecVertex;
-          branches["ttZ_3l_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
-          branches["ttZ_3l_b_charge"].branchVal = lep_charge*(*jets)->at(iJet2).charge;
-          branches["ttZ_3l_top_mass_lep_B"].branchVal = top_mass_lep_B;
-          branches["ttZ_3l_top_mass_b_q"].branchVal = top_mass_b_q;
-          branches["ttZ_3l_ttbar_3j_MT_mass_ratio_Bbq"].branchVal = jet_123_vect_trans.M()/jet_123_vect.M();
+          branches["ttZ_3l_GP_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_b_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_q_1_CSV"].branchVal = (*jets)->at(iJet3).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
+          branches["ttZ_3l_GP_b_charge"].branchVal = lep_charge*(*jets)->at(iJet2).charge;
+          branches["ttZ_3l_GP_top_mass_lep_B"].branchVal = top_mass_lep_B;
+          branches["ttZ_3l_GP_top_mass_b_q"].branchVal = top_mass_b_q;
+          branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_Bbq"].branchVal = jet_123_vect_trans.M()/jet_123_vect.M();
         }
 
         //ratio_Bqq
@@ -534,22 +530,19 @@ void MatchTester_ttZ_3l::evaluate() {
         bin = std::max(1, std::min(ratio_ttbar_3j_MT_mass_ratio->GetNbinsX(), ratio_ttbar_3j_MT_mass_ratio->GetXaxis()->FindBin(jet_123_vect_trans.M()/jet_123_vect.M())) );
         ratio_Bqq *= ratio_ttbar_3j_MT_mass_ratio->GetBinContent(bin);
 
-        //std::cout << "Branch Match_ttZ_3l_Bqq = " << branches["Match_ttZ_3l_Bqq"].branchVal << std::endl;
-        //std::cout << "Current Match_ttZ_3l_Bqq = " << log(ratio_Bqq) << std::endl;
-        if (log(ratio_Bqq) > branches["Match_ttZ_3l_Bqq"].branchVal) {
-          branches["Match_ttZ_3l_Bqq"].branchVal = log(ratio_Bqq);
-          //std::cout << "New branch Match_ttZ_3l_Bqq = " << branches["Match_ttZ_3l_Bqq"].branchVal << std::endl;
-          branches["Full_match_ttZ_3l_Bqq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
+        if (log(ratio_Bqq) > branches["Match_ttZ_3l_GP_Bqq"].branchVal) {
+          branches["Match_ttZ_3l_GP_Bqq"].branchVal = log(ratio_Bqq);
+          branches["Full_match_ttZ_3l_GP_Bqq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
                                                          abs((*jets)->at(iJet2).genPartonMotherId) == 24 &&
                                                          abs((*jets)->at(iJet3).genPartonMotherId) == 24);
-          branches["ttZ_3l_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
-          branches["ttZ_3l_q_1_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
-          branches["ttZ_3l_q_2_CSV"].branchVal = (*jets)->at(iJet3).btagCombinedSecVertex;
-          branches["ttZ_3l_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
-          branches["ttZ_3l_top_mass_lep_B"].branchVal = top_mass_lep_B;
-          branches["ttZ_3l_W_mass_qq"].branchVal = W_mass_qq;
-          branches["ttZ_3l_W_sum_charge_qq"].branchVal = W_sum_charge_qq;
-          branches["ttZ_3l_ttbar_3j_MT_mass_ratio_Bqq"].branchVal = jet_123_vect_trans.M()/jet_123_vect.M();
+          branches["ttZ_3l_GP_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_q_1_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_q_2_CSV"].branchVal = (*jets)->at(iJet3).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
+          branches["ttZ_3l_GP_top_mass_lep_B"].branchVal = top_mass_lep_B;
+          branches["ttZ_3l_GP_W_mass_qq"].branchVal = W_mass_qq;
+          branches["ttZ_3l_GP_W_sum_charge_qq"].branchVal = W_sum_charge_qq;
+          branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_Bqq"].branchVal = jet_123_vect_trans.M()/jet_123_vect.M();
         }
 
         //ratio_bqq
@@ -579,22 +572,19 @@ void MatchTester_ttZ_3l::evaluate() {
         bin = std::max(1, std::min(corr_top_mass_b_qq_W_mass_qq->GetNbinsX(), corr_top_mass_b_qq_W_mass_qq->GetXaxis()->FindBin(top_mass_b_qq)) );
         ratio_bqq *= corr_top_mass_b_qq_W_mass_qq->GetBinContent(bin);
 
-        //std::cout << "Branch Match_ttZ_3l_bqq = " << branches["Match_ttZ_3l_bqq"].branchVal << std::endl;
-        //std::cout << "Current Match_ttZ_3l_bqq = " << log(ratio_bqq) << std::endl;
-        if (log(ratio_bqq) > branches["Match_ttZ_3l_bqq"].branchVal) {
-          branches["Match_ttZ_3l_bqq"].branchVal = log(ratio_bqq);
-          //std::cout << "New branch Match_ttZ_3l_Bqq = " << branches["Match_ttZ_3l_bqq"].branchVal << std::endl;
-          branches["Full_match_ttZ_3l_bqq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == -6*lep_charge &&
+        if (log(ratio_bqq) > branches["Match_ttZ_3l_GP_bqq"].branchVal) {
+          branches["Match_ttZ_3l_GP_bqq"].branchVal = log(ratio_bqq);
+          branches["Full_match_ttZ_3l_GP_bqq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == -6*lep_charge &&
                                                    abs((*jets)->at(iJet2).genPartonMotherId) == 24 &&
                                                    abs((*jets)->at(iJet3).genPartonMotherId) == 24);
-          branches["ttZ_3l_b_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
-          branches["ttZ_3l_q_1_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
-          branches["ttZ_3l_q_2_CSV"].branchVal = (*jets)->at(iJet3).btagCombinedSecVertex;
-          branches["ttZ_3l_b_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
-          branches["ttZ_3l_W_mass_qq"].branchVal = W_mass_qq;
-          branches["ttZ_3l_W_sum_charge_qq"].branchVal = W_sum_charge_qq;
-          branches["ttZ_3l_top_mass_b_qq"].branchVal = top_mass_b_qq;
-          branches["ttZ_3l_ttbar_3j_MT_mass_ratio_bqq"].branchVal = jet_123_vect_trans.M()/jet_123_vect.M();
+          branches["ttZ_3l_GP_b_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_q_1_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_q_2_CSV"].branchVal = (*jets)->at(iJet3).btagCombinedSecVertex;
+          branches["ttZ_3l_GP_b_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
+          branches["ttZ_3l_GP_W_mass_qq"].branchVal = W_mass_qq;
+          branches["ttZ_3l_GP_W_sum_charge_qq"].branchVal = W_sum_charge_qq;
+          branches["ttZ_3l_GP_top_mass_b_qq"].branchVal = top_mass_b_qq;
+          branches["ttZ_3l_GP_ttbar_3j_MT_mass_ratio_bqq"].branchVal = jet_123_vect_trans.M()/jet_123_vect.M();
         }
 
         
@@ -634,26 +624,23 @@ void MatchTester_ttZ_3l::evaluate() {
           bin = std::max(1, std::min(corr_top_mass_b_qq_W_mass_qq->GetNbinsX(), corr_top_mass_b_qq_W_mass_qq->GetXaxis()->FindBin(top_mass_b_qq)) );
           ratio_Bbqq *= (corr_top_mass_b_qq_W_mass_qq->GetBinContent(bin));
 
-          //std::cout << "Branch Match_ttZ_3l_Bbqq = " << branches["Match_ttZ_3l_Bbqq"].branchVal << std::endl;
-          //std::cout << "Current Match_ttZ_3l_Bbqq = " << log(ratio_Bbqq) << std::endl;
-          if (log(ratio_Bbqq) > branches["Match_ttZ_3l_Bbqq"].branchVal) {
-            branches["Match_ttZ_3l_Bbqq"].branchVal = log(ratio_Bbqq);
-            //std::cout << "New branch Match_ttZ_3l_Bbqq = " << branches["Match_ttZ_3l_Bbqq"].branchVal << std::endl;
-            branches["Full_match_ttZ_3l_Bbqq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
+          if (log(ratio_Bbqq) > branches["Match_ttZ_3l_GP_Bbqq"].branchVal) {
+            branches["Match_ttZ_3l_GP_Bbqq"].branchVal = log(ratio_Bbqq);
+            branches["Full_match_ttZ_3l_GP_Bbqq"].branchVal = ((*jets)->at(iJet1).genPartonMotherId == 6*lep_charge &&
                                                             (*jets)->at(iJet2).genPartonMotherId == -6*lep_charge &&
                                                             abs((*jets)->at(iJet3).genPartonMotherId) == 24 &&
                                                             abs((*jets)->at(iJet4).genPartonMotherId) == 24);
-            branches["ttZ_3l_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
-            branches["ttZ_3l_b_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
-            branches["ttZ_3l_q_1_CSV"].branchVal = (*jets)->at(iJet3).btagCombinedSecVertex;
-            branches["ttZ_3l_q_2_CSV"].branchVal = (*jets)->at(iJet4).btagCombinedSecVertex;
-            branches["ttZ_3l_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
-            branches["ttZ_3l_b_charge"].branchVal = lep_charge*(*jets)->at(iJet2).charge;
-            branches["ttZ_3l_top_mass_lep_B"].branchVal = top_mass_lep_B;
-            branches["ttZ_3l_W_mass_qq"].branchVal = W_mass_qq;
-            branches["ttZ_3l_W_sum_charge_qq"].branchVal = W_sum_charge_qq;
-            branches["ttZ_3l_top_mass_b_qq"].branchVal = top_mass_b_qq;
-            branches["ttZ_3l_ttbar_4j_MT_mass_ratio_Bbqq"].branchVal = ttbar_4j_MT_mass_ratio;
+            branches["ttZ_3l_GP_B_CSV"].branchVal = (*jets)->at(iJet1).btagCombinedSecVertex;
+            branches["ttZ_3l_GP_b_CSV"].branchVal = (*jets)->at(iJet2).btagCombinedSecVertex;
+            branches["ttZ_3l_GP_q_1_CSV"].branchVal = (*jets)->at(iJet3).btagCombinedSecVertex;
+            branches["ttZ_3l_GP_q_2_CSV"].branchVal = (*jets)->at(iJet4).btagCombinedSecVertex;
+            branches["ttZ_3l_GP_B_charge"].branchVal = lep_charge*(*jets)->at(iJet1).charge;
+            branches["ttZ_3l_GP_b_charge"].branchVal = lep_charge*(*jets)->at(iJet2).charge;
+            branches["ttZ_3l_GP_top_mass_lep_B"].branchVal = top_mass_lep_B;
+            branches["ttZ_3l_GP_W_mass_qq"].branchVal = W_mass_qq;
+            branches["ttZ_3l_GP_W_sum_charge_qq"].branchVal = W_sum_charge_qq;
+            branches["ttZ_3l_GP_top_mass_b_qq"].branchVal = top_mass_b_qq;
+            branches["ttZ_3l_GP_ttbar_4j_MT_mass_ratio_Bbqq"].branchVal = ttbar_4j_MT_mass_ratio;
           }
         } //end iJet4
       } //end iJet3
@@ -671,7 +658,7 @@ void MatchTester_ttZ_3l::evaluate() {
   
 }
 
-MatchTester_ttZ_3l::~MatchTester_ttZ_3l() {
+MatchTester_ttZ_3l_GP::~MatchTester_ttZ_3l_GP() {
 
 
   //Delete histograms BEFORE closing file  

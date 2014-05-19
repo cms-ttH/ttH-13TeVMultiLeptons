@@ -159,6 +159,7 @@ def draw_stack_plot(lepton_category, jet_tag_category, distribution):
                 if signal_sum > 0:
                     if signal_samples[sample_group]['scale'] == 'norm':
                         signal_histograms[sample_group].Scale(mc_sum / signal_sum)
+                        stack_plot_legend.AddEntry(signal_histograms[sample_group], '%s (%0.2f x %0.2f)' % (signal_samples[sample_group]['draw name'], signal_sum, (signal_histograms[sample_group].Integral() / signal_sum)), legend_option)
                     else:
                         signal_histograms[sample_group].Scale(signal_samples[sample_group]['scale'])
                         stack_plot_legend.AddEntry(signal_histograms[sample_group], '%s (%0.2f x %0.2f)' % (signal_samples[sample_group]['draw name'], signal_sum, (signal_histograms[sample_group].Integral() / signal_sum)), legend_option)
