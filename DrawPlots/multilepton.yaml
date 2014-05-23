@@ -1,8 +1,8 @@
-label: ss_v15
-output label: ss_v15
+label: testCodeV1
+output label: testCodeV1
 luminosity: 19450.0
-input_trees_directory: ~awoodard/releases/CMSSW_5_3_8_patch1/src/ttHMultileptonAnalysis/DrawPlots/tree_files
-output directory: histos_ss_v15
+input_trees_directory: tree_files
+output directory: histos_testCodeV1
 
 #options
 skip systematics: true
@@ -16,10 +16,10 @@ common cuts:
     pt20_20_htllv100: all_leptons_by_pt_2_pt > 20 && ((all_leptons_by_pt_1_pt + all_leptons_by_pt_2_pt + met_pt) > 100)
     nJets25_ge_2: numJets>=2
     2b_loose: (numLooseBJets >= 2 || numMediumBJets >= 1)
-    trigger: '((dataset.length() == 2 && (isDoubleMuTriggerPass || isDoubleElectronTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
-              (dataset.length() == 8 && isDoubleMuTriggerPass) ||
-              (dataset.length() == 14 && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass) ) ||
-              (dataset.length() == 4 && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass) )'
+    trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleElectronTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+              (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+              (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+              (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
     lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
     same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
 
@@ -102,7 +102,7 @@ samples:
     ttbarGStar_tt:
     tbZ_ll:
     WpWpqq:
-    WmWmqq:
+#    WmWmqq:
     WWDPI:
     ttH125:
     ttH125_tt:
@@ -186,10 +186,10 @@ distributions:
         axis labels: ['MHT', Events]
         binning: [*default_num_bins, 0, 250]
 
-    mindr_lep2_jet:
-        expression: mindr_lep2_jet
-        axis labels: ['min dR (lepton 2, jet)', Events]
-        binning: [*default_num_bins, 0, 3]
+#     mindr_lep2_jet:
+#         expression: mindr_lep2_jet
+#         axis labels: ['min dR (lepton 2, jet)', Events]
+#         binning: [*default_num_bins, 0, 3]
 
     met_1_all_leptons_by_pt_1_MT:
         expression: met_1_all_leptons_by_pt_1_MT
