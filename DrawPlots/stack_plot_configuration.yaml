@@ -1,7 +1,7 @@
 #input and output file names
-input file location: histos_ss_v15
-input file label: ss_v15
-output file location: pdf_ss_v15
+input file location: histos_testCodeV1
+input file label: testCodeV1
+output file location: pdf_testCodeV1
 
 #drawing options
 skip systematics: true
@@ -162,7 +162,7 @@ distributions:
     numMediumBJets: ['number of medium b-tagged jets', true, true]
     sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', true, true]
     mht: ['MHT', true, true]
-    mindr_lep2_jet: ['min dR (lepton 2, jet)', true, true]
+#    mindr_lep2_jet: ['min dR (lepton 2, jet)', true, true]
     met_1_all_leptons_by_pt_1_MT: ['MT (lepton 1, MET)', true, true]
     met_1_all_leptons_by_pt_2_MT: ['MT (lepton 2, MET)', true, true]
     sum_pt: ['Sum pT (leptons, jets)', true, true]
