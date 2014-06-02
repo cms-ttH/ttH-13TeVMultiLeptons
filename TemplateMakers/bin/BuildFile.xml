@@ -16,6 +16,8 @@
 <lib   name="TMVA" />
 <use   name="ttHMultileptonAnalysis/TemplateMakers" />
 <environment>
+<bin file="osTwoLep.C">
+</bin>
   <bin   file="ssTwoLep.C">
   </bin>
   <bin   file="csvSF.C">

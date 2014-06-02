@@ -1,7 +1,7 @@
 #input and output file names
 input file location: histos_OS_studies
-input file label: OS_v0
-output file location: pdf_OS_studies
+input file label: os_v1
+output file location: pdf_OS_studies/os_v1
 
 #drawing options
 skip systematics: true
@@ -21,17 +21,33 @@ luminosity error: 0.044
 trigger SF error: 0.02
 lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
 
-#Lepton categories: "draw name"
 lepton categories:
-    mu_mu: " #mu #mu "
-    mu_ele: " #mu #ele "
-    ele_ele: " e e "
+    mu_mu:
+        data samples: [DoubleMu]
+        #data sample: [inclusive_data]
+        #excluded samples: [inclusive_data_QF_sideband]
+        excluded samples: []
+        tex name: " #mu #mu "
+    mu_ele:
+        data samples: [MuEG]
+        #data sample: [inclusive_data]
+        excluded samples: []
+        tex name: " #mu e "
+    ele_ele:
+        data samples: [DoubleElectron]
+        #data sample: [inclusive_data]
+        excluded samples: []
+        tex name: " e e "
 
 #Jet-tag categories: "draw name"
 jet tag categories:
     eq3jeq2t: " + #eq3 jets + #eq2 tags"
-    ge4jeq2t: " + #geq4 jets + #eq2 tags"
+    eq4jeq2t: " + #eq4 jets + #eq2 tags"
     ge3t: " + #geq3 tags"
+    eq4j_bloose: " + #eq4 jets + loose tags"
+    eq5j_bloose: " + #eq5 jets + loose tags"
+    ge6j_bloose: " + #geq6 jets + loose tags"
+    
 
 #Systematics used in error bars
 systematics:
@@ -44,122 +60,144 @@ systematics:
 # Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
 
 signal samples:
-    ttH125:
-        draw name: "t#bar{t}H125"
-        color: kBlue
+    ttH125_tt:
+        draw name: "t#bar{t}H125_tt"
+        color: kGreen
+        samples: [ttH125_tt]
         stack or line: line
         line width: 2 # must be integer
         scale: norm
 
-#Samples in each group will be added together and appear as a single entry in the stack plot
-background sample groups:
+    ttH125_bb:
+        draw name: "t#bar{t}H125_bb"
+        color: kOrange
+        samples: [ttH125_bb]
+        stack or line: line
+        line width: 2 # must be integer
+        scale: norm
+
+    ttH125_WW:
+        draw name: "t#bar{t}H125_WW"
+        color: kBlue
+        samples: [ttH125_WW]
+        stack or line: line
+        line width: 2 # must be integer
+        scale: norm
+
+#     ttH125_WW_ll:
+#         draw name: "t#bar{t}H125_WW_ll"
+#         color: kBlue
+#         samples: [ttH125_WW_ll]
+#         stack or line: line
+#         line width: 2 # must be integer
+#         scale: norm
+
+#     ttH125_WW_lj:
+#         draw name: "t#bar{t}H125_WW_lj"
+#         color: kCyan
+#         samples: [ttH125_WW_lj]
+#         stack or line: line
+#         line width: 2 # must be integer
+#         scale: norm
+
+#     ttH125_WW_jj:
+#         draw name: "t#bar{t}H125_WW_jj"
+#         color: kMagenta
+#         samples: [ttH125_WW_jj]
+#         stack or line: line
+#         line width: 2 # must be integer
+#         scale: norm
+
+# Samples in each group will be added together and appear as a single entry in the stack plot
+background samples:
     Wjets:
         draw name: Wjets
         color: kGreen
         systematics: all
-        samples:
-            - wjets_0p
-            - wjets_1p
-            - wjets_2p
-            - wjets_3p
-            - wjets_4p
+        samples: [wjets_0p, wjets_1p, wjets_2p, wjets_3p, wjets_4p]
+
     diboson:
         draw name: diboson
         color: kAzure+2
         systematics: all
-        samples:
-            - ww
-            - wz
-            - zz
+        samples: [ww, wz, zz]
 
     Zjets:
         draw name: Zjets
         color: kBlue
         systematics: all
-        samples:
-            - zjets_0p
-            - zjets_1p
-            - zjets_2p
-            - zjets_3p
-            - zjets_4p
-            - zjets_lowmass
+        samples: [zjets_0p, zjets_1p, zjets_2p, zjets_3p, zjets_4p, zjets_lowmass]
 
     single_top:
         draw name: single_top
         color: kMagenta
         systematics: all
-        samples:
-            - singlet_s
-            - singlet_t
-            - singlet_tW
-            - singletbar_s
-            - singletbar_t
-            - singletbar_tW
+        samples: [singlet_s, singlet_t, singlet_tW, singletbar_s, singletbar_t, singletbar_tW]
 
     ttbar:
         draw name: ttbar
         color: kRed-7
         systematics: all
-        samples:
-            - ttbar_jj
-            - ttbar_lj
-            - ttbar_ll
+        samples: [ttbar_jj, ttbar_lj, ttbar_ll]
 
     ttbar_cc:
         draw name: ttbar_cc
         color: kRed+1
         systematics: all
-        samples:
-            - ttbar_cc_jj
-            - ttbar_cc_lj
-            - ttbar_cc_ll
+        samples: [ttbar_cc_jj, ttbar_cc_lj, ttbar_cc_ll]
 
     ttbar_b:
         draw name: ttbar_b
         color: kRed-2
         systematics: all
-        samples:
-            - ttbar_b_jj
-            - ttbar_b_lj
-            - ttbar_b_ll
+        samples: [ttbar_b_jj, ttbar_b_lj, ttbar_b_ll]
 
     ttbar_bb:
         draw name: ttbar_bb
         color: kRed+3
         systematics: all
-        samples:
-            - ttbar_bb_jj
-            - ttbar_bb_lj
-            - ttbar_bb_ll
+        samples: [ttbar_bb_jj, ttbar_bb_lj, ttbar_bb_ll]
 
-#Samples, ordered bottom-to-top
-background samples:
-    ttbarZ:
-        draw name: "t#bar{t}Z"
+    ttbarV:
+        draw name: "t#bar{t}V"
         color: kBlue-10
         systematics: all
+        samples: [ttbarW, ttbarZ]
 
-    ttbarW:
-        draw name: "t#bar{t}W"
-        color: kBlue-10
-        systematics: all
 
 #distribution: [title, underflow, overflow]
 distributions:
-    numJets: [number of jets, false, false]
-    numMediumBJets: [number of medium b-tagged jets, false, false]
-    numAllLeptons: [number of leptons, false, false]
-    leptons_by_pt_1_pt: [First lepton pT, false, false]
-    leptons_by_pt_2_pt: [Second lepton pT, false, false]
-    leptons_by_pt_1_eta: [First lepton eta, false, false]
-    leptons_by_pt_2_eta: [Second lepton eta, false, false]
-    jets_by_pt_1_pt: [First jet pT, false, false]
-    jets_by_pt_2_pt: [Second jet pT, false, false]
-    jets_by_pt_3_pt: [Third jet pT, false, false]
-    mass_leplep: [dilepton mass, false, false]
-    dR_leplep: [dR between leptons, false, false]
-    met_pt: [MET, false, false]
-    mht: [MHT, false, false]
-    sum_pt: [Sum pT (tight), false, false]
-
-
+    numJets: ['number of 25GeV jets', false, true]
+    numJets_30: ['number of 30GeV jets', false, true]
+    numJets_fromHiggs: ['number of 25GeV jets from Higgs', false, true]
+    numJets_fromHiggs_30: ['number of 30GeV jets from Higgs', false, true]
+    numMediumBJets: ['number of medium b-tagged jets', false, true]
+    numAllLeptons: ['number of leptons', false, true]
+    leptons_by_pt_1_pt: ['First lepton pT', false, true]
+    leptons_by_pt_2_pt: ['Second lepton pT', false, true]
+    leptons_by_pt_1_eta: ['First lepton eta', false, true]
+    leptons_by_pt_2_eta: ['Second lepton eta', false, true]
+    jets_by_pt_1_pt: ['First jet pT', false, true]
+    jets_by_pt_2_pt: ['Second jet pT', false, true]
+    jets_by_pt_3_pt: ['Third jet pT', false, true]
+    mass_leplep: ['dilepton mass', false, true]
+    dR_leplep: ['dR between leptons', false, true]
+    met_pt: ['MET', false, true]
+    mht: ['MHT', false, true]
+    sum_pt: ['Sum pT (tight)', false, true]
+    dPhi_leplep: ['dPhi between leptons', false, true]
+    sum_jet_mass: ['Sum mass of all jets', false, true]
+    sum_non_tagged_jet_mass: ['Sum mass of non-tagged jets', false, true]
+    WLike_dijet_mass: ['dijet mass closest to W mass', false, true]
+    mass_met_leplep: ['Mass of MET and first two leptons', false, true]
+    MT_met_leplep: ['MT of MET and first two leptons', false, true]
+    dR_met_leplep: ['dR between MET and first two leptons', false, true]
+    dPhi_met_leplep: ['dPhi between MET and first two leptons', false, true]
+    dPhi_met_lep1: ['dPhi between MET and lepton 1', false, true]
+    dPhi_met_lep2: ['dPhi between MET and lepton 2', false, true]
+    min_dPhi_metjet: ['Minimum dPhi between MET and jets', false, true]
+    max_dPhi_metjet: ['Maximum dPhi between MET and jets', false, true]
+    dPhi_jets_fromHiggs: ['dPhi between jets from Higgs', false, true]
+    dR_jets_fromHiggs: ['dR between jets from Higgs', false, true]
+    min_dPhi_metjet_fromHiggs: ['Minimum dPhi between jets from Higgs and MET', false, true]
+    max_dPhi_metjet_fromHiggs: ['Maximum dPhi between jets from Higgs and MET', false, true]
