@@ -25,6 +25,9 @@ public:
   std::set <string> doubleEleTriggerNames;
   std::set <string> muonEleTriggerNames;
   std::set <string> tripleEleTriggerNames;
+  std::set <string> metTriggerNames;
+  std::set <string> singleMuTriggerNames;
+  std::set <string> singleEleTriggerNames;
 };
 
 CheckTwoLepTrigger::CheckTwoLepTrigger(HelperLeptonCore * in, BNtriggerCollection **_hltCollection):
@@ -37,6 +40,9 @@ CheckTwoLepTrigger::CheckTwoLepTrigger(HelperLeptonCore * in, BNtriggerCollectio
   branches["isDoubleElectronTriggerPass"] = BranchInfo<int>("isDoubleElectronTriggerPass");
   branches["isMuEGTriggerPass"] = BranchInfo<int>("isMuEGTriggerPass");
   branches["isTripleElectronTriggerPass"] = BranchInfo<int>("isTripleElectronTriggerPass");
+  branches["isMETTriggerPass"] = BranchInfo<int>("isMETTriggerPass");
+  branches["isSingleMuTriggerPass"] = BranchInfo<int>("isSingleMuTriggerPass");
+  branches["isSingleElectronTriggerPass"] = BranchInfo<int>("isSingleElectronTriggerPass");
 
   if(myHelper->analysisYear == "2011"){
     doubleMuonTriggerNames.insert("HLT_DoubleMu7_v");
@@ -60,11 +66,17 @@ CheckTwoLepTrigger::CheckTwoLepTrigger(HelperLeptonCore * in, BNtriggerCollectio
     muonEleTriggerNames.insert("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     muonEleTriggerNames.insert("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v");
     tripleEleTriggerNames.insert("HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v");
-
-    //     mc_hlt_MET_trigger_collection.push_back("HLT_DiCentralPFJet30_PFMET80_BTagCSV07_v");
-    //     mc_hlt_MET_trigger_collection.push_back("HLT_MET120_HBHENoiseCleaned_v");
-    //     mc_hlt_MET_trigger_collection.push_back("HLT_MET200_v");
-    //     mc_hlt_MET_trigger_collection.push_back("HLT_PFMET150_v");
+    metTriggerNames.insert("HLT_MET120_HBHENoiseCleaned_v");
+    metTriggerNames.insert("HLT_MET200_v");
+    // //These triggers depend on L1_ETM40, which is prescaled in column 0
+    // //See run 208390, https://cmswbm.web.cern.ch/cmswbm/cmsdb/servlet/TriggerMode?KEY=l1_hlt_collisions_2012/v150
+    // //Effect on efficiency is minimal
+    //metTriggerNames.insert("HLT_DiCentralJetSumpT100_dPhi05_DiCentralPFJet60_25_PFMET100_HBHENoiseCleaned_v");
+    //metTriggerNames.insert("HLT_DiCentralPFJet30_PFMET80_BTagCSV07_v");
+    //metTriggerNames.insert("HLT_PFMET150_v");
+    singleMuTriggerNames.insert("HLT_IsoMu24_eta2p1_v");
+    singleMuTriggerNames.insert("HLT_IsoMu24_v");
+    singleEleTriggerNames.insert("HLT_Ele27_WP80_v");
   }
 }
 
@@ -82,6 +94,9 @@ void CheckTwoLepTrigger::evaluate() {
   bool twoEleTrigFired = false;
   bool muonEleTrigFired = false;
   bool tripleEleTrigFired = false;
+  bool metTrigFired = false;
+  bool singleMuTrigFired = false;
+  bool singleEleTrigFired = false;
 
   for (BNtriggerCollection::iterator iTrig = (*hltCollection)->begin();
        iTrig != (*hltCollection)->end();
@@ -113,12 +128,30 @@ void CheckTwoLepTrigger::evaluate() {
       if (iTrig->pass == 1)
         tripleEleTrigFired = true;
     }
+    
+    if (metTriggerNames.find(trigName) != metTriggerNames.end()) {
+      if (iTrig->pass == 1)
+        metTrigFired = true;
+    }
+    
+    if (singleMuTriggerNames.find(trigName) != singleMuTriggerNames.end()) {
+      if (iTrig->pass == 1)
+        singleMuTrigFired = true;
+    }
+    
+    if (singleEleTriggerNames.find(trigName) != singleEleTriggerNames.end()) {
+      if (iTrig->pass == 1)
+        singleEleTrigFired = true;
+    }
   }// end for each trigger
 
   branches["isDoubleMuTriggerPass"].branchVal = twoMuonTrigFired ? 1 : 0;
   branches["isDoubleElectronTriggerPass"].branchVal = twoEleTrigFired ? 1 : 0;
   branches["isMuEGTriggerPass"].branchVal = muonEleTrigFired ? 1 : 0;
   branches["isTripleElectronTriggerPass"].branchVal = tripleEleTrigFired ? 1 : 0;
+  branches["isMETTriggerPass"].branchVal = metTrigFired ? 1 : 0;
+  branches["isSingleMuTriggerPass"].branchVal = singleMuTrigFired ? 1 : 0;
+  branches["isSingleElectronTriggerPass"].branchVal = singleEleTrigFired ? 1 : 0;
 }
 
 std::string CheckTwoLepTrigger::removeVersion(std::string input) {

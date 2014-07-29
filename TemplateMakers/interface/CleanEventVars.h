@@ -53,6 +53,8 @@ CleanEventVars::CleanEventVars(HelperLeptonCore *in, BNeventCollection **_events
 {
 
   branches["isCleanEvent"] = BranchInfo<int>("isCleanEvent");
+  branches["numPV"] = BranchInfo<int>("numPV");
+  branches["numGoodPV"] = BranchInfo<int>("numGoodPV");
 
   this->resetVal = KinematicVariableConstants::INT_INIT;
 
@@ -66,6 +68,10 @@ void CleanEventVars::evaluate () {
 
   isData = myHelper->isData;
 
+  int numGoodPV = calculateNumGoodPVs(*primaryVertexes);
+  branches["numPV"].branchVal = (*primaryVertexes)->size();
+  branches["numGoodPV"].branchVal = numGoodPV;
+    
   if (!isData) {
 
     // case MC: don't let any event fail
@@ -78,8 +84,7 @@ void CleanEventVars::evaluate () {
 
     BNevent & myEvent = (*events)->at(0);
 
-    int numPV = calculateNumGoodPVs(*primaryVertexes);
-    passGoodVertex =  (numPV >0) ? true : false;
+    passGoodVertex =  (numGoodPV >0) ? true : false;
 
     passFilterOutScraping = (myEvent.FilterOutScraping==1) ? true : false;
 

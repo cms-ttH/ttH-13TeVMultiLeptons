@@ -461,7 +461,7 @@ void MatchTester_ttW_SS::evaluate() {
         }
         
         for (unsigned int iJet3 = 0; iJet3 < (*jets)->size(); iJet3++) {
-          if (iJet3 == iJet1 || iJet3 == iJet1) continue;
+          if (iJet3 == iJet1 || iJet3 == iJet2) continue;
           //std::cout << "iJet3 = " << iJet1 << std::endl;
           jet3_vect.SetPtEtaPhiE((*jets)->at(iJet3).pt, (*jets)->at(iJet3).eta, (*jets)->at(iJet3).phi, (*jets)->at(iJet3).energy);
           jet3_vect_trans.SetPtEtaPhiE((*jets)->at(iJet3).pt, 0, (*jets)->at(iJet3).phi, (*jets)->at(iJet3).pt);

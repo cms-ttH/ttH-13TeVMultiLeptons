@@ -135,21 +135,21 @@ void DataDrivenFR<collectionType>::evaluate() {
         weight *= -FR/(1.0-FR);
         if (weight == 1 || weight == 0) std::cout << "Error: DataDrivenFR weight = " << weight << std::endl;
       }
-      else {
-        QF_charge[num_passed_leptons] = (ptr((*selCollection)->at(iObj)))->tkCharge;
-        num_passed_leptons += 1;
-        if (isElectron==1) {
-          int pt_bin  = std::max(1, std::min(FR_QF_el->GetNbinsX(), FR_QF_el->GetXaxis()->FindBin(lep_pt)));
-          int eta_bin  = std::max(1, std::min(FR_QF_el->GetNbinsY(), FR_QF_el->GetYaxis()->FindBin(lep_eta)));
-          FR_QF[num_electrons] = FR_QF_el->GetBinContent(pt_bin, eta_bin);
-          QF_charge[num_passed_leptons] = ((BNelectron*)ptr((*selCollection)->at(iObj)))->tkCharge;
-          num_electrons += 1;
-          if (FR_QF_el->GetBinContent(pt_bin, eta_bin) == 1 || FR_QF_el->GetBinContent(pt_bin, eta_bin) == 0) {
-            std::cout << "Error: QF SF = " << FR_QF_el->GetBinContent(pt_bin, eta_bin) <<
-              ", pt = " << lep_pt << ", eta = " << lep_eta << ", pt_bin = " << pt_bin << ", eta_bin = " << eta_bin << std::endl;
-          }
+      //else { //Compute QF for all electrons, not just tight electrons
+      QF_charge[num_passed_leptons] = (ptr((*selCollection)->at(iObj)))->tkCharge;
+      num_passed_leptons += 1;
+      if (isElectron==1) {
+        int pt_bin  = std::max(1, std::min(FR_QF_el->GetNbinsX(), FR_QF_el->GetXaxis()->FindBin(lep_pt)));
+        int eta_bin  = std::max(1, std::min(FR_QF_el->GetNbinsY(), FR_QF_el->GetYaxis()->FindBin(lep_eta)));
+        FR_QF[num_electrons] = FR_QF_el->GetBinContent(pt_bin, eta_bin);
+        QF_charge[num_passed_leptons] = ((BNelectron*)ptr((*selCollection)->at(iObj)))->tkCharge;
+        num_electrons += 1;
+        if (FR_QF_el->GetBinContent(pt_bin, eta_bin) == 1 || FR_QF_el->GetBinContent(pt_bin, eta_bin) == 0) {
+          std::cout << "Error: QF SF = " << FR_QF_el->GetBinContent(pt_bin, eta_bin) <<
+            ", pt = " << lep_pt << ", eta = " << lep_eta << ", pt_bin = " << pt_bin << ", eta_bin = " << eta_bin << std::endl;
         }
       }
+        //} //Compute QF for all electrons, not just tight electrons
     } //end if ( iObj < number_of_leptons )
   } //end loop over iObj
 
