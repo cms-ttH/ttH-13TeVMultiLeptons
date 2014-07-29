@@ -1,0 +1,487 @@
+label: ttV_lepCuts_v1
+output label: ttV_lepCuts_v1
+luminosity: 19450.0
+input_trees_directory: tree_files
+output directory: histos_4l_ttZ_studies_4t_lepCut
+limits output directory: histos_4l_ttZ_studies_4t_lepCut_forLimits
+
+#options
+skip systematics: true
+limits skip systematics: false
+
+#cuts
+common cuts:
+    cleanup: min_mass_leplep_all > 12
+    4_leptons: numAllLeptons >= 4
+    z_selection: abs(ZLike_mass_leplep_SFOS_all-91.2) < 10
+    lepton_pt: all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10
+    lepCSV: all_leptons_by_pt_1_lepCut > -1 && all_leptons_by_pt_2_lepCut > -1 && all_leptons_by_pt_3_lepCut > -1 && all_leptons_by_pt_4_lepCut > -1
+    4tight: all_leptons_by_pt_1_lepCut == 2 && all_leptons_by_pt_2_lepCut == 2 && all_leptons_by_pt_3_lepCut == 2 && all_leptons_by_pt_4_lepCut == 2
+    ##Not a common cut - for ZZ studies only
+    #2_SFOS_pairs: ZLike_mass_leplep_SFOS_all > 0 && ZLike_mass_leplep_SFOS_all_2 > 0
+
+jet tag categories:
+#     ge0j: ['numJets >= 0']
+#     ge2j: ['numJets >= 2']
+#     ge0j_Zpeak: ['numJets >= 0 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 10']
+#     ge2j_Zpeak: ['numJets >= 2 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 10']
+#     ge0j_Zmask: ['numJets >= 0 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 10']
+#     ge2j_Zmask: ['numJets >= 2 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 10']
+# #     ge0j_metLD: ['numJets >= 0 && met_ld > 0.2']
+# #     ge2j_metLD: ['numJets >= 2 && met_ld > 0.2']
+# #     ge0j_1bloose: ['numJets >= 0 && numLooseBJets >= 1']
+# #     ge2j_1bloose: ['numJets >= 2 && numLooseBJets >= 1']
+# #     ge0j_metLD_1bloose: ['numJets >= 0 && met_ld > 0.2 && numLooseBJets >= 1']
+# #     ge2j_metLD_1bloose: ['numJets >= 2 && met_ld > 0.2 && numLooseBJets >= 1']
+#     ge0j_Zpeak_metLD_1bloose: ['numJets >= 0  && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 10 && met_ld > 0.2 && numLooseBJets >= 1']
+    #ge2j_Zpeak_1bloose: ['numJets >= 2  && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 10 && met_ld > 0.2']
+    ge2j_Zpeak_lowMet_lf: ['numJets >= 2  && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 10 && (met_ld < 0.2 || numLooseBJets == 0)']
+    ge2j_Zpeak_metLD_1bloose: ['numJets >= 2  && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 10 && met_ld > 0.2 && numLooseBJets >= 1']
+    #ge2j_Zmask_1bloose: ['numJets >= 2  && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 10 && numLooseBJets >= 1']
+    ge2j_Zmask_lowMet_lf: ['numJets >= 2  && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 10 && (met_ld < 0.2 || numLooseBJets == 0)']
+    ge2j_Zmask_metLD_1bloose: ['numJets >= 2  && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 10 && met_ld > 0.2 && numLooseBJets >= 1']
+
+#     2lep_pt: ['all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10']
+#     3lep_pt: ['all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10']
+#     4lep_pt: ['all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10']
+
+#     2lep_pt_Zpeak1_Zpeak2: ['abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10']
+#     3lep_pt_Zpeak1_Zpeak2: ['abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10']
+#     4lep_pt_Zpeak1_Zpeak2: ['abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10']
+
+#     2lep_pt_Zpeak1_Zmask2: ['abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10']
+#     3lep_pt_Zpeak1_Zmask2: ['abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10']
+#     4lep_pt_Zpeak1_Zmask2: ['abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10']
+
+#     2lep_pt_Zmask1: ['abs(ZLike_mass_leplep_SFOS_all-91.2) > 10 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10']
+#     3lep_pt_Zmask1: ['abs(ZLike_mass_leplep_SFOS_all-91.2) > 10 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10']
+#     4lep_pt_Zmask1: ['abs(ZLike_mass_leplep_SFOS_all-91.2) > 10 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10']
+
+#     eq0j_2lep_pt: ['numJets == 0 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10']
+#     eq0j_3lep_pt: ['numJets == 0 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10']
+#     eq0j_4lep_pt: ['numJets == 0 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10']
+
+#     eq0j_2lep_pt_Zpeak1_Zpeak2: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10']
+#     eq0j_3lep_pt_Zpeak1_Zpeak2: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10']
+#     eq0j_4lep_pt_Zpeak1_Zpeak2: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) < 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10']
+
+#     eq0j_2lep_pt_Zpeak1_Zmask2: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10']
+#     eq0j_3lep_pt_Zpeak1_Zmask2: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10']
+#     eq0j_4lep_pt_Zpeak1_Zmask2: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) < 10 && abs(ZLike_mass_leplep_SFOS_all_2-91.2) > 15 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10']
+
+#     eq0j_2lep_pt_Zmask1: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) > 10 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10']
+#     eq0j_3lep_pt_Zmask1: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) > 10 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10']
+#     eq0j_4lep_pt_Zmask1: ['numJets == 0 && abs(ZLike_mass_leplep_SFOS_all-91.2) > 10 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10 && all_leptons_by_pt_4_pt > 10']
+
+
+lepton categories:
+    mu_mu:
+        data samples: [inclusive_data]
+        cuts:
+            mu_mu: 'all_nonZ_leptons_by_pt_1_isMuon && all_nonZ_leptons_by_pt_2_isMuon'
+            trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleMuTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+                (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+                (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+                (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+# #     mu_ele:
+# #         data samples: [MuEG]
+# #         cuts:
+# #             mu_ele: numAllMuons == numAllElectrons
+# #             isMuEGTriggerPass: isMuEGTriggerPass
+    ele_ele:
+        data samples: [inclusive_data]
+        cuts:
+            ele_ele: '!all_nonZ_leptons_by_pt_1_isMuon && !all_nonZ_leptons_by_pt_2_isMuon'
+            trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleMuTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+                (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+                (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+                (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+    4l:
+        data samples: [inclusive_data]
+        cuts:
+            trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleMuTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+                (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+                (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+                (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+
+weights:
+    - RecoIDIsoSIPSF_4lep
+    - weight_PU
+    - topPtWgt
+    - csvWgtlf
+    - csvWgthf
+    - triggerSF
+    - lepCutTight4LepSF
+
+systematics:
+    - nominal
+    - weight_PUUp
+    - weight_PUDown
+    - topPtWgtDown
+    - topPtWgtUp
+    - csvWeightHFUp
+    - csvWeightHFDown
+    - csvWeightLFUp
+    - csvWeightLFDown
+
+#weights: all ---> weight by everything in "weights" section above
+#weights: none ---> don't apply any weight
+#weights: all+weight1 ---> weight by everything in the "weights" section above, and also by weight1
+#weights: all+weight1-weight2 ---> weight by everything in the "weights" section above except for weight2, and also by weight1
+#weights: weight1+weight2 ---> weight only by weight1 and weight2
+#same idea for systematics
+samples:
+    ttH125:
+    wz_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    wz_lf_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    wz_cc_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    wz_b_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    wz_bb_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_lowmll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_lf_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_cc_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_b_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_bb_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    www:
+    wwz:
+    #zjets:
+    #zjets_1p:
+    #zjets_2p:
+    #zjets_3p:
+    #zjets_4p:
+    #ttbar_lj:
+    ttbar_ll:
+    ttbarW:
+    ttbarWW:
+    ttbarZ:
+    ttbarG:
+    ttbarGStar_ee:
+    ttbarGStar_mm:
+    ttbarGStar_tt:
+    tbZ_ll:
+    WpWpqq:
+    #WmWmqq: #Tree does not exist yet
+    WWDPI:
+    inclusive_data:
+        weights: none
+        systematics: nominal
+    DoubleMu:
+        weights: none
+        systematics: nominal
+    DoubleElectron:
+        weights: none
+        systematics: nominal
+    inclusive_data_NP_sideband:
+        tree sample: inclusive_data
+        additional cuts: ['(all_leptons_by_pt_1_lepCut < 2 || all_leptons_by_pt_2_lepCut < 2 || all_leptons_by_pt_3_lepCut < 2 || all_leptons_by_pt_4_lepCut < 2)']
+        cuts to remove: ['all_leptons_by_pt_1_lepCut == 2 && all_leptons_by_pt_2_lepCut == 2 && all_leptons_by_pt_3_lepCut == 2 && all_leptons_by_pt_4_lepCut == 2']
+        weights: DataDrivenFRLepCut_NP_4_tight
+        systematics: [40PercentRateUp, 40PercentRateDown]
+    DoubleMu_NP_sideband:
+        tree sample: DoubleMu
+        additional cuts: ['(all_leptons_by_pt_1_lepCut < 2 || all_leptons_by_pt_2_lepCut < 2 || all_leptons_by_pt_3_lepCut < 2 || all_leptons_by_pt_4_lepCut < 2)']
+        cuts to remove: ['all_leptons_by_pt_1_lepCut == 2 && all_leptons_by_pt_2_lepCut == 2 && all_leptons_by_pt_3_lepCut == 2 && all_leptons_by_pt_4_lepCut == 2']
+        weights: DataDrivenFRLepCut_NP_4_tight
+        systematics: [40PercentRateUp, 40PercentRateDown]
+    DoubleElectron_NP_sideband:
+        tree sample: DoubleElectron
+        additional cuts: ['(all_leptons_by_pt_1_lepCut < 2 || all_leptons_by_pt_2_lepCut < 2 || all_leptons_by_pt_3_lepCut < 2 || all_leptons_by_pt_4_lepCut < 2)']
+        cuts to remove: ['all_leptons_by_pt_1_lepCut == 2 && all_leptons_by_pt_2_lepCut == 2 && all_leptons_by_pt_3_lepCut == 2 && all_leptons_by_pt_4_lepCut == 2']
+        weights: DataDrivenFRLepCut_NP_4_tight
+        systematics: [40PercentRateUp, 40PercentRateDown]
+
+
+aliases:
+    - &default_num_bins 10
+
+distributions:
+    numAllMuons:
+        expression: numAllMuons
+        axis labels: ['number of muons', Events]
+        binning: [5, -0.5, 4.5]
+
+    numAllNonZMuons:
+        expression: ( (all_nonZ_leptons_by_pt_1_isMuon == 1) + (all_nonZ_leptons_by_pt_2_isMuon == 1) )
+        axis labels: ['number of non-Z muons', Events]
+        binning: [3, -0.5, 2.5]
+
+    numJets:
+        expression: numJets
+        axis labels: ['number of jets', Events]
+        binning: [8, -0.5, 7.5]
+
+    numLooseBJets:
+        expression: numLooseBJets
+        axis labels: ['number of loose b-tagged jets', Events]
+        binning: [5, -0.5, 4.5]
+
+    numMediumBJets:
+        expression: numMediumBJets
+        axis labels: ['number of medium b-tagged jets', Events]
+        binning: [4, -0.5, 3.5]
+
+    numTightBJets:
+        expression: numTightBJets
+        axis labels: ['number of tight b-tagged jets', Events]
+        binning: [4, -0.5, 3.5]
+
+    all_Z_leptons_by_pt_1_pt:
+        expression: all_Z_leptons_by_pt_1_pt
+        axis labels: ['First Z lepton pT', Events]
+        binning: [*default_num_bins, 0, 300]
+
+#     all_Z_leptons_by_pt_1_pt_med:
+#         expression: all_Z_leptons_by_pt_1_pt
+#         axis labels: ['First Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 100]
+
+#     all_Z_leptons_by_pt_1_pt_low:
+#         expression: all_Z_leptons_by_pt_1_pt
+#         axis labels: ['First Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 40]
+
+    all_Z_leptons_by_pt_2_pt:
+        expression: all_Z_leptons_by_pt_2_pt
+        axis labels: ['Second Z lepton pT', Events]
+        binning: [*default_num_bins, 0, 100]
+
+#     all_Z_leptons_by_pt_2_pt_med:
+#         expression: all_Z_leptons_by_pt_2_pt
+#         axis labels: ['Second Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 50]
+
+#     all_Z_leptons_by_pt_2_pt_low:
+#         expression: all_Z_leptons_by_pt_2_pt
+#         axis labels: ['Second Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 30]
+
+    all_nonZ_leptons_by_pt_1_pt:
+        expression: all_nonZ_leptons_by_pt_1_pt
+        axis labels: ['First non-Z lepton pT', Events]
+        binning: [*default_num_bins, 0, 200]
+
+#     all_nonZ_leptons_by_pt_1_pt_med:
+#         expression: all_nonZ_leptons_by_pt_1_pt
+#         axis labels: ['First non-Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 100]
+
+#     all_nonZ_leptons_by_pt_1_pt_low:
+#         expression: all_nonZ_leptons_by_pt_1_pt
+#         axis labels: ['First non-Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 40]
+
+    all_nonZ_leptons_by_pt_2_pt:
+        expression: all_nonZ_leptons_by_pt_2_pt
+        axis labels: ['Second non-Z lepton pT', Events]
+        binning: [*default_num_bins, 0, 100]
+
+#     all_nonZ_leptons_by_pt_2_pt_med:
+#         expression: all_nonZ_leptons_by_pt_2_pt
+#         axis labels: ['Second non-Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 50]
+
+#     all_nonZ_leptons_by_pt_2_pt_low:
+#         expression: all_nonZ_leptons_by_pt_2_pt
+#         axis labels: ['Second non-Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 30]
+
+    min_nonZ_lepton_eta:
+        expression: min(abs(all_nonZ_leptons_by_pt_1_eta), abs(all_nonZ_leptons_by_pt_2_eta))
+        axis labels: ['Min non-Z lepton eta', Events]
+        binning: [*default_num_bins, 0, 2.5]
+
+    max_nonZ_lepton_eta:
+        expression: max(abs(all_nonZ_leptons_by_pt_1_eta), abs(all_nonZ_leptons_by_pt_2_eta))
+        axis labels: ['Max non-Z lepton eta', Events]
+        binning: [*default_num_bins, 0, 2.5]
+
+# #     all_nonZ_leptons_by_pt_1_eta:
+# #         expression: abs(all_nonZ_leptons_by_pt_1_eta)
+# #         axis labels: ['Non-Z lepton eta', Events]
+# #         binning: [*default_num_bins, 0, 2.5]
+
+# #     all_nonZ_leptons_by_pt_1_jetBTagCSV:
+# #         expression: abs(all_nonZ_leptons_by_pt_1_jetBTagCSV)
+# #         axis labels: ['Non-Z lepton jetBTagCSV', Events]
+# #         binning: [*default_num_bins, 0, 1]
+
+    jets_by_pt_1_pt:
+        expression: jets_by_pt_1_pt
+        axis labels: ['First jet pT', Events]
+        binning: [*default_num_bins, 20, 300]
+
+    jets_by_pt_2_pt:
+        expression: jets_by_pt_2_pt
+        axis labels: ['Second jet pT', Events]
+        binning: [*default_num_bins, 20, 250]
+
+    ## Should add max jet eta
+
+#     min_mass_leplep_all:
+#         expression: min_mass_leplep_all
+#         axis labels: ['min dilepton mass', Events]
+#         binning: [*default_num_bins, 10, 110]
+
+    ZLike_mass_leplep_SFOS_all:
+        expression: ZLike_mass_leplep_SFOS_all
+        axis labels: ['Z mass', Events]
+        binning: [*default_num_bins, 76.2, 106.2]
+
+#     ZLike_mass_leplep_SFOS_all_med:
+#         expression: ZLike_mass_leplep_SFOS_all
+#         axis labels: ['Z mass', Events]
+#         binning: [24, 0, 120]
+
+#     ZLike_mass_leplep_SFOS_all_low:
+#         expression: ZLike_mass_leplep_SFOS_all
+#         axis labels: ['Z mass', Events]
+#         binning: [20, 0, 40]
+
+    ZLike_pt_leplep_SFOS_all:
+        expression: ZLike_pt_leplep_SFOS_all
+        axis labels: ['Z pt', Events]
+        binning: [*default_num_bins, 0, 300]
+
+    ZLike_pt_leplep_SFOS_all_low:
+        expression: ZLike_pt_leplep_SFOS_all
+        axis labels: ['Z pt', Events]
+        binning: [*default_num_bins, 0, 100]
+
+    ZLike_eta_leplep_SFOS_all:
+        expression: ZLike_eta_leplep_SFOS_all
+        axis labels: ['Z eta', Events]
+        binning: [*default_num_bins, -5, 5]
+
+    ZLike_mass_leplep_SFOS_all_2:
+        expression: ZLike_mass_leplep_SFOS_all_2
+        axis labels: ['Z mass', Events]
+        binning: [*default_num_bins, 0, 300]
+
+#     ZLike_mass_leplep_SFOS_all_2_med:
+#         expression: ZLike_mass_leplep_SFOS_all_2
+#         axis labels: ['Z mass', Events]
+#         binning: [24, 0, 120]
+
+#     ZLike_mass_leplep_SFOS_all_2_low:
+#         expression: ZLike_mass_leplep_SFOS_all_2
+#         axis labels: ['Z mass', Events]
+#         binning: [20, 0, 40]
+
+    met_pt:
+        expression: met_pt
+        axis labels: ['MET', Events]
+        binning: [*default_num_bins, 0, 200]
+
+#     met_pt_low:
+#         expression: met_pt
+#         axis labels: ['MET', Events]
+#         binning: [*default_num_bins, 0, 60]
+
+    mht:
+        expression: mht
+        axis labels: ['MHT', Events]
+        binning: [*default_num_bins, 0, 200]
+
+#     mht_low:
+#         expression: mht
+#         axis labels: ['MHT', Events]
+#         binning: [*default_num_bins, 0, 60]
+
+    met_ld:
+        expression: met_pt*0.6 + mht*0.4
+        axis labels: ['MetLD', Events]
+        binning: [*default_num_bins, 0, 200]
+        
+#     met_ld_low:
+#         expression: met_pt*0.6 + mht*0.4
+#         axis labels: ['MetLD', Events]
+#         binning: [*default_num_bins, 0, 60]
+        
+    sum_pt:
+        expression: sum_pt
+        axis labels: ['Sum pT', Events]
+        binning: [*default_num_bins, 0, 1200]
+
+    sum_jet_pt:
+        expression: sum_jet_pt
+        axis labels: ['Sum jet pT', Events]
+        binning: [*default_num_bins, 0, 1000]
+
+    mass_of_jets:
+        expression: mass_of_jets
+        axis labels: ['Mass of all jets', Events]
+        binning: [*default_num_bins, 0, 1000]
+
+# #     WLike_dijet_mass_X1b:
+# #         expression: WLike_dijet_mass_X1b
+# #         axis labels: ['W mass (exclude one b-jet)', Events]
+# #         binning: [*default_num_bins, 0, 200]
+
+# #     WLike_dijet_mass_X2b:
+# #         expression: WLike_dijet_mass_X2b
+# #         axis labels: ['W mass (exclude two b-jets)', Events]
+# #         binning: [*default_num_bins, 0, 200]
+
+#     WLike_MT_met_lep:
+#         expression: WLike_MT_met_lep
+#         axis labels: ['MT(met, lep)', Events]
+#         binning: [*default_num_bins, 0, 200]
+
+#     WLike_MT_met_lep_low:
+#         expression: WLike_MT_met_lep
+#         axis labels: ['MT(met, lep)', Events]
+#         binning: [*default_num_bins, 0, 60]
+
+#     topLike_MT_met_lep_b_175:
+#         expression: topLike_MT_met_lep_b_175
+#         axis labels: ['top MT(met, lep, b)', Events]
+#         binning: [*default_num_bins, 0, 400]
+
+#     topLike_mass_lep_b_100:
+#         expression: topLike_mass_lep_b_100
+#         axis labels: ['top mass(lep, b)', Events]
+#         binning: [*default_num_bins, 0, 300]
+
+# #     topLike_multijet_mass_b1:
+# #         expression: topLike_multijet_mass_b1
+# #         axis labels: ['top mass(jets, b1)', Events]
+# #         binning: [*default_num_bins, 0, 1000]
+
+# #     topLike_multijet_mass_b2:
+# #         expression: topLike_multijet_mass_b2
+# #         axis labels: ['top mass(jets, b2)', Events]
+# #         binning: [*default_num_bins, 0, 1000]
+
+# #     topPairLike_MT_met_lep_jets:
+# #         expression: topPairLike_MT_met_lep_jets
+# #         axis labels: ['top pair MT(met, lep, jets)', Events]
+# #         binning: [*default_num_bins, 0, 1000]
+
+# #     topPairLike_mass_lep_jets:
+# #         expression: topPairLike_mass_lep_jets
+# #         axis labels: ['top pair mass(lep, jets)', Events]
+# #         binning: [*default_num_bins, 0, 1200]
+
+limits distributions:
+    twoBins:
+        expression: all_Z_leptons_by_pt_1_eta
+        axis labels: ['first Z lepton eta', Events]
+        binning: [2, -5, 5]
+
+    numMediumBJets:
+        expression: max(0, min(2, numMediumBJets))
+        axis labels: ['number of medium b-tagged jets', Events]
+        binning: [3, -0.5, 2.5]
+        

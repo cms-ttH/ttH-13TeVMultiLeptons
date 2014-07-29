@@ -200,21 +200,23 @@ int HelperLeptonCore::convertSampleNameToNumber(string sampleName) {
       nGen = 221576; Xsec = 0.0633; }
     else if (sampleName == "wwG") { sampleNumber = 2720;
       nGen = 94500; Xsec = 0.0000001; } //AWB incorrect values
-    else if (sampleName == "wz") { sampleNumber = 2701;
+    else if (tmpName.Contains("wz") && !(tmpName.Contains("_ll") || tmpName.Contains("_lj"))) { sampleNumber = 2701;      
       nGen = 9931257; Xsec = 32.3; }
-    else if (sampleName == "wz_lll") { sampleNumber = 2731;
+    else if (tmpName.Contains("wz") && tmpName.Contains("lll")) { sampleNumber = 2731;
       nGen = 1987010; Xsec = 1.057*1.10; } 
-    else if (sampleName == "wz_lljj") { sampleNumber = 2761;
+    else if (tmpName.Contains("wz") && tmpName.Contains("lljj")) { sampleNumber = 2761;
       nGen = 3212461; Xsec = 32.3*0.101*(1-0.324); }
-    else if (sampleName == "wz_ljj") { sampleNumber = 2791;
+    else if (tmpName.Contains("wz") && tmpName.Contains("ljj")) { sampleNumber = 2791;
       nGen = 2906320; Xsec = 32.3*0.324*0.699; }
     else if (sampleName == "wzz") { sampleNumber = 2721;
       nGen = 219835; Xsec = 0.01922; } 
-    else if (sampleName == "zz") { sampleNumber = 2702;
+    else if (tmpName.Contains("wz") && !tmpName.Contains("_ll")) { sampleNumber = 2702;
       nGen = 9755621; Xsec = 7.7; }
-    else if (sampleName == "zz_llll") { sampleNumber = 2732;
+    else if (tmpName.Contains("zz") && tmpName.Contains("llll")) { sampleNumber = 2732;
       nGen = 4804217; Xsec = 0.157*1.21; } //why is it not (7.7*0.101*0.101) * 1.21?
-    else if (sampleName == "zz_lljj") { sampleNumber = 2762;
+    else if (tmpName.Contains("zz") && tmpName.Contains("lowmll")) { sampleNumber = 2732;
+      nGen = 4804217; Xsec = 0.157*1.21; } //Incorrect nGen and Xsec
+    else if (tmpName.Contains("zz") && tmpName.Contains("lljj")) { sampleNumber = 2762;
       nGen = 1934806; Xsec = 7.7*2*0.101*0.699; }
     else if (sampleName == "zzz") { sampleNumber = 2722;
       nGen = 224519; Xsec = 0.004587; }
@@ -272,6 +274,13 @@ int HelperLeptonCore::convertSampleNameToNumber(string sampleName) {
   }
   else {
     assert (analysisYear == "either 2012_52x, 2012_53x, or 2011");
+  }
+
+  if (tmpName.Contains("wz") || tmpName.Contains("zz")) {
+    if (tmpName.Contains("_lf")) sampleNumber = sampleNumber*10 + 1;
+    if (tmpName.Contains("_cc")) sampleNumber = sampleNumber*10 + 2;
+    if (tmpName.Contains("_bb")) sampleNumber = sampleNumber*10 + 4;
+    else if (tmpName.Contains("_b")) sampleNumber = sampleNumber*10 + 3;
   }
 
   std::cout << "CONFIG: Sample Name = " << sampleName

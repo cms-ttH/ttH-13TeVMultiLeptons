@@ -26,6 +26,14 @@ void getNumExtraPartons(BEANhelper* beanHelper, BNmcparticleCollection& mcPartic
   return;
 }
 
+void dibosonPlusHFKeepEventFunction(BEANhelper * beanHelper, BNmcparticleCollection& mcParticles,
+                                    BNjetCollection& rawJets, bool & dibosonPlusHFKeepEventBool) {
+
+  dibosonPlusHFKeepEventBool = beanHelper->dibosonPlusHFKeepEvent(mcParticles, rawJets);
+
+  return;
+}
+
 void safetyCheckJobOptions (int argc, char** argv) {
   std::cout << "--->Num argments provided at command line...  " << argc << std::endl;
   if (argc < 2) {
@@ -168,7 +176,7 @@ int main (int argc, char** argv) {
   GenericCollectionSizeVariable<BNjetCollection> numJets(&(jets.ptrToItems), "numJets");
   kinVars.push_back(&numJets);
   numJets.setCutMin(2);
-  cutVars.push_back(&numJets);
+  //cutVars.push_back(&numJets);
 
   GenericCollectionSizeVariable<BNjetCollection> numLooseBJets(&(looseCSVJets.ptrToItems), "numLooseBJets");
   kinVars.push_back(&numLooseBJets);
@@ -181,13 +189,19 @@ int main (int argc, char** argv) {
 
   GenericCollectionSizeVariable<BNleptonCollection> numTightLeptons(&(tightLeptons.ptrToItems), "numTightLeptons");
   kinVars.push_back(&numTightLeptons);
-  if (myConfig.sampleName.find("NP_sideband") == std::string::npos) { //All samples except NP_sideband
+  if (myConfig.sampleName.find("NP_sideband") == std::string::npos &&
+      myConfig.sampleName.find("ttbar_") == std::string::npos &&
+      myConfig.sampleName.find("singlet") == std::string::npos &&
+      myConfig.sampleName.find("wjets") == std::string::npos) { //All prompt MC samples
     numTightLeptons.setCutMin(2);
   }
   else if (myConfig.sampleName.find("NP_sideband") != std::string::npos) { //NP_sideband
     numTightLeptons.setCutMax(1);
   }
-  cutVars.push_back(&numTightLeptons);
+  else { //non-prompt MC samples
+    numTightLeptons.setCutMin(0);
+  }
+  //cutVars.push_back(&numTightLeptons);
   
   GenericCollectionSizeVariable<BNleptonCollection> numTightLooseLeptons(&(tightLooseLeptons.ptrToItems), "numTightLooseLeptons");
   kinVars.push_back(&numTightLooseLeptons);
@@ -247,11 +261,17 @@ int main (int argc, char** argv) {
   kinVars.push_back(&myLepTrig);
 
   //Give particular collections
-  TightChargeAndLepMVAScaleFactors myTightChargeAndLepMVASF2Lep(2, &(tightLoosePreselectedLeptons.ptrToItems));
-  kinVars.push_back(&myTightChargeAndLepMVASF2Lep);
+//   TightChargeAndLepMVAScaleFactors myTightChargeAndLepMVASF2Lep(2, &(tightLoosePreselectedLeptons.ptrToItems));
+//   kinVars.push_back(&myTightChargeAndLepMVASF2Lep);
 
-  TightChargeAndLepMVAScaleFactorsPerLepton myTightChargeAndLepMVASFPerLepton(2, &(tightLoosePreselectedLeptons.ptrToItems));
-  kinVars.push_back(&myTightChargeAndLepMVASFPerLepton);
+//   TightChargeAndLepMVAScaleFactorsPerLepton myTightChargeAndLepMVASFPerLepton(2, &(tightLoosePreselectedLeptons.ptrToItems));
+//   kinVars.push_back(&myTightChargeAndLepMVASFPerLepton);
+
+  TightChargeAndLepCutScaleFactors myTightChargeAndLepCutSF2Lep(2, &(tightLoosePreselectedLeptons.ptrToItems));
+  kinVars.push_back(&myTightChargeAndLepCutSF2Lep);
+
+  TightChargeAndLepCutScaleFactorsPerLepton myTightChargeAndLepCutSFPerLepton(2, &(tightLoosePreselectedLeptons.ptrToItems));
+  kinVars.push_back(&myTightChargeAndLepCutSFPerLepton);
 
   CleanEventVars myClean(&lepHelper, &(events.ptrToItems), &(primaryVertexes.ptrToItems));
   kinVars.push_back(&myClean);
@@ -262,9 +282,20 @@ int main (int argc, char** argv) {
   LepMVAs<BNleptonCollection> myLepMVAsAllLeptons(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), "all_leptons_by_pt", 3);
   kinVars.push_back(&myLepMVAsAllLeptons);
 
-  DataDrivenFR<BNleptonCollection> myDataDrivenFR2Tight(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), &(mediumCSVJets.ptrToItems),
-                                                        2, 0.7, "FR_merged_data", "QF_data_el", "_2_tight"); 
-  kinVars.push_back(&myDataDrivenFR2Tight);
+  LepCuts<BNleptonCollection> myLepCutsAllLeptons(&(tightLoosePreselectedLeptons.ptrToItems), "all_leptons_by_pt", 3);
+  kinVars.push_back(&myLepCutsAllLeptons);
+
+//   DataDrivenFR<BNleptonCollection> myDataDrivenFR2Tight(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), &(mediumCSVJets.ptrToItems),
+//                                                         2, 0.7, "FR_merged_data", "QF_data_el", "_2_tight"); 
+//   kinVars.push_back(&myDataDrivenFR2Tight);
+  
+  DataDrivenFRLepCut<BNleptonCollection> myDataDrivenFRLepCut2Tight(&(tightLoosePreselectedLeptons.ptrToItems),
+                                                        2, 2, "FR_merged_data", "QF_data_el", "_2_tight"); 
+  kinVars.push_back(&myDataDrivenFRLepCut2Tight);
+  
+  DataDrivenFRLepCut<BNleptonCollection> myDataDrivenFRLepCut2Loose(&(tightLoosePreselectedLeptons.ptrToItems),
+                                                        2, 1, "FR_merged_data", "QF_data_el", "_2_loose"); 
+  kinVars.push_back(&myDataDrivenFRLepCut2Loose);
   
   //Causes run-time error
   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems),
@@ -515,21 +546,21 @@ int main (int argc, char** argv) {
                                                                    "SIP", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allLeptonSIP);
   
-  GenericCollectionMember<double, BNleptonCollection> allLeptonD0(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
-                                                                  "correctedD0Vertex", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&allLeptonD0);
+//   GenericCollectionMember<double, BNleptonCollection> allLeptonD0(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
+//                                                                   "correctedD0Vertex", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+//   kinVars.push_back(&allLeptonD0);
   
-  GenericCollectionMember<double, BNleptonCollection> allLeptonDZ(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
-                                                                  "correctedDZ", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&allLeptonDZ);
+//   GenericCollectionMember<double, BNleptonCollection> allLeptonDZ(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
+//                                                                   "correctedDZ", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+//   kinVars.push_back(&allLeptonDZ);
   
   GenericCollectionMember<double, BNleptonCollection> allLeptonIP(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
                                                                   "IP", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allLeptonIP);
   
-  GenericCollectionMember<double, BNleptonCollection> allLeptonIPError(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
-                                                                       "IPError", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&allLeptonIPError);
+//   GenericCollectionMember<double, BNleptonCollection> allLeptonIPError(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
+//                                                                        "IPError", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+//   kinVars.push_back(&allLeptonIPError);
   
   GenericCollectionMember<double, BNleptonCollection> allLeptonJetBTagCSV(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
                                                                           "jetBTagCSV", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
@@ -539,9 +570,14 @@ int main (int argc, char** argv) {
                                                                           "jetPtRatio", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allLeptonJetPtRatio);
   
-  GenericCollectionMember<double, BNleptonCollection> allLeptonJetDeltaR(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
-                                                                         "jetDeltaR", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&allLeptonJetDeltaR);
+//   GenericCollectionMember<double, BNleptonCollection> allLeptonJetDeltaR(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
+//                                                                          "jetDeltaR", "all_leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+//   kinVars.push_back(&allLeptonJetDeltaR);
+
+  // isMuon  
+  GenericCollectionMember<int, BNleptonCollection> allLeptonIsMuon(Reflex::Type::ByName("BNlepton"), &(tightLoosePreselectedLeptons.ptrToItems),
+                                                                     "isMuon", "all_leptons_by_pt",  KinematicVariableConstants::INT_INIT, 3);
+  kinVars.push_back(&allLeptonIsMuon);
 
   /////////////////////////////////////
   //// REQUIRED - Must do something with muons and electrons for leptons to be filled
@@ -672,6 +708,8 @@ int main (int argc, char** argv) {
   int numExtraPartons = -99;
   summaryTree->Branch("numExtraPartons", &numExtraPartons);
 
+  bool dibosonPlusHFKeepEventBool = false;
+  
   ////////// event info //////////
   GenericCollectionMember<unsigned, BNeventCollection> runNumber(Reflex::Type::ByName("BNevent"), &(events.ptrToItems),
                                                                  "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
@@ -734,13 +772,24 @@ int main (int argc, char** argv) {
     //    Initialize collections and apply object ids
     //
     //////////////////////////////////////////////////////////////
+    //Normal non-PF jets for lepMVA
     jetsForLepMVA.initializeRawItemsSortedByCSV(ev, "BNproducer", "patJetsAK5PF");
+//     //PF jets; testing. (Turns out these jets had the leptons cleaned out, so they're useless - AWB 06/26/14)
+//     jetsForLepMVA.initializeRawItemsSortedByCSV(ev, "BNproducer","selectedPatJetsPFlow");
+//     //jetsForLepMVA.correctRawJets();
+    
     tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsLoosePFlow");
     tightLoosePreselectedElectrons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatElectronsGSF");
 //     tightLoosePreselectedTaus.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatTausPFlow");
 
-    lepHelper.applyRochesterCorrections(tightLoosePreselectedMuons.rawItems);
-    bool applySmearing = !(lepHelper.isData);
+
+    //lepHelper.applyRochesterCorrections(tightLoosePreselectedMuons.rawItems);
+    //Apply Rochester for data only
+    bool applyRochester = (lepHelper.isData);
+    if (applyRochester) lepHelper.applyRochesterCorrections(tightLoosePreselectedMuons.rawItems);
+    //bool applySmearing = !(lepHelper.isData);
+    //No smearing
+    bool applySmearing = false;
     if (applySmearing) {
       lepHelper.fillMCMatchAny(tightLoosePreselectedMuons.rawItems, mcParticles.rawItems, 0.3);
       lepHelper.fillMCMatchAny(tightLoosePreselectedElectrons.rawItems, mcParticles.rawItems, 0.3);
@@ -760,6 +809,11 @@ int main (int argc, char** argv) {
     lepHelper.fillLepJetDeltaR(tightLoosePreselectedElectrons.rawItems, jetsForLepMVA.rawItems, applySmearing);
     lepHelper.fillLepJetBTagCSV(tightLoosePreselectedMuons.rawItems, jetsForLepMVA.rawItems);
     lepHelper.fillLepJetBTagCSV(tightLoosePreselectedElectrons.rawItems, jetsForLepMVA.rawItems);
+
+    auto electronPt10 = [] (BNelectron e) { return (e.pt > 10); };
+    tightLoosePreselectedElectrons.keepSelectedParticles(electronPt10);
+    auto muonPt10 = [] (BNmuon m) { return (m.pt > 10); };
+    tightLoosePreselectedMuons.keepSelectedParticles(muonPt10);
 
     tightLoosePreselectedElectrons.keepSelectedParticles(electronPreselectedID);
     tightElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
@@ -961,6 +1015,15 @@ int main (int argc, char** argv) {
         continue;
       }
     }
+
+    if (myConfig.sampleName.find("wz_") != std::string::npos || myConfig.sampleName.find("zz_") != std::string::npos) { //diboson samples
+      dibosonPlusHFKeepEventFunction(beanHelper, mcParticles.items, jets.rawItems, dibosonPlusHFKeepEventBool);
+      if (!dibosonPlusHFKeepEventBool) {
+        numEventsFailCuts++;
+        numEventsPassCuts--;
+        continue; //Don't go on to fill tree with this event
+      }
+    }    
       
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();

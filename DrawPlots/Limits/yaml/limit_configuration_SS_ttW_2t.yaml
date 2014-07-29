@@ -1,0 +1,156 @@
+#input and output file names
+input file location: ../histos_SS_ttW_studies_2t_forLimits
+input file label: ttV_SS_match_v4
+
+lepton categories:
+    mu_mu:
+        data sample: DoubleMu
+        excluded samples: [3rd_spot, MuEG_NP_sideband, MuEG_QF_sideband, DoubleElectron_NP_sideband, DoubleElectron_QF_sideband]
+        category name: 'ttW_2lss_mumu'
+    mu_ele:
+        data sample: MuEG
+        excluded samples: [3rd_spot, DoubleMu_NP_sideband, DoubleElectron_NP_sideband, DoubleElectron_QF_sideband]
+        category name: 'ttW_2lss_em'
+    ele_ele:
+        data sample: DoubleElectron
+        excluded samples: [3rd_spot, DoubleMu_NP_sideband, MuEG_NP_sideband, MuEG_QF_sideband]
+        category name: 'ttW_2lss_ee'
+
+        
+#Jet-tag categories: "draw name"
+jet tag categories:
+    eq3j_bloose: " + #eq3 jet"
+    ge4j_bloose: " + #geq4 jets"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - weight_PU
+    - topPtWgt
+    - csvWeightHF
+    - csvWeightLF
+
+ttH mass points: ##New code to automate masses
+    - '125'
+    
+data samples:
+    DoubleMu:
+        datacard name: "data_obs"
+        systematics: common
+        samples: [DoubleMu]
+    MuEG:
+        datacard name: "data_obs"
+        systematics: common
+        samples: [MuEG]
+    DoubleElectron:
+        datacard name: "data_obs"
+        systematics: common
+        samples: [DoubleElectron]
+
+signal samples:
+    ttbarW:
+        datacard name: "TTW"
+        systematics: common
+        samples: [ttbarW]
+
+#Samples, ordered bottom-to-top
+background samples:
+    DoubleMu_NP_sideband:
+        datacard name: "FR_data"
+        systematics: 40PercentRate
+        samples: [DoubleMu_NP_sideband]
+
+    MuEG_NP_sideband:
+        datacard name: "FR_data"
+        systematics: 40PercentRate
+        samples: [MuEG_NP_sideband]
+
+    DoubleElectron_NP_sideband:
+        datacard name: "FR_data"
+        systematics: 40PercentRate
+        samples: [DoubleElectron_NP_sideband]
+
+    MuEG_QF_sideband:
+        datacard name: "QF_data"
+        systematics: 40PercentRate
+        samples: [MuEG_QF_sideband]
+
+    DoubleElectron_QF_sideband:
+        datacard name: "QF_data"
+        systematics: 40PercentRate
+        samples: [DoubleElectron_QF_sideband]
+
+#     Others:
+#         datacard name: "Rare SM"
+#         systematics: common
+#         samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
+
+    3rd_spot:
+        datacard name: "3rd_spot"
+        systematics: common
+        samples: [3rd_spot] #WmWmqq
+
+#     ## Not enough MC events; makes combine tool seg fault
+#     WWqq:
+#         datacard name: "WWqq"
+#         systematics: common
+#         samples: [WpWpqq] #WmWmqq
+
+    tbZ_ll:
+        datacard name: "TBZ"
+        systematics: common
+        samples: [tbZ_ll]
+
+    zz_llll:
+        datacard name: "ZZ"
+        systematics: common
+        samples: [zz_llll]
+
+    wz_lll:
+        datacard name: "WZ"
+        systematics: common
+        samples: [wz_lll]
+
+    triboson:
+        datacard name: "VVV"
+        systematics: common
+        samples: [www, wwz] #wzz, zzz
+ 
+    ## Not enough MC events; makes combine tool seg fault
+    ttbarG:
+        datacard name: "TTG"
+        systematics: common
+        samples: [ttbarG]
+
+    ## Not enough MC events; makes combine tool seg fault
+    ttbarGStar:
+        datacard name: "TTGStar"
+        systematics: common
+        samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
+
+    ttbarWW:
+        datacard name: "TTWW"
+        color: kBlue-9
+        systematics: common
+        samples: [ttbarWW]
+
+    ttbarZ:
+        datacard name: "TTZ"
+        systematics: common
+        samples: [ttbarZ]
+
+#     ttH125_tt:
+#         datacard name: "ttH_htt"
+#         systematics: common
+#         samples: [ttH125_tt]
+
+#     ttH125_ZZ:
+#         datacard name: "ttH_hzz"
+#         systematics: common
+#         samples: [ttH125_ZZ]
+
+#     ttH125_WW:
+#         datacard name: "ttH_hww"
+#         systematics: common
+#         samples: [ttH125_WW]
+

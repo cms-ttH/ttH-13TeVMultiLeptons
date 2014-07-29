@@ -137,6 +137,7 @@ def make_datacard_one_category(lepton_category, jet_tag_category, histograms):
                 scale = float(args.scale_all)
             else:
                 scale = 1.0
+            scale *= (cfg_data_sig_bkg[sample_no_mass]['scale'] if 'scale' in cfg_data_sig_bkg[sample_no_mass].keys() else 1.0)				
             
             if 'ttH' in sample:
                 sample_part = sample_part.replace('ttH','ttH'+mass)
@@ -150,10 +151,14 @@ def make_datacard_one_category(lepton_category, jet_tag_category, histograms):
                 name_plus_cycle_nominal = distribution
         
             root_file_name = '%s/%s/%s_%s_%s_%s.root' % (input_file_location, lepton_category, lepton_category, jet_tag_category, sample_part, input_file_label)
+            #print root_file_name
             root_files[sample_part] = TFile(root_file_name)
 
             ## Create or add to group_histogram
             if not group_histogram:
+                #print sample_part
+                #print name_plus_cycle_nominal
+                #print 'x_%s' % (sample_d)
                 group_histogram = root_files[sample_part].Get(name_plus_cycle_nominal).Clone("x_%s" % (sample_d))
             else:
                 group_histogram.Add(root_files[sample_part].Get(name_plus_cycle_nominal))

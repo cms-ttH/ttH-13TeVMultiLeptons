@@ -8,7 +8,9 @@ const float RochCor2012::genm_smr = 9.09915e+01; //gen mass peak with eta depend
 const float RochCor2012::genm = 91.06; //gen mass peak without smearing => Z mass profile vs. eta/phi in CMS note
   
 const float RochCor2012::mrecm = 90.8177; //rec mass peak in MC (2011A)
+//const float RochCor2012::mrecm = 91.0; //rec mass peak in MC (AWB, 2012 @ 8 TeV)
 const float RochCor2012::drecm = 90.5332; //rec mass peak in data (2011A)
+//const float RochCor2012::drecm = 90.8; //rec mass peak in data (AWB, 2012D @ 8 TeV)
 const float RochCor2012::mgscl_stat = 0.0001; //stat. error of global factor for mass peak in MC (2011A)  
 const float RochCor2012::mgscl_syst = 0.0006; //syst. error of global factor for mass peak in MC (2011A)  
 const float RochCor2012::dgscl_stat = 0.0001; //stat. error of global factor for mass peak in data (2011A)
