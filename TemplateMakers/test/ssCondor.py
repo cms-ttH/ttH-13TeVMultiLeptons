@@ -10,10 +10,10 @@
 #  Main parameters specified by user at CL
 #    1. Sample name
 #    2. Job label
-#    3. (optional) Job number, default 0
-#    4. (optional) Total num jobs, default 1
-#    5. (optional) File name (run on this file only)
-#    6. (optional) Systematics (not yet implemented)
+#    3. (optional) Systematics
+#    4. (optional) Job number, default 0
+#    5. (optional) Total num jobs, default 1
+#    6. (optional) File name (run on this file only)
 #
 #  Important configurations that don't change often
 #  and are written into script
@@ -32,7 +32,7 @@ except: #For running without submit_condor_jobs
     thisDir = open(sys.argv[0] + '_lists.txt').read().splitlines()[0]
 directoryOfLists = cmssw_base + thisDir
 outputBaseDir = "batch_trees/"
-maxEvents = -1
+maxEvents = 1000
 
 # -----------  Define some useful functions
 def printHostInfo():
@@ -49,7 +49,7 @@ def checkDir(inDir):
                 raise
 
 def printUsage() :
-    print "Usage: ", sys.argv[0], " ssCondor.py  sampleName jobLabel [jobNum totalJobs] [sys]"
+    print "Usage: ", sys.argv[0], " ssCondor.py  sampleName jobLabel [jetSyst] [jobNum totalJobs]"
 
 def calcBeginEndFileThisJob(totalFiles, totalJobs, thisJob):
     filesPerJob = totalFiles/totalJobs
@@ -68,7 +68,8 @@ def calcBeginEndFileThisJob(totalFiles, totalJobs, thisJob):
 process = cms.Process("ttH2lss")
 process.inputs = cms.PSet(
     fileNames = cms.vstring(),
-    maxEvents = cms.int32(maxEvents)
+    maxEvents = cms.int32(maxEvents),
+	jetSyst = cms.string("dummy")
     )
 process.analysis = cms.PSet (
     sampleName = cms.string("dummy")
@@ -86,6 +87,14 @@ sampleName = sys.argv[2]
 jobLabel   = sys.argv[3]
 process.analysis.sampleName = sampleName
 sampleList = directoryOfLists + sampleName + ".list"
+
+if len(sys.argv) > 4:
+    jetSyst = sys.argv[4]
+    if not 'NA' in jetSyst:
+        jobLabel = jobLabel+'_'+jetSyst
+else:
+    jetSyst = 'NA'
+process.inputs.jetSyst = jetSyst
 
 if not os.path.exists(sampleList):
     print "Error - can't find list ", sampleList
@@ -106,10 +115,10 @@ doAllFiles = True
 
 #---------- parse more arguments if they exist
 #This would be much more convenient with ArgumentParser, but the c++ executable steals the arguments
-if len(sys.argv) >= 6:
+if len(sys.argv) >= 7:
     doAllFiles = False
-    jobNum = int (sys.argv[4])
-    totalNumJobs = int (sys.argv[5])
+    jobNum = int (sys.argv[5])
+    totalNumJobs = int (sys.argv[6])
 
 #---------- figure out what files to add
 if not doAllFiles:
@@ -118,8 +127,8 @@ else :
     firstFile = 0
     lastFile = numFiles-1
 
-if len(sys.argv) > 6:
-    process.inputs.fileNames.append('file:'+sys.argv[6].strip())
+if len(sys.argv) > 7:
+    process.inputs.fileNames.append('file:'+sys.argv[7].strip())
 else:
     nLine = 0
     for iLine in linesInFile:
@@ -142,3 +151,5 @@ outputFileName = outputDir + sampleName + "_%s_job%03d.root" % (jobLabel, jobNum
 process.outputs.fileName = outputFileName
 
 print "CONFIG: Output dir = ", outputDir, "\nFile name = ", outputFileName
+
+print "CONFIG: JES systematic = ", process.inputs.jetSyst, "\njetSyst = ", jetSyst

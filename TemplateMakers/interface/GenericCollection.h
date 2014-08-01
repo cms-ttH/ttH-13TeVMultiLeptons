@@ -8,7 +8,6 @@ template <class collectionType>
 class GenericCollection {
 
 public:
-  sysType::sysType jetEnergyShift;
   BEANhelper * bHelp;
   collectionType rawItems;
   collectionType items;
@@ -47,9 +46,9 @@ public:
   void pushBackAndSort(const BNleptonCollection& leptons);
   void cleanJets(const BNleptonCollection& leptons, const double drCut);
   void cleanJets_cProj(const BNleptonCollection& leptons, const double drCut);
-  void correctRawJets();
+  void correctRawJets(sysType::sysType jetSyst=sysType::NA);
   void keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP);
-  void getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType shift=sysType::NA);
+  void getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType jetSyst=sysType::NA);
   void reset();
 
 private:
@@ -358,8 +357,8 @@ void GenericCollection<BNjetCollection>::cleanJets_cProj(const BNleptonCollectio
 }
 
 template<class BNjetCollection>
-void GenericCollection<BNjetCollection>::correctRawJets() {
-  rawItems = bHelp->GetCorrectedJets(rawItems, jetEnergyShift);
+void GenericCollection<BNjetCollection>::correctRawJets(sysType::sysType jetSyst) {
+  rawItems = bHelp->GetCorrectedJets(rawItems, jetSyst);
 
   ptrToItems = &items;
 }
@@ -372,10 +371,10 @@ void GenericCollection<BNjetCollection>::keepSelectedJets(const double ptCut, co
 }
 
 template<class BNmetCollection>
-void GenericCollection<BNmetCollection>::getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType shift) {
+void GenericCollection<BNmetCollection>::getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType jetSyst) {
   items.clear();
   //take the GenericCollection instead of the BNjetCollection to ensure we don't accidentally use the corrected jets
-  BNmet tmpMet = bHelp->GetCorrectedMET(rawItems.at(0), jets.rawItems, shift);
+  BNmet tmpMet = bHelp->GetCorrectedMET(rawItems.at(0), jets.rawItems, jetSyst);
   items.push_back(tmpMet);
 
   ptrToItems = &items;

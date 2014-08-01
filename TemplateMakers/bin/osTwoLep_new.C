@@ -85,6 +85,7 @@ JobParameters parseJobOptions (int argc, char** argv) {
   myConfig.maxEvents = inputs.getParameter < int > ("maxEvents");
   myConfig.outputFileName = outputs.getParameter < string > ("fileName");
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
+  myConfig.jetSyst = inputs.getParameter < string > ("jetSyst");
 
   return myConfig;
 }
@@ -112,6 +113,12 @@ int main (int argc, char** argv) {
   // setup the analysis
   // it comes from the lepHelper
   BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", myConfig.sampleName);
+
+  sysType::sysType jetSyst = sysType::NA;
+  if (myConfig.jetSyst == "NA") jetSyst = sysType::NA;
+  else if (myConfig.jetSyst == "JESUp") jetSyst = sysType::JESup;
+  else if (myConfig.jetSyst == "JESDown") jetSyst = sysType::JESdown;
+  else std::cout << "No valid JES corrections specified - using nominal" << std::endl;
 
   // ---------------------------------------------
   // Note for future development: should these be
@@ -249,7 +256,7 @@ int main (int argc, char** argv) {
   kinVars.push_back(&numTightElectrons);
 
   CSVWeights
-    myCSV(beanHelper, &(jets.ptrToItems));
+    myCSV(beanHelper, &(jets.ptrToItems), jetSyst);
   kinVars.push_back(&myCSV);
 
   PUWeights
@@ -688,7 +695,7 @@ int main (int argc, char** argv) {
  
     jets.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJets");
     jets.cleanJets_cProj(tightLooseLeptons.items,0.5);
-    jets.correctRawJets();
+    jets.correctRawJets(jetSyst);
     jets.keepSelectedJets(20.0, 2.4, jetID::jetLoose, '-');
 
     jets2.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJets");

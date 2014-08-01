@@ -53,8 +53,11 @@ def getListThatMatches(everyList, sample) :
         exit (6)
     return [returnList]
 
-def createCondorSubFileAndSubmit(executable, sample, label, numJobs, wait):
+def createCondorSubFileAndSubmit(executable, sample, label, jetSyst, numJobs, wait):
     with open("multiLepBatch.submit", "w") as condorJobFile:
+        labelSyst = label
+        if not 'NA' in jetSyst:
+            labelSyst = label+'_'+jetSyst
         contents = ('universe = vanilla\n'
                     'List = {list}\n'
                     'executable = {executable}\n'
@@ -62,14 +65,18 @@ def createCondorSubFileAndSubmit(executable, sample, label, numJobs, wait):
                     'log = batch_trees/multilepton.logfile\n'
                     'getenv = True\n'
                     'Label = {label}\n'
+                    'LabelSyst = {labelSyst}\n'
+                    'jetSyst = {jetSyst}\n'
                     'NJobs = {numJobs}\n'
-                    'arguments = ssCondor.py $(List) $(Label) $(Process) $(NJobs)\n'
-                    'output = batch_trees/condor_logs/condor_$(List)_$(Label)_$(Process).stdout\n'
-                    'error = batch_trees/condor_logs/condor_$(List)_$(Label)_$(Process).stderr\n'
+                    'arguments = ssCondor.py $(List) $(Label) $(jetSyst) $(Process) $(NJobs)\n'
+                    'output = batch_trees/condor_logs/condor_$(List)_$(LabelSyst)_$(Process).stdout\n'
+                    'error = batch_trees/condor_logs/condor_$(List)_$(LabelSyst)_$(Process).stderr\n'
                     'queue $(NJobs)')
         condorJobFile.write(contents.format(executable=executable,
                                             list=sample,
                                             label=label,
+                                            labelSyst=labelSyst,
+                                            jetSyst=jetSyst,
                                             numJobs=numJobs))
 
     print "Trying to submit jobs..."
@@ -83,6 +90,7 @@ def main ():
     parser.add_argument('project_label', help='Project label.')
     parser.add_argument('-o', '--oneSample', help="Run on only this sample")
     parser.add_argument('-w', '--wait', help='Add a wait time between submitting jobs')
+    parser.add_argument('-j', '--jetSyst', help="Jet systematic")
     args = parser.parse_args()
 
     print 'args.executable: ' + args.executable
@@ -107,14 +115,19 @@ def main ():
     else :
         listsToRun = listsInDir
 
+    if args.jetSyst:
+        jetSyst = args.jetSyst
+    else:
+        jetSyst = 'NA'
+
     print "Running over the following:\n", listsToRun
 
     for iList in listsToRun:
         sampleName = getSampleFromListPath(iList)
         nJobs = getNumLinesInFile(iList)
 #        nJobs = int(nJobs/10)
-        print "Calling create with ", executable, " ", sampleName, " ", args.project_label, " ", nJobs
-        createCondorSubFileAndSubmit(executable, sampleName, args.project_label, nJobs, args.wait)
+        print "Calling create with ", executable, " ", sampleName, " ", args.project_label, " ", jetSyst, " ", nJobs
+        createCondorSubFileAndSubmit(executable, sampleName, args.project_label, jetSyst, nJobs, args.wait)
 
     print "Done with loop over samples"
 

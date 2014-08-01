@@ -18,17 +18,19 @@ public:
   BEANhelper * beanHelper;
   BNjetCollection **jets;
   HelperLeptonCore * myHelper;
+  sysType::sysType jetSyst;
   string option;
 
-  CSVWeights(BEANhelper * beanHelper, BNjetCollection** jets, string _option="none");
+  CSVWeights(BEANhelper * _beanHelper, BNjetCollection** _jets, sysType::sysType _jetSyst, string _option="none");
   void evaluate();
   bool passCut();
 
 };
 
-CSVWeights::CSVWeights(BEANhelper * beanHelper, BNjetCollection **jets, string _option) :
-  beanHelper(beanHelper),
-  jets(jets),
+CSVWeights::CSVWeights(BEANhelper * _beanHelper, BNjetCollection **_jets, sysType::sysType _jetSyst, string _option) :
+  beanHelper(_beanHelper),
+  jets(_jets),
+  jetSyst(_jetSyst),
   option(_option)
 {
   this->resetVal = KinematicVariableConstants::DOUBLE_INIT;
@@ -61,7 +63,7 @@ void CSVWeights::evaluate () {
   if (this->evaluatedThisEvent) return;
   evaluatedThisEvent = true;
 
-  vector<double> nominalWeights = beanHelper->GetCSVweights(*(*(jets)), sysType::NA);
+  vector<double> nominalWeights = beanHelper->GetCSVweights(*(*(jets)), jetSyst);
 
   vector<double> csvWgtHFup = beanHelper->GetCSVweights(*(*(jets)), sysType::CSVHFup);
   vector<double> csvWgtHFdown = beanHelper->GetCSVweights(*(*(jets)), sysType::CSVHFdown);

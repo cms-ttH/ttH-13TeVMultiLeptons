@@ -63,6 +63,7 @@ JobParameters parseJobOptions (int argc, char** argv) {
   myConfig.maxEvents = inputs.getParameter < int > ("maxEvents");
   myConfig.outputFileName = outputs.getParameter < string > ("fileName");
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
+  myConfig.jetSyst = inputs.getParameter < string > ("jetSyst");
 
   return myConfig;
 }
@@ -90,6 +91,12 @@ int main (int argc, char** argv) {
   // setup the analysis
   // it comes from the lepHelper
   BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", myConfig.sampleName);
+
+  sysType::sysType jetSyst = sysType::NA;
+  if (myConfig.jetSyst == "NA") jetSyst = sysType::NA;
+  else if (myConfig.jetSyst == "JESUp") jetSyst = sysType::JESup;
+  else if (myConfig.jetSyst == "JESDown") jetSyst = sysType::JESdown;
+  else std::cout << "No valid JES corrections specified - using nominal" << std::endl;
 
 //   int iJetFromLepTop = 1;
 //   int iJetFromHadTop = 2;
@@ -153,6 +160,7 @@ int main (int argc, char** argv) {
 //   GenericCollection<BNmcparticleCollection> genAntiTops(beanHelper);
   GenericCollection<BNmcparticleCollection> genWFromTops(beanHelper);
   GenericCollection<BNmcparticleCollection> genWFromAntiTops(beanHelper);
+  GenericCollection<BNmcparticleCollection> genZs(beanHelper);
 
   GenericCollection<BNjetCollection> jetsFromW(beanHelper);
   GenericCollection<BNjetCollection> jetsFromLepTop(beanHelper);
@@ -227,7 +235,7 @@ int main (int argc, char** argv) {
 //   kinVars.push_back(&numTightTaus);
 
   //ttH hadrons reweighting
-  CSVWeights myCSV(beanHelper, &(jets.ptrToItems));
+  CSVWeights myCSV(beanHelper, &(jets.ptrToItems), jetSyst);
   kinVars.push_back(&myCSV);
 
   //Btag POG reweighting
@@ -391,6 +399,15 @@ int main (int argc, char** argv) {
   TightCharges myTightCharges(&(tightLoosePreselectedLeptons.ptrToItems), "CERN_tight_charge", "all_leptons_by_pt", 2);
   kinVars.push_back(&myTightCharges);
   //myTightCharges.setCut("pass");
+
+  // Z mass for WZ* sample
+  GenericCollectionMember<double, BNmcparticleCollection> myGenZMass(Reflex::Type::ByName("BNmcparticle"), &(genZs.ptrToItems),
+                                                                  "mass", "Zs_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&myGenZMass);
+
+  GenericCollectionMember<double, BNmcparticleCollection> myGenZPt(Reflex::Type::ByName("BNmcparticle"), &(genZs.ptrToItems),
+                                                                  "pt", "Zs_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&myGenZPt);
 
   //////////////////////////////////
   //Variables for both matching algorithms
@@ -852,7 +869,7 @@ int main (int argc, char** argv) {
 //     tightLooseTaus.keepSelectedParticles(tauLooseID);
     
     jets.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJetsPFlow");
-    jets.correctRawJets();
+    jets.correctRawJets(jetSyst);
     // comment out for ttbar_lj or ttbar_ll
     jets.cleanJets(tightLoosePreselectedLeptons.items);
 //     // cleanJets for ttbar_lj or ttbar_ll
@@ -893,6 +910,10 @@ int main (int argc, char** argv) {
     genWFromAntiTops.initializeRawItems(mcParticles.rawItems);
     auto WFromAntiTopPDGID = [] (BNmcparticle p) { return (p.id == -24 && p.motherId == -6); };
     genWFromAntiTops.keepSelectedParticles(WFromAntiTopPDGID);
+
+    genZs.initializeRawItems(mcParticles.rawItems);
+    auto ZPDGID = [] (BNmcparticle p) { return (p.id == 23); };
+    genZs.keepSelectedParticles(ZPDGID);
 
     leptonsFromW.resetAndPushBack(tightLoosePreselectedLeptons.items);
     auto leptonFromGenW = [] (BNlepton l) { return (abs(l.genMotherId) == 24 || (abs(l.genMotherId) == 15 && abs(l.genGrandMother00Id) == 24)); };

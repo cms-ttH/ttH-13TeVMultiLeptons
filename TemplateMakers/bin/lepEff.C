@@ -55,6 +55,7 @@ JobParameters parseJobOptions (int argc, char** argv) {
   myConfig.maxEvents = inputs.getParameter < int > ("maxEvents");
   myConfig.outputFileName = outputs.getParameter < string > ("fileName");
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
+  myConfig.jetSyst = inputs.getParameter < string > ("jetSyst");
 
   return myConfig;
 }
@@ -80,6 +81,12 @@ int main (int argc, char** argv) {
   HelperLeptonCore lepHelper;
 
   BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", myConfig.sampleName);
+
+  sysType::sysType jetSyst = sysType::NA;
+  if (myConfig.jetSyst == "NA") jetSyst = sysType::NA;
+  else if (myConfig.jetSyst == "JESUp") jetSyst = sysType::JESup;
+  else if (myConfig.jetSyst == "JESDown") jetSyst = sysType::JESdown;
+  else std::cout << "No valid JES corrections specified - using nominal" << std::endl;
 
   muonID::muonID muonTightID = muonID::muonSideTightMVA;
   muonID::muonID muonLooseID = muonID::muonSideLooseMVA;
@@ -125,7 +132,7 @@ int main (int argc, char** argv) {
   vector<ArbitraryVariable*> cutVars;
 
   ////////////////////////// corrections, weights, etc
-  CSVWeights myCSV(beanHelper, &(jets.ptrToItems), "skipSyst");
+  CSVWeights myCSV(beanHelper, &(jets.ptrToItems), jetSyst, "skipSyst");
   kinVars.push_back(&myCSV);
 
 //   //Btag POG version
@@ -554,7 +561,7 @@ int main (int argc, char** argv) {
 
     jets.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJetsPFlow");
     jets.cleanJets(tightLoosePreselectedLeptons.items);
-    jets.correctRawJets();
+    jets.correctRawJets(jetSyst);
     jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
     jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
     looseCSVJets.initializeRawItems(jets.rawItems);

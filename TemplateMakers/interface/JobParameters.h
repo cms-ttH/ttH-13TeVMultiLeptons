@@ -13,7 +13,8 @@ public:
   JobParameters() :
     outputFileName("NONE"),
     sampleName("NONE"),
-    maxEvents(-1)
+    maxEvents(-1),
+    jetSyst("NA")
   {};
 
 
@@ -23,6 +24,8 @@ public:
   string sampleName;
 
   int maxEvents;
+
+  string jetSyst;
 
   
 

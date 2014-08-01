@@ -63,6 +63,7 @@ JobParameters parseJobOptions (int argc, char** argv) {
   myConfig.maxEvents = inputs.getParameter < int > ("maxEvents");
   myConfig.outputFileName = outputs.getParameter < string > ("fileName");
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
+  myConfig.jetSyst = inputs.getParameter < string > ("jetSyst");
 
   return myConfig;
 }
@@ -86,6 +87,12 @@ int main (int argc, char** argv) {
   fwlite::ChainEvent ev(myConfig.inputFileNames);
 
   HelperLeptonCore lepHelper;
+
+  sysType::sysType jetSyst = sysType::NA;
+  if (myConfig.jetSyst == "NA") jetSyst = sysType::NA;
+  else if (myConfig.jetSyst == "JESUp") jetSyst = sysType::JESup;
+  else if (myConfig.jetSyst == "JESDown") jetSyst = sysType::JESdown;
+  else std::cout << "No valid JES corrections specified - using nominal" << std::endl;
 
   // setup the analysis
   // it comes from the lepHelper
@@ -232,7 +239,7 @@ int main (int argc, char** argv) {
   kinVars.push_back(&numTightTaus);
 
   //ttH hadrons reweighting
-  CSVWeights myCSV(beanHelper, &(jets.ptrToItems));
+  CSVWeights myCSV(beanHelper, &(jets.ptrToItems), jetSyst);
   kinVars.push_back(&myCSV);
 
   //Btag POG reweighting
@@ -1575,7 +1582,7 @@ int main (int argc, char** argv) {
     tightLooseTaus.keepSelectedParticles(tauLooseID);
     
     jets.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJetsPFlow");
-    jets.correctRawJets();
+    jets.correctRawJets(jetSyst);
     // comment out for ttbar_lj or ttbar_ll
     jets.cleanJets(tightLoosePreselectedLeptons.items);
 //     // cleanJets for ttbar_lj or ttbar_ll

@@ -113,7 +113,7 @@ public:
                                              const char csvWorkingPoint);
 
   void getCorrectedMet(BEANFileInterface * selectedCollections,
-                       sysType::sysType shift = sysType::NA);
+                       sysType::sysType jetSyst = sysType::NA);
 
   void fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections);
   void fillZLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections,
