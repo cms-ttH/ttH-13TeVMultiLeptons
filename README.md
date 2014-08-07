@@ -5,7 +5,7 @@ See the [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NovaDilWorkfl
 [PyYaml](http://pyyaml.org/wiki/PyYAML) is a pre-requisite.  Install it locally after executing `cmsenv`:
 
 	cd /tmp
-    wget -O - http://pyyaml.org/download/pyyaml/PyYAML-3.10.tar.gz|tar xzf -
+    wget --no-check-certificate -O - http://pyyaml.org/download/pyyaml/PyYAML-3.10.tar.gz|tar xzf -
     cd PyYAML-3.10/
     python setup.py install --user
     cd ..
