@@ -112,7 +112,7 @@ def make_datacard_one_category(lepton_category, jet_tag_category, histograms):
                 continue
 
         ## If a sample is being excluded, remove it (but it remains in process_number)
-        if sample in lepton_categories[lepton_category]['excluded samples']:
+        if sample in lepton_categories[lepton_category].get('excluded samples', []):
             if sample in signal_keys: signal_keys.remove(sample)
             if sample in signal_keys_masses: signal_keys_masses.remove(sample)
             if sample in background_keys: background_keys.remove(sample)
