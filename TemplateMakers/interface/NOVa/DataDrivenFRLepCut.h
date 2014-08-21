@@ -19,7 +19,8 @@ public:
   string file_name_NP;
   string file_name_QF;
   string branchNameNP;
-  string branchNameQF;
+  string branchNameQF_sel_fail;
+  string branchNameQF_sel;
   string label;
   collectionType **selCollection_2;
   unsigned int number_of_leptons_2;
@@ -35,8 +36,10 @@ public:
   //TH2 * FR_NP_tight2_mu; //FR for >= 2 b-jets
   //TH2 * FR_NP_tight_el; //FR for < 2 b-jets
   //TH2 * FR_NP_tight2_el; //FR for >= 2 b-jets
-  TH2 * FR_QF_el; //Charge flip FR
-  double FR_QF[6];
+  TH1 * FR_QF_el_sel_fail; //Charge flip FR
+  TH1 * FR_QF_el_sel; //Charge flip FR
+  double FR_QF_sel_fail[6];
+  double FR_QF_sel[6];
   int QF_charge[6];
 
   DataDrivenFRLepCut(collectionType **_selCollection, int _number_of_leptons,
@@ -61,13 +64,16 @@ DataDrivenFRLepCut<collectionType>::DataDrivenFRLepCut(collectionType **_selColl
 
   this->resetVal = 1.0;
   branchNameNP = Form("DataDrivenFRLepCut_NP%s", label.c_str());
-  branchNameQF = Form("DataDrivenFRLepCut_QF%s", label.c_str());
+  branchNameQF_sel_fail = Form("DataDrivenFRLepCut_QF_sel_fail%s", label.c_str());
+  branchNameQF_sel = Form("DataDrivenFRLepCut_QF_sel%s", label.c_str());
   branches[branchNameNP] = BranchInfo<double>(branchNameNP);
-  branches[branchNameQF] = BranchInfo<double>(branchNameQF);
+  branches[branchNameQF_sel_fail] = BranchInfo<double>(branchNameQF_sel_fail);
+  branches[branchNameQF_sel] = BranchInfo<double>(branchNameQF_sel);
   branches[branchNameNP].branchVal = 1.0;
-  branches[branchNameQF].branchVal = 1.0;
+  branches[branchNameQF_sel_fail].branchVal = 1.0;
+  branches[branchNameQF_sel].branchVal = 1.0;
 
-  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/fakerate/").c_str();
+  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVa/lepCut_weights/").c_str();
 //   TString weight_file_name_NP = Form("%s%s.root", directory.c_str(), file_name_NP.c_str());
 //   weight_file_NP = TFile::Open(weight_file_name_NP);
 
@@ -82,8 +88,8 @@ DataDrivenFRLepCut<collectionType>::DataDrivenFRLepCut(collectionType **_selColl
 
   TString weight_file_name_QF = Form("%s%s.root", directory.c_str(), file_name_QF.c_str());
   weight_file_QF = TFile::Open(weight_file_name_QF);
-  FR_QF_el = (TH2*)weight_file_QF->Get("QF_el_data")->Clone();
-
+  FR_QF_el_sel_fail = (TH1*)weight_file_QF->Get("QF_data_el_SS_lepCut_fail")->Clone();
+  FR_QF_el_sel = (TH1*)weight_file_QF->Get("QF_data_el_SS_lepCut")->Clone();
 
 }
 
@@ -93,7 +99,8 @@ void DataDrivenFRLepCut<collectionType>::evaluate() {
   evaluatedThisEvent = true;
 
   //--------
-  FR_QF[0] = 1.0; FR_QF[1] = 1.0; FR_QF[2] = 1.0; FR_QF[3] = 1.0; FR_QF[4] = 1.0; FR_QF[5] = 1.0;
+  FR_QF_sel_fail[0] = 1.0; FR_QF_sel_fail[1] = 1.0; FR_QF_sel_fail[2] = 1.0; FR_QF_sel_fail[3] = 1.0; FR_QF_sel_fail[4] = 1.0; FR_QF_sel_fail[5] = 1.0;
+  FR_QF_sel[0] = 1.0; FR_QF_sel[1] = 1.0; FR_QF_sel[2] = 1.0; FR_QF_sel[3] = 1.0; FR_QF_sel[4] = 1.0; FR_QF_sel[5] = 1.0;
   QF_charge[0] = 0; QF_charge[1] = 0; QF_charge[2] = 0; QF_charge[3] = 0; QF_charge[4] = 0; QF_charge[5] = 0;
   //int num_fail = 0;
   int num_passed_leptons = 0;
@@ -146,15 +153,12 @@ void DataDrivenFRLepCut<collectionType>::evaluate() {
       QF_charge[num_passed_leptons] = (ptr((*selCollection)->at(iObj)))->tkCharge;
       num_passed_leptons += 1;
       if (ptr((*selCollection)->at(iObj))->isElectron == 1) {
-        int pt_bin  = std::max(1, std::min(FR_QF_el->GetNbinsX(), FR_QF_el->GetXaxis()->FindBin(lep_pt)));
-        int eta_bin  = std::max(1, std::min(FR_QF_el->GetNbinsY(), FR_QF_el->GetYaxis()->FindBin(lep_eta)));
-        FR_QF[num_electrons] = FR_QF_el->GetBinContent(pt_bin, eta_bin);
+        //int pt_bin  = std::max(1, std::min(FR_QF_el->GetNbinsX(), FR_QF_el->GetXaxis()->FindBin(lep_pt)));
+        int eta_bin  = std::max(1, std::min(FR_QF_el_sel_fail->GetNbinsX(), FR_QF_el_sel_fail->GetXaxis()->FindBin(lep_eta)));
+        FR_QF_sel_fail[num_electrons] = FR_QF_el_sel_fail->GetBinContent(eta_bin);
+        FR_QF_sel[num_electrons] = FR_QF_el_sel->GetBinContent(eta_bin);
         QF_charge[num_passed_leptons] = ((BNelectron*)ptr((*selCollection)->at(iObj)))->tkCharge;
         num_electrons += 1;
-        if (FR_QF_el->GetBinContent(pt_bin, eta_bin) == 1 || FR_QF_el->GetBinContent(pt_bin, eta_bin) == 0) {
-          std::cout << "Error: QF SF = " << FR_QF_el->GetBinContent(pt_bin, eta_bin) <<
-            ", pt = " << lep_pt << ", eta = " << lep_eta << ", pt_bin = " << pt_bin << ", eta_bin = " << eta_bin << std::endl;
-        }
       }
         //}
     } //end if ( iObj < number_of_leptons )
@@ -209,15 +213,19 @@ void DataDrivenFRLepCut<collectionType>::evaluate() {
   if (weight == -1.0) weight = 1.0;
   branches[branchNameNP].branchVal = weight;
 
-  if ((number_of_leptons == 2) && (num_passed_leptons == 2) && (QF_charge[0] * QF_charge[1] == -1)) {
+  if ( number_of_leptons == 2 && QF_charge[0] * QF_charge[1] == -1) {
     //FR for opposite-sign events with electrons
-    if (num_electrons == 0) branches[branchNameQF].branchVal = 1.0;
-    if (num_electrons == 1) branches[branchNameQF].branchVal = FR_QF[0];
-    if (num_electrons == 2) branches[branchNameQF].branchVal = FR_QF[0] + FR_QF[1];
+    if (num_electrons == 0) branches[branchNameQF_sel_fail].branchVal = 0.0;
+    if (num_electrons == 0) branches[branchNameQF_sel].branchVal = 0.0;
+    if (num_electrons == 1) branches[branchNameQF_sel_fail].branchVal = FR_QF_sel_fail[0];
+    if (num_electrons == 1) branches[branchNameQF_sel].branchVal = FR_QF_sel[0];
+    if (num_electrons == 2) branches[branchNameQF_sel_fail].branchVal = FR_QF_sel_fail[0] + FR_QF_sel_fail[1];
+    if (num_electrons == 2) branches[branchNameQF_sel].branchVal = FR_QF_sel[0] + FR_QF_sel[1];
   }
 
   //Fill a QF branch with weight 0, so we can run over ss and 3l events together
-  if (number_of_leptons == 3) branches[branchNameQF].branchVal = 0.0;
+  if (number_of_leptons >= 3) branches[branchNameQF_sel_fail].branchVal = 0.0;
+  if (number_of_leptons >= 3) branches[branchNameQF_sel].branchVal = 0.0;
 
   //Clean out values from last event
   myVars.clear();
@@ -239,7 +247,8 @@ DataDrivenFRLepCut<collectionType>::~DataDrivenFRLepCut() {
   //delete FR_NP_tight2_mu;
   //delete FR_NP_tight_el;
   //delete FR_NP_tight2_el;
-  delete FR_QF_el;
+  delete FR_QF_el_sel_fail;
+  delete FR_QF_el_sel;
   //weight_file_NP->Close();
   weight_file_QF->Close();
 

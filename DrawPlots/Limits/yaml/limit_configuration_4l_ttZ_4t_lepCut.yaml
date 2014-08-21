@@ -89,7 +89,7 @@ background samples:
     zz_bb_llll:
         datacard name: "ZZ_BB"
         systematics: common
-        samples: [zz_b_llll]
+        samples: [zz_bb_llll]
 
     triboson:
         datacard name: "VVV"

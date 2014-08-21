@@ -1,11 +1,11 @@
 #input and output file names
 input file location: histos_SS_ttW_studies_2t_lepCut
-input file label: ttV_SS_lepCuts_v1
+input file label: ttV_SS_Aug11
 output file location: pdf_SS_ttW_studies_2t_lepCut_blind
 
 #drawing options
 skip systematics: true
-draw ratio plot: true
+draw ratio plot: false
 draw legend: true
 log scale: false
 save png: true
@@ -60,15 +60,15 @@ jet tag categories:
 #     eq0j: " + 0 jets"
 #     eq1j: " + 1 jets"
 #     eq2j: " + 2 jets"
-    eq3j_lf: " + 3 jets + lf"
-    ge4j_lf: " + #geq4 jets + lf"
+#     eq3j_lf: " + 3 jets + lf"
+#     ge4j_lf: " + #geq4 jets + lf"
     eq3j_bloose: " + 3 jets + bloose"
     ge4j_bloose: " + #geq4 jets + bloose"
     
 #     ge0j_Zpeak: " + #geq0 jets"
-#     eq0j_Zpeak: " + 0 jets"
-#     eq1j_Zpeak: " + 1 jets"
-#     eq2j_Zpeak: " + 2 jets"
+# #     eq0j_Zpeak: " + 0 jets"
+# #     eq1j_Zpeak: " + 1 jets"
+# #     eq2j_Zpeak: " + 2 jets"
     
 #Systematics used in error bars
 systematics:
@@ -111,13 +111,15 @@ background samples:
         draw name: "Fakes"
         color: kGray
         systematics: [40PercentRateUp, 40PercentRateDown]
-        samples: [MuEG_NP_sideband]
+        samples: [MuEG_NP_sideband, MuEG_QF_sideband_neg]
+        #samples: [MuEG_NP_sideband]
 
     DoubleElectron_NP_sideband:
         draw name: "Fakes"
         color: kGray
         systematics: [40PercentRateUp, 40PercentRateDown]
-        samples: [DoubleElectron_NP_sideband]
+        samples: [DoubleElectron_NP_sideband, DoubleElectron_QF_sideband_neg]
+        #samples: [DoubleElectron_NP_sideband]
 
     MuEG_QF_sideband:
         draw name: "Q flip"
@@ -209,6 +211,7 @@ distributions:
     #NP_lepton_pt: ['NP lepton pT', false, true]
     all_leptons_by_pt_1_eta: ['First lepton eta', false, false]
     all_leptons_by_pt_2_eta: ['Second lepton eta', false, false]
+    max_lepton_eta: ['Max lepton eta', false, false]
     #NP_lepton_eta: ['NP lepton eta', false, false]
     all_leptons_by_pt_1_jetBTagCSV: ['First lepton jetBTagCSV', true, false]
     all_leptons_by_pt_2_jetBTagCSV: ['Second lepton jetBTagCSV', true, false]

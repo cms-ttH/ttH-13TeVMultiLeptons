@@ -112,7 +112,7 @@ def make_datacard_one_category(lepton_category, jet_tag_category, histograms):
                 continue
 
         ## If a sample is being excluded, remove it (but it remains in process_number)
-        if sample in lepton_categories[lepton_category].get('excluded samples', []):
+        if sample in lepton_categories[lepton_category]['excluded samples']:
             if sample in signal_keys: signal_keys.remove(sample)
             if sample in signal_keys_masses: signal_keys_masses.remove(sample)
             if sample in background_keys: background_keys.remove(sample)
@@ -164,7 +164,9 @@ def make_datacard_one_category(lepton_category, jet_tag_category, histograms):
                 group_histogram.Add(root_files[sample_part].Get(name_plus_cycle_nominal))
 
             if sample in signal_background_keys_masses:
+                #print sample				
                 for systematic in systematics:
+                    #print systematic
                     if systematic != 'nominal':
                         if not group_histogram_Up[systematic]:
                             group_histogram_Up[systematic] = root_files[sample_part].Get("%s_%sUp" % (name_plus_cycle_nominal, systematic)).Clone("x_%s_%sUp" % (sample_d, systematic))
@@ -403,21 +405,21 @@ def make_datacard_one_category(lepton_category, jet_tag_category, histograms):
     kpatt = " %%%ds "  % klen
     fpatt = " %%%d.%df " % (klen,3)
     datacard.write('##----------------------------------\n')
-    datacard.write('bin             '+(" ".join([kpatt % category_name    for sample in signal_background_keys_d]))+"\n")
-    datacard.write('process         '+(" ".join([kpatt % sample           for sample in signal_background_keys_d]))+"\n")
-    datacard.write('process         '+(" ".join([kpatt % process_number[sample] for sample in signal_background_keys]))+"\n")
-    datacard.write('rate           '+(" ".join([fpatt % (-1.0*('ttH' in sample and len(ttH_masses) > 1) + (not 'ttH' in sample or len(ttH_masses) < 2)*histograms_local[sample].Integral()) for sample in signal_background_keys_one_mass_d]))+"\n")
+    datacard.write('bin                                                '+(" ".join([kpatt % category_name    for sample in signal_background_keys_d]))+"\n")
+    datacard.write('process                                            '+(" ".join([kpatt % sample           for sample in signal_background_keys_d]))+"\n")
+    datacard.write('process                                            '+(" ".join([kpatt % process_number[sample] for sample in signal_background_keys]))+"\n")
+    datacard.write('rate                                               '+(" ".join([fpatt % (-1.0*('ttH' in sample and len(ttH_masses) > 1) + (not 'ttH' in sample or len(ttH_masses) < 2)*histograms_local[sample].Integral()) for sample in signal_background_keys_one_mass_d]))+"\n")
     datacard.write('##----------------------------------\n')
     for rate_systematic_name,effect_map in rate_systematics.iteritems(): #Uses a different order than signal_background_keys_d
-        datacard.write(('%-12s lnN' % rate_systematic_name) + " ".join([kpatt % effect_map[sample] for sample in signal_background_keys_one_mass_d]) +"\n")
+        datacard.write(('%-47s lnN' % rate_systematic_name) + " ".join([kpatt % effect_map[sample] for sample in signal_background_keys_one_mass_d]) +"\n") #12s
     for shape_systematic_name,(effect_map_0,effect_map_12,systematic_type) in shape_systematics.iteritems():
         if systematic_type == "templates":
-            datacard.write(('%-10s shape' % shape_systematic_name) + " ".join([kpatt % effect_map_0[sample]     for sample in signal_background_keys_one_mass_d]) +"\n")
+            datacard.write(('%-45s shape' % shape_systematic_name) + " ".join([kpatt % effect_map_0[sample]     for sample in signal_background_keys_one_mass_d]) +"\n") #10s
         if systematic_type in ["envelope", "alternateShapeOnly"]:
-            datacard.write(('%-10s shape' % (shape_systematic_name+"0")) + " ".join([kpatt % effect_map_0[sample]  for sample in signal_background_keys_one_mass_d]) +"\n")
+            datacard.write(('%-45s shape' % (shape_systematic_name+"0")) + " ".join([kpatt % effect_map_0[sample]  for sample in signal_background_keys_one_mass_d]) +"\n") #10s
         if systematic_type in ["envelope", "shapeOnly"]:
-            datacard.write(('%-10s shape' % (shape_systematic_name+"1")) + " ".join([kpatt % effect_map_12[sample] for sample in signal_background_keys_one_mass_d]) +"\n")
-            datacard.write(('%-10s shape' % (shape_systematic_name+"2")) + " ".join([kpatt % effect_map_12[sample] for sample in signal_background_keys_one_mass_d]) +"\n")
+            datacard.write(('%-45s shape' % (shape_systematic_name+"1")) + " ".join([kpatt % effect_map_12[sample] for sample in signal_background_keys_one_mass_d]) +"\n") #10s
+            datacard.write(('%-45s shape' % (shape_systematic_name+"2")) + " ".join([kpatt % effect_map_12[sample] for sample in signal_background_keys_one_mass_d]) +"\n") #10s
 
     datacard.close()
     print "Wrote to ",outdir+category_name+out_label+".card.txt"

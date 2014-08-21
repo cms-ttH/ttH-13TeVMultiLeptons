@@ -87,7 +87,7 @@ background samples:
 #     zz_bb_llll:
 #         datacard name: "ZZ_BB"
 #         systematics: common
-#         samples: [zz_b_llll]
+#         samples: [zz_bb_llll]
 
 #     wz_lll:
 #         datacard name: "WZ"
@@ -112,7 +112,7 @@ background samples:
     wz_bb_lll:
         datacard name: "WZ_BB"
         systematics: common
-        samples: [wz_b_lll]
+        samples: [wz_bb_lll]
 
     triboson:
         datacard name: "VVV"

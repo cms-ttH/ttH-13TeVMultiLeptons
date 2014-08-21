@@ -1,19 +1,19 @@
 #input and output file names
 input file location: ../histos_SS_ttW_studies_2t_lepCut_forLimits
-input file label: ttV_SS_lepCuts_v1
+input file label: ttV_SS_Aug11
 
 lepton categories:
     mu_mu:
         data sample: DoubleMu
-        excluded samples: [3rd_spot, MuEG_NP_sideband, MuEG_QF_sideband, DoubleElectron_NP_sideband, DoubleElectron_QF_sideband]
+        excluded samples: [MuEG_NP_sideband, MuEG_QF_sideband, MuEG_NP_sideband_HF, MuEG_QF_sideband_neg, DoubleElectron_NP_sideband, DoubleElectron_QF_sideband, DoubleElectron_NP_sideband_HF, DoubleElectron_QF_sideband_neg]
         category name: 'ttW_2lss_mumu'
     mu_ele:
         data sample: MuEG
-        excluded samples: [3rd_spot, DoubleMu_NP_sideband, DoubleElectron_NP_sideband, DoubleElectron_QF_sideband]
+        excluded samples: [DoubleMu_NP_sideband, DoubleMu_NP_sideband_HF, DoubleElectron_NP_sideband, DoubleElectron_QF_sideband, DoubleElectron_NP_sideband_HF, DoubleElectron_QF_sideband_neg]
         category name: 'ttW_2lss_em'
     ele_ele:
         data sample: DoubleElectron
-        excluded samples: [3rd_spot, DoubleMu_NP_sideband, MuEG_NP_sideband, MuEG_QF_sideband]
+        excluded samples: [DoubleMu_NP_sideband, DoubleMu_NP_sideband_HF, MuEG_NP_sideband, MuEG_QF_sideband, MuEG_NP_sideband_HF, MuEG_QF_sideband_neg]
         category name: 'ttW_2lss_ee'
 
         
@@ -25,26 +25,33 @@ jet tag categories:
 #Systematics used in error bars
 systematics:
     - nominal
+    - JES
     - weight_PU
-    - topPtWgt
-    - csvWeightHF
-    - csvWeightLF
+    - csvWgtlf_HF
+    - csvWgtlf_Stats1
+    - csvWgtlf_Stats2
+    - csvWgthf_LF
+    - csvWgthf_Stats1
+    - csvWgthf_Stats2
+    - csvWgtc_Err1
+    - csvWgtc_Err2
 
+    
 ttH mass points: ##New code to automate masses
     - '125'
     
 data samples:
     DoubleMu:
         datacard name: "data_obs"
-        systematics: common
+        systematics: none
         samples: [DoubleMu]
     MuEG:
         datacard name: "data_obs"
-        systematics: common
+        systematics: none
         samples: [MuEG]
     DoubleElectron:
         datacard name: "data_obs"
-        systematics: common
+        systematics: none
         samples: [DoubleElectron]
 
 signal samples:
@@ -57,38 +64,33 @@ signal samples:
 background samples:
     DoubleMu_NP_sideband:
         datacard name: "FR_data"
-        systematics: 40PercentRate
+        systematics: [NP_FR_lepCut_SS_2t_mu_rate, NP_FR_lepCut_SS_2t_mu_pt_20_30_rate, NP_FR_lepCut_SS_2t_mu_pt_30_inf_rate]
         samples: [DoubleMu_NP_sideband]
 
     MuEG_NP_sideband:
         datacard name: "FR_data"
-        systematics: 40PercentRate
+        systematics: [NP_FR_lepCut_SS_2t_mu_rate, NP_FR_lepCut_SS_2t_ele_rate, NP_FR_lepCut_SS_2t_mu_pt_20_30_rate, NP_FR_lepCut_SS_2t_mu_pt_30_inf_rate, NP_FR_lepCut_SS_2t_ele_pt_20_40_rate, NP_FR_lepCut_SS_2t_ele_pt_40_inf_rate]
         samples: [MuEG_NP_sideband]
 
     DoubleElectron_NP_sideband:
         datacard name: "FR_data"
-        systematics: 40PercentRate
+        systematics: [NP_FR_lepCut_SS_2t_ele_rate, NP_FR_lepCut_SS_2t_ele_pt_20_40_rate, NP_FR_lepCut_SS_2t_ele_pt_40_inf_rate]
         samples: [DoubleElectron_NP_sideband]
 
     MuEG_QF_sideband:
         datacard name: "QF_data"
-        systematics: 40PercentRate
+        systematics: QF_FR_lepCut_SS_2t_ele_rate
         samples: [MuEG_QF_sideband]
 
     DoubleElectron_QF_sideband:
         datacard name: "QF_data"
-        systematics: 40PercentRate
+        systematics: QF_FR_lepCut_SS_2t_ele_rate
         samples: [DoubleElectron_QF_sideband]
 
 #     Others:
 #         datacard name: "Rare SM"
 #         systematics: common
 #         samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
-
-    3rd_spot:
-        datacard name: "3rd_spot"
-        systematics: common
-        samples: [3rd_spot] #WmWmqq
 
 #     ## Not enough MC events; makes combine tool seg fault
 #     WWqq:
@@ -129,7 +131,7 @@ background samples:
     wz_bb_lll:
         datacard name: "WZ_BB"
         systematics: common
-        samples: [wz_b_lll]
+        samples: [wz_bb_lll]
 
     triboson:
         datacard name: "VVV"

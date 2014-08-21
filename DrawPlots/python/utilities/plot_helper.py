@@ -818,16 +818,49 @@ def get_systematic_info(systematic):
         '40PercentRateUp': {'weight_string': '(1.40)', 'systematic_label': '_40PercentRateUp'},
         '40PercentRateDown': {'weight_string': '(0.60)', 'systematic_label': '_40PercentRateDown'},
         'RecoIDIsoSIPSFDown_3lep': {'weight_string': '(RecoIDIsoSIPSFDown_3lep/RecoIDIsoSIPSF_3lep)', 'systematic_label': '_RecoIDIsoSIPSFDown_3lep'},
-        'RecoIDIsoSIPSFUp_3lep': {'weight_string': '(RecoIDIsoSIPSFUp_3lep/RecoIDIsoSIPSF_3lep)', 'systematic_label': '_RecoIDIsoSIPSFUp_3lep'}
+        'RecoIDIsoSIPSFUp_3lep': {'weight_string': '(RecoIDIsoSIPSFUp_3lep/RecoIDIsoSIPSF_3lep)', 'systematic_label': '_RecoIDIsoSIPSFUp_3lep'},
+		'QF_FR_lepCut_SS_2t_ele_rateUp': {'weight_string': '(1.0 + 0.3*(!all_leptons_by_pt_1_isMuon + !all_leptons_by_pt_2_isMuon))', 'systematic_label': '_QF_FR_lepCut_SS_2t_ele_rateUp'},
+		'QF_FR_lepCut_SS_2t_ele_rateDown': {'weight_string': '(1.0 - 0.3*(!all_leptons_by_pt_1_isMuon + !all_leptons_by_pt_2_isMuon))', 'systematic_label': '_QF_FR_lepCut_SS_2t_ele_rateDown'},
+		'NP_FR_lepCut_SS_2t_mu_rateUp': {'weight_string': '(1.0 + 0.6*((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_mu_rateUp'},
+		'NP_FR_lepCut_SS_2t_mu_rateDown': {'weight_string': '(1.0 - 0.6*((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_mu_rateDown'},
+		'NP_FR_lepCut_SS_2t_ele_rateUp': {'weight_string': '(1.0 + 0.4*((!all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2) || (!all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_ele_rateUp'},
+		'NP_FR_lepCut_SS_2t_ele_rateDown': {'weight_string': '(1.0 - 0.4*((!all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2) || (!all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_ele_rateDown'},
+		'NP_FR_lepCut_SS_2t_mu_pt_20_30_rateUp': {'weight_string': '(1.0 + 0.5*((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_1_pt < 30) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2 && all_leptons_by_pt_2_pt > 20 && all_leptons_by_pt_2_pt < 30)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_mu_pt_20_30_rateUp'},
+		'NP_FR_lepCut_SS_2t_mu_pt_20_30_rateDown': {'weight_string': '(1.0 - 0.5*((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_1_pt < 30) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2 && all_leptons_by_pt_2_pt > 20 && all_leptons_by_pt_2_pt < 30)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_mu_pt_20_30_rateDown'},
+		'NP_FR_lepCut_SS_2t_mu_pt_30_inf_rateUp': {'weight_string': '(1.0 + 1.0*((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2 && all_leptons_by_pt_1_pt > 30) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2 && all_leptons_by_pt_2_pt > 30)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_mu_pt_30_inf_rateUp'},
+		'NP_FR_lepCut_SS_2t_mu_pt_30_inf_rateDown': {'weight_string': '(1.0 - 1.0*((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2 && all_leptons_by_pt_1_pt > 30) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2 && all_leptons_by_pt_2_pt > 30)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_mu_pt_30_inf_rateDown'},
+		'NP_FR_lepCut_SS_2t_ele_pt_20_40_rateUp': {'weight_string': '(1.0 + 0.5*((!all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_1_pt < 40) || (!all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2 && all_leptons_by_pt_2_pt > 20 && all_leptons_by_pt_2_pt < 40)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_ele_pt_20_40_rateUp'},
+		'NP_FR_lepCut_SS_2t_ele_pt_20_40_rateDown': {'weight_string': '(1.0 - 0.5*((!all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2 && all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_1_pt < 40) || (!all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2 && all_leptons_by_pt_2_pt > 20 && all_leptons_by_pt_2_pt < 40)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_ele_pt_20_40_rateDown'},
+		'NP_FR_lepCut_SS_2t_ele_pt_40_inf_rateUp': {'weight_string': '(1.0 + 1.0*((!all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2 && all_leptons_by_pt_1_pt > 40) || (!all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2 && all_leptons_by_pt_2_pt > 40)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_ele_pt_40_inf_rateUp'},
+		'NP_FR_lepCut_SS_2t_ele_pt_40_inf_rateDown': {'weight_string': '(1.0 - 1.0*((!all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_lepCut < 2 && all_leptons_by_pt_1_pt > 40) || (!all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_lepCut < 2 && all_leptons_by_pt_2_pt > 40)) )', 'systematic_label': '_NP_FR_lepCut_SS_2t_ele_pt_40_inf_rateDown'},
+		'NP_FR_lepCut_3l_2t_mu_rateUp': {'weight_string': '(1.0 + 0.6*((all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2) || (all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_mu_rateUp'},
+		'NP_FR_lepCut_3l_2t_mu_rateDown': {'weight_string': '(1.0 - 0.6*((all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2) || (all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_mu_rateDown'},
+		'NP_FR_lepCut_3l_2t_ele_rateUp': {'weight_string': '(1.0 + 0.4*((!all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2) || (!all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_ele_rateUp'},
+		'NP_FR_lepCut_3l_2t_ele_rateDown': {'weight_string': '(1.0 - 0.4*((!all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2) || (!all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_ele_rateDown'},
+		'NP_FR_lepCut_3l_2t_mu_pt_20_30_rateUp': {'weight_string': '(1.0 + 0.5*((all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2 && all_SS_leptons_by_pt_1_pt > 20 && all_SS_leptons_by_pt_1_pt < 30) || (all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2 && all_SS_leptons_by_pt_2_pt > 20 && all_SS_leptons_by_pt_2_pt < 30)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_mu_pt_20_30_rateUp'},
+		'NP_FR_lepCut_3l_2t_mu_pt_20_30_rateDown': {'weight_string': '(1.0 - 0.5*((all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2 && all_SS_leptons_by_pt_1_pt > 20 && all_SS_leptons_by_pt_1_pt < 30) || (all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2 && all_SS_leptons_by_pt_2_pt > 20 && all_SS_leptons_by_pt_2_pt < 30)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_mu_pt_20_30_rateDown'},
+		'NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateUp': {'weight_string': '(1.0 + 1.0*((all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2 && all_SS_leptons_by_pt_1_pt > 30) || (all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2 && all_SS_leptons_by_pt_2_pt > 30)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateUp'},
+		'NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateDown': {'weight_string': '(1.0 - 1.0*((all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2 && all_SS_leptons_by_pt_1_pt > 30) || (all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2 && all_SS_leptons_by_pt_2_pt > 30)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateDown'},
+		'NP_FR_lepCut_3l_2t_ele_pt_20_40_rateUp': {'weight_string': '(1.0 + 0.5*((!all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2 && all_SS_leptons_by_pt_1_pt > 20 && all_SS_leptons_by_pt_1_pt < 40) || (!all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2 && all_SS_leptons_by_pt_2_pt > 20 && all_SS_leptons_by_pt_2_pt < 40)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_ele_pt_20_40_rateUp'},
+		'NP_FR_lepCut_3l_2t_ele_pt_20_40_rateDown': {'weight_string': '(1.0 - 0.5*((!all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2 && all_SS_leptons_by_pt_1_pt > 20 && all_SS_leptons_by_pt_1_pt < 40) || (!all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2 && all_SS_leptons_by_pt_2_pt > 20 && all_SS_leptons_by_pt_2_pt < 40)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_ele_pt_20_40_rateDown'},
+		'NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateUp': {'weight_string': '(1.0 + 1.0*((!all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2 && all_SS_leptons_by_pt_1_pt > 40) || (!all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2 && all_SS_leptons_by_pt_2_pt > 40)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateUp'},
+		'NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateDown': {'weight_string': '(1.0 - 1.0*((!all_SS_leptons_by_pt_1_isMuon && all_SS_leptons_by_pt_1_lepCut < 2 && all_SS_leptons_by_pt_1_pt > 40) || (!all_SS_leptons_by_pt_2_isMuon && all_SS_leptons_by_pt_2_lepCut < 2 && all_SS_leptons_by_pt_2_pt > 40)) )', 'systematic_label': '_NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateDown'},
+        'HF_NP_lep': {'weight_string': '1', 'systematic_label': '_HF_NP_lep'},
         }
 
-    return (dictionary[systematic]['weight_string'], dictionary[systematic]['systematic_label'])
+    if (systematic in dictionary):
+        return (dictionary[systematic]['weight_string'], dictionary[systematic]['systematic_label'])
+    else:
+        return (systematic, '_'+systematic)
 
 def customize_systematics(systematics, customization_string):
     customized_systematics = customize_list(systematics, customization_string)
 
-    if 'nominal' not in customized_systematics:
+    if 'nominal' not in customized_systematics and 'noNominal' not in customized_systematics:
         customized_systematics.append('nominal')
+
+    if 'noNominal' in customized_systematics:
+        customized_systematics.remove('noNominal')
 
     return customized_systematics
 

@@ -161,6 +161,7 @@ int main (int argc, char** argv) {
   GenericCollection<BNmcparticleCollection> genWFromTops(beanHelper);
   GenericCollection<BNmcparticleCollection> genWFromAntiTops(beanHelper);
   GenericCollection<BNmcparticleCollection> genZs(beanHelper);
+  GenericCollection<BNmcparticleCollection> genWs(beanHelper);
 
   GenericCollection<BNjetCollection> jetsFromW(beanHelper);
   GenericCollection<BNjetCollection> jetsFromLepTop(beanHelper);
@@ -301,9 +302,9 @@ int main (int argc, char** argv) {
                                                         2, 2, "FR_merged_data", "QF_data_el", "_2_tight"); 
   kinVars.push_back(&myDataDrivenFRLepCut2Tight);
   
-  DataDrivenFRLepCut<BNleptonCollection> myDataDrivenFRLepCut2Loose(&(tightLoosePreselectedLeptons.ptrToItems),
-                                                        2, 1, "FR_merged_data", "QF_data_el", "_2_loose"); 
-  kinVars.push_back(&myDataDrivenFRLepCut2Loose);
+//   DataDrivenFRLepCut<BNleptonCollection> myDataDrivenFRLepCut2Loose(&(tightLoosePreselectedLeptons.ptrToItems),
+//                                                         2, 1, "FR_merged_data", "QF_data_el", "_2_loose"); 
+//   kinVars.push_back(&myDataDrivenFRLepCut2Loose);
   
   //Causes run-time error
   DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems),
@@ -400,7 +401,7 @@ int main (int argc, char** argv) {
   kinVars.push_back(&myTightCharges);
   //myTightCharges.setCut("pass");
 
-  // Z mass for WZ* sample
+  // W and Z mass for WZ* sample
   GenericCollectionMember<double, BNmcparticleCollection> myGenZMass(Reflex::Type::ByName("BNmcparticle"), &(genZs.ptrToItems),
                                                                   "mass", "Zs_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&myGenZMass);
@@ -408,6 +409,14 @@ int main (int argc, char** argv) {
   GenericCollectionMember<double, BNmcparticleCollection> myGenZPt(Reflex::Type::ByName("BNmcparticle"), &(genZs.ptrToItems),
                                                                   "pt", "Zs_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&myGenZPt);
+
+  GenericCollectionMember<double, BNmcparticleCollection> myGenWMass(Reflex::Type::ByName("BNmcparticle"), &(genWs.ptrToItems),
+                                                                  "mass", "Ws_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&myGenWMass);
+
+  GenericCollectionMember<double, BNmcparticleCollection> myGenWPt(Reflex::Type::ByName("BNmcparticle"), &(genWs.ptrToItems),
+                                                                  "pt", "Ws_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&myGenWPt);
 
   //////////////////////////////////
   //Variables for both matching algorithms
@@ -553,8 +562,8 @@ int main (int argc, char** argv) {
     allLeptonTkCharge.setCut(tkChargeCut);
   }
   else if (myConfig.sampleName.find("QF_sideband") != std::string::npos) { //QF_sideband samples
-    //Cut to require opposite-sign leptons
-    auto tkChargeCut = [] (vector<BranchInfo<int>> vars) { return ((vars[0].branchVal + vars[1].branchVal) == 0); };
+    //Cut to require two charged leptons
+    auto tkChargeCut = [] (vector<BranchInfo<int>> vars) { return (abs(vars[0].branchVal) + abs(vars[1].branchVal) == 2); };
     allLeptonTkCharge.setCut(tkChargeCut);
   }
   cutVars.push_back(&allLeptonTkCharge);
@@ -914,6 +923,10 @@ int main (int argc, char** argv) {
     genZs.initializeRawItems(mcParticles.rawItems);
     auto ZPDGID = [] (BNmcparticle p) { return (p.id == 23); };
     genZs.keepSelectedParticles(ZPDGID);
+
+    genWs.initializeRawItems(mcParticles.rawItems);
+    auto WPDGID = [] (BNmcparticle p) { return (abs(p.id) == 24); };
+    genWs.keepSelectedParticles(WPDGID);
 
     leptonsFromW.resetAndPushBack(tightLoosePreselectedLeptons.items);
     auto leptonFromGenW = [] (BNlepton l) { return (abs(l.genMotherId) == 24 || (abs(l.genMotherId) == 15 && abs(l.genGrandMother00Id) == 24)); };
