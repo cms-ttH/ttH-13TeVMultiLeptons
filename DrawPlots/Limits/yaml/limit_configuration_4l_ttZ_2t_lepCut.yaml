@@ -1,0 +1,139 @@
+#input and output file names
+input file location: ../histos_4l_ttZ_studies_2t_lepCut_forLimits
+input file label: ttV_Aug11
+
+lepton categories:
+    4l:
+        data sample: inclusive_data
+        excluded samples: [] #[ttbarG]
+        category name: 'ttZ_4l'
+        
+#Jet-tag categories: "draw name"
+jet tag categories:
+    ge2j_Zpeak_metLD_1bloose: " + #geq2 jets + tag"
+    ge2j_Zmask_metLD_1bloose: " + #geq2 jets + tag"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - JES
+    - weight_PU
+    - csvWgtlf_HF
+    - csvWgtlf_Stats1
+    - csvWgtlf_Stats2
+    - csvWgthf_LF
+    - csvWgthf_Stats1
+    - csvWgthf_Stats2
+    - csvWgtc_Err1
+    - csvWgtc_Err2
+
+ttH mass points: ##New code to automate masses
+    - '125'
+    
+data samples:
+    inclusive_data:
+        datacard name: "data_obs"
+        systematics: none
+        samples: [inclusive_data]
+
+signal samples:
+    ttbarZ:
+        datacard name: "TTZ"
+        systematics: common
+        samples: [ttbarZ]
+        scale: 1.0
+
+#Samples, ordered bottom-to-top
+background samples:
+    inclusive_data_NP_sideband:
+        datacard name: "FR_data"
+        systematics: none
+        samples: [inclusive_data_NP_sideband, inclusive_data_NP_sideband_2]
+        scale: 1.0
+
+#     Others:
+#         datacard name: "Rare SM"
+#         systematics: common
+#         samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
+
+#     ## Not enough MC events; makes combine tool seg fault
+#     WWqq:
+#         datacard name: "WWqq"
+#         systematics: common
+#         samples: [WpWpqq] #WmWmqq
+
+#     tbZ_ll:
+#         datacard name: "TBZ"
+#         systematics: common
+#         samples: [tbZ_ll]
+#         scale: 1.0
+
+    zz_lf_llll:
+        datacard name: "ZZ_LF"
+        systematics: common
+        samples: [zz_lf_llll]
+        scale: 1.0
+
+    zz_cc_llll:
+        datacard name: "ZZ_CC"
+        systematics: common
+        samples: [zz_cc_llll]
+        scale: 1.0
+
+    zz_b_llll:
+        datacard name: "ZZ_B"
+        systematics: common
+        samples: [zz_b_llll]
+        scale: 1.0
+
+    zz_bb_llll:
+        datacard name: "ZZ_BB"
+        systematics: common
+        samples: [zz_bb_llll]
+
+    triboson:
+        datacard name: "VVV"
+        systematics: common
+        samples: [wwz] #wzz, zzz
+        scale: 1.0
+ 
+#     ## Not enough MC events; makes combine tool seg fault
+#     ttbarG:
+#         datacard name: "TTG"
+#         systematics: common
+#         samples: [ttbarG]
+
+#     ## Not enough MC events; makes combine tool seg fault
+#     ttbarGStar:
+#         datacard name: "TTGStar"
+#         systematics: common
+#         samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
+
+    ttbarWW:
+        datacard name: "TTWW"
+        color: kBlue-9
+        systematics: common
+        samples: [ttbarWW]
+        scale: 1.0
+
+#     ttbarW:
+#         datacard name: "TTW"
+#         systematics: common
+#         samples: [ttbarW]
+#         scale: 1.0
+
+#     ttH125_tt:
+#         datacard name: "ttH_htt"
+#         systematics: common
+#         samples: [ttH125_tt]
+
+#     ttH125_ZZ:
+#         datacard name: "ttH_hzz"
+#         systematics: common
+#         samples: [ttH125_ZZ]
+
+#     ttH125_WW:
+#         datacard name: "ttH_hww"
+#         systematics: common
+#         samples: [ttH125_WW]
+

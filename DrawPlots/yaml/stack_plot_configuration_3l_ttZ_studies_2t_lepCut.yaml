@@ -1,0 +1,392 @@
+#input and output file names
+input file location: histos_3l_ttZ_studies_2t_lepCut
+input file label: ttV_Aug11
+output file location: pdf_3l_ttZ_studies_2t_lepCut_blind
+
+#drawing options
+skip systematics: true
+draw ratio plot: false
+draw legend: true
+log scale: false
+save png: true
+save pdf: true
+blinded: true
+KS test: false
+selection info : false
+SF info: false
+
+#luminosity and era
+luminosity: 19.5
+luminosity error: 0.044
+trigger SF error: 0.02
+lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
+
+#Lepton categories: "draw name"
+lepton categories:
+#     mu_mu:
+#         data samples: [inclusive_data]
+#         excluded samples: []
+#         tex name: " non-Z #mu "
+#     ele_ele:
+#         data samples: [inclusive_data]
+#         excluded samples: []
+#         tex name: " non-Z e "
+    3l:
+        data samples: [inclusive_data]
+        excluded samples: []
+        tex name: " 3 lepton "
+
+#Jet-tag categories: "draw name"
+jet tag categories:
+# #     ## WZ
+# #     ge0j: " + #geq0 jets"
+# #     ge2j: " + #geq2 jets"
+# #     ge0j_metLD: " + #geq0 jets + MetLD"
+# #     ge0j_bloose: " + #geq0 jets + tags"
+# #     ge0j_metLD_bloose: " + #geq0 jets + MetLD + tags"
+#     ## ttZ
+#     ge4j: " + #geq4 jets"
+#     ge2j_metLD: " + #geq2 jets + MetLD"
+#     ge4j_metLD: " + #geq4 jets + MetLD"
+# #     ge2j_bloose: " + #geq2 jets + tags"
+# #     ge4j_bloose: " + #geq4 jets + tags"
+#     ge2j_metLD_bloose: " + #geq2 jets + MetLD + tags"
+#     ge4j_metLD_bloose: " + #geq4 jets + MetLD + tags"
+
+#     eq3j_lf: " + #eq3 jets + lf"
+#     ge4j_lf: " + #geq4 jets + lf"
+    eq3j_bloose: " + #eq3 jets + tags"
+    ge4j_bloose: " + #geq4 jets + tags"
+    
+#     eq0j_lowMet: " + #eq0 jets - MetLD"
+#     eq1j_lowMet: " + #eq1 jets - MetLD"
+#     eq2j_lowMet: " + #eq2 jets - MetLD"
+
+#     le2j_lowMet: " + #leq2 jets - MetLD"
+#     le2j_hiMet: " + #leq2 jets + MetLD"
+
+#     ge0j_hiMet_lf: " + #geq0 jets + MetLD + lf"
+# #     eq0j_hiMet: " + #eq0 jets + MetLD"
+# #     eq1j_hiMet: " + #eq1 jets + MetLD"
+# #     eq2j_hiMet: " + #eq2 jets + MetLD"
+# #     eq3j_hiMet_lf: " + #eq3 jets + MetLD + lf"
+#     ge3j_hiMet_lf: " + #geq3 jets + MetLD + lf"
+# #     ge4j_hiMet_lf: " + #geq4 jets + MetLD + lf"
+    
+#Systematics used in error bars
+systematics:
+    - nominal
+    - weight_PUUp
+    - weight_PUDown
+    - topPtWgtDown
+    - topPtWgtUp
+    - csvWeightHFUp
+    - csvWeightHFDown
+    - csvWeightLFUp
+    - csvWeightLFDown
+    
+# Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
+
+signal samples:
+    ttbarZ:
+        draw name: "t#bar{t}Z"
+        color: kSpring+2
+        samples: [ttbarZ]
+        stack or line: stack
+        line width: 2 # must be integer
+        scale: 1.0
+
+#Samples in each group will be added together and appear as a single entry in the stack plot
+background samples:
+    inclusive_data_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+        systematics: [40PercentRateUp, 40PercentRateDown]
+        samples: [inclusive_data_NP_sideband]
+
+    DoubleMu_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+        systematics: [40PercentRateUp, 40PercentRateDown]
+        samples: [DoubleMu_NP_sideband]
+
+    DoubleElectron_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+        systematics: [40PercentRateUp, 40PercentRateDown]
+        samples: [DoubleElectron_NP_sideband]
+
+    #ttbar:
+        #draw name: ttbar
+        #color: kRed
+        #systematics: all
+        #samples:
+            #- ttbar_lj
+            #- ttbar_ll
+
+#     wz_lll:
+#         draw name: "WZ"
+#         color: kViolet-4
+#         samples: [wz_lll]
+        
+    wz_lf_lll:
+        draw name: "WZ_lf"
+        color: kViolet-5
+        samples: [wz_lf_lll]
+        
+    wz_cc_lll:
+        draw name: "WZ_cc"
+        color: kViolet-4
+        samples: [wz_cc_lll]
+        
+    wz_b_lll:
+        draw name: "WZ_b"
+        color: kViolet-3
+        samples: [wz_b_lll]
+        
+    wz_bb_lll:
+        draw name: "WZ_bb"
+        color: kViolet-2
+        samples: [wz_bb_lll]
+        
+#     zz_lowmll:
+#         draw name: "ZZ/ZZ*"
+#         color: kAzure-8
+#         samples: [zz_lowmll]
+        
+# #     zz_llll:
+# #         draw name: "ZZ"
+# #         color: kAzure-9
+# #         samples: [zz_llll]
+        
+    zz_llll:
+        draw name: "ZZ"
+        color: kAzure-9
+        samples: [zz_lf_llll, zz_cc_llll, zz_b_llll, zz_bb_llll]
+
+#     zz_lf_llll:
+#         draw name: "ZZ_lf"
+#         color: kAzure-9
+#         samples: [zz_lf_llll]
+        
+#     zz_cc_llll:
+#         draw name: "ZZ_cc"
+#         color: kAzure-8
+#         samples: [zz_cc_llll]
+        
+#     zz_b_llll:
+#         draw name: "ZZ_b"
+#         color: kAzure-7
+#         samples: [zz_b_llll]
+        
+#     zz_bb_llll:
+#         draw name: "ZZ_bb"
+#         color: kAzure-6
+#         samples: [zz_bb_llll]
+        
+    Others:
+        draw name: "Rare SM"
+        color: kSpring+8
+        samples: [tbZ_ll, WpWpqq, WWDPI] #WmWmqq
+
+
+    triboson:
+        draw name: "triboson"
+        color: kViolet
+        samples: [www, wwz]
+
+    ttbarGStar:
+        draw name: "t#bar{t}G*"
+        color: kCyan-3
+        samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
+                                        
+    ttbarW:
+        draw name: "t#bar{t}W"
+        color: kGreen-5
+        samples: [ttbarW]
+                                        
+    ttbarWW:
+        draw name: "t#bar{t}WW"
+        color: kBlue-9
+        samples: [ttbarWW]
+                                        
+    ttH125:
+        draw name: "t#bar{t}H125"
+        color: kRed
+        samples: [ttH125]
+                                        
+    #Zjets:
+        #draw name: Zjets
+        #color: kBlue
+        #systematics: all
+        #samples:
+            #- zjets_0p
+            #- zjets_1p
+            #- zjets_2p
+            #- zjets_3p
+            #- zjets_4p
+
+#distribution: [title, underflow, overflow]
+distributions:
+    numAllLeptons: ['number of leptons', true, true]
+    numAllMuons: ['number of muons', true, true]
+    numJets: ['number of jets', true, true]
+    numLooseBJets: ['number of loose b-tagged jets', true, true]
+    numMediumBJets: ['number of medium b-tagged jets', true, true]
+    numTightBJets: ['number of tight b-tagged jets', true, true]
+    all_nonZ_leptons_by_pt_1_pt: ['Non-Z lepton pT', true, true]
+    all_nonZ_leptons_by_pt_1_eta: ['Non-Z lepton eta', true, true]
+#     all_nonZ_leptons_by_pt_1_jetBTagCSV: ['Non-Z lepton jetBTagCSV', true, false]
+#     all_nonZ_leptons_by_pt_1_SIP: ['Non-Z lepton SIP', true, true]
+#     all_nonZ_leptons_by_pt_1_correctedD0Vertex: ['Non-Z lepton correctedD0Vertex', true, true]
+#     all_nonZ_leptons_by_pt_1_correctedDZ: ['Non-Z lepton correctedDZ', true, true]
+#     all_nonZ_leptons_by_pt_1_IP: ['Non-Z lepton IP', true, true]
+#     all_nonZ_leptons_by_pt_1_IPError: ['Non-Z lepton IPError', true, true]
+#     all_nonZ_leptons_by_pt_1_lepMVA: ['Non-Z lepton lepMVA', true, false]
+    all_nonZ_leptons_by_pt_1_isMuon: ['Non-Z lepton isMuon', false, false]
+    all_SS_leptons_by_pt_2_pt: ['Second SS lepton pT', true, true]
+    all_SS_leptons_by_pt_2_eta: ['Second SS lepton eta', true, true]
+    #all_SS_leptons_by_pt_2_jetBTagCSV: ['Second SS lepton jetBTagCSV', true, true]
+    ZLike_pt_leplep_SFOS_all: ['Z pT', true, true]
+    met_ld: ['MetLD', true, true]
+    WLike_MT_met_lep: ['MT(met, lep)', true, true]
+    WLike_deltaPhi_met_lep: ['cos(deltaPhi(met, lep))', true, true]
+    min_mass_Z_nonZ_lep: ['min Z non-Z mass', true, true]
+    min_deltaR_Z_nonZ_lep: ['min Z non-Z deltaR', true, true]
+    met_minus_all_nonZ_leptons_by_pt_1_pt: ['met - Non-Z lepton pT', true, true]
+    ## ttZ
+    #all_Z_leptons_by_pt_1_pt: ['First Z lepton pT', true, true]
+    #all_Z_leptons_by_pt_2_pt: ['Second Z lepton pT', true, true]
+    all_SS_leptons_by_pt_1_pt: ['First SS lepton pT', true, true]
+    all_OS_leptons_by_pt_1_pt: ['OS lepton pT', true, true]
+    jets_by_pt_1_pt: ['First jet pT', false, true]
+    jets_by_pt_2_pt: ['Second jet pT', false, true]
+    min_mass_leplep_all: ['min dilepton mass', true, true]
+    ZLike_mass_leplep_SFOS_all: ['Z mass', true, true]
+    ZLike_eta_leplep_SFOS_all: ['Z eta', true, true]
+    met_pt: ['MET', true, true]
+    mht: ['MHT', true, true]
+    sum_pt: ['Sum pT', true, true]
+#     sum_jet_pt: ['Sum jet pT', true, true]
+#     mass_of_jets: ['Mass of all jets', true, true]
+#     jets_MT_mass_ratio: ['MT/mass of all jets', true, true]
+#     everything_MT_mass_ratio: ['MT/mass of everything', true, true]
+
+#     Match_ttZ_3l_Bb: ['match score Bb', true, true]
+#     Match_ttZ_3l_Bq: ['match score Bq', true, true]
+#     Match_ttZ_3l_bq: ['match score bq', true, true]
+    Match_ttZ_3l_Bbq: ['match score Bbq', true, true]
+    Match_ttZ_3l_Bqq: ['match score Bqq', true, true]
+    Match_ttZ_3l_bqq: ['match score bqq', true, true]
+    Match_ttZ_3l_Bbqq: ['match score Bbqq', true, true]
+#     ttZ_3l_B_CSV: ['matched B CSV', true, true]
+#     ttZ_3l_b_CSV: ['matched b CSV', true, true]
+#     ttZ_3l_q_1_CSV: ['matched first q CSV', true, true]
+#     ttZ_3l_q_2_CSV: ['matched second q CSV', true, true]
+#     ttZ_3l_B_charge: ['matched B charge', true, true]
+#     ttZ_3l_b_charge: ['matched b charge', true, true]
+#     ttZ_3l_W_mass_qq: ['matched W mass qq', true, true]
+#     ttZ_3l_top_mass_lep_B: ['matched top mass lep B', true, true]
+#     ttZ_3l_top_mass_b_q: ['matched top mass bq', true, true]
+#     ttZ_3l_top_mass_b_qq: ['matched top mass bqq', true, true]
+    FinalBDT: ['final BDT', false, false]
+
+# #     WLike_dijet_mass_X1b: ['W mass (exclude one b-jet)', true, true]
+# #     WLike_dijet_mass_X2b: ['W mass (exclude two b-jets)', true, true]
+# #     topLike_MT_met_lep_b_175: ['top MT(met, lep, b)', true, true]
+# #     topLike_mass_lep_b_100: ['top mass(lep, b)', true, true]
+# #     topLike_multijet_mass_b1: ['top mass(jets, b1)', true, true]
+# #     topLike_multijet_mass_b2: ['top mass(jets, b2)', true, true]
+# #     topPairLike_MT_met_lep_jets: ['top pair MT(met, lep, jets)', true, true]
+# #     topPairLike_mass_lep_jets: ['top pair mass(lep, jets)', true, true]
+
+# ### ------ Muon properties ------- ###
+
+#     min_mass_Z_nonZ_lep: ['min Z non-Z mass', true, true]
+#     min_deltaR_Z_nonZ_lep: ['min Z non-Z deltaR', true, true]
+#     WLike_MT_met_lep: ['MT(met, lep)', true, true]
+#     WLike_deltaPhi_met_lep: ['deltaPhi(met, lep)', true, true]
+#     met_minus_all_nonZ_leptons_by_pt_1_pt: ['met - Non-Z lepton pT', true, true]
+#     all_Z_leptons_by_pt_1_lepMVA: ['First Z lepton lepMVA', true, true]
+#     all_Z_leptons_by_pt_2_lepMVA: ['Second Z lepton lepMVA', true, true]
+#     all_nonZ_leptons_by_pt_1_lepMVA: ['Non-Z lepton lepMVA', true, true]
+#     all_Z_leptons_by_pt_1_pt: ['First Z lepton pt', true, true]
+#     all_Z_leptons_by_pt_2_pt: ['Second Z lepton pt', true, true]
+#     all_nonZ_leptons_by_pt_1_pt: ['Non-Z lepton pt', true, true]
+#     all_Z_leptons_by_pt_1_eta: ['First Z lepton eta', true, true]
+#     all_Z_leptons_by_pt_2_eta: ['Second Z lepton eta', true, true]
+#     all_nonZ_leptons_by_pt_1_eta: ['Non-Z lepton eta', true, true]
+#     all_Z_leptons_by_pt_1_DBCorrectedRelIsoDR04: ['First Z lepton DBCorrectedRelIsoDR04', true, true]
+#     all_Z_leptons_by_pt_2_DBCorrectedRelIsoDR04: ['Second Z lepton DBCorrectedRelIsoDR04', true, true]
+#     all_nonZ_leptons_by_pt_1_DBCorrectedRelIsoDR04: ['Non-Z lepton DBCorrectedRelIsoDR04', true, true]
+#     all_Z_leptons_by_pt_1_pt_minus_samPT: ['First Z lepton pt - samPT', true, false]
+#     all_Z_leptons_by_pt_2_pt_minus_samPT: ['Second Z lepton pt - samPT', true, false]
+#     all_nonZ_leptons_by_pt_1_pt_minus_samPT: ['Non-Z lepton pt - samPT', true, true]
+#     all_Z_leptons_by_pt_1_eta_minus_samEta: ['First Z lepton eta - samEta', true, false]
+#     all_Z_leptons_by_pt_2_eta_minus_samEta: ['Second Z lepton eta - samEta', true, false]
+#     all_nonZ_leptons_by_pt_1_eta_minus_samEta: ['Non-Z lepton eta - samEta', true, true]
+#     all_Z_leptons_by_pt_1_phi_minus_samPhi: ['First Z lepton phi - samPhi', true, false]
+#     all_Z_leptons_by_pt_2_phi_minus_samPhi: ['Second Z lepton phi - samPhi', true, false]
+#     all_nonZ_leptons_by_pt_1_phi_minus_samPhi: ['Non-Z lepton phi - samPhi', true, true]
+#     all_Z_leptons_by_pt_1_jetBTagCSV: ['First Z lepton jetBTagCSV', true, true]
+#     all_Z_leptons_by_pt_2_jetBTagCSV: ['Second Z lepton jetBTagCSV', true, true]
+#     all_nonZ_leptons_by_pt_1_jetBTagCSV: ['Non-Z lepton jetBTagCSV', true, true]
+#     all_Z_leptons_by_pt_1_jetPtRatio: ['First Z lepton jetPtRatio', true, true]
+#     all_Z_leptons_by_pt_2_jetPtRatio: ['Second Z lepton jetPtRatio', true, true]
+#     all_nonZ_leptons_by_pt_1_jetPtRatio: ['Non-Z lepton jetPtRatio', true, true]
+#     all_Z_leptons_by_pt_1_jetDeltaR: ['First Z lepton jetDeltaR', true, true]
+#     all_Z_leptons_by_pt_2_jetDeltaR: ['Second Z lepton jetDeltaR', true, true]
+#     all_nonZ_leptons_by_pt_1_jetDeltaR: ['Non-Z lepton jetDeltaR', true, true]
+#     all_Z_leptons_by_pt_1_SIP: ['First Z lepton SIP', true, true]
+#     all_Z_leptons_by_pt_2_SIP: ['Second Z lepton SIP', true, true]
+#     all_nonZ_leptons_by_pt_1_SIP: ['Non-Z lepton SIP', true, true]
+#     all_Z_leptons_by_pt_1_correctedD0Vertex: ['First Z lepton correctedD0Vertex', true, true]
+#     all_Z_leptons_by_pt_2_correctedD0Vertex: ['Second Z lepton correctedD0Vertex', true, true]
+#     all_nonZ_leptons_by_pt_1_correctedD0Vertex: ['Non-Z lepton correctedD0Vertex', true, true]
+#     all_Z_leptons_by_pt_1_correctedDZ: ['First Z lepton correctedDZ', true, true]
+#     all_Z_leptons_by_pt_2_correctedDZ: ['Second Z lepton correctedDZ', true, true]
+#     all_nonZ_leptons_by_pt_1_correctedDZ: ['Non-Z lepton correctedDZ', true, true]
+#     all_Z_leptons_by_pt_1_IP: ['First Z lepton IP', true, true]
+#     all_Z_leptons_by_pt_2_IP: ['Second Z lepton IP', true, true]
+#     all_nonZ_leptons_by_pt_1_IP: ['Non-Z lepton IP', true, true]
+#     all_Z_leptons_by_pt_1_IPError: ['First Z lepton IPError', true, true]
+#     all_Z_leptons_by_pt_2_IPError: ['Second Z lepton IPError', true, true]
+#     all_nonZ_leptons_by_pt_1_IPError: ['Non-Z lepton IPError', true, true]
+#     all_Z_leptons_by_pt_1_normalizedChi2: ['First Z lepton normalizedChi2', false, true]
+#     all_Z_leptons_by_pt_2_normalizedChi2: ['Second Z lepton normalizedChi2', false, true]
+#     all_nonZ_leptons_by_pt_1_normalizedChi2: ['Non-Z lepton normalizedChi2', true, true]
+#     all_Z_leptons_by_pt_1_innerTrackNormChi2: ['First Z lepton innerTrackNormChi2', false, true]
+#     all_Z_leptons_by_pt_2_innerTrackNormChi2: ['Second Z lepton innerTrackNormChi2', false, true]
+#     all_nonZ_leptons_by_pt_1_innerTrackNormChi2: ['Non-Z lepton innerTrackNormChi2', true, true]
+#     all_Z_leptons_by_pt_1_tkNormChi2: ['First Z lepton tkNormChi2', false, true]
+#     all_Z_leptons_by_pt_2_tkNormChi2: ['Second Z lepton tkNormChi2', false, true]
+#     all_nonZ_leptons_by_pt_1_tkNormChi2: ['Non-Z lepton tkNormChi2', true, true]
+#     all_Z_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack: ['First Z lepton numberOfValidTrackerHitsInnerTrack', false, true]
+#     all_Z_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack: ['Second Z lepton numberOfValidTrackerHitsInnerTrack', false, true]
+#     all_nonZ_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack: ['Non-Z lepton numberOfValidTrackerHitsInnerTrack', true, true]
+#     all_Z_leptons_by_pt_1_numberOfValidTrackerHits: ['First Z lepton numberOfValidTrackerHits', false, true]
+#     all_Z_leptons_by_pt_2_numberOfValidTrackerHits: ['Second Z lepton numberOfValidTrackerHits', false, true]
+#     all_nonZ_leptons_by_pt_1_numberOfValidTrackerHits: ['Non-Z lepton numberOfValidTrackerHits', true, true]
+#     all_Z_leptons_by_pt_1_numberOfValidMuonHits: ['First Z lepton numberOfValidMuonHits', false, true]
+#     all_Z_leptons_by_pt_2_numberOfValidMuonHits: ['Second Z lepton numberOfValidMuonHits', false, true]
+#     all_nonZ_leptons_by_pt_1_numberOfValidMuonHits: ['Non-Z lepton numberOfValidMuonHits', true, true]
+#     all_Z_leptons_by_pt_1_numberOfValidPixelHits: ['First Z lepton numberOfValidPixelHits', false, true]
+#     all_Z_leptons_by_pt_2_numberOfValidPixelHits: ['Second Z lepton numberOfValidPixelHits', false, true]
+#     all_nonZ_leptons_by_pt_1_numberOfValidPixelHits: ['Non-Z lepton numberOfValidPixelHits', true, true]
+#     all_Z_leptons_by_pt_1_numberOfMatchedStations: ['First Z lepton numberOfMatchedStations', false, true]
+#     all_Z_leptons_by_pt_2_numberOfMatchedStations: ['Second Z lepton numberOfMatchedStations', false, true]
+#     all_nonZ_leptons_by_pt_1_numberOfMatchedStations: ['Non-Z lepton numberOfMatchedStations', true, true]
+#     all_Z_leptons_by_pt_1_numberOfMatches: ['First Z lepton numberOfMatches', false, true]
+#     all_Z_leptons_by_pt_2_numberOfMatches: ['Second Z lepton numberOfMatches', false, true]
+#     all_nonZ_leptons_by_pt_1_numberOfMatches: ['Non-Z lepton numberOfMatches', true, true]
+#     #all_Z_leptons_by_pt_1_isTrackerMuon: ['First Z lepton isTrackerMuon', false, true]
+#     #all_Z_leptons_by_pt_2_isTrackerMuon: ['Second Z lepton isTrackerMuon', false, true]
+#     #all_nonZ_leptons_by_pt_1_isTrackerMuon: ['Non-Z lepton isTrackerMuon', true, true]
+#     all_Z_leptons_by_pt_1_isGlobalMuonPromptTight: ['First Z lepton isGlobalMuonPromptTight', false, true]
+#     all_Z_leptons_by_pt_2_isGlobalMuonPromptTight: ['Second Z lepton isGlobalMuonPromptTight', false, true]
+#     all_nonZ_leptons_by_pt_1_isGlobalMuonPromptTight: ['Non-Z lepton isGlobalMuonPromptTight', true, true]
+#     all_Z_leptons_by_pt_1_isGoodMuon_1StationTight: ['First Z lepton isGoodMuon_1StationTight', false, true]
+#     all_Z_leptons_by_pt_2_isGoodMuon_1StationTight: ['Second Z lepton isGoodMuon_1StationTight', false, true]
+#     all_nonZ_leptons_by_pt_1_isGoodMuon_1StationTight: ['Non-Z lepton isGoodMuon_1StationTight', true, true]
+
+
