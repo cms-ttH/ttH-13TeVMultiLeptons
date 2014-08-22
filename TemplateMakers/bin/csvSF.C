@@ -174,7 +174,7 @@ int main (int argc, char** argv) {
   GenericCollectionSizeVariable<BNjetCollection> numJets(&(jets.ptrToItems), "numJets");
   kinVars.push_back(&numJets);
   numJets.setCutMin(2);
-  numJets.setCutMax(2);
+//   numJets.setCutMax(2);
   cutVars.push_back(&numJets);
 
   GenericCollectionSizeVariable<BNjetCollection> numMediumBJets(&(mediumCSVJets.ptrToItems), "numMediumBJets");
@@ -193,11 +193,11 @@ int main (int argc, char** argv) {
 
   // various event weights
   //Older or deprecated? AWB 01/08/14
-  //CSVWeightsSF myCSV(beanHelper, &(jets.ptrToItems));
-  //kinVars.push_back(&myCSV);
-
-  CSVWeights myCSV(beanHelper, &(jets.ptrToItems), jetSyst);
+  CSVWeightsSF myCSV(beanHelper, &(jets.ptrToItems));
   kinVars.push_back(&myCSV);
+
+//   CSVWeights myCSV(beanHelper, &(jets.ptrToItems), jetSyst);
+//   kinVars.push_back(&myCSV);
 
   PUWeights myPU(&lepHelper, &(events.ptrToItems));
   kinVars.push_back(&myPU);
@@ -245,19 +245,19 @@ int main (int argc, char** argv) {
 
   ////////// all jets //////////
   GenericCollectionMember<double, BNjetCollection> allJetPt(Reflex::Type::ByName("BNjet"), &(jets.ptrToItems),
-                                                            "pt", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+                                                            "pt", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetPt);
 
   GenericCollectionMember<double, BNjetCollection> allJetEta(Reflex::Type::ByName("BNjet"), &(jets.ptrToItems),
-                                                             "eta", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+                                                             "eta", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetEta);
 
   GenericCollectionMember<double, BNjetCollection> allJetCSV(Reflex::Type::ByName("BNjet"),  &(jets.ptrToItems),
-                                                             "btagCombinedSecVertex", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+                                                             "btagCombinedSecVertex", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetCSV);
 
   GenericCollectionMember<int, BNjetCollection> allJetFlavor(Reflex::Type::ByName("BNjet"), &(jets.ptrToItems),
-                                                            "flavour", "jets_by_pt",  KinematicVariableConstants::INT_INIT, 2);
+                                                            "flavour", "jets_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   kinVars.push_back(&allJetFlavor);
 
   ////////// met //////////
@@ -304,11 +304,11 @@ int main (int argc, char** argv) {
 
   bool ttPlusHFKeepEventBool = false;
 
-//   int sampleNumber = (int)lepHelper.sampleNumber;
+  int sampleNumber = (int)lepHelper.sampleNumber;
 //   double weight_Xsec = (double)lepHelper.weight_Xsec;
   int nGen = (int)lepHelper.nGen;
   double Xsec = (double)lepHelper.Xsec;
-//   summaryTree->Branch("sampleNumber", &sampleNumber);
+  summaryTree->Branch("sampleNumber", &sampleNumber);
 //   summaryTree->Branch("weight_Xsec", &weight_Xsec);
   summaryTree->Branch("nGen", &nGen);
   summaryTree->Branch("Xsec", &Xsec);
@@ -403,9 +403,9 @@ int main (int argc, char** argv) {
 
     jets.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJetsPFlow");
     jets.correctRawJets(jetSyst);
-    jets.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
+    jets.keepSelectedJets(20.0, 2.4, jetID::jetLoose, '-');
     mediumCSVJets.initializeRawItems(jets.rawItems);
-    mediumCSVJets.keepSelectedJets(30.0, 2.4, jetID::jetLoose, 'M');
+    mediumCSVJets.keepSelectedJets(20.0, 2.4, jetID::jetLoose, 'M');
 
     met.initializeRawItems(ev, "BNproducer","patMETsPFlow");
     met.getCorrectedMet(jets);

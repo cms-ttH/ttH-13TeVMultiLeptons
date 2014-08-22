@@ -210,7 +210,7 @@ int HelperLeptonCore::convertSampleNameToNumber(string sampleName) {
       nGen = 2906320; Xsec = 32.3*0.324*0.699; }
     else if (sampleName == "wzz") { sampleNumber = 2721;
       nGen = 219835; Xsec = 0.01922; } 
-    else if (tmpName.Contains("wz") && !tmpName.Contains("_ll")) { sampleNumber = 2702;
+    else if (tmpName.Contains("zz") && !tmpName.Contains("_ll")) { sampleNumber = 2702;
       nGen = 9755621; Xsec = 7.7; }
     else if (tmpName.Contains("zz") && tmpName.Contains("llll")) { sampleNumber = 2732;
       nGen = 4804217; Xsec = 0.157*1.21; } //why is it not (7.7*0.101*0.101) * 1.21?
