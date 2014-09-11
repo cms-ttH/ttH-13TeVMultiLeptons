@@ -88,11 +88,11 @@ int main (int argc, char** argv) {
   else if (myConfig.jetSyst == "JESDown") jetSyst = sysType::JESdown;
   else std::cout << "No valid JES corrections specified - using nominal" << std::endl;
 
-  muonID::muonID muonTightID = muonID::muonSideTightMVA;
-  muonID::muonID muonLooseID = muonID::muonSideLooseMVA;
+  muonID::muonID muonTightID = muonID::muonSideTightCut;
+  muonID::muonID muonLooseID = muonID::muonSideLooseCut;
   muonID::muonID muonPreselectedID = muonID::muonSide;
-  electronID::electronID electronTightID = electronID::electronSideTightMVA;
-  electronID::electronID electronLooseID = electronID::electronSideLooseMVA;
+  electronID::electronID electronTightID = electronID::electronSideTightCut;
+  electronID::electronID electronLooseID = electronID::electronSideLooseCut;
   electronID::electronID electronPreselectedID = electronID::electronSide;
 
   // collections
@@ -234,7 +234,7 @@ int main (int argc, char** argv) {
   LepMVAs<BNleptonCollection> myLepMVAsAllLeptons(&lepHelper, &(tightLoosePreselectedLeptons.ptrToItems), "all_leptons_by_pt", 2);
   kinVars.push_back(&myLepMVAsAllLeptons);
 
-  LepCuts<BNleptonCollection> myLepCutsAllLeptons(&(tightLoosePreselectedLeptons.ptrToItems), "all_leptons_by_pt", 2);
+  LepCuts<BNleptonCollection> myLepCutsAllLeptons(beanHelper, &(tightLoosePreselectedLeptons.ptrToItems), "all_leptons_by_pt", 2);
   kinVars.push_back(&myLepCutsAllLeptons);
 
   ////////////////////////// composite objects
@@ -547,6 +547,12 @@ int main (int argc, char** argv) {
 //     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
 //     tightLooseMuons.keepSelectedParticles(muonLooseID);
 
+    //Can't place above "tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);" line - won't work
+    auto electronPt10 = [] (BNelectron e) { return (e.pt > 10); };
+    tightLoosePreselectedElectrons.keepSelectedParticles(electronPt10);
+    auto muonPt10 = [] (BNmuon m) { return (m.pt > 10); };
+    tightLoosePreselectedMuons.keepSelectedParticles(muonPt10);
+    
     // Require reset before first pushback to avoid keeping leptons from previous event
     tightLeptons.resetAndPushBack(tightElectrons.items);
     tightLeptons.pushBackAndSort(tightMuons.items);

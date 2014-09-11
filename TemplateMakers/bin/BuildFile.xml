@@ -30,4 +30,8 @@
   </bin>
   <bin   file="ttV_SS.C">
   </bin>
+  <bin   file="matcher_ttV.C">
+  </bin>
+  <bin   file="matcher_ttV_SS.C">
+  </bin>
 </environment>

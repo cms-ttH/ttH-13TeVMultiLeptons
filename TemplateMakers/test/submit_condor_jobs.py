@@ -71,6 +71,8 @@ def createCondorSubFileAndSubmit(executable, sample, label, jetSyst, numJobs, wa
                     'arguments = ssCondor.py $(List) $(Label) $(jetSyst) $(Process) $(NJobs)\n'
                     'output = batch_trees/condor_logs/condor_$(List)_$(LabelSyst)_$(Process).stdout\n'
                     'error = batch_trees/condor_logs/condor_$(List)_$(LabelSyst)_$(Process).stderr\n'
+#                     ## Runs on 32 cores on earth
+#                     '+IsExpressJob = True\n'
                     'queue $(NJobs)')
         condorJobFile.write(contents.format(executable=executable,
                                             list=sample,

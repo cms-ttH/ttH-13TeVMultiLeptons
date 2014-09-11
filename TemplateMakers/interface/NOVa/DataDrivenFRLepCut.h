@@ -13,6 +13,7 @@ public:
   //Store branch values so they are accessible to other classes
   vector<BranchInfo<double>> myVars;
 
+  BEANhelper * beanHelper;
   collectionType **selCollection;
   unsigned int number_of_leptons;
   int working_point;
@@ -42,23 +43,19 @@ public:
   double FR_QF_sel[6];
   int QF_charge[6];
 
-  DataDrivenFRLepCut(collectionType **_selCollection, int _number_of_leptons,
+  DataDrivenFRLepCut(BEANhelper * _beanHelper, collectionType **_selCollection, int _number_of_leptons,
                int _working_point, string _file_name_NP, string _file_name_QF, string _label,
                collectionType **_selCollection_2, int _number_of_leptons_2, int _working_point_2);
   ~DataDrivenFRLepCut();
   void evaluate();
 
-  int computeLepCut2(double _pt, int _isElectron, int _isMuon,
-                     double _jetBTagCSV, double _chargedHadronIsoDR04,
-                     double _IP, double _SIP, double _jetPtRatio);
-  
 };
 
 template <class collectionType>
-DataDrivenFRLepCut<collectionType>::DataDrivenFRLepCut(collectionType **_selCollection, int _number_of_leptons,
+DataDrivenFRLepCut<collectionType>::DataDrivenFRLepCut(BEANhelper * _beanHelper, collectionType **_selCollection, int _number_of_leptons,
                                            int _working_point, string _file_name_NP, string _file_name_QF, string _label = "",
                                            collectionType **_selCollection_2 = 0, int _number_of_leptons_2 = 0, int _working_point_2 = -99):
-  selCollection(_selCollection), number_of_leptons(_number_of_leptons),
+  beanHelper(_beanHelper), selCollection(_selCollection), number_of_leptons(_number_of_leptons),
   working_point(_working_point), file_name_NP(_file_name_NP), file_name_QF(_file_name_QF),label(_label),
   selCollection_2(_selCollection_2), number_of_leptons_2(_number_of_leptons_2), working_point_2(_working_point_2) {
 
@@ -113,14 +110,12 @@ void DataDrivenFRLepCut<collectionType>::evaluate() {
       double lep_pt = ptr((*selCollection)->at(iObj))->pt;
       double lep_eta = abs(ptr((*selCollection)->at(iObj))->eta);
       int lepCut = -2;
-      lepCut = computeLepCut2(ptr((*selCollection)->at(iObj))->pt,
-                              ptr((*selCollection)->at(iObj))->isElectron,
-                              ptr((*selCollection)->at(iObj))->isMuon,
-                              ptr((*selCollection)->at(iObj))->jetBTagCSV,
-                              ptr((*selCollection)->at(iObj))->chargedHadronIsoDR04,
-                              ptr((*selCollection)->at(iObj))->IP,
-                              ptr((*selCollection)->at(iObj))->SIP,
-                              ptr((*selCollection)->at(iObj))->jetPtRatio);
+
+      if (ptr((*selCollection)->at(iObj))->isElectron) {
+        lepCut = beanHelper->GetElectronLepCut(*(BNelectron*)ptr((*selCollection)->at(iObj))); }
+      else {
+        lepCut = beanHelper->GetMuonLepCut(*(BNmuon*)ptr((*selCollection)->at(iObj))); }
+
       //TH2 * FR_NP_histo = 0;
 
       if (lepCut < working_point) {
@@ -171,14 +166,12 @@ void DataDrivenFRLepCut<collectionType>::evaluate() {
         double lep_pt = ptr((*selCollection_2)->at(iObj))->pt;
         double lep_eta = abs(ptr((*selCollection_2)->at(iObj))->eta);
         int lepCut = -2;
-        lepCut = computeLepCut2(ptr((*selCollection_2)->at(iObj))->pt,
-                                                    ptr((*selCollection_2)->at(iObj))->isElectron,
-                                                    ptr((*selCollection_2)->at(iObj))->isMuon,
-                                                    ptr((*selCollection_2)->at(iObj))->jetBTagCSV,
-                                                    ptr((*selCollection_2)->at(iObj))->chargedHadronIsoDR04,
-                                                    ptr((*selCollection_2)->at(iObj))->IP,
-                                                    ptr((*selCollection_2)->at(iObj))->SIP,
-                                                    ptr((*selCollection_2)->at(iObj))->jetPtRatio);
+
+        if (ptr((*selCollection)->at(iObj))->isElectron) {
+          lepCut = beanHelper->GetElectronLepCut(*(BNelectron*)ptr((*selCollection)->at(iObj))); }
+        else {
+          lepCut = beanHelper->GetMuonLepCut(*(BNmuon*)ptr((*selCollection)->at(iObj))); }
+        
         //TH2 * FR_NP_histo = 0;
 
         if (lepCut < working_point_2) {
@@ -251,39 +244,6 @@ DataDrivenFRLepCut<collectionType>::~DataDrivenFRLepCut() {
   delete FR_QF_el_sel;
   //weight_file_NP->Close();
   weight_file_QF->Close();
-
-}
-
-template <class collectionType>
-int DataDrivenFRLepCut<collectionType>::computeLepCut2(double pt, int isElectron, int isMuon,
-                                       double jetBTagCSV, double chargedHadronIsoDR04,
-                                       double IP, double SIP, double jetPtRatio) {
-  
-  int lepCut = -2;
-  if (isElectron) {
-    if ( jetBTagCSV > 0.679 ) {
-      lepCut = -1; }
-    else if ( chargedHadronIsoDR04 < 0 || // < -1 does nothing; < 0 eliminates some
-              chargedHadronIsoDR04 / pt > 0.15 ) {
-      lepCut = 0; }
-    else if ( abs(IP) > 0.015 ||
-                            chargedHadronIsoDR04 / pt > 0.05 ||
-              jetPtRatio < 0.6 ) {
-      lepCut = 1; }
-    else lepCut = 2;
-  }
-  else if (isMuon) {
-    if ( jetBTagCSV > 0.679 ) {
-      lepCut = -1; }
-    else if ( abs(SIP) > 4 ||
-              chargedHadronIsoDR04 / pt > 0.20 ) {
-      lepCut = 0; }
-    else if ( chargedHadronIsoDR04 / pt > 0.10 ||
-              jetPtRatio < 0.6 ) {
-      lepCut = 1; }
-    else lepCut = 2;
-  }
-  return lepCut;
 
 }
 
