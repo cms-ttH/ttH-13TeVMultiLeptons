@@ -2,7 +2,7 @@
 
 using namespace std;
 
-// constructor
+//constructor
 HelperLeptonCore::HelperLeptonCore(): rawCollections() {
   verbose = true;
   if (verbose) std::cout << "Inside constructor" << std::endl;
@@ -20,7 +20,6 @@ void HelperLeptonCore::initializePUReweighting () {
 BEANhelper * HelperLeptonCore::setupAnalysisParameters(string year, string inputName) {
   analysisYear = year;
   sampleName = inputName;
-
   detectData(sampleName);
   convertSampleNameToNumber(sampleName);
   initializePUReweighting();
@@ -34,7 +33,6 @@ BEANhelper * HelperLeptonCore::setupAnalysisParameters(string year, string input
   // param 8: list of collision datasets, which much be long
 
   bHelp.SetUp(analysisYear, sampleNumber, analysisType::DIL, isData, datasetForBEANHelper, false, true, listOfCollisionDatasets);
-
   return &bHelp;
 }
 
@@ -289,529 +287,529 @@ int HelperLeptonCore::convertSampleNameToNumber(string sampleName) {
   return sampleNumber;
 }
 
-void HelperLeptonCore::initializeInputCollections(edm::EventBase& ev, bool isLepMVA, BEANFileInterface& collections) {
-  // Each handle for a collection must be de-referenced to get the collection
-  // Then you can store a pointer to the collection in a BEANFileInterface
-  // then return a pointer to the BEANFileInterface for other folks to use.
+// void HelperLeptonCore::initializeInputCollections(edm::EventBase& ev, bool isLepMVA, BEANFileInterface& collections) {
+//   // Each handle for a collection must be de-referenced to get the collection
+//   // Then you can store a pointer to the collection in a BEANFileInterface
+//   // then return a pointer to the BEANFileInterface for other folks to use.
 
-  //------   Event
-  edm::InputTag eventTag("BNproducer");
-  ev.getByLabel(eventTag, h_event);
+//   //------   Event
+//   edm::InputTag eventTag("BNproducer");
+//   ev.getByLabel(eventTag, h_event);
 
-  events = *h_event;
-  collections.eventCollection = &events;
+//   events = *h_event;
+//   collections.eventCollection = &events;
 
-  //------ MC particles
-  edm::InputTag mcTag("BNproducer","MCstatus3");
-  ev.getByLabel(mcTag, h_mcparticles);
-  mcparticles = *h_mcparticles;
-  collections.mcParticleCollection = &mcparticles;
+//   //------ MC particles
+//   edm::InputTag mcTag("BNproducer","MCstatus3");
+//   ev.getByLabel(mcTag, h_mcparticles);
+//   mcparticles = *h_mcparticles;
+//   collections.mcParticleCollection = &mcparticles;
 
-  //----- hlt
-  edm::InputTag hltTag("BNproducer","HLT");
-  ev.getByLabel(hltTag, h_hlt);
-  hltInfo = *h_hlt;
-  collections.hltCollection = &hltInfo;
+//   //----- hlt
+//   edm::InputTag hltTag("BNproducer","HLT");
+//   ev.getByLabel(hltTag, h_hlt);
+//   hltInfo = *h_hlt;
+//   collections.hltCollection = &hltInfo;
 
-  //------- Muons
-  if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
-    if (!isLepMVA) {
-      edm::InputTag muonTag("BNproducer","selectedPatMuonsPFlow"); //It looks like there isn't a way to set an input tag except in the constructor, unless I'm missing something obvious (likely)
-      ev.getByLabel(muonTag, h_muons);
-    } else {
-      edm::InputTag muonTag("BNproducer","selectedPatMuonsLoosePFlow");
-      ev.getByLabel(muonTag, h_muons);
-    }
-  }
-  else {
-    edm::InputTag muonTag("BNproducer","selectedPatMuonsLoosePFlow");
-    ev.getByLabel(muonTag, h_muons);
-  }
+//   //------- Muons
+//   if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
+//     if (!isLepMVA) {
+//       edm::InputTag muonTag("BNproducer","selectedPatMuonsPFlow"); //It looks like there isn't a way to set an input tag except in the constructor, unless I'm missing something obvious (likely)
+//       ev.getByLabel(muonTag, h_muons);
+//     } else {
+//       edm::InputTag muonTag("BNproducer","selectedPatMuonsLoosePFlow");
+//       ev.getByLabel(muonTag, h_muons);
+//     }
+//   }
+//   else {
+//     edm::InputTag muonTag("BNproducer","selectedPatMuonsLoosePFlow");
+//     ev.getByLabel(muonTag, h_muons);
+//   }
 
-  muonsRaw = *h_muons;
-  collections.rawMuonCollection = &muonsRaw;
+//   muonsRaw = *h_muons;
+//   collections.rawMuonCollection = &muonsRaw;
 
-  //-----  Electrons
-  if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
-    if (!isLepMVA) {
-      edm::InputTag electronTag("BNproducer","selectedPatElectronsPFlow");
-      ev.getByLabel(electronTag, h_electrons);
-    } else {
-      edm::InputTag electronTag("BNproducer","selectedPatElectronsGSF");
-      ev.getByLabel(electronTag, h_electrons);
-    }
-  }
-  else {
-    edm::InputTag electronTag("BNproducer","selectedPatElectronsLoosePFlow");
-    ev.getByLabel(electronTag, h_electrons);
-  }
+//   //-----  Electrons
+//   if ( analysisYear == "2012_52x" || analysisYear == "2012_53x" ) {
+//     if (!isLepMVA) {
+//       edm::InputTag electronTag("BNproducer","selectedPatElectronsPFlow");
+//       ev.getByLabel(electronTag, h_electrons);
+//     } else {
+//       edm::InputTag electronTag("BNproducer","selectedPatElectronsGSF");
+//       ev.getByLabel(electronTag, h_electrons);
+//     }
+//   }
+//   else {
+//     edm::InputTag electronTag("BNproducer","selectedPatElectronsLoosePFlow");
+//     ev.getByLabel(electronTag, h_electrons);
+//   }
 
-  electronsRaw = *h_electrons;
-  collections.rawElectronCollection = &electronsRaw;
+//   electronsRaw = *h_electrons;
+//   collections.rawElectronCollection = &electronsRaw;
 
-  //-----  Taus
-  edm::InputTag tauTag("BNproducer","selectedPatTausPFlow");
-  ev.getByLabel(tauTag, h_taus);
+//   //-----  Taus
+//   edm::InputTag tauTag("BNproducer","selectedPatTausPFlow");
+//   ev.getByLabel(tauTag, h_taus);
 
-  tausRaw = *h_taus;
-  collections.rawTauCollection = &tausRaw;
+//   tausRaw = *h_taus;
+//   collections.rawTauCollection = &tausRaw;
 
-  //-----  Jets
-  edm::InputTag jetTag("BNproducer","selectedPatJetsPFlow");
-  ev.getByLabel(jetTag, h_pfjets);
-  pfjets = *h_pfjets;
-  collections.jetCollection = &pfjets;
+//   //-----  Jets
+//   edm::InputTag jetTag("BNproducer","selectedPatJetsPFlow");
+//   ev.getByLabel(jetTag, h_pfjets);
+//   pfjets = *h_pfjets;
+//   collections.jetCollection = &pfjets;
 
-  //----- MET
-  if (analysisYear == "2011") {
-    edm::InputTag metTag("BNproducer","patMETsTypeIPFlow");
-    ev.getByLabel(metTag, h_pfmets);
-  }
-  else if (analysisYear == "2012_52x" || analysisYear == "2012_53x") {
-    edm::InputTag metTag("BNproducer","patMETsPFlow");
-    ev.getByLabel(metTag, h_pfmets);
-  }
+//   //----- MET
+//   if (analysisYear == "2011") {
+//     edm::InputTag metTag("BNproducer","patMETsTypeIPFlow");
+//     ev.getByLabel(metTag, h_pfmets);
+//   }
+//   else if (analysisYear == "2012_52x" || analysisYear == "2012_53x") {
+//     edm::InputTag metTag("BNproducer","patMETsPFlow");
+//     ev.getByLabel(metTag, h_pfmets);
+//   }
 
-  pfmets = *h_pfmets;
-  collections.metCollection = &pfmets;
+//   pfmets = *h_pfmets;
+//   collections.metCollection = &pfmets;
 
-  edm::InputTag metType1Tag("BNproducer","pfType1CorrectedMetBN");
-  ev.getByLabel(metType1Tag, h_pfType1CorrectedMetBN);
-  metpfType1CorrectedMetBN = *h_pfType1CorrectedMetBN;
-  collections.metpfType1CorrectedMetBNCollection = &metpfType1CorrectedMetBN;
+//   edm::InputTag metType1Tag("BNproducer","pfType1CorrectedMetBN");
+//   ev.getByLabel(metType1Tag, h_pfType1CorrectedMetBN);
+//   metpfType1CorrectedMetBN = *h_pfType1CorrectedMetBN;
+//   collections.metpfType1CorrectedMetBNCollection = &metpfType1CorrectedMetBN;
 
-  // ----- Primary Vertices
-  edm::InputTag pvTag("BNproducer","offlinePrimaryVertices");
-  ev.getByLabel(pvTag, h_pvs);
-  pvs = *h_pvs;
-  collections.primaryVertexCollection = &pvs;
+//   // ----- Primary Vertices
+//   edm::InputTag pvTag("BNproducer","offlinePrimaryVertices");
+//   ev.getByLabel(pvTag, h_pvs);
+//   pvs = *h_pvs;
+//   collections.primaryVertexCollection = &pvs;
 
-  // careful, not defined in every sample
-  if (analysisYear == "2012_53x" && isLepMVA) {
-    edm::InputTag lepMVAJetTag("BNproducer", "patJetsAK5PF");
-    ev.getByLabel(lepMVAJetTag, h_lepMvaJets);
-    lepMvaJets = *h_lepMvaJets;
+//   // careful, not defined in every sample
+//   if (analysisYear == "2012_53x" && isLepMVA) {
+//     edm::InputTag lepMVAJetTag("BNproducer", "patJetsAK5PF");
+//     ev.getByLabel(lepMVAJetTag, h_lepMvaJets);
+//     lepMvaJets = *h_lepMvaJets;
 
-    lepMvaJets = bHelp.GetSortedByCSV(lepMvaJets);
-    collections.jetsForLepMVACollection = &lepMvaJets;
-  }
+//     lepMvaJets = bHelp.GetSortedByCSV(lepMvaJets);
+//     collections.jetsForLepMVACollection = &lepMvaJets;
+//   }
 
-  rawCollections = collections;
-}
+//   rawCollections = collections;
+// }
 
-void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID tightID, electronID::electronID looseID, electronID::electronID preselectedID, BEANFileInterface * selectedCollections) {
-  electronsTight = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), tightID);
-  electronsTightLoose = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), looseID);
-  electronsLoose = bHelp.GetDifference(electronsTightLoose, electronsTight);
+// void HelperLeptonCore::getTightLoosePreselectedElectrons (electronID::electronID tightID, electronID::electronID looseID, electronID::electronID preselectedID, BEANFileInterface * selectedCollections) {
+//   electronsTight = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), tightID);
+//   electronsTightLoose = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), looseID);
+//   electronsLoose = bHelp.GetDifference(electronsTightLoose, electronsTight);
 
-  if ( preselectedID==electronID::electronNoCuts ) electronsTightLoosePreselected = *(rawCollections.rawElectronCollection);
-  else electronsTightLoosePreselected = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), preselectedID);
-  electronsPreselected = bHelp.GetDifference(electronsTightLoosePreselected, electronsTightLoose);
-  electronsLoosePreselected = bHelp.GetUnion(electronsLoose, electronsPreselected);
+//   if ( preselectedID==electronID::electronNoCuts ) electronsTightLoosePreselected = *(rawCollections.rawElectronCollection);
+//   else electronsTightLoosePreselected = bHelp.GetSelectedElectrons(*(rawCollections.rawElectronCollection), preselectedID);
+//   electronsPreselected = bHelp.GetDifference(electronsTightLoosePreselected, electronsTightLoose);
+//   electronsLoosePreselected = bHelp.GetUnion(electronsLoose, electronsPreselected);
 
-  selectedCollections->tightElectronCollection = &electronsTight;
-  selectedCollections->looseElectronCollection = &electronsLoose;
-  selectedCollections->preselectedElectronCollection = &electronsPreselected;
+//   selectedCollections->tightElectronCollection = &electronsTight;
+//   selectedCollections->looseElectronCollection = &electronsLoose;
+//   selectedCollections->preselectedElectronCollection = &electronsPreselected;
 
-  selectedCollections->tightLooseElectronCollection = &electronsTightLoose;
-  selectedCollections->loosePreselectedElectronCollection = &electronsLoosePreselected;
-  selectedCollections->tightLoosePreselectedElectronCollection = &electronsTightLoosePreselected;
-}
+//   selectedCollections->tightLooseElectronCollection = &electronsTightLoose;
+//   selectedCollections->loosePreselectedElectronCollection = &electronsLoosePreselected;
+//   selectedCollections->tightLoosePreselectedElectronCollection = &electronsTightLoosePreselected;
+// }
 
-void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, muonID::muonID looseID, muonID::muonID preselectedID, BEANFileInterface * selectedCollections) {
-  muonsTight = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), tightID);
-  muonsTightLoose = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), looseID);
-  muonsLoose = bHelp.GetDifference(muonsTightLoose, muonsTight);
+// void HelperLeptonCore::getTightLoosePreselectedMuons (muonID::muonID tightID, muonID::muonID looseID, muonID::muonID preselectedID, BEANFileInterface * selectedCollections) {
+//   muonsTight = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), tightID);
+//   muonsTightLoose = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), looseID);
+//   muonsLoose = bHelp.GetDifference(muonsTightLoose, muonsTight);
 
-  if ( preselectedID==muonID::muonNoCuts ) muonsTightLoosePreselected = *(rawCollections.rawMuonCollection);
-  else muonsTightLoosePreselected = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), preselectedID);
-  muonsPreselected = bHelp.GetDifference(muonsTightLoosePreselected, muonsTightLoose);
-  muonsLoosePreselected = bHelp.GetUnion(muonsLoose, muonsPreselected);
+//   if ( preselectedID==muonID::muonNoCuts ) muonsTightLoosePreselected = *(rawCollections.rawMuonCollection);
+//   else muonsTightLoosePreselected = bHelp.GetSelectedMuons(*(rawCollections.rawMuonCollection), preselectedID);
+//   muonsPreselected = bHelp.GetDifference(muonsTightLoosePreselected, muonsTightLoose);
+//   muonsLoosePreselected = bHelp.GetUnion(muonsLoose, muonsPreselected);
 
-  selectedCollections->tightMuonCollection = &muonsTight;
-  selectedCollections->looseMuonCollection = &muonsLoose;
-  selectedCollections->preselectedMuonCollection = &muonsPreselected;
+//   selectedCollections->tightMuonCollection = &muonsTight;
+//   selectedCollections->looseMuonCollection = &muonsLoose;
+//   selectedCollections->preselectedMuonCollection = &muonsPreselected;
 
-  selectedCollections->tightLooseMuonCollection = &muonsTightLoose;
-  selectedCollections->loosePreselectedMuonCollection = &muonsLoosePreselected;
-  selectedCollections->tightLoosePreselectedMuonCollection = &muonsTightLoosePreselected;
-}
+//   selectedCollections->tightLooseMuonCollection = &muonsTightLoose;
+//   selectedCollections->loosePreselectedMuonCollection = &muonsLoosePreselected;
+//   selectedCollections->tightLoosePreselectedMuonCollection = &muonsTightLoosePreselected;
+// }
 
-void HelperLeptonCore::getTightCorrectedJets (double ptCut,
-                                              double etaCut,
-                                              jetID::jetID tightID,
-                                              BEANFileInterface * selectedCollections) {
+// void HelperLeptonCore::getTightCorrectedJets (double ptCut,
+//                                               double etaCut,
+//                                               jetID::jetID tightID,
+//                                               BEANFileInterface * selectedCollections) {
 
-    BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);
-    BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, '-' ) ;
+//     BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);
+//     BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, '-' ) ;
 
-    jetsTight = bHelp.GetSortedByPt(tmpCorrSelJets);
-    selectedCollections->jetCollection = &jetsTight;
+//     jetsTight = bHelp.GetSortedByPt(tmpCorrSelJets);
+//     selectedCollections->jetCollection = &jetsTight;
 
-    jetsByCSVTight = bHelp.GetSortedByCSV(tmpCorrSelJets);
-    selectedCollections->jetsByCSVCollection = &jetsByCSVTight;
+//     jetsByCSVTight = bHelp.GetSortedByCSV(tmpCorrSelJets);
+//     selectedCollections->jetsByCSVCollection = &jetsByCSVTight;
 
-    tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'L');
-    jetsLooseCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
-    selectedCollections->jetCollectionLooseCSV = &jetsLooseCSV;
+//     tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'L');
+//     jetsLooseCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
+//     selectedCollections->jetCollectionLooseCSV = &jetsLooseCSV;
 
-    jetsNotLooseCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsLooseCSV));
-    selectedCollections->jetCollectionNotLooseCSV = &jetsNotLooseCSV;
+//     jetsNotLooseCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsLooseCSV));
+//     selectedCollections->jetCollectionNotLooseCSV = &jetsNotLooseCSV;
 
-    tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'M');
-    jetsMediumCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
-    selectedCollections->jetCollectionMediumCSV = &jetsMediumCSV;
+//     tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'M');
+//     jetsMediumCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
+//     selectedCollections->jetCollectionMediumCSV = &jetsMediumCSV;
 
-    jetsNotMediumCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsMediumCSV));
-    selectedCollections->jetCollectionNotMediumCSV = &jetsNotMediumCSV;
+//     jetsNotMediumCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsMediumCSV));
+//     selectedCollections->jetCollectionNotMediumCSV = &jetsNotMediumCSV;
 
-    tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'T');
-    jetsTightCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
-    selectedCollections->jetCollectionTightCSV = &jetsTightCSV;
+//     tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, tightID, 'T');
+//     jetsTightCSV = bHelp.GetSortedByPt(tmpCorrSelJets);
+//     selectedCollections->jetCollectionTightCSV = &jetsTightCSV;
 
-    jetsNotTightCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsTightCSV));
-    selectedCollections->jetCollectionNotTightCSV = &jetsNotTightCSV;
+//     jetsNotTightCSV = bHelp.GetSortedByPt(bHelp.GetDifference(jetsTight,jetsTightCSV));
+//     selectedCollections->jetCollectionNotTightCSV = &jetsNotTightCSV;
 
-}
+// }
 
-BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets(double ptCut,
-                                                             double etaCut,
-                                                             jetID::jetID jetID,
-                                                             const char csvWorkingPoint) {
-  sortedCorrSelJets.clear();
+// BNjetCollection * HelperLeptonCore::getCorrectedSelectedJets(double ptCut,
+//                                                              double etaCut,
+//                                                              jetID::jetID jetID,
+//                                                              const char csvWorkingPoint) {
+//   sortedCorrSelJets.clear();
 
-  BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);
-  BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, jetID, csvWorkingPoint);
-  sortedCorrSelJets = bHelp.GetSortedByPt(tmpCorrSelJets);
+//   BNjetCollection tmpCorrJets = bHelp.GetCorrectedJets (*(rawCollections.jetCollection), jetEnergyShift);
+//   BNjetCollection tmpCorrSelJets = bHelp.GetSelectedJets(tmpCorrJets , ptCut, etaCut, jetID, csvWorkingPoint);
+//   sortedCorrSelJets = bHelp.GetSortedByPt(tmpCorrSelJets);
 
-  return &sortedCorrSelJets;
+//   return &sortedCorrSelJets;
 
-}
+// }
 
-void HelperLeptonCore::getCorrectedMet (BEANFileInterface * selectedCollections, sysType::sysType shift ) {
+// void HelperLeptonCore::getCorrectedMet (BEANFileInterface * selectedCollections, sysType::sysType shift ) {
 
-  // make sure you clear this out
-  // before you add something into again
-  metCorrected.clear();
+//   // make sure you clear this out
+//   // before you add something into again
+//   metCorrected.clear();
 
-  //--- Important notice from BEANhelper
-  //--- Use unselected, uncorrected jets for correction
+//   //--- Important notice from BEANhelper
+//   //--- Use unselected, uncorrected jets for correction
 
-  BNmet tmpMet = bHelp.GetCorrectedMET(rawCollections.metCollection->at(0), *rawCollections.jetCollection, shift);
+//   BNmet tmpMet = bHelp.GetCorrectedMET(rawCollections.metCollection->at(0), *rawCollections.jetCollection, shift);
 
-  metCorrected.push_back(tmpMet);
+//   metCorrected.push_back(tmpMet);
 
-  selectedCollections->metCollection = &metCorrected;
-}
+//   selectedCollections->metCollection = &metCorrected;
+// }
 
-void HelperLeptonCore::getTightLoosePreselectedTaus (tauID::tauID tightID, tauID::tauID looseID, tauID::tauID preselectedID, BEANFileInterface * selectedCollections) {
-  tausTight = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), tightID);
-  tausTightLoose = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), looseID);
-  tausLoose = bHelp.GetDifference(tausTightLoose, tausTight);
+// void HelperLeptonCore::getTightLoosePreselectedTaus (tauID::tauID tightID, tauID::tauID looseID, tauID::tauID preselectedID, BEANFileInterface * selectedCollections) {
+//   tausTight = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), tightID);
+//   tausTightLoose = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), looseID);
+//   tausLoose = bHelp.GetDifference(tausTightLoose, tausTight);
 
-  //if ( preselectedID==tauID::tauNoCuts ) tausTightLoosePreselected = *(rawCollections.rawTauCollection);
-  //else tausTightLoosePreselected = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), preselectedID);
-  tausTightLoosePreselected = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), preselectedID);
-  tausPreselected = bHelp.GetDifference(tausTightLoosePreselected, tausTightLoose);
-  tausLoosePreselected = bHelp.GetUnion(tausLoose, tausPreselected);
+//   //if ( preselectedID==tauID::tauNoCuts ) tausTightLoosePreselected = *(rawCollections.rawTauCollection);
+//   //else tausTightLoosePreselected = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), preselectedID);
+//   tausTightLoosePreselected = bHelp.GetSelectedTaus(*(rawCollections.rawTauCollection), preselectedID);
+//   tausPreselected = bHelp.GetDifference(tausTightLoosePreselected, tausTightLoose);
+//   tausLoosePreselected = bHelp.GetUnion(tausLoose, tausPreselected);
 
-  selectedCollections->tightTauCollection = &tausTight;
-  selectedCollections->looseTauCollection = &tausLoose;
-  selectedCollections->preselectedTauCollection = &tausPreselected;
+//   selectedCollections->tightTauCollection = &tausTight;
+//   selectedCollections->looseTauCollection = &tausLoose;
+//   selectedCollections->preselectedTauCollection = &tausPreselected;
 
-  selectedCollections->tightLooseTauCollection = &tausTightLoose;
-  selectedCollections->loosePreselectedTauCollection = &tausLoosePreselected;
-  selectedCollections->tightLoosePreselectedTauCollection = &tausTightLoosePreselected;
-}
+//   selectedCollections->tightLooseTauCollection = &tausTightLoose;
+//   selectedCollections->loosePreselectedTauCollection = &tausLoosePreselected;
+//   selectedCollections->tightLoosePreselectedTauCollection = &tausTightLoosePreselected;
+// }
 
-void HelperLeptonCore::fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections) {
-  // remove all entries first
-  leptonsTight.clear();
-  leptonsLoose.clear();
-  leptonsPreselected.clear();
-  leptonsTightLoose.clear();
-  leptonsLoosePreselected.clear();
-  leptonsTightLoosePreselected.clear();
+// void HelperLeptonCore::fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections) {
+//   // remove all entries first
+//   leptonsTight.clear();
+//   leptonsLoose.clear();
+//   leptonsPreselected.clear();
+//   leptonsTightLoose.clear();
+//   leptonsLoosePreselected.clear();
+//   leptonsTightLoosePreselected.clear();
 
-  leptonsTight.push_back(*(selectedCollections->tightMuonCollection));
-  leptonsTight.push_back(*(selectedCollections->tightElectronCollection));
-  leptonsLoose.push_back(*(selectedCollections->looseMuonCollection));
-  leptonsLoose.push_back(*(selectedCollections->looseElectronCollection));
-  leptonsPreselected.push_back(*(selectedCollections->preselectedMuonCollection));
-  leptonsPreselected.push_back(*(selectedCollections->preselectedElectronCollection));
-  leptonsTightLoose.push_back(*(selectedCollections->tightLooseMuonCollection));
-  leptonsTightLoose.push_back(*(selectedCollections->tightLooseElectronCollection));
-  leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedMuonCollection));
-  leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedElectronCollection));
-  leptonsTightLoosePreselected.push_back(*(selectedCollections->tightLoosePreselectedMuonCollection));
-  leptonsTightLoosePreselected.push_back(*(selectedCollections->tightLoosePreselectedElectronCollection));
+//   leptonsTight.push_back(*(selectedCollections->tightMuonCollection));
+//   leptonsTight.push_back(*(selectedCollections->tightElectronCollection));
+//   leptonsLoose.push_back(*(selectedCollections->looseMuonCollection));
+//   leptonsLoose.push_back(*(selectedCollections->looseElectronCollection));
+//   leptonsPreselected.push_back(*(selectedCollections->preselectedMuonCollection));
+//   leptonsPreselected.push_back(*(selectedCollections->preselectedElectronCollection));
+//   leptonsTightLoose.push_back(*(selectedCollections->tightLooseMuonCollection));
+//   leptonsTightLoose.push_back(*(selectedCollections->tightLooseElectronCollection));
+//   leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedMuonCollection));
+//   leptonsLoosePreselected.push_back(*(selectedCollections->loosePreselectedElectronCollection));
+//   leptonsTightLoosePreselected.push_back(*(selectedCollections->tightLoosePreselectedMuonCollection));
+//   leptonsTightLoosePreselected.push_back(*(selectedCollections->tightLoosePreselectedElectronCollection));
       
-  // sort them by pt
-  leptonsTight.sort();
-  leptonsLoose.sort();
-  leptonsPreselected.sort();
-  leptonsTightLoose.sort();
-  leptonsLoosePreselected.sort();
-  leptonsTightLoosePreselected.sort();
+//   // sort them by pt
+//   leptonsTight.sort();
+//   leptonsLoose.sort();
+//   leptonsPreselected.sort();
+//   leptonsTightLoose.sort();
+//   leptonsLoosePreselected.sort();
+//   leptonsTightLoosePreselected.sort();
 
-  selectedCollections->tightLeptonCollection = &leptonsTight;
-  selectedCollections->looseLeptonCollection = &leptonsLoose;
-  selectedCollections->preselectedLeptonCollection = &leptonsPreselected;
-  selectedCollections->tightLooseLeptonCollection = &leptonsTightLoose;
-  selectedCollections->loosePreselectedLeptonCollection = &leptonsLoosePreselected;
-  selectedCollections->tightLoosePreselectedLeptonCollection = &leptonsTightLoosePreselected;
+//   selectedCollections->tightLeptonCollection = &leptonsTight;
+//   selectedCollections->looseLeptonCollection = &leptonsLoose;
+//   selectedCollections->preselectedLeptonCollection = &leptonsPreselected;
+//   selectedCollections->tightLooseLeptonCollection = &leptonsTightLoose;
+//   selectedCollections->loosePreselectedLeptonCollection = &leptonsLoosePreselected;
+//   selectedCollections->tightLoosePreselectedLeptonCollection = &leptonsTightLoosePreselected;
 
-}
+// }
 
-void HelperLeptonCore::fillZLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections,
-                                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tight,
-                                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tightLoose,
-                                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_all) {
+// void HelperLeptonCore::fillZLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections,
+//                                                              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tight,
+//                                                              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tightLoose,
+//                                                              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_all) {
 
-  leptonsTightZ.clear();
-  leptonsTightNonZ.clear();
-  leptonsTightLooseZ.clear();
-  leptonsTightLooseNonZ.clear();
-  leptonsTightLoosePreselectedZ.clear();
-  leptonsTightLoosePreselectedNonZ.clear();
+//   leptonsTightZ.clear();
+//   leptonsTightNonZ.clear();
+//   leptonsTightLooseZ.clear();
+//   leptonsTightLooseNonZ.clear();
+//   leptonsTightLoosePreselectedZ.clear();
+//   leptonsTightLoosePreselectedNonZ.clear();
 
-  //Leptons from Z decay and not from Z decay
-  myZLikeMassLepLepSFOS_tight->reset();
-  myZLikeMassLepLepSFOS_tight->evaluate();
-  myZLikeMassLepLepSFOS_tightLoose->reset();
-  myZLikeMassLepLepSFOS_tightLoose->evaluate();
-  myZLikeMassLepLepSFOS_all->reset();
-  myZLikeMassLepLepSFOS_all->evaluate();
-  float ZLikeMassLepLepSFOS_tight = (*myZLikeMassLepLepSFOS_tight).myVars[0].branchVal;
-  float ZLikeMassLepLepSFOS_tightLoose = (*myZLikeMassLepLepSFOS_tightLoose).myVars[0].branchVal;
-  float ZLikeMassLepLepSFOS_all = (*myZLikeMassLepLepSFOS_all).myVars[0].branchVal;
-  TLorentzVector vect1;
-  TLorentzVector vect2;
-  TLorentzVector vect12;
-  bool NonZ;
-  bool noFillZ;
+//   //Leptons from Z decay and not from Z decay
+//   myZLikeMassLepLepSFOS_tight->reset();
+//   myZLikeMassLepLepSFOS_tight->evaluate();
+//   myZLikeMassLepLepSFOS_tightLoose->reset();
+//   myZLikeMassLepLepSFOS_tightLoose->evaluate();
+//   myZLikeMassLepLepSFOS_all->reset();
+//   myZLikeMassLepLepSFOS_all->evaluate();
+//   float ZLikeMassLepLepSFOS_tight = (*myZLikeMassLepLepSFOS_tight).myVars[0].branchVal;
+//   float ZLikeMassLepLepSFOS_tightLoose = (*myZLikeMassLepLepSFOS_tightLoose).myVars[0].branchVal;
+//   float ZLikeMassLepLepSFOS_all = (*myZLikeMassLepLepSFOS_all).myVars[0].branchVal;
+//   TLorentzVector vect1;
+//   TLorentzVector vect2;
+//   TLorentzVector vect12;
+//   bool NonZ;
+//   bool noFillZ;
 
-  if (ZLikeMassLepLepSFOS_tight < 0) {
-    for (auto& lepton1: leptonsTight) {
-      leptonsTightNonZ.push_back(lepton1);
-    }
-  }
-  else {
-    noFillZ = true;
-    float mass_tight = -999999.0;
-    for (auto& lepton1: leptonsTight) {
-      NonZ = true;
-      for (auto& lepton2: leptonsTight) {
-        vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
-        vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
-        vect12 = vect1 + vect2;
-        if ( abs(vect12.M() - ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight < 0.00001 ) {
-          leptonsTightZ.push_back(lepton1);
-          NonZ = false;
-          noFillZ = false;
-        }
-        else if (abs(vect12.M() - ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight < 0.01 ) {
-          mass_tight = vect12.M();
-        }
-      }
-      if ( NonZ ) {
-        leptonsTightNonZ.push_back(lepton1);
-      }
-    }
-    if ( noFillZ ) {
-      std::cout << "Strangeness in fillZLepCollection: " << mass_tight << " , " << ZLikeMassLepLepSFOS_tight << " , " << abs(mass_tight-ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight << std::endl;
-    }
-  }
+//   if (ZLikeMassLepLepSFOS_tight < 0) {
+//     for (auto& lepton1: leptonsTight) {
+//       leptonsTightNonZ.push_back(lepton1);
+//     }
+//   }
+//   else {
+//     noFillZ = true;
+//     float mass_tight = -999999.0;
+//     for (auto& lepton1: leptonsTight) {
+//       NonZ = true;
+//       for (auto& lepton2: leptonsTight) {
+//         vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
+//         vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
+//         vect12 = vect1 + vect2;
+//         if ( abs(vect12.M() - ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight < 0.00001 ) {
+//           leptonsTightZ.push_back(lepton1);
+//           NonZ = false;
+//           noFillZ = false;
+//         }
+//         else if (abs(vect12.M() - ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight < 0.01 ) {
+//           mass_tight = vect12.M();
+//         }
+//       }
+//       if ( NonZ ) {
+//         leptonsTightNonZ.push_back(lepton1);
+//       }
+//     }
+//     if ( noFillZ ) {
+//       std::cout << "Strangeness in fillZLepCollection: " << mass_tight << " , " << ZLikeMassLepLepSFOS_tight << " , " << abs(mass_tight-ZLikeMassLepLepSFOS_tight)/ZLikeMassLepLepSFOS_tight << std::endl;
+//     }
+//   }
 
-  if (ZLikeMassLepLepSFOS_tightLoose < 0) {
-    for (auto& lepton1: leptonsTightLoose) {
-      leptonsTightLooseNonZ.push_back(lepton1);
-    }
-  }
-  else {
-    noFillZ = true;
-    float mass_tightLoose = -999999.0;
-    for (auto& lepton1: leptonsTightLoose) {
-      NonZ = true;
-      for (auto& lepton2: leptonsTightLoose) {
-        vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
-        vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
-        vect12 = vect1 + vect2;
-        if ( abs(vect12.M() - ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose < 0.00001 ) {
-          leptonsTightLooseZ.push_back(lepton1);
-          NonZ = false;
-          noFillZ = false;
-        }
-        else if (abs(vect12.M() - ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose < 0.01 ) {
-          mass_tightLoose = vect12.M();
-        }
-      }
-      if ( NonZ ) {
-        leptonsTightLooseNonZ.push_back(lepton1);
-      }
-    }
-    if ( noFillZ ) {
-      std::cout << "Strangeness in fillZLepCollection: " << mass_tightLoose << " , " << ZLikeMassLepLepSFOS_tightLoose << " , " << abs(mass_tightLoose-ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose << std::endl;
-    }
-  }
+//   if (ZLikeMassLepLepSFOS_tightLoose < 0) {
+//     for (auto& lepton1: leptonsTightLoose) {
+//       leptonsTightLooseNonZ.push_back(lepton1);
+//     }
+//   }
+//   else {
+//     noFillZ = true;
+//     float mass_tightLoose = -999999.0;
+//     for (auto& lepton1: leptonsTightLoose) {
+//       NonZ = true;
+//       for (auto& lepton2: leptonsTightLoose) {
+//         vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
+//         vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
+//         vect12 = vect1 + vect2;
+//         if ( abs(vect12.M() - ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose < 0.00001 ) {
+//           leptonsTightLooseZ.push_back(lepton1);
+//           NonZ = false;
+//           noFillZ = false;
+//         }
+//         else if (abs(vect12.M() - ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose < 0.01 ) {
+//           mass_tightLoose = vect12.M();
+//         }
+//       }
+//       if ( NonZ ) {
+//         leptonsTightLooseNonZ.push_back(lepton1);
+//       }
+//     }
+//     if ( noFillZ ) {
+//       std::cout << "Strangeness in fillZLepCollection: " << mass_tightLoose << " , " << ZLikeMassLepLepSFOS_tightLoose << " , " << abs(mass_tightLoose-ZLikeMassLepLepSFOS_tightLoose)/ZLikeMassLepLepSFOS_tightLoose << std::endl;
+//     }
+//   }
 
-  if (ZLikeMassLepLepSFOS_all < 0) {
-    for (auto& lepton1: leptonsTightLoosePreselected) {
-      leptonsTightLoosePreselectedNonZ.push_back(lepton1);
-    }
-  }
-  else {
-    noFillZ = true;
-    float mass_all = -999999.0;
-    for (auto& lepton1: leptonsTightLoosePreselected) {
-      NonZ = true;
-      for (auto& lepton2: leptonsTightLoosePreselected) {
-        vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
-        vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
-        vect12 = vect1 + vect2;
-        if ( abs(vect12.M() - ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all < 0.00001 ) {
-          leptonsTightLoosePreselectedZ.push_back(lepton1);
-          NonZ = false;
-          noFillZ = false;
-        }
-        else if (abs(vect12.M() - ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all < 0.01 ) {
-          mass_all = vect12.M();
-        }
-      }
-      if ( NonZ ) {
-        leptonsTightLoosePreselectedNonZ.push_back(lepton1);
-      }
-    }
-    if ( noFillZ ) {
-      std::cout << "Strangeness in fillZLepCollection: " << mass_all << " , " << ZLikeMassLepLepSFOS_all << " , " << abs(mass_all-ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all << std::endl;
-    }
-  }
+//   if (ZLikeMassLepLepSFOS_all < 0) {
+//     for (auto& lepton1: leptonsTightLoosePreselected) {
+//       leptonsTightLoosePreselectedNonZ.push_back(lepton1);
+//     }
+//   }
+//   else {
+//     noFillZ = true;
+//     float mass_all = -999999.0;
+//     for (auto& lepton1: leptonsTightLoosePreselected) {
+//       NonZ = true;
+//       for (auto& lepton2: leptonsTightLoosePreselected) {
+//         vect1.SetPtEtaPhiE(lepton1->pt, lepton1->eta, lepton1->phi, lepton1->energy);
+//         vect2.SetPtEtaPhiE(lepton2->pt, lepton2->eta, lepton2->phi, lepton2->energy);
+//         vect12 = vect1 + vect2;
+//         if ( abs(vect12.M() - ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all < 0.00001 ) {
+//           leptonsTightLoosePreselectedZ.push_back(lepton1);
+//           NonZ = false;
+//           noFillZ = false;
+//         }
+//         else if (abs(vect12.M() - ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all < 0.01 ) {
+//           mass_all = vect12.M();
+//         }
+//       }
+//       if ( NonZ ) {
+//         leptonsTightLoosePreselectedNonZ.push_back(lepton1);
+//       }
+//     }
+//     if ( noFillZ ) {
+//       std::cout << "Strangeness in fillZLepCollection: " << mass_all << " , " << ZLikeMassLepLepSFOS_all << " , " << abs(mass_all-ZLikeMassLepLepSFOS_all)/ZLikeMassLepLepSFOS_all << std::endl;
+//     }
+//   }
 
-  leptonsTightZ.sort();
-  leptonsTightNonZ.sort();
-  leptonsTightLooseZ.sort();
-  leptonsTightLooseNonZ.sort();
-  leptonsTightLoosePreselectedZ.sort();
-  leptonsTightLoosePreselectedNonZ.sort();
+//   leptonsTightZ.sort();
+//   leptonsTightNonZ.sort();
+//   leptonsTightLooseZ.sort();
+//   leptonsTightLooseNonZ.sort();
+//   leptonsTightLoosePreselectedZ.sort();
+//   leptonsTightLoosePreselectedNonZ.sort();
 
-  selectedCollections->tightZLeptonCollection = &leptonsTightZ;
-  selectedCollections->tightNonZLeptonCollection = &leptonsTightNonZ;
-  selectedCollections->tightLooseZLeptonCollection = &leptonsTightLooseZ;
-  selectedCollections->tightLooseNonZLeptonCollection = &leptonsTightLooseNonZ;
-  selectedCollections->tightLoosePreselectedZLeptonCollection = &leptonsTightLoosePreselectedZ;
-  selectedCollections->tightLoosePreselectedNonZLeptonCollection = &leptonsTightLoosePreselectedNonZ;
+//   selectedCollections->tightZLeptonCollection = &leptonsTightZ;
+//   selectedCollections->tightNonZLeptonCollection = &leptonsTightNonZ;
+//   selectedCollections->tightLooseZLeptonCollection = &leptonsTightLooseZ;
+//   selectedCollections->tightLooseNonZLeptonCollection = &leptonsTightLooseNonZ;
+//   selectedCollections->tightLoosePreselectedZLeptonCollection = &leptonsTightLoosePreselectedZ;
+//   selectedCollections->tightLoosePreselectedNonZLeptonCollection = &leptonsTightLoosePreselectedNonZ;
 
-}
+// }
 
-bool HelperLeptonCore::isFromB(BNmcparticle particle) {
-  auto isB = [] (int& id) {return ((abs(id) / 1000) == 5 || (abs(id) / 100) == 5 || (abs(id) == 5));};
+// bool HelperLeptonCore::isFromB(BNmcparticle particle) {
+//   auto isB = [] (int& id) {return ((abs(id) / 1000) == 5 || (abs(id) / 100) == 5 || (abs(id) == 5));};
 
-  if (isB(particle.motherId)) return true;
-  if (isB(particle.mother0Id)) return true;
-  if (isB(particle.mother1Id)) return true;
+//   if (isB(particle.motherId)) return true;
+//   if (isB(particle.mother0Id)) return true;
+//   if (isB(particle.mother1Id)) return true;
 
-  if ((particle.mother0Status == 2) && (isB(particle.grandMother00Id) || isB(particle.grandMother01Id))) return true;
-  if ((particle.mother1Status == 2) && (isB(particle.grandMother10Id) || isB(particle.grandMother11Id))) return true;
+//   if ((particle.mother0Status == 2) && (isB(particle.grandMother00Id) || isB(particle.grandMother01Id))) return true;
+//   if ((particle.mother1Status == 2) && (isB(particle.grandMother10Id) || isB(particle.grandMother11Id))) return true;
 
-  return false;
-}
+//   return false;
+// }
 
-double HelperLeptonCore::scaleIPVarsMC(double ipvar, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
-  if (abs(genID) == 13) {
-    if (mcMatchID != -99 || mcMatchAny <= 1) {
-      return ipvar * (abs(eta) < 1.5 ? 1.04 : 1.10);
-    } else {
-      return ipvar * 0.95;
-    }
-  } else {
-    if (mcMatchID != -99 || mcMatchAny <= 1) {
-      return ipvar * (abs(eta) < 1.479 ? 1.02 : 1.07);
-    } else {
-      return ipvar * 0.95;
-    }
-  }
-}
+// double HelperLeptonCore::scaleIPVarsMC(double ipvar, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+//   if (abs(genID) == 13) {
+//     if (mcMatchID != -99 || mcMatchAny <= 1) {
+//       return ipvar * (abs(eta) < 1.5 ? 1.04 : 1.10);
+//     } else {
+//       return ipvar * 0.95;
+//     }
+//   } else {
+//     if (mcMatchID != -99 || mcMatchAny <= 1) {
+//       return ipvar * (abs(eta) < 1.479 ? 1.02 : 1.07);
+//     } else {
+//       return ipvar * 0.95;
+//     }
+//   }
+// }
 
-double HelperLeptonCore::scaleSIPMC(double& sip, int& genID, double& pt, int& mcMatchID, int& mcMatchAny, double& eta) {
-  if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
-    return logSmearMC(gSmearer, sip, 0.10, 0.2);
-  }
-  return scaleIPVarsMC(sip, genID, pt, eta, mcMatchID, mcMatchAny);
-}
+// double HelperLeptonCore::scaleSIPMC(double& sip, int& genID, double& pt, int& mcMatchID, int& mcMatchAny, double& eta) {
+//   if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+//     return logSmearMC(gSmearer, sip, 0.10, 0.2);
+//   }
+//   return scaleIPVarsMC(sip, genID, pt, eta, mcMatchID, mcMatchAny);
+// }
 
-double HelperLeptonCore::scaleDZMC(double dz, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
-  if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
-    return logSmearMC(gSmearer, dz, 0.20, 0.3);
-  }
-  return scaleIPVarsMC(dz, genID, pt, eta, mcMatchID, mcMatchAny);
-}
+// double HelperLeptonCore::scaleDZMC(double dz, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+//   if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+//     return logSmearMC(gSmearer, dz, 0.20, 0.3);
+//   }
+//   return scaleIPVarsMC(dz, genID, pt, eta, mcMatchID, mcMatchAny);
+// }
 
-double HelperLeptonCore::scaleDXYMC(double dxy, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
-  if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
-    return logSmearMC(gSmearer, dxy, 0.07, 0.3);
-  }
-  return scaleIPVarsMC(dxy, genID, pt, eta, mcMatchID, mcMatchAny);
-}
+// double HelperLeptonCore::scaleDXYMC(double dxy, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+//   if (abs(genID) == 11 && (mcMatchID != -99 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+//     return logSmearMC(gSmearer, dxy, 0.07, 0.3);
+//   }
+//   return scaleIPVarsMC(dxy, genID, pt, eta, mcMatchID, mcMatchAny);
+// }
 
-double HelperLeptonCore::scaleLepJetPtRatioMC(double jetPtRatio, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
-  if (mcMatchAny >= 2) {
-    if (pt < 15 && jetPtRatio == 1) {
-      if (gSmearer->Rndm() < 0.2) {
-        if (abs(eta) < 1.5) {
-          return gSmearer->Gaus(0.35,0.10);
-        } else {
-          return gSmearer->Gaus(0.47,0.20);
-        }
-      }
-    }
-    if (abs(eta) < 1.5) {
-      return (jetPtRatio == 1.0 ? 1.0 : jetPtRatio * 0.95);
-    } else {
-      // pull closer to central value
-      return (jetPtRatio == 1.0 ? 1.0 : 0.95*jetPtRatio + 0.05*0.45);
-    }
-  }
-  if (abs(eta) < 1.5) {
-    if (jetPtRatio == 1) return 1;
-    return jetPtRatio * 0.98;
-  } else {
-    if (jetPtRatio == 1) return 1;
-    return 0.95*(jetPtRatio*0.972) + 0.05*0.8374; // pull closer to central value
-  }
-}
+// double HelperLeptonCore::scaleLepJetPtRatioMC(double jetPtRatio, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+//   if (mcMatchAny >= 2) {
+//     if (pt < 15 && jetPtRatio == 1) {
+//       if (gSmearer->Rndm() < 0.2) {
+//         if (abs(eta) < 1.5) {
+//           return gSmearer->Gaus(0.35,0.10);
+//         } else {
+//           return gSmearer->Gaus(0.47,0.20);
+//         }
+//       }
+//     }
+//     if (abs(eta) < 1.5) {
+//       return (jetPtRatio == 1.0 ? 1.0 : jetPtRatio * 0.95);
+//     } else {
+//       // pull closer to central value
+//       return (jetPtRatio == 1.0 ? 1.0 : 0.95*jetPtRatio + 0.05*0.45);
+//     }
+//   }
+//   if (abs(eta) < 1.5) {
+//     if (jetPtRatio == 1) return 1;
+//     return jetPtRatio * 0.98;
+//   } else {
+//     if (jetPtRatio == 1) return 1;
+//     return 0.95*(jetPtRatio*0.972) + 0.05*0.8374; // pull closer to central value
+//   }
+// }
 
-double HelperLeptonCore::scaleLepJetDRMC(double jetDR, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
-  if (jetDR == 0.) return 0.;
-  if (abs(genID) == 13) {
-    if (mcMatchAny >= 2) return jetDR;
-    if (pt > 15) { // muons, high pt
-      if (abs(eta) < 1.5) {
-        return jetDR * 1.01;
-      } else {
-        return log(1 + jetDR * (eta * eta) * 0.95) / (eta * eta); // pull closer to zero
-      }
-    } else { // muons, low pt
-      if (abs(eta) < 1.5) {
-        return jetDR * 1.01;
-      } else if (abs(eta) < 1.9) {
-        return log(1 + jetDR * 0.5) / 0.5;
-      } else {
-        return log(1 + jetDR * 2 * 0.95) / 2;
-      }
-    }
-  } else { // electrons
-    if (mcMatchAny >= 2) return jetDR;
-    //if (pt > 0) { // electrons, any pt for now
-    if (abs(eta) < 1.5) {
-      return jetDR * 1.01;
-    } else if (abs(eta) < 2.0) {
-      return log(1 + jetDR * 0.5) / 0.5;
-    } else {
-      return log(1 + jetDR * 5 * 0.95) / 5;
-    }
-    //}
-  }
-}
+// double HelperLeptonCore::scaleLepJetDRMC(double jetDR, int genID, double pt, double eta, int mcMatchID, int mcMatchAny) {
+//   if (jetDR == 0.) return 0.;
+//   if (abs(genID) == 13) {
+//     if (mcMatchAny >= 2) return jetDR;
+//     if (pt > 15) { // muons, high pt
+//       if (abs(eta) < 1.5) {
+//         return jetDR * 1.01;
+//       } else {
+//         return log(1 + jetDR * (eta * eta) * 0.95) / (eta * eta); // pull closer to zero
+//       }
+//     } else { // muons, low pt
+//       if (abs(eta) < 1.5) {
+//         return jetDR * 1.01;
+//       } else if (abs(eta) < 1.9) {
+//         return log(1 + jetDR * 0.5) / 0.5;
+//       } else {
+//         return log(1 + jetDR * 2 * 0.95) / 2;
+//       }
+//     }
+//   } else { // electrons
+//     if (mcMatchAny >= 2) return jetDR;
+//     //if (pt > 0) { // electrons, any pt for now
+//     if (abs(eta) < 1.5) {
+//       return jetDR * 1.01;
+//     } else if (abs(eta) < 2.0) {
+//       return log(1 + jetDR * 0.5) / 0.5;
+//     } else {
+//       return log(1 + jetDR * 5 * 0.95) / 5;
+//     }
+//     //}
+//   }
+// }
 
 
 

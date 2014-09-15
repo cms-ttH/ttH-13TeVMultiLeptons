@@ -84,64 +84,64 @@ public:
   void detectData(string sampleName);
   int convertSampleNameToNumber(string sampleName);
   void initializePUReweighting(); // setup some PU reweighting flags
-  void initializeInputCollections(edm::EventBase&, bool, BEANFileInterface&);
+/*   void initializeInputCollections(edm::EventBase&, bool, BEANFileInterface&); */
 
-  // Handle the gymnastics of tight and loose collection definitions
-  void getTightLoosePreselectedElectrons(electronID::electronID tightID,
-                                         electronID::electronID looseID,
-                                         electronID::electronID preselectedID,
-                                         BEANFileInterface* selectedCollections);
+/*   // Handle the gymnastics of tight and loose collection definitions */
+/*   void getTightLoosePreselectedElectrons(electronID::electronID tightID, */
+/*                                          electronID::electronID looseID, */
+/*                                          electronID::electronID preselectedID, */
+/*                                          BEANFileInterface* selectedCollections); */
 
-  void getTightLoosePreselectedMuons(muonID::muonID tightID,
-                                     muonID::muonID looseID,
-                                     muonID::muonID preselectedID,
-                                     BEANFileInterface* selectedCollections);
+/*   void getTightLoosePreselectedMuons(muonID::muonID tightID, */
+/*                                      muonID::muonID looseID, */
+/*                                      muonID::muonID preselectedID, */
+/*                                      BEANFileInterface* selectedCollections); */
 
-  void getTightLoosePreselectedTaus(tauID::tauID tightID,
-                                         tauID::tauID looseID,
-                                         tauID::tauID preselectedID,
-                                         BEANFileInterface* selectedCollections);
+/*   void getTightLoosePreselectedTaus(tauID::tauID tightID, */
+/*                                          tauID::tauID looseID, */
+/*                                          tauID::tauID preselectedID, */
+/*                                          BEANFileInterface* selectedCollections); */
 
-  void getTightCorrectedJets(double ptCut,
-                             double etaCut,
-                             jetID::jetID tightID,
-                             BEANFileInterface* selectedCollections);
+/*   void getTightCorrectedJets(double ptCut, */
+/*                              double etaCut, */
+/*                              jetID::jetID tightID, */
+/*                              BEANFileInterface* selectedCollections); */
 
-  BNjetCollection * getCorrectedSelectedJets(double ptCut,
-                                             double etaCut,
-                                             jetID::jetID jetID,
-                                             const char csvWorkingPoint);
+/*   BNjetCollection * getCorrectedSelectedJets(double ptCut, */
+/*                                              double etaCut, */
+/*                                              jetID::jetID jetID, */
+/*                                              const char csvWorkingPoint); */
 
-  void getCorrectedMet(BEANFileInterface * selectedCollections,
-                       sysType::sysType jetSyst = sysType::NA);
+/*   void getCorrectedMet(BEANFileInterface * selectedCollections, */
+/*                        sysType::sysType jetSyst = sysType::NA); */
 
-  void fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections);
-  void fillZLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections,
-                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tight,
-                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tightLoose,
-                                             TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_all);
+/*   void fillLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections); */
+/*   void fillZLepCollectionWithSelectedLeptons(BEANFileInterface * selectedCollections, */
+/*                                              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tight, */
+/*                                              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_tightLoose, */
+/*                                              TwoObjectKinematic<BNleptonCollection,BNleptonCollection> * myZLikeMassLepLepSFOS_all); */
 
-  bool isFromB(BNmcparticle particle);
+/*   bool isFromB(BNmcparticle particle); */
 
-  double scaleIPVarsMC(double ipvar, int pdgId, double pt, double eta, int mcMatchId, int mcMatchAny);
-  double scaleSIPMC(double& sip, int& genID, double& pt, int& mcMatchID, int& mcMatchAny, double& eta);
-  double scaleDZMC(double dz, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
-  double scaleDXYMC(double dxy, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
-  double scaleLepJetPtRatioMC(double jetPtRatio, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
-  double scaleLepJetDRMC(double jetDR, int genID, double pt, double eta, int mcMatchID, int mcMatchAny);
+/*   double scaleIPVarsMC(double ipvar, int pdgId, double pt, double eta, int mcMatchId, int mcMatchAny); */
+/*   double scaleSIPMC(double& sip, int& genID, double& pt, int& mcMatchID, int& mcMatchAny, double& eta); */
+/*   double scaleDZMC(double dz, int genID, double pt, double eta, int mcMatchID, int mcMatchAny); */
+/*   double scaleDXYMC(double dxy, int genID, double pt, double eta, int mcMatchID, int mcMatchAny); */
+/*   double scaleLepJetPtRatioMC(double jetPtRatio, int genID, double pt, double eta, int mcMatchID, int mcMatchAny); */
+/*   double scaleLepJetDRMC(double jetDR, int genID, double pt, double eta, int mcMatchID, int mcMatchAny); */
 
-  template <typename collectionType> void fillMCMatchID(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR);
-  template <typename collectionType> void fillMCMatchAny(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR);
-  template <typename collectionType> void fillSIP(collectionType& collection, bool applySmearing);
-  template <typename collectionType> void fillLepJetPtRatio(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing);
-  template <typename collectionType> void fillLepJetDeltaR(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing);
-  template <typename collectionType> void fillLepJetBTagCSV(collectionType& collection, BNjetCollection& jetCollection);
-  template <typename collectionType> void scaleMCCollectionDZ(collectionType& collection);
-  template <typename collectionType> void scaleMCCollectionDXY(collectionType& collection);
-  template <typename particleType> bool isPlausible(particleType particle, const BNmcparticle& mcParticle);
-  template <typename particleType> BNmcparticleCollection getPlausibleParticles(particleType& particle, BNmcparticleCollection mcParticles);
-  template <typename collectionType> void applyRochesterCorrections(collectionType& collection);
-  template <typename particleType> BNjet GetClosestJet(const BNjetCollection& jets, const particleType& particle, const double maxDeltaR);
+/*   template <typename collectionType> void fillMCMatchID(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR); */
+/*   template <typename collectionType> void fillMCMatchAny(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR); */
+/*   template <typename collectionType> void fillSIP(collectionType& collection, bool applySmearing); */
+/*   template <typename collectionType> void fillLepJetPtRatio(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing); */
+/*   template <typename collectionType> void fillLepJetDeltaR(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing); */
+/*   template <typename collectionType> void fillLepJetBTagCSV(collectionType& collection, BNjetCollection& jetCollection); */
+/*   template <typename collectionType> void scaleMCCollectionDZ(collectionType& collection); */
+/*   template <typename collectionType> void scaleMCCollectionDXY(collectionType& collection); */
+/*   template <typename particleType> bool isPlausible(particleType particle, const BNmcparticle& mcParticle); */
+/*   template <typename particleType> BNmcparticleCollection getPlausibleParticles(particleType& particle, BNmcparticleCollection mcParticles); */
+/*   template <typename collectionType> void applyRochesterCorrections(collectionType& collection); */
+/*   template <typename particleType> BNjet GetClosestJet(const BNjetCollection& jets, const particleType& particle, const double maxDeltaR); */
 
   TRandom *gSmearer;
 
@@ -170,254 +170,254 @@ public:
   std::string listOfCollisionDatasets;
   std::string datasetForBEANHelper;
 
-  edm::Handle<BNeventCollection> h_event;
-  BNeventCollection events;
+/*   edm::Handle<BNeventCollection> h_event; */
+/*   BNeventCollection events; */
 
-  edm::Handle<BNmuonCollection> h_muons;
-  BNmuonCollection muonsRaw;
-  BNmuonCollection muonsTight;
-  BNmuonCollection muonsLoose;
-  BNmuonCollection muonsPreselected;
-  BNmuonCollection muonsTightLoose;
-  BNmuonCollection muonsLoosePreselected;
-  BNmuonCollection muonsTightLoosePreselected;
+/*   edm::Handle<BNmuonCollection> h_muons; */
+/*   BNmuonCollection muonsRaw; */
+/*   BNmuonCollection muonsTight; */
+/*   BNmuonCollection muonsLoose; */
+/*   BNmuonCollection muonsPreselected; */
+/*   BNmuonCollection muonsTightLoose; */
+/*   BNmuonCollection muonsLoosePreselected; */
+/*   BNmuonCollection muonsTightLoosePreselected; */
 
-  edm::Handle<BNmcparticleCollection> h_mcparticles;
-  BNmcparticleCollection mcparticles;
+/*   edm::Handle<BNmcparticleCollection> h_mcparticles; */
+/*   BNmcparticleCollection mcparticles; */
 
-  edm::Handle<BNjetCollection> h_pfjets;
-  BNjetCollection sortedCorrSelJets;
-  BNjetCollection pfjets;
-  BNjetCollection jetsTight;
-  BNjetCollection jetsByCSVTight;
-  BNjetCollection jetsLooseCSV;
-  BNjetCollection jetsTightCSV;
-  BNjetCollection jetsNotLooseCSV;
-  BNjetCollection jetsNotMediumCSV;
-  BNjetCollection jetsNotTightCSV;
-  BNjetCollection jetsMediumCSV;
+/*   edm::Handle<BNjetCollection> h_pfjets; */
+/*   BNjetCollection sortedCorrSelJets; */
+/*   BNjetCollection pfjets; */
+/*   BNjetCollection jetsTight; */
+/*   BNjetCollection jetsByCSVTight; */
+/*   BNjetCollection jetsLooseCSV; */
+/*   BNjetCollection jetsTightCSV; */
+/*   BNjetCollection jetsNotLooseCSV; */
+/*   BNjetCollection jetsNotMediumCSV; */
+/*   BNjetCollection jetsNotTightCSV; */
+/*   BNjetCollection jetsMediumCSV; */
 
-  edm::Handle<BNmetCollection> h_pfmets;
-  BNmetCollection pfmets;
-  BNmetCollection metCorrected;
-  edm::Handle<BNmetCollection> h_pfType1CorrectedMetBN;
-  BNmetCollection metpfType1CorrectedMetBN;
+/*   edm::Handle<BNmetCollection> h_pfmets; */
+/*   BNmetCollection pfmets; */
+/*   BNmetCollection metCorrected; */
+/*   edm::Handle<BNmetCollection> h_pfType1CorrectedMetBN; */
+/*   BNmetCollection metpfType1CorrectedMetBN; */
 
-  edm::Handle<BNtriggerCollection> h_hlt;
-  BNtriggerCollection hltInfo;
+/*   edm::Handle<BNtriggerCollection> h_hlt; */
+/*   BNtriggerCollection hltInfo; */
 
-  edm::Handle<BNprimaryvertexCollection> h_pvs;
-  BNprimaryvertexCollection pvs;
+/*   edm::Handle<BNprimaryvertexCollection> h_pvs; */
+/*   BNprimaryvertexCollection pvs; */
 
-  edm::Handle<BNelectronCollection> h_electrons;
-  BNelectronCollection electronsRaw;
-  BNelectronCollection electronsTight;
-  BNelectronCollection electronsLoose;
-  BNelectronCollection electronsPreselected;
-  BNelectronCollection electronsTightLoose;
-  BNelectronCollection electronsLoosePreselected;
-  BNelectronCollection electronsTightLoosePreselected;
+/*   edm::Handle<BNelectronCollection> h_electrons; */
+/*   BNelectronCollection electronsRaw; */
+/*   BNelectronCollection electronsTight; */
+/*   BNelectronCollection electronsLoose; */
+/*   BNelectronCollection electronsPreselected; */
+/*   BNelectronCollection electronsTightLoose; */
+/*   BNelectronCollection electronsLoosePreselected; */
+/*   BNelectronCollection electronsTightLoosePreselected; */
 
-  BNleptonCollection leptonsRaw;
-  BNleptonCollection leptonsTight;
-  BNleptonCollection leptonsLoose;
-  BNleptonCollection leptonsPreselected;
-  BNleptonCollection leptonsTightLoose;
-  BNleptonCollection leptonsLoosePreselected;
-  BNleptonCollection leptonsTightLoosePreselected;
-  BNleptonCollection leptonsTightZ;
-  BNleptonCollection leptonsTightNonZ;
-  BNleptonCollection leptonsTightLooseZ;
-  BNleptonCollection leptonsTightLooseNonZ;
-  BNleptonCollection leptonsTightLoosePreselectedZ;
-  BNleptonCollection leptonsTightLoosePreselectedNonZ;
+/*   BNleptonCollection leptonsRaw; */
+/*   BNleptonCollection leptonsTight; */
+/*   BNleptonCollection leptonsLoose; */
+/*   BNleptonCollection leptonsPreselected; */
+/*   BNleptonCollection leptonsTightLoose; */
+/*   BNleptonCollection leptonsLoosePreselected; */
+/*   BNleptonCollection leptonsTightLoosePreselected; */
+/*   BNleptonCollection leptonsTightZ; */
+/*   BNleptonCollection leptonsTightNonZ; */
+/*   BNleptonCollection leptonsTightLooseZ; */
+/*   BNleptonCollection leptonsTightLooseNonZ; */
+/*   BNleptonCollection leptonsTightLoosePreselectedZ; */
+/*   BNleptonCollection leptonsTightLoosePreselectedNonZ; */
 
-  edm::Handle<BNtauCollection> h_taus;
-  BNtauCollection tausRaw;
-  BNtauCollection tausTight;
-  BNtauCollection tausLoose;
-  BNtauCollection tausPreselected;
-  BNtauCollection tausTightLoose;
-  BNtauCollection tausLoosePreselected;
-  BNtauCollection tausTightLoosePreselected;
+/*   edm::Handle<BNtauCollection> h_taus; */
+/*   BNtauCollection tausRaw; */
+/*   BNtauCollection tausTight; */
+/*   BNtauCollection tausLoose; */
+/*   BNtauCollection tausPreselected; */
+/*   BNtauCollection tausTightLoose; */
+/*   BNtauCollection tausLoosePreselected; */
+/*   BNtauCollection tausTightLoosePreselected; */
 
-  edm::Handle<BNjetCollection> h_lepMvaJets;
-  BNjetCollection lepMvaJets;
+/*   edm::Handle<BNjetCollection> h_lepMvaJets; */
+/*   BNjetCollection lepMvaJets; */
 
-  BNmcparticleCollection higgsParticles;
+/*   BNmcparticleCollection higgsParticles; */
 
 //-------------------- Inline functions
-  inline double smearMC(TRandom* gSmearer, double x, double mu, double sigma) {
-    if (x == 0) return gSmearer->Gaus(mu,sigma);
-    else return (x/abs(x))*(abs(x) + gSmearer->Gaus(mu,sigma));
-  }
-  inline double logSmearMC(TRandom* gSmearer, double x, double mu, double sigma) {
-    if (x == 0) return std::exp(gSmearer->Gaus(mu,sigma));
-    else return (x/abs(x))*std::exp(std::log(abs(x)) + gSmearer->Gaus(mu,sigma));
-  }
-  inline double shiftMC(double x, double delta) {
-    if (x == 0) return delta;
-    else return (x/abs(x))*(abs(x) + delta);
-  }
-  inline double scaleShiftMC(double x, double scale, double shift) {
-    if (x == 0) return shift;
-    else return (x/abs(x))*(abs(x)*scale + shift);
-  }
+/*   inline double smearMC(TRandom* gSmearer, double x, double mu, double sigma) { */
+/*     if (x == 0) return gSmearer->Gaus(mu,sigma); */
+/*     else return (x/abs(x))*(abs(x) + gSmearer->Gaus(mu,sigma)); */
+/*   } */
+/*   inline double logSmearMC(TRandom* gSmearer, double x, double mu, double sigma) { */
+/*     if (x == 0) return std::exp(gSmearer->Gaus(mu,sigma)); */
+/*     else return (x/abs(x))*std::exp(std::log(abs(x)) + gSmearer->Gaus(mu,sigma)); */
+/*   } */
+/*   inline double shiftMC(double x, double delta) { */
+/*     if (x == 0) return delta; */
+/*     else return (x/abs(x))*(abs(x) + delta); */
+/*   } */
+/*   inline double scaleShiftMC(double x, double scale, double shift) { */
+/*     if (x == 0) return shift; */
+/*     else return (x/abs(x))*(abs(x)*scale + shift); */
+/*   } */
 
 };
 
 //-------------------- Template functions
-template <typename collectionType>
-void HelperLeptonCore::fillMCMatchID(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR) {
-  BNmcparticleCollection plausibleParticles;
-  BNmcparticle matchedParticle;
+/* template <typename collectionType> */
+/* void HelperLeptonCore::fillMCMatchID(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR) { */
+/*   BNmcparticleCollection plausibleParticles; */
+/*   BNmcparticle matchedParticle; */
 
-  for (auto& object: collection) {
-    plausibleParticles = getPlausibleParticles(object, mcParticles);
-    matchedParticle = bHelp.GetMatchedMCparticle(plausibleParticles, object, maxDR);
-    object.mcMatchID = matchedParticle.id;
-  }
-}
+/*   for (auto& object: collection) { */
+/*     plausibleParticles = getPlausibleParticles(object, mcParticles); */
+/*     matchedParticle = bHelp.GetMatchedMCparticle(plausibleParticles, object, maxDR); */
+/*     object.mcMatchID = matchedParticle.id; */
+/*   } */
+/* } */
 
-template <typename collectionType>
-void HelperLeptonCore::fillMCMatchAny(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR) {
-  BNmcparticleCollection plausibleParticles;
-  BNmcparticle matchedParticle;
+/* template <typename collectionType> */
+/* void HelperLeptonCore::fillMCMatchAny(collectionType& collection, BNmcparticleCollection& mcParticles, const double& maxDR) { */
+/*   BNmcparticleCollection plausibleParticles; */
+/*   BNmcparticle matchedParticle; */
 
-  for (auto& object: collection) {
-    plausibleParticles = getPlausibleParticles(object, mcParticles);
-    matchedParticle = bHelp.GetMatchedMCparticle(plausibleParticles, object, maxDR);
-    object.mcMatchAny = 1 + int(isFromB(matchedParticle));
-  }
-}
+/*   for (auto& object: collection) { */
+/*     plausibleParticles = getPlausibleParticles(object, mcParticles); */
+/*     matchedParticle = bHelp.GetMatchedMCparticle(plausibleParticles, object, maxDR); */
+/*     object.mcMatchAny = 1 + int(isFromB(matchedParticle)); */
+/*   } */
+/* } */
 
-template <typename particleType>
-BNmcparticleCollection HelperLeptonCore::getPlausibleParticles(particleType& particle, BNmcparticleCollection mcParticles) {
-  BNmcparticleCollection plausibleParticles;
+/* template <typename particleType> */
+/* BNmcparticleCollection HelperLeptonCore::getPlausibleParticles(particleType& particle, BNmcparticleCollection mcParticles) { */
+/*   BNmcparticleCollection plausibleParticles; */
 
-  for (auto mcParticle: mcParticles) {
-    if (isPlausible(particle, mcParticle)) plausibleParticles.push_back(mcParticle);
-  }
-  return plausibleParticles;
-}
+/*   for (auto mcParticle: mcParticles) { */
+/*     if (isPlausible(particle, mcParticle)) plausibleParticles.push_back(mcParticle); */
+/*   } */
+/*   return plausibleParticles; */
+/* } */
 
-template <typename particleType>
-bool HelperLeptonCore::isPlausible(particleType particle, const BNmcparticle& mcParticle) {
-  if ((abs(particle.genId) == 11) && (abs(mcParticle.id != 11))) return false;
-  if ((abs(particle.genId) == 13) && (abs(mcParticle.id != 13))) return false;
-  double dR = deltaR(particle.eta, particle.phi, mcParticle.eta, mcParticle.phi);
-  if (dR < 0.3) return true;
-  if ((particle.pt < 10) && (abs(particle.genId) == 13) && (mcParticle.id != particle.genId)) return false;
-  if (dR<0.7) return true;
-  if (min(particle.pt, mcParticle.pt) / max(particle.pt, mcParticle.pt) < 0.3) return false;
-  return true;
-}
+/* template <typename particleType> */
+/* bool HelperLeptonCore::isPlausible(particleType particle, const BNmcparticle& mcParticle) { */
+/*   if ((abs(particle.genId) == 11) && (abs(mcParticle.id != 11))) return false; */
+/*   if ((abs(particle.genId) == 13) && (abs(mcParticle.id != 13))) return false; */
+/*   double dR = deltaR(particle.eta, particle.phi, mcParticle.eta, mcParticle.phi); */
+/*   if (dR < 0.3) return true; */
+/*   if ((particle.pt < 10) && (abs(particle.genId) == 13) && (mcParticle.id != particle.genId)) return false; */
+/*   if (dR<0.7) return true; */
+/*   if (min(particle.pt, mcParticle.pt) / max(particle.pt, mcParticle.pt) < 0.3) return false; */
+/*   return true; */
+/* } */
 
-template <typename collectionType>
-void HelperLeptonCore::fillSIP(collectionType& collection, bool applySmearing) {
-  double sip = -99.0;
-  for (auto& object: collection) {
-    if (object.IP != -99 && object.IPError != -99) sip = object.IP / object.IPError;
-    if (applySmearing) sip = scaleSIPMC(sip, object.genId, object.pt, object.mcMatchID, object.mcMatchAny, object.eta);
-    object.SIP = sip;
-  }
-}
+/* template <typename collectionType> */
+/* void HelperLeptonCore::fillSIP(collectionType& collection, bool applySmearing) { */
+/*   double sip = -99.0; */
+/*   for (auto& object: collection) { */
+/*     if (object.IP != -99 && object.IPError != -99) sip = object.IP / object.IPError; */
+/*     if (applySmearing) sip = scaleSIPMC(sip, object.genId, object.pt, object.mcMatchID, object.mcMatchAny, object.eta); */
+/*     object.SIP = sip; */
+/*   } */
+/* } */
 
-template <typename collectionType>
-void HelperLeptonCore::fillLepJetBTagCSV(collectionType& collection, BNjetCollection& jetCollection) {
-  BNjet matchedJet;
+/* template <typename collectionType> */
+/* void HelperLeptonCore::fillLepJetBTagCSV(collectionType& collection, BNjetCollection& jetCollection) { */
+/*   BNjet matchedJet; */
 
-  for (auto& object: collection) {
-    matchedJet = GetClosestJet(jetCollection, object, 0.5);
-    object.jetBTagCSV = matchedJet.btagCombinedSecVertex;
-  }
-}
+/*   for (auto& object: collection) { */
+/*     matchedJet = GetClosestJet(jetCollection, object, 0.5); */
+/*     object.jetBTagCSV = matchedJet.btagCombinedSecVertex; */
+/*   } */
+/* } */
 
-template <typename collectionType>
-void HelperLeptonCore::fillLepJetPtRatio(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing) {
-  double jetPtRatio = 1.5;
-  BNjet matchedJet;
+/* template <typename collectionType> */
+/* void HelperLeptonCore::fillLepJetPtRatio(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing) { */
+/*   double jetPtRatio = 1.5; */
+/*   BNjet matchedJet; */
 
-  for (auto& object: collection) {
-    matchedJet = GetClosestJet(jetCollection, object, 0.5);
-    jetPtRatio = object.pt/matchedJet.pt;
-    if (applySmearing) jetPtRatio = scaleLepJetPtRatioMC(jetPtRatio, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
+/*   for (auto& object: collection) { */
+/*     matchedJet = GetClosestJet(jetCollection, object, 0.5); */
+/*     jetPtRatio = object.pt/matchedJet.pt; */
+/*     if (applySmearing) jetPtRatio = scaleLepJetPtRatioMC(jetPtRatio, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny); */
 
-    object.jetPtRatio = jetPtRatio;
-  }
-}
+/*     object.jetPtRatio = jetPtRatio; */
+/*   } */
+/* } */
 
-template <typename collectionType>
-void HelperLeptonCore::fillLepJetDeltaR(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing) {
-  double jetDeltaR = -99;
-  BNjet matchedJet;
+/* template <typename collectionType> */
+/* void HelperLeptonCore::fillLepJetDeltaR(collectionType& collection, BNjetCollection& jetCollection, bool applySmearing) { */
+/*   double jetDeltaR = -99; */
+/*   BNjet matchedJet; */
 
-  for (auto& object: collection) {
-    matchedJet = GetClosestJet(jetCollection, object, 0.5);
-    jetDeltaR = deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi);
-    if (applySmearing) jetDeltaR = scaleLepJetDRMC(jetDeltaR, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
+/*   for (auto& object: collection) { */
+/*     matchedJet = GetClosestJet(jetCollection, object, 0.5); */
+/*     jetDeltaR = deltaR(object.eta, object.phi, matchedJet.eta, matchedJet.phi); */
+/*     if (applySmearing) jetDeltaR = scaleLepJetDRMC(jetDeltaR, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny); */
 
-    object.jetDeltaR = jetDeltaR;
-  }
-}
+/*     object.jetDeltaR = jetDeltaR; */
+/*   } */
+/* } */
 
-template <typename collectionType>
-void HelperLeptonCore::scaleMCCollectionDZ(collectionType& collection) {
-  double dz = -99.0;
-  for (auto& object: collection) {
-    dz = scaleDZMC(object.correctedDZ, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
-    object.correctedDZ = dz;
-  }
-}
+/* template <typename collectionType> */
+/* void HelperLeptonCore::scaleMCCollectionDZ(collectionType& collection) { */
+/*   double dz = -99.0; */
+/*   for (auto& object: collection) { */
+/*     dz = scaleDZMC(object.correctedDZ, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny); */
+/*     object.correctedDZ = dz; */
+/*   } */
+/* } */
 
-template <typename collectionType>
-void HelperLeptonCore::scaleMCCollectionDXY(collectionType& collection) {
-  double dxy = -99.0;
-  for (auto& object: collection) {
-    dxy = scaleDXYMC(object.correctedD0Vertex, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny);
-    object.correctedD0Vertex = dxy;
-  }
-}
+/* template <typename collectionType> */
+/* void HelperLeptonCore::scaleMCCollectionDXY(collectionType& collection) { */
+/*   double dxy = -99.0; */
+/*   for (auto& object: collection) { */
+/*     dxy = scaleDXYMC(object.correctedD0Vertex, object.genId, object.pt, object.eta, object.mcMatchID, object.mcMatchAny); */
+/*     object.correctedD0Vertex = dxy; */
+/*   } */
+/* } */
 
-template <typename collectionType>
-void HelperLeptonCore::applyRochesterCorrections(collectionType& collection) {
-  RochCor2012 rochesterCorrections2012;
-  TLorentzVector p4;
+/* template <typename collectionType> */
+/* void HelperLeptonCore::applyRochesterCorrections(collectionType& collection) { */
+/*   RochCor2012 rochesterCorrections2012; */
+/*   TLorentzVector p4; */
 
-  for (auto& object: collection) {
-    p4.SetPxPyPzE(object.px, object.py, object.pz, object.energy);
-    if (isData) rochesterCorrections2012.momcor_data(p4, object.tkCharge, 0.0, 0);
-    if (!isData) rochesterCorrections2012.momcor_mc(p4, object.tkCharge, 0.0, 0);
+/*   for (auto& object: collection) { */
+/*     p4.SetPxPyPzE(object.px, object.py, object.pz, object.energy); */
+/*     if (isData) rochesterCorrections2012.momcor_data(p4, object.tkCharge, 0.0, 0); */
+/*     if (!isData) rochesterCorrections2012.momcor_mc(p4, object.tkCharge, 0.0, 0); */
 
-    //std::cout << "uncorrected pt: " << object.pt << "  corrected pt: " << p4.Pt() << std::endl;
+/*     //std::cout << "uncorrected pt: " << object.pt << "  corrected pt: " << p4.Pt() << std::endl; */
 
-    object.px = p4.Px();
-    object.py = p4.Py();
-    object.pz = p4.Pz();
-    object.energy = p4.Energy();
-    object.pt = p4.Pt();
-  }
-}
+/*     object.px = p4.Px(); */
+/*     object.py = p4.Py(); */
+/*     object.pz = p4.Pz(); */
+/*     object.energy = p4.Energy(); */
+/*     object.pt = p4.Pt(); */
+/*   } */
+/* } */
 
-template <typename particleType>
-BNjet HelperLeptonCore::GetClosestJet(const BNjetCollection& jets, const particleType& object, const double maxDeltaR) {
-  BNjet result;
-  double minDeltaR = 999;
-  for (auto& jet: jets) {
-    double dR = deltaR(jet.eta, jet.phi, object.eta, object.phi);
-    if ((dR <= maxDeltaR) && (dR < minDeltaR)) {
-      result = jet;
-      minDeltaR = dR;
-    }
-  }
+/* template <typename particleType> */
+/* BNjet HelperLeptonCore::GetClosestJet(const BNjetCollection& jets, const particleType& object, const double maxDeltaR) { */
+/*   BNjet result; */
+/*   double minDeltaR = 999; */
+/*   for (auto& jet: jets) { */
+/*     double dR = deltaR(jet.eta, jet.phi, object.eta, object.phi); */
+/*     if ((dR <= maxDeltaR) && (dR < minDeltaR)) { */
+/*       result = jet; */
+/*       minDeltaR = dR; */
+/*     } */
+/*   } */
 
-  if (minDeltaR == 999) {
-    result.phi = object.phi;
-    result.eta = object.eta;
-    result.pt = object.pt;
-  }
+/*   if (minDeltaR == 999) { */
+/*     result.phi = object.phi; */
+/*     result.eta = object.eta; */
+/*     result.pt = object.pt; */
+/*   } */
 
-  return result;
-}
+/*   return result; */
+/* } */
 
 #endif // _HelperLeptonCore_h
