@@ -1,7 +1,5 @@
-
 #ifndef _KinematicVariable_h
 #define _KinematicVariable_h
-
 
 #include "TFile.h"
 #include "TChain.h"
@@ -42,27 +40,29 @@
 #include "DataFormats/FWLite/interface/ChainEvent.h"
 
 //Headers for the data items
-#include "BEAN/Collections/interface/BNelectron.h"
-#include "BEAN/Collections/interface/BNevent.h"
-#include "BEAN/Collections/interface/BNjet.h"
-#include "BEAN/Collections/interface/BNmcparticle.h"
-#include "BEAN/Collections/interface/BNmet.h"
-#include "BEAN/Collections/interface/BNmuon.h"
-#include "BEAN/Collections/interface/BNphoton.h"
-#include "BEAN/Collections/interface/BNsupercluster.h"
-#include "BEAN/Collections/interface/BNtrack.h"
-#include "BEAN/Collections/interface/BNtrigger.h"
-#include "BEAN/Collections/interface/BNskimbits.h"
-#include "BEAN/Collections/interface/BNtrigobj.h"
-#include "BEAN/Collections/interface/BNprimaryvertex.h"
+/* #include "BEAN/Collections/interface/BNelectron.h" */
+/* #include "BEAN/Collections/interface/BNevent.h" */
+/* #include "BEAN/Collections/interface/BNjet.h" */
+/* #include "BEAN/Collections/interface/BNmcparticle.h" */
+/* #include "BEAN/Collections/interface/BNmet.h" */
+/* #include "BEAN/Collections/interface/BNmuon.h" */
+/* #include "BEAN/Collections/interface/BNphoton.h" */
+/* #include "BEAN/Collections/interface/BNsupercluster.h" */
+/* #include "BEAN/Collections/interface/BNtrack.h" */
+/* #include "BEAN/Collections/interface/BNtrigger.h" */
+/* #include "BEAN/Collections/interface/BNskimbits.h" */
+/* #include "BEAN/Collections/interface/BNtrigobj.h" */
+/* #include "BEAN/Collections/interface/BNprimaryvertex.h" */
 
 
 // headers for python config processing
 
-#include "BEAN/BEANmaker/interface/BtagWeight.h"
-#include "BEAN/BEANmaker/interface/BEANhelper.h"
+//#include "BEAN/BEANmaker/interface/BtagWeight.h"
+//#include "BEAN/BEANmaker/interface/BEANhelper.h"
 
-#include "BEAN/BEANmaker/interface/AnglesUtil.h"
+#include "MiniAOD/MiniAODHelper/interface/MiniAODHelper.h"
+
+//#include "BEAN/BEANmaker/interface/AnglesUtil.h"
 #include "PhysicsTools/Utilities/interface/LumiReweightingStandAlone.h"
 
 #include "TMVA/Tools.h"
@@ -70,7 +70,7 @@
 #include "TMVA/MethodCuts.h"
 
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
+//#include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
 
 using namespace std;
@@ -98,10 +98,6 @@ public:
   
   ArbitraryVariable() {};
 
-  virtual void assignCollections( BEANFileInterface *col) {
-    cout << "Called ArbitraryVariable assignCollections, which is not right!" << endl;
-  };
-  
   virtual void evaluate () {};
 
   
@@ -131,7 +127,7 @@ public:
   // Do nothing
   KinematicVariable ();
 
-  BEANFileInterface *blocks;
+  //  BEANFileInterface *blocks;
 
   branchDataType resetVal;
 
@@ -140,11 +136,8 @@ public:
 
   bool evaluatedThisEvent;
 
-  virtual void assignCollections( BEANFileInterface *col);
-  
   virtual void evaluate ();
 
-  
   virtual void attachToTree (TTree *);
   
   virtual void reset ();
@@ -164,11 +157,6 @@ template <class branchDataType>
 KinematicVariable<branchDataType>::KinematicVariable() {
 
   
-}
-
-template <class branchDataType>
-void KinematicVariable<branchDataType>::assignCollections(BEANFileInterface * col ) {
-    blocks = col;
 }
 
 template <class branchDataType>

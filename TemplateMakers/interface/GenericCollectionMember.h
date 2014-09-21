@@ -9,6 +9,20 @@
 #include "Reflex/Member.h"
 #include "Reflex/Kernel.h"
 
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/GenericParticle.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Lepton.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+
+
 // //Anna's fix to make BNleptonCollection work just like any other collection
 // //Template defined in BEAN/BEANMaker/BEANmaker/interface/BEANhelper.h
 // template<typename T>
@@ -38,7 +52,7 @@ public:
   void print ();
   void listAvailableMembers ();
   bool checkForMember (Reflex::Type myType);
-  Reflex::Object getBaseObject (Reflex::Object& object, int index);
+  //Reflex::Object getBaseObject (Reflex::Object& object, int index);
 };
 
 template <class branchDataType, class collectionType>
@@ -91,12 +105,13 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
   unsigned numObjs = (*selectedCollection)->size();
   unsigned loopMax = (unsigned(maxObjInColl) < numObjs) ? unsigned(maxObjInColl) : numObjs;
   for (unsigned iObj = 0; iObj < loopMax; iObj++ ){
-    Reflex::Object object(myClass, ptr((*selectedCollection)->at(iObj)));
-    Reflex::Object baseObject = getBaseObject(object, iObj);
-
-    if (checkForMember(baseObject.TypeOf())) {
-      branchDataType * tempValPtr = (branchDataType*) (baseObject.Get(memberName).Address());
+    Reflex::Object object(myClass, &(*selectedCollection)->at(iObj));//ptr
+    //Reflex::Object baseObject = getBaseObject(object, iObj);
+    cout << "LOOK HERE" << checkForMember(object.TypeOf()) << iObj << endl;
+    if (checkForMember(object.TypeOf())) {
+      branchDataType * tempValPtr = (branchDataType*) (object.Get(memberName).Address());
       myVars[iObj].branchVal = *tempValPtr;
+      cout << *tempValPtr << endl;
     }
   }
 }
@@ -139,27 +154,28 @@ void GenericCollectionMember<branchDataType, collectionType>::listAvailableMembe
 
 //If the object is a BNlepton, figure out if it's a muon (electron) and return a new muon (electron) object
 //Otherwise, just return the object
-template <class branchDataType, class collectionType>
-Reflex::Object GenericCollectionMember<branchDataType, collectionType>::getBaseObject (Reflex::Object &object, int index) {
-  if (myClass.Name()=="BNlepton") {
-    Reflex::Type leptonType;
-    int * isMuon = (int*) (object.Get("isMuon").Address());
-    if (*isMuon==1) {
-      leptonType = Reflex::Type::ByName("BNmuon");
-    } else {
-      leptonType = Reflex::Type::ByName("BNelectron");
-    }
-    Reflex::Object baseObject(leptonType, ptr((*selectedCollection)->at(index)));
-    object = baseObject;
-  }
+/* template <class branchDataType, class collectionType> */
+/* Reflex::Object GenericCollectionMember<branchDataType, collectionType>::getBaseObject (R { */
+/*   //if (myClass.Name()=="BNlepton") { */
+/*   //Reflex::Type leptonType; */
+/*   //int * isMuon = (int*) (object.Get("isMuon").Address()); */
+/*   //if (*isMuon==1) { */
+/*   // leptonType = Reflex::Type::ByName("BNmuon"); */
+/*   //} else { */
+/*   // leptonType = Reflex::Type::ByName("BNelectron"); */
+/*   //} */
+/*   Reflex::Object baseObject(leptonType, ptr((*selectedCollection)->at(index))); */
+/*   object = baseObject; */
 
-  return object;
-}
+/*   return object; */
+/* } */
 
 template <class branchDataType, class collectionType>
 bool GenericCollectionMember<branchDataType, collectionType>::checkForMember (Reflex::Type classToCheck) {
   bool hasMember = false;
+  cout << "DATA MEMBER SIZE " << classToCheck.DataMemberSize() << endl;
   for (unsigned iMem = 0; iMem < classToCheck.DataMemberSize(); iMem ++) {
+
     if (classToCheck.DataMemberAt(iMem).Name() == memberName) hasMember = true;
   }
   return hasMember;

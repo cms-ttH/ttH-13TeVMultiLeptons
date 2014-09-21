@@ -1,6 +1,26 @@
 #ifndef _GenericCollection_h
 #include <functional>
-#include "BEAN/BEANmaker/interface/BEANhelper.h"
+//#include "BEAN/BEANmaker/interface/BEANhelper.h"
+#include "MiniAOD/MiniAODHelper/interface/MiniAODHelper.h"
+
+
+//miniAOD
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/GenericParticle.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Lepton.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+
+
+
+
 
 #define _GenericCollection_h
 
@@ -8,17 +28,19 @@ template <class collectionType>
 class GenericCollection {
 
 public:
-  BEANhelper * bHelp;
+  MiniAODHelper * bHelp;
   collectionType rawItems;
   collectionType items;
   collectionType * ptrToItems;
   std::function<bool (collectionType)> selectionFunction;
 
-  GenericCollection(BEANhelper * bHelp);
-  void initializeRawItems(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
+  GenericCollection(MiniAODHelper * bHelp);
+  void initializeRawItems(edm::EventBase& event, string rawCollectionInstance);
   void initializeRawItems(const collectionType& collection);
   void initializeRawItems(std::initializer_list<collectionType> collections);
-  void initializeRawItemsSortedByPt(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance);
+  void initializeRawItemsSortedByPt(edm::EventBase& event, string rawCollectionInstance);
+
+
   //  void initializeRawItemsSortedByPt(const collectionType& collection);
 
   //  template <typename functionType> void keepSelectedParticles(functionType selectionFunction);
@@ -30,7 +52,7 @@ public:
   //  void keepSelectedParticles(tauID::tauID& ID);
   // void keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID);
   // void keepSelectedDifference(muonID::muonID& topID, muonID::muonID& bottomID);
-  void addUnion(std::initializer_list<collectionType> collections);
+  //  void addUnion(std::initializer_list<collectionType> collections);
   //  void pushBack(std::initializer_list<BNelectronCollection> collections);
   //  void pushBack(std::initializer_list<BNmuonCollection> collections);
   //  void pushBack(std::initializer_list<BNleptonCollection> collections);
@@ -56,7 +78,7 @@ private:
 };
 
 template<class collectionType>
-GenericCollection<collectionType>::GenericCollection(BEANhelper * bHelp) : bHelp(bHelp) {
+GenericCollection<collectionType>::GenericCollection(MiniAODHelper * bHelp) : bHelp(bHelp) {
   reset();
 }
 
@@ -67,10 +89,10 @@ void GenericCollection<collectionType>::reset() {
 }
 
 template<class collectionType>
-void GenericCollection<collectionType>::initializeRawItems(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance) {
+void GenericCollection<collectionType>::initializeRawItems(edm::EventBase& event, string rawCollectionInstance) {
   reset();
 
-  edm::InputTag tag(rawCollectionLabel, rawCollectionInstance);
+  edm::InputTag tag(rawCollectionInstance);
   edm::Handle<collectionType> handle;
   event.getByLabel(tag, handle);
   rawItems = *handle;
@@ -89,18 +111,18 @@ void GenericCollection<collectionType>::initializeRawItems(const collectionType&
   ptrToItems = &items;
 }
 
+/* template<class collectionType> */
+/* void GenericCollection<collectionType>::initializeRawItems(std::initializer_list<collectionType> collections) { */
+/*   reset(); */
+
+/*   addUnion(collections); */
+
+/* } */
+
 template<class collectionType>
-void GenericCollection<collectionType>::initializeRawItems(std::initializer_list<collectionType> collections) {
+void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventBase& event, string rawCollectionInstance) {
   reset();
-
-  addUnion(collections);
-
-}
-
-template<class collectionType>
-void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventBase& event, string rawCollectionLabel, string rawCollectionInstance) {
-  reset();
-  initializeRawItems(event, rawCollectionLabel, rawCollectionInstance);
+  initializeRawItems(event, rawCollectionInstance);
 
   items = bHelp->GetSortedByPt(items);
 
@@ -181,10 +203,17 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventB
 /*   ptrToItems = &items; */
 /* } */
 
-template<class BNmuonCollection>
-void GenericCollection<BNmuonCollection>::keepSelectedParticles(muonID::muonID& ID) {
+//template<class BNmuonCollection>
+template<class collectionType>
+void GenericCollection<collectionType>::keepSelectedParticles(muonID::muonID& ID) {
 
-  items = bHelp->GetSelectedMuons(rawItems, ID);
+  //  items = bHelp->GetSelectedMuons(rawItems, ID);
+  //  std::float minPt = 0.;
+  
+  items = bHelp->GetSelectedMuons(rawItems,0., ID);
+  
+  
+  std::cout << items.size() << std::endl;
 
   ptrToItems = &items;
 }
@@ -217,13 +246,13 @@ void GenericCollection<BNmuonCollection>::keepSelectedParticles(muonID::muonID& 
 /*   ptrToItems = &items; */
 /* } */
 
-template<class collectionType>
-void GenericCollection<collectionType>::addUnion(std::initializer_list<collectionType> collections) {
-  for (auto& collection: collections) {
-    items = bHelp->GetUnion(items, collection);
-  }
-  ptrToItems = &items;
-}
+/* template<class collectionType> */
+/* void GenericCollection<collectionType>::addUnion(std::initializer_list<collectionType> collections) { */
+/*   for (auto& collection: collections) { */
+/*     items = bHelp->GetUnion(items, collection); */
+/*   } */
+/*   ptrToItems = &items; */
+/* } */
 
 /* template<class BNleptonCollection> */
 /* void GenericCollection<BNleptonCollection>::pushBack(std::initializer_list<BNelectronCollection> collections) { */

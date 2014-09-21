@@ -1,3 +1,18 @@
+//new include items for miniAOD compatibility
+
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/GenericParticle.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Lepton.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
 #include "TROOT.h"
 #include "TSystem.h"
@@ -11,8 +26,7 @@
 //done
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
 //needs work
-#include "BEAN/BEANmaker/interface/BtagWeight.h"
-#include "BEAN/BEANmaker/interface/BEANhelper.h"
+#include "MiniAOD/MiniAODHelper/interface/MiniAODHelper.h"
 
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"
@@ -29,21 +43,9 @@ bool isData;
 string analysisYear = "2012_53x";
 string sampleName;
 int sampleNumber;
-std::string listOfCollisionDatasets;
-std::string datasetForBEANHelper;
-
-
-
-void initializePUReweighting () {
-  listOfCollisionDatasets = "2012A_13July, 2012A_06Aug, 2012B_13July, 2012C_PR, 2012C_24Aug, 2012D_PR";
-  // this cannot be blank
-  // but it is only used for 2011 PU reweighting
-  // Options are SingleMu, and ElectronHad
-  datasetForBEANHelper = "SingleMu";
-}
 
 void detectData(string sampleName) {
-  bool isData = false;
+  isData = false;
   string dataset = "MC";
 
   if (TString(sampleName).Contains("DoubleElectron")) dataset = "DoubleElectron";
@@ -288,29 +290,10 @@ int convertSampleNameToNumber(string sampleName) {
 
   std::cout << "CONFIG: Sample Name = " << sampleName
             << ", sample Number = " << sampleNumber << endl;
-
+  
+  std::cout << weight_Xsec << nGen << Xsec << endl;
   return sampleNumber;
 }
-
-// BEANhelper * HelperLeptonCore::setupAnalysisParameters(string year, string inputName) {
-//   analysisYear = year;
-//   sampleName = inputName;
-//   detectData(sampleName);
-//   convertSampleNameToNumber(sampleName);
-//   initializePUReweighting();
-
-//   // param 1: the era for your analysis
-//   // param 2: the type of analysis (DIL most of the time)
-//   // param 3: data or not?
-//   // param 4: dataset... for 2011 PU treatment
-//   // param 5: CSV reshaping on/off
-//   // param 6: use pf leptons?
-//   // param 8: list of collision datasets, which much be long
-
-//   bHelp.SetUp(analysisYear, sampleNumber, analysisType::DIL, isData, datasetForBEANHelper, false, true, listOfCollisionDatasets);
-//   return &bHelp;
-// }
-
 
 void safetyCheckJobOptions (int argc, char** argv) {
   std::cout << "--->Num argments provided at command line...  " << argc << std::endl;
@@ -341,14 +324,17 @@ JobParameters parseJobOptions (int argc, char** argv) {
   myConfig.outputFileName = outputs.getParameter < string > ("fileName");
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
   myConfig.jetSyst = inputs.getParameter < string > ("jetSyst");
+  
+
 
   return myConfig;
 }
 
+
+
 int main (int argc, char** argv) {
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
-  //gSystem->Load("libNtupleMakerBEANmaker.so");
   AutoLibraryLoader::enable();
 
   int debug = 0; // levels of debug, 10 is large
@@ -363,21 +349,17 @@ int main (int argc, char** argv) {
 
   fwlite::ChainEvent ev(myConfig.inputFileNames);
 
-  //  HelperLeptonCore lepHelper;
-
   // setup the analysis
   // it comes from the lepHelper
 
-  //bool isData;
-  //string analysisYear = "2012_53x";
   sampleName = myConfig.sampleName;
   detectData(sampleName);
   convertSampleNameToNumber(sampleName);
-  initializePUReweighting();
+  // initializePUReweighting();
   
-  //BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", myConfig.sampleName);
-  BEANhelper * beanHelper = new BEANhelper();
-  beanHelper->SetUp(analysisYear, sampleNumber, analysisType::DIL, isData, datasetForBEANHelper, false, true, listOfCollisionDatasets);
+  
+  MiniAODHelper * miniAODhelper = new MiniAODHelper();
+  miniAODhelper->SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
 
 
   sysType::sysType jetSyst = sysType::NA;
@@ -385,6 +367,8 @@ int main (int argc, char** argv) {
   else if (myConfig.jetSyst == "JESUp") jetSyst = sysType::JESup;
   else if (myConfig.jetSyst == "JESDown") jetSyst = sysType::JESdown;
   else std::cout << "No valid JES corrections specified - using nominal" << std::endl;
+  
+  std::cout << jetSyst << std::endl;
 
   // ---------------------------------------------
   // Note for future development: should these be
@@ -392,29 +376,30 @@ int main (int argc, char** argv) {
   // For now they are ok here
   // ---------------------------------------------
 
-  muonID::muonID muonTightID = muonID::muonTight;
+  //  muonID::muonID muonTightID = muonID::muonTight;
   muonID::muonID muonLooseID = muonID::muonLoose;
   muonID::muonID muonPreselectedID = muonID::muonNoCuts;
 
   //collections
-  //  GenericCollection<BNmuonCollection> tightMuons(beanHelper);
-  GenericCollection<BNmuonCollection> tightLooseMuons(beanHelper);
-  GenericCollection<BNmuonCollection> tightLoosePreselectedMuons(beanHelper);
+  GenericCollection<pat::MuonCollection> tightLooseMuons(miniAODhelper);
+  GenericCollection<pat::MuonCollection> tightLoosePreselectedMuons(miniAODhelper);
 
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
 
   // NECESSARY TO FILL LEPTON VALUES - DO NOT COMMENT OUT //
-  GenericCollectionMember<double, BNmuonCollection>
-    allMuonPt(Reflex::Type::ByName("BNmuon"), &(tightLooseMuons.ptrToItems),
-              "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  // GenericCollectionMember<double, BNmuonCollection>
+  //   allMuonPt(Reflex::Type::ByName("BNmuon"), &(tightLooseMuons.ptrToItems),
+  //             "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  // kinVars.push_back(&allMuonPt);
+
+  //std::vector<pat:Muon>>
+
+  GenericCollectionMember<double,std::vector<pat::Muon>> 
+    allMuonPt(Reflex::Type::ByName("pat::Muon"), &(tightLooseMuons.ptrToItems),
+              "pt_", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allMuonPt);
-
-//   GenericCollectionMember<double, std::vector<recoCand>>
-//     allMuonPt(Reflex::Type::ByName(""), &(tightLooseMuons.ptrToItems),
-//               "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-//   kinVars.push_back(&allMuonPt);
-
+  
   
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
@@ -446,11 +431,15 @@ int main (int argc, char** argv) {
     //
     //////////////////////////////////////////////////////////////   
 
-    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsPFlow");
+    //    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsPFlow");
+    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "slimmedMuons");
+    cout << "here0" << endl;
     tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);
+    cout << "here1" << endl;
     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
+    cout << "here2" << endl;
     tightLooseMuons.keepSelectedParticles(muonLooseID);
-
+    cout << "here3" << endl;
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
