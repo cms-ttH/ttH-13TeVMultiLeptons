@@ -17,4 +17,9 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 	git checkout -b 13TeV
 	cd -
 	scram b -j 32
-	
+
+Then try running over some miniAOD:
+
+	cd ttHMultileptonAnalysis/TemplateMakers/test/
+	osTwoLep ssCondor.py ttH125_miniAOD <your_label_here>
+
