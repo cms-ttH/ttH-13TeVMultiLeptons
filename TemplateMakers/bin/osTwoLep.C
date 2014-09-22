@@ -324,13 +324,8 @@ JobParameters parseJobOptions (int argc, char** argv) {
   myConfig.outputFileName = outputs.getParameter < string > ("fileName");
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
   myConfig.jetSyst = inputs.getParameter < string > ("jetSyst");
-  
-
-
   return myConfig;
 }
-
-
 
 int main (int argc, char** argv) {
   // load framework libraries
@@ -383,6 +378,8 @@ int main (int argc, char** argv) {
   //collections
   GenericCollection<pat::MuonCollection> tightLooseMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> tightLoosePreselectedMuons(miniAODhelper);
+  GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
+
 
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
@@ -433,13 +430,11 @@ int main (int argc, char** argv) {
 
     //    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsPFlow");
     tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "slimmedMuons");
-    cout << "here0" << endl;
     tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);
-    cout << "here1" << endl;
     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
-    cout << "here2" << endl;
     tightLooseMuons.keepSelectedParticles(muonLooseID);
-    cout << "here3" << endl;
+    primaryVertices.initializeRawItems(ev,"offlineSlimmedPrimaryVertices");
+
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
