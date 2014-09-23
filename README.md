@@ -26,7 +26,7 @@ Here are some temporary instructions to get the tree-making code to compile:
 	rm -rf listsForSkims2012_53x_v3_hadoop/
 	rm -rf listsUnskimmed2012_53x_v3_hadoop/
 	rm -rf DrawPlots/
-	
+	rm -rf TemplateMakers/bean.tags
 
 Then try running over some miniAOD:
 
