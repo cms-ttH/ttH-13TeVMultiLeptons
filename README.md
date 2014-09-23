@@ -18,6 +18,15 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 	cd -
 	scram b -j 32
 
+Here are some temporary instructions to get the tree-making code to compile:
+	cd ttHMultileptonAnalysis/
+	rm -rf skim/
+	rm -rf listsForSkims2012_v3/
+	rm -rf listsForSkims2012_53x_v3_hadoop/
+	rm -rf listsUnskimmed2012_53x_v3_hadoop/
+	rm -rf DrawPlots/
+	
+
 Then try running over some miniAOD:
 
 	voms-proxy-init -voms cms
