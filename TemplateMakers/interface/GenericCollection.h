@@ -44,7 +44,7 @@ public:
   //template <typename functionType, typename paramType1, typename paramType2, typename paramType3> void keepSelectedParticles(functionType selectionFunction, paramType1 i, paramType2 j, paramType3 k);
   void keepSelectedParticles(electronID::electronID& ID);
   void keepSelectedParticles(muonID::muonID& ID);
-  //  void keepSelectedParticles(tauID::tauID& ID);
+  void keepSelectedParticles(tauID::tauID& ID);
   void keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID);
   void keepSelectedDifference(muonID::muonID& topID, muonID::muonID& bottomID);
   void addUnion(std::initializer_list<collectionType> collections);
@@ -209,13 +209,13 @@ void GenericCollection<collectionType>::keepSelectedParticles(muonID::muonID& ID
   ptrToItems = &items;
 }
 
-/* template<class BNtauCollection> */
-/* void GenericCollection<BNtauCollection>::keepSelectedParticles(tauID::tauID& ID) { */
+template<class collectionType>
+void GenericCollection<collectionType>::keepSelectedParticles(tauID::tauID& ID) {
 
-/*   items = mHelp->GetSelectedTaus(rawItems, ID); */
+  items = mHelp->GetSelectedTaus(rawItems,0., ID);
 
-/*   ptrToItems = &items; */
-/* } */
+  ptrToItems = &items;
+}
 
 template<class collectionType>
 void GenericCollection<collectionType>::keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID) {

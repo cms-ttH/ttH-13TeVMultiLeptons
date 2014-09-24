@@ -381,6 +381,11 @@ int main (int argc, char** argv) {
   muonID::muonID muonLooseID = muonID::muonLoose;
   muonID::muonID muonPreselectedID = muonID::muonNoCuts;
 
+  tauID::tauID tauTightID = tauID::tauMedium;
+  // tauID::tauID tauLooseID = tauID::tauVLoose;
+  tauID::tauID tauPreselectedID = tauID::tauNonIso;
+
+
   //collections
   GenericCollection<pat::ElectronCollection> tightElectrons(miniAODhelper);
   GenericCollection<pat::ElectronCollection> looseElectrons(miniAODhelper);
@@ -388,13 +393,16 @@ int main (int argc, char** argv) {
   GenericCollection<pat::ElectronCollection> tightLooseElectrons(miniAODhelper);
   GenericCollection<pat::ElectronCollection> loosePreselectedElectrons(miniAODhelper);
   GenericCollection<pat::ElectronCollection> tightLoosePreselectedElectrons(miniAODhelper);
-
   
   GenericCollection<pat::MuonCollection> tightMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> looseMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> preselectedMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> tightLooseMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> tightLoosePreselectedMuons(miniAODhelper);
+
+  GenericCollection<pat::TauCollection> tightTaus(miniAODhelper);
+  GenericCollection<pat::TauCollection> tightLooseTaus(miniAODhelper);
+  GenericCollection<pat::TauCollection> tightLoosePreselectedTaus(miniAODhelper);
 
   GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
 
@@ -412,6 +420,11 @@ int main (int argc, char** argv) {
 
   //std::vector<pat:Muon>>
 
+  //////////////////////////////////////////////////////////////////////////////
+  ////
+  //// Add vars to tree
+  ////
+  //////////////////////////////////////////////////////////////////////////////
 
   GenericCollectionMember<double,std::vector<pat::Muon>> 
     allMuonPt(Reflex::Type::ByName("pat::Muon"), &(tightLooseMuons.ptrToItems),
@@ -432,9 +445,7 @@ int main (int argc, char** argv) {
     numTightElectrons(&(tightElectrons.ptrToItems), "numTightElectrons");
   kinVars.push_back(&numTightElectrons);
 
-
-  
-  
+    
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
        iVar != kinVars.end();
@@ -520,6 +531,12 @@ int main (int argc, char** argv) {
     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightLooseMuons.keepSelectedParticles(muonLooseID);
 
+    tightTaus.initializeRawItemsSortedByPt(ev, "slimmedTaus");
+    tightTaus.keepSelectedParticles(tauTightID);
+    tightLooseTaus.initializeRawItems(tightTaus.rawItems);
+    tightLooseTaus.keepSelectedParticles(tauTightID);
+    tightLoosePreselectedTaus.initializeRawItems(tightTaus.rawItems);
+    tightLoosePreselectedTaus.keepSelectedParticles(tauPreselectedID);
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
