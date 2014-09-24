@@ -50,7 +50,7 @@ public:
   void keepSelectedParticles(electronID::electronID& ID);
   void keepSelectedParticles(muonID::muonID& ID);
   //  void keepSelectedParticles(tauID::tauID& ID);
-  // void keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID);
+  void keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID);
   // void keepSelectedDifference(muonID::muonID& topID, muonID::muonID& bottomID);
   //  void addUnion(std::initializer_list<collectionType> collections);
   //  void pushBack(std::initializer_list<BNelectronCollection> collections);
@@ -222,15 +222,15 @@ void GenericCollection<collectionType>::keepSelectedParticles(muonID::muonID& ID
 /*   ptrToItems = &items; */
 /* } */
 
-/* template<class BNelectronCollection> */
-/* void GenericCollection<BNelectronCollection>::keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID) { */
-/*   topCollection = bHelp->GetSelectedElectrons(rawItems, topID); */
-/*   bottomCollection = bHelp->GetSelectedElectrons(rawItems, bottomID); */
+template<class collectionType>
+void GenericCollection<collectionType>::keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID) {
+  topCollection = bHelp->GetSelectedElectrons(rawItems,0., topID);
+  bottomCollection = bHelp->GetSelectedElectrons(rawItems,0., bottomID);
+  
+  items = bHelp->GetDifference(topCollection, bottomCollection);
 
-/*   items = bHelp->GetDifference(topCollection, bottomCollection); */
-
-/*   ptrToItems = &items; */
-/* } */
+  ptrToItems = &items;
+}
 
 /* template<class BNmuonCollection> */
 /* void GenericCollection<BNmuonCollection>::keepSelectedDifference(muonID::muonID& topID, muonID::muonID& bottomID) { */
