@@ -371,14 +371,30 @@ int main (int argc, char** argv) {
   // For now they are ok here
   // ---------------------------------------------
 
+  
+  //  electronID::electronID electronTightID = electronID::electronTight;
+  //  electronID::electronID electronLooseID = electronID::electronLoose;
+  //  electronID::electronID electronPreselectedID = electronID::electronNoCuts;
+
   //  muonID::muonID muonTightID = muonID::muonTight;
   muonID::muonID muonLooseID = muonID::muonLoose;
   muonID::muonID muonPreselectedID = muonID::muonNoCuts;
 
   //collections
+  // GenericCollection<pat::ElectronCollection> tightElectrons(miniAODhelper);
+  // GenericCollection<pat::ElectronCollection> looseElectrons(miniAODhelper);
+  // GenericCollection<pat::ElectronCollection> preselectedElectrons(miniAODhelper);
+  // GenericCollection<pat::ElectronCollection> tightLooseElectrons(miniAODhelper);
+  // GenericCollection<pat::ElectronCollection> loosePreselectedElectrons(miniAODhelper);
+  // GenericCollection<pat::ElectronCollection> tightLoosePreselectedElectrons(miniAODhelper);
+
+
   GenericCollection<pat::MuonCollection> tightLooseMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> tightLoosePreselectedMuons(miniAODhelper);
   GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
+
+  //GenericColleciton<GenEventInfoProduct> events(miniAODhelper);
+
 
 
   vector<ArbitraryVariable*> kinVars;
@@ -410,6 +426,16 @@ int main (int argc, char** argv) {
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
   int printEvery = 1000;
+  
+  //vars for vertex loop
+  reco::Vertex vertex;
+  double minNDOF = 4.0;
+  double maxAbsZ = 24.0;
+  double maxd0 = 2.;
+  int numpv = 0;
+
+
+
 
   for (ev.toBegin(); !ev.atEnd(); ++ev){
     numEvents++;
@@ -420,20 +446,54 @@ int main (int argc, char** argv) {
       cout << "Processing event.... " << numEvents << endl;
 
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
-
-
+    ////////////////////////////////////////////////////////////
+    //
+    // count pvs for miniAODhelper
+    //
+    ////////////////////////////////////////////////////////////
+    primaryVertices.initializeRawItems(ev,"offlineSlimmedPrimaryVertices");
+    numpv = 0;
+    for (reco::VertexCollection::const_iterator iPV = primaryVertices.ptrToItems->begin(); iPV != primaryVertices.ptrToItems->end(); ++iPV){
+      bool isGood = ( !(iPV->isFake()) &&
+		     (iPV->ndof() >= minNDOF) &&
+		     (abs(iPV->z()) <= maxAbsZ) &&
+		     (abs(iPV->position().Rho()) <= maxd0)
+		     );
+      if ( !isGood ) continue;
+      if ( numpv == 0 ) vertex = *iPV;
+      numpv++;
+    }
+    
+    cout << "numpv = " << numpv << endl;
+    if ( numpv > 0 ){
+      cout << "setting vertex, numpv > 0" << endl;
+      miniAODhelper->SetVertex(vertex);
+    }
     /////////////////////////////////////////////////////////////
     //
     //    Initialize collections and apply object ids
     //
     //////////////////////////////////////////////////////////////   
+    //    events.initializeRawItems(ev,"generator");
+    // tightLoosePreselectedElectrons.initializeRawItemsSortedByPt(ev,"slimmedElectrons");
+    // tightLoosePreselectedElectrons.keepSelectedParticles(electronPreselectedID);
+    // tightElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
+    // tightElectrons.keepSelectedParticles(electronTightID);
+    // tightLooseElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
+    // tightLooseElectrons.keepSelectedParticles(electronLooseID);
+    // looseElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
+    // looseElectrons.keepSelectedDifference(electronLooseID, electronTightID);
+    // preselectedElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
+    // preselectedElectrons.keepSelectedDifference(electronPreselectedID, electronLooseID);
+    // loosePreselectedElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
+    // loosePreselectedElectrons.addUnion({looseElectrons.items, preselectedElectrons.items});
 
     //    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsPFlow");
     tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "slimmedMuons");
     tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);
     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightLooseMuons.keepSelectedParticles(muonLooseID);
-    primaryVertices.initializeRawItems(ev,"offlineSlimmedPrimaryVertices");
+
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;

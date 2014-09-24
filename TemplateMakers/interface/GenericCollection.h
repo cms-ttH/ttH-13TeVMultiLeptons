@@ -47,7 +47,7 @@ public:
   //  template <typename functionType, typename paramType> void keepSelectedParticles(functionType selectionFunction, paramType i);
   //  template <typename functionType, typename paramType1, typename paramType2> void keepSelectedParticles(functionType selectionFunction, paramType1 i, paramType2 j);
   //template <typename functionType, typename paramType1, typename paramType2, typename paramType3> void keepSelectedParticles(functionType selectionFunction, paramType1 i, paramType2 j, paramType3 k);
-  //  void keepSelectedParticles(electronID::electronID& ID);
+  void keepSelectedParticles(electronID::electronID& ID);
   void keepSelectedParticles(muonID::muonID& ID);
   //  void keepSelectedParticles(tauID::tauID& ID);
   // void keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID);
@@ -97,7 +97,7 @@ void GenericCollection<collectionType>::initializeRawItems(edm::EventBase& event
   event.getByLabel(tag, handle);
   rawItems = *handle;
   items = rawItems;
-
+  cout << "items size = " << items.size() <<endl;
   ptrToItems = &items;
 }
 
@@ -195,15 +195,14 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventB
 /*   ptrToItems = &items; */
 /* } */
 
-/* template<class BNelectronCollection> */
-/* void GenericCollection<BNelectronCollection>::keepSelectedParticles(electronID::electronID& ID) { */
+template<class collectionType>
+void GenericCollection<collectionType>::keepSelectedParticles(electronID::electronID& ID) {
 
-/*   items = bHelp->GetSelectedElectrons(rawItems, ID); */
+  items = bHelp->GetSelectedElectrons(rawItems,0., ID);
 
-/*   ptrToItems = &items; */
-/* } */
+  ptrToItems = &items;
+}
 
-//template<class BNmuonCollection>
 template<class collectionType>
 void GenericCollection<collectionType>::keepSelectedParticles(muonID::muonID& ID) {
 
@@ -211,9 +210,6 @@ void GenericCollection<collectionType>::keepSelectedParticles(muonID::muonID& ID
   //  std::float minPt = 0.;
   
   items = bHelp->GetSelectedMuons(rawItems,0., ID);
-  
-  
-  std::cout << items.size() << std::endl;
 
   ptrToItems = &items;
 }
