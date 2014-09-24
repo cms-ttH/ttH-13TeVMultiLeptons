@@ -464,9 +464,9 @@ int main (int argc, char** argv) {
       numpv++;
     }
     
-    cout << "numpv = " << numpv << endl;
+    //cout << "numpv = " << numpv << endl;
     if ( numpv > 0 ){
-      cout << "setting vertex, numpv > 0" << endl;
+      //cout << "setting vertex, numpv > 0" << endl;
       miniAODhelper->SetVertex(vertex);
     }
     /////////////////////////////////////////////////////////////

@@ -107,11 +107,11 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
   for (unsigned iObj = 0; iObj < loopMax; iObj++ ){
     Reflex::Object object(myClass, &(*selectedCollection)->at(iObj));//ptr
     //Reflex::Object baseObject = getBaseObject(object, iObj);
-    cout << "LOOK HERE" << checkForMember(object.TypeOf()) << iObj << endl;
+    //cout << "LOOK HERE" << checkForMember(object.TypeOf()) << iObj << endl;
     if (checkForMember(object.TypeOf())) {
       branchDataType * tempValPtr = (branchDataType*) (object.Get(memberName).Address());
       myVars[iObj].branchVal = *tempValPtr;
-      cout << *tempValPtr << endl;
+      //cout << *tempValPtr << endl;
     }
   }
 }
@@ -173,7 +173,7 @@ void GenericCollectionMember<branchDataType, collectionType>::listAvailableMembe
 template <class branchDataType, class collectionType>
 bool GenericCollectionMember<branchDataType, collectionType>::checkForMember (Reflex::Type classToCheck) {
   bool hasMember = false;
-  cout << "DATA MEMBER SIZE " << classToCheck.DataMemberSize() << endl;
+  //cout << "DATA MEMBER SIZE " << classToCheck.DataMemberSize() << endl;
   for (unsigned iMem = 0; iMem < classToCheck.DataMemberSize(); iMem ++) {
 
     if (classToCheck.DataMemberAt(iMem).Name() == memberName) hasMember = true;

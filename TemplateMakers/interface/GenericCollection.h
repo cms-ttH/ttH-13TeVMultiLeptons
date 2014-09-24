@@ -97,7 +97,7 @@ void GenericCollection<collectionType>::initializeRawItems(edm::EventBase& event
   event.getByLabel(tag, handle);
   rawItems = *handle;
   items = rawItems;
-  cout << "items size = " << items.size() <<endl;
+  //  cout << "items size = " << items.size() <<endl;
   ptrToItems = &items;
 }
 
