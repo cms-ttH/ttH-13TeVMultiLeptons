@@ -1,6 +1,5 @@
 #ifndef _GenericCollection_h
 #include <functional>
-//#include "BEAN/BEANmaker/interface/BEANhelper.h"
 #include "MiniAOD/MiniAODHelper/interface/MiniAODHelper.h"
 
 
@@ -18,23 +17,19 @@
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
-
-
-
-
 #define _GenericCollection_h
 
 template <class collectionType>
 class GenericCollection {
 
 public:
-  MiniAODHelper * bHelp;
+  MiniAODHelper * mHelp;
   collectionType rawItems;
   collectionType items;
   collectionType * ptrToItems;
   std::function<bool (collectionType)> selectionFunction;
 
-  GenericCollection(MiniAODHelper * bHelp);
+  GenericCollection(MiniAODHelper * mHelp);
   void initializeRawItems(edm::EventBase& event, string rawCollectionInstance);
   void initializeRawItems(const collectionType& collection);
   void initializeRawItems(std::initializer_list<collectionType> collections);
@@ -51,8 +46,8 @@ public:
   void keepSelectedParticles(muonID::muonID& ID);
   //  void keepSelectedParticles(tauID::tauID& ID);
   void keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID);
-  // void keepSelectedDifference(muonID::muonID& topID, muonID::muonID& bottomID);
-  //  void addUnion(std::initializer_list<collectionType> collections);
+  void keepSelectedDifference(muonID::muonID& topID, muonID::muonID& bottomID);
+  void addUnion(std::initializer_list<collectionType> collections);
   //  void pushBack(std::initializer_list<BNelectronCollection> collections);
   //  void pushBack(std::initializer_list<BNmuonCollection> collections);
   //  void pushBack(std::initializer_list<BNleptonCollection> collections);
@@ -78,7 +73,7 @@ private:
 };
 
 template<class collectionType>
-GenericCollection<collectionType>::GenericCollection(MiniAODHelper * bHelp) : bHelp(bHelp) {
+GenericCollection<collectionType>::GenericCollection(MiniAODHelper * mHelp) : mHelp(mHelp) {
   reset();
 }
 
@@ -124,7 +119,7 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventB
   reset();
   initializeRawItems(event, rawCollectionInstance);
 
-  items = bHelp->GetSortedByPt(items);
+  items = mHelp->GetSortedByPt(items);
 
   ptrToItems = &items;
 }
@@ -134,7 +129,7 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventB
 /*   reset(); */
 
 /*   rawItems = collection; */
-/*   items = bHelp->GetSortedByPt(collection); */
+/*   items = mHelp->GetSortedByPt(collection); */
 
 /*   ptrToItems = &items; */
 /* } */
@@ -198,7 +193,7 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventB
 template<class collectionType>
 void GenericCollection<collectionType>::keepSelectedParticles(electronID::electronID& ID) {
 
-  items = bHelp->GetSelectedElectrons(rawItems,0., ID);
+  items = mHelp->GetSelectedElectrons(rawItems,0., ID);
 
   ptrToItems = &items;
 }
@@ -206,10 +201,10 @@ void GenericCollection<collectionType>::keepSelectedParticles(electronID::electr
 template<class collectionType>
 void GenericCollection<collectionType>::keepSelectedParticles(muonID::muonID& ID) {
 
-  //  items = bHelp->GetSelectedMuons(rawItems, ID);
+  //  items = mHelp->GetSelectedMuons(rawItems, ID);
   //  std::float minPt = 0.;
   
-  items = bHelp->GetSelectedMuons(rawItems,0., ID);
+  items = mHelp->GetSelectedMuons(rawItems,0., ID);
 
   ptrToItems = &items;
 }
@@ -217,38 +212,38 @@ void GenericCollection<collectionType>::keepSelectedParticles(muonID::muonID& ID
 /* template<class BNtauCollection> */
 /* void GenericCollection<BNtauCollection>::keepSelectedParticles(tauID::tauID& ID) { */
 
-/*   items = bHelp->GetSelectedTaus(rawItems, ID); */
+/*   items = mHelp->GetSelectedTaus(rawItems, ID); */
 
 /*   ptrToItems = &items; */
 /* } */
 
 template<class collectionType>
 void GenericCollection<collectionType>::keepSelectedDifference(electronID::electronID& topID, electronID::electronID& bottomID) {
-  topCollection = bHelp->GetSelectedElectrons(rawItems,0., topID);
-  bottomCollection = bHelp->GetSelectedElectrons(rawItems,0., bottomID);
+  topCollection = mHelp->GetSelectedElectrons(rawItems,0., topID);
+  bottomCollection = mHelp->GetSelectedElectrons(rawItems,0., bottomID);
   
-  items = bHelp->GetDifference(topCollection, bottomCollection);
+  items = mHelp->GetDifference(topCollection, bottomCollection);
 
   ptrToItems = &items;
 }
 
-/* template<class BNmuonCollection> */
-/* void GenericCollection<BNmuonCollection>::keepSelectedDifference(muonID::muonID& topID, muonID::muonID& bottomID) { */
-/*   topCollection = bHelp->GetSelectedMuons(rawItems, topID); */
-/*   bottomCollection = bHelp->GetSelectedMuons(rawItems, bottomID); */
+template<class collectionType>
+void GenericCollection<collectionType>::keepSelectedDifference(muonID::muonID& topID, muonID::muonID& bottomID) {
+  topCollection = mHelp->GetSelectedMuons(rawItems,0., topID);
+  bottomCollection = mHelp->GetSelectedMuons(rawItems,0., bottomID);
 
-/*   items = bHelp->GetDifference(topCollection, bottomCollection); */
+  items = mHelp->GetDifference(topCollection, bottomCollection);
 
-/*   ptrToItems = &items; */
-/* } */
+  ptrToItems = &items;
+}
 
-/* template<class collectionType> */
-/* void GenericCollection<collectionType>::addUnion(std::initializer_list<collectionType> collections) { */
-/*   for (auto& collection: collections) { */
-/*     items = bHelp->GetUnion(items, collection); */
-/*   } */
-/*   ptrToItems = &items; */
-/* } */
+template<class collectionType>
+void GenericCollection<collectionType>::addUnion(std::initializer_list<collectionType> collections) {
+  for (auto& collection: collections) {
+    items = mHelp->GetUnion(items, collection);
+  }
+  ptrToItems = &items;
+}
 
 /* template<class BNleptonCollection> */
 /* void GenericCollection<BNleptonCollection>::pushBack(std::initializer_list<BNelectronCollection> collections) { */
@@ -348,26 +343,26 @@ void GenericCollection<collectionType>::keepSelectedDifference(electronID::elect
 
 /* template<class BNjetCollection> */
 /* void GenericCollection<BNjetCollection>::cleanJets(const BNleptonCollection& leptons, const double drCut = 0.5) { */
-/*   rawItems = bHelp->GetCleanJets(rawItems, leptons, drCut); */
+/*   rawItems = mHelp->GetCleanJets(rawItems, leptons, drCut); */
 /*   ptrToItems = &items; */
 /* } */
 
 /* template<class BNjetCollection> */
 /* void GenericCollection<BNjetCollection>::cleanJets_cProj(const BNleptonCollection& leptons, const double drCut = 0.5) { */
-/*   rawItems = bHelp->GetCleanJets_cProj(rawItems, leptons, drCut); */
+/*   rawItems = mHelp->GetCleanJets_cProj(rawItems, leptons, drCut); */
 /*   ptrToItems = &items; */
 /* } */
 
 /* template<class BNjetCollection> */
 /* void GenericCollection<BNjetCollection>::correctRawJets(sysType::sysType jetSyst) { */
-/*   rawItems = bHelp->GetCorrectedJets(rawItems, jetSyst); */
+/*   rawItems = mHelp->GetCorrectedJets(rawItems, jetSyst); */
 
 /*   ptrToItems = &items; */
 /* } */
 
 /* template<class BNjetCollection> */
 /* void GenericCollection<BNjetCollection>::keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP) { */
-/*   items = bHelp->GetSelectedJets(rawItems, ptCut, etaCut, ID, csvWP); */
+/*   items = mHelp->GetSelectedJets(rawItems, ptCut, etaCut, ID, csvWP); */
 
 /*   ptrToItems = &items; */
 /* } */
@@ -376,7 +371,7 @@ void GenericCollection<collectionType>::keepSelectedDifference(electronID::elect
 /* void GenericCollection<BNmetCollection>::getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType jetSyst) { */
 /*   items.clear(); */
 /*   //take the GenericCollection instead of the BNjetCollection to ensure we don't accidentally use the corrected jets */
-/*   BNmet tmpMet = bHelp->GetCorrectedMET(rawItems.at(0), jets.rawItems, jetSyst); */
+/*   BNmet tmpMet = mHelp->GetCorrectedMET(rawItems.at(0), jets.rawItems, jetSyst); */
 /*   items.push_back(tmpMet); */
 
 //  ptrToItems = &items;

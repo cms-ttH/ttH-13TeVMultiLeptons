@@ -21,6 +21,7 @@
 #include <TRandom3.h>
 #include <vector>
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
 ///-------------- Kinematic Variables ------------------
 //done
@@ -372,11 +373,11 @@ int main (int argc, char** argv) {
   // ---------------------------------------------
 
   
-   electronID::electronID electronTightID = electronID::electronTight;
-   electronID::electronID electronLooseID = electronID::electronLoose;
-   electronID::electronID electronPreselectedID = electronID::electronNoCuts;
-
-  //  muonID::muonID muonTightID = muonID::muonTight;
+  electronID::electronID electronTightID = electronID::electronTight;
+  electronID::electronID electronLooseID = electronID::electronLoose;
+  electronID::electronID electronPreselectedID = electronID::electronNoCuts;
+  
+  muonID::muonID muonTightID = muonID::muonTight;
   muonID::muonID muonLooseID = muonID::muonLoose;
   muonID::muonID muonPreselectedID = muonID::muonNoCuts;
 
@@ -388,9 +389,13 @@ int main (int argc, char** argv) {
   GenericCollection<pat::ElectronCollection> loosePreselectedElectrons(miniAODhelper);
   GenericCollection<pat::ElectronCollection> tightLoosePreselectedElectrons(miniAODhelper);
 
-
+  
+  GenericCollection<pat::MuonCollection> tightMuons(miniAODhelper);
+  GenericCollection<pat::MuonCollection> looseMuons(miniAODhelper);
+  GenericCollection<pat::MuonCollection> preselectedMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> tightLooseMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> tightLoosePreselectedMuons(miniAODhelper);
+
   GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
 
   //GenericColleciton<GenEventInfoProduct> events(miniAODhelper);
@@ -399,7 +404,6 @@ int main (int argc, char** argv) {
 
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
-
   // NECESSARY TO FILL LEPTON VALUES - DO NOT COMMENT OUT //
   // GenericCollectionMember<double, BNmuonCollection>
   //   allMuonPt(Reflex::Type::ByName("BNmuon"), &(tightLooseMuons.ptrToItems),
@@ -407,6 +411,7 @@ int main (int argc, char** argv) {
   // kinVars.push_back(&allMuonPt);
 
   //std::vector<pat:Muon>>
+
 
   GenericCollectionMember<double,std::vector<pat::Muon>> 
     allMuonPt(Reflex::Type::ByName("pat::Muon"), &(tightLooseMuons.ptrToItems),
@@ -417,6 +422,15 @@ int main (int argc, char** argv) {
     allElectronPt(Reflex::Type::ByName("pat::Electron"), &(tightLooseElectrons.ptrToItems),
               "pt_", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allElectronPt);
+
+
+  GenericCollectionSizeVariable<std::vector<pat::Muon>>
+    numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
+  kinVars.push_back(&numTightMuons);
+
+  GenericCollectionSizeVariable<std::vector<pat::Electron>>
+    numTightElectrons(&(tightElectrons.ptrToItems), "numTightElectrons");
+  kinVars.push_back(&numTightElectrons);
 
 
   
@@ -493,11 +507,16 @@ int main (int argc, char** argv) {
     preselectedElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
     preselectedElectrons.keepSelectedDifference(electronPreselectedID, electronLooseID);
     loosePreselectedElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
-    //    loosePreselectedElectrons.addUnion({looseElectrons.items, preselectedElectrons.items});
+    loosePreselectedElectrons.addUnion({looseElectrons.items, preselectedElectrons.items});
 
-    //    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsPFlow");
     tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "slimmedMuons");
     tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);
+    tightMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
+    tightMuons.keepSelectedParticles(muonTightID);
+    looseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
+    looseMuons.keepSelectedDifference(muonLooseID, muonTightID);
+    preselectedMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
+    preselectedMuons.keepSelectedDifference(muonPreselectedID, muonLooseID);
     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightLooseMuons.keepSelectedParticles(muonLooseID);
 
