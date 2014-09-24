@@ -9,9 +9,6 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 	cd CMSSW_7_0_7_patch1/src/
 	cmsenv	
 	git clone git@github.com:cms-ttH/MiniAOD.git
-	cd MiniAOD/
-	git checkout -b MultiLeptons	
-	cd -
 	git clone git@github.com:cms-ttH/ttHMultileptonAnalysis.git
 	cd ttHMultileptonAnalysis/
 	git checkout -b 13TeV
