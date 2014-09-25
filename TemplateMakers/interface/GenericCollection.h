@@ -17,6 +17,8 @@
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
+
 #define _GenericCollection_h
 
 template <class collectionType>
@@ -28,6 +30,8 @@ public:
   collectionType items;
   collectionType * ptrToItems;
   std::function<bool (collectionType)> selectionFunction;
+
+  lepton Lepton;
 
   GenericCollection(MiniAODHelper * mHelp);
   void initializeRawItems(edm::EventBase& event, string rawCollectionInstance);
@@ -54,13 +58,16 @@ public:
   //  void pushBack(const BNelectronCollection& electrons);
   //  void pushBack(const BNmuonCollection& muons);
   //  void pushBack(const BNleptonCollection& leptons);
-  //  void resetAndPushBack(const BNelectronCollection& electrons);
-  //  void resetAndPushBack(const BNmuonCollection& muons);
+
+  void resetAndPushBack(const std::vector<pat::Electron>& collection);
+
+  //  void resetAndPushBack(const std::vector<pat::Electron>& collection);
+  //void resetAndPushBack(const BNmuonCollection& muons);
   //  void resetAndPushBack(const BNleptonCollection& leptons);
   //  void pushBackAndSort(const BNelectronCollection& electrons);
-  //  void pushBackAndSort(const BNmuonCollection& muons);
+  //void pushBackAndSort(const BNmuonCollection& muons);
   //  void pushBackAndSort(const BNleptonCollection& leptons);
-  //  void cleanJets(const BNleptonCollection& leptons, const double drCut);
+  //void cleanJets(const BNleptonCollection& leptons, const double drCut);
   //  void cleanJets_cProj(const BNleptonCollection& leptons, const double drCut);
   //  void correctRawJets(sysType::sysType jetSyst=sysType::NA);
   //  void keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP);
@@ -293,13 +300,24 @@ void GenericCollection<collectionType>::addUnion(std::initializer_list<collectio
 /*   ptrToItems = &items; */
 /* } */
 
-/* template<class BNleptonCollection> */
-/* void GenericCollection<BNleptonCollection>::resetAndPushBack(const BNelectronCollection& electrons) { */
-/*   reset(); */
-/*   items.push_back(electrons); */
+template<class LeptonCollection>
+void GenericCollection<LeptonCollection>::resetAndPushBack(const std::vector<pat::Electron>& collection) {
+  reset();
+  
+  for( std::vector<pat::Electron>::const_iterator iobj = collection.begin(); iobj!=collection.end(); ++iobj ){
+ 
+    Lepton.pt = ptr(*iobj)->pt();
+    Lepton.px = ptr(*iobj)->px();
+    Lepton.py = ptr(*iobj)->py();
+    Lepton.pz = ptr(*iobj)->pz();
+    Lepton.energy = ptr(*iobj)->energy();
+    Lepton.eta = ptr(*iobj)->eta();
+    Lepton.phi = ptr(*iobj)->phi();
+    items.push_back(Lepton);    
 
-/*   ptrToItems = &items; */
-/* } */
+  }
+  ptrToItems = &items;
+}
 
 /* template<class BNleptonCollection> */
 /* void GenericCollection<BNleptonCollection>::resetAndPushBack(const BNmuonCollection& muons) { */

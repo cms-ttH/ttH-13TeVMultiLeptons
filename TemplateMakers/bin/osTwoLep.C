@@ -13,6 +13,13 @@
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
+#include "DataFormats/PatCandidates/interface/PATObject.h"
+#include "DataFormats/PatCandidates/interface/Particle.h"
+
+
+
+#include "DataFormats/Candidate/interface/Candidate.h"
+
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
 #include "TROOT.h"
 #include "TSystem.h"
@@ -23,6 +30,7 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 ///-------------- Kinematic Variables ------------------
 //done
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
@@ -44,6 +52,21 @@ bool isData;
 string analysisYear = "2012_53x";
 string sampleName;
 int sampleNumber;
+
+
+
+// struct lepton{
+  
+//   double px;
+//   double py;
+//   double pz;
+//   double energy;
+
+// }
+
+
+// typedef std::vector<std::vector<lepton>> LeptonCollection;
+
 
 void detectData(string sampleName) {
   isData = false;
@@ -404,6 +427,19 @@ int main (int argc, char** argv) {
   GenericCollection<pat::TauCollection> tightLooseTaus(miniAODhelper);
   GenericCollection<pat::TauCollection> tightLoosePreselectedTaus(miniAODhelper);
 
+  GenericCollection<LeptonCollection> tightLeptons(miniAODhelper);  
+  
+  //  GenericCollection<LeptonCollection> tightLeptons(miniAODhelper);
+
+  // GenericCollection<pat::JetCollection> jets(miniAODhelper);
+  // GenericCollection<pat::JetCollection> jets_30(miniAODhelper);
+  // GenericCollection<pat::JetCollection> jetsByCSV(miniAODhelper);
+  // GenericCollection<pat::JetCollection> looseCSVJets(miniAODhelper);
+  // GenericCollection<pat::JetCollection> mediumCSVJets(miniAODhelper);
+  // GenericCollection<pat::JetCollection> notMediumCSVJets(miniAODhelper);
+  // GenericCollection<pat::JetCollection> jets_fromHiggs(miniAODhelper);
+  // GenericCollection<pat::JetCollection> jets_fromHiggs_30(miniAODhelper);
+
   GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
 
   //GenericColleciton<GenEventInfoProduct> events(miniAODhelper);
@@ -466,7 +502,8 @@ int main (int argc, char** argv) {
   double maxd0 = 2.;
   int numpv = 0;
 
-
+  //std::vector<pat::Muon> *leptons;
+  
 
 
   for (ev.toBegin(); !ev.atEnd(); ++ev){
@@ -519,7 +556,7 @@ int main (int argc, char** argv) {
     preselectedElectrons.keepSelectedDifference(electronPreselectedID, electronLooseID);
     loosePreselectedElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
     loosePreselectedElectrons.addUnion({looseElectrons.items, preselectedElectrons.items});
-
+    
     tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "slimmedMuons");
     tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);
     tightMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
@@ -531,12 +568,46 @@ int main (int argc, char** argv) {
     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightLooseMuons.keepSelectedParticles(muonLooseID);
 
+    // for (pat::MuonCollection::const_iterator iMu = tightMuons.ptrToItems->begin(); iMu != tightMuons.ptrToItems->end(); ++iMu){
+    //   leptons->push_back(*iMu);
+    // }
+    // for (pat::ElectronCollection::const_iterator iMu = tightElectrons.ptrToItems->begin(); iMu != tightElectrons.ptrToItems->end(); ++iMu){
+    //   leptons->push_back(*iMu);
+    // }
+
+
     tightTaus.initializeRawItemsSortedByPt(ev, "slimmedTaus");
     tightTaus.keepSelectedParticles(tauTightID);
     tightLooseTaus.initializeRawItems(tightTaus.rawItems);
     tightLooseTaus.keepSelectedParticles(tauTightID);
     tightLoosePreselectedTaus.initializeRawItems(tightTaus.rawItems);
     tightLoosePreselectedTaus.keepSelectedParticles(tauPreselectedID);
+
+    
+    tightLeptons.resetAndPushBack(tightElectrons.items);
+    //tightLeptons.pushBack(tightMuons.items);
+
+    //    tightLeptons.resetAndPushBack(tightElectrons.items);
+    //    tightLeptons.pushBackAndSort(tightMuons.items);
+
+    // jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
+    // jets.cleanJets(tightLoosePreselectedLeptons.items);
+    // jets.correctRawJets(jetSyst);
+    // jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
+    // jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
+    // looseCSVJets.initializeRawItems(jets.rawItems);
+    // looseCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'L');
+    // mediumCSVJets.initializeRawItems(jets.rawItems);
+    // mediumCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'M');
+    // notMediumCSVJets.initializeRawItems(beanHelper->GetDifference(jets.items, mediumCSVJets.items));
+    // jets_30.initializeRawItems(jets.items);
+    // jets_30.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
+    // jets_fromHiggs.initializeRawItems(jets.items);
+    // auto jetGenPartonMotherId = [] (BNjet j) { return (j.genPartonMotherId == 25); };
+    // jets_fromHiggs.keepSelectedParticles(jetGenPartonMotherId);
+    // jets_fromHiggs_30.initializeRawItems(jets_30.items);
+    // jets_fromHiggs_30.keepSelectedParticles(jetGenPartonMotherId);
+
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;

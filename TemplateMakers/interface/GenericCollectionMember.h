@@ -55,6 +55,14 @@ public:
   //Reflex::Object getBaseObject (Reflex::Object& object, int index);
 };
 
+
+//////////////////////////////////////////////////////////////////
+////
+////
+////
+//////////////////////////////////////////////////////////////////
+
+
 template <class branchDataType, class collectionType>
 GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember (Reflex::Type rType, collectionType **selColl, string mem, string prefix,  branchDataType defval, int max):
   myClass(rType),
@@ -82,6 +90,14 @@ GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember
   reset();
 }
 
+//////////////////////////////////////////////////////////////////
+////
+////
+////
+//////////////////////////////////////////////////////////////////
+
+
+
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::reset () {
   for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
@@ -89,14 +105,22 @@ void GenericCollectionMember<branchDataType, collectionType>::reset () {
   }
   evaluatedThisEvent = false;
 }
-
+//////////////////////////////////////////////////////////////////
+////
+////
+////
+//////////////////////////////////////////////////////////////////
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::attachToTree  (TTree * inTree) {
   for (unsigned iVar = 0; iVar < myVars.size(); iVar++){
     inTree->Branch(myVars[iVar].branchName, &myVars[iVar].branchVal);
   }
 }
-
+//////////////////////////////////////////////////////////////////
+////
+////
+////
+//////////////////////////////////////////////////////////////////
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
   if (evaluatedThisEvent ) return;
@@ -115,18 +139,30 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
     }
   }
 }
-
+//////////////////////////////////////////////////////////////////
+////
+////
+////
+//////////////////////////////////////////////////////////////////
 template <class branchDataType, class collectionType>
 bool GenericCollectionMember<branchDataType, collectionType>::passCut () {
   return cutFunction(myVars);
 }
-
+//////////////////////////////////////////////////////////////////
+////
+////
+////
+//////////////////////////////////////////////////////////////////
 template <class branchDataType, class collectionType>
 template <typename functionType>
 void GenericCollectionMember<branchDataType, collectionType>::setCut (functionType function) {
   cutFunction = function;
 }
-
+//////////////////////////////////////////////////////////////////
+////
+////
+////
+//////////////////////////////////////////////////////////////////
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::print () {
   cout << "Printing GenericCollectionMember .... "
@@ -139,7 +175,11 @@ void GenericCollectionMember<branchDataType, collectionType>::print () {
   }
   cout << endl;
 }
-
+//////////////////////////////////////////////////////////////////
+////
+////
+////
+//////////////////////////////////////////////////////////////////
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::listAvailableMembers () {
   cout << "Data member size  " << myClass.DataMemberSize() << endl;
