@@ -1,14 +1,41 @@
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
+//new include items for miniAOD compatibility
+
+#include "DataFormats/BeamSpot/interface/BeamSpot.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/GenericParticle.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Lepton.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
+#include "DataFormats/PatCandidates/interface/Tau.h"
+
+#include "DataFormats/PatCandidates/interface/PATObject.h"
+#include "DataFormats/PatCandidates/interface/Particle.h"
+
+
+
+#include "DataFormats/Candidate/interface/Candidate.h"
+
+//#include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
+#include "TROOT.h"
+#include "TSystem.h"
+#include "TStyle.h"
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
+#include <TRandom3.h>
+#include <vector>
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
-
-
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 ///-------------- Kinematic Variables ------------------
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/EveryVariable.h"
+//done
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
-
-#include "BEAN/BEANmaker/interface/BtagWeight.h"
-#include "BEAN/BEANmaker/interface/BEANhelper.h"
+//needs work
+#include "MiniAOD/MiniAODHelper/interface/MiniAODHelper.h"
 
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"
@@ -20,42 +47,278 @@
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 
-void LeptonVarsThisAnalysis(BNmuonCollection& tightMuons, BNmuonCollection& tightLooseMuons,
-                            BNelectronCollection& tightElectrons, BNelectronCollection& tightLooseElectrons,
-                            int & TwoMuon, int & TwoElectron, int & MuonElectron, int & PassTwoLepton) {
+//define some global variables (probs not the best idea)!! 
+bool isData;
+string analysisYear = "2012_53x";
+string sampleName;
+int sampleNumber;
 
-    //Collection definitions set by muonID::muonID and electronID::electronID inside main function
-    unsigned numTightMuons = tightMuons.size();
-    unsigned numTightElectrons = tightElectrons.size();
-    unsigned numTightLooseMuons = tightLooseMuons.size();
-    unsigned numTightLooseElectrons = tightLooseElectrons.size();
 
-    TwoMuon = 0; TwoElectron = 0; MuonElectron = 0; PassTwoLepton = 0;
 
-    if ( numTightMuons >= 1 && numTightLooseMuons == 2 && numTightLooseElectrons == 0 ) TwoMuon = 1;
-    if ( numTightElectrons >= 1 && numTightLooseElectrons == 2 && numTightLooseMuons == 0 ) TwoElectron = 1;
-    if ( ( numTightMuons + numTightElectrons ) >= 1 && numTightLooseMuons == 1 && numTightLooseElectrons == 1 ) MuonElectron = 1;
-    if ( TwoMuon + TwoElectron + MuonElectron == 1 ) PassTwoLepton = 1;
+// struct lepton{
+  
+//   double px;
+//   double py;
+//   double pz;
+//   double energy;
 
-    return;
+// }
+
+
+// typedef std::vector<std::vector<lepton>> LeptonCollection;
+
+
+void detectData(string sampleName) {
+  isData = false;
+  string dataset = "MC";
+
+  if (TString(sampleName).Contains("DoubleElectron")) dataset = "DoubleElectron";
+  if (TString(sampleName).Contains("DoubleMu")) dataset = "DoubleMu";
+  if (TString(sampleName).Contains("MuEG")) dataset = "MuEG";
+  if (TString(sampleName).Contains("MET")) dataset = "MET";
+
+  if (dataset != "MC") {
+    std::cout << "CONFIG: DATA detected for sample " << sampleName << std::endl;
+    isData = true;
+  }
 }
 
-void getNumExtraPartons(BEANhelper * beanHelper, BNmcparticleCollection& mcParticles, int & numExtraPartons) {
+int convertSampleNameToNumber(string sampleName) {
+  sampleNumber = 999999;
+  double weight_Xsec = 1.0;
+  int nGen = 1;
+  float Xsec = 1.0;
 
-  numExtraPartons = beanHelper->GetNumExtraPartons(mcParticles);
+  // make a TString version of this so you can use it for contains
+  TString tmpName (sampleName);
 
-  return;
-} 
+  if (analysisYear == "2011") {
+    if (isData) sampleNumber = -1;
+    else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) sampleNumber = 2300; 
+    else if (sampleName == "zjets_lowmass") sampleNumber = 2310; 
+    else if (sampleName == "wjets") sampleNumber = 2400; 
+    else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) sampleNumber = 2500;
+    else if (sampleName == "ttbar_bb" ) sampleNumber = 2555; 
+    else if (sampleName == "ttbar_cc") sampleNumber = 2544; 
+    else if (tmpName.Contains("scaleup_ttbar")) sampleNumber = 2510; 
+    else if (tmpName.Contains("scaledown_ttbar")) sampleNumber = 2511; 
+    else if (sampleName == "ttbarZ") sampleNumber = 2523; 
+    else if (sampleName == "ttbarW") sampleNumber = 2524; 
+    else if (tmpName.Contains("singlet")) sampleNumber = 2600; 
+    else if (sampleName == "ww") sampleNumber = 2700; 
+    else if (sampleName == "wz") sampleNumber = 2701; 
+    else if (sampleName == "zz") sampleNumber = 2702; 
+    else if (tmpName.Contains("ttH")) sampleNumber = 120;
+    else assert (sampleName == "sampleName is not in the approved list");
+  }
+  else if (analysisYear == "2012_52x" || analysisYear == "2012_53x") {
+    if (isData) sampleNumber = -1;
+    else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) { sampleNumber = 2500;
+      nGen = 6912438+1362471; Xsec = 245.8; }
+    else if (sampleName == "ttbar_bb" || tmpName.Contains("ttbar_bb_part")) { sampleNumber = 2555;
+      nGen = 6912438+1362471; Xsec = 245.8; }
+    else if (sampleName == "ttbar_cc" || tmpName.Contains("ttbar_cc_part")) { sampleNumber = 2544;
+      nGen = 6912438+1362471; Xsec = 245.8; }
+    else if (sampleName == "ttbar_scaleup") sampleNumber = 2511; 
+    else if (sampleName == "ttbar_scaledown") sampleNumber = 2510; 
+    else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
+    else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
+    else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2566;
+      nGen = 31111456; Xsec = 0.457*245.8;
+      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2563;
+      nGen = 25327478; Xsec = 0.438*245.8;
+      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2533;
+      nGen = 12100452; Xsec = 0.105*245.8;
+      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
+      nGen = 31111456; Xsec = 0.457*245.8;
+      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_cc_lj" || tmpName.Contains("ttbar_cc_lj_part")) { sampleNumber = 2573;
+      nGen = 25327478; Xsec = 0.438*245.8;
+      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_cc_ll" || tmpName.Contains("ttbar_cc_ll_part")) { sampleNumber = 2543;
+      nGen = 12100452; Xsec = 0.105*245.8;
+      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_bb_jj" || tmpName.Contains("ttbar_bb_jj_part")) { sampleNumber = 2586;
+      nGen = 31111456; Xsec = 0.457*245.8;
+      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_bb_lj" || tmpName.Contains("ttbar_bb_lj_part")) { sampleNumber = 2583;
+      nGen = 25327478; Xsec = 0.438*245.8;
+      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) { sampleNumber = 2553;
+      nGen = 12100452; Xsec = 0.105*245.8;
+      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_b_jj" || tmpName.Contains("ttbar_b_jj_part")) { sampleNumber = 2596;
+      nGen = 31111456; Xsec = 0.457*245.8;
+      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_b_lj" || tmpName.Contains("ttbar_b_lj_part")) { sampleNumber = 2593;
+      nGen = 25327478; Xsec = 0.438*245.8;
+      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "ttbar_b_ll" || tmpName.Contains("ttbar_b_ll_part")) { sampleNumber = 2599;
+      nGen = 12100452; Xsec = 0.105*245.8;
+      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
+    else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) { sampleNumber = 2400;
+      nGen = 57536319; Xsec = 36257; }
+    else if (sampleName == "wjets_0p" || tmpName.Contains("wjets_0p_part")) { sampleNumber = 2400;
+      nGen = 57536319; Xsec = 36257; }
+    else if (sampleName == "wjets_1p" || tmpName.Contains("wjets_1p_part")) { sampleNumber = 2400;
+      nGen = 23134881; Xsec = 6440.4;
+      weight_Xsec = ( 5400.0 / 23134881 ) / ( 30400.0 / 57536319 ); }
+    else if (sampleName == "wjets_2p" || tmpName.Contains("wjets_2p_part")) { sampleNumber = 2400;
+      nGen = 33933328; Xsec = 2087.2;
+      weight_Xsec = ( 1750.0 / 339333285 ) / ( 30400.0 / 57536319 ); }
+    else if (sampleName == "wjets_3p" || tmpName.Contains("wjets_3p_part")) { sampleNumber = 2400;
+      nGen = 15463420; Xsec = 619.0;
+      weight_Xsec = ( 519.0 / 15463420 ) / ( 30400.0 / 57536319 ); }
+    else if (sampleName == "wjets_4p" || tmpName.Contains("wjets_4p_part")) { sampleNumber = 2400;
+      nGen = 13365439; Xsec = 255.2;
+      weight_Xsec = ( 214.0 / 13365439 ) / ( 30400.0 / 57536319 ); } 
+    else if (sampleName == "zjets_lowmass" || tmpName.Contains("zjets_lowmass_part")) { sampleNumber = 2850;
+      nGen = 37828841; Xsec = 14702; }
+    else if (sampleName == "zjets_lowmass_1p" || tmpName.Contains("zjets_lowmass_1p_part")) { sampleNumber = 2851;
+      weight_Xsec = ( 716.0 / 8039604 ) / ( 11050.0 / 37828841 ); }
+    else if (sampleName == "zjets_lowmass_2p" || tmpName.Contains("zjets_lowmass_2p_part")) { sampleNumber = 2852;
+      weight_Xsec = ( 309.7 / 30684442 ) / ( 11050.0 / 37828841 ); }
+    else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) { sampleNumber = 2800;
+      nGen =  30072710; Xsec = 3505.7; }
+    else if (sampleName == "zjets_0p" || tmpName.Contains("zjets_0p_part")) { sampleNumber = 2800;
+      nGen =  30072710; Xsec = 3505.7; }
+    else if (sampleName == "zjets_1p" || tmpName.Contains("zjets_1p_part")) { sampleNumber = 2801;
+      nGen = 24032562; Xsec = 666.7;
+      weight_Xsec = ( 561.0 / 24032562 ) / ( 2950.0 /  30072710 ); }
+    else if (sampleName == "zjets_2p" || tmpName.Contains("zjets_2p_part")) { sampleNumber = 2802;
+      nGen = 2350806; Xsec = 215.1;
+      weight_Xsec = ( 181.0 / 2350806 ) / ( 2950.0 /  30072710 ); }
+    else if (sampleName == "zjets_3p" || tmpName.Contains("zjets_3p_part")) { sampleNumber = 2803;
+      nGen = 10753491; Xsec = 66.07;
+      weight_Xsec = ( 55.6 / 10753491 ) / ( 2950.0 /  30072710 ); }
+    else if (sampleName == "zjets_4p" || tmpName.Contains("zjets_4p_part")) { sampleNumber = 2804;
+      nGen = 6370630; Xsec = 27.38;
+      weight_Xsec = ( 23.04 /6370630 ) / ( 2950.0 /  30072710 ); }
+    else if (sampleName == "singlet_s") { sampleNumber = 2600;
+      nGen = 259657; Xsec = 3.79; }
+    else if (sampleName == "singlet_s_ll") sampleNumber = 2630;
+    else if (sampleName == "singletbar_s") { sampleNumber = 2601;
+      nGen = 139835; Xsec = 1.76; }
+    else if (sampleName == "singletbar_s_ll") sampleNumber = 2631; 
+    else if (sampleName == "singlet_t") { sampleNumber = 2602;
+      nGen = 3744404; Xsec = 56.4; }
+    else if (sampleName == "singlet_t_ll") sampleNumber = 2632; 
+    else if (sampleName == "singletbar_t") { sampleNumber = 2603;
+      nGen = 1933504; Xsec = 30.7; }
+    else if (sampleName == "singletbar_t_ll") sampleNumber = 2633; 
+    else if (sampleName == "singlet_tW") { sampleNumber = 2604;
+      nGen = 496918; Xsec = 11.1; }
+    else if (sampleName == "singlet_tW_lj") sampleNumber = 2654; 
+    else if (sampleName == "singlet_tW_jl") sampleNumber = 2664; 
+    else if (sampleName == "singlet_tW_ll") sampleNumber = 2634; 
+    else if (sampleName == "singletbar_tW") { sampleNumber = 2605;
+      nGen = 492779; Xsec = 7.87; }
+    else if (sampleName == "singletbar_tW_lj") sampleNumber = 2655; 
+    else if (sampleName == "singletbar_tW_jl") sampleNumber = 2665; 
+    else if (sampleName == "singletbar_tW_ll") sampleNumber = 2635; 
+    else if (sampleName == "ww") { sampleNumber = 2700;
+      nGen = 9955089; Xsec = 54.8; }
+    else if (sampleName == "ww_ll") { sampleNumber = 2700;
+      nGen = 1931931; Xsec = 54.8*0.324*0.324; }
+    else if (sampleName == "www") { sampleNumber = 2710;
+      nGen = 220040; Xsec =  0.08217; }
+    else if (sampleName == "wwz") { sampleNumber = 2720;
+      nGen = 221576; Xsec = 0.0633; }
+    else if (sampleName == "wwG") { sampleNumber = 2720;
+      nGen = 94500; Xsec = 0.0000001; } //AWB incorrect values
+    else if (tmpName.Contains("wz") && !(tmpName.Contains("_ll") || tmpName.Contains("_lj"))) { sampleNumber = 2701;      
+      nGen = 9931257; Xsec = 32.3; }
+    else if (tmpName.Contains("wz") && tmpName.Contains("lll")) { sampleNumber = 2731;
+      nGen = 1987010; Xsec = 1.057*1.10; } 
+    else if (tmpName.Contains("wz") && tmpName.Contains("lljj")) { sampleNumber = 2761;
+      nGen = 3212461; Xsec = 32.3*0.101*(1-0.324); }
+    else if (tmpName.Contains("wz") && tmpName.Contains("ljj")) { sampleNumber = 2791;
+      nGen = 2906320; Xsec = 32.3*0.324*0.699; }
+    else if (sampleName == "wzz") { sampleNumber = 2721;
+      nGen = 219835; Xsec = 0.01922; } 
+    else if (tmpName.Contains("zz") && !tmpName.Contains("_ll")) { sampleNumber = 2702;
+      nGen = 9755621; Xsec = 7.7; }
+    else if (tmpName.Contains("zz") && tmpName.Contains("llll")) { sampleNumber = 2732;
+      nGen = 4804217; Xsec = 0.157*1.21; } //why is it not (7.7*0.101*0.101) * 1.21?
+    else if (tmpName.Contains("zz") && tmpName.Contains("lowmll")) { sampleNumber = 2732;
+      nGen = 4804217; Xsec = 0.157*1.21; } //Incorrect nGen and Xsec
+    else if (tmpName.Contains("zz") && tmpName.Contains("lljj")) { sampleNumber = 2762;
+      nGen = 1934806; Xsec = 7.7*2*0.101*0.699; }
+    else if (sampleName == "zzz") { sampleNumber = 2722;
+      nGen = 224519; Xsec = 0.004587; }
+    else if (sampleName == "ttbarW") { sampleNumber = 2524;
+      nGen = 195396; Xsec = 0.249; }
+    else if (sampleName == "ttbarWW") { sampleNumber = 2534;
+      nGen = 216867; Xsec = 0.002037; }
+    else if (sampleName == "ttbarZ") { sampleNumber = 2523;
+      nGen = 209512; Xsec = 0.206; }
+    else if (sampleName == "ttbarG") { sampleNumber = 2560;
+      nGen = 71405; Xsec = 1.444*1.8; } 
+    else if (sampleName == "ttbarGStar_ee") { sampleNumber = 2567;
+      nGen = 13517; Xsec = 1.5*0.02724*0.104; } 
+    else if (sampleName == "ttbarGStar_mm") { sampleNumber = 2568;
+      nGen = 8019; Xsec = 1.5*0.01233*0.141; }
+    else if (sampleName == "ttbarGStar_tt") { sampleNumber = 2569;
+      nGen = 17289; Xsec = 1.5*0.00133*0.038; } 
+    else if (sampleName == "tttt") { sampleNumber = 2525;
+      nGen = 99994; Xsec = 0.000716; }
+    else if (sampleName == "tbZ_ll") { sampleNumber = 2000;
+      nGen = 148158; Xsec = 0.0114; }
+    else if (sampleName == "WpWpqq") { sampleNumber = 2001;
+      nGen = 99700; Xsec = 0.2482; }
+    else if (sampleName == "WmWmqq") { sampleNumber = 2002;
+      nGen = 1; Xsec = 0.0889; } //Not yet processed
+    else if (sampleName == "WWDPI") { sampleNumber = 2003;
+      nGen = 833755; Xsec = 0.5879; }
+    else if (sampleName == "VH_tautau") { sampleNumber = 2915;
+      nGen = 200124; Xsec = 0.07717352; } 
+    else if (sampleName == "VH_TauMu") { sampleNumber = 2915; 
+      nGen = 200124; Xsec = 0.07717352; }
+    else if (sampleName == "VH_ZZ") { sampleNumber = 2923;
+      nGen = 500409; Xsec = 0.03223704; } 
+    else if (sampleName == "VH_WW") { sampleNumber = 2924;
+      nGen = 200408; Xsec = 0.2625365; } 
+    else if (tmpName.Contains("ttH") && analysisYear == "2012_52x") {
+      if (tmpName.Contains("FullSim")) sampleNumber = 8120;
+      else sampleNumber = 9120;
+    }
+    // hack hack hack to allow me to keep a separate list
+    // treat this as a regular sample
+    else if (sampleName == "ttbar_lj_passMva")  { sampleNumber = 2500;
+      nGen = 25165429; Xsec = 98.65;
+      weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 ));
+    } 
+    else if (tmpName.Contains("ttH") && analysisYear == "2012_53x") {
+      if (tmpName.Contains("_tautau")) { sampleNumber = 7120;
+        nGen = 992997; Xsec = 0.1302*0.1302; }
+      else if (tmpName.Contains("_bb")) { sampleNumber = 8120;
+        nGen = 980931; Xsec = 0.1302*0.577; }
+      else { sampleNumber = 9120;
+        nGen = 992997; Xsec = 0.1302; }
+    }
+    else assert (sampleName == "sampleName is not in the approved list");
+  }
+  else {
+    assert (analysisYear == "either 2012_52x, 2012_53x, or 2011");
+  }
+
+  if (tmpName.Contains("wz") || tmpName.Contains("zz")) {
+    if (tmpName.Contains("_lf")) sampleNumber = sampleNumber*10 + 1;
+    if (tmpName.Contains("_cc")) sampleNumber = sampleNumber*10 + 2;
+    if (tmpName.Contains("_bb")) sampleNumber = sampleNumber*10 + 4;
+    else if (tmpName.Contains("_b")) sampleNumber = sampleNumber*10 + 3;
+  }
+
+  std::cout << "CONFIG: Sample Name = " << sampleName
+            << ", sample Number = " << sampleNumber << endl;
   
-void ttPlusHFKeepEventFunction(BEANhelper * beanHelper, BNmcparticleCollection& mcParticles,
-                               BNjetCollection& jets, bool & ttPlusHFKeepEventBool) {
+  std::cout << weight_Xsec << nGen << Xsec << endl;
+  return sampleNumber;
+}
 
-  ttPlusHFKeepEventBool = beanHelper->ttPlusHFKeepEvent(mcParticles,
-                                                        jets);
-
-  return;
-} 
-  
 void safetyCheckJobOptions (int argc, char** argv) {
   std::cout << "--->Num argments provided at command line...  " << argc << std::endl;
   if (argc < 2) {
@@ -68,7 +331,6 @@ void safetyCheckJobOptions (int argc, char** argv) {
               << endl;
     exit (3);
   }
-
   return;
 }
 
@@ -86,14 +348,12 @@ JobParameters parseJobOptions (int argc, char** argv) {
   myConfig.outputFileName = outputs.getParameter < string > ("fileName");
   myConfig.sampleName = analysis.getParameter < string > ("sampleName");
   myConfig.jetSyst = inputs.getParameter < string > ("jetSyst");
-
   return myConfig;
 }
 
 int main (int argc, char** argv) {
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
-  //gSystem->Load("libNtupleMakerBEANmaker.so");
   AutoLibraryLoader::enable();
 
   int debug = 0; // levels of debug, 10 is large
@@ -108,17 +368,26 @@ int main (int argc, char** argv) {
 
   fwlite::ChainEvent ev(myConfig.inputFileNames);
 
-  HelperLeptonCore lepHelper;
-
   // setup the analysis
   // it comes from the lepHelper
-  BEANhelper * beanHelper = lepHelper.setupAnalysisParameters("2012_53x", myConfig.sampleName);
+
+  sampleName = myConfig.sampleName;
+  detectData(sampleName);
+  convertSampleNameToNumber(sampleName);
+  // initializePUReweighting();
+  
+  
+  MiniAODHelper * miniAODhelper = new MiniAODHelper();
+  miniAODhelper->SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
+
 
   sysType::sysType jetSyst = sysType::NA;
   if (myConfig.jetSyst == "NA") jetSyst = sysType::NA;
   else if (myConfig.jetSyst == "JESUp") jetSyst = sysType::JESup;
   else if (myConfig.jetSyst == "JESDown") jetSyst = sysType::JESdown;
   else std::cout << "No valid JES corrections specified - using nominal" << std::endl;
+  
+  std::cout << jetSyst << std::endl;
 
   // ---------------------------------------------
   // Note for future development: should these be
@@ -126,470 +395,93 @@ int main (int argc, char** argv) {
   // For now they are ok here
   // ---------------------------------------------
 
-  muonID::muonID muonTightID = muonID::muonTight;
-  muonID::muonID muonLooseID = muonID::muonLoose;
-  muonID::muonID muonPreselectedID = muonID::muonNoCuts;
+  
   electronID::electronID electronTightID = electronID::electronTight;
   electronID::electronID electronLooseID = electronID::electronLoose;
   electronID::electronID electronPreselectedID = electronID::electronNoCuts;
+  
+  muonID::muonID muonTightID = muonID::muonTight;
+  muonID::muonID muonLooseID = muonID::muonLoose;
+  muonID::muonID muonPreselectedID = muonID::muonNoCuts;
+
   tauID::tauID tauTightID = tauID::tauMedium;
-  //  tauID::tauID tauLooseID = tauID::tauVLoose;
+  // tauID::tauID tauLooseID = tauID::tauVLoose;
   tauID::tauID tauPreselectedID = tauID::tauNonIso;
 
-  // collections
-  GenericCollection<BNelectronCollection> tightElectrons(beanHelper);
-  GenericCollection<BNelectronCollection> looseElectrons(beanHelper);
-  GenericCollection<BNelectronCollection> preselectedElectrons(beanHelper);
-  GenericCollection<BNelectronCollection> tightLooseElectrons(beanHelper);
-  GenericCollection<BNelectronCollection> loosePreselectedElectrons(beanHelper);
-  GenericCollection<BNelectronCollection> tightLoosePreselectedElectrons(beanHelper);
 
-  GenericCollection<BNmuonCollection> tightMuons(beanHelper);
-  GenericCollection<BNmuonCollection> looseMuons(beanHelper);
-  GenericCollection<BNmuonCollection> preselectedMuons(beanHelper);
-  GenericCollection<BNmuonCollection> tightLooseMuons(beanHelper);
-  GenericCollection<BNmuonCollection> tightLoosePreselectedMuons(beanHelper);
+  //collections
+  GenericCollection<pat::ElectronCollection> tightElectrons(miniAODhelper);
+  GenericCollection<pat::ElectronCollection> looseElectrons(miniAODhelper);
+  GenericCollection<pat::ElectronCollection> preselectedElectrons(miniAODhelper);
+  GenericCollection<pat::ElectronCollection> tightLooseElectrons(miniAODhelper);
+  GenericCollection<pat::ElectronCollection> loosePreselectedElectrons(miniAODhelper);
+  GenericCollection<pat::ElectronCollection> tightLoosePreselectedElectrons(miniAODhelper);
+  
+  GenericCollection<pat::MuonCollection> tightMuons(miniAODhelper);
+  GenericCollection<pat::MuonCollection> looseMuons(miniAODhelper);
+  GenericCollection<pat::MuonCollection> preselectedMuons(miniAODhelper);
+  GenericCollection<pat::MuonCollection> tightLooseMuons(miniAODhelper);
+  GenericCollection<pat::MuonCollection> tightLoosePreselectedMuons(miniAODhelper);
 
-  GenericCollection<BNleptonCollection> tightLeptons(beanHelper);
-  GenericCollection<BNleptonCollection> looseLeptons(beanHelper);
-  GenericCollection<BNleptonCollection> preselectedLeptons(beanHelper);
-  GenericCollection<BNleptonCollection> tightLooseLeptons(beanHelper);
-  GenericCollection<BNleptonCollection> tightLoosePreselectedLeptons(beanHelper);
+  GenericCollection<pat::TauCollection> tightTaus(miniAODhelper);
+  GenericCollection<pat::TauCollection> tightLooseTaus(miniAODhelper);
+  GenericCollection<pat::TauCollection> tightLoosePreselectedTaus(miniAODhelper);
 
-//   GenericCollection<BNleptonCollection> tightLooseLeptons_fromHiggs(beanHelper); //failed to get working 
+  GenericCollection<LeptonCollection> tightLeptons(miniAODhelper);  
+  
+  //  GenericCollection<LeptonCollection> tightLeptons(miniAODhelper);
 
-  GenericCollection<BNtauCollection> tightTaus(beanHelper);
-  GenericCollection<BNtauCollection> tightLooseTaus(beanHelper);
-  GenericCollection<BNtauCollection> tightLoosePreselectedTaus(beanHelper);
+  // GenericCollection<pat::JetCollection> jets(miniAODhelper);
+  // GenericCollection<pat::JetCollection> jets_30(miniAODhelper);
+  // GenericCollection<pat::JetCollection> jetsByCSV(miniAODhelper);
+  // GenericCollection<pat::JetCollection> looseCSVJets(miniAODhelper);
+  // GenericCollection<pat::JetCollection> mediumCSVJets(miniAODhelper);
+  // GenericCollection<pat::JetCollection> notMediumCSVJets(miniAODhelper);
+  // GenericCollection<pat::JetCollection> jets_fromHiggs(miniAODhelper);
+  // GenericCollection<pat::JetCollection> jets_fromHiggs_30(miniAODhelper);
 
-  GenericCollection<BNjetCollection> jets(beanHelper);
-  GenericCollection<BNjetCollection> jets_30(beanHelper);
-  GenericCollection<BNjetCollection> jetsByCSV(beanHelper);
-  GenericCollection<BNjetCollection> looseCSVJets(beanHelper);
-  GenericCollection<BNjetCollection> mediumCSVJets(beanHelper);
-  GenericCollection<BNjetCollection> notMediumCSVJets(beanHelper);
+  GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
 
-  GenericCollection<BNjetCollection> jets_fromHiggs(beanHelper);
-  GenericCollection<BNjetCollection> jets_fromHiggs_30(beanHelper);
+  //GenericColleciton<GenEventInfoProduct> events(miniAODhelper);
 
-  GenericCollection<BNmetCollection> met(beanHelper);
-  GenericCollection<BNprimaryvertexCollection> primaryVertexes(beanHelper);
-  GenericCollection<BNtriggerCollection> hltCollection(beanHelper);
-  GenericCollection<BNeventCollection> events(beanHelper);
-  GenericCollection<BNmcparticleCollection> mcParticles(beanHelper);
 
-  GenericCollection<BNmcparticleCollection> genHiggsParticles(beanHelper);
-  GenericCollection<BNmcparticleCollection> genTopParticles(beanHelper);
-  GenericCollection<BNmcparticleCollection> genAntiTopParticles(beanHelper);
 
-  // declare your kinematic variables that you want
-  // to be written out into the tree
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
+  // NECESSARY TO FILL LEPTON VALUES - DO NOT COMMENT OUT //
+  // GenericCollectionMember<double, BNmuonCollection>
+  //   allMuonPt(Reflex::Type::ByName("BNmuon"), &(tightLooseMuons.ptrToItems),
+  //             "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  // kinVars.push_back(&allMuonPt);
+
+  //std::vector<pat:Muon>>
+
+  //////////////////////////////////////////////////////////////////////////////
+  ////
+  //// Add vars to tree
+  ////
+  //////////////////////////////////////////////////////////////////////////////
+
+  GenericCollectionMember<double,std::vector<pat::Muon>> 
+    allMuonPt(Reflex::Type::ByName("pat::Muon"), &(tightLooseMuons.ptrToItems),
+              "pt_", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allMuonPt);
+
+  GenericCollectionMember<double,std::vector<pat::Electron>> 
+    allElectronPt(Reflex::Type::ByName("pat::Electron"), &(tightLooseElectrons.ptrToItems),
+              "pt_", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allElectronPt);
 
 
-//   GenericCollectionSizeVariable<BNprimaryvertex> numPV(&(rawCollections.primaryVertexCollection), "numPV");
-//   kinVars.push_back(&numPV);
-  
-  GenericCollectionSizeVariable<BNjetCollection>
-    numJets(&(jets.ptrToItems), "numJets");
-  kinVars.push_back(&numJets);
-  numJets.setCutMin(2);
-  cutVars.push_back(&numJets);
-
-  GenericCollectionSizeVariable<BNjetCollection>
-    numJets_30(&(jets_30.ptrToItems), "numJets_30");
-  kinVars.push_back(&numJets_30);
-
-  GenericCollectionSizeVariable<BNjetCollection>
-    numJets_fromHiggs(&(jets_fromHiggs.ptrToItems), "numJets_fromHiggs");
-  kinVars.push_back(&numJets_fromHiggs);
-
-  GenericCollectionSizeVariable<BNjetCollection>
-    numJets_fromHiggs_30(&(jets_fromHiggs_30.ptrToItems), "numJets_fromHiggs_30");
-  kinVars.push_back(&numJets_fromHiggs_30);
-
-  //GenericCollectionSizeVariable<BNjetCollection>
-  //  numRawJets(&(rawJets.ptrToItems), "numRawJets");
-  //kinVars.push_back(&numRawJets);
-  
-  GenericCollectionSizeVariable<BNjetCollection>
-    numMediumBJets(&(mediumCSVJets.ptrToItems), "numMediumBJets");
-  kinVars.push_back(&numMediumBJets);
-
-  GenericCollectionSizeVariable<BNjetCollection>
-    numLooseBJets(&(looseCSVJets.ptrToItems), "numLooseBJets");
-  kinVars.push_back(&numLooseBJets);
-  
-  GenericCollectionSizeVariable<BNleptonCollection>
-    numTightLooseLeptons(&(tightLooseLeptons.ptrToItems), "numTightLooseLeptons");
-  kinVars.push_back(&numTightLooseLeptons);
-  numTightLooseLeptons.setCutMin(2);
-  cutVars.push_back(&numTightLooseLeptons);
-
-  GenericCollectionSizeVariable<BNleptonCollection>
-    numAllLeptons(&(tightLoosePreselectedLeptons.ptrToItems), "numAllLeptons");
-  kinVars.push_back(&numAllLeptons);
-
-  GenericCollectionSizeVariable<BNleptonCollection>
-    numTightLeptons(&(tightLeptons.ptrToItems), "numTightLeptons");
-  kinVars.push_back(&numTightLeptons);
-  numTightLeptons.setCutMin(1);
-  cutVars.push_back(&numTightLeptons);
-
-  GenericCollectionSizeVariable<BNmuonCollection>
+  GenericCollectionSizeVariable<std::vector<pat::Muon>>
     numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
   kinVars.push_back(&numTightMuons);
 
-  GenericCollectionSizeVariable<BNelectronCollection>
+  GenericCollectionSizeVariable<std::vector<pat::Electron>>
     numTightElectrons(&(tightElectrons.ptrToItems), "numTightElectrons");
   kinVars.push_back(&numTightElectrons);
 
-  CSVWeights
-    myCSV(beanHelper, &(jets.ptrToItems), jetSyst);
-  kinVars.push_back(&myCSV);
-
-  PUWeights
-    myPU(&lepHelper, &(events.ptrToItems));
-  kinVars.push_back(&myPU);
-
-  TopPtWeights
-    myTopPt(&lepHelper, &(mcParticles.ptrToItems));
-  kinVars.push_back(&myTopPt);
-
-  LeptonIDAndIsoScaleFactors
-    myLepIDAndIsoSF(&lepHelper, muonTightID, muonLooseID, electronTightID, electronLooseID,
-                    &(tightMuons.ptrToItems), &(looseMuons.ptrToItems),
-                    &(tightElectrons.ptrToItems), &(looseElectrons.ptrToItems));
-  kinVars.push_back(&myLepIDAndIsoSF);
-  
-  LeptonTriggerScaleFactors
-    myLepTrig(&lepHelper, &(tightMuons.ptrToItems), &(looseMuons.ptrToItems), &(preselectedMuons.ptrToItems),
-              &(tightElectrons.ptrToItems), &(looseElectrons.ptrToItems), &(preselectedElectrons.ptrToItems));
-  kinVars.push_back(&myLepTrig);
-  
-  CleanEventVars
-    myClean(&lepHelper, &(events.ptrToItems), &(primaryVertexes.ptrToItems));
-  kinVars.push_back(&myClean);
-  
-  CheckTwoLepTrigger
-    checkTrig(&lepHelper, &(hltCollection.ptrToItems));
-  kinVars.push_back(&checkTrig);
-  
-  //DBCorrectedRelIsoDR04s myDBCorrectedRelIsoDR04s(&lepHelper, 2);
-  //kinVars.push_back(&myDBCorrectedRelIsoDR04s);
- 
-   HiggsDecayType
-    myHiggsDecayType(&lepHelper, &(mcParticles.ptrToItems));
-  kinVars.push_back(&myHiggsDecayType);
-  
-  TwoObjectKinematic<BNleptonCollection,BNleptonCollection>
-    myMassLepLep("mass", "min", "mass_leplep",
-                 &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-                 &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
-  kinVars.push_back(&myMassLepLep);
-  
-  TwoObjectKinematic<BNleptonCollection,BNleptonCollection>
-    myZmass("mass", "closest_to", "Zmass",
-            &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-            &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-            91.2, "same_flavour");
-  kinVars.push_back(&myZmass);
-  
-  TwoObjectKinematic<BNleptonCollection,BNleptonCollection>
-    myDeltaRLepLep("deltaR", "min", "dR_leplep",
-                   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-                   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
-  kinVars.push_back(&myDeltaRLepLep);
-
-  TwoObjectKinematic<BNleptonCollection,BNleptonCollection>
-    myDeltaPhiLepLep("deltaPhi", "min", "dPhi_leplep",
-                   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-                   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
-  kinVars.push_back(&myDeltaPhiLepLep);
-  
-  TwoObjectKinematic<BNleptonCollection,BNjetCollection>
-    myMHT("pt", "vector_sum", "mht",
-          &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-          &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&myMHT);
-
-  ////////// Variables for BDT //////////
-  
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myMinDrJets("deltaR", "min", "min_dr_jets",
-                &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&myMinDrJets);
-  
-  TwoObjectKinematic<BNleptonCollection,BNjetCollection>
-    mySumPt("pt", "sum", "sum_pt",
-            &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-            &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&mySumPt);
-
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    mySumJetPt("pt", "sum", "sum_jet_pt",
-               &(jets.ptrToItems), "jets_by_pt", 1, 99,
-               &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&mySumJetPt);
-
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    mySumJetMass("mass", "vector_sum", "sum_jet_mass",
-                 &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                 &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&mySumJetMass);
-
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    mySumNonTaggedJetMass("mass", "vector_sum", "sum_non_tagged_jet_mass",
-                          &(notMediumCSVJets.ptrToItems), "untagged_jets_by_pt", 1, 99,
-                          &(notMediumCSVJets.ptrToItems), "untagged_jets_by_pt", 1, 99);
-  kinVars.push_back(&mySumNonTaggedJetMass);
-
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myWLikeDijetMass81("mass", "closest_to", "WLike_dijet_mass",
-                       &(notMediumCSVJets.ptrToItems), "untagged_jets_by_pt", 1, 99,
-                       &(notMediumCSVJets.ptrToItems), "untagged_jets_by_pt", 1, 99,
-                       81);
-  kinVars.push_back(&myWLikeDijetMass81);
-
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myDeltaPhiJets_FromHiggs("deltaPhi", "min", "dPhi_jets_fromHiggs",
-                             &(jets_fromHiggs.ptrToItems), "jets_fromHiggs_by_pt", 1, 99,
-                             &(jets_fromHiggs.ptrToItems), "jets_fromHiggs_by_pt", 1, 99);
-  kinVars.push_back(&myDeltaPhiJets_FromHiggs);
-  
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myDeltaRJets_FromHiggs("deltaR", "min", "dR_jets_fromHiggs",
-                           &(jets_fromHiggs.ptrToItems), "jets_fromHiggs_by_pt", 1, 99,
-                           &(jets_fromHiggs.ptrToItems), "jets_fromHiggs_by_pt", 1, 99);
-  kinVars.push_back(&myDeltaRJets_FromHiggs);
-  
-  TwoObjectKinematic<BNmetCollection,BNleptonCollection>
-    myDeltaPhiMetLep1("deltaPhi", "min", "dPhi_met_lep1",
-                      &(met.ptrToItems), "met", 1, 1,
-                      &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 1);
-  kinVars.push_back(&myDeltaPhiMetLep1);
-  
-  TwoObjectKinematic<BNmetCollection,BNleptonCollection>
-    myDeltaPhiMetLep2("deltaPhi", "min", "dPhi_met_lep2",
-                      &(met.ptrToItems), "met", 1, 1,
-                      &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 2, 2);
-  kinVars.push_back(&myDeltaPhiMetLep2);
-
-  TwoObjectKinematic<BNmetCollection,BNjetCollection>
-    myMinDeltaPhiMetJet("deltaPhi", "min", "min_dPhi_metjet",
-                        &(met.ptrToItems), "met", 1, 99,
-                        &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&myMinDeltaPhiMetJet);
-
-  TwoObjectKinematic<BNmetCollection,BNjetCollection>
-    myMaxDeltaPhiMetJet("deltaPhi", "max", "max_dPhi_metjet",
-                        &(met.ptrToItems), "met", 1, 99,
-                        &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&myMaxDeltaPhiMetJet);
-  
-  TwoObjectKinematic<BNmetCollection,BNjetCollection>
-    myMinDeltaPhiMetJet_fromHiggs("deltaPhi", "min", "min_dPhi_metjet_fromHiggs",
-                        &(met.ptrToItems), "met", 1, 99,
-                        &(jets_fromHiggs.ptrToItems), "jets_fromHiggs_by_pt", 1, 99);
-  kinVars.push_back(&myMinDeltaPhiMetJet_fromHiggs);
-
-  TwoObjectKinematic<BNmetCollection,BNjetCollection>
-    myMaxDeltaPhiMetJet_fromHiggs("deltaPhi", "max", "max_dPhi_metjet_fromHiggs",
-                        &(met.ptrToItems), "met", 1, 99,
-                        &(jets_fromHiggs.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&myMaxDeltaPhiMetJet_fromHiggs);
-
-  ThreeObjectKinematic<BNleptonCollection, BNleptonCollection, BNmetCollection>
-    myMassMetLepLep("mass", "min", "mass_met_leplep",
-                    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 1,
-                    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 2, 2,
-                    &(met.ptrToItems), "met", 1, 1);
-  kinVars.push_back(&myMassMetLepLep);
-  
-  ThreeObjectKinematic<BNleptonCollection, BNleptonCollection, BNmetCollection>
-    myMTMetLepLep("MT", "min", "MT_met_leplep",
-                    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 1,
-                    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 2, 2,
-                    &(met.ptrToItems), "met", 1, 1);
-  kinVars.push_back(&myMTMetLepLep);
-  
-  ThreeObjectKinematic<BNleptonCollection, BNleptonCollection, BNmetCollection>
-    myDeltaRMetLepLep("deltaR", "min", "dR_met_leplep",
-                      &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 1,
-                      &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 2, 2,
-                      &(met.ptrToItems), "met", 1, 1);
-  kinVars.push_back(&myDeltaRMetLepLep);
-  
-  ThreeObjectKinematic<BNleptonCollection, BNleptonCollection, BNmetCollection>
-    myDeltaPhiMetLepLep("deltaPhi", "min", "dPhi_met_leplep",
-                        &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 1,
-                        &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 2, 2,
-                        &(met.ptrToItems), "met", 1, 1);
-  kinVars.push_back(&myDeltaPhiMetLepLep);
-  
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myGenHiggsDijetMass("mass", "min", "genHiggs_dijet_mass",
-                        &(jets_fromHiggs.ptrToItems), "jets_by_pt", 1, 1,
-                        &(jets_fromHiggs.ptrToItems), "jets_by_pt", 2, 2);
-  kinVars.push_back(&myGenHiggsDijetMass);
-  
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myHiggsLikeDijetMass("mass", "closest_to", "higgsLike_dijet_mass",
-                         &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                         &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                         115.0);
-  kinVars.push_back(&myHiggsLikeDijetMass);
-  
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myHiggsLikeDijetMass2("mass", "second_closest_to", "higgsLike_dijet_mass2",
-                          &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                          &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                          115.0);
-  kinVars.push_back(&myHiggsLikeDijetMass2);
-
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myNumJetsFloat("eta", "num_within", "numJets_float",
-                   &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                   &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                   0.0, "", "", 5.0);
-  kinVars.push_back(&myNumJetsFloat);
-
-  TwoObjectKinematic<BNjetCollection,BNjetCollection>
-    myNumHiggsLikeDijet15("mass", "num_within", "numHiggsLike_dijet_15_float",
-                          &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                          &(jets.ptrToItems), "jets_by_pt", 1, 99,
-                          115.0, "", "", 15.0);
-  kinVars.push_back(&myNumHiggsLikeDijet15);
-  
-  TwoJetVariables
-    myAvgBtagDiscBtags("CSV", "avg", "avg_btag_disc_btags",
-                       &(mediumCSVJets.ptrToItems), "medium_bjets_by_pt", 1, 99,
-                       &(mediumCSVJets.ptrToItems), "medium_bjets_by_pt", 1, 99);
-  kinVars.push_back(&myAvgBtagDiscBtags);
-  
-  TwoJetVariables
-    myAvgBtagDiscNonBtags("CSV", "avg", "avg_btag_disc_non_btags",
-                          &(notMediumCSVJets.ptrToItems), "not_medium_bjets_by_pt", 1, 99,
-                          &(notMediumCSVJets.ptrToItems), "not_medium_bjets_by_pt", 1, 99);
-  kinVars.push_back(&myAvgBtagDiscNonBtags);
-
-  ////////// all leptons //////////
-  GenericCollectionMember<double, BNleptonCollection>
-    allLeptonPt(Reflex::Type::ByName("BNlepton"), &(tightLooseLeptons.ptrToItems),
-                "pt", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&allLeptonPt);
-  
-  GenericCollectionMember<double, BNleptonCollection>
-    allLeptonEta(Reflex::Type::ByName("BNlepton"), &(tightLooseLeptons.ptrToItems),
-                 "eta", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&allLeptonEta);
-  
-  GenericCollectionMember<int, BNleptonCollection>
-    allLeptonTkCharge(Reflex::Type::ByName("BNlepton"), &(tightLooseLeptons.ptrToItems),
-                      "tkCharge", "leptons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
-  kinVars.push_back(&allLeptonTkCharge);
-
-  GenericCollectionMember<int, BNleptonCollection>
-    allLeptonGenMotherId(Reflex::Type::ByName("BNlepton"), &(tightLooseLeptons.ptrToItems),
-                         "genMotherId", "leptons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
-  kinVars.push_back(&allLeptonGenMotherId);
-
-  GenericCollectionMember<int, BNleptonCollection>
-    allLeptonGenGrandMotherId(Reflex::Type::ByName("BNlepton"), &(tightLooseLeptons.ptrToItems),
-                              "genGrandMother00Id", "leptons_by_pt",  KinematicVariableConstants::INT_INIT, 2);
-  kinVars.push_back(&allLeptonGenGrandMotherId);
-  
-  // NECESSARY TO ACTUALLY FILL LEPTON VALUES - DO NOT COMMENT OUT //
-  GenericCollectionMember<double, BNmuonCollection>
-    allMuonPt(Reflex::Type::ByName("BNmuon"), &(tightLooseMuons.ptrToItems),
-              "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&allMuonPt);
-  
-  GenericCollectionMember<double, BNelectronCollection>
-    allElectronPt(Reflex::Type::ByName("BNelectron"), &(tightLooseElectrons.ptrToItems),
-                  "pt", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  kinVars.push_back(&allElectronPt);
-  
-  ////////// all jets //////////
-  GenericCollectionMember<double, BNjetCollection>
-    allJetPt(Reflex::Type::ByName("BNjet"), &(jets.ptrToItems),
-             "pt", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-  kinVars.push_back(&allJetPt);
-
-  GenericCollectionMember<double, BNjetCollection>
-    allJetEta(Reflex::Type::ByName("BNjet"), &(jets.ptrToItems),
-              "eta", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-  kinVars.push_back(&allJetEta);
-
-  GenericCollectionMember<double, BNjetCollection>
-    allJetCSV(Reflex::Type::ByName("BNjet"),  &(jets.ptrToItems),
-              "btagCombinedSecVertex", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-  kinVars.push_back(&allJetCSV);
-
-  ////////// met //////////
-  GenericCollectionMember<double, BNmetCollection>
-    metPt(Reflex::Type::ByName("BNmet"),  &(met.ptrToItems),
-          "pt", "met",  KinematicVariableConstants::FLOAT_INIT, 1);
-  kinVars.push_back(&metPt);
-
-  ////////// manual variables //////////
-  int TwoMuon = 0;
-  int TwoElectron = 0;
-  int MuonElectron = 0;
-  int PassTwoLepton = 0;
-  Char_t *dataset = (Char_t *)lepHelper.dataset.c_str();
-
-  int sampleNumber = (int)lepHelper.sampleNumber;
-  double weight_Xsec = (double)lepHelper.weight_Xsec;
-  int nGen = (int)lepHelper.nGen;
-  double Xsec = (double)lepHelper.Xsec;
-  summaryTree->Branch("sampleNumber", &sampleNumber);
-  summaryTree->Branch("weight_Xsec", &weight_Xsec);
-  summaryTree->Branch("nGen", &nGen);
-  summaryTree->Branch("Xsec", &Xsec);
-
-  summaryTree->Branch("TwoMuon", &TwoMuon);
-  summaryTree->Branch("TwoElectron", &TwoElectron);
-  summaryTree->Branch("MuonElectron", &MuonElectron);
-  summaryTree->Branch("PassTwoLepton", &PassTwoLepton);
-  summaryTree->Branch("dataset", (void*)dataset, "dataset/C");
-
-  int numExtraPartons = -99;
-  summaryTree->Branch("numExtraPartons", &numExtraPartons);
-
-  bool ttPlusHFKeepEventBool = false;
-  
-  ////////// event info //////////
-  GenericCollectionMember<unsigned, BNeventCollection>
-    runNumber(Reflex::Type::ByName("BNevent"), &(events.ptrToItems),
-              "run", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
-  kinVars.push_back(&runNumber);
-
-  GenericCollectionMember<unsigned, BNeventCollection>
-    lumiBlock(Reflex::Type::ByName("BNevent"), &(events.ptrToItems),
-              "lumi", "eventInfo",  KinematicVariableConstants::UINT_INIT, 1);
-  kinVars.push_back(&lumiBlock);
-  
-  // this is a long inside BNevent
-  // just using keyword long won't work
-  // needs to be Long64_t 
-  GenericCollectionMember<Long64_t, BNeventCollection>
-    eventNumber(Reflex::Type::ByName("BNevent"),  &(events.ptrToItems),
-                "evt", "eventInfo",  KinematicVariableConstants::INT_INIT, 1);
-  kinVars.push_back(&eventNumber);
-
-  ////////// variables from functions //////////
-  PassZmask myPassZmask(&myZmass, &myMHT, &metPt);
-  kinVars.push_back(&myPassZmask);
-  myPassZmask.setCut("PassZmask_mht");
-  cutVars.push_back(&myPassZmask);
-
-  FinalBDT_OS_2012 myFinalBDT_OS_2012(&myMinDrJets, &mySumPt, &myAvgBtagDiscBtags, &myAvgBtagDiscNonBtags,
-                                      &myHiggsLikeDijetMass, &myHiggsLikeDijetMass2, &myNumJetsFloat, &myNumHiggsLikeDijet15);
-  kinVars.push_back(&myFinalBDT_OS_2012);
-
+    
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
        iVar != kinVars.end();
@@ -602,6 +494,17 @@ int main (int argc, char** argv) {
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
   int printEvery = 1000;
+  
+  //vars for vertex loop
+  reco::Vertex vertex;
+  double minNDOF = 4.0;
+  double maxAbsZ = 24.0;
+  double maxd0 = 2.;
+  int numpv = 0;
+
+  //std::vector<pat::Muon> *leptons;
+  
+
 
   for (ev.toBegin(); !ev.atEnd(); ++ev){
     numEvents++;
@@ -612,16 +515,36 @@ int main (int argc, char** argv) {
       cout << "Processing event.... " << numEvents << endl;
 
     if (debug > 9) cout << "---------->>>>>> Event " << numEvents << endl;
-
-
+    ////////////////////////////////////////////////////////////
+    //
+    // count pvs for miniAODhelper
+    //
+    ////////////////////////////////////////////////////////////
+    primaryVertices.initializeRawItems(ev,"offlineSlimmedPrimaryVertices");
+    numpv = 0;
+    for (reco::VertexCollection::const_iterator iPV = primaryVertices.ptrToItems->begin(); iPV != primaryVertices.ptrToItems->end(); ++iPV){
+      bool isGood = ( !(iPV->isFake()) &&
+		     (iPV->ndof() >= minNDOF) &&
+		     (abs(iPV->z()) <= maxAbsZ) &&
+		     (abs(iPV->position().Rho()) <= maxd0)
+		     );
+      if ( !isGood ) continue;
+      if ( numpv == 0 ) vertex = *iPV;
+      numpv++;
+    }
+    
+    //cout << "numpv = " << numpv << endl;
+    if ( numpv > 0 ){
+      //cout << "setting vertex, numpv > 0" << endl;
+      miniAODhelper->SetVertex(vertex);
+    }
     /////////////////////////////////////////////////////////////
     //
     //    Initialize collections and apply object ids
     //
     //////////////////////////////////////////////////////////////   
-    tightLoosePreselectedElectrons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatElectronsPFlow");
-    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatMuonsPFlow");
-
+    //    events.initializeRawItems(ev,"generator");
+    tightLoosePreselectedElectrons.initializeRawItemsSortedByPt(ev,"slimmedElectrons");
     tightLoosePreselectedElectrons.keepSelectedParticles(electronPreselectedID);
     tightElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
     tightElectrons.keepSelectedParticles(electronTightID);
@@ -633,7 +556,8 @@ int main (int argc, char** argv) {
     preselectedElectrons.keepSelectedDifference(electronPreselectedID, electronLooseID);
     loosePreselectedElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
     loosePreselectedElectrons.addUnion({looseElectrons.items, preselectedElectrons.items});
-
+    
+    tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "slimmedMuons");
     tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);
     tightMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightMuons.keepSelectedParticles(muonTightID);
@@ -644,63 +568,45 @@ int main (int argc, char** argv) {
     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightLooseMuons.keepSelectedParticles(muonLooseID);
 
-// Require reset before first pushback to avoid keeping leptons from previous event
-    tightLeptons.resetAndPushBack(tightElectrons.items);
-    tightLeptons.pushBackAndSort(tightMuons.items);
-    looseLeptons.resetAndPushBack(looseElectrons.items);
-    looseLeptons.pushBackAndSort(looseMuons.items);
-    preselectedLeptons.resetAndPushBack(preselectedElectrons.items);
-    preselectedLeptons.pushBackAndSort(preselectedMuons.items);
-    tightLooseLeptons.resetAndPushBack(tightLooseElectrons.items);
-    tightLooseLeptons.pushBackAndSort(tightLooseMuons.items);
-    tightLoosePreselectedLeptons.resetAndPushBack(tightLoosePreselectedElectrons.items);
-    tightLoosePreselectedLeptons.pushBackAndSort(tightLoosePreselectedMuons.items);
+    // for (pat::MuonCollection::const_iterator iMu = tightMuons.ptrToItems->begin(); iMu != tightMuons.ptrToItems->end(); ++iMu){
+    //   leptons->push_back(*iMu);
+    // }
+    // for (pat::ElectronCollection::const_iterator iMu = tightElectrons.ptrToItems->begin(); iMu != tightElectrons.ptrToItems->end(); ++iMu){
+    //   leptons->push_back(*iMu);
+    // }
 
-//     tightLooseLeptons_fromHiggs.initializeRawItems(tightLooseLeptons.items);
-//     auto lepGenMotherId = [] (BNlepton l) { return (l.genMotherId == 25); }; //failed to get working
-//     tightLooseLeptons_fromHiggs.keepSelectedParticles(lepGenMotherId);
 
-    tightTaus.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatTaus");
+    tightTaus.initializeRawItemsSortedByPt(ev, "slimmedTaus");
     tightTaus.keepSelectedParticles(tauTightID);
     tightLooseTaus.initializeRawItems(tightTaus.rawItems);
     tightLooseTaus.keepSelectedParticles(tauTightID);
     tightLoosePreselectedTaus.initializeRawItems(tightTaus.rawItems);
     tightLoosePreselectedTaus.keepSelectedParticles(tauPreselectedID);
 
-    jets.initializeRawItemsSortedByPt(ev, "BNproducer","selectedPatJetsPFlow");
-    jets.cleanJets(tightLoosePreselectedLeptons.items);
-    jets.correctRawJets(jetSyst);
-    jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
-    jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
-    looseCSVJets.initializeRawItems(jets.rawItems);
-    looseCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'L');
-    mediumCSVJets.initializeRawItems(jets.rawItems);
-    mediumCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'M');
-    notMediumCSVJets.initializeRawItems(beanHelper->GetDifference(jets.items, mediumCSVJets.items));
+    
+    tightLeptons.resetAndPushBack(tightElectrons.items);
+    //tightLeptons.pushBack(tightMuons.items);
 
-    jets_30.initializeRawItems(jets.items);
-    jets_30.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
-    jets_fromHiggs.initializeRawItems(jets.items);
-    auto jetGenPartonMotherId = [] (BNjet j) { return (j.genPartonMotherId == 25); };
-    jets_fromHiggs.keepSelectedParticles(jetGenPartonMotherId);
-    jets_fromHiggs_30.initializeRawItems(jets_30.items);
-    jets_fromHiggs_30.keepSelectedParticles(jetGenPartonMotherId);
+    //    tightLeptons.resetAndPushBack(tightElectrons.items);
+    //    tightLeptons.pushBackAndSort(tightMuons.items);
 
-    met.initializeRawItems(ev, "BNproducer","patMETsPFlow");
-    met.getCorrectedMet(jets);
-    events.initializeRawItems(ev, "BNproducer", "");
-    mcParticles.initializeRawItems(ev, "BNproducer", "MCstatus3");
-    primaryVertexes.initializeRawItems(ev, "BNproducer","offlinePrimaryVertices");
-    hltCollection.initializeRawItems(ev, "BNproducer", "HLT");
-
-    genHiggsParticles.initializeRawItems(mcParticles.rawItems);
-    auto higgsPDGID = [] (BNmcparticle p) { return (p.id == 25); };
-    genHiggsParticles.keepSelectedParticles(higgsPDGID);
-    genTopParticles.initializeRawItems(mcParticles.rawItems);
-    auto topPDGID = [] (BNmcparticle p) { return (p.id == 6); };
-    genTopParticles.keepSelectedParticles(topPDGID);
-    genAntiTopParticles.initializeRawItems(mcParticles.rawItems);
-    auto antitopPDGID = [] (BNmcparticle p) { return (p.id == -6); };
+    // jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
+    // jets.cleanJets(tightLoosePreselectedLeptons.items);
+    // jets.correctRawJets(jetSyst);
+    // jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
+    // jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
+    // looseCSVJets.initializeRawItems(jets.rawItems);
+    // looseCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'L');
+    // mediumCSVJets.initializeRawItems(jets.rawItems);
+    // mediumCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'M');
+    // notMediumCSVJets.initializeRawItems(beanHelper->GetDifference(jets.items, mediumCSVJets.items));
+    // jets_30.initializeRawItems(jets.items);
+    // jets_30.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
+    // jets_fromHiggs.initializeRawItems(jets.items);
+    // auto jetGenPartonMotherId = [] (BNjet j) { return (j.genPartonMotherId == 25); };
+    // jets_fromHiggs.keepSelectedParticles(jetGenPartonMotherId);
+    // jets_fromHiggs_30.initializeRawItems(jets_30.items);
+    // jets_fromHiggs_30.keepSelectedParticles(jetGenPartonMotherId);
 
 
     // reset all the vars
@@ -739,7 +645,6 @@ int main (int argc, char** argv) {
     for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
          iVar != kinVars.end();
          iVar++) {
-
       (*iVar)->evaluate();
     }
 
@@ -753,29 +658,6 @@ int main (int argc, char** argv) {
       }
     }
 
-    // Get manual variables
-    LeptonVarsThisAnalysis(tightMuons.items, tightLooseMuons.items, tightElectrons.items, tightLooseElectrons.items,
-                           TwoMuon, TwoElectron, MuonElectron, PassTwoLepton);
-
-    getNumExtraPartons(beanHelper, mcParticles.items, numExtraPartons);
-    if (myConfig.sampleName.find("_0p") != std::string::npos) { //0 parton samples
-      //Cut to require 0 partons
-      if (numExtraPartons != 0) {
-        numEventsFailCuts++;
-        numEventsPassCuts--;
-        continue; //Don't go on to fill tree with this event
-      }
-    }
-
-    if (myConfig.sampleName == "ttbar" || myConfig.sampleName.find("ttbar_") != std::string::npos ) { //ttbar samples
-      ttPlusHFKeepEventFunction(beanHelper, mcParticles.items, jets.items, ttPlusHFKeepEventBool);
-      if (!ttPlusHFKeepEventBool) {
-        numEventsFailCuts++;
-        numEventsPassCuts--;
-        continue; //Don't go on to fill tree with this event
-      }
-    }
-    
     // Fill the trees
     if (debug > 9) cout << "Filling tree "  << endl;
     summaryTree->Fill();

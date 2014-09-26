@@ -29,6 +29,7 @@ ttH115
 ttH120
 ttH122p5
 ttH125
+ttH125_miniAOD
 ttH127p5
 ttH130
 ttH135
