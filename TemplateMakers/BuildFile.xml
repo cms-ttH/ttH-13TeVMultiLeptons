@@ -1,5 +1,5 @@
-<use name="BEAN/Collections"/>
-<use name="BEAN/BEANmaker"/>
+<!--<use name="BEAN/Collections"/>
+<use name="BEAN/BEANmaker"/>!-->
 <use name="CommonTools/Utils"/>
 <use name="DataFormats/FWLite"/>
 <use name="DataFormats/Math"/>
