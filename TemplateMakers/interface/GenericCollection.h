@@ -60,6 +60,7 @@ public:
   //  void pushBack(const BNleptonCollection& leptons);
 
   void resetAndPushBack(const std::vector<pat::Electron>& collection);
+  void pushBackAndSort(const std::vector<pat::Muon>& collection);
 
   //  void resetAndPushBack(const std::vector<pat::Electron>& collection);
   //void resetAndPushBack(const BNmuonCollection& muons);
@@ -318,6 +319,28 @@ void GenericCollection<LeptonCollection>::resetAndPushBack(const std::vector<pat
   }
   ptrToItems = &items;
 }
+
+template<class LeptonCollection>
+void GenericCollection<LeptonCollection>::pushBackAndSort(const std::vector<pat::Muon>& collection) {
+
+  for( std::vector<pat::Muon>::const_iterator iobj = collection.begin(); iobj!=collection.end(); ++iobj ){
+    
+    Lepton.pt = ptr(*iobj)->pt();
+    Lepton.px = ptr(*iobj)->px();
+    Lepton.py = ptr(*iobj)->py();
+    Lepton.pz = ptr(*iobj)->pz();
+    Lepton.energy = ptr(*iobj)->energy();
+    Lepton.eta = ptr(*iobj)->eta();
+    Lepton.phi = ptr(*iobj)->phi();
+    items.push_back(Lepton);    
+
+  }
+  //items.sort();
+  ptrToItems = &items;
+}
+
+
+
 
 /* template<class BNleptonCollection> */
 /* void GenericCollection<BNleptonCollection>::resetAndPushBack(const BNmuonCollection& muons) { */

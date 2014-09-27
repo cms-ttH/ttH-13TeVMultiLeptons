@@ -585,7 +585,7 @@ int main (int argc, char** argv) {
 
     
     tightLeptons.resetAndPushBack(tightElectrons.items);
-    //tightLeptons.pushBack(tightMuons.items);
+    tightLeptons.pushBackAndSort(tightMuons.items);
 
     //    tightLeptons.resetAndPushBack(tightElectrons.items);
     //    tightLeptons.pushBackAndSort(tightMuons.items);
