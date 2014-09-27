@@ -24,17 +24,15 @@ Here are some temporary instructions to get the tree-making code to compile:
 
 If code still does not compile, try removing the following:
 	
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/matcher_ttV_SS.C
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/matcher_ttV.C
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/ttV.C
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/lepEff.C
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/ssTwoLep.C
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/csvSF.C
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/threeLepton.C
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/ttV_SS.C
-	rm ttHMultileptonAnalysis/TemplateMakers/interface/TTreeWrapper.h
+	rm TemplateMakers/bin/matcher_ttV_SS.C
+	rm TemplateMakers/bin/matcher_ttV.C
+	rm TemplateMakers/bin/ttV.C
+	rm TemplateMakers/bin/lepEff.C
+	rm TemplateMakers/bin/ssTwoLep.C
+	rm TemplateMakers/bin/csvSF.C
+	rm TemplateMakers/bin/threeLepton.C
+	rm TemplateMakers/bin/ttV_SS.C
 	rm ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h
-	rm ttHMultileptonAnalysis/TemplateMakers/src/TTreeWrapper.cc
 
 Then try running over some miniAOD:
 
