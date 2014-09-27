@@ -12,27 +12,6 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 	git clone git@github.com:cms-ttH/ttHMultileptonAnalysis.git -b 13TeV
 	scram b -j 32
 
-Here are some temporary instructions to get the tree-making code to compile:
-
-	cd ttHMultileptonAnalysis/
-	rm -rf skim/
-	rm -rf listsForSkims2012_v3/
-	rm -rf listsForSkims2012_53x_v3_hadoop/
-	rm -rf listsUnskimmed2012_53x_v3_hadoop/
-	rm -rf DrawPlots/
-	rm -rf TemplateMakers/bean.tags
-
-If code still does not compile, try removing the following:
-	
-	rm TemplateMakers/bin/matcher_ttV_SS.C
-	rm TemplateMakers/bin/matcher_ttV.C
-	rm TemplateMakers/bin/ttV.C
-	rm TemplateMakers/bin/lepEff.C
-	rm TemplateMakers/bin/ssTwoLep.C
-	rm TemplateMakers/bin/csvSF.C
-	rm TemplateMakers/bin/threeLepton.C
-	rm TemplateMakers/bin/ttV_SS.C
-	rm ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h
 
 Then try running over some miniAOD:
 
