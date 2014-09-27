@@ -34,8 +34,10 @@ If code still does not compile, try removing the following:
 	rm ttHMultileptonAnalysis/TemplateMakers/bin/ssTwoLep.C
 	rm ttHMultileptonAnalysis/TemplateMakers/bin/csvSF.C
 	rm ttHMultileptonAnalysis/TemplateMakers/bin/threeLepton.C
-	rm ttHMultileptonAnalysis/TemplateMakers/bin/osTwoLep.C
 	rm ttHMultileptonAnalysis/TemplateMakers/bin/ttV_SS.C
+	rm ttHMultileptonAnalysis/TemplateMakers/interface/TTreeWrapper.h
+	rm ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h
+	rm ttHMultileptonAnalysis/TemplateMakers/src/TTreeWrapper.cc
 
 Then try running over some miniAOD:
 
