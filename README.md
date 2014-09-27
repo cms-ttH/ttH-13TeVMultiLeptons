@@ -25,6 +25,18 @@ Here are some temporary instructions to get the tree-making code to compile:
 	rm -rf DrawPlots/
 	rm -rf TemplateMakers/bean.tags
 
+If code still does not compile, try removing the following:
+	
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/matcher_ttV_SS.C
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/matcher_ttV.C
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/ttV.C
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/lepEff.C
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/ssTwoLep.C
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/csvSF.C
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/threeLepton.C
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/osTwoLep.C
+	rm ttHMultileptonAnalysis/TemplateMakers/bin/ttV_SS.C
+
 Then try running over some miniAOD:
 
 	voms-proxy-init -voms cms
