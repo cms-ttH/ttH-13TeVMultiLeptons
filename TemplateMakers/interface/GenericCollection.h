@@ -307,13 +307,13 @@ void GenericCollection<LeptonCollection>::resetAndPushBack(const std::vector<pat
   
   for( std::vector<pat::Electron>::const_iterator iobj = collection.begin(); iobj!=collection.end(); ++iobj ){
  
-    Lepton.pt = ptr(*iobj)->pt();
-    Lepton.px = ptr(*iobj)->px();
-    Lepton.py = ptr(*iobj)->py();
-    Lepton.pz = ptr(*iobj)->pz();
-    Lepton.energy = ptr(*iobj)->energy();
-    Lepton.eta = ptr(*iobj)->eta();
-    Lepton.phi = ptr(*iobj)->phi();
+    Lepton.pt_ = ptr(*iobj)->pt();
+    Lepton.px_ = ptr(*iobj)->px();
+    Lepton.py_ = ptr(*iobj)->py();
+    Lepton.pz_ = ptr(*iobj)->pz();
+    Lepton.energy_ = ptr(*iobj)->energy();
+    Lepton.eta_ = ptr(*iobj)->eta();
+    Lepton.phi_ = ptr(*iobj)->phi();
     items.push_back(Lepton);    
 
   }
@@ -325,17 +325,18 @@ void GenericCollection<LeptonCollection>::pushBackAndSort(const std::vector<pat:
 
   for( std::vector<pat::Muon>::const_iterator iobj = collection.begin(); iobj!=collection.end(); ++iobj ){
     
-    Lepton.pt = ptr(*iobj)->pt();
-    Lepton.px = ptr(*iobj)->px();
-    Lepton.py = ptr(*iobj)->py();
-    Lepton.pz = ptr(*iobj)->pz();
-    Lepton.energy = ptr(*iobj)->energy();
-    Lepton.eta = ptr(*iobj)->eta();
-    Lepton.phi = ptr(*iobj)->phi();
+    Lepton.pt_ = ptr(*iobj)->pt();
+    Lepton.px_ = ptr(*iobj)->px();
+    Lepton.py_ = ptr(*iobj)->py();
+    Lepton.pz_ = ptr(*iobj)->pz();
+    Lepton.energy_ = ptr(*iobj)->energy();
+    Lepton.eta_ = ptr(*iobj)->eta();
+    Lepton.phi_ = ptr(*iobj)->phi();
     items.push_back(Lepton);    
 
   }
   //items.sort();
+  //items = mHelp->GetSortedByPt(items);
   ptrToItems = &items;
 }
 

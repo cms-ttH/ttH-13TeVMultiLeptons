@@ -428,9 +428,13 @@ int main (int argc, char** argv) {
   GenericCollection<pat::TauCollection> tightLoosePreselectedTaus(miniAODhelper);
 
   GenericCollection<LeptonCollection> tightLeptons(miniAODhelper);  
-  
-  //  GenericCollection<LeptonCollection> tightLeptons(miniAODhelper);
 
+  GenericCollection<LeptonCollection> looseLeptons(miniAODhelper);
+  GenericCollection<LeptonCollection> preselectedLeptons(miniAODhelper);
+  GenericCollection<LeptonCollection> tightLooseLeptons(miniAODhelper);
+  GenericCollection<LeptonCollection> tightLoosePreselectedLeptons(miniAODhelper);
+
+  
   // GenericCollection<pat::JetCollection> jets(miniAODhelper);
   // GenericCollection<pat::JetCollection> jets_30(miniAODhelper);
   // GenericCollection<pat::JetCollection> jetsByCSV(miniAODhelper);
@@ -587,8 +591,16 @@ int main (int argc, char** argv) {
     tightLeptons.resetAndPushBack(tightElectrons.items);
     tightLeptons.pushBackAndSort(tightMuons.items);
 
-    //    tightLeptons.resetAndPushBack(tightElectrons.items);
-    //    tightLeptons.pushBackAndSort(tightMuons.items);
+    tightLeptons.resetAndPushBack(tightElectrons.items);
+    tightLeptons.pushBackAndSort(tightMuons.items);
+    looseLeptons.resetAndPushBack(looseElectrons.items);
+    looseLeptons.pushBackAndSort(looseMuons.items);
+    preselectedLeptons.resetAndPushBack(preselectedElectrons.items);
+    preselectedLeptons.pushBackAndSort(preselectedMuons.items);
+    tightLooseLeptons.resetAndPushBack(tightLooseElectrons.items);
+    tightLooseLeptons.pushBackAndSort(tightLooseMuons.items);
+    tightLoosePreselectedLeptons.resetAndPushBack(tightLoosePreselectedElectrons.items);
+    tightLoosePreselectedLeptons.pushBackAndSort(tightLoosePreselectedMuons.items);
 
     // jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
     // jets.cleanJets(tightLoosePreselectedLeptons.items);
@@ -599,7 +611,7 @@ int main (int argc, char** argv) {
     // looseCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'L');
     // mediumCSVJets.initializeRawItems(jets.rawItems);
     // mediumCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'M');
-    // notMediumCSVJets.initializeRawItems(beanHelper->GetDifference(jets.items, mediumCSVJets.items));
+    // notMediumCSVJets.initializeRawItems(miniAODhelper->GetDifference(jets.items, mediumCSVJets.items));
     // jets_30.initializeRawItems(jets.items);
     // jets_30.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
     // jets_fromHiggs.initializeRawItems(jets.items);
