@@ -54,6 +54,7 @@
 /* #include "BEAN/Collections/interface/BNtrigobj.h" */
 /* #include "BEAN/Collections/interface/BNprimaryvertex.h" */
 
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 
 // headers for python config processing
 

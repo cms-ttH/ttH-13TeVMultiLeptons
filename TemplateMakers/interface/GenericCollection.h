@@ -31,16 +31,18 @@ public:
   collectionType * ptrToItems;
   std::function<bool (collectionType)> selectionFunction;
 
-  lepton Lepton;
+  Lepton lepton;
 
   GenericCollection(MiniAODHelper * mHelp);
   void initializeRawItems(edm::EventBase& event, string rawCollectionInstance);
   void initializeRawItems(const collectionType& collection);
   void initializeRawItems(std::initializer_list<collectionType> collections);
   void initializeRawItemsSortedByPt(edm::EventBase& event, string rawCollectionInstance);
-
+  
 
   //  void initializeRawItemsSortedByPt(const collectionType& collection);
+
+  void initializeRawItemsSortedByCSV(const collectionType& collection);
 
   //  template <typename functionType> void keepSelectedParticles(functionType selectionFunction);
   //  template <typename functionType, typename paramType> void keepSelectedParticles(functionType selectionFunction, paramType i);
@@ -68,10 +70,10 @@ public:
   //  void pushBackAndSort(const BNelectronCollection& electrons);
   //void pushBackAndSort(const BNmuonCollection& muons);
   //  void pushBackAndSort(const BNleptonCollection& leptons);
-  //void cleanJets(const BNleptonCollection& leptons, const double drCut);
+  void cleanJets(const LeptonCollection& leptons, const double drCut);
   //  void cleanJets_cProj(const BNleptonCollection& leptons, const double drCut);
-  //  void correctRawJets(sysType::sysType jetSyst=sysType::NA);
-  //  void keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP);
+  void correctRawJets(sysType::sysType jetSyst=sysType::NA);
+  void keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP);
   //  void getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType jetSyst=sysType::NA);
   void reset();
 
@@ -141,6 +143,24 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByPt(edm::EventB
 
 /*   ptrToItems = &items; */
 /* } */
+
+
+template<class collectionType>
+void GenericCollection<collectionType>::initializeRawItemsSortedByCSV(const collectionType& collection) {
+  reset();
+  rawItems = collection;
+  rawItems = mHelp->GetSortedByCSV(rawItems);
+  items = rawItems;
+  ptrToItems = &items;
+}
+
+
+
+
+
+
+
+
 
 /* template<class collectionType> */
 /* template<typename functionType> */
@@ -307,14 +327,14 @@ void GenericCollection<LeptonCollection>::resetAndPushBack(const std::vector<pat
   
   for( std::vector<pat::Electron>::const_iterator iobj = collection.begin(); iobj!=collection.end(); ++iobj ){
  
-    Lepton.pt_ = ptr(*iobj)->pt();
-    Lepton.px_ = ptr(*iobj)->px();
-    Lepton.py_ = ptr(*iobj)->py();
-    Lepton.pz_ = ptr(*iobj)->pz();
-    Lepton.energy_ = ptr(*iobj)->energy();
-    Lepton.eta_ = ptr(*iobj)->eta();
-    Lepton.phi_ = ptr(*iobj)->phi();
-    items.push_back(Lepton);    
+    lepton.pt_ = ptr(*iobj)->pt();
+    lepton.px_ = ptr(*iobj)->px();
+    lepton.py_ = ptr(*iobj)->py();
+    lepton.pz_ = ptr(*iobj)->pz();
+    lepton.energy_ = ptr(*iobj)->energy();
+    lepton.eta_ = ptr(*iobj)->eta();
+    lepton.phi_ = ptr(*iobj)->phi();
+    items.push_back(lepton);    
 
   }
   ptrToItems = &items;
@@ -325,14 +345,14 @@ void GenericCollection<LeptonCollection>::pushBackAndSort(const std::vector<pat:
 
   for( std::vector<pat::Muon>::const_iterator iobj = collection.begin(); iobj!=collection.end(); ++iobj ){
     
-    Lepton.pt_ = ptr(*iobj)->pt();
-    Lepton.px_ = ptr(*iobj)->px();
-    Lepton.py_ = ptr(*iobj)->py();
-    Lepton.pz_ = ptr(*iobj)->pz();
-    Lepton.energy_ = ptr(*iobj)->energy();
-    Lepton.eta_ = ptr(*iobj)->eta();
-    Lepton.phi_ = ptr(*iobj)->phi();
-    items.push_back(Lepton);    
+    lepton.pt_ = ptr(*iobj)->pt();
+    lepton.px_ = ptr(*iobj)->px();
+    lepton.py_ = ptr(*iobj)->py();
+    lepton.pz_ = ptr(*iobj)->pz();
+    lepton.energy_ = ptr(*iobj)->energy();
+    lepton.eta_ = ptr(*iobj)->eta();
+    lepton.phi_ = ptr(*iobj)->phi();
+    items.push_back(lepton);    
 
   }
   //items.sort();
@@ -383,11 +403,11 @@ void GenericCollection<LeptonCollection>::pushBackAndSort(const std::vector<pat:
 /*   ptrToItems = &items; */
 /* } */
 
-/* template<class BNjetCollection> */
-/* void GenericCollection<BNjetCollection>::cleanJets(const BNleptonCollection& leptons, const double drCut = 0.5) { */
-/*   rawItems = mHelp->GetCleanJets(rawItems, leptons, drCut); */
-/*   ptrToItems = &items; */
-/* } */
+template<class collectionType>
+void GenericCollection<collectionType>::cleanJets(const LeptonCollection& leptons, const double drCut = 0.5) {
+  rawItems = mHelp->GetCleanJets(rawItems, leptons, drCut);
+  ptrToItems = &items;
+}
 
 /* template<class BNjetCollection> */
 /* void GenericCollection<BNjetCollection>::cleanJets_cProj(const BNleptonCollection& leptons, const double drCut = 0.5) { */
@@ -395,19 +415,19 @@ void GenericCollection<LeptonCollection>::pushBackAndSort(const std::vector<pat:
 /*   ptrToItems = &items; */
 /* } */
 
-/* template<class BNjetCollection> */
-/* void GenericCollection<BNjetCollection>::correctRawJets(sysType::sysType jetSyst) { */
-/*   rawItems = mHelp->GetCorrectedJets(rawItems, jetSyst); */
+template<class collectionType>
+void GenericCollection<collectionType>::correctRawJets(sysType::sysType jetSyst) {
+  rawItems = mHelp->GetCorrectedJets(rawItems, jetSyst);
 
-/*   ptrToItems = &items; */
-/* } */
+  ptrToItems = &items;
+}
 
-/* template<class BNjetCollection> */
-/* void GenericCollection<BNjetCollection>::keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP) { */
-/*   items = mHelp->GetSelectedJets(rawItems, ptCut, etaCut, ID, csvWP); */
+template<class collectionType>
+void GenericCollection<collectionType>::keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP) {
+  items = mHelp->GetSelectedJets(rawItems, ptCut, etaCut, ID, csvWP);
 
-/*   ptrToItems = &items; */
-/* } */
+  ptrToItems = &items;
+}
 
 /* template<class BNmetCollection> */
 /* void GenericCollection<BNmetCollection>::getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType jetSyst) { */

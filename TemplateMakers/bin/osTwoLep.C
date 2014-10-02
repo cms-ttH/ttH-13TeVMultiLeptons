@@ -9,18 +9,10 @@
 #include "DataFormats/PatCandidates/interface/GenericParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "DataFormats/PatCandidates/interface/Lepton.h"
+//#include "DataFormats/PatCandidates/interface/Lepton.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
-#include "DataFormats/PatCandidates/interface/PATObject.h"
-#include "DataFormats/PatCandidates/interface/Particle.h"
-
-
-
-#include "DataFormats/Candidate/interface/Candidate.h"
-
-//#include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
 #include "TROOT.h"
 #include "TSystem.h"
 #include "TStyle.h"
@@ -380,6 +372,13 @@ int main (int argc, char** argv) {
   MiniAODHelper * miniAODhelper = new MiniAODHelper();
   miniAODhelper->SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
 
+  miniAODhelper->SetFactorizedJetCorrector();
+  
+  fwlite::Handle<double> rhoHandle;
+  rhoHandle.getByLabel(ev,"fixedGridRhoFastjetAll");//"fixedGridRhoAll");
+  double rho = *rhoHandle;
+  
+  miniAODhelper->SetRho(rho);
 
   sysType::sysType jetSyst = sysType::NA;
   if (myConfig.jetSyst == "NA") jetSyst = sysType::NA;
@@ -435,14 +434,14 @@ int main (int argc, char** argv) {
   GenericCollection<LeptonCollection> tightLoosePreselectedLeptons(miniAODhelper);
 
   
-  // GenericCollection<pat::JetCollection> jets(miniAODhelper);
-  // GenericCollection<pat::JetCollection> jets_30(miniAODhelper);
-  // GenericCollection<pat::JetCollection> jetsByCSV(miniAODhelper);
+  GenericCollection<pat::JetCollection> jets(miniAODhelper);
+  GenericCollection<pat::JetCollection> jets_30(miniAODhelper);
+  GenericCollection<pat::JetCollection> jetsByCSV(miniAODhelper);
   // GenericCollection<pat::JetCollection> looseCSVJets(miniAODhelper);
   // GenericCollection<pat::JetCollection> mediumCSVJets(miniAODhelper);
   // GenericCollection<pat::JetCollection> notMediumCSVJets(miniAODhelper);
-  // GenericCollection<pat::JetCollection> jets_fromHiggs(miniAODhelper);
-  // GenericCollection<pat::JetCollection> jets_fromHiggs_30(miniAODhelper);
+  //GenericCollection<pat::JetCollection> jets_fromHiggs(miniAODhelper);
+  //GenericCollection<pat::JetCollection> jets_fromHiggs_30(miniAODhelper);
 
   GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
 
@@ -476,7 +475,16 @@ int main (int argc, char** argv) {
               "pt_", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allElectronPt);
 
+  // GenericCollectionMember<double,std::vector<Lepton>> 
+  //   allLeptonPt(Reflex::Type::ByName("Lepton"), &(tightLooseLeptons.ptrToItems),
+  // 		  "pt_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  // kinVars.push_back(&allLeptonPt);
 
+  GenericCollectionMember<double,std::vector<pat::Jet>> 
+    allJetPt(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
+  		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allJetPt);
+  
   GenericCollectionSizeVariable<std::vector<pat::Muon>>
     numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
   kinVars.push_back(&numTightMuons);
@@ -484,6 +492,21 @@ int main (int argc, char** argv) {
   GenericCollectionSizeVariable<std::vector<pat::Electron>>
     numTightElectrons(&(tightElectrons.ptrToItems), "numTightElectrons");
   kinVars.push_back(&numTightElectrons);
+
+  GenericCollectionSizeVariable<std::vector<pat::Jet>>
+    numJets(&(jets.ptrToItems), "numJets");
+  kinVars.push_back(&numJets);
+  numJets.setCutMin(2);
+
+  GenericCollectionSizeVariable<std::vector<Lepton>>
+    numLeptons(&(tightLooseLeptons.ptrToItems), "numLeptons");
+  kinVars.push_back(&numLeptons);
+  //numLeptons.setCutMin(2);
+
+
+
+  //cutVars.push_back(&numJets);
+  
 
     
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
@@ -590,9 +613,6 @@ int main (int argc, char** argv) {
     
     tightLeptons.resetAndPushBack(tightElectrons.items);
     tightLeptons.pushBackAndSort(tightMuons.items);
-
-    tightLeptons.resetAndPushBack(tightElectrons.items);
-    tightLeptons.pushBackAndSort(tightMuons.items);
     looseLeptons.resetAndPushBack(looseElectrons.items);
     looseLeptons.pushBackAndSort(looseMuons.items);
     preselectedLeptons.resetAndPushBack(preselectedElectrons.items);
@@ -602,18 +622,18 @@ int main (int argc, char** argv) {
     tightLoosePreselectedLeptons.resetAndPushBack(tightLoosePreselectedElectrons.items);
     tightLoosePreselectedLeptons.pushBackAndSort(tightLoosePreselectedMuons.items);
 
-    // jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
-    // jets.cleanJets(tightLoosePreselectedLeptons.items);
-    // jets.correctRawJets(jetSyst);
-    // jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
-    // jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
+    jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
+    jets.cleanJets(tightLoosePreselectedLeptons.items);
+    //jets.correctRawJets(jetSyst);
+    jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
+    jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
     // looseCSVJets.initializeRawItems(jets.rawItems);
     // looseCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'L');
     // mediumCSVJets.initializeRawItems(jets.rawItems);
     // mediumCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'M');
     // notMediumCSVJets.initializeRawItems(miniAODhelper->GetDifference(jets.items, mediumCSVJets.items));
-    // jets_30.initializeRawItems(jets.items);
-    // jets_30.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
+    jets_30.initializeRawItems(jets.items);
+    jets_30.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
     // jets_fromHiggs.initializeRawItems(jets.items);
     // auto jetGenPartonMotherId = [] (BNjet j) { return (j.genPartonMotherId == 25); };
     // jets_fromHiggs.keepSelectedParticles(jetGenPartonMotherId);

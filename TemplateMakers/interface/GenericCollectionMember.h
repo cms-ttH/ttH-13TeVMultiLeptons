@@ -4,6 +4,8 @@
 #include <functional>
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
+
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"
 #include "Reflex/Member.h"
@@ -18,10 +20,9 @@
 #include "DataFormats/PatCandidates/interface/GenericParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "DataFormats/PatCandidates/interface/Lepton.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
-
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 
 // //Anna's fix to make BNleptonCollection work just like any other collection
 // //Template defined in BEAN/BEANMaker/BEANmaker/interface/BEANhelper.h
@@ -73,7 +74,7 @@ GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember
   selectedCollection = selColl;
   this->resetVal = defval;
   //cout << "Blocks is " << hex << blocks << dec << endl;
-
+  cout <<"myclass = " << myClass.Name() << endl;
   // do this to make sure you get the inherited ones
   myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);
 
@@ -126,12 +127,18 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
   if (evaluatedThisEvent ) return;
   evaluatedThisEvent = true;
 
+  listAvailableMembers();
+
   unsigned numObjs = (*selectedCollection)->size();
   unsigned loopMax = (unsigned(maxObjInColl) < numObjs) ? unsigned(maxObjInColl) : numObjs;
   for (unsigned iObj = 0; iObj < loopMax; iObj++ ){
     Reflex::Object object(myClass, &(*selectedCollection)->at(iObj));//ptr
     //Reflex::Object baseObject = getBaseObject(object, iObj);
-    //cout << "LOOK HERE" << checkForMember(object.TypeOf()) << iObj << endl;
+    //check for member is ALWAYS FALSE...why?
+    cout << "LOOK HERE" << checkForMember(object.TypeOf()) << iObj << endl;
+    cout <<" memberName = " << memberName << endl;
+
+    //cout << "object " << object.TypeOf() << endl;
     if (checkForMember(object.TypeOf())) {
       branchDataType * tempValPtr = (branchDataType*) (object.Get(memberName).Address());
       myVars[iObj].branchVal = *tempValPtr;
@@ -183,6 +190,7 @@ void GenericCollectionMember<branchDataType, collectionType>::print () {
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::listAvailableMembers () {
   cout << "Data member size  " << myClass.DataMemberSize() << endl;
+  cout << "Data member name  " << myClass.Name() << endl;
 
   for (unsigned iMem = 0;
        iMem < myClass.DataMemberSize();
