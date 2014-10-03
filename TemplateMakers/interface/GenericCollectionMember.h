@@ -74,7 +74,7 @@ GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember
   selectedCollection = selColl;
   this->resetVal = defval;
   //cout << "Blocks is " << hex << blocks << dec << endl;
-  cout <<"myclass = " << myClass.Name() << endl;
+  //cout <<"myclass = " << myClass.Name() << endl;
   // do this to make sure you get the inherited ones
   myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);
 
@@ -127,17 +127,16 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
   if (evaluatedThisEvent ) return;
   evaluatedThisEvent = true;
 
-  listAvailableMembers();
-
   unsigned numObjs = (*selectedCollection)->size();
   unsigned loopMax = (unsigned(maxObjInColl) < numObjs) ? unsigned(maxObjInColl) : numObjs;
   for (unsigned iObj = 0; iObj < loopMax; iObj++ ){
     Reflex::Object object(myClass, &(*selectedCollection)->at(iObj));//ptr
     //Reflex::Object baseObject = getBaseObject(object, iObj);
-    //check for member is ALWAYS FALSE...why?
-    cout << "LOOK HERE" << checkForMember(object.TypeOf()) << iObj << endl;
-    cout <<" memberName = " << memberName << endl;
-
+    
+    
+    //cout << "LOOK HERE" << checkForMember(object.TypeOf()) << iObj << endl;
+    //cout <<" memberName = " << memberName << endl;
+    //listAvailableMembers();
     //cout << "object " << object.TypeOf() << endl;
     if (checkForMember(object.TypeOf())) {
       branchDataType * tempValPtr = (branchDataType*) (object.Get(memberName).Address());

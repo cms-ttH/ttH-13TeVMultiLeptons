@@ -9,7 +9,7 @@
 #include "DataFormats/PatCandidates/interface/GenericParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-//#include "DataFormats/PatCandidates/interface/Lepton.h"
+#include "DataFormats/PatCandidates/interface/Lepton.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
@@ -23,6 +23,7 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagDiscrim.h"
 ///-------------- Kinematic Variables ------------------
 //done
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
@@ -44,21 +45,6 @@ bool isData;
 string analysisYear = "2012_53x";
 string sampleName;
 int sampleNumber;
-
-
-
-// struct lepton{
-  
-//   double px;
-//   double py;
-//   double pz;
-//   double energy;
-
-// }
-
-
-// typedef std::vector<std::vector<lepton>> LeptonCollection;
-
 
 void detectData(string sampleName) {
   isData = false;
@@ -485,6 +471,12 @@ int main (int argc, char** argv) {
   		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetPt);
   
+
+  BTagDiscrim<std::vector<pat::Jet>>
+    JetCSV(&(jets.ptrToItems));
+  kinVars.push_back(&JetCSV);
+
+
   GenericCollectionSizeVariable<std::vector<pat::Muon>>
     numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
   kinVars.push_back(&numTightMuons);
