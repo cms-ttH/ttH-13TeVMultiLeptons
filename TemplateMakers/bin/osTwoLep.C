@@ -13,6 +13,9 @@
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
 #include "TROOT.h"
 #include "TSystem.h"
 #include "TStyle.h"
@@ -24,6 +27,8 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagDiscrim.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenPt.h"
+
 ///-------------- Kinematic Variables ------------------
 //done
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
@@ -423,27 +428,16 @@ int main (int argc, char** argv) {
   GenericCollection<pat::JetCollection> jets(miniAODhelper);
   GenericCollection<pat::JetCollection> jets_30(miniAODhelper);
   GenericCollection<pat::JetCollection> jetsByCSV(miniAODhelper);
-  // GenericCollection<pat::JetCollection> looseCSVJets(miniAODhelper);
-  // GenericCollection<pat::JetCollection> mediumCSVJets(miniAODhelper);
-  // GenericCollection<pat::JetCollection> notMediumCSVJets(miniAODhelper);
-  //GenericCollection<pat::JetCollection> jets_fromHiggs(miniAODhelper);
-  //GenericCollection<pat::JetCollection> jets_fromHiggs_30(miniAODhelper);
 
   GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
 
-  //GenericColleciton<GenEventInfoProduct> events(miniAODhelper);
-
-
-
+  //GenericCollection<pat::PackedGenParticleCollection> genTopParticles(miniAODhelper);
+  GenericCollection<reco::GenParticleCollection> genParticles(miniAODhelper);
+  GenericCollection<reco::GenParticleCollection> genTopParticles(miniAODhelper);
+  GenericCollection<reco::GenParticleCollection> genHiggsParticles(miniAODhelper);
+  
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
-  // NECESSARY TO FILL LEPTON VALUES - DO NOT COMMENT OUT //
-  // GenericCollectionMember<double, BNmuonCollection>
-  //   allMuonPt(Reflex::Type::ByName("BNmuon"), &(tightLooseMuons.ptrToItems),
-  //             "pt", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  // kinVars.push_back(&allMuonPt);
-
-  //std::vector<pat:Muon>>
 
   //////////////////////////////////////////////////////////////////////////////
   ////
@@ -461,21 +455,27 @@ int main (int argc, char** argv) {
               "pt_", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allElectronPt);
 
-  // GenericCollectionMember<double,std::vector<Lepton>> 
-  //   allLeptonPt(Reflex::Type::ByName("Lepton"), &(tightLooseLeptons.ptrToItems),
-  // 		  "pt_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-  // kinVars.push_back(&allLeptonPt);
+  GenericCollectionMember<double,std::vector<Lepton>> 
+    allLeptonPt(Reflex::Type::ByName("Lepton"), &(tightLooseLeptons.ptrToItems),
+  		  "pt_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonPt);
 
   GenericCollectionMember<double,std::vector<pat::Jet>> 
     allJetPt(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
   		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetPt);
-  
 
+  GenPt<std::vector<reco::GenParticle>>
+    topPt(&(genTopParticles.ptrToItems),"genTopPt");
+  kinVars.push_back(&topPt);
+
+  GenPt<std::vector<reco::GenParticle>>
+    higgsPt(&(genHiggsParticles.ptrToItems),"genHiggsPt");
+  kinVars.push_back(&higgsPt);
+  
   BTagDiscrim<std::vector<pat::Jet>>
     JetCSV(&(jets.ptrToItems));
   kinVars.push_back(&JetCSV);
-
 
   GenericCollectionSizeVariable<std::vector<pat::Muon>>
     numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
@@ -495,12 +495,6 @@ int main (int argc, char** argv) {
   kinVars.push_back(&numLeptons);
   //numLeptons.setCutMin(2);
 
-
-
-  //cutVars.push_back(&numJets);
-  
-
-    
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
        iVar != kinVars.end();
@@ -520,9 +514,6 @@ int main (int argc, char** argv) {
   double maxAbsZ = 24.0;
   double maxd0 = 2.;
   int numpv = 0;
-
-  //std::vector<pat::Muon> *leptons;
-  
 
 
   for (ev.toBegin(); !ev.atEnd(); ++ev){
@@ -594,7 +585,6 @@ int main (int argc, char** argv) {
     //   leptons->push_back(*iMu);
     // }
 
-
     tightTaus.initializeRawItemsSortedByPt(ev, "slimmedTaus");
     tightTaus.keepSelectedParticles(tauTightID);
     tightLooseTaus.initializeRawItems(tightTaus.rawItems);
@@ -602,7 +592,6 @@ int main (int argc, char** argv) {
     tightLoosePreselectedTaus.initializeRawItems(tightTaus.rawItems);
     tightLoosePreselectedTaus.keepSelectedParticles(tauPreselectedID);
 
-    
     tightLeptons.resetAndPushBack(tightElectrons.items);
     tightLeptons.pushBackAndSort(tightMuons.items);
     looseLeptons.resetAndPushBack(looseElectrons.items);
@@ -616,21 +605,20 @@ int main (int argc, char** argv) {
 
     jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
     jets.cleanJets(tightLoosePreselectedLeptons.items);
-    //jets.correctRawJets(jetSyst);
     jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
+
     jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
-    // looseCSVJets.initializeRawItems(jets.rawItems);
-    // looseCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'L');
-    // mediumCSVJets.initializeRawItems(jets.rawItems);
-    // mediumCSVJets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, 'M');
-    // notMediumCSVJets.initializeRawItems(miniAODhelper->GetDifference(jets.items, mediumCSVJets.items));
+
     jets_30.initializeRawItems(jets.items);
     jets_30.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
-    // jets_fromHiggs.initializeRawItems(jets.items);
-    // auto jetGenPartonMotherId = [] (BNjet j) { return (j.genPartonMotherId == 25); };
-    // jets_fromHiggs.keepSelectedParticles(jetGenPartonMotherId);
-    // jets_fromHiggs_30.initializeRawItems(jets_30.items);
-    // jets_fromHiggs_30.keepSelectedParticles(jetGenPartonMotherId);
+
+    genTopParticles.initializeRawItems(ev,"prunedGenParticles");
+    auto topPDGID = [] (reco::GenParticle p) { return (p.pdgId() == 6 ); };
+    genTopParticles.keepSelectedParticles(topPDGID);
+
+    genHiggsParticles.initializeRawItems(ev,"prunedGenParticles");
+    auto higgsPDGID = [] (reco::GenParticle p) { return (p.pdgId() == 25 ); };
+    genHiggsParticles.keepSelectedParticles(higgsPDGID);
 
 
     // reset all the vars

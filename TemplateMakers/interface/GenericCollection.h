@@ -17,6 +17,9 @@
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
 
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 
 #define _GenericCollection_h
@@ -44,7 +47,7 @@ public:
 
   void initializeRawItemsSortedByCSV(const collectionType& collection);
 
-  //  template <typename functionType> void keepSelectedParticles(functionType selectionFunction);
+  template <typename functionType> void keepSelectedParticles(functionType selectionFunction);
   //  template <typename functionType, typename paramType> void keepSelectedParticles(functionType selectionFunction, paramType i);
   //  template <typename functionType, typename paramType1, typename paramType2> void keepSelectedParticles(functionType selectionFunction, paramType1 i, paramType2 j);
   //template <typename functionType, typename paramType1, typename paramType2, typename paramType3> void keepSelectedParticles(functionType selectionFunction, paramType1 i, paramType2 j, paramType3 k);
@@ -162,19 +165,19 @@ void GenericCollection<collectionType>::initializeRawItemsSortedByCSV(const coll
 
 
 
-/* template<class collectionType> */
-/* template<typename functionType> */
-/* void GenericCollection<collectionType>::keepSelectedParticles(functionType selectionFunction) { */
-/*   collectionType selectedParticles; */
+template<class collectionType>
+template<typename functionType>
+void GenericCollection<collectionType>::keepSelectedParticles(functionType selectionFunction) {
+  collectionType selectedParticles;
 
-/*   for (auto& particle: items) { */
-/*     if (selectionFunction(*(ptr(particle)))) selectedParticles.push_back(particle); */
-/*   } */
+  for (auto& particle: items) {
+    if (selectionFunction(*(ptr(particle)))) selectedParticles.push_back(particle);
+  }
 
-/*   items = selectedParticles; */
+  items = selectedParticles;
 
-/*   ptrToItems = &items; */
-/* } */
+  ptrToItems = &items;
+}
 
 /* template<class collectionType> */
 /* template<typename functionType, typename paramType> */

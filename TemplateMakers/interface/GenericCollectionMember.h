@@ -24,6 +24,8 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
+
 // //Anna's fix to make BNleptonCollection work just like any other collection
 // //Template defined in BEAN/BEANMaker/BEANmaker/interface/BEANhelper.h
 // template<typename T>
@@ -78,15 +80,10 @@ GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember
   // do this to make sure you get the inherited ones
   myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);
 
-  if (myClass.Name()=="BNevent" || myClass.Name()=="BNmet") {
-    TString bName = Form("%s_%s", prefix.c_str(), mem.c_str());
+  for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
+    TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, mem.c_str());
     myVars.push_back(BranchInfo<branchDataType>(bName));
-  } else {
-    for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
-      TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, mem.c_str());
-      myVars.push_back(BranchInfo<branchDataType>(bName));
     }
-  }
 
   reset();
 }
@@ -96,8 +93,6 @@ GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember
 ////
 ////
 //////////////////////////////////////////////////////////////////
-
-
 
 template <class branchDataType, class collectionType>
 void GenericCollectionMember<branchDataType, collectionType>::reset () {
@@ -140,8 +135,9 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
     //cout << "object " << object.TypeOf() << endl;
     if (checkForMember(object.TypeOf())) {
       branchDataType * tempValPtr = (branchDataType*) (object.Get(memberName).Address());
+            
       myVars[iObj].branchVal = *tempValPtr;
-      //cout << *tempValPtr << endl;
+	      
     }
   }
 }
