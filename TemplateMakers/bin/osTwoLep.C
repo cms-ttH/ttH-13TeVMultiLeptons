@@ -455,27 +455,27 @@ int main (int argc, char** argv) {
               "pt_", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
   kinVars.push_back(&allElectronPt);
 
-  GenericCollectionMember<double,std::vector<Lepton>> 
-    allLeptonPt(Reflex::Type::ByName("Lepton"), &(tightLooseLeptons.ptrToItems),
-  		  "pt_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-  kinVars.push_back(&allLeptonPt);
+  // GenericCollectionMember<double,std::vector<Lepton>> 
+  //   allLeptonPt(Reflex::Type::ByName("Lepton"), &(tightLooseLeptons.ptrToItems),
+  // 		  "pt_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  // kinVars.push_back(&allLeptonPt);
 
   GenericCollectionMember<double,std::vector<pat::Jet>> 
     allJetPt(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
   		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetPt);
 
-  GenPt<std::vector<reco::GenParticle>>
-    topPt(&(genTopParticles.ptrToItems),"genTopPt");
-  kinVars.push_back(&topPt);
+  // GenPt<std::vector<reco::GenParticle>>
+  //   topPt(&(genTopParticles.ptrToItems),"genTopPt");
+  // kinVars.push_back(&topPt);
 
-  GenPt<std::vector<reco::GenParticle>>
-    higgsPt(&(genHiggsParticles.ptrToItems),"genHiggsPt");
-  kinVars.push_back(&higgsPt);
+  // GenPt<std::vector<reco::GenParticle>>
+  //   higgsPt(&(genHiggsParticles.ptrToItems),"genHiggsPt");
+  // kinVars.push_back(&higgsPt);
   
-  BTagDiscrim<std::vector<pat::Jet>>
-    JetCSV(&(jets.ptrToItems));
-  kinVars.push_back(&JetCSV);
+  // BTagDiscrim<std::vector<pat::Jet>>
+  //   JetCSV(&(jets.ptrToItems));
+  // kinVars.push_back(&JetCSV);
 
   GenericCollectionSizeVariable<std::vector<pat::Muon>>
     numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
@@ -491,7 +491,7 @@ int main (int argc, char** argv) {
   numJets.setCutMin(2);
 
   GenericCollectionSizeVariable<std::vector<Lepton>>
-    numLeptons(&(tightLooseLeptons.ptrToItems), "numLeptons");
+    numLeptons(&(tightLooseLeptons.ptrToItems), "numTightLooseLeptons");
   kinVars.push_back(&numLeptons);
   //numLeptons.setCutMin(2);
 
@@ -606,7 +606,6 @@ int main (int argc, char** argv) {
     jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
     jets.cleanJets(tightLoosePreselectedLeptons.items);
     jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
-
     jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
 
     jets_30.initializeRawItems(jets.items);
