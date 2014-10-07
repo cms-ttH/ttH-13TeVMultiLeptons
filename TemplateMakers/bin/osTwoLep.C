@@ -477,6 +477,11 @@ int main (int argc, char** argv) {
   //   JetCSV(&(jets.ptrToItems));
   // kinVars.push_back(&JetCSV);
 
+  GenericCollectionMember<double,std::vector<reco::LeafCandidate>> 
+    allLeptonPt(Reflex::Type::ByName("reco::LeafCandidate"), &(tightLoosePreselectedLeptons.ptrToItems),
+  		  "pt_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonPt);
+
   GenericCollectionSizeVariable<std::vector<pat::Muon>>
     numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
   kinVars.push_back(&numTightMuons);
@@ -506,7 +511,7 @@ int main (int argc, char** argv) {
   int numEvents = 0;
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
-  int printEvery = 1000;
+  int printEvery = 100;
   
   //vars for vertex loop
   reco::Vertex vertex;
