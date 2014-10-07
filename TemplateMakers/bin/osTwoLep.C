@@ -25,7 +25,7 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
+//#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagDiscrim.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenPt.h"
 
@@ -417,12 +417,12 @@ int main (int argc, char** argv) {
   GenericCollection<pat::TauCollection> tightLooseTaus(miniAODhelper);
   GenericCollection<pat::TauCollection> tightLoosePreselectedTaus(miniAODhelper);
 
-  GenericCollection<LeptonCollection> tightLeptons(miniAODhelper);  
+  GenericCollection<std::vector<reco::LeafCandidate>> tightLeptons(miniAODhelper);  
 
-  GenericCollection<LeptonCollection> looseLeptons(miniAODhelper);
-  GenericCollection<LeptonCollection> preselectedLeptons(miniAODhelper);
-  GenericCollection<LeptonCollection> tightLooseLeptons(miniAODhelper);
-  GenericCollection<LeptonCollection> tightLoosePreselectedLeptons(miniAODhelper);
+  GenericCollection<std::vector<reco::LeafCandidate>> looseLeptons(miniAODhelper);
+  GenericCollection<std::vector<reco::LeafCandidate>> preselectedLeptons(miniAODhelper);
+  GenericCollection<std::vector<reco::LeafCandidate>> tightLooseLeptons(miniAODhelper);
+  GenericCollection<std::vector<reco::LeafCandidate>> tightLoosePreselectedLeptons(miniAODhelper);
 
   
   GenericCollection<pat::JetCollection> jets(miniAODhelper);
@@ -490,7 +490,7 @@ int main (int argc, char** argv) {
   kinVars.push_back(&numJets);
   numJets.setCutMin(2);
 
-  GenericCollectionSizeVariable<std::vector<Lepton>>
+  GenericCollectionSizeVariable<std::vector<reco::LeafCandidate>>
     numLeptons(&(tightLooseLeptons.ptrToItems), "numTightLooseLeptons");
   kinVars.push_back(&numLeptons);
   //numLeptons.setCutMin(2);
@@ -604,7 +604,7 @@ int main (int argc, char** argv) {
     tightLoosePreselectedLeptons.pushBackAndSort(tightLoosePreselectedMuons.items);
 
     jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
-    jets.cleanJets(tightLoosePreselectedLeptons.items);
+    //    jets.cleanJets(tightLoosePreselectedLeptons.items);
     jets.keepSelectedJets(25.0, 2.4, jetID::jetLoose, '-');
     jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
 
