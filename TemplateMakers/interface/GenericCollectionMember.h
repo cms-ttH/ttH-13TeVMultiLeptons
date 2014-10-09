@@ -79,9 +79,11 @@ GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember
   //cout <<"myclass = " << myClass.Name() << endl;
   // do this to make sure you get the inherited ones
   myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);
+  
+  string st = mem.substr(0,mem.size()-1);
 
   for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
-    TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, mem.c_str());
+    TString bName = Form("%s_%d", prefix.c_str(), iVar+1);//, mem.c_str());
     myVars.push_back(BranchInfo<branchDataType>(bName));
     }
 
@@ -126,18 +128,17 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
   unsigned loopMax = (unsigned(maxObjInColl) < numObjs) ? unsigned(maxObjInColl) : numObjs;
   for (unsigned iObj = 0; iObj < loopMax; iObj++ ){
     Reflex::Object object(myClass, &(*selectedCollection)->at(iObj));//ptr
-    //Reflex::Object baseObject = getBaseObject(object, iObj);
-    
-    
-    //cout << "LOOK HERE" << checkForMember(object.TypeOf()) << iObj << endl;
-    //cout <<" memberName = " << memberName << endl;
     //listAvailableMembers();
-    //cout << "object " << object.TypeOf() << endl;
+    //print();
     if (checkForMember(object.TypeOf())) {
-      branchDataType * tempValPtr = (branchDataType*) (object.Get(memberName).Address());
-            
+      string method = "bDiscriminator";
+      string tags = "combinedSecondaryVertexBJetTags";
+      std::vector<void*> arg(*tags.c_str());
+      object.Invoke(method,object,arg);
+      
+      branchDataType * tempValPtr = (branchDataType*) (object.Address());//.Address());//(object.Get(memberName).Address());
       myVars[iObj].branchVal = *tempValPtr;
-	      
+      cout << "branch val" << myVars[iObj].branchVal << endl;
     }
   }
 }

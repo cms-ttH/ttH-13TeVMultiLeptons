@@ -76,8 +76,10 @@ public:
   //  void pushBackAndSort(const BNelectronCollection& electrons);
   //void pushBackAndSort(const BNmuonCollection& muons);
   //  void pushBackAndSort(const BNleptonCollection& leptons);
-  void cleanJets(const std::vector<reco::RecoCandidate>& leptons, const double drCut);
-  //  void cleanJets_cProj(const BNleptonCollection& leptons, const double drCut);
+  
+  void cleanJets(const std::vector<pat::Muon>& muons);
+  void cleanJets(const std::vector<pat::Electron>& electrons);
+
   void correctRawJets(sysType::sysType jetSyst=sysType::NA);
   void keepSelectedJets(const double ptCut, const double etaCut, const jetID::jetID ID, const char csvWP);
   //  void getCorrectedMet(GenericCollection<BNjetCollection> jets, sysType::sysType jetSyst=sysType::NA);
@@ -444,17 +446,24 @@ void GenericCollection<collectionType>::pushBackAndSort(const inputType& collect
 /*   ptrToItems = &items; */
 /* } */
 
+/* template<class collectionType> */
+/* void GenericCollection<collectionType>::cleanJets(const std::vector<reco::RecoCandidate>& leptons, const double drCut = 0.5) { */
+/*   rawItems = mHelp->GetCleanJets(rawItems, leptons, drCut); */
+/*   ptrToItems = &items; */
+/* } */
+
 template<class collectionType>
-void GenericCollection<collectionType>::cleanJets(const std::vector<reco::RecoCandidate>& leptons, const double drCut = 0.5) {
-  rawItems = mHelp->GetCleanJets(rawItems, leptons, drCut);
+void GenericCollection<collectionType>::cleanJets(const std::vector<pat::Muon>& muons) {
+  items = mHelp->RemoveOverlaps(muons,items);
   ptrToItems = &items;
 }
 
-/* template<class BNjetCollection> */
-/* void GenericCollection<BNjetCollection>::cleanJets_cProj(const BNleptonCollection& leptons, const double drCut = 0.5) { */
-/*   rawItems = mHelp->GetCleanJets_cProj(rawItems, leptons, drCut); */
-/*   ptrToItems = &items; */
-/* } */
+template<class collectionType>
+void GenericCollection<collectionType>::cleanJets(const std::vector<pat::Electron>& electrons) {
+  items = mHelp->RemoveOverlaps(electrons,items);
+  ptrToItems = &items;
+}
+
 
 template<class collectionType>
 void GenericCollection<collectionType>::correctRawJets(sysType::sysType jetSyst) {
