@@ -131,12 +131,7 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
     //listAvailableMembers();
     //print();
     if (checkForMember(object.TypeOf())) {
-      string method = "bDiscriminator";
-      string tags = "combinedSecondaryVertexBJetTags";
-      std::vector<void*> arg(*tags.c_str());
-      object.Invoke(method,object,arg);
-      
-      branchDataType * tempValPtr = (branchDataType*) (object.Address());//.Address());//(object.Get(memberName).Address());
+      branchDataType * tempValPtr = (branchDataType*) (object.Address());
       myVars[iObj].branchVal = *tempValPtr;
       cout << "branch val" << myVars[iObj].branchVal << endl;
     }

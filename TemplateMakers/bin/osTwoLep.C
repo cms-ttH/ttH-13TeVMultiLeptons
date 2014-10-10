@@ -23,6 +23,7 @@
 #include <TRandom3.h>
 #include <vector>
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMethod.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
 //#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
@@ -464,9 +465,19 @@ int main (int argc, char** argv) {
   // 		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   // kinVars.push_back(&allJetPt);
 
-  GenericCollectionMember<float,std::vector<pat::Jet>> 
+  GenericCollectionMember<float,std::vector<pat::Jet>>
+    allJetPt(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
+  		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allJetPt);
+
+  GenericCollectionMethod<int, std::vector<pat::Jet>>
+    allJetNumberOfDaughters(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
+  	      "numberOfDaughters", "", "jets_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  kinVars.push_back(&allJetNumberOfDaughters);
+
+  GenericCollectionMethod<float, std::vector<pat::Jet>>
     allJetCSV(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
-  		  "pt_", "jets_by_csv",  KinematicVariableConstants::FLOAT_INIT, 4);
+  	      "bDiscriminator", "combinedSecondaryVertexBJetTags", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetCSV);
 
   // GenPt<std::vector<reco::GenParticle>>
@@ -514,7 +525,7 @@ int main (int argc, char** argv) {
   int numEvents = 0;
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
-  int printEvery = 100;
+  int printEvery = 1;
   
   //vars for vertex loop
   reco::Vertex vertex;
