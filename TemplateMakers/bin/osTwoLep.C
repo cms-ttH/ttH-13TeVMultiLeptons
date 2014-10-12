@@ -26,9 +26,8 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMethod.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
-//#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagDiscrim.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenPt.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
+
 
 ///-------------- Kinematic Variables ------------------
 //done
@@ -445,74 +444,109 @@ int main (int argc, char** argv) {
   ////
   //////////////////////////////////////////////////////////////////////////////
 
-  // GenericCollectionMember<float,std::vector<pat::Muon>> 
-  //   allMuonPt(Reflex::Type::ByName("pat::Muon"), &(tightLooseMuons.ptrToItems),
-  //             "pt_", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  // kinVars.push_back(&allMuonPt);
+  ///////////// Series Variables of data members //////////////// 
 
-  // GenericCollectionMember<float,std::vector<pat::Electron>> 
-  //   allElectronPt(Reflex::Type::ByName("pat::Electron"), &(tightLooseElectrons.ptrToItems),
-  // 		  "pt_", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
-  // kinVars.push_back(&allElectronPt);
+  GenericCollectionMember<float,std::vector<pat::Muon>> 
+    allMuonPt(Reflex::Type::ByName("pat::Muon"), &(tightLooseMuons.ptrToItems),
+              "pt_", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allMuonPt);
 
-  // GenericCollectionMember<float,std::vector<reco::LeafCandidate>> 
-  //   allLeptonPt(Reflex::Type::ByName("reco::LeafCandidate"), &(tightLooseLeptons.ptrToItems),
-  // 		  "pt_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-  // kinVars.push_back(&allLeptonPt);
+  GenericCollectionMember<float,std::vector<pat::Electron>> 
+    allElectronPt(Reflex::Type::ByName("pat::Electron"), &(tightLooseElectrons.ptrToItems),
+  		  "pt_", "electrons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
+  kinVars.push_back(&allElectronPt);
 
-  // GenericCollectionMember<float,std::vector<pat::Jet>> 
-  //   allJetPt(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
-  // 		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
-  // kinVars.push_back(&allJetPt);
+  GenericCollectionMember<float,std::vector<reco::LeafCandidate>> 
+    allLeptonPt(Reflex::Type::ByName("reco::LeafCandidate"), &(tightLooseLeptons.ptrToItems),
+  		  "pt_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonPt);
 
   GenericCollectionMember<float,std::vector<pat::Jet>>
     allJetPt(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
   		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetPt);
 
-  GenericCollectionMethod<int, std::vector<pat::Jet>>
-    allJetNumberOfDaughters(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
-  	      "numberOfDaughters", "", "jets_by_pt",  KinematicVariableConstants::INT_INIT, 4);
-  kinVars.push_back(&allJetNumberOfDaughters);
+  ///////////// Series Variables of class methods //////////////// 
+
+  // GenericCollectionMethod<int, std::vector<pat::Jet>>
+  //   allJetNumberOfDaughters(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
+  // 	      "numberOfDaughters", "", "jets_by_pt",  KinematicVariableConstants::INT_INIT, 4);
+  // kinVars.push_back(&allJetNumberOfDaughters);
 
   GenericCollectionMethod<float, std::vector<pat::Jet>>
     allJetCSV(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
   	      "bDiscriminator", "combinedSecondaryVertexBJetTags", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetCSV);
 
-  // GenPt<std::vector<reco::GenParticle>>
-  //   topPt(&(genTopParticles.ptrToItems),"genTopPt");
-  // kinVars.push_back(&topPt);
+  ///////////// Size Variables //////////////// 
 
-  // GenPt<std::vector<pat::Muon>>
-  //   muPt(&(tightLooseMuons.ptrToItems),"muonPt");
-  // kinVars.push_back(&muPt);
+  GenericCollectionSizeVariable<std::vector<pat::Muon>>
+    numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
+  kinVars.push_back(&numTightMuons);
 
-  // GenPt<std::vector<reco::GenParticle>>
-  //   higgsPt(&(genHiggsParticles.ptrToItems),"genHiggsPt");
-  // kinVars.push_back(&higgsPt);
+  GenericCollectionSizeVariable<std::vector<pat::Electron>>
+    numTightElectrons(&(tightElectrons.ptrToItems), "numTightElectrons");
+  kinVars.push_back(&numTightElectrons);
+
+  GenericCollectionSizeVariable<std::vector<pat::Jet>>
+    numJets(&(jets.ptrToItems), "numJets");
+  kinVars.push_back(&numJets);
+
+  GenericCollectionSizeVariable<std::vector<reco::LeafCandidate>>
+    numLeptons(&(tightLooseLeptons.ptrToItems), "numTightLooseLeptons");
+  kinVars.push_back(&numLeptons);
+
+  ///////////// Two Object Kinematic Variables ////////////////
+
+  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+    myMassLepLep("mass", "min", "mass_leplep",
+  		 &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  		 &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
+  kinVars.push_back(&myMassLepLep);
   
-  // BTagDiscrim<std::vector<pat::Jet>>
-  //   JetCSV(&(jets.ptrToItems));
-  // kinVars.push_back(&JetCSV);
+  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+    myZmass("mass", "closest_to", "Zmass",
+	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+	    91.2, "same_flavour");
+  kinVars.push_back(&myZmass);
 
-  // GenericCollectionSizeVariable<std::vector<pat::Muon>>
-  //   numTightMuons(&(tightMuons.ptrToItems), "numTightMuons");
-  // kinVars.push_back(&numTightMuons);
+  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+    myDeltaRLepLep("deltaR", "min", "dR_leplep",
+		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
+  kinVars.push_back(&myDeltaRLepLep);
 
-  // GenericCollectionSizeVariable<std::vector<pat::Electron>>
-  //   numTightElectrons(&(tightElectrons.ptrToItems), "numTightElectrons");
-  // kinVars.push_back(&numTightElectrons);
+  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+    myDeltaPhiLepLep("deltaPhi", "min", "dPhi_leplep",
+		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
+  kinVars.push_back(&myDeltaPhiLepLep);
 
-  // GenericCollectionSizeVariable<std::vector<pat::Jet>>
-  //   numJets(&(jets.ptrToItems), "numJets");
-  // kinVars.push_back(&numJets);
-  // numJets.setCutMin(2);
+  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+    myMinDrJets("deltaR", "min", "min_dr_jets",
+		&(jets.ptrToItems), "jets_by_pt", 1, 99,
+		&(jets.ptrToItems), "jets_by_pt", 1, 99);
+  kinVars.push_back(&myMinDrJets);
 
-  // GenericCollectionSizeVariable<std::vector<reco::LeafCandidate>>
-  //   numLeptons(&(tightLooseLeptons.ptrToItems), "numTightLooseLeptons");
-  // kinVars.push_back(&numLeptons);
-  //numLeptons.setCutMin(2);
+  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<pat::Jet>>
+    mySumPt("pt", "sum", "sum_pt",
+	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+	    &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  kinVars.push_back(&mySumPt);
+
+  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+    mySumJetPt("pt", "sum", "sum_jet_pt",
+	       &(jets.ptrToItems), "jets_by_pt", 1, 99,
+	       &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  kinVars.push_back(&mySumJetPt);
+
+  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+    mySumJetMass("mass", "vector_sum", "sum_jet_mass",
+		 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+		 &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  kinVars.push_back(&mySumJetMass);
+
 
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();

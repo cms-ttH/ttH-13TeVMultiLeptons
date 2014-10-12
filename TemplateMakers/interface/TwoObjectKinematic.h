@@ -194,9 +194,9 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
       if (iObj1 >= min1-1 && iObj1 < max1) {
 
         thisValueIterator += 1.0;
-        vect1.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt,ptr((*collection1)->at(iObj1))->eta,ptr((*collection1)->at(iObj1))->phi,
-                           max(ptr((*collection1)->at(iObj1))->energy,ptr((*collection1)->at(iObj1))->pt)); //Hack for "energy" of MET
-        vect1_transverse.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt,0.0,ptr((*collection1)->at(iObj1))->phi,ptr((*collection1)->at(iObj1))->pt);
+        vect1.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt(),ptr((*collection1)->at(iObj1))->eta(),ptr((*collection1)->at(iObj1))->phi(),
+                           max(ptr((*collection1)->at(iObj1))->energy(),double(ptr((*collection1)->at(iObj1))->pt()))); //Hack for "energy" of MET
+        vect1_transverse.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt(),0.0,ptr((*collection1)->at(iObj1))->phi(),ptr((*collection1)->at(iObj1))->pt());
         thisVectorSum += vect1; thisVectorTransverseSum += vect1_transverse;
 
         if ( variable == "pt" ) { thisValue = vect1.Pt(); thisValueCounter += 1.0*( abs(vect1.Pt() - target_value) < within_value ); }
@@ -224,9 +224,9 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
       //Sets min and max number of objects, eliminates use of the same object twice
       if ( iObj2 >= min2-1 && iObj2 < max2 && ((void*)collection1 != collection2 || iObj2 >= (*collection1)->size() || iObj2 >= max1 ) ) {
         thisValueIterator += 1.0;
-        vect2.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt,ptr((*collection2)->at(iObj2))->eta,ptr((*collection2)->at(iObj2))->phi,
-                           max(ptr((*collection2)->at(iObj2))->energy,ptr((*collection2)->at(iObj2))->pt)); //Hack for "energy" of MET
-        vect2_transverse.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt,0.0,ptr((*collection2)->at(iObj2))->phi,ptr((*collection2)->at(iObj2))->pt);
+        vect2.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt(),ptr((*collection2)->at(iObj2))->eta(),ptr((*collection2)->at(iObj2))->phi(),
+                           max(ptr((*collection2)->at(iObj2))->energy(),double(ptr((*collection2)->at(iObj2))->pt()))); //Hack for "energy" of MET
+        vect2_transverse.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt(),0.0,ptr((*collection2)->at(iObj2))->phi(),ptr((*collection2)->at(iObj2))->pt());
         thisVectorSum += vect2; thisVectorTransverseSum += vect2_transverse;
 
         if ( variable == "pt" ) { thisValue = vect2.Pt(); thisValueCounter += 1.0*( abs(vect2.Pt() - target_value) < within_value ); }
@@ -290,36 +290,36 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
 
         //Adds requirements to eliminate some pairs of objects
         if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {
-          BNlepton* lepton_1 = (BNlepton*)ptr((*collection1)->at(iObj1));
-          BNlepton* lepton_2 = (BNlepton*)ptr((*collection2)->at(iObj2));
+          reco::LeafCandidate* lepton_1 = (reco::LeafCandidate*)ptr((*collection1)->at(iObj1));
+          reco::LeafCandidate* lepton_2 = (reco::LeafCandidate*)ptr((*collection2)->at(iObj2));
 
-          if ( ( lepton_1->isMuon != 1 && lepton_1->isElectron != 1 ) || ( lepton_2->isMuon != 1 && lepton_2->isElectron != 1 ) ) {
+          if ( ( lepton_1->isMuon() != 1 && lepton_1->isElectron() != 1 ) || ( lepton_2->isMuon() != 1 && lepton_2->isElectron() != 1 ) ) {
             std::cout << "Why are we requiring same flavour on non-leptons?" << std::endl;
           }
-          else if ( lepton_1->isMuon != lepton_2->isMuon ) continue;
+          else if ( lepton_1->isMuon() != lepton_2->isMuon() ) continue;
         }
 
-        if ( pair_req_1 == "opposite_sign" || pair_req_2 == "opposite_sign" ) {
-          BNlepton* lepton_1 = (BNlepton*)ptr((*collection1)->at(iObj1));
-          BNlepton* lepton_2 = (BNlepton*)ptr((*collection2)->at(iObj2));
+        /* if ( pair_req_1 == "opposite_sign" || pair_req_2 == "opposite_sign" ) { */
+        /*   reco::LeafCandidate* lepton_1 = (reco::LeafCandidate*)ptr((*collection1)->at(iObj1)); */
+        /*   reco::LeafCandidate* lepton_2 = (reco::LeafCandidate*)ptr((*collection2)->at(iObj2)); */
 
-          if ( ( abs(lepton_1->tkCharge) != 1 && lepton_1->tkCharge != -99 ) || ( abs(lepton_2->tkCharge) != 1 && lepton_2->tkCharge != -99 ) ) {
-            std::cout << "Why are we requiring opposite sign on non-leptons?" << std::endl;
-            continue;
-          }
-          else if ( lepton_1->tkCharge + lepton_2->tkCharge != 0 ) continue;
-        }
+        /*   /\* if ( ( abs(lepton_1->tkCharge()) != 1 && lepton_1->tkCharge() != -99 ) || ( abs(lepton_2->tkCharge()) != 1 && lepton_2->tkCharge() != -99 ) ) { *\/ */
+        /*   /\*   std::cout << "Why are we requiring opposite sign on non-leptons?" << std::endl; *\/ */
+        /*   /\*   continue; *\/ */
+        /*   /\* } *\/ */
+	/*   //          else if ( lepton_1->tkCharge() + lepton_2->tkCharge() != 0 ) continue; */
+        /* } */
 
         thisPairValueIterator += 1.0;
 
-        vect1.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt,ptr((*collection1)->at(iObj1))->eta,ptr((*collection1)->at(iObj1))->phi,
-                           max(ptr((*collection1)->at(iObj1))->energy,ptr((*collection1)->at(iObj1))->pt)); //Hack for "energy" of MET
-        vect2.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt,ptr((*collection2)->at(iObj2))->eta,ptr((*collection2)->at(iObj2))->phi,
-                           max(ptr((*collection2)->at(iObj2))->energy,ptr((*collection2)->at(iObj2))->pt)); //Hack for "energy" of MET
+        vect1.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt(),ptr((*collection1)->at(iObj1))->eta(),ptr((*collection1)->at(iObj1))->phi(),
+                           max(ptr((*collection1)->at(iObj1))->energy(),double(ptr((*collection1)->at(iObj1))->pt()))); //Hack for "energy" of MET
+        vect2.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt(),ptr((*collection2)->at(iObj2))->eta(),ptr((*collection2)->at(iObj2))->phi(),
+                           max(ptr((*collection2)->at(iObj2))->energy(),double(ptr((*collection2)->at(iObj2))->pt()))); //Hack for "energy" of MET
         vect12 = vect1 + vect2;
 
-        vect1_transverse.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt,0.0,ptr((*collection1)->at(iObj1))->phi,ptr((*collection1)->at(iObj1))->pt);
-        vect2_transverse.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt,0.0,ptr((*collection2)->at(iObj2))->phi,ptr((*collection2)->at(iObj2))->pt);
+        vect1_transverse.SetPtEtaPhiE(ptr((*collection1)->at(iObj1))->pt(),0.0,ptr((*collection1)->at(iObj1))->phi(),ptr((*collection1)->at(iObj1))->pt());
+        vect2_transverse.SetPtEtaPhiE(ptr((*collection2)->at(iObj2))->pt(),0.0,ptr((*collection2)->at(iObj2))->phi(),ptr((*collection2)->at(iObj2))->pt());
         vect12_transverse = vect1_transverse + vect2_transverse;
 
         if ( variable == "mass" ) thisPairValue = vect12.M();

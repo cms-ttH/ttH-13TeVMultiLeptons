@@ -68,9 +68,11 @@ GenericCollectionMethod<branchDataType, collectionType>::GenericCollectionMethod
 
   // do this to make sure you get the inherited ones
   myClass.DataMemberSize(Reflex::INHERITEDMEMBERS_ALSO);
+  
+  string st = "btagCombinedSecVertex";
 
   for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
-    TString bName = Form("%s_%d_%s", storePrefix.c_str(), iVar+1, methodName.c_str());
+    TString bName = Form("%s_%d_%s", storePrefix.c_str(), iVar+1, st.c_str());//methodName.c_str());
     myVars.push_back(BranchInfo<branchDataType>(bName));
     }
 

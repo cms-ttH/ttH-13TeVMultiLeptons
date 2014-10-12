@@ -229,7 +229,7 @@ void GenericCollection<collectionType>::keepSelectedParticles(functionType selec
 template<class collectionType>
 void GenericCollection<collectionType>::keepSelectedParticles(electronID::electronID& ID) {
 
-  items = mHelp->GetSelectedElectrons(rawItems,0., ID);
+  items = mHelp->GetSelectedElectrons(rawItems,10., ID);
 
   ptrToItems = &items;
 }
@@ -240,7 +240,7 @@ void GenericCollection<collectionType>::keepSelectedParticles(muonID::muonID& ID
   //  items = mHelp->GetSelectedMuons(rawItems, ID);
   //  std::float minPt = 0.;
   
-  items = mHelp->GetSelectedMuons(rawItems,0., ID);
+  items = mHelp->GetSelectedMuons(rawItems,10., ID);
 
   ptrToItems = &items;
 }
