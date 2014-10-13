@@ -4,7 +4,6 @@
 #include <functional>
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"
@@ -22,8 +21,6 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
-
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 // //Anna's fix to make BNleptonCollection work just like any other collection
@@ -83,7 +80,7 @@ GenericCollectionMember<branchDataType, collectionType>::GenericCollectionMember
   string st = mem.substr(0,mem.size()-1);
 
   for (int iVar = 0; iVar  < maxObjInColl; iVar++) {
-    TString bName = Form("%s_%d", prefix.c_str(), iVar+1);//, mem.c_str());
+    TString bName = Form("%s_%d_%s", prefix.c_str(), iVar+1, st.c_str());
     myVars.push_back(BranchInfo<branchDataType>(bName));
     }
 
@@ -131,9 +128,9 @@ void GenericCollectionMember<branchDataType, collectionType>::evaluate () {
     //listAvailableMembers();
     //print();
     if (checkForMember(object.TypeOf())) {
-      branchDataType * tempValPtr = (branchDataType*) (object.Address());
+      branchDataType * tempValPtr = (branchDataType*) (object.Get(memberName).Address());
       myVars[iObj].branchVal = *tempValPtr;
-      cout << "branch val" << myVars[iObj].branchVal << endl;
+      //cout << "branch val" << myVars[iObj].branchVal << endl;
     }
   }
 }
@@ -190,24 +187,6 @@ void GenericCollectionMember<branchDataType, collectionType>::listAvailableMembe
     cout << "---Member " << myClass.DataMemberAt(iMem).Name() << endl;
   }
 }
-
-//If the object is a BNlepton, figure out if it's a muon (electron) and return a new muon (electron) object
-//Otherwise, just return the object
-/* template <class branchDataType, class collectionType> */
-/* Reflex::Object GenericCollectionMember<branchDataType, collectionType>::getBaseObject (R { */
-/*   //if (myClass.Name()=="BNlepton") { */
-/*   //Reflex::Type leptonType; */
-/*   //int * isMuon = (int*) (object.Get("isMuon").Address()); */
-/*   //if (*isMuon==1) { */
-/*   // leptonType = Reflex::Type::ByName("BNmuon"); */
-/*   //} else { */
-/*   // leptonType = Reflex::Type::ByName("BNelectron"); */
-/*   //} */
-/*   Reflex::Object baseObject(leptonType, ptr((*selectedCollection)->at(index))); */
-/*   object = baseObject; */
-
-/*   return object; */
-/* } */
 
 template <class branchDataType, class collectionType>
 bool GenericCollectionMember<branchDataType, collectionType>::checkForMember (Reflex::Type classToCheck) {
