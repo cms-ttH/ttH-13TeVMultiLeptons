@@ -547,6 +547,22 @@ int main (int argc, char** argv) {
 		 &(jets.ptrToItems), "jets_by_pt", 1, 99);
   kinVars.push_back(&mySumJetMass);
 
+  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+    myHiggsLikeDijetMass("mass", "closest_to", "higgsLike_dijet_mass",
+			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+			 115.0);
+  kinVars.push_back(&myHiggsLikeDijetMass);
+  
+  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+    myHiggsLikeDijetMass2("mass", "second_closest_to", "higgsLike_dijet_mass2",
+			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
+			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
+			  115.0);
+  kinVars.push_back(&myHiggsLikeDijetMass2);
+
+
+
 
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();

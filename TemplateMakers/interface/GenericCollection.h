@@ -20,8 +20,6 @@
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
-//#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
-
 #define _GenericCollection_h
 
 template <class collectionType>

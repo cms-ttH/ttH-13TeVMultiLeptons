@@ -6,7 +6,6 @@
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"
@@ -24,7 +23,6 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Isolation.h"
 #include "DataFormats/PatCandidates/interface/Tau.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 

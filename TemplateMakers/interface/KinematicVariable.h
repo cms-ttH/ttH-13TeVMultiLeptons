@@ -39,31 +39,11 @@
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/FWLite/interface/ChainEvent.h"
 
-//Headers for the data items
-/* #include "BEAN/Collections/interface/BNelectron.h" */
-/* #include "BEAN/Collections/interface/BNevent.h" */
-/* #include "BEAN/Collections/interface/BNjet.h" */
-/* #include "BEAN/Collections/interface/BNmcparticle.h" */
-/* #include "BEAN/Collections/interface/BNmet.h" */
-/* #include "BEAN/Collections/interface/BNmuon.h" */
-/* #include "BEAN/Collections/interface/BNphoton.h" */
-/* #include "BEAN/Collections/interface/BNsupercluster.h" */
-/* #include "BEAN/Collections/interface/BNtrack.h" */
-/* #include "BEAN/Collections/interface/BNtrigger.h" */
-/* #include "BEAN/Collections/interface/BNskimbits.h" */
-/* #include "BEAN/Collections/interface/BNtrigobj.h" */
-/* #include "BEAN/Collections/interface/BNprimaryvertex.h" */
-
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
-
 // headers for python config processing
 
-//#include "BEAN/BEANmaker/interface/BtagWeight.h"
-//#include "BEAN/BEANmaker/interface/BEANhelper.h"
 
 #include "MiniAOD/MiniAODHelper/interface/MiniAODHelper.h"
 
-//#include "BEAN/BEANmaker/interface/AnglesUtil.h"
 #include "PhysicsTools/Utilities/interface/LumiReweightingStandAlone.h"
 
 #include "TMVA/Tools.h"

@@ -89,7 +89,6 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
-//#include "ttHMultileptonAnalysis/TemplateMakers/interface/Lepton.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagDiscrim.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenPt.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
