@@ -1,3 +1,4 @@
+<use   name="MiniAOD/MiniAODHelper"/>
 <use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/FWLite"/>
 <use   name="FWCore/PythonParameterSet"/>
