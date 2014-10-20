@@ -151,6 +151,8 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
   double thisPairValueIterator = 0.0; //Conting the total number of distinct pairs
   double thisPairValueCounter = 0.0; //Conting the total number of distinct pairs passing some criteria
 
+  //  double invariant_mass = KinematicVariableConstants::DOUBLE_INIT;
+
   double thisPairValue2 = KinematicVariableConstants::DOUBLE_INIT; //For saving pair values from previous iterations
 
   TLorentzVector thisVectorSum(0.,0.,0.,0.); //Sum of vectors of individual objects
@@ -289,15 +291,15 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
       if (iObj1 >= min1-1 && iObj2 >= min2-1 && iObj1<max1 && iObj2<max2 && ((void*)collection1 != collection2 || iObj1 < iObj2) ) {
 
         //Adds requirements to eliminate some pairs of objects
-        if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {
-          reco::LeafCandidate* lepton_1 = (reco::LeafCandidate*)ptr((*collection1)->at(iObj1));
-          reco::LeafCandidate* lepton_2 = (reco::LeafCandidate*)ptr((*collection2)->at(iObj2));
+        //if ( pair_req_1 == "same_flavour" || pair_req_2 == "same_flavour" ) {
+	//reco::LeafCandidate* lepton_1 = (reco::LeafCandidate*)ptr((*collection1)->at(iObj1));
+	//reco::LeafCandidate* lepton_2 = (reco::LeafCandidate*)ptr((*collection2)->at(iObj2));
 
-          if ( ( lepton_1->isMuon() != 1 && lepton_1->isElectron() != 1 ) || ( lepton_2->isMuon() != 1 && lepton_2->isElectron() != 1 ) ) {
-            std::cout << "Why are we requiring same flavour on non-leptons?" << std::endl;
-          }
-          else if ( lepton_1->isMuon() != lepton_2->isMuon() ) continue;
-        }
+          //if ( ( lepton_1->isMuon() != 1 && lepton_1->isElectron() != 1 ) || ( lepton_2->isMuon() != 1 && lepton_2->isElectron() != 1 ) ) {
+            //std::cout << "Why are we requiring same flavour on non-leptons?" << std::endl;
+          //}
+          //else if ( lepton_1->isMuon() != lepton_2->isMuon() ) continue;
+        //}
 
         /* if ( pair_req_1 == "opposite_sign" || pair_req_2 == "opposite_sign" ) { */
         /*   reco::LeafCandidate* lepton_1 = (reco::LeafCandidate*)ptr((*collection1)->at(iObj1)); */
@@ -327,7 +329,16 @@ void TwoObjectKinematic<collectionType1, collectionType2>::evaluate() {
         else if ( variable == "deltaR" ) thisPairValue = vect1.DeltaR(vect2);
         else if ( variable == "weightedDeltaR" ) thisPairValue = abs(vect1.Pt() * vect1.DeltaR(vect2));
         else if ( variable == "deltaEta" ) thisPairValue = vect1.Eta() - vect2.Eta();
-        else if ( variable == "deltaPhi" ) thisPairValue = vect1.Phi() - vect2.Phi();
+        else if ( variable == "deltaPhi" ) {
+	  thisPairValue = vect1.Phi() - vect2.Phi();
+	  //if (abs(thisPairValue) < 0.6) {
+	    //invariant_mass = vect12.M();
+	    /* cout << thisPairValue << endl; */
+	  //cout << ptr((*collection1)->at(iObj1))->pdgId() << endl; 
+	  //cout << ptr((*collection2)->at(iObj2))->pdgId() << endl; 
+	    /* cout << "===================="<< endl; */
+	  //}
+	}
         else if ( variable == "absDeltaEta" ) thisPairValue = abs(vect1.Eta() - vect2.Eta());
         else if ( variable == "absDeltaPhi" ) thisPairValue = abs(vect1.Phi() - vect2.Phi());
         else if ( variable == "weightedAbsDeltaPhi") thisPairValue = vect1.Pt() * abs(vect1.Phi() - vect2.Phi());

@@ -28,6 +28,10 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
 
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/SingleObjectVariable.h"
+
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 ///-------------- Kinematic Variables ------------------
 //done
@@ -75,205 +79,14 @@ int convertSampleNameToNumber(string sampleName) {
   // make a TString version of this so you can use it for contains
   TString tmpName (sampleName);
 
-  if (analysisYear == "2011") {
-    if (isData) sampleNumber = -1;
-    else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) sampleNumber = 2300; 
-    else if (sampleName == "zjets_lowmass") sampleNumber = 2310; 
-    else if (sampleName == "wjets") sampleNumber = 2400; 
-    else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) sampleNumber = 2500;
-    else if (sampleName == "ttbar_bb" ) sampleNumber = 2555; 
-    else if (sampleName == "ttbar_cc") sampleNumber = 2544; 
-    else if (tmpName.Contains("scaleup_ttbar")) sampleNumber = 2510; 
-    else if (tmpName.Contains("scaledown_ttbar")) sampleNumber = 2511; 
-    else if (sampleName == "ttbarZ") sampleNumber = 2523; 
-    else if (sampleName == "ttbarW") sampleNumber = 2524; 
-    else if (tmpName.Contains("singlet")) sampleNumber = 2600; 
-    else if (sampleName == "ww") sampleNumber = 2700; 
-    else if (sampleName == "wz") sampleNumber = 2701; 
-    else if (sampleName == "zz") sampleNumber = 2702; 
-    else if (tmpName.Contains("ttH")) sampleNumber = 120;
-    else assert (sampleName == "sampleName is not in the approved list");
-  }
-  else if (analysisYear == "2012_52x" || analysisYear == "2012_53x") {
+  if (analysisYear == "2012_52x" || analysisYear == "2012_53x") {
     if (isData) sampleNumber = -1;
     else if (sampleName == "ttbar" || tmpName.Contains("ttbar_part")) { sampleNumber = 2500;
       nGen = 6912438+1362471; Xsec = 245.8; }
-    else if (sampleName == "ttbar_bb" || tmpName.Contains("ttbar_bb_part")) { sampleNumber = 2555;
-      nGen = 6912438+1362471; Xsec = 245.8; }
-    else if (sampleName == "ttbar_cc" || tmpName.Contains("ttbar_cc_part")) { sampleNumber = 2544;
-      nGen = 6912438+1362471; Xsec = 245.8; }
-    else if (sampleName == "ttbar_scaleup") sampleNumber = 2511; 
-    else if (sampleName == "ttbar_scaledown") sampleNumber = 2510; 
-    else if (sampleName == "ttbar_matchingup") sampleNumber = 2513; 
-    else if (sampleName == "ttbar_matchingdown") sampleNumber = 2512; 
-    else if (sampleName == "ttbar_jj" || tmpName.Contains("ttbar_jj_part")) { sampleNumber = 2566;
-      nGen = 31111456; Xsec = 0.457*245.8;
-      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_lj" || tmpName.Contains("ttbar_lj_part")) { sampleNumber = 2563;
-      nGen = 25327478; Xsec = 0.438*245.8;
-      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_ll" || tmpName.Contains("ttbar_ll_part")) { sampleNumber = 2533;
-      nGen = 12100452; Xsec = 0.105*245.8;
-      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_cc_jj" || tmpName.Contains("ttbar_cc_jj_part")) { sampleNumber = 2576;
-      nGen = 31111456; Xsec = 0.457*245.8;
-      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_cc_lj" || tmpName.Contains("ttbar_cc_lj_part")) { sampleNumber = 2573;
-      nGen = 25327478; Xsec = 0.438*245.8;
-      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_cc_ll" || tmpName.Contains("ttbar_cc_ll_part")) { sampleNumber = 2543;
-      nGen = 12100452; Xsec = 0.105*245.8;
-      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_bb_jj" || tmpName.Contains("ttbar_bb_jj_part")) { sampleNumber = 2586;
-      nGen = 31111456; Xsec = 0.457*245.8;
-      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_bb_lj" || tmpName.Contains("ttbar_bb_lj_part")) { sampleNumber = 2583;
-      nGen = 25327478; Xsec = 0.438*245.8;
-      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_bb_ll" || tmpName.Contains("ttbar_bb_ll_part")) { sampleNumber = 2553;
-      nGen = 12100452; Xsec = 0.105*245.8;
-      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_b_jj" || tmpName.Contains("ttbar_b_jj_part")) { sampleNumber = 2596;
-      nGen = 31111456; Xsec = 0.457*245.8;
-      weight_Xsec = ( 0.457 / 31111456 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_b_lj" || tmpName.Contains("ttbar_b_lj_part")) { sampleNumber = 2593;
-      nGen = 25327478; Xsec = 0.438*245.8;
-      weight_Xsec = ( 0.438 / 25327478 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "ttbar_b_ll" || tmpName.Contains("ttbar_b_ll_part")) { sampleNumber = 2599;
-      nGen = 12100452; Xsec = 0.105*245.8;
-      weight_Xsec = ( 0.105 / 12100452 ) / ( 1.0 / ( 6912438 + 1362471 )); }
-    else if (sampleName == "wjets" || tmpName.Contains("wjets_part")) { sampleNumber = 2400;
-      nGen = 57536319; Xsec = 36257; }
-    else if (sampleName == "wjets_0p" || tmpName.Contains("wjets_0p_part")) { sampleNumber = 2400;
-      nGen = 57536319; Xsec = 36257; }
-    else if (sampleName == "wjets_1p" || tmpName.Contains("wjets_1p_part")) { sampleNumber = 2400;
-      nGen = 23134881; Xsec = 6440.4;
-      weight_Xsec = ( 5400.0 / 23134881 ) / ( 30400.0 / 57536319 ); }
-    else if (sampleName == "wjets_2p" || tmpName.Contains("wjets_2p_part")) { sampleNumber = 2400;
-      nGen = 33933328; Xsec = 2087.2;
-      weight_Xsec = ( 1750.0 / 339333285 ) / ( 30400.0 / 57536319 ); }
-    else if (sampleName == "wjets_3p" || tmpName.Contains("wjets_3p_part")) { sampleNumber = 2400;
-      nGen = 15463420; Xsec = 619.0;
-      weight_Xsec = ( 519.0 / 15463420 ) / ( 30400.0 / 57536319 ); }
-    else if (sampleName == "wjets_4p" || tmpName.Contains("wjets_4p_part")) { sampleNumber = 2400;
-      nGen = 13365439; Xsec = 255.2;
-      weight_Xsec = ( 214.0 / 13365439 ) / ( 30400.0 / 57536319 ); } 
-    else if (sampleName == "zjets_lowmass" || tmpName.Contains("zjets_lowmass_part")) { sampleNumber = 2850;
-      nGen = 37828841; Xsec = 14702; }
-    else if (sampleName == "zjets_lowmass_1p" || tmpName.Contains("zjets_lowmass_1p_part")) { sampleNumber = 2851;
-      weight_Xsec = ( 716.0 / 8039604 ) / ( 11050.0 / 37828841 ); }
-    else if (sampleName == "zjets_lowmass_2p" || tmpName.Contains("zjets_lowmass_2p_part")) { sampleNumber = 2852;
-      weight_Xsec = ( 309.7 / 30684442 ) / ( 11050.0 / 37828841 ); }
-    else if (sampleName == "zjets" || tmpName.Contains("zjets_part")) { sampleNumber = 2800;
-      nGen =  30072710; Xsec = 3505.7; }
-    else if (sampleName == "zjets_0p" || tmpName.Contains("zjets_0p_part")) { sampleNumber = 2800;
-      nGen =  30072710; Xsec = 3505.7; }
-    else if (sampleName == "zjets_1p" || tmpName.Contains("zjets_1p_part")) { sampleNumber = 2801;
-      nGen = 24032562; Xsec = 666.7;
-      weight_Xsec = ( 561.0 / 24032562 ) / ( 2950.0 /  30072710 ); }
-    else if (sampleName == "zjets_2p" || tmpName.Contains("zjets_2p_part")) { sampleNumber = 2802;
-      nGen = 2350806; Xsec = 215.1;
-      weight_Xsec = ( 181.0 / 2350806 ) / ( 2950.0 /  30072710 ); }
-    else if (sampleName == "zjets_3p" || tmpName.Contains("zjets_3p_part")) { sampleNumber = 2803;
-      nGen = 10753491; Xsec = 66.07;
-      weight_Xsec = ( 55.6 / 10753491 ) / ( 2950.0 /  30072710 ); }
-    else if (sampleName == "zjets_4p" || tmpName.Contains("zjets_4p_part")) { sampleNumber = 2804;
-      nGen = 6370630; Xsec = 27.38;
-      weight_Xsec = ( 23.04 /6370630 ) / ( 2950.0 /  30072710 ); }
-    else if (sampleName == "singlet_s") { sampleNumber = 2600;
-      nGen = 259657; Xsec = 3.79; }
-    else if (sampleName == "singlet_s_ll") sampleNumber = 2630;
-    else if (sampleName == "singletbar_s") { sampleNumber = 2601;
-      nGen = 139835; Xsec = 1.76; }
-    else if (sampleName == "singletbar_s_ll") sampleNumber = 2631; 
-    else if (sampleName == "singlet_t") { sampleNumber = 2602;
-      nGen = 3744404; Xsec = 56.4; }
-    else if (sampleName == "singlet_t_ll") sampleNumber = 2632; 
-    else if (sampleName == "singletbar_t") { sampleNumber = 2603;
-      nGen = 1933504; Xsec = 30.7; }
-    else if (sampleName == "singletbar_t_ll") sampleNumber = 2633; 
-    else if (sampleName == "singlet_tW") { sampleNumber = 2604;
-      nGen = 496918; Xsec = 11.1; }
-    else if (sampleName == "singlet_tW_lj") sampleNumber = 2654; 
-    else if (sampleName == "singlet_tW_jl") sampleNumber = 2664; 
-    else if (sampleName == "singlet_tW_ll") sampleNumber = 2634; 
-    else if (sampleName == "singletbar_tW") { sampleNumber = 2605;
-      nGen = 492779; Xsec = 7.87; }
-    else if (sampleName == "singletbar_tW_lj") sampleNumber = 2655; 
-    else if (sampleName == "singletbar_tW_jl") sampleNumber = 2665; 
-    else if (sampleName == "singletbar_tW_ll") sampleNumber = 2635; 
-    else if (sampleName == "ww") { sampleNumber = 2700;
-      nGen = 9955089; Xsec = 54.8; }
-    else if (sampleName == "ww_ll") { sampleNumber = 2700;
-      nGen = 1931931; Xsec = 54.8*0.324*0.324; }
-    else if (sampleName == "www") { sampleNumber = 2710;
-      nGen = 220040; Xsec =  0.08217; }
-    else if (sampleName == "wwz") { sampleNumber = 2720;
-      nGen = 221576; Xsec = 0.0633; }
-    else if (sampleName == "wwG") { sampleNumber = 2720;
-      nGen = 94500; Xsec = 0.0000001; } //AWB incorrect values
-    else if (tmpName.Contains("wz") && !(tmpName.Contains("_ll") || tmpName.Contains("_lj"))) { sampleNumber = 2701;      
-      nGen = 9931257; Xsec = 32.3; }
-    else if (tmpName.Contains("wz") && tmpName.Contains("lll")) { sampleNumber = 2731;
-      nGen = 1987010; Xsec = 1.057*1.10; } 
-    else if (tmpName.Contains("wz") && tmpName.Contains("lljj")) { sampleNumber = 2761;
-      nGen = 3212461; Xsec = 32.3*0.101*(1-0.324); }
-    else if (tmpName.Contains("wz") && tmpName.Contains("ljj")) { sampleNumber = 2791;
-      nGen = 2906320; Xsec = 32.3*0.324*0.699; }
-    else if (sampleName == "wzz") { sampleNumber = 2721;
-      nGen = 219835; Xsec = 0.01922; } 
-    else if (tmpName.Contains("zz") && !tmpName.Contains("_ll")) { sampleNumber = 2702;
-      nGen = 9755621; Xsec = 7.7; }
-    else if (tmpName.Contains("zz") && tmpName.Contains("llll")) { sampleNumber = 2732;
-      nGen = 4804217; Xsec = 0.157*1.21; } //why is it not (7.7*0.101*0.101) * 1.21?
-    else if (tmpName.Contains("zz") && tmpName.Contains("lowmll")) { sampleNumber = 2732;
-      nGen = 4804217; Xsec = 0.157*1.21; } //Incorrect nGen and Xsec
-    else if (tmpName.Contains("zz") && tmpName.Contains("lljj")) { sampleNumber = 2762;
-      nGen = 1934806; Xsec = 7.7*2*0.101*0.699; }
-    else if (sampleName == "zzz") { sampleNumber = 2722;
-      nGen = 224519; Xsec = 0.004587; }
-    else if (sampleName == "ttbarW") { sampleNumber = 2524;
-      nGen = 195396; Xsec = 0.249; }
-    else if (sampleName == "ttbarWW") { sampleNumber = 2534;
-      nGen = 216867; Xsec = 0.002037; }
-    else if (sampleName == "ttbarZ") { sampleNumber = 2523;
-      nGen = 209512; Xsec = 0.206; }
-    else if (sampleName == "ttbarG") { sampleNumber = 2560;
-      nGen = 71405; Xsec = 1.444*1.8; } 
-    else if (sampleName == "ttbarGStar_ee") { sampleNumber = 2567;
-      nGen = 13517; Xsec = 1.5*0.02724*0.104; } 
-    else if (sampleName == "ttbarGStar_mm") { sampleNumber = 2568;
-      nGen = 8019; Xsec = 1.5*0.01233*0.141; }
-    else if (sampleName == "ttbarGStar_tt") { sampleNumber = 2569;
-      nGen = 17289; Xsec = 1.5*0.00133*0.038; } 
-    else if (sampleName == "tttt") { sampleNumber = 2525;
-      nGen = 99994; Xsec = 0.000716; }
-    else if (sampleName == "tbZ_ll") { sampleNumber = 2000;
-      nGen = 148158; Xsec = 0.0114; }
-    else if (sampleName == "WpWpqq") { sampleNumber = 2001;
-      nGen = 99700; Xsec = 0.2482; }
-    else if (sampleName == "WmWmqq") { sampleNumber = 2002;
-      nGen = 1; Xsec = 0.0889; } //Not yet processed
-    else if (sampleName == "WWDPI") { sampleNumber = 2003;
-      nGen = 833755; Xsec = 0.5879; }
-    else if (sampleName == "VH_tautau") { sampleNumber = 2915;
-      nGen = 200124; Xsec = 0.07717352; } 
-    else if (sampleName == "VH_TauMu") { sampleNumber = 2915; 
-      nGen = 200124; Xsec = 0.07717352; }
-    else if (sampleName == "VH_ZZ") { sampleNumber = 2923;
-      nGen = 500409; Xsec = 0.03223704; } 
-    else if (sampleName == "VH_WW") { sampleNumber = 2924;
-      nGen = 200408; Xsec = 0.2625365; } 
     else if (tmpName.Contains("ttH") && analysisYear == "2012_52x") {
       if (tmpName.Contains("FullSim")) sampleNumber = 8120;
       else sampleNumber = 9120;
     }
-    // hack hack hack to allow me to keep a separate list
-    // treat this as a regular sample
-    else if (sampleName == "ttbar_lj_passMva")  { sampleNumber = 2500;
-      nGen = 25165429; Xsec = 98.65;
-      weight_Xsec = ( 0.438 / 25165429 ) / ( 1.0 / ( 6889624 + 1362471 ));
-    } 
     else if (tmpName.Contains("ttH") && analysisYear == "2012_53x") {
       if (tmpName.Contains("_tautau")) { sampleNumber = 7120;
         nGen = 992997; Xsec = 0.1302*0.1302; }
@@ -384,7 +197,6 @@ int main (int argc, char** argv) {
   // saved inside the lepHelper somewhere?
   // For now they are ok here
   // ---------------------------------------------
-
   
   electronID::electronID electronTightID = electronID::electronTight;
   electronID::electronID electronLooseID = electronID::electronLoose;
@@ -430,13 +242,17 @@ int main (int argc, char** argv) {
 
   GenericCollection<reco::VertexCollection> primaryVertices(miniAODhelper);
 
-  //GenericCollection<pat::PackedGenParticleCollection> genTopParticles(miniAODhelper);
   GenericCollection<reco::GenParticleCollection> genParticles(miniAODhelper);
   GenericCollection<reco::GenParticleCollection> genTopParticles(miniAODhelper);
   GenericCollection<reco::GenParticleCollection> genHiggsParticles(miniAODhelper);
-  
+
+  GenericCollection<pat::PackedGenParticleCollection> genMuons(miniAODhelper);
+  GenericCollection<pat::PackedGenParticleCollection> genElectrons(miniAODhelper);
+
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
+
+  double wgt;
 
   //////////////////////////////////////////////////////////////////////////////
   ////
@@ -446,6 +262,11 @@ int main (int argc, char** argv) {
 
   ///////////// Series Variables of data members //////////////// 
 
+
+  SingleObjectVariable<double>
+    evtwgt(&wgt,"aMC@NLO_event_weight");
+  kinVars.push_back(&evtwgt);
+  
   GenericCollectionMember<float,std::vector<pat::Muon>> 
     allMuonPt(Reflex::Type::ByName("pat::Muon"), &(tightLooseMuons.ptrToItems),
               "pt_", "muons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 2);
@@ -465,6 +286,12 @@ int main (int argc, char** argv) {
     allJetPt(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
   		  "pt_", "jets_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
   kinVars.push_back(&allJetPt);
+
+  GenericCollectionMember<float,std::vector<reco::LeafCandidate>> 
+    allLeptonPhi(Reflex::Type::ByName("reco::LeafCandidate"), &(tightLooseLeptons.ptrToItems),
+  		  "phi_", "leptons_by_pt",  KinematicVariableConstants::FLOAT_INIT, 4);
+  kinVars.push_back(&allLeptonPhi);
+  
 
   ///////////// Series Variables of class methods //////////////// 
 
@@ -506,61 +333,73 @@ int main (int argc, char** argv) {
   
   TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
     myZmass("mass", "closest_to", "Zmass",
-	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-	    91.2, "same_flavour");
+  	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  	    91.2, "same_flavour");
   kinVars.push_back(&myZmass);
 
   TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
     myDeltaRLepLep("deltaR", "min", "dR_leplep",
-		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
+  		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
   kinVars.push_back(&myDeltaRLepLep);
+
 
   TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
     myDeltaPhiLepLep("deltaPhi", "min", "dPhi_leplep",
-		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
+  		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
   kinVars.push_back(&myDeltaPhiLepLep);
+
+
+  TwoObjectKinematic<std::vector<pat::PackedGenParticle>,std::vector<pat::PackedGenParticle>>
+    myDeltaPhiMuMuGen("deltaPhi", "min", "dPhi_leplep_gen",
+  		     &(genMuons.ptrToItems), "muons_by_pt", 1, 99,
+  		     &(genMuons.ptrToItems), "muons_by_pt", 1, 99);
+  kinVars.push_back(&myDeltaPhiMuMuGen);
+
+
 
   TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
     myMinDrJets("deltaR", "min", "min_dr_jets",
-		&(jets.ptrToItems), "jets_by_pt", 1, 99,
-		&(jets.ptrToItems), "jets_by_pt", 1, 99);
+  		&(jets.ptrToItems), "jets_by_pt", 1, 99,
+  		&(jets.ptrToItems), "jets_by_pt", 1, 99);
   kinVars.push_back(&myMinDrJets);
 
   TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<pat::Jet>>
     mySumPt("pt", "sum", "sum_pt",
-	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-	    &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  	    &(jets.ptrToItems), "jets_by_pt", 1, 99);
   kinVars.push_back(&mySumPt);
 
   TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
     mySumJetPt("pt", "sum", "sum_jet_pt",
-	       &(jets.ptrToItems), "jets_by_pt", 1, 99,
-	       &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  	       &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  	       &(jets.ptrToItems), "jets_by_pt", 1, 99);
   kinVars.push_back(&mySumJetPt);
 
   TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
     mySumJetMass("mass", "vector_sum", "sum_jet_mass",
-		 &(jets.ptrToItems), "jets_by_pt", 1, 99,
-		 &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  		 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  		 &(jets.ptrToItems), "jets_by_pt", 1, 99);
   kinVars.push_back(&mySumJetMass);
 
   TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
     myHiggsLikeDijetMass("mass", "closest_to", "higgsLike_dijet_mass",
-			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
-			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
-			 115.0);
+  			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  			 115.0);
   kinVars.push_back(&myHiggsLikeDijetMass);
   
   TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
     myHiggsLikeDijetMass2("mass", "second_closest_to", "higgsLike_dijet_mass2",
-			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
-			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
-			  115.0);
+  			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  			  115.0);
   kinVars.push_back(&myHiggsLikeDijetMass2);
 
+
+  
 
 
 
@@ -575,7 +414,7 @@ int main (int argc, char** argv) {
   int numEvents = 0;
   int numEventsFailCuts = 0;
   int numEventsPassCuts = 0;
-  int printEvery = 1;
+  int printEvery = 1000;
   
   //vars for vertex loop
   reco::Vertex vertex;
@@ -583,7 +422,6 @@ int main (int argc, char** argv) {
   double maxAbsZ = 24.0;
   double maxd0 = 2.;
   int numpv = 0;
-
 
   for (ev.toBegin(); !ev.atEnd(); ++ev){
     numEvents++;
@@ -617,6 +455,10 @@ int main (int argc, char** argv) {
       //cout << "setting vertex, numpv > 0" << endl;
       miniAODhelper->SetVertex(vertex);
     }
+    ///define weights here
+    //evt_wgts.initializeRawWgtItems(ev,"generator");
+
+
     /////////////////////////////////////////////////////////////
     //
     //    Initialize collections and apply object ids
@@ -627,8 +469,10 @@ int main (int argc, char** argv) {
     tightLoosePreselectedElectrons.keepSelectedParticles(electronPreselectedID);
     tightElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
     tightElectrons.keepSelectedParticles(electronTightID);
+
     tightLooseElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
     tightLooseElectrons.keepSelectedParticles(electronLooseID);
+
     looseElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
     looseElectrons.keepSelectedDifference(electronLooseID, electronTightID);
     preselectedElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
@@ -640,19 +484,14 @@ int main (int argc, char** argv) {
     tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);
     tightMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightMuons.keepSelectedParticles(muonTightID);
+
+    tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
+    tightLooseMuons.keepSelectedParticles(muonLooseID);
+
     looseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     looseMuons.keepSelectedDifference(muonLooseID, muonTightID);
     preselectedMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     preselectedMuons.keepSelectedDifference(muonPreselectedID, muonLooseID);
-    tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
-    tightLooseMuons.keepSelectedParticles(muonLooseID);
-
-    // for (pat::MuonCollection::const_iterator iMu = tightMuons.ptrToItems->begin(); iMu != tightMuons.ptrToItems->end(); ++iMu){
-    //   leptons->push_back(*iMu);
-    // }
-    // for (pat::ElectronCollection::const_iterator iMu = tightElectrons.ptrToItems->begin(); iMu != tightElectrons.ptrToItems->end(); ++iMu){
-    //   leptons->push_back(*iMu);
-    // }
 
     tightTaus.initializeRawItemsSortedByPt(ev, "slimmedTaus");
     tightTaus.keepSelectedParticles(tauTightID);
@@ -667,21 +506,27 @@ int main (int argc, char** argv) {
     looseLeptons.pushBackAndSort(looseMuons.items);
     preselectedLeptons.resetAndPushBack(preselectedElectrons.items);
     preselectedLeptons.pushBackAndSort(preselectedMuons.items);
+
     tightLooseLeptons.resetAndPushBack(tightLooseElectrons.items);
     tightLooseLeptons.pushBackAndSort(tightLooseMuons.items);
+
     tightLoosePreselectedLeptons.resetAndPushBack(tightLoosePreselectedElectrons.items);
     tightLoosePreselectedLeptons.pushBackAndSort(tightLoosePreselectedMuons.items);
 
     jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
     jets.cleanJets(tightLoosePreselectedMuons.items);
     jets.cleanJets(tightLoosePreselectedElectrons.items);
-    
 
     jets.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
     jetsByCSV.initializeRawItemsSortedByCSV(jets.items);
 
     jets_30.initializeRawItems(jets.items);
     jets_30.keepSelectedJets(30.0, 2.4, jetID::jetLoose, '-');
+
+    /////////   aMC@NLO negative event weights   //////////////
+    fwlite::Handle<GenEventInfoProduct> GenInfo;
+    GenInfo.getByLabel(ev,"generator");
+    wgt = GenInfo->weight();
 
     genTopParticles.initializeRawItems(ev,"prunedGenParticles");
     auto topPDGID = [] (reco::GenParticle p) { return (p.pdgId() == 6 ); };
@@ -691,6 +536,11 @@ int main (int argc, char** argv) {
     auto higgsPDGID = [] (reco::GenParticle p) { return (p.pdgId() == 25 ); };
     genHiggsParticles.keepSelectedParticles(higgsPDGID);
 
+    genMuons.initializeRawItems(ev,"packedGenParticles");
+    auto muonPDGID = [] (pat::PackedGenParticle p) { return (abs(p.pdgId()) == 13 ); };
+    auto muonPt = [] (pat::PackedGenParticle p) { return (p.pt() >= 10. ); };
+    genMuons.keepSelectedParticles(muonPDGID);
+    genMuons.keepSelectedParticles(muonPt);
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
@@ -754,3 +604,15 @@ int main (int argc, char** argv) {
   outputFile->Write();
   outputFile->Close();
 }
+
+
+
+
+
+
+
+
+
+
+
+

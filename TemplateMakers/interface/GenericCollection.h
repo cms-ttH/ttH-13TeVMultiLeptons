@@ -392,7 +392,7 @@ template<class collectionType>
 template<typename inputType>
 void GenericCollection<collectionType>::pushBackAndSort(const inputType& collection) {
   //  void GenericCollection<collectionType>::resetAndPushBack(const inputType& collection) { //works
-  reset();
+  //reset();
   for (auto particle: collection) {
     items.push_back(particle);
   }
