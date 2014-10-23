@@ -14,6 +14,14 @@
 #include <vector>
 #include <string>
 
+#include <iostream>
+#include <algorithm>
+#include <exception>
+#include <cmath> 
+#include <iomanip>
+#include <fstream>
+#include <sstream>
+
 #include "TROOT.h"
 #include "TSystem.h"
 #include "TStyle.h"
@@ -23,6 +31,8 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TH2D.h"
+#include "TVector.h"
+#include "TLorentzVector.h"
 
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"
@@ -37,6 +47,8 @@
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+//#include "FWCore/Framework/interface/Handle.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -67,7 +79,8 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
-
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 // Trigger
 
@@ -87,9 +100,11 @@
 // Multilepton
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMethod.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagDiscrim.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenPt.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
 
@@ -102,6 +117,34 @@
 //using namespace trigger;
 //using namespace std;
 
+typedef std::vector< TLorentzVector >          	vecTLorentzVector;
+typedef std::vector<int>                       	vint;
+typedef std::vector<double>                    	vdouble;
+typedef std::vector<std::vector<double> > 	vvdouble;
+typedef std::vector<std::string> 		vstring;
+
+typedef edm::Handle<pat::MuonCollection>	patMuons;
+typedef edm::Handle<pat::ElectronCollection>	patElectrons;
+typedef edm::Handle<pat::JetCollection>		patJets;
+typedef edm::Handle<pat::METCollection>		patMETs;
+typedef edm::Handle<std::vector< PileupSummaryInfo > > 	pileupInfo;
+
+typedef edm::Handle<pat::Muon>		patMuon;
+typedef edm::Handle<pat::Electron>	patElectron;
+typedef edm::Handle<pat::Jet>		patJet;
+typedef edm::Handle<pat::MET>		patMET;
+
+typedef std::vector<pat::Muon>	     vecPatMuon;
+typedef std::vector<pat::Electron>   vecPatElectron;
+typedef std::vector<pat::Jet>	     vecPatJet;
+typedef std::vector<pat::MET>	     vecPatMET;
+
+
+typedef std::vector<pat::Jet>::const_iterator 		jetit;
+typedef std::vector<pat::Muon>::const_iterator		muit;
+typedef std::vector<pat::Electron>::const_iterator	eleit;
+//typedef std::vector<pat::MET>::const_iterator		metit;
+
 
 class MultileptonAna
 {
@@ -110,26 +153,96 @@ class MultileptonAna
 		bool isData;
 		string sampleName;
 		int sampleNumber;
+		bool debug;
+		int eventcount;
 		
 		void detectData(string sampleName);
 		int convertSampleNameToNumber(string sampleName);
+		
+		edm::ParameterSet entire_pset;
+		edm::ParameterSet setupoptionsparams;
+		edm::ParameterSet triggerparams;
+		edm::ParameterSet muonparams;
+		edm::ParameterSet electronparams;
+		edm::ParameterSet leptonparams;
+		edm::ParameterSet jetparams;
+		edm::ParameterSet subjetparams;
+		edm::ParameterSet btagparams;
+		edm::ParameterSet metparams;
+		edm::ParameterSet variableparams;
+		edm::ParameterSet systparams;
+		edm::ParameterSet selectionparams;
+		
+		void parse_params();
+		
+		MiniAODHelper miniAODhelper;
+		
+		double rho;
+		
+		HLTConfigProvider hltConfig_;
+		std::string hltTag;	
+		
+		double doublemucount;
+		double doublemucount2;
+		double doublemucount3;
+		double doublemucount4;
+		
+		double doubleelecount;
+		double doubleelecount2;
+		
+		double muelecount;
+		double elemucount; 
+		
+		double tripelcount;
+		
+		int numpassedcuts;
+		double numpassedmumucuts;
+		double numpassedelelcuts;
+		double numpassedmuelcuts;
+		double numpassedelmucuts;
+		
+		vstring mumutriggerstostudy;
+		vstring eleltriggerstostudy
+		vstring mueltriggerstostudy;
+		vstring elmutriggerstostudy;
+		vstring tripeltriggerstostudy;
+		
+		
 		
 	public:
 		
 		MultileptonAna();
                 ~MultileptonAna();
 		
-		string analysisYear = "2012_53x";
+		string analysisYear = "2012_53x"; // "2015_73X"!
+		
+
+		vecTLorentzVector Get_vecTLorentzVector (vecPatJet theobjs);
+		vecTLorentzVector Get_vecTLorentzVector (vecPatMuon theobjs);
+		vecTLorentzVector Get_vecTLorentzVector (vecPatElectron theobjs);
+		TLorentzVector Get_TLorentzVector (patMETs theobjs);
+		vecTLorentzVector Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2);
+		
+		void SetupOptions(const edm::Event& event);
+		vstring Triggers(const edm::Event& event);
+		patMuons GetMuons(const edm::Event& event);
+		patElectrons GetElectrons(const edm::Event& event); 
+		patJets GetJets(const edm::Event& event);
+		patJets GetSubJets(const edm::Event& event); 
+		patMETs GetMet(const edm::Event& event);
+		int GetVertices (const edm::Event& event);
+		void GetLeptons(const edm::Event& event);
+		void GetBtags(const edm::Event& event);
+		void Variables(const edm::Event& event); 
+		void Systematics(const edm::Event& event);
+		void EventSelection(const edm::Event& event);
+		
 };
 
 
-MultileptonAna::MultileptonAna()
-{
-	//analysisYear = "2012_53x";
-}
+MultileptonAna::MultileptonAna(){} // use EDAnalyzer constructor
 
-MultileptonAna::~MultileptonAna() {}
-
+MultileptonAna::~MultileptonAna(){} 
 
 
 void MultileptonAna::detectData(string sampleName) {
