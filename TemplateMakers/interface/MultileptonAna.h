@@ -128,6 +128,7 @@ typedef edm::Handle<pat::ElectronCollection>	patElectrons;
 typedef edm::Handle<pat::JetCollection>		patJets;
 typedef edm::Handle<pat::METCollection>		patMETs;
 typedef edm::Handle<std::vector< PileupSummaryInfo > > 	pileupInfo;
+typedef edm::Handle<edm::TriggerResults>	trigRes;
 
 typedef edm::Handle<pat::Muon>		patMuon;
 typedef edm::Handle<pat::Electron>	patElectron;
@@ -186,6 +187,7 @@ class MultileptonAna
 		double doublemucount2;
 		double doublemucount3;
 		double doublemucount4;
+		double doublemucount5;
 		
 		double doubleelecount;
 		double doubleelecount2;
@@ -195,14 +197,21 @@ class MultileptonAna
 		
 		double tripelcount;
 		
+		double allcount_mumu[1000];
+		double allcount_elel[1000];
+		double allcount_muel[1000];
+		double allcount_elmu[1000];
+		
+		
 		int numpassedcuts;
 		double numpassedmumucuts;
 		double numpassedelelcuts;
 		double numpassedmuelcuts;
 		double numpassedelmucuts;
 		
+		vstring alltriggerstostudy;
 		vstring mumutriggerstostudy;
-		vstring eleltriggerstostudy
+		vstring eleltriggerstostudy;
 		vstring mueltriggerstostudy;
 		vstring elmutriggerstostudy;
 		vstring tripeltriggerstostudy;
@@ -224,7 +233,7 @@ class MultileptonAna
 		vecTLorentzVector Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2);
 		
 		void SetupOptions(const edm::Event& event);
-		vstring Triggers(const edm::Event& event);
+		trigRes GetTriggers(const edm::Event& event);
 		patMuons GetMuons(const edm::Event& event);
 		patElectrons GetElectrons(const edm::Event& event); 
 		patJets GetJets(const edm::Event& event);
@@ -236,6 +245,7 @@ class MultileptonAna
 		void Variables(const edm::Event& event); 
 		void Systematics(const edm::Event& event);
 		void EventSelection(const edm::Event& event);
+		vstring HLTInfo ();
 		
 };
 

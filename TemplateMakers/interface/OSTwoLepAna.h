@@ -58,5 +58,8 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		TH1D *jet4pt;		
 		TH1D *hlt_count_hist;		
 		
+		TH2D *lep1_lep2_pt;
+		
+		
 		
 };

@@ -21,21 +21,31 @@ void MultileptonAna::parse_params()
 
 void MultileptonAna::SetupOptions (const edm::Event& event)
 {
-	string rhostr = setupoptionsparams.getParameter<string> ("rhohandle");
+	string rhostr = setupoptionsparams.getParameter<string> ("rhoHandle");
 	edm::Handle<double> rhoHandle;
   	event.getByLabel(rhostr,rhoHandle);  //"fixedGridRhoAll");
   	rho = *rhoHandle; 
 
 }
-vstring MultileptonAna::Triggers (const edm::Event& event)
+vstring MultileptonAna::HLTInfo ()
 {
 	vstring HLT_triggers = triggerparams.getParameter<vstring> ("trigger_vstring");
-	if (debug) cout << "triggers to include: << endl;
+	if (debug) cout << "triggers to include:" << endl;
 	if (debug) for (unsigned int i=0; i<HLT_triggers.size(); i++) { cout << HLT_triggers[i] << endl; }
 	hltTag = triggerparams.getParameter<string> ("hltlabel");
 	
 	return HLT_triggers;
 }
+
+trigRes MultileptonAna::GetTriggers (const edm::Event& event)
+{
+	// hltTag already got by HLTInfo ...	
+	edm::Handle<edm::TriggerResults> triggerResults;
+	event.getByLabel(edm::InputTag("TriggerResults","", hltTag), triggerResults);
+	return triggerResults;
+}
+
+
 patMuons MultileptonAna::GetMuons (const edm::Event& event)
 {
 	string muCollection = muonparams.getParameter<string> ("muonCollection");
@@ -209,7 +219,7 @@ TLorentzVector MultileptonAna::Get_TLorentzVector (patMETs theobjs)
 	return metTLV;
 	
 }
-//vecTLorentzVector Get_vecTLorentzVector_Muons
+
 
 vecTLorentzVector MultileptonAna::Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2)
 {	
@@ -218,54 +228,56 @@ vecTLorentzVector MultileptonAna::Get_vecTLorentzVector_sorted_leptons (vecTLore
 	
 	// assuming they are already sorted by pt, respectively:
 	
-// 	int size1 = leps1.size();
-// 	int size2 = leps2.size();
-// 	
-// 	//if (size1==0&&size2==0) return 0;
-// 	
-// 	int maxsize = max(size1,size2);
-// 	int minsize = min(size1,size2);
-// 	
-// 	bool smallestis1 = (size1<size2) ? true : false;
-// 	
-// 	int i = 0;
-// 	int j = 0;
-// 	
-// 	while (true)
-// 	{
-// 		if ((i==minsize&&smallestis1)||(j==minsize&&(!smallestis1))) break;
-// 
-// 		if (leps1[i].Pt() < leps2[j].Pt())
-// 		{
-// 			newvecTLV.push_back(leps2[j]);
-// 			j++;
-// 		}
-// 		else
-// 		{
-// 			newvecTLV.push_back(leps1[i]);
-// 			i++;
-// 		}
-// 	}		
-// 	if (smallestis1)
-// 	{
-// 		while (true)
-// 		{
-// 			if (j==maxsize) break;
-// 			newvecTLV.push_back(leps2[j]);
-// 			j++;
-// 		}								
-// 	}
-// 	if (!smallestis1)
-// 	{			
-// 		while (true)
-// 		{
-// 			if (i==maxsize) break;
-// 			newvecTLV.push_back(leps1[i]);
-// 			i++;
-// 		}
-// 	}
+	int size1 = leps1.size();
+ 	int size2 = leps2.size();
+ 	
+ 	if (size1==0||size2!=0) return leps2;
+	if (size2==0||size1!=0) return leps1;
+	if (size1==0&&size2==0) { TLorentzVector ret(0.,0.,0.,0.); newvecTLV.push_back(ret); return newvecTLV; } // <- should figure out something else for this case..
 	
-//// above takes a time that is linear in size of the vectors.
+	int maxsize = max(size1,size2);
+	int minsize = min(size1,size2);
+	
+	bool smallestis1 = (size1<size2) ? true : false;
+	
+	int i = 0;
+	int j = 0;
+	
+	while (true)
+	{
+		if ((i==minsize&&smallestis1)||(j==minsize&&(!smallestis1))) break;
+
+		if (leps1[i].Pt() < leps2[j].Pt())
+		{
+			newvecTLV.push_back(leps2[j]);
+			j++;
+		}
+		else
+		{
+			newvecTLV.push_back(leps1[i]);
+			i++;
+		}
+	}		
+	if (smallestis1)
+	{
+		while (true)
+		{
+			if (j==maxsize) break;
+			newvecTLV.push_back(leps2[j]);
+			j++;
+		}								
+	}
+	if (!smallestis1)
+	{			
+		while (true)
+		{
+			if (i==maxsize) break;
+			newvecTLV.push_back(leps1[i]);
+			i++;
+		}
+	}
+	
+//// above takes a time that is linear with size of the vectors.
 //// brute force (if you aren't sure if they are sorted beforehand), takes
 //// a time that is quadratic in size of the vector:
 // 	
@@ -284,9 +296,9 @@ vecTLorentzVector MultileptonAna::Get_vecTLorentzVector_sorted_leptons (vecTLore
 // 			int max
 			
 	
-	TLorentzVector dummy;
-	dummy.SetPxPyPzE(0.,0.,0.,0.);
-	newvecTLV.push_back(dummy);
+//	TLorentzVector dummy;
+//	dummy.SetPxPyPzE(0.,0.,0.,0.);
+//	newvecTLV.push_back(dummy);
 
 	return newvecTLV;
 	

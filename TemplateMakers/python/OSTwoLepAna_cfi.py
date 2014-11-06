@@ -3,13 +3,14 @@
 # You can explicitly set these parameters of analysis via the cmsRun config.
 # 
 # 10/23/14 -- still somewhat of a skeleton. Parameters to be added.
-#
+# 11/05/14 -- more params 
 
 import FWCore.ParameterSet.Config as cms
 
 
 ####-----------------------------------------------
 
+## Feel free to add more parameters (see MultileptonAna.cc, OSTwoLepAna.cc)
 
 
 OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
@@ -18,16 +19,22 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 	
 	## anything to do at the beginning of the job:
         setupoptions = cms.PSet(	
-		rho = cms.string("fixedGridRhoFastjetAll") # choices are: fixedGridRhoAll, fixedGridRhoFastjetAll, fixedGridRhoFastjetAllCalo, fixedGridRhoFastjetCentralCalo, fixedGridRhoFastjetCentralChargedPileUp, fixedGridRhoFastjetCentralNeutral
+		rhoHandle = cms.string("fixedGridRhoFastjetAll") # choices are: fixedGridRhoAll, fixedGridRhoFastjetAll, fixedGridRhoFastjetAllCalo, fixedGridRhoFastjetCentralCalo, fixedGridRhoFastjetCentralChargedPileUp, fixedGridRhoFastjetCentralNeutral
 	),
 		
 	## list of triggers in the analysis:
 	triggers = cms.PSet(
-		hltlabel = cms.vstring("reHLT"), #trig studies = reHLT; real analysis = HLT
+		hltlabel = cms.string("reHLT"), #trig studies = reHLT; real analysis = HLT
 		trigger_vstring = cms.vstring(
-			"HLT_trig1",		
-			"HLT_trig2",
-			"HLT_trig3",
+			"HLT_Mu17_Mu8_v1",
+			"HLT_Mu17_TkMu8_v1",
+			"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1",
+			"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1",
+			"HLT_Ele17_Ele8_Gsf_v1",
+			"HLT_Ele23_Ele12_CaloId_TrackId_Iso_v1",
+			"HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1",
+			"HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1",
+			"HLT_Ele17_Ele12_Ele10_CaloId_TrackId_v1",
 		)
 	),
 
@@ -71,7 +78,6 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 	## how are btagged jets defined
 	btags = cms.PSet(
 	
-		
 	
 	),
 
