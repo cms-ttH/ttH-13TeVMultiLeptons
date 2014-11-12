@@ -213,6 +213,7 @@ vecTLorentzVector MultileptonAna::Get_vecTLorentzVector (vecPatJet theobjs)
 	
 }
 //vecTLorentzVector Get_vecTLorentzVector_SubJets ()
+
 TLorentzVector MultileptonAna::Get_TLorentzVector (patMETs theobjs)
 {
 	pat::MET theMET = theobjs->front();
@@ -220,7 +221,13 @@ TLorentzVector MultileptonAna::Get_TLorentzVector (patMETs theobjs)
 	return metTLV;
 	
 }
-
+TLorentzVector MultileptonAna::Get_TLorentzVector (pat::MET theMET)
+{
+	//pat::MET theMET = theobj;
+	TLorentzVector metTLV(theMET.px(),theMET.py(),0.0,theMET.pt());
+	return metTLV;
+	
+}
 
 vecTLorentzVector MultileptonAna::Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2)
 {	
@@ -389,16 +396,22 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
 }
 
 
-
 bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float iMinPt, const electronID::electronID iElectronID){
 
   CheckVertexSetUp();
 
   double minElectronPt = iMinPt;
 
-  float maxLooseElectronAbsEta = 2.5;
-  float maxTightElectronAbsEta = 2.5;
-
+  float maxLooseElectronAbsEta = electronparams.getParameter<double> ("maxLooseElectronAbsEta");
+  float maxTightElectronAbsEta = electronparams.getParameter<double> ("maxTightElectronAbsEta");
+  string theElectronMVA = electronparams.getParameter<string> ("theElectronMVA");
+  double passMVAcut = electronparams.getParameter<double> ("passMVAcut");
+  double tightElectronIso = electronparams.getParameter<double> ("tightElectronIso");
+  double looseElectronIso = electronparams.getParameter<double> ("looseElectronIso");  
+  double tightDxy = electronparams.getParameter<double> ("tightDxy");
+  double looseDxy = electronparams.getParameter<double> ("looseDxy");
+  double dz = electronparams.getParameter<double> ("dZ");
+  
 
   // Be skeptical about this electron making it through
   bool passesKinematics	= false;
@@ -407,29 +420,29 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
 
   bool inCrack = false;
   if( iElectron.superCluster().isAvailable() )
-    inCrack = ( fabs(iElectron.superCluster()->position().eta())>1.4442 && fabs(iElectron.superCluster()->position().eta())<1.5660 );
+    inCrack = ( fabs(iElectron.superCluster()->position().eta())>1.4442 && fabs(iElectron.superCluster()->position().eta())<1.5660 ); // doesn't change
 
+
+  // below should be made less confusing ...
 
   bool myTrigPresel = true;
 
-  double eleID      = iElectron.electronID("eidTight");
-  bool passMVAId53x = ( eleID>0.5 );  // For 2012_53x, tighter selection
+  double eleID      = iElectron.electronID(theElectronMVA);
+  bool passMVAId53x = ( eleID > passMVAcut );  // For 2012_53x, tighter selection
 
   bool d02 = false; 
   bool d04 = false;
   bool dZ  = false;
   bool no_exp_inner_trkr_hits = true; //false; // see below
   if( iElectron.gsfTrack().isAvailable() ){
-    d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.02 );
-    d04 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.04 );
+    d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < tightDxy );
+    d04 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < looseDxy );
     //no_exp_inner_trkr_hits = ( iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 0 ); // deprecated in 7_2_0 .. replace with ..?
-    dZ = ( fabs(iElectron.gsfTrack()->dz(vertex.position())) < 1. );
+    dZ = ( fabs(iElectron.gsfTrack()->dz(vertex.position())) < dz );
   }
-
 
   bool notConv = ( iElectron.passConversionVeto() );
   bool id      = ( passMVAId53x && d02 && dZ && notConv );
-
 
   switch(iElectronID){
   case electronID::electronSide:
@@ -439,13 +452,13 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   case electronID::electronNoCuts:
   case electronID::electronLoose:
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxLooseElectronAbsEta) && !inCrack);
-    passesIso        = (GetElectronRelIso(iElectron) < 0.200);
+    passesIso        = (GetElectronRelIso(iElectron) < looseElectronIso);
     passesID         = ( passMVAId53x && no_exp_inner_trkr_hits && d04 && notConv && myTrigPresel );
     break;
   case electronID::electronTightMinusTrigPresel:
   case electronID::electronTight:
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxTightElectronAbsEta) && !inCrack);
-    passesIso        = (GetElectronRelIso(iElectron) < 0.100);
+    passesIso        = (GetElectronRelIso(iElectron) < tightElectronIso);
     passesID         = ( id && no_exp_inner_trkr_hits && myTrigPresel );
     break;
   }
@@ -459,14 +472,25 @@ bool MultileptonAna::isGoodTau(const pat::Tau& iTau, const float iMinPt, const t
  
   double minTauPt = iMinPt;
   
+  //double tauMinPt
+  //double tauMaxAbsEta = 
+  
   bool passesKinematics = false;
-  passesKinematics = (iTau.pt() >= 20) && (fabs(iTau.eta()) <= 2.1) && (iTau.pt() > minTauPt);
+  passesKinematics = (iTau.pt() >= 20) && (fabs(iTau.eta()) <= 2.1) && (iTau.pt() > minTauPt); //minTauPt vs. 20?
   return passesKinematics;
 }
 
 bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const float iMaxAbsEta, const jetID::jetID iJetID, const char iCSVworkingPoint){
 
   CheckVertexSetUp();
+
+  
+//   neutralHadronEnergyFraction
+//   chargedEmEnergyFraction
+//   neutralEmEnergyFraction
+//   numberOfDaughters
+//   chargedHadronEnergyFraction
+//   chargedMultiplicity
 
   // Transverse momentum requirement
   if( iJet.pt() < iMinPt ) return false;
@@ -481,7 +505,7 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
 		iJet.numberOfDaughters() > 1
 		);
 
-  if( fabs(iJet.eta())<2.4 ){
+  if( fabs(iJet.eta())<2.4 ){ // endcaps
     loose = ( loose &&
 	      iJet.chargedHadronEnergyFraction() > 0.0 &&
 	      iJet.chargedMultiplicity() > 0

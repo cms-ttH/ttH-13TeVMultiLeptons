@@ -45,20 +45,30 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 		maxTightMuonAbsEta = cms.double(2.1), 			# there is no cms.float!
 		maxLooseMuonAbsEta = cms.double(2.5),
 		looseRelativeIso = cms.double(0.200),
-  		titghtRelativeIso = cms.double(0.120),
+  		tightRelativeIso = cms.double(0.120),
   		tightTrackNormalizedChi2 = cms.double(10.),		
   		tightTrackNumberOfValidMuonHits = cms.int32(0),		# greater than this
   		tightTrackDxy = cms.double(0.2),
   		tightTrackDz = cms.double(0.5),
   		tightNumberOfValidPixelHits = cms.int32(0),		# greater than this
-  		tightTrackerLayersWithMeasurement = cms.int32(5)		# greater than this
+  		tightTrackerLayersWithMeasurement = cms.int32(5)	# greater than this
 		
 	),
 
 
 	## electron collection to use, and defining loose, tight electrons:
 	electrons = cms.PSet( 
-		electronCollection = cms.string("slimmedElectrons")
+		electronCollection = cms.string("slimmedElectrons"),
+		maxLooseElectronAbsEta = cms.double(2.5),
+		maxTightElectronAbsEta = cms.double(2.5),
+		theElectronMVA = cms.string("eidTight"),	# which MVA to use
+		passMVAcut = cms.double(0.5),			# cut on the above MVA
+		tightElectronIso = cms.double(0.100),
+		looseElectronIso = cms.double(0.200),
+		tightDxy = cms.double(0.02),
+		looseDxy = cms.double(0.04),
+		dZ = cms.double(1.0),	 
+		
 	),
 
 

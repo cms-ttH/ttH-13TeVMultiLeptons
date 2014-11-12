@@ -144,7 +144,7 @@ typedef std::vector<pat::MET>	     vecPatMET;
 typedef std::vector<pat::Jet>::const_iterator 		jetit;
 typedef std::vector<pat::Muon>::const_iterator		muit;
 typedef std::vector<pat::Electron>::const_iterator	eleit;
-//typedef std::vector<pat::MET>::const_iterator		metit;
+typedef std::vector<pat::MET>::const_iterator		metit;
 
 
 class MultileptonAna: public MiniAODHelper
@@ -183,40 +183,6 @@ class MultileptonAna: public MiniAODHelper
 		HLTConfigProvider hltConfig_;
 		std::string hltTag;	
 		
-		double doublemucount;
-		double doublemucount2;
-		double doublemucount3;
-		double doublemucount4;
-		double doublemucount5;
-		
-		double doubleelecount;
-		double doubleelecount2;
-		
-		double muelecount;
-		double elemucount; 
-		
-		double tripelcount;
-		
-		double allcount_mumu[1000];
-		double allcount_elel[1000];
-		double allcount_muel[1000];
-		double allcount_elmu[1000];
-		
-		
-		int numpassedcuts;
-		double numpassedmumucuts;
-		double numpassedelelcuts;
-		double numpassedmuelcuts;
-		double numpassedelmucuts;
-		
-		vstring alltriggerstostudy;
-		vstring mumutriggerstostudy;
-		vstring eleltriggerstostudy;
-		vstring mueltriggerstostudy;
-		vstring elmutriggerstostudy;
-		vstring tripeltriggerstostudy;
-		
-		
 		
 	public:
 		
@@ -243,6 +209,7 @@ class MultileptonAna: public MiniAODHelper
 		vecTLorentzVector Get_vecTLorentzVector (vecPatMuon theobjs);
 		vecTLorentzVector Get_vecTLorentzVector (vecPatElectron theobjs);
 		TLorentzVector Get_TLorentzVector (patMETs theobjs);
+		TLorentzVector Get_TLorentzVector (pat::MET theMET);
 		vecTLorentzVector Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2);
 		
 		void SetupOptions(const edm::Event& event);
@@ -260,6 +227,7 @@ class MultileptonAna: public MiniAODHelper
 		void EventSelection(const edm::Event& event);
 		vstring HLTInfo ();
 		
+		// replace virtual members from inherited miniAODhelper:
 		bool isGoodMuon(const pat::Muon&, const float, const muonID::muonID);
   		bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID);
   		bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);

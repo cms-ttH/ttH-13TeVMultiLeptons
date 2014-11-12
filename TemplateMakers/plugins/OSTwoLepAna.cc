@@ -14,15 +14,12 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 void OSTwoLepAna::beginJob()
 {
 	edm::Service<TFileService> newfs;
+		
+	//summaryTree = new TTree("summaryTree", "Summary Event Values");	
 	
+	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
 	
-	//summaryTree = new TTree("summaryTree", "Summary Event Values"); // <-- usually we will want this
-	
-	sampleNumber=9120; //hack for now -> to include in parameterset
-	
-	//miniAODhelper.SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
-	//miniAODhelper.SetFactorizedJetCorrector();
 	SetFactorizedJetCorrector();
 
 	// book histos:
@@ -50,6 +47,8 @@ void OSTwoLepAna::beginJob()
 	jet2pt = newfs->make<TH1D>("jet2pt","jet2pt",200,0,400);
 	jet3pt = newfs->make<TH1D>("jet3pt","jet3pt",200,0,400);
 	jet4pt = newfs->make<TH1D>("jet4pt","jet4pt",200,0,400);   
+
+	met_pt = newfs->make<TH1D>("met_pt","met_pt",200,0,400);
 
 	lep1_lep2_pt = newfs->make<TH2D>("lep1_lep2_pt","lep1_lep2_pt",30,0,150,30,0,150);
 
@@ -164,9 +163,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	patMuons muons = 		GetMuons(event);
 	patJets pfjets = 		GetJets(event);
 	patElectrons electrons = 	GetElectrons(event);
-	//  patMETs mets = 		GetMET(event);
-
-	//miniAODhelper.SetRho(rho);	
+	patMETs mets = 			GetMet(event);
+	
 	SetRho(rho);
 	
 	int numpvs =			GetVertices(event);
@@ -174,7 +172,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		
 	edm::Handle<GenEventInfoProduct> GenInfo;
     	event.getByLabel("generator",GenInfo);
-    	double wgt = GenInfo->weight();		// <- gen-level weights
+    	double wgt = GenInfo->weight();		// <- gen-level weight
 	
 	double weight = 1.;			// <- analysis weight 
 	//  int numEvents = 0;
@@ -278,8 +276,20 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	int numSelJetsLooseCSVM = selectedJets_loose_tag_noSys_unsorted.size();
 
-
-	// fill histos:
+	
+	/////////
+	///
+	/// MET
+	///
+	////////
+	
+	TLorentzVector theMET = Get_TLorentzVector(mets);
+	
+	
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// fill some basic histos:
 
 	numtighteles->Fill					(numTightElectrons,weight);
 	numlooseeles->Fill					(numLooseElectrons,weight);
@@ -302,10 +312,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	if (jetsTLVloose.size()>1)jet2pt->Fill			(jetsTLVloose[1].Pt(),weight);
 	if (jetsTLVloose.size()>2)jet3pt->Fill			(jetsTLVloose[2].Pt(),weight);
 	if (jetsTLVloose.size()>3)jet4pt->Fill			(jetsTLVloose[3].Pt(),weight);
+	met_pt->Fill						(theMET.Pt(),weight);
 	// .....
 
 
-	//////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Do anything else specific to the analysis (like apply event selection, evaluate variables, loop over systematics, save things to a tree)
 	// In this case, I'm doing some trigger studies:
 	// ////////////////////////////////////////////////////////////////////////////////////////////
