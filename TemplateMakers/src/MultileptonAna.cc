@@ -138,7 +138,8 @@ int MultileptonAna::GetVertices (const edm::Event& event)
 	if ( numpv > 0 )
 	{
 		//cout << "setting vertex, numpv > 0" << endl;
-		miniAODhelper.SetVertex(vertex);
+		//miniAODhelper.SetVertex(vertex);
+		SetVertex(vertex);
 	}
 
 	return numpv;
@@ -302,4 +303,205 @@ vecTLorentzVector MultileptonAna::Get_vecTLorentzVector_sorted_leptons (vecTLore
 
 	return newvecTLV;
 	
+}
+
+
+bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, const muonID::muonID iMuonID){
+
+  CheckVertexSetUp();
+
+  double minMuonPt = iMinPt;
+
+  //float maxLooseMuonAbsEta = 2.5;
+  float maxLooseMuonAbsEta = muonparams.getParameter<double> ("maxLooseMuonAbsEta");
+  
+  
+
+  //float maxTightMuonAbsEta = 2.1;
+//float maxTightMuonAbsEta = 0.25;
+  float maxTightMuonAbsEta = muonparams.getParameter<double> ("maxTightMuonAbsEta");
+  
+  // Be skeptical about this muon making it through
+  bool passesKinematics	= false;
+  bool passesIso        = false;
+  bool passesID         = false;
+  bool isPFMuon         = false;
+  bool passesTrackerID  = false;
+
+  bool passesGlobalTrackID   = false;
+  bool passesMuonBestTrackID = false;
+  bool passesInnerTrackID    = false;
+  bool passesTrackID         = false;
+
+  
+  double tightRelativeIso = muonparams.getParameter<double> ("tightRelativeIso");
+  double looseRelativeIso = muonparams.getParameter<double> ("looseRelativeIso");
+  double tightTrackNormalizedChi2 = muonparams.getParameter<double> ("tightTrackNormalizedChi2");
+  int tightTrackNumberOfValidMuonHits = muonparams.getParameter<int> ("tightTrackNumberOfValidMuonHits");
+  double tightTrackDxy = muonparams.getParameter<double> ("tightTrackDxy");
+  double tightTrackDz = muonparams.getParameter<double> ("tightTrackDz");
+  int tightNumberOfValidPixelHits = muonparams.getParameter<int> ("tightNumberOfValidPixelHits");
+  int tightTrackerLayersWithMeasurement = muonparams.getParameter<int> ("tightTrackerLayersWithMeasurement");
+  
+
+  switch(iMuonID){
+  case muonID::muonSide:
+  case muonID::muonSideLooseMVA:
+  case muonID::muonSideTightMVA:
+  case muonID::muonPtOnly:
+  case muonID::muonPtEtaOnly:
+  case muonID::muonPtEtaIsoOnly:
+  case muonID::muonPtEtaIsoTrackerOnly:
+  case muonID::muonNoCuts:
+  case muonID::muonLoose:
+    passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) <= maxLooseMuonAbsEta));
+    passesIso        = (GetMuonRelIso(iMuon) < looseRelativeIso);
+    isPFMuon         = true;
+    passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon);
+    break;
+  case muonID::muonTight:
+    passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) <= maxTightMuonAbsEta));
+    passesIso        = (GetMuonRelIso(iMuon) < tightRelativeIso);
+    isPFMuon         = true;
+
+    if( iMuon.globalTrack().isAvailable() ){
+      passesGlobalTrackID = ( (iMuon.globalTrack()->normalizedChi2() < tightTrackNormalizedChi2) 
+			      && (iMuon.globalTrack()->hitPattern().numberOfValidMuonHits() > tightTrackNumberOfValidMuonHits)
+			      );
+    }
+    if( iMuon.muonBestTrack().isAvailable() ){
+      passesMuonBestTrackID = ( (fabs(iMuon.muonBestTrack()->dxy(vertex.position())) < tightTrackDxy)
+				&& (fabs(iMuon.muonBestTrack()->dz(vertex.position())) < tightTrackDz)
+				);
+    }
+    if( iMuon.innerTrack().isAvailable() )
+      passesInnerTrackID = (iMuon.innerTrack()->hitPattern().numberOfValidPixelHits() > tightNumberOfValidPixelHits);
+    if( iMuon.track().isAvailable() )
+      passesTrackID = (iMuon.track()->hitPattern().trackerLayersWithMeasurement() > tightTrackerLayersWithMeasurement);
+
+    passesTrackerID = ( passesGlobalTrackID && passesMuonBestTrackID && passesInnerTrackID && passesTrackID && (iMuon.numberOfMatchedStations() > 1) );
+
+    passesID        = ((iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && isPFMuon && passesTrackerID);
+    break;
+  }
+
+  return (passesKinematics && passesIso && passesID);
+}
+
+
+
+bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float iMinPt, const electronID::electronID iElectronID){
+
+  CheckVertexSetUp();
+
+  double minElectronPt = iMinPt;
+
+  float maxLooseElectronAbsEta = 2.5;
+  float maxTightElectronAbsEta = 2.5;
+
+
+  // Be skeptical about this electron making it through
+  bool passesKinematics	= false;
+  bool passesIso        = false;
+  bool passesID         = false;
+
+  bool inCrack = false;
+  if( iElectron.superCluster().isAvailable() )
+    inCrack = ( fabs(iElectron.superCluster()->position().eta())>1.4442 && fabs(iElectron.superCluster()->position().eta())<1.5660 );
+
+
+  bool myTrigPresel = true;
+
+  double eleID      = iElectron.electronID("eidTight");
+  bool passMVAId53x = ( eleID>0.5 );  // For 2012_53x, tighter selection
+
+  bool d02 = false; 
+  bool d04 = false;
+  bool dZ  = false;
+  bool no_exp_inner_trkr_hits = true; //false; // see below
+  if( iElectron.gsfTrack().isAvailable() ){
+    d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.02 );
+    d04 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.04 );
+    //no_exp_inner_trkr_hits = ( iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 0 ); // deprecated in 7_2_0 .. replace with ..?
+    dZ = ( fabs(iElectron.gsfTrack()->dz(vertex.position())) < 1. );
+  }
+
+
+  bool notConv = ( iElectron.passConversionVeto() );
+  bool id      = ( passMVAId53x && d02 && dZ && notConv );
+
+
+  switch(iElectronID){
+  case electronID::electronSide:
+  case electronID::electronSideLooseMVA:
+  case electronID::electronSideTightMVA:
+  case electronID::electronLooseMinusTrigPresel:
+  case electronID::electronNoCuts:
+  case electronID::electronLoose:
+    passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxLooseElectronAbsEta) && !inCrack);
+    passesIso        = (GetElectronRelIso(iElectron) < 0.200);
+    passesID         = ( passMVAId53x && no_exp_inner_trkr_hits && d04 && notConv && myTrigPresel );
+    break;
+  case electronID::electronTightMinusTrigPresel:
+  case electronID::electronTight:
+    passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxTightElectronAbsEta) && !inCrack);
+    passesIso        = (GetElectronRelIso(iElectron) < 0.100);
+    passesID         = ( id && no_exp_inner_trkr_hits && myTrigPresel );
+    break;
+  }
+
+  return (passesKinematics && passesIso && passesID);
+}
+
+bool MultileptonAna::isGoodTau(const pat::Tau& iTau, const float iMinPt, const tauID::tauID iTauID){
+
+  CheckVertexSetUp();
+ 
+  double minTauPt = iMinPt;
+  
+  bool passesKinematics = false;
+  passesKinematics = (iTau.pt() >= 20) && (fabs(iTau.eta()) <= 2.1) && (iTau.pt() > minTauPt);
+  return passesKinematics;
+}
+
+bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const float iMaxAbsEta, const jetID::jetID iJetID, const char iCSVworkingPoint){
+
+  CheckVertexSetUp();
+
+  // Transverse momentum requirement
+  if( iJet.pt() < iMinPt ) return false;
+
+  // Absolute eta requirement
+  if( fabs(iJet.eta()) > iMaxAbsEta ) return false;
+
+  bool loose = (
+		iJet.neutralHadronEnergyFraction() < 0.99 &&
+		iJet.chargedEmEnergyFraction() < 0.99 &&
+		iJet.neutralEmEnergyFraction() < 0.99 &&
+		iJet.numberOfDaughters() > 1
+		);
+
+  if( fabs(iJet.eta())<2.4 ){
+    loose = ( loose &&
+	      iJet.chargedHadronEnergyFraction() > 0.0 &&
+	      iJet.chargedMultiplicity() > 0
+	      );
+  }
+
+  // Jet ID
+  switch(iJetID){
+  case jetID::none:
+  case jetID::jetMinimal:
+  case jetID::jetLooseAOD:
+  case jetID::jetLoose:
+  case jetID::jetTight:
+    if( !loose ) return false;
+    break;
+  default:
+    break;
+  }
+
+  if( !PassesCSV(iJet, iCSVworkingPoint) ) return false;
+
+  return true;
 }

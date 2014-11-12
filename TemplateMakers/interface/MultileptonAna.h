@@ -147,7 +147,7 @@ typedef std::vector<pat::Electron>::const_iterator	eleit;
 //typedef std::vector<pat::MET>::const_iterator		metit;
 
 
-class MultileptonAna
+class MultileptonAna: public MiniAODHelper
 {
 	protected:
 		
@@ -176,7 +176,7 @@ class MultileptonAna
 		
 		void parse_params();
 		
-		MiniAODHelper miniAODhelper;
+		//MiniAODHelper miniAODhelper;
 		
 		double rho;
 		
@@ -223,8 +223,21 @@ class MultileptonAna
 		MultileptonAna();
                 ~MultileptonAna();
 		
-		string analysisYear = "2012_53x"; // "2015_73X"!
+		string analysisYear = "2012_53x"; // "2015_74X"!
 		
+		electronID::electronID electronTightID;
+		electronID::electronID electronLooseID;
+		electronID::electronID electronPreselectedID;
+
+		muonID::muonID muonTightID;
+		muonID::muonID muonLooseID;
+		muonID::muonID muonPreselectedID;
+
+		tauID::tauID tauTightID;
+		// tauID::tauID tauLooseID = tauID::tauVLoose;
+		tauID::tauID tauPreselectedID;
+		vector<ArbitraryVariable*> kinVars;
+		vector<ArbitraryVariable*> cutVars;
 
 		vecTLorentzVector Get_vecTLorentzVector (vecPatJet theobjs);
 		vecTLorentzVector Get_vecTLorentzVector (vecPatMuon theobjs);
@@ -246,6 +259,11 @@ class MultileptonAna
 		void Systematics(const edm::Event& event);
 		void EventSelection(const edm::Event& event);
 		vstring HLTInfo ();
+		
+		bool isGoodMuon(const pat::Muon&, const float, const muonID::muonID);
+  		bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID);
+  		bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
+  		bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
 		
 };
 

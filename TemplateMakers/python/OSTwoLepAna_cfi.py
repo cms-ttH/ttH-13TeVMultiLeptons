@@ -24,8 +24,8 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 		
 	## list of triggers in the analysis:
 	triggers = cms.PSet(
-		hltlabel = cms.string("reHLT"), #trig studies = reHLT; real analysis = HLT
-		trigger_vstring = cms.vstring(
+		hltlabel = cms.string("reHLT"),		#trig studies = reHLT; real analysis = HLT
+		trigger_vstring = cms.vstring(		# this will eventually only be osTwoLep triggers
 			"HLT_Mu17_Mu8_v1",
 			"HLT_Mu17_TkMu8_v1",
 			"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1",
@@ -41,7 +41,18 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 
 	## muon collection to use, and defining loose, tight muons:
 	muons = cms.PSet( 
-		muonCollection = cms.string("slimmedMuons")
+		muonCollection = cms.string("slimmedMuons"),
+		maxTightMuonAbsEta = cms.double(2.1), 			# there is no cms.float!
+		maxLooseMuonAbsEta = cms.double(2.5),
+		looseRelativeIso = cms.double(0.200),
+  		titghtRelativeIso = cms.double(0.120),
+  		tightTrackNormalizedChi2 = cms.double(10.),		
+  		tightTrackNumberOfValidMuonHits = cms.int32(0),		# greater than this
+  		tightTrackDxy = cms.double(0.2),
+  		tightTrackDz = cms.double(0.5),
+  		tightNumberOfValidPixelHits = cms.int32(0),		# greater than this
+  		tightTrackerLayersWithMeasurement = cms.int32(5)		# greater than this
+		
 	),
 
 
@@ -51,7 +62,7 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 	),
 
 
-	## what goes into lepton collection (trivial here):
+	## what goes into lepton collection:
 	leptons = cms.PSet(
 		useElectrons = cms.bool(True),
 		useMuons = cms.bool(True),

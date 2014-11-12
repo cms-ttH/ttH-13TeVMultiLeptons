@@ -10,6 +10,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything t
 }
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
 
+
 void OSTwoLepAna::beginJob()
 {
 	edm::Service<TFileService> newfs;
@@ -19,10 +20,10 @@ void OSTwoLepAna::beginJob()
 	
 	sampleNumber=9120; //hack for now -> to include in parameterset
 	
-	miniAODhelper.SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
-
-	miniAODhelper.SetFactorizedJetCorrector();
-
+	//miniAODhelper.SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
+	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
+	//miniAODhelper.SetFactorizedJetCorrector();
+	SetFactorizedJetCorrector();
 
 	// book histos:
 
@@ -142,7 +143,6 @@ void OSTwoLepAna::beginJob()
 	if (numtrigs>7) elmutriggerstostudy.push_back(alltriggerstostudy[7]);
 	if (numtrigs>8) tripeltriggerstostudy.push_back(alltriggerstostudy[8]);
 	
-	
 }
 void OSTwoLepAna::endJob() {
 
@@ -158,7 +158,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	if (debug) cout << "event: " << event.id().event() << endl;
 	
 	eventcount++;
-	
 	SetupOptions(event);
   
 	trigRes triggerResults = 	GetTriggers(event);
@@ -167,8 +166,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	patElectrons electrons = 	GetElectrons(event);
 	//  patMETs mets = 		GetMET(event);
 
-	miniAODhelper.SetRho(rho);	
-		
+	//miniAODhelper.SetRho(rho);	
+	SetRho(rho);
+	
 	int numpvs =			GetVertices(event);
 	if (debug) cout << "numpvs: " << numpvs << endl;
 		
@@ -203,9 +203,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//double mintightelept = 10.;
 	//double minlooseelept = 5.;
 
-	vecPatElectron selectedElectrons_tight = miniAODhelper.GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );
-	vecPatElectron selectedElectrons_loose = miniAODhelper.GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );
-	vecPatElectron selectedElectrons_loose_notight = miniAODhelper.RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);
+	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper.
+	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
+	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	
 	int numTightElectrons = int(selectedElectrons_tight.size());
 	int numLooseElectrons = int(selectedElectrons_loose.size());
@@ -223,9 +223,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	double mintightmupt = minTightLeptonPt;
 	double minloosemupt = minLooseLeptonPt;
 
-	vecPatMuon selectedMuons_tight = miniAODhelper.GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );
-	vecPatMuon selectedMuons_loose = miniAODhelper.GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );
-	vecPatMuon selectedMuons_loose_notight = miniAODhelper.RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
+	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );		//miniAODhelper.
+	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );		//miniAODhelper.
+	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);		//miniAODhelper.
 
 	int numTightMuons = int(selectedMuons_tight.size());
 	int numLooseMuons = int(selectedMuons_loose.size());
@@ -254,15 +254,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////
 
  	
-	vecPatJet rawJets				= miniAODhelper.GetUncorrectedJets(*pfjets);
-	vecPatJet jetsNoMu			       	= miniAODhelper.RemoveOverlaps(selectedMuons_loose, rawJets);
-	vecPatJet jetsNoEle			       	= miniAODhelper.RemoveOverlaps(selectedElectrons_loose, rawJets);
-	vecPatJet jetsNoLep			       	= miniAODhelper.RemoveOverlaps(selectedElectrons_loose, jetsNoMu);
-	vecPatJet correctedJets_noSys		       	= miniAODhelper.GetCorrectedJets(jetsNoLep);
-	vecPatJet selectedJets_noSys_unsorted	       	= miniAODhelper.GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' );
-	vecPatJet selectedJets_tag_noSys_unsorted	= miniAODhelper.GetSelectedJets( correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );
-	vecPatJet selectedJets_loose_noSys_unsorted     = miniAODhelper.GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );
-	vecPatJet selectedJets_loose_tag_noSys_unsorted	= miniAODhelper.GetSelectedJets( correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );
+	vecPatJet rawJets				= GetUncorrectedJets(*pfjets);  					  //miniAODhelper.
+	vecPatJet jetsNoMu			       	= RemoveOverlaps(selectedMuons_loose, rawJets); 			    //miniAODhelper.
+	vecPatJet jetsNoEle			       	= RemoveOverlaps(selectedElectrons_loose, rawJets);			    //miniAODhelper.
+	vecPatJet jetsNoLep			       	= RemoveOverlaps(selectedElectrons_loose, jetsNoMu);			    //miniAODhelper.
+	vecPatJet correctedJets_noSys		       	= GetCorrectedJets(jetsNoLep);  					    //miniAODhelper.
+	vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
+	vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
+	vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
+	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
 
 	vecTLorentzVector jetsTLVloose = Get_vecTLorentzVector(selectedJets_loose_noSys_unsorted);
 	vecTLorentzVector jetsTLVtight = Get_vecTLorentzVector(selectedJets_noSys_unsorted);
@@ -376,7 +376,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	
 	double leg1 = 20.; //pt
-	double leg2 = 1.; //pt
+	double leg2 = 10.; //pt
 	
 	bool tightmupass = false;
 	if ((numTightMuons>0)&&(muonsTLVtight[0].Pt()>leg1)) tightmupass = true;
@@ -405,14 +405,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	if (numLooseMuons) if (tightelepass&&(muonsTLVloose[0].Pt()>leg2)) muele_loosemupass = true;
 	
 	
-
+	string extra_trig = "HLT_IsoMu30_v12";
 
 	if (tightmupass&&loosedubmupass)
 	{
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[0]))) doublemucount += wgt; // doublemucount++;
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1]))) doublemucount2 += wgt; // doublemucount2++;
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2]))) doublemucount3 += wgt; // doublemucount3++;
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[3]))) doublemucount4 += wgt; // doublemucount4++;
+		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount += wgt; // doublemucount++;
+		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount2 += wgt; // doublemucount2++;
+		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount3 += wgt; // doublemucount3++;
+		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[3]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount4 += wgt; // doublemucount4++;
 		
 		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1]))||triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2]))) doublemucount5 += wgt;
 
@@ -425,8 +425,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	if (tightelepass&&loosedubelepass)
 	{
-		if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0]))) doubleelecount += wgt; //doubleelecount++;
-		if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[1]))) doubleelecount2 += wgt; //doubleelecount2++;
+		if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doubleelecount += wgt; //doubleelecount++;
+		if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[1]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doubleelecount2 += wgt; //doubleelecount2++;
 		numpassedelelcuts += wgt; //numpassedelelcuts++;
 		
 		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_elel[i] += wgt;
@@ -436,7 +436,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	if (tightmupass&&muele_looseelepass)
 	{
-		if (triggerResults->accept(hltConfig_.triggerIndex(mueltriggerstostudy[0]))) muelecount += wgt; //muelecount++;
+		if (triggerResults->accept(hltConfig_.triggerIndex(mueltriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) muelecount += wgt; //muelecount++;
 		numpassedmuelcuts += wgt; //numpassedmuelcuts++;
 		
 		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_muel[i] += wgt;
@@ -445,7 +445,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	if (tightelepass&&muele_loosemupass)
 	{
-		if (triggerResults->accept(hltConfig_.triggerIndex(elmutriggerstostudy[0]))) elemucount += wgt; //elemucount++;
+		if (triggerResults->accept(hltConfig_.triggerIndex(elmutriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) elemucount += wgt; //elemucount++;
 		numpassedelmucuts += wgt; //numpassedelmucuts++;
 		
 		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_elmu[i] += wgt;
@@ -534,17 +534,17 @@ void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup){
 // 	cout << elmutriggerstostudy[0] << "  " << elemucount << "out of " << numpassedelmucuts << endl;
 
 
-	cout << mumutriggerstostudy[0] << "  " << doublemucount << "out of " << numpassedmumucuts << endl;
-	cout << mumutriggerstostudy[1] << "  " << doublemucount2 << "out of " << numpassedmumucuts << endl;
-	cout << mumutriggerstostudy[2] << "  " << doublemucount3 << "out of " << numpassedmumucuts << endl;
-	cout << mumutriggerstostudy[3] << "  " << doublemucount4 << "out of " << numpassedmumucuts << endl;
+	cout << mumutriggerstostudy[0] << "  " << doublemucount << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount/numpassedmumucuts << endl;
+	cout << mumutriggerstostudy[1] << "  " << doublemucount2 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount2/numpassedmumucuts << endl;
+	cout << mumutriggerstostudy[2] << "  " << doublemucount3 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount3/numpassedmumucuts << endl;
+	cout << mumutriggerstostudy[3] << "  " << doublemucount4 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount4/numpassedmumucuts << endl;
 	cout << "  " << endl;
-	cout << eleltriggerstostudy[0] << "  " << doubleelecount << "out of " << numpassedelelcuts << endl;
-	cout << eleltriggerstostudy[1] << "  " << doubleelecount2 << "out of " << numpassedelelcuts << endl;
+	cout << eleltriggerstostudy[0] << "  " << doubleelecount << "out of " << numpassedelelcuts << ", fraction: " << (double)doubleelecount/numpassedelelcuts << endl;
+	cout << eleltriggerstostudy[1] << "  " << doubleelecount2 << "out of " << numpassedelelcuts << ", fraction: " << (double)doubleelecount2/numpassedelelcuts << endl;
 	cout << "  " << endl;
-	cout << mueltriggerstostudy[0] << "  " << muelecount << "out of " << numpassedmuelcuts << endl;
+	cout << mueltriggerstostudy[0] << "  " << muelecount << "out of " << numpassedmuelcuts << ", fraction: " << (double)muelecount/numpassedmuelcuts << endl;
 	cout << "  " << endl;
-	cout << elmutriggerstostudy[0] << "  " << elemucount << "out of " << numpassedelmucuts << endl;
+	cout << elmutriggerstostudy[0] << "  " << elemucount << "out of " << numpassedelmucuts << ", fraction: " << (double)elemucount/numpassedelmucuts << endl;
 	cout << "  " << endl;
 	cout << doublemucount5 <<  "  "  << numpassedmumucuts << endl;
 	cout << "  " << endl;
@@ -580,8 +580,6 @@ void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup){
 // 	cout << "HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1" << ": " << the_saved_tag_modules7[0] << endl;
 // 	std::vector<std::string> the_saved_tag_modules8 = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1"));
 // 	cout << "HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1" << ": " << the_saved_tag_modules8[0] << endl;
-	
-	
 	
 	
 

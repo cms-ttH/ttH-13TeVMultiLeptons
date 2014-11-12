@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+import sys
 
 process = cms.Process("Demo")
 
@@ -15,7 +16,7 @@ process.prefer("GlobalTag")
 
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(-1) # number of events
+    	input = cms.untracked.int32(100) # number of events
 )
 
 process.source = cms.Source("PoolSource",
@@ -62,11 +63,15 @@ process.load("ttHMultileptonAnalysis.TemplateMakers.OSTwoLepAna_cfi")
 process.OSTwoLepAna.triggers.hltlabel = "HLT" #"reHLT" #"HLT" # HLT = centrally produced samples
 process.OSTwoLepAna.triggers.trigger_vstring = "HLT_Mu13_Mu8_v23","HLT_Mu17_Mu8_v23","HLT_Mu17_TkMu8_v15","HLT_Mu22_TkMu8_v10","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v20","HLT_Ele27_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele15_CaloIdT_CaloIsoVL_trackless_v9","HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10","HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v7" # triggers from the 2012 menu
 
+# example of trivially changing muon isolation:
+looseMuonRelIso = sys.argv[2] #takes command line argument -> just run however many cmsRun jobs for isolation study!
+process.OSTwoLepAna.muons.looseRelativeIso = looseMuonRelIso
+
 ######################################
 
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("test_oldsamp_2dplt_intg.root") # name of output file
+                                   fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + "_.root") # name of output file
                                    )
 
 

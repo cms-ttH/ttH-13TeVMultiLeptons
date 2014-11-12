@@ -4,7 +4,7 @@
 
 class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 {
-	private: //does this need to be private?
+	private:
 	
 		virtual void beginJob() ;
       		virtual void analyze(const edm::Event&, const edm::EventSetup&);
@@ -19,21 +19,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		~OSTwoLepAna();
 		
 		TTree * summaryTree;
-		
-		electronID::electronID electronTightID;
-		electronID::electronID electronLooseID;
-		electronID::electronID electronPreselectedID;
-
-		muonID::muonID muonTightID;
-		muonID::muonID muonLooseID;
-		muonID::muonID muonPreselectedID;
-
-		tauID::tauID tauTightID;
-		// tauID::tauID tauLooseID = tauID::tauVLoose;
-		tauID::tauID tauPreselectedID;
-		vector<ArbitraryVariable*> kinVars;
-		vector<ArbitraryVariable*> cutVars;
-		
 		
 		TH1D *numtighteles;
 		TH1D *numlooseeles;
