@@ -142,6 +142,8 @@ void OSTwoLepAna::beginJob()
 	if (numtrigs>7) elmutriggerstostudy.push_back(alltriggerstostudy[7]);
 	if (numtrigs>8) tripeltriggerstostudy.push_back(alltriggerstostudy[8]);
 	
+
+	
 }
 void OSTwoLepAna::endJob() {
 
@@ -468,44 +470,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	
 	
-// 	if (numTightMuons>0)
-// 	{
-// 		if ((muonsTLVtight[0].Pt()>leg1)&&(muonsTLVtight[1].Pt()>leg2))
-// 		{
-// 			if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[0]))) doublemucount += wgt; // doublemucount++;
-// 			if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1]))) doublemucount2 += wgt; // doublemucount2++;
-// 			if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2]))) doublemucount3 += wgt; // doublemucount3++;
-// 			if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[3]))) doublemucount4 += wgt; // doublemucount4++;
-// 			
-// 			//cout << wgt << endl;
-// 			
-// 			numpassedmumucuts += wgt; //numpassedmumucuts++;
-// 		}
-// 	}
-// 	if (numTightElectrons>0)
-// 	{
-// 		if ((elesTLVtight[0].Pt()>leg1)&&(elesTLVtight[1].Pt()>leg2))
-// 		{
-// 			if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0]))) doubleelecount += wgt; //doubleelecount++;
-// 			if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[1]))) doubleelecount2 += wgt; //doubleelecount2++;
-// 			numpassedelelcuts += wgt; //numpassedelelcuts++;
-// 		}
-// 		
-// 	}
-// 	if ((numTightMuons>0)||(numTightElectrons>0))
-// 	{
-// 		if ((muonsTLVtight[0].Pt()>leg1)&&(elesTLVtight[1].Pt()>leg2))
-// 		{
-// 			if (triggerResults->accept(hltConfig_.triggerIndex(mueltriggerstostudy[0]))) muelecount += wgt; //muelecount++;
-// 			numpassedmuelcuts += wgt; //numpassedmuelcuts++;
-// 		}
-// 		
-// 		if ((elesTLVtight[0].Pt()>leg1)&&(muonsTLVtight[1].Pt()>leg2))
-// 		{
-// 			if (triggerResults->accept(hltConfig_.triggerIndex(elmutriggerstostudy[0]))) elemucount += wgt; //elemucount++;
-// 			numpassedelmucuts += wgt; //numpassedelmucuts++;
-// 		}
-// 	}
+	
+	
+	
+	//numTightMuons = GenericCollectionSizeVariable<std::vector<pat::Muon>>((*muons), "numTightMuons");
+
+
+
+
 
 
 
