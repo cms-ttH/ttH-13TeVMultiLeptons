@@ -62,6 +62,19 @@ patElectrons MultileptonAna::GetElectrons (const edm::Event& event)
 	return electronHandle;
 	
 }
+vecPatLepton MultileptonAna::fillLeptons(vecPatMuon& muons, vecPatElectron& electrons)
+{
+  vecPatLepton leptons;
+  for (vecPatMuon::const_iterator iMu = muons.begin(); iMu != muons.end(); iMu++)
+    {
+      leptons.push_back(*iMu);
+    }
+  for (vecPatElectron::const_iterator iEle = electrons.begin(); iEle != electrons.end(); iEle++)
+    {
+      leptons.push_back(*iEle);
+    }
+  return leptons;
+}
 void MultileptonAna::GetLeptons (const edm::Event& event)
 {
 	bool are_electrons_added_to_leptons = leptonparams.getParameter<bool> ("useElectrons");
@@ -389,6 +402,19 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
     passesTrackerID = ( passesGlobalTrackID && passesMuonBestTrackID && passesInnerTrackID && passesTrackID && (iMuon.numberOfMatchedStations() > 1) );
 
     passesID        = ((iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && isPFMuon && passesTrackerID);
+
+  case muonID::muonPreselection:
+    passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
+    passesIso        = (GetMuonRelIso(iMuon) < 0.400);
+    isPFMuon         = true;
+    if( iMuon.muonBestTrack().isAvailable() ){
+      passesMuonBestTrackID = ( (fabs(iMuon.muonBestTrack()->dxy(vertex.position())) < 0.05)
+                                && (fabs(iMuon.muonBestTrack()->dz(vertex.position())) < 0.2)
+                                );
+    }
+    //need charge flip cuts...
+    passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon && passesMuonBestTrackID );
+    
     break;
   }
 
@@ -434,6 +460,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   bool d04 = false;
   bool dZ  = false;
   bool no_exp_inner_trkr_hits = true; //false; // see below
+  bool passGsfTrackID = false;
   if( iElectron.gsfTrack().isAvailable() ){
     d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < tightDxy );
     d04 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < looseDxy );
@@ -460,6 +487,15 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxTightElectronAbsEta) && !inCrack);
     passesIso        = (GetElectronRelIso(iElectron) < tightElectronIso);
     passesID         = ( id && no_exp_inner_trkr_hits && myTrigPresel );
+  case electronID::electronPreselection:
+    passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < maxLooseElectronAbsEta) && !inCrack);
+    passesIso        = (GetElectronRelIso(iElectron) < 0.400);
+    if( iElectron.gsfTrack().isAvailable() ){
+      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1  );
+    }
+
+    passesID         = ( passGsfTrackID && passMVAId53x && no_exp_inner_trkr_hits && notConv && myTrigPresel );    
+
     break;
   }
 
@@ -499,10 +535,12 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
   if( fabs(iJet.eta()) > iMaxAbsEta ) return false;
 
   bool loose = (
+
 		iJet.neutralHadronEnergyFraction() < 0.99 &&
 		iJet.chargedEmEnergyFraction() < 0.99 &&
 		iJet.neutralEmEnergyFraction() < 0.99 &&
 		iJet.numberOfDaughters() > 1
+
 		);
 
   if( fabs(iJet.eta())<2.4 ){ // endcaps

@@ -84,10 +84,13 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
 		
 		TH2D *lep1_lep2_pt;
-		
-		//GenericCollection<pat::MuonCollection> tightMuons;
-		
-		
-		GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuons(const GenericCollection<pat::MuonCollection> &, const string);
+
+		//initialize collections
+		vecPatElectron selectedElectrons_loose_notight;
+
+		GenericCollectionSizeVariable2<std::vector<pat::Electron>>
+		  numTightElectronz(vecPatElectron &, string);
+
+
 		
 };

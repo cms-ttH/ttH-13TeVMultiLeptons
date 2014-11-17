@@ -2,11 +2,13 @@
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/OSTwoLepAna.h"
 
-	
+
 OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything that needs to be done at creation time
 	debug = constructparams.getParameter<bool> ("debug");
 	entire_pset = constructparams;
 	parse_params();
+
+
 }
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
 
@@ -15,7 +17,8 @@ void OSTwoLepAna::beginJob()
 {
 	edm::Service<TFileService> newfs;
 		
-	//summaryTree = new TTree("summaryTree", "Summary Event Values");	
+	//	summaryTree = new TTree("summaryTree", "Summary Event Values");	
+	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
 	
 	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
 	
@@ -142,7 +145,18 @@ void OSTwoLepAna::beginJob()
 	if (numtrigs>7) elmutriggerstostudy.push_back(alltriggerstostudy[7]);
 	if (numtrigs>8) tripeltriggerstostudy.push_back(alltriggerstostudy[8]);
 	
-
+	//initialize kinematic variables
+	//global var
+	GenericCollectionSizeVariable2<std::vector<pat::Electron>> 
+	  numTightElectronz(&selectedElectrons_loose_notight, "numTightElectronzz");
+ 
+	kinVars.push_back(&numTightElectronz);
+	
+	for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++) 
+	  {
+	    (*iVar)->attachToTree(summaryTree);
+	  }
+	
 	
 }
 void OSTwoLepAna::endJob() {
@@ -205,7 +219,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
-	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
+	selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	
 	int numTightElectrons = int(selectedElectrons_tight.size());
 	int numLooseElectrons = int(selectedElectrons_loose.size());
@@ -245,6 +259,16 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	vecTLorentzVector muonsTLVloosenotight = Get_vecTLorentzVector(selectedMuons_loose_notight);
 	vecTLorentzVector elesTLVloosenotight = Get_vecTLorentzVector(selectedElectrons_loose_notight);
+	
+	/////////
+	///
+	/// Leptons
+	///
+	////////
+
+	vecPatLepton selectedLeptons_tight = fillLeptons(selectedMuons_tight,selectedElectrons_tight);
+	
+
 	
 		
 	/////////
@@ -463,25 +487,26 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		
 		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_elmu[i] += wgt;
 	}
-
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	//numTightMuons = GenericCollectionSizeVariable<std::vector<pat::Muon>>((*muons), "numTightMuons");
+	//	numTightMuons = GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuons(&muons, "numTightMuons");
+	//	GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuonz(&muons, "numTightMuons");
 
 
-
-
-
-
-
+	for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++)
+	  {
+	    cout << "before reset is called" << endl;
+	    (*iVar)->reset();
+	    cout << kinVars.size() << endl;
+	  }
 	
+	for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin(); iVar != kinVars.end();iVar++)
+	  {
+	    cout << "here I am "<< endl;
+	    //(*iVar)->evaluate();
+	  }
+	// summaryTree->Fill();
+	
+
 	
 } // end for each event
 
