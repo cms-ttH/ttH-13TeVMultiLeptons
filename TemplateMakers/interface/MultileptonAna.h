@@ -101,7 +101,7 @@
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMethod.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable.h"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable2.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagDiscrim.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
@@ -125,6 +125,7 @@ typedef std::vector<std::string> 		vstring;
 
 typedef edm::Handle<pat::MuonCollection>	patMuons;
 typedef edm::Handle<pat::ElectronCollection>	patElectrons;
+
 typedef edm::Handle<pat::JetCollection>		patJets;
 typedef edm::Handle<pat::METCollection>		patMETs;
 typedef edm::Handle<std::vector< PileupSummaryInfo > > 	pileupInfo;
@@ -137,6 +138,7 @@ typedef edm::Handle<pat::MET>		patMET;
 
 typedef std::vector<pat::Muon>	     vecPatMuon;
 typedef std::vector<pat::Electron>   vecPatElectron;
+typedef std::vector<reco::LeafCandidate> vecPatLepton;
 typedef std::vector<pat::Jet>	     vecPatJet;
 typedef std::vector<pat::MET>	     vecPatMET;
 
@@ -211,7 +213,8 @@ class MultileptonAna: public MiniAODHelper
 		TLorentzVector Get_TLorentzVector (patMETs theobjs);
 		TLorentzVector Get_TLorentzVector (pat::MET theMET);
 		vecTLorentzVector Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2);
-		
+		vecPatLepton fillLeptons(vecPatMuon& mus, vecPatElectron& eles);
+
 		void SetupOptions(const edm::Event& event);
 		trigRes GetTriggers(const edm::Event& event);
 		patMuons GetMuons(const edm::Event& event);
