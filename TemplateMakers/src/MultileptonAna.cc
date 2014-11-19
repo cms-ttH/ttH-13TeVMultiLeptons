@@ -361,6 +361,52 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   int tightNumberOfValidPixelHits = muonparams.getParameter<int> ("tightNumberOfValidPixelHits");
   int tightTrackerLayersWithMeasurement = muonparams.getParameter<int> ("tightTrackerLayersWithMeasurement");
   
+  ///////
+  //
+  // ele mva id hack
+  //
+  //////
+  EGammaMvaEleEstimatorFWLite* mvaID_ = new EGammaMvaEleEstimatorFWLite();
+  bool useBinnedVersion_ = true;
+  string method_ = "BDT";
+  EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrig;
+  std::vector<std::string> mvaWeightFiles_;
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
+  mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_);
+  bool useFull5x5 = true;
+  bool mvaDebug = false;
+  double eleMvaNonTrig = mvaID_->mvaValue(iMuon,vertex,rho,useFull5x5,mvaDebug);
+  bool passesMVA = false;
+  if ( iMuon.pt() < 10 ){
+    if ( abs(iMuon.eta()) > 0. && abs(iMuon.eta()) < 0.8){
+      passesMVA = ( eleMvaNonTrig > 0.47 );
+    }
+    else if ( abs(iMuon.eta()) >= 0.8 && abs(iMuon.eta()) < 1.479){
+      passesMVA = ( eleMvaNonTrig > 0.004 );
+    }
+    else if ( abs(iMuon.eta()) >= 1.479 && abs(iMuon.eta()) <= 2.5){
+      passesMVA = ( eleMvaNonTrig > 0.295 );
+    }
+
+  }
+  else if ( iMuon.pt() >= 10 ) {
+    if ( abs(iMuon.eta()) > 0. && abs(iMuon.eta()) < 0.8){
+      passesMVA = ( eleMvaNonTrig > 0.5 );
+    }
+    else if ( abs(iMuon.eta()) >= 0.8 && abs(iMuon.eta()) < 1.479){
+      passesMVA = ( eleMvaNonTrig > 0.12 );
+    }
+    else if ( abs(iMuon.eta()) >= 1.479 && abs(iMuon.eta()) <= 2.5){
+      passesMVA = ( eleMvaNonTrig > 0.60 );
+    }
+    
+  }
+
 
   switch(iMuonID){
   case muonID::muonSide:

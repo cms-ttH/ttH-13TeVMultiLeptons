@@ -108,6 +108,8 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenPt.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
 
+// hack for ele mva id
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
 
 // end includes
 // -----------------------------------------------
