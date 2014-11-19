@@ -327,15 +327,13 @@ vecTLorentzVector MultileptonAna::Get_vecTLorentzVector_sorted_leptons (vecTLore
 
 
 bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, const muonID::muonID iMuonID){
-
+  
   CheckVertexSetUp();
-
+  
   double minMuonPt = iMinPt;
-
+  
   //float maxLooseMuonAbsEta = 2.5;
   float maxLooseMuonAbsEta = muonparams.getParameter<double> ("maxLooseMuonAbsEta");
-  
-  
 
   //float maxTightMuonAbsEta = 2.1;
 //float maxTightMuonAbsEta = 0.25;
@@ -404,8 +402,8 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
     passesID        = ((iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && isPFMuon && passesTrackerID);
     break;
   case muonID::muonPreselection:
-    passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
-    passesIso        = (GetMuonRelIso(iMuon) < 0.400);
+    passesKinematics = ((iMuon.pt() > 5.) && (fabs(iMuon.eta()) < 2.4));
+    passesIso        = (GetMuonRelIso(iMuon) < 0.4);
     isPFMuon         = true;
     if( iMuon.muonBestTrack().isAvailable() ){
       passesMuonBestTrackID = ( (fabs(iMuon.muonBestTrack()->dxy(vertex.position())) < 0.05)
@@ -419,6 +417,22 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
 
   return (passesKinematics && passesIso && passesID);
 }
+
+float MultileptonAna::GetMuonRelIso(const pat::Muon& iMuon) const
+{
+  float result = 9999;
+  
+  double pfIsoCharged = iMuon.pfIsolationR03().sumChargedHadronPt;
+  double pfIsoNeutral = iMuon.pfIsolationR03().sumNeutralHadronEt + iMuon.pfIsolationR03().sumPhotonEt;
+  
+  double pfIsoPUSubtracted = std::max( 0.0, pfIsoNeutral - 0.5*iMuon.pfIsolationR03().sumPUPt );
+  
+  result = (pfIsoCharged + pfIsoPUSubtracted)/iMuon.pt();
+  
+  return result;
+}
+
+
 
 
 bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float iMinPt, const electronID::electronID iElectronID){
@@ -488,16 +502,16 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesID         = ( id && no_exp_inner_trkr_hits && myTrigPresel );
     break;
   case electronID::electronPreselection:
-    passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < maxLooseElectronAbsEta) && !inCrack);
+    passesKinematics = ((iElectron.pt() > 7.) && (fabs(iElectron.eta()) < 2.5));
     passesIso        = (GetElectronRelIso(iElectron) < 0.400);
     if( iElectron.gsfTrack().isAvailable() ){
       passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1  );
     }
-
+    
     passesID         = ( passGsfTrackID && passMVAId53x && no_exp_inner_trkr_hits && notConv && myTrigPresel );    
     break;
   }
-
+  
   return (passesKinematics && passesIso && passesID);
 }
 

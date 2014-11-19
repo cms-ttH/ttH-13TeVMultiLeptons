@@ -235,7 +235,7 @@ class MultileptonAna: public MiniAODHelper
   		bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID);
   		bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
   		bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
-		
+		float GetMuonRelIso(const pat::Muon&) const;
 };
 
 
