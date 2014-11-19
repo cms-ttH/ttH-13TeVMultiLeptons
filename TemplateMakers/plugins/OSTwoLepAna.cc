@@ -147,15 +147,15 @@ void OSTwoLepAna::beginJob()
 	
 	//initialize kinematic variables
 	//global var
-	GenericCollectionSizeVariable2<std::vector<pat::Electron>> 
-	  numTightElectronz(&selectedElectrons_loose_notight, "numTightElectronzz");
+	// GenericCollectionSizeVariable2<std::vector<pat::Electron>> 
+	//   numTightElectronz(&selectedElectrons_loose_notight, "numTightElectronzz");
  
-	kinVars.push_back(&numTightElectronz);
+	// kinVars.push_back(&numTightElectronz);
 	
-	for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++) 
-	  {
-	    (*iVar)->attachToTree(summaryTree);
-	  }
+	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++) 
+	//   {
+	//     (*iVar)->attachToTree(summaryTree);
+	//   }
 	
 	
 }
@@ -219,7 +219,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
-	selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
+	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	
 	int numTightElectrons = int(selectedElectrons_tight.size());
 	int numLooseElectrons = int(selectedElectrons_loose.size());
@@ -492,19 +492,19 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//	GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuonz(&muons, "numTightMuons");
 
 
-	for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++)
-	  {
-	    cout << "before reset is called" << endl;
-	    (*iVar)->reset();
-	    cout << kinVars.size() << endl;
-	  }
+	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++)
+	//   {
+	//     cout << "before reset is called" << endl;
+	//     (*iVar)->reset();
+	//     cout << kinVars.size() << endl;
+	//   }
 	
-	for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin(); iVar != kinVars.end();iVar++)
-	  {
-	    cout << "here I am "<< endl;
-	    //(*iVar)->evaluate();
-	  }
-	// summaryTree->Fill();
+	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin(); iVar != kinVars.end();iVar++)
+	//   {
+	//     cout << "here I am "<< endl;
+	//     //(*iVar)->evaluate();
+	//   }
+	// // summaryTree->Fill();
 	
 
 	

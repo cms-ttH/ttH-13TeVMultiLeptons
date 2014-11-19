@@ -86,10 +86,10 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		TH2D *lep1_lep2_pt;
 
 		//initialize collections
-		vecPatElectron selectedElectrons_loose_notight;
+		//vecPatElectron selectedElectrons_loose_notight;
 
-		GenericCollectionSizeVariable2<std::vector<pat::Electron>>
-		  numTightElectronz(vecPatElectron &, string);
+		//GenericCollectionSizeVariable2<std::vector<pat::Electron>>
+		//numTightElectronz(vecPatElectron &, string);
 
 
 		

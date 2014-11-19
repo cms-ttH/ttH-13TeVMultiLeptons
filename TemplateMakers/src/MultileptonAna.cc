@@ -403,19 +403,18 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
 
     passesID        = ((iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && isPFMuon && passesTrackerID);
     break;
-    // case muonID::muonPreselection:
-  //   passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
-  //   passesIso        = (GetMuonRelIso(iMuon) < 0.400);
-  //   isPFMuon         = true;
-  //   if( iMuon.muonBestTrack().isAvailable() ){
-  //     passesMuonBestTrackID = ( (fabs(iMuon.muonBestTrack()->dxy(vertex.position())) < 0.05)
-  //                               && (fabs(iMuon.muonBestTrack()->dz(vertex.position())) < 0.2)
-  //                               );
-  //   }
-  //   //need charge flip cuts...
-  //   passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon && passesMuonBestTrackID );
-    
-  //   break;
+  case muonID::muonPreselection:
+    passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
+    passesIso        = (GetMuonRelIso(iMuon) < 0.400);
+    isPFMuon         = true;
+    if( iMuon.muonBestTrack().isAvailable() ){
+      passesMuonBestTrackID = ( (fabs(iMuon.muonBestTrack()->dxy(vertex.position())) < 0.05)
+                                && (fabs(iMuon.muonBestTrack()->dz(vertex.position())) < 0.2)
+                                );
+    }
+    //need charge flip cuts...
+    passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon && passesMuonBestTrackID );
+    break;
   }
 
   return (passesKinematics && passesIso && passesID);
@@ -460,7 +459,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   bool d04 = false;
   bool dZ  = false;
   bool no_exp_inner_trkr_hits = true; //false; // see below
-  //  bool passGsfTrackID = false;
+  bool passGsfTrackID = false;
   if( iElectron.gsfTrack().isAvailable() ){
     d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < tightDxy );
     d04 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < looseDxy );
@@ -488,16 +487,15 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesIso        = (GetElectronRelIso(iElectron) < tightElectronIso);
     passesID         = ( id && no_exp_inner_trkr_hits && myTrigPresel );
     break;
-  // case electronID::electronPreselection:
-  //   passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < maxLooseElectronAbsEta) && !inCrack);
-  //   passesIso        = (GetElectronRelIso(iElectron) < 0.400);
-  //   if( iElectron.gsfTrack().isAvailable() ){
-  //     passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1  );
-  //   }
+  case electronID::electronPreselection:
+    passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < maxLooseElectronAbsEta) && !inCrack);
+    passesIso        = (GetElectronRelIso(iElectron) < 0.400);
+    if( iElectron.gsfTrack().isAvailable() ){
+      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1  );
+    }
 
-  //   passesID         = ( passGsfTrackID && passMVAId53x && no_exp_inner_trkr_hits && notConv && myTrigPresel );    
-
-  //   break;
+    passesID         = ( passGsfTrackID && passMVAId53x && no_exp_inner_trkr_hits && notConv && myTrigPresel );    
+    break;
   }
 
   return (passesKinematics && passesIso && passesID);
