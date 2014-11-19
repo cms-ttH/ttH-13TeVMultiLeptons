@@ -4,9 +4,12 @@ import sys
 process = cms.Process("Demo")
 
 #old samples
+
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_cff" )
 process.GlobalTag.globaltag = 'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
 process.prefer("GlobalTag")
+
+
 
 #new samples
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -19,18 +22,21 @@ process.maxEvents = cms.untracked.PSet(
     	input = cms.untracked.int32(100) # number of events
 )
 
+
+
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
 	
+#        'file:/afs/cern.ch/user/m/muell149/work/CMSSW_7_0_7_patch1/src/ttHMultileptonAnalysis/listsForSkims2012_53x_v2_hadoop/'
 	#new menu
-#	'file:/afs/cern.ch/work/g/gesmith/CMSSW_7_2_0_pre8/src/HLTrigger/Configuration/test/miniAOD-prod_PAT_justdoitalready2.root'
+	'file:/afs/cern.ch/work/g/gesmith/CMSSW_7_2_0_pre8/src/HLTrigger/Configuration/test/miniAOD-prod_PAT_justdoitalready2.root'
 	
 	#'/store/user/gesmith/samples/custum_miniAOD/HWW/00000/miniAOD-prod_PAT_0C055296-DE6F-E311-A240-008CFA002028.root',
 	#'/store/user/gesmith/samples/custum_miniAOD/HWW/00000/miniAOD-prod_PAT_12EBB80F-A870-E311-9035-7845C4FC3A91.root'
    	
 	#old menu
-	"/store/user/gesmith/samples/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/1E4F9BDC-3E1E-E411-A56C-001E67396EAA.root",	
-	"/store/user/gesmith/samples/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/6CF66322-2C1E-E411-85EF-002590A83192.root"
+#	"/store/user/gesmith/samples/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/1E4F9BDC-3E1E-E411-A56C-001E67396EAA.root",	
+#	"/store/user/gesmith/samples/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/6CF66322-2C1E-E411-85EF-002590A83192.root"
 	
 	###"/store/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/1E4F9BDC-3E1E-E411-A56C-001E67396EAA.root",
 #	"root://xrootd.unl.edu//store/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/6CF66322-2C1E-E411-85EF-002590A83192.root"
@@ -58,11 +64,9 @@ process.source = cms.Source("PoolSource",
 process.load("ttHMultileptonAnalysis.TemplateMakers.OSTwoLepAna_cfi")
 
 ### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile):
-
 ### an example, where we re-define some HLT parameters:
 process.OSTwoLepAna.triggers.hltlabel = "HLT" #"reHLT" #"HLT" # HLT = centrally produced samples
 process.OSTwoLepAna.triggers.trigger_vstring = "HLT_Mu13_Mu8_v23","HLT_Mu17_Mu8_v23","HLT_Mu17_TkMu8_v15","HLT_Mu22_TkMu8_v10","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v20","HLT_Ele27_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele15_CaloIdT_CaloIsoVL_trackless_v9","HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10","HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v7" # triggers from the 2012 menu
-
 ### example of trivially changing muon isolation:
 looseMuonRelIso = 0.3
 #looseMuonRelIso = sys.argv[2] #or take command line argument -> just run however many cmsRun jobs for isolation study!
@@ -86,5 +90,8 @@ process.options = cms.untracked.PSet(
 
 ## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
 outfile = open('config.py','w')
+
 print >> outfile,process.dumpPython()
+
 outfile.close()
+

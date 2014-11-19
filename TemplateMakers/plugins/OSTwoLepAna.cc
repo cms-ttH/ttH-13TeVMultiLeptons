@@ -1,7 +1,7 @@
 // created by Geoff Smith
 
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/OSTwoLepAna.h"
-
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
 
 OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything that needs to be done at creation time
 	debug = constructparams.getParameter<bool> ("debug");

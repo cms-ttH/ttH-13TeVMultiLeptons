@@ -1,5 +1,4 @@
 //new include items for miniAOD compatibility
-
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
@@ -28,10 +27,19 @@
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
 
+// #include "ttHMultileptonAnalysis/TemplateMakers/interface/minDr_leplep.h"
+// #include "ttHMultileptonAnalysis/TemplateMakers/interface/minDr_leplep_dxyz.h"
+// #include "ttHMultileptonAnalysis/TemplateMakers/interface/minDr_leplep2.h"
+// #include "ttHMultileptonAnalysis/TemplateMakers/interface/minDr_leplep3.h"
+
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenPt.h"
+
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/SingleObjectVariable.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
 
 ///-------------- Kinematic Variables ------------------
 //done
@@ -54,6 +62,7 @@ bool isData;
 string analysisYear = "2012_53x";
 string sampleName;
 int sampleNumber;
+
 
 void detectData(string sampleName) {
   isData = false;
@@ -171,7 +180,21 @@ int main (int argc, char** argv) {
   detectData(sampleName);
   convertSampleNameToNumber(sampleName);
   // initializePUReweighting();
-  
+
+  //initialize hacked electron mvaID
+  EGammaMvaEleEstimatorFWLite* mvaID_ = new EGammaMvaEleEstimatorFWLite();
+  bool useBinnedVersion_ = true;
+  string method_ = "BDT";
+  EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrig;
+  std::vector<std::string> mvaWeightFiles_;
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
+  mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_);
+  ///end ele mva id hack  
   
   MiniAODHelper * miniAODhelper = new MiniAODHelper();
   miniAODhelper->SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
@@ -201,16 +224,18 @@ int main (int argc, char** argv) {
   electronID::electronID electronTightID = electronID::electronTight;
   electronID::electronID electronLooseID = electronID::electronLoose;
   electronID::electronID electronPreselectedID = electronID::electronNoCuts;
+  electronID::electronID electronCernID = electronID::electronPreselection;
   
   muonID::muonID muonTightID = muonID::muonTight;
   muonID::muonID muonLooseID = muonID::muonLoose;
   muonID::muonID muonPreselectedID = muonID::muonNoCuts;
-
+  muonID::muonID muonCernID = muonID::muonPreselection;
+  
   tauID::tauID tauTightID = tauID::tauMedium;
   // tauID::tauID tauLooseID = tauID::tauVLoose;
   tauID::tauID tauPreselectedID = tauID::tauNonIso;
-
-
+  
+  
   //collections
   GenericCollection<pat::ElectronCollection> tightElectrons(miniAODhelper);
   GenericCollection<pat::ElectronCollection> looseElectrons(miniAODhelper);
@@ -218,12 +243,14 @@ int main (int argc, char** argv) {
   GenericCollection<pat::ElectronCollection> tightLooseElectrons(miniAODhelper);
   GenericCollection<pat::ElectronCollection> loosePreselectedElectrons(miniAODhelper);
   GenericCollection<pat::ElectronCollection> tightLoosePreselectedElectrons(miniAODhelper);
-  
+  GenericCollection<pat::ElectronCollection> cernElectrons(miniAODhelper);
+
   GenericCollection<pat::MuonCollection> tightMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> looseMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> preselectedMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> tightLooseMuons(miniAODhelper);
   GenericCollection<pat::MuonCollection> tightLoosePreselectedMuons(miniAODhelper);
+  GenericCollection<pat::MuonCollection> cernMuons(miniAODhelper);
 
   GenericCollection<pat::TauCollection> tightTaus(miniAODhelper);
   GenericCollection<pat::TauCollection> tightLooseTaus(miniAODhelper);
@@ -236,6 +263,8 @@ int main (int argc, char** argv) {
   GenericCollection<std::vector<reco::LeafCandidate>> tightLooseLeptons(miniAODhelper);
   GenericCollection<std::vector<reco::LeafCandidate>> tightLoosePreselectedLeptons(miniAODhelper);
   
+  GenericCollection<std::vector<reco::LeafCandidate>> cernLeptons(miniAODhelper);
+
   GenericCollection<pat::JetCollection> jets(miniAODhelper);
   GenericCollection<pat::JetCollection> jets_30(miniAODhelper);
   GenericCollection<pat::JetCollection> jetsByCSV(miniAODhelper);
@@ -245,9 +274,10 @@ int main (int argc, char** argv) {
   GenericCollection<reco::GenParticleCollection> genParticles(miniAODhelper);
   GenericCollection<reco::GenParticleCollection> genTopParticles(miniAODhelper);
   GenericCollection<reco::GenParticleCollection> genHiggsParticles(miniAODhelper);
+  //GenericCollection<pat::PackedGenParticleCollection> genHiggsParticles(miniAODhelper);
 
-  GenericCollection<pat::PackedGenParticleCollection> genMuons(miniAODhelper);
-  GenericCollection<pat::PackedGenParticleCollection> genElectrons(miniAODhelper);
+  GenericCollection<pat::PackedGenParticleCollection> genLeptons(miniAODhelper);
+  //GenericCollection<pat::PackedGenParticleCollection> genElectrons(miniAODhelper);
 
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
@@ -299,6 +329,12 @@ int main (int argc, char** argv) {
   //   allJetNumberOfDaughters(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
   // 	      "numberOfDaughters", "", "jets_by_pt",  KinematicVariableConstants::INT_INIT, 4);
   // kinVars.push_back(&allJetNumberOfDaughters);
+  
+  
+  GenPt<std::vector<reco::GenParticle>>
+    higgsPdgId(&(genHiggsParticles.ptrToItems),"genHiggsPt");
+  kinVars.push_back(&higgsPdgId);
+
 
   GenericCollectionMethod<float, std::vector<pat::Jet>>
     allJetCSV(Reflex::Type::ByName("pat::Jet"), &(jets.ptrToItems),
@@ -315,93 +351,134 @@ int main (int argc, char** argv) {
     numTightElectrons(&(tightElectrons.ptrToItems), "numTightElectrons");
   kinVars.push_back(&numTightElectrons);
 
+  GenericCollectionSizeVariable<std::vector<pat::Electron>>
+    numCernElectrons(&(cernElectrons.ptrToItems), "numCernElectrons");
+  kinVars.push_back(&numCernElectrons);
+
   GenericCollectionSizeVariable<std::vector<pat::Jet>>
     numJets(&(jets.ptrToItems), "numJets");
   kinVars.push_back(&numJets);
 
   GenericCollectionSizeVariable<std::vector<reco::LeafCandidate>>
-    numLeptons(&(tightLooseLeptons.ptrToItems), "numTightLooseLeptons");
-  kinVars.push_back(&numLeptons);
+    numTightLeptons(&(tightLeptons.ptrToItems), "numTightLeptons");
+  kinVars.push_back(&numTightLeptons);
 
+  GenericCollectionSizeVariable<std::vector<reco::LeafCandidate>>
+    numLooseLeptons(&(tightLooseLeptons.ptrToItems), "numTightLooseLeptons");
+  kinVars.push_back(&numLooseLeptons);
+
+  GenericCollectionSizeVariable<std::vector<reco::LeafCandidate>>
+    numPreselectedLeptons(&(tightLoosePreselectedLeptons.ptrToItems), "numPreselectedLeptons");
+  kinVars.push_back(&numPreselectedLeptons);
+
+  GenericCollectionSizeVariable<std::vector<reco::LeafCandidate>>
+    numCernLeptons(&(cernLeptons.ptrToItems), "numCernLeptons");
+  kinVars.push_back(&numCernLeptons);
+  
   ///////////// Two Object Kinematic Variables ////////////////
 
-  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
-    myMassLepLep("mass", "min", "mass_leplep",
-  		 &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-  		 &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
-  kinVars.push_back(&myMassLepLep);
+  // TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+  //   myMassLepLep("mass", "min", "mass_leplep",
+  // 		 &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  // 		 &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
+  // kinVars.push_back(&myMassLepLep);
   
-  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
-    myZmass("mass", "closest_to", "Zmass",
-  	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-  	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-  	    91.2, "same_flavour");
-  kinVars.push_back(&myZmass);
+  // TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+  //   myZmass("mass", "closest_to", "Zmass",
+  // 	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  // 	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  // 	    91.2, "same_flavour");
+  // kinVars.push_back(&myZmass);
 
-  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
-    myDeltaRLepLep("deltaR", "min", "dR_leplep",
-  		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-  		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
-  kinVars.push_back(&myDeltaRLepLep);
-
-
-  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
-    myDeltaPhiLepLep("deltaPhi", "min", "dPhi_leplep",
-  		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-  		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
-  kinVars.push_back(&myDeltaPhiLepLep);
+  // TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+  //   myDeltaRLepLep("deltaR", "min", "dR_leplep",
+  // 		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  // 		   &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
+  // kinVars.push_back(&myDeltaRLepLep);
 
 
-  TwoObjectKinematic<std::vector<pat::PackedGenParticle>,std::vector<pat::PackedGenParticle>>
-    myDeltaPhiMuMuGen("deltaPhi", "min", "dPhi_leplep_gen",
-  		     &(genMuons.ptrToItems), "muons_by_pt", 1, 99,
-  		     &(genMuons.ptrToItems), "muons_by_pt", 1, 99);
-  kinVars.push_back(&myDeltaPhiMuMuGen);
+  // TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+  //   myDeltaPhiLepLep("deltaPhi", "min", "dPhi_leplep",
+  // 		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  // 		     &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99);
+  // kinVars.push_back(&myDeltaPhiLepLep);
 
 
+  // TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+  //   myMinDrJets("deltaR", "min", "min_dr_jets",
+  // 		&(jets.ptrToItems), "jets_by_pt", 1, 99,
+  // 		&(jets.ptrToItems), "jets_by_pt", 1, 99);
+  // kinVars.push_back(&myMinDrJets);
 
-  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
-    myMinDrJets("deltaR", "min", "min_dr_jets",
-  		&(jets.ptrToItems), "jets_by_pt", 1, 99,
-  		&(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&myMinDrJets);
+  // TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<pat::Jet>>
+  //   mySumPt("pt", "sum", "sum_pt",
+  // 	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
+  // 	    &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  // kinVars.push_back(&mySumPt);
 
-  TwoObjectKinematic<std::vector<reco::LeafCandidate>,std::vector<pat::Jet>>
-    mySumPt("pt", "sum", "sum_pt",
-  	    &(tightLooseLeptons.ptrToItems), "leptons_by_pt", 1, 99,
-  	    &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&mySumPt);
+  // TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+  //   mySumJetPt("pt", "sum", "sum_jet_pt",
+  // 	       &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  // 	       &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  // kinVars.push_back(&mySumJetPt);
 
-  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
-    mySumJetPt("pt", "sum", "sum_jet_pt",
-  	       &(jets.ptrToItems), "jets_by_pt", 1, 99,
-  	       &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&mySumJetPt);
+  // TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+  //   mySumJetMass("mass", "vector_sum", "sum_jet_mass",
+  // 		 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  // 		 &(jets.ptrToItems), "jets_by_pt", 1, 99);
+  // kinVars.push_back(&mySumJetMass);
 
-  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
-    mySumJetMass("mass", "vector_sum", "sum_jet_mass",
-  		 &(jets.ptrToItems), "jets_by_pt", 1, 99,
-  		 &(jets.ptrToItems), "jets_by_pt", 1, 99);
-  kinVars.push_back(&mySumJetMass);
-
-  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
-    myHiggsLikeDijetMass("mass", "closest_to", "higgsLike_dijet_mass",
-  			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
-  			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
-  			 115.0);
-  kinVars.push_back(&myHiggsLikeDijetMass);
+  // TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+  //   myHiggsLikeDijetMass("mass", "closest_to", "higgsLike_dijet_mass",
+  // 			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  // 			 &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  // 			 115.0);
+  // kinVars.push_back(&myHiggsLikeDijetMass);
   
-  TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
-    myHiggsLikeDijetMass2("mass", "second_closest_to", "higgsLike_dijet_mass2",
-  			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
-  			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
-  			  115.0);
-  kinVars.push_back(&myHiggsLikeDijetMass2);
+  // TwoObjectKinematic<std::vector<pat::Jet>,std::vector<pat::Jet>>
+  //   myHiggsLikeDijetMass2("mass", "second_closest_to", "higgsLike_dijet_mass2",
+  // 			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  // 			  &(jets.ptrToItems), "jets_by_pt", 1, 99,
+  // 			  115.0);
+  // kinVars.push_back(&myHiggsLikeDijetMass2);
 
+  //////// INVESTIGATION VARIABLES //////////////////
 
-  
+  // minDr_leplep<std::vector<pat::PackedGenParticle>,std::vector<reco::LeafCandidate>>
+  //   cernLeptonMotherId(&(genLeptons.ptrToItems),&(cernLeptons.ptrToItems),"cern_");
+  // kinVars.push_back(&cernLeptonMotherId);
 
+  // minDr_leplep<std::vector<pat::PackedGenParticle>,std::vector<reco::LeafCandidate>>
+  //   tightLeptonMotherId(&(genLeptons.ptrToItems),&(tightLeptons.ptrToItems),"tight_");
+  // kinVars.push_back(&tightLeptonMotherId);
 
+  // minDr_leplep<std::vector<pat::PackedGenParticle>,std::vector<reco::LeafCandidate>>
+  //   looseLeptonMotherId(&(genLeptons.ptrToItems),&(tightLooseLeptons.ptrToItems),"loose_");
+  // kinVars.push_back(&looseLeptonMotherId);
+
+  // minDr_leplep<std::vector<pat::PackedGenParticle>,std::vector<reco::LeafCandidate>>
+  //   tightLoosePreselectedLeptonMotherId(&(genLeptons.ptrToItems),&(tightLoosePreselectedLeptons.ptrToItems),"tightLoosePreselected_");
+  // kinVars.push_back(&tightLoosePreselectedLeptonMotherId);
+
+  // minDr_leplep_dxyz<std::vector<reco::LeafCandidate>,std::vector<pat::Muon>,std::vector<pat::Electron>,std::vector<reco::Vertex>>
+  //   dxyz(&(tightLoosePreselectedLeptons.ptrToItems),&(tightLoosePreselectedMuons.ptrToItems),&(tightLoosePreselectedElectrons.ptrToItems),&(primaryVertices.ptrToItems),"tightLoosePreselected");
+  // kinVars.push_back(&dxyz);
+
+  // // minDr_leplep2<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+  // //   leptonIds(&(tightLooseLeptons.ptrToItems),&(tightLooseLeptons.ptrToItems),"lepton1","lepton2","_pdgId");
+  // // kinVars.push_back(&leptonIds);
+
+  // // minDr_leplep2<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+  // //   leptonPts(&(tightLooseLeptons.ptrToItems),&(tightLooseLeptons.ptrToItems),"lepton1","lepton2","_pTs");
+  // // kinVars.push_back(&leptonPts);
+
+  // // minDr_leplep2<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+  // //   leptonPhi(&(tightLooseLeptons.ptrToItems),&(tightLooseLeptons.ptrToItems),"lepton1","lepton2","_phi");
+  // // kinVars.push_back(&leptonPhi);
+
+  // // minDr_leplep3<std::vector<reco::LeafCandidate>,std::vector<reco::LeafCandidate>>
+  // //   customDeltaPhiLepLep(&(tightLooseLeptons.ptrToItems),&(tightLooseLeptons.ptrToItems),"dPhi_leplep_custom");
+  // // kinVars.push_back(&customDeltaPhiLepLep);
 
   if (debug > 9) { cout << "Hooking variables to tree" << endl;}
   for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();
@@ -464,7 +541,11 @@ int main (int argc, char** argv) {
     //    Initialize collections and apply object ids
     //
     //////////////////////////////////////////////////////////////   
-    //    events.initializeRawItems(ev,"generator");
+    
+    //object IDs
+    
+    //preselected muons
+
     tightLoosePreselectedElectrons.initializeRawItemsSortedByPt(ev,"slimmedElectrons");
     tightLoosePreselectedElectrons.keepSelectedParticles(electronPreselectedID);
     tightElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
@@ -480,19 +561,59 @@ int main (int argc, char** argv) {
     loosePreselectedElectrons.initializeRawItems(tightLoosePreselectedElectrons.rawItems);
     loosePreselectedElectrons.addUnion({looseElectrons.items, preselectedElectrons.items});
     
+    cernElectrons.initializeRawItemsSortedByPt(ev,"slimmedElectrons");
+    cernElectrons.keepSelectedParticles(electronCernID);
+    auto eleMvaNonTrigID = [&] (pat::Electron p) { 
+      bool useFull5x5 = true;
+      bool mvaDebug = false;
+      double eleMvaNonTrig = mvaID_->mvaValue(p,vertex,rho,useFull5x5,mvaDebug);
+      bool passesMVA = false;
+      if ( p.pt() < 10 ){
+	if ( abs(p.eta()) > 0. && abs(p.eta()) < 0.8){
+	  passesMVA = ( eleMvaNonTrig > 0.47 );
+	}
+	else if ( abs(p.eta()) >= 0.8 && abs(p.eta()) < 1.479){
+	  passesMVA = ( eleMvaNonTrig > 0.004 );
+	}
+	else if ( abs(p.eta()) >= 1.479 && abs(p.eta()) <= 2.5){
+	  passesMVA = ( eleMvaNonTrig > 0.295 );
+	}
+	
+      }
+      else if ( p.pt() >= 10 ) {
+	if ( abs(p.eta()) > 0. && abs(p.eta()) < 0.8){
+	  passesMVA = ( eleMvaNonTrig > 0.34 );
+	}
+	else if ( abs(p.eta()) >= 0.8 && abs(p.eta()) < 1.479){
+	  passesMVA = ( eleMvaNonTrig > -065 );
+	}
+	else if ( abs(p.eta()) >= 1.479 && abs(p.eta()) <= 2.5){
+	  passesMVA = ( eleMvaNonTrig > 0.60 );
+	}
+	
+      }
+
+      return ( passesMVA );
+    };
+    cernElectrons.keepSelectedParticles(eleMvaNonTrigID);
+    
+
     tightLoosePreselectedMuons.initializeRawItemsSortedByPt(ev, "slimmedMuons");
     tightLoosePreselectedMuons.keepSelectedParticles(muonPreselectedID);
     tightMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightMuons.keepSelectedParticles(muonTightID);
-
+    
     tightLooseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     tightLooseMuons.keepSelectedParticles(muonLooseID);
-
+    
     looseMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     looseMuons.keepSelectedDifference(muonLooseID, muonTightID);
     preselectedMuons.initializeRawItems(tightLoosePreselectedMuons.rawItems);
     preselectedMuons.keepSelectedDifference(muonPreselectedID, muonLooseID);
 
+    cernMuons.initializeRawItemsSortedByPt(ev, "slimmedMuons");
+    cernMuons.keepSelectedParticles(muonCernID);
+    
     tightTaus.initializeRawItemsSortedByPt(ev, "slimmedTaus");
     tightTaus.keepSelectedParticles(tauTightID);
     tightLooseTaus.initializeRawItems(tightTaus.rawItems);
@@ -509,9 +630,12 @@ int main (int argc, char** argv) {
 
     tightLooseLeptons.resetAndPushBack(tightLooseElectrons.items);
     tightLooseLeptons.pushBackAndSort(tightLooseMuons.items);
-
+    
     tightLoosePreselectedLeptons.resetAndPushBack(tightLoosePreselectedElectrons.items);
     tightLoosePreselectedLeptons.pushBackAndSort(tightLoosePreselectedMuons.items);
+    
+    cernLeptons.resetAndPushBack(cernElectrons.items);
+    cernLeptons.pushBackAndSort(cernMuons.items);
 
     jets.initializeRawItemsSortedByPt(ev, "slimmedJets");
     jets.cleanJets(tightLoosePreselectedMuons.items);
@@ -536,11 +660,17 @@ int main (int argc, char** argv) {
     auto higgsPDGID = [] (reco::GenParticle p) { return (p.pdgId() == 25 ); };
     genHiggsParticles.keepSelectedParticles(higgsPDGID);
 
-    genMuons.initializeRawItems(ev,"packedGenParticles");
-    auto muonPDGID = [] (pat::PackedGenParticle p) { return (abs(p.pdgId()) == 13 ); };
-    auto muonPt = [] (pat::PackedGenParticle p) { return (p.pt() >= 10. ); };
-    genMuons.keepSelectedParticles(muonPDGID);
-    genMuons.keepSelectedParticles(muonPt);
+    genLeptons.initializeRawItems(ev,"packedGenParticles");
+    auto leptonPDGID = [] (pat::PackedGenParticle p) { return (abs(p.pdgId()) == 13 || abs(p.pdgId()) == 11 ); };
+    auto leptonPt = [] (pat::PackedGenParticle p) { return (p.pt() >= 10 ); };
+    genLeptons.keepSelectedParticles(leptonPDGID);
+    genLeptons.keepSelectedParticles(leptonPt);
+
+    // genElectrons.initializeRawItems(ev,"packedGenParticles");
+    // auto electronPDGID = [] (pat::PackedGenParticle p) { return (abs(p.pdgId()) == 11 ); };
+    // auto electronPt = [] (pat::PackedGenParticle p) { return (p.pt() >= 10. ); };
+    // genElectrons.keepSelectedParticles(electronPDGID);
+    // genElectrons.keepSelectedParticles(electronPt);
 
     // reset all the vars
     if (debug > 9) cout << "Resetting "  << endl;
