@@ -11,6 +11,7 @@
 <use   name="FWCore/PluginManager"/>
 <use   name="FWCore/ParameterSet"/>
 <use   name="FWCore/Utilities"/>
+<use   name="ttHMultileptonAnalysis/TemplateMakers" />
 <!--<use   name="HLTrigger/HLTcore"/>!-->
 <library name="multilepton_plugins" file="OSTwoLepAna.cc">
 	<flags   EDM_PLUGIN="1"/>

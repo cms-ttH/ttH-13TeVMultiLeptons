@@ -37,6 +37,26 @@ vstring MultileptonAna::HLTInfo ()
 	return HLT_triggers;
 }
 
+void MultileptonAna::setupMva(){
+  mvaID_ = new EGammaMvaEleEstimatorFWLite();
+  bool useBinnedVersion_ = true;
+  string method_ = "BDT";
+  EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrig;
+  std::vector<std::string> mvaWeightFiles_;
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
+  mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_);
+  
+}
+
+
+
+
+
 trigRes MultileptonAna::GetTriggers (const edm::Event& event)
 {
 	// hltTag already got by HLTInfo ...	
@@ -450,54 +470,6 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   double looseDxy = electronparams.getParameter<double> ("looseDxy");
   double dz = electronparams.getParameter<double> ("dZ");
   
-  ///////
-  //
-  // ele mva id hack
-  //
-  //////
-  // EGammaMvaEleEstimatorFWLite* mvaID_ = new EGammaMvaEleEstimatorFWLite();
-  // bool useBinnedVersion_ = true;
-  // string method_ = "BDT";
-  // EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrig;
-  // std::vector<std::string> mvaWeightFiles_;
-  // mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml");
-  // mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml");
-  // mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml");
-  // mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml");
-  // mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
-  // mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
-  // mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_);
-  // bool useFull5x5 = true;
-  // bool mvaDebug = false;
-  // double eleMvaNonTrig = mvaID_->mvaValue(iElectron,vertex,rho,useFull5x5,mvaDebug);
-  // bool passesMVA = false;
-  // if ( iElectron.pt() < 10 ){
-  //   if ( abs(iElectron.eta()) > 0. && abs(iElectron.eta()) < 0.8){
-  //     passesMVA = ( eleMvaNonTrig > 0.47 );
-  //   }
-  //   else if ( abs(iElectron.eta()) >= 0.8 && abs(iElectron.eta()) < 1.479){
-  //     passesMVA = ( eleMvaNonTrig > 0.004 );
-  //   }
-  //   else if ( abs(iElectron.eta()) >= 1.479 && abs(iElectron.eta()) <= 2.5){
-  //     passesMVA = ( eleMvaNonTrig > 0.295 );
-  //   }
-
-  // }
-  // else if ( iElectron.pt() >= 10 ) {
-  //   if ( abs(iElectron.eta()) > 0. && abs(iElectron.eta()) < 0.8){
-  //     passesMVA = ( eleMvaNonTrig > 0.5 );
-  //   }
-  //   else if ( abs(iElectron.eta()) >= 0.8 && abs(iElectron.eta()) < 1.479){
-  //     passesMVA = ( eleMvaNonTrig > 0.12 );
-  //   }
-  //   else if ( abs(iElectron.eta()) >= 1.479 && abs(iElectron.eta()) <= 2.5){
-  //     passesMVA = ( eleMvaNonTrig > 0.60 );
-  //   }
-    
-  // }
-
-
-
   // Be skeptical about this electron making it through
   bool passesKinematics	= false;
   bool passesIso        = false;
@@ -548,14 +520,45 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesID         = ( id && no_exp_inner_trkr_hits && myTrigPresel );
     break;
   case electronID::electronPreselection:
+    ///////
+    //
+    // ele mva id hack
+    //
+    //////
+    bool passesMVA = false;
+    bool useFull5x5 = true;
+    bool mvaDebug = false;
+    double eleMvaNonTrig = mvaID_->mvaValue(iElectron,vertex,rho,useFull5x5,mvaDebug);
+    if ( iElectron.pt() < 10 ){
+      if ( abs(iElectron.eta()) > 0. && abs(iElectron.eta()) < 0.8){
+	passesMVA = ( eleMvaNonTrig > 0.47 );
+      }
+      else if ( abs(iElectron.eta()) >= 0.8 && abs(iElectron.eta()) < 1.479){
+	passesMVA = ( eleMvaNonTrig > 0.004 );
+      }
+      else if ( abs(iElectron.eta()) >= 1.479 && abs(iElectron.eta()) <= 2.5){
+	passesMVA = ( eleMvaNonTrig > 0.295 );
+      }
+    }
+    else if ( iElectron.pt() >= 10 ) {
+      if ( abs(iElectron.eta()) > 0. && abs(iElectron.eta()) < 0.8){
+	passesMVA = ( eleMvaNonTrig > 0.5 );
+      }
+      else if ( abs(iElectron.eta()) >= 0.8 && abs(iElectron.eta()) < 1.479){
+	passesMVA = ( eleMvaNonTrig > 0.12 );
+      }
+      else if ( abs(iElectron.eta()) >= 1.479 && abs(iElectron.eta()) <= 2.5){
+	passesMVA = ( eleMvaNonTrig > 0.60 );
+      }
+    }
+    
     passesKinematics = ((iElectron.pt() > 7.) && (fabs(iElectron.eta()) < 2.5));
     passesIso        = (GetElectronRelIso(iElectron) < 0.400);
     if( iElectron.gsfTrack().isAvailable() ){
       passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1  );
     }
     
-    //    passesID         = ( passGsfTrackID && passMVAId53x && no_exp_inner_trkr_hits && notConv && myTrigPresel && passesMVA);    
-    passesID         = ( passGsfTrackID && passMVAId53x && no_exp_inner_trkr_hits && notConv && myTrigPresel);    
+    passesID         = ( passGsfTrackID && passMVAId53x && no_exp_inner_trkr_hits && notConv && myTrigPresel && passesMVA);    
     break;
   }
   

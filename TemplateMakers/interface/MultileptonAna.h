@@ -162,6 +162,10 @@ class MultileptonAna: public MiniAODHelper
 		int eventcount;
 		
 		void detectData(string sampleName);
+		
+		EGammaMvaEleEstimatorFWLite* mvaID_;
+		void setupMva();
+
 		int convertSampleNameToNumber(string sampleName);
 		
 		edm::ParameterSet entire_pset;
@@ -238,12 +242,30 @@ class MultileptonAna: public MiniAODHelper
   		bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
   		bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
 		float GetMuonRelIso(const pat::Muon&) const;
-};
+
+	};
 
 
 MultileptonAna::MultileptonAna(){} // use EDAnalyzer constructor
 
 MultileptonAna::~MultileptonAna(){} 
+
+
+/* void MultileptonAna::setupMva(){ */
+/*   mvaID_ = new EGammaMvaEleEstimatorFWLite(); */
+/*   bool useBinnedVersion_ = true; */
+/*   string method_ = "BDT"; */
+/*   EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrig; */
+/*   std::vector<std::string> mvaWeightFiles_; */
+/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml"); */
+/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml"); */
+/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml"); */
+/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml"); */
+/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml"); */
+/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml"); */
+/*   mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_); */
+  
+/* } */
 
 
 void MultileptonAna::detectData(string sampleName) {

@@ -23,7 +23,10 @@ void OSTwoLepAna::beginJob()
 	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
 	
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
+	
 	SetFactorizedJetCorrector();
+	
+	setupMva();
 
 	// book histos:
 
@@ -62,7 +65,7 @@ void OSTwoLepAna::beginJob()
 
 	electronTightID = electronID::electronTight;
 	electronLooseID = electronID::electronLoose;
-	electronPreselectedID = electronID::electronNoCuts;
+	electronPreselectedID = electronID::electronPreselection;
 
 	muonTightID = muonID::muonTight;
 	muonLooseID = muonID::muonLoose;
@@ -219,6 +222,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
+	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	
 	int numTightElectrons = int(selectedElectrons_tight.size());
