@@ -620,7 +620,6 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
   switch(iJetID){
   case jetID::none:
   case jetID::jetPU:
-    
     if (fabs(iJet.eta()) > 0. && fabs(iJet.eta()) <2.5)
       {
         passesPUJetID = (puMvaId > -0.63);
@@ -653,3 +652,76 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
 
   return true;
 }
+
+// float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pat::Jet>* iJets){
+//   CheckSetUp();
+
+//   varchRelIso = iMuon.chargedHadronIso()/iMuon.pt();
+//   varneuRelIso = GetMuonRelIso(iMuon) - varchRelIso;
+
+//   varjetDR_in = iMuon.jetDeltaR;
+  
+
+//   varjetPtRatio_in = min(iMuon.jetPtRatio, 1.5);
+//   varjetBTagCSV_in = max(iMuon.jetBTagCSV, 0.0);
+//   varsip3d = fabs(iMuon.SIP);
+//   vardxy = log(fabs(iMuon.correctedD0Vertex));
+//   vardz = log(fabs(iMuon.correctedDZ));
+
+//   if (iMuon.pt > 15 && fabs(iMuon.eta) < 1.5) {
+//     // std::cout << "LepMVA: " << mu_reader_high_b->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return mu_reader_high_b->EvaluateMVA( "BDTG method" );
+//   }
+//   else if (iMuon.pt > 15 && fabs(iMuon.eta) >= 1.5) {
+//     // std::cout << "LepMVA: " << mu_reader_high_e->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return mu_reader_high_e->EvaluateMVA( "BDTG method" );
+//   }
+//   else if (iMuon.pt <= 15 && fabs(iMuon.eta) < 1.5) {
+//     // std::cout << "LepMVA: " << mu_reader_low_b->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return mu_reader_low_b->EvaluateMVA( "BDTG method" );
+//   }
+//   else {
+//     // std::cout << "LepMVA: " << mu_reader_low_e->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return mu_reader_low_e->EvaluateMVA( "BDTG method" );
+//   }
+// }
+
+
+// float MultileptonAna::GetElectronLepMVA(const BNelectron& iElectron){
+//   CheckSetUp();
+//   varneuRelIso = max(0.0, iElectron.neutralHadronIsoDR04 + iElectron.photonIsoDR04 - 0.5*iElectron.puChargedHadronIsoDR04)/iElectron.pt;
+//   // varneuRelIso = max(0.0, iElectron.neutralHadronIso + iElectron.photonIso - iElectron.AEffDr03*iElectron.rhoPrime)/iElectron.pt;
+//   varchRelIso = iElectron.chargedHadronIso/iElectron.pt;
+//   varjetDR_in = iElectron.jetDeltaR;
+//   varjetPtRatio_in = min(iElectron.jetPtRatio, 1.5);
+//   varjetBTagCSV_in = max(iElectron.jetBTagCSV, 0.0);
+//   varsip3d = fabs(iElectron.SIP);
+//   varmvaId = iElectron.mvaNonTrigV0;
+//   // varmvaId = iElectron.mva;
+//   varinnerHits = iElectron.numberOfExpectedInnerHits;
+  
+//   if (iElectron.pt >= 10 && fabs(iElectron.eta) <= 0.8) {
+//     // std::cout << "LepMVA: " << ele_reader_high_cb->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return ele_reader_high_cb->EvaluateMVA( "BDTG method" );
+//   }
+//   else if (iElectron.pt >= 10 && fabs(iElectron.eta) > 0.8 && fabs(iElectron.eta) <= 1.479) {
+//     // std::cout << "LepMVA: " << ele_reader_high_fb->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return ele_reader_high_fb->EvaluateMVA( "BDTG method" );
+//   }
+//   else if (iElectron.pt >= 10 && fabs(iElectron.eta) > 1.479) {
+//     // std::cout << "LepMVA: " << ele_reader_high_ec->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return ele_reader_high_ec->EvaluateMVA( "BDTG method" );
+//   }
+//   else if (iElectron.pt < 10 && fabs(iElectron.eta) <= 0.8) {
+//     // std::cout << "LepMVA: " << ele_reader_low_cb->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return ele_reader_low_cb->EvaluateMVA( "BDTG method" );
+//   }
+//   else if (iElectron.pt < 10 && fabs(iElectron.eta) > 0.8 && fabs(iElectron.eta) <= 1.479) {
+//     // std::cout << "LepMVA: " << ele_reader_low_fb->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return ele_reader_low_fb->EvaluateMVA( "BDTG method" );
+//   }
+//   else {
+//     // std::cout << "LepMVA: " << ele_reader_low_ec->EvaluateMVA( "BDTG method" ) << std::endl;
+//     return ele_reader_low_ec->EvaluateMVA( "BDTG method" );
+//   }
+// }

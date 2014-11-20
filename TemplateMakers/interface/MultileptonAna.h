@@ -246,8 +246,8 @@ class MultileptonAna: public MiniAODHelper
   template <typename T, typename S> std::vector<T> cleanObjects(const std::vector<T>&, const std::vector<S>&, const double);
 
   //lepMVA
-  //float GetMuonLepMVA( const BNmuon&, const BNjetCollection* = 0);
-  //  float GetElectronLepMVA(const BNelectron&);
+  //float GetMuonLepMVA( const pat::Muon&, const std::vector<pat::Jet>* = 0);
+  //  float GetElectronLepMVA(const pat::Electron&);
 
 
 
@@ -275,9 +275,9 @@ class MultileptonAna: public MiniAODHelper
   Float_t vardxy;
   Float_t vardz;
   
-
-
-	};
+  
+  
+};
 
 
 MultileptonAna::MultileptonAna(){} // use EDAnalyzer constructor
