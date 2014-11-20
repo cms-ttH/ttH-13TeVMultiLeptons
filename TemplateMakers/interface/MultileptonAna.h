@@ -153,95 +153,129 @@ typedef std::vector<pat::MET>::const_iterator		metit;
 
 class MultileptonAna: public MiniAODHelper
 {
-	protected:
+ protected:
+  
+  bool isData;
+  string sampleName;
+  int sampleNumber;
+  bool debug;
+  int eventcount;
+  
+  void detectData(string sampleName);
+  
+  EGammaMvaEleEstimatorFWLite* mvaID_;
+  void setupMva();
+  
+  int convertSampleNameToNumber(string sampleName);
+  
+  edm::ParameterSet entire_pset;
+  edm::ParameterSet setupoptionsparams;
+  edm::ParameterSet triggerparams;
+  edm::ParameterSet muonparams;
+  edm::ParameterSet electronparams;
+  edm::ParameterSet leptonparams;
+  edm::ParameterSet jetparams;
+  edm::ParameterSet subjetparams;
+  edm::ParameterSet btagparams;
+  edm::ParameterSet metparams;
+  edm::ParameterSet variableparams;
+  edm::ParameterSet systparams;
+  edm::ParameterSet selectionparams;
+  
+  void parse_params();
+  
+  //MiniAODHelper miniAODhelper;
+  
+  double rho;
+  
+  HLTConfigProvider hltConfig_;
+  std::string hltTag;	
+  
+  
+ public:
+  
+  MultileptonAna();
+  ~MultileptonAna();
+  
+  string analysisYear = "2012_53x"; // "2015_74X"!
 		
-		bool isData;
-		string sampleName;
-		int sampleNumber;
-		bool debug;
-		int eventcount;
-		
-		void detectData(string sampleName);
-		
-		EGammaMvaEleEstimatorFWLite* mvaID_;
-		void setupMva();
+  electronID::electronID electronTightID;
+  electronID::electronID electronLooseID;
+  electronID::electronID electronPreselectedID;
+  
+  muonID::muonID muonTightID;
+  muonID::muonID muonLooseID;
+  muonID::muonID muonPreselectedID;
+  
+  tauID::tauID tauTightID;
+  // tauID::tauID tauLooseID = tauID::tauVLoose;
+  tauID::tauID tauPreselectedID;
+  vector<ArbitraryVariable*> kinVars;
+  vector<ArbitraryVariable*> cutVars;
+  
+  vecTLorentzVector Get_vecTLorentzVector (vecPatJet theobjs);
+  vecTLorentzVector Get_vecTLorentzVector (vecPatMuon theobjs);
+  vecTLorentzVector Get_vecTLorentzVector (vecPatElectron theobjs);
+  TLorentzVector Get_TLorentzVector (patMETs theobjs);
+  TLorentzVector Get_TLorentzVector (pat::MET theMET);
+  vecTLorentzVector Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2);
+  vecPatLepton fillLeptons(vecPatMuon& mus, vecPatElectron& eles);
 
-		int convertSampleNameToNumber(string sampleName);
-		
-		edm::ParameterSet entire_pset;
-		edm::ParameterSet setupoptionsparams;
-		edm::ParameterSet triggerparams;
-		edm::ParameterSet muonparams;
-		edm::ParameterSet electronparams;
-		edm::ParameterSet leptonparams;
-		edm::ParameterSet jetparams;
-		edm::ParameterSet subjetparams;
-		edm::ParameterSet btagparams;
-		edm::ParameterSet metparams;
-		edm::ParameterSet variableparams;
-		edm::ParameterSet systparams;
-		edm::ParameterSet selectionparams;
-		
-		void parse_params();
-		
-		//MiniAODHelper miniAODhelper;
-		
-		double rho;
-		
-		HLTConfigProvider hltConfig_;
-		std::string hltTag;	
-		
-		
-	public:
-		
-		MultileptonAna();
-                ~MultileptonAna();
-		
-		string analysisYear = "2012_53x"; // "2015_74X"!
-		
-		electronID::electronID electronTightID;
-		electronID::electronID electronLooseID;
-		electronID::electronID electronPreselectedID;
+  void SetupOptions(const edm::Event& event);
+  trigRes GetTriggers(const edm::Event& event);
+  patMuons GetMuons(const edm::Event& event);
+  patElectrons GetElectrons(const edm::Event& event); 
+  patJets GetJets(const edm::Event& event);
+  patJets GetSubJets(const edm::Event& event); 
+  patMETs GetMet(const edm::Event& event);
+  int GetVertices (const edm::Event& event);
+  void GetLeptons(const edm::Event& event);
+  void GetBtags(const edm::Event& event);
+  void Variables(const edm::Event& event); 
+  void Systematics(const edm::Event& event);
+  void EventSelection(const edm::Event& event);
+  vstring HLTInfo ();
+  
+  // replace virtual members from inherited miniAODhelper:
+  bool isGoodMuon(const pat::Muon&, const float, const muonID::muonID);
+  bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID);
+  bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
+  bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
+  float GetMuonRelIso(const pat::Muon&) const;
+  
+  template <typename T, typename S> std::vector<T> cleanObjects(const std::vector<T>&, const std::vector<S>&, const double);
 
-		muonID::muonID muonTightID;
-		muonID::muonID muonLooseID;
-		muonID::muonID muonPreselectedID;
+  //lepMVA
+  //float GetMuonLepMVA( const BNmuon&, const BNjetCollection* = 0);
+  //  float GetElectronLepMVA(const BNelectron&);
 
-		tauID::tauID tauTightID;
-		// tauID::tauID tauLooseID = tauID::tauVLoose;
-		tauID::tauID tauPreselectedID;
-		vector<ArbitraryVariable*> kinVars;
-		vector<ArbitraryVariable*> cutVars;
 
-		vecTLorentzVector Get_vecTLorentzVector (vecPatJet theobjs);
-		vecTLorentzVector Get_vecTLorentzVector (vecPatMuon theobjs);
-		vecTLorentzVector Get_vecTLorentzVector (vecPatElectron theobjs);
-		TLorentzVector Get_TLorentzVector (patMETs theobjs);
-		TLorentzVector Get_TLorentzVector (pat::MET theMET);
-		vecTLorentzVector Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2);
-		vecPatLepton fillLeptons(vecPatMuon& mus, vecPatElectron& eles);
 
-		void SetupOptions(const edm::Event& event);
-		trigRes GetTriggers(const edm::Event& event);
-		patMuons GetMuons(const edm::Event& event);
-		patElectrons GetElectrons(const edm::Event& event); 
-		patJets GetJets(const edm::Event& event);
-		patJets GetSubJets(const edm::Event& event); 
-		patMETs GetMet(const edm::Event& event);
-		int GetVertices (const edm::Event& event);
-		void GetLeptons(const edm::Event& event);
-		void GetBtags(const edm::Event& event);
-		void Variables(const edm::Event& event); 
-		void Systematics(const edm::Event& event);
-		void EventSelection(const edm::Event& event);
-		vstring HLTInfo ();
-		
-		// replace virtual members from inherited miniAODhelper:
-		bool isGoodMuon(const pat::Muon&, const float, const muonID::muonID);
-  		bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID);
-  		bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
-  		bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
-		float GetMuonRelIso(const pat::Muon&) const;
+ private:
+  
+  // lepMVA TMVA readers
+  TMVA::Reader* mu_reader_high_b;
+  TMVA::Reader* mu_reader_high_e;
+  TMVA::Reader* mu_reader_low_b;
+  TMVA::Reader* mu_reader_low_e;
+  TMVA::Reader* ele_reader_high_cb;
+  TMVA::Reader* ele_reader_high_fb;
+  TMVA::Reader* ele_reader_high_ec;
+  TMVA::Reader* ele_reader_low_cb;
+  TMVA::Reader* ele_reader_low_fb;
+  TMVA::Reader* ele_reader_low_ec;
+  Float_t varneuRelIso;
+  Float_t varchRelIso;
+  Float_t varjetDR_in;
+  Float_t varjetPtRatio_in;
+  Float_t varjetBTagCSV_in;
+  Float_t varsip3d;
+  Float_t varmvaId;
+  Float_t varinnerHits;
+  Float_t vardxy;
+  Float_t vardz;
+  
+
 
 	};
 
@@ -249,23 +283,6 @@ class MultileptonAna: public MiniAODHelper
 MultileptonAna::MultileptonAna(){} // use EDAnalyzer constructor
 
 MultileptonAna::~MultileptonAna(){} 
-
-
-/* void MultileptonAna::setupMva(){ */
-/*   mvaID_ = new EGammaMvaEleEstimatorFWLite(); */
-/*   bool useBinnedVersion_ = true; */
-/*   string method_ = "BDT"; */
-/*   EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrig; */
-/*   std::vector<std::string> mvaWeightFiles_; */
-/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml"); */
-/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml"); */
-/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml"); */
-/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml"); */
-/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml"); */
-/*   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml"); */
-/*   mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_); */
-  
-/* } */
 
 
 void MultileptonAna::detectData(string sampleName) {
@@ -519,3 +536,28 @@ int MultileptonAna::convertSampleNameToNumber(string sampleName) {
   return sampleNumber;
 }
 
+template <typename obj1, typename obj2>
+  std::vector<obj1> MultileptonAna::cleanObjects(const std::vector<obj1>& dirtyCollection,const std::vector<obj2>& soapCollection,const double coneSize)
+{
+  std::vector<obj1> cleanedCollection;
+  bool isClean;
+  for (typename std::vector<obj1>::const_iterator dirtObj = dirtyCollection.begin(); dirtObj != dirtyCollection.end(); dirtObj++)
+    {
+      isClean = true;
+      for (typename std::vector<obj2>::const_iterator soapObj = soapCollection.begin(); soapObj != soapCollection.end(); soapObj++)
+        {
+          if (MiniAODHelper::DeltaR(dirtObj,soapObj) <= coneSize )
+            {
+              isClean = false;
+              break;
+            }
+        }
+      if (isClean)
+	{
+	  obj1 cleanedObj = (*dirtObj);
+	  cleanedCollection.push_back(cleanedObj);
+	}
+    }
+  
+  return cleanedCollection;
+}

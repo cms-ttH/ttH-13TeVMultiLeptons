@@ -95,6 +95,7 @@ vecPatLepton MultileptonAna::fillLeptons(vecPatMuon& muons, vecPatElectron& elec
     }
   return leptons;
 }
+
 void MultileptonAna::GetLeptons (const edm::Event& event)
 {
 	bool are_electrons_added_to_leptons = leptonparams.getParameter<bool> ("useElectrons");
@@ -613,9 +614,31 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
 	      );
   }
 
+  bool passesPUJetID = false;
+  float puMvaId = iJet.userFloat("pileupJetId:fullDiscriminant");
   // Jet ID
   switch(iJetID){
   case jetID::none:
+  case jetID::jetPU:
+    
+    if (fabs(iJet.eta()) > 0. && fabs(iJet.eta()) <2.5)
+      {
+        passesPUJetID = (puMvaId > -0.63);
+      }
+    else if (fabs(iJet.eta()) >= 2.5 && fabs(iJet.eta()) < 2.75)
+      {
+        passesPUJetID = (puMvaId > -0.60);
+      }
+    else if (fabs(iJet.eta()) >= 2.75 && fabs(iJet.eta()) < 3.0)
+      {
+	passesPUJetID = (puMvaId > -0.55);
+      }
+    else if (fabs(iJet.eta()) >= 3.0 && fabs(iJet.eta()) <= 5.2)
+      {
+        passesPUJetID = (puMvaId > -0.45);
+      }
+    if (passesPUJetID) return true;
+    break;
   case jetID::jetMinimal:
   case jetID::jetLooseAOD:
   case jetID::jetLoose:
