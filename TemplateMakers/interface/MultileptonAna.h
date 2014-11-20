@@ -244,10 +244,12 @@ class MultileptonAna: public MiniAODHelper
   float GetMuonRelIso(const pat::Muon&) const;
   
   template <typename T, typename S> std::vector<T> cleanObjects(const std::vector<T>&, const std::vector<S>&, const double);
+  
+  template <typename T> pat::Jet getClosestJet(const std::vector<pat::Jet>&, const T&);
 
   //lepMVA
-  //float GetMuonLepMVA( const pat::Muon&, const std::vector<pat::Jet>* = 0);
-  //  float GetElectronLepMVA(const pat::Electron&);
+  float GetMuonLepMVA( const pat::Muon&, const std::vector<pat::Jet>&);
+  float GetElectronLepMVA(const pat::Electron&, const std::vector<pat::Jet>&);
 
 
 
