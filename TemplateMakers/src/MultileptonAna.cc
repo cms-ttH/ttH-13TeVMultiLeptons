@@ -653,6 +653,38 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
   return true;
 }
 
+template <typename obj1, typename obj2>
+std::vector<obj1> MultileptonAna::cleanObjects(const std::vector<obj1>& dirtyCollection,const std::vector<obj2>& soapCollection,const double coneSize)
+{
+  std::vector<obj1> cleanedCollection;
+  bool isClean;
+  for (typename std::vector<obj1>::const_iterator dirtObj = dirtyCollection.begin(); dirtObj != dirtyCollection.end(); dirtObj++)
+    {
+      isClean = true;
+      for (typename std::vector<obj2>::const_iterator soapObj = soapCollection.begin(); soapObj != soapCollection.end(); soapObj++)
+        {
+          if (MiniAODHelper::DeltaR(dirtObj,soapObj) <= coneSize )
+            {
+              isClean = false;
+              break;
+            }
+        }
+      if (isClean)
+        {
+          obj1 cleanedObj = (*dirtObj);
+          cleanedCollection.push_back(cleanedObj);
+        }
+    }
+  
+  return cleanedCollection;
+}
+	  
+
+
+
+
+
+
 // float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pat::Jet>* iJets){
 //   CheckSetUp();
 
