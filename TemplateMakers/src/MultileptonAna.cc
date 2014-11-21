@@ -37,6 +37,7 @@ vstring MultileptonAna::HLTInfo ()
 	return HLT_triggers;
 }
 
+
 void MultileptonAna::setupMva(){
   mvaID_ = new EGammaMvaEleEstimatorFWLite();
   bool useBinnedVersion_ = true;
@@ -50,6 +51,119 @@ void MultileptonAna::setupMva(){
   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
   mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_);
+
+  mu_reader_high_b = new TMVA::Reader( "!Color:!Silent" );
+  mu_reader_high_e = new TMVA::Reader( "!Color:!Silent" );
+  mu_reader_low_b = new TMVA::Reader( "!Color:!Silent" );
+  mu_reader_low_e = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_high_cb = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_high_fb = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_high_ec = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_low_cb = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_low_fb = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_low_ec = new TMVA::Reader( "!Color:!Silent" );
+
+  ele_reader_high_cb->AddVariable( "neuRelIso", &varneuRelIso );
+  ele_reader_high_cb->AddVariable( "chRelIso", &varchRelIso );
+  ele_reader_high_cb->AddVariable( "jetDR_in", &varjetDR_in );
+  ele_reader_high_cb->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  ele_reader_high_cb->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  ele_reader_high_cb->AddVariable( "sip3d", &varsip3d );
+  ele_reader_high_cb->AddVariable( "mvaId", &varmvaId );
+  ele_reader_high_cb->AddVariable( "innerHits", &varinnerHits );
+
+  ele_reader_high_fb->AddVariable( "neuRelIso", &varneuRelIso );
+  ele_reader_high_fb->AddVariable( "chRelIso", &varchRelIso );
+  ele_reader_high_fb->AddVariable( "jetDR_in", &varjetDR_in );
+  ele_reader_high_fb->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  ele_reader_high_fb->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  ele_reader_high_fb->AddVariable( "sip3d", &varsip3d );
+  ele_reader_high_fb->AddVariable( "mvaId", &varmvaId );
+  ele_reader_high_fb->AddVariable( "innerHits", &varinnerHits );
+
+  ele_reader_high_ec->AddVariable( "neuRelIso", &varneuRelIso );
+  ele_reader_high_ec->AddVariable( "chRelIso", &varchRelIso );
+  ele_reader_high_ec->AddVariable( "jetDR_in", &varjetDR_in );
+  ele_reader_high_ec->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  ele_reader_high_ec->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  ele_reader_high_ec->AddVariable( "sip3d", &varsip3d );
+  ele_reader_high_ec->AddVariable( "mvaId", &varmvaId );
+  ele_reader_high_ec->AddVariable( "innerHits", &varinnerHits );
+
+  ele_reader_low_cb->AddVariable( "neuRelIso", &varneuRelIso );
+  ele_reader_low_cb->AddVariable( "chRelIso", &varchRelIso );
+  ele_reader_low_cb->AddVariable( "jetDR_in", &varjetDR_in );
+  ele_reader_low_cb->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  ele_reader_low_cb->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  ele_reader_low_cb->AddVariable( "sip3d", &varsip3d );
+  ele_reader_low_cb->AddVariable( "mvaId", &varmvaId );
+  ele_reader_low_cb->AddVariable( "innerHits", &varinnerHits );
+
+  ele_reader_low_fb->AddVariable( "neuRelIso", &varneuRelIso );
+  ele_reader_low_fb->AddVariable( "chRelIso", &varchRelIso );
+  ele_reader_low_fb->AddVariable( "jetDR_in", &varjetDR_in );
+  ele_reader_low_fb->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  ele_reader_low_fb->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  ele_reader_low_fb->AddVariable( "sip3d", &varsip3d );
+  ele_reader_low_fb->AddVariable( "mvaId", &varmvaId );
+  ele_reader_low_fb->AddVariable( "innerHits", &varinnerHits );
+
+  ele_reader_low_ec->AddVariable( "neuRelIso", &varneuRelIso );
+  ele_reader_low_ec->AddVariable( "chRelIso", &varchRelIso );
+  ele_reader_low_ec->AddVariable( "jetDR_in", &varjetDR_in );
+  ele_reader_low_ec->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  ele_reader_low_ec->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  ele_reader_low_ec->AddVariable( "sip3d", &varsip3d );
+  ele_reader_low_ec->AddVariable( "mvaId", &varmvaId );
+  ele_reader_low_ec->AddVariable( "innerHits", &varinnerHits );
+
+  mu_reader_high_b->AddVariable( "neuRelIso", &varneuRelIso );
+  mu_reader_high_b->AddVariable( "chRelIso", &varchRelIso );
+  mu_reader_high_b->AddVariable( "jetDR_in", &varjetDR_in );
+  mu_reader_high_b->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  mu_reader_high_b->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  mu_reader_high_b->AddVariable( "sip3d", &varsip3d );
+  mu_reader_high_b->AddVariable( "dxy", &vardxy );
+  mu_reader_high_b->AddVariable( "dz", &vardz );
+
+  mu_reader_high_e->AddVariable( "neuRelIso", &varneuRelIso );
+  mu_reader_high_e->AddVariable( "chRelIso", &varchRelIso );
+  mu_reader_high_e->AddVariable( "jetDR_in", &varjetDR_in );
+  mu_reader_high_e->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  mu_reader_high_e->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  mu_reader_high_e->AddVariable( "sip3d", &varsip3d );
+  mu_reader_high_e->AddVariable( "dxy", &vardxy );
+  mu_reader_high_e->AddVariable( "dz", &vardz );
+
+  mu_reader_low_b->AddVariable( "neuRelIso", &varneuRelIso );
+  mu_reader_low_b->AddVariable( "chRelIso", &varchRelIso );
+  mu_reader_low_b->AddVariable( "jetDR_in", &varjetDR_in );
+  mu_reader_low_b->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  mu_reader_low_b->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  mu_reader_low_b->AddVariable( "sip3d", &varsip3d );
+  mu_reader_low_b->AddVariable( "dxy", &vardxy );
+  mu_reader_low_b->AddVariable( "dz", &vardz );
+
+  mu_reader_low_e->AddVariable( "neuRelIso", &varneuRelIso );
+  mu_reader_low_e->AddVariable( "chRelIso", &varchRelIso );
+  mu_reader_low_e->AddVariable( "jetDR_in", &varjetDR_in );
+  mu_reader_low_e->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
+  mu_reader_low_e->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
+  mu_reader_low_e->AddVariable( "sip3d", &varsip3d );
+  mu_reader_low_e->AddVariable( "dxy", &vardxy );
+  mu_reader_low_e->AddVariable( "dz", &vardz );
+
+  mu_reader_high_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_high_b_BDTG.weights.xml");
+  mu_reader_high_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_high_e_BDTG.weights.xml");
+  mu_reader_low_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_low_b_BDTG.weights.xml");
+  mu_reader_low_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_low_e_BDTG.weights.xml");
+  ele_reader_high_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_cb_BDTG.weights.xml");
+  ele_reader_high_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_fb_BDTG.weights.xml");
+  ele_reader_high_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_ec_BDTG.weights.xml");
+  ele_reader_low_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_low_cb_BDTG.weights.xml");
+  ele_reader_low_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_low_fb_BDTG.weights.xml");
+  ele_reader_low_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttHMultileptonAnalysis/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_low_ec_BDTG.weights.xml");
+
   
 }
 
