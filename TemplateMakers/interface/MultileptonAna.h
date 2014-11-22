@@ -58,6 +58,7 @@
 
 // Physics
 
+#include "DataFormats/Math/interface/LorentzVectorFwd.h"
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
@@ -119,6 +120,8 @@
 //using namespace trigger;
 //using namespace std;
 
+typedef math::XYZTLorentzVectorD 		TLorentzVectorCMS;
+typedef std::vector< math::XYZTLorentzVectorD >	vecTLorentzVectorCMS;
 typedef std::vector< TLorentzVector >          	vecTLorentzVector;
 typedef std::vector<int>                       	vint;
 typedef std::vector<double>                    	vdouble;
@@ -213,12 +216,12 @@ class MultileptonAna: public MiniAODHelper
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
   
-  vecTLorentzVector Get_vecTLorentzVector (vecPatJet theobjs);
-  vecTLorentzVector Get_vecTLorentzVector (vecPatMuon theobjs);
-  vecTLorentzVector Get_vecTLorentzVector (vecPatElectron theobjs);
-  TLorentzVector Get_TLorentzVector (patMETs theobjs);
-  TLorentzVector Get_TLorentzVector (pat::MET theMET);
-  vecTLorentzVector Get_vecTLorentzVector_sorted_leptons (vecTLorentzVector leps1, vecTLorentzVector leps2);
+  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
+  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatMuon theobjs);
+  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatElectron theobjs);
+  TLorentzVectorCMS Get_TLorentzVectorCMS (patMETs theobjs);
+  TLorentzVectorCMS Get_TLorentzVectorCMS (pat::MET theMET);
+  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS_sorted_leptons(vecTLorentzVectorCMS leps1, vecTLorentzVectorCMS leps2);
   vecPatLepton fillLeptons(vecPatMuon& mus, vecPatElectron& eles);
 
   void SetupOptions(const edm::Event& event);
@@ -231,7 +234,8 @@ class MultileptonAna: public MiniAODHelper
   int GetVertices (const edm::Event& event);
   void GetLeptons(const edm::Event& event);
   void GetBtags(const edm::Event& event);
-  void Variables(const edm::Event& event); 
+  vector<double> ReturnBTagDisc (vecPatJet theobjs);
+  //void Variables(const edm::Event& event); 
   void Systematics(const edm::Event& event);
   void EventSelection(const edm::Event& event);
   vstring HLTInfo ();

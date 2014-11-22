@@ -48,8 +48,10 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vstring eleltriggerstostudy;
 		vstring mueltriggerstostudy;
 		vstring elmutriggerstostudy;
-		vstring tripeltriggerstostudy;		
-		
+		vstring tripeltriggerstostudy;	
+			
+		void tree_add_branches();
+		void initialize_variables();
 	
 	public:
 		explicit OSTwoLepAna(const edm::ParameterSet&);
@@ -92,6 +94,94 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		//GenericCollectionSizeVariable2<std::vector<pat::Electron>>
 		//numTightElectronz(vecPatElectron &, string);
 
-
 		
+		// tree branches:
+				
+		double mcwgt_intree;
+		double wgt_intree;
+		
+		int numLooseMuons_intree;
+		int numLooseElectrons_intree;
+		int numTightMuons_intree;
+		int numTightElectrons_intree;
+		
+		int numPreselectedLeptons_intree;
+		int numTightLeptons_intree;
+		int numLooseLeptons_intree;
+		
+		int numCernMuons_intree;
+		int numCernElectrons_intree;
+		int numCernLeptons_intree;
+		int numCernJets_intree;
+
+		double allJetCSV_intree;
+		int numJets_intree;
+		
+		vdouble testvect;
+		
+		TLorentzVectorCMS testTLV_intree;
+		TLorentzVectorCMS MET_intree;
+		//std::vector<math::XYZTLorentzVectorD> Jets_intree;
+		vecTLorentzVectorCMS Jets_intree;
+		vecTLorentzVectorCMS LooseElectrons_intree;
+		vecTLorentzVectorCMS LooseMuons_intree;
+		vecTLorentzVectorCMS TightElectrons_intree;
+		vecTLorentzVectorCMS TightMuons_intree;
+		vdouble	JetCSV_intree;
 };
+
+void OSTwoLepAna::tree_add_branches()
+{
+	
+	// add the branches to the tree:
+		
+	summaryTree->Branch("mcwgt", &mcwgt_intree, "mcwgt/D");
+	summaryTree->Branch("wgt", &wgt_intree, "wgt/D");
+
+	summaryTree->Branch("numLooseMuons", &numLooseMuons_intree, "numLooseMuons/I");
+      	summaryTree->Branch("numLooseElectrons", &numLooseElectrons_intree, "numLooseElectrons/I");
+      	summaryTree->Branch("numTightMuons", &numTightMuons_intree, "numTightMuons/I");
+      	summaryTree->Branch("numTightElectrons", &numTightElectrons_intree, "numTightElectrons/I");
+      	
+	//summaryTree->Branch("testvect", &testvect);
+	//summaryTree->Branch("testTLV", &testTLV_intree);
+	
+	//summaryTree->Branch("Jets", "std::vector<TLorentzVector>", &Jets_intree);
+	//summaryTree->Branch("Jets", "std::vector<math::XYZTLorentzVectorD>", &Jets_intree);
+	summaryTree->Branch("Jets", &Jets_intree);
+	summaryTree->Branch("MET", &MET_intree);
+	summaryTree->Branch("LooseElectrons", &LooseElectrons_intree);
+	summaryTree->Branch("LooseMuons", &LooseMuons_intree);
+	summaryTree->Branch("TightElectrons", &TightElectrons_intree);
+	summaryTree->Branch("TightMuons", &TightMuons_intree);
+	summaryTree->Branch("JetCSV", &JetCSV_intree);
+	
+	
+	
+}
+
+void OSTwoLepAna::initialize_variables()
+{
+	testTLV_intree.SetPxPyPzE(0.,0.,0.,0.);
+	
+	testvect.clear();
+	
+	mcwgt_intree = -9999.;
+	wgt_intree = -9999.;
+	
+	numLooseMuons_intree = -1;
+	numLooseElectrons_intree = -1;
+	numTightMuons_intree = -1;
+	numTightElectrons_intree = -1;
+	
+	Jets_intree.clear();
+	MET_intree.SetPxPyPzE(0.,0.,0.,0.);
+	LooseElectrons_intree.clear();
+	LooseMuons_intree.clear();
+	TightElectrons_intree.clear();
+	TightMuons_intree.clear();
+	JetCSV_intree.clear();
+	
+	
+	
+}

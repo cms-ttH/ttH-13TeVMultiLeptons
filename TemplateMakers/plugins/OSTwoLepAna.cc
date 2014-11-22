@@ -77,11 +77,6 @@ void OSTwoLepAna::beginJob()
 
 	eventcount=0;
 
-	//	doublmucount=0;
-	//	doubleelecount=0;
-	//	muelecount=0;
-	//	elemucount=0;	    
-
 	doublemucount=0.;
 	doublemucount2=0.;
 	doublemucount3=0.;
@@ -110,29 +105,8 @@ void OSTwoLepAna::beginJob()
 	numpassedmuelcuts=0.;
 	numpassedelmucuts=0.;
 	
-	doublemucount5=0;
+	doublemucount5=0;	
 	
-	// usually this will be parsed elsewhere:
-// 	mumutriggerstostudy.push_back("HLT_Mu17_Mu8_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TkMu8_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1");
-// 	eleltriggerstostudy.push_back("HLT_Ele17_Ele8_Gsf_v1");
-// 	eleltriggerstostudy.push_back("HLT_Ele23_Ele12_CaloId_TrackId_Iso_v1");
-// 	mueltriggerstostudy.push_back("HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1");
-// 	elmutriggerstostudy.push_back("HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1");
-// 	tripeltriggerstostudy.push_back("HLT_Ele17_Ele12_Ele10_CaloId_TrackId_v1");
-	
-	
-// 	mumutriggerstostudy.push_back("HLT_Mu13_Mu8_v23");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_Mu8_v23");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TkMu8_v15");
-// 	mumutriggerstostudy.push_back("HLT_Mu22_TkMu8_v10");
-// 	eleltriggerstostudy.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v20");
-// 	eleltriggerstostudy.push_back("HLT_Ele27_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele15_CaloIdT_CaloIsoVL_trackless_v9");
-// 	mueltriggerstostudy.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10");
-// 	elmutriggerstostudy.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10");
-// 	tripeltriggerstostudy.push_back("HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v7");
 	
 	alltriggerstostudy = HLTInfo();
 	
@@ -148,17 +122,8 @@ void OSTwoLepAna::beginJob()
 	if (numtrigs>7) elmutriggerstostudy.push_back(alltriggerstostudy[7]);
 	if (numtrigs>8) tripeltriggerstostudy.push_back(alltriggerstostudy[8]);
 	
-	//initialize kinematic variables
-	//global var
-	// GenericCollectionSizeVariable2<std::vector<pat::Electron>> 
-	//   numTightElectronz(&selectedElectrons_loose_notight, "numTightElectronzz");
- 
-	// kinVars.push_back(&numTightElectronz);
-	
-	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++) 
-	//   {
-	//     (*iVar)->attachToTree(summaryTree);
-	//   }
+	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");
+	tree_add_branches();
 	
 	
 }
@@ -202,7 +167,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	//wgt = weight; //test
 
-				
+	initialize_variables();	
+			
 	/////////
 	///
 	/// Electrons
@@ -254,18 +220,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	//bool isOS = false;	
 	
-	vecTLorentzVector muonsTLVloose = Get_vecTLorentzVector(selectedMuons_loose);
-	vecTLorentzVector muonsTLVtight = Get_vecTLorentzVector(selectedMuons_tight);
+	vecTLorentzVectorCMS muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_loose);
+	vecTLorentzVectorCMS muonsTLVtight = Get_vecTLorentzVectorCMS(selectedMuons_tight);
 			  
-	vecTLorentzVector elesTLVloose = Get_vecTLorentzVector(selectedElectrons_loose);
-	vecTLorentzVector elesTLVtight = Get_vecTLorentzVector(selectedElectrons_tight);
+	vecTLorentzVectorCMS elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_loose);
+	vecTLorentzVectorCMS elesTLVtight = Get_vecTLorentzVectorCMS(selectedElectrons_tight);
 	
 	
-	vecTLorentzVector leptonsTLVtight = Get_vecTLorentzVector_sorted_leptons (muonsTLVtight, elesTLVtight); 
-	vecTLorentzVector leptonsTLVloose = Get_vecTLorentzVector_sorted_leptons (muonsTLVloose, elesTLVloose); 
+	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
+	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 
 	
-	vecTLorentzVector muonsTLVloosenotight = Get_vecTLorentzVector(selectedMuons_loose_notight);
-	vecTLorentzVector elesTLVloosenotight = Get_vecTLorentzVector(selectedElectrons_loose_notight);
+	vecTLorentzVectorCMS muonsTLVloosenotight = Get_vecTLorentzVectorCMS(selectedMuons_loose_notight);
+	vecTLorentzVectorCMS elesTLVloosenotight = Get_vecTLorentzVectorCMS(selectedElectrons_loose_notight);
 	
 	/////////
 	///
@@ -300,8 +266,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	
 
-	vecTLorentzVector jetsTLVloose = Get_vecTLorentzVector(selectedJets_loose_noSys_unsorted);
-	vecTLorentzVector jetsTLVtight = Get_vecTLorentzVector(selectedJets_noSys_unsorted);
+	vecTLorentzVectorCMS jetsTLVloose = Get_vecTLorentzVectorCMS(selectedJets_loose_noSys_unsorted);
+	vecTLorentzVectorCMS jetsTLVtight = Get_vecTLorentzVectorCMS(selectedJets_noSys_unsorted);
 
 	int numRawJets = rawJets.size();
 	int numJetsNoEle = jetsNoEle.size();
@@ -321,7 +287,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////
 	
-	TLorentzVector theMET = Get_TLorentzVector(mets);
+	TLorentzVectorCMS theMET = Get_TLorentzVectorCMS(mets);
 	
 	
 	
@@ -500,23 +466,29 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_elmu[i] += wgt;
 	}
 	
-	//	numTightMuons = GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuons(&muons, "numTightMuons");
-	//	GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuonz(&muons, "numTightMuons");
-
-
-	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++)
-	//   {
-	//     cout << "before reset is called" << endl;
-	//     (*iVar)->reset();
-	//     cout << kinVars.size() << endl;
-	//   }
 	
-	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin(); iVar != kinVars.end();iVar++)
-	//   {
-	//     cout << "here I am "<< endl;
-	//     //(*iVar)->evaluate();
-	//   }
-	// // summaryTree->Fill();
+	
+	
+	// assign values to tree variables:
+	numLooseMuons_intree = numLooseMuons;
+	numLooseElectrons_intree = numLooseElectrons;
+	numTightMuons_intree = numTightMuons;
+	numTightElectrons_intree = numTightElectrons;
+	
+	//testvect.push_back(3.);
+	//testvect.push_back(11.);
+	
+	Jets_intree = jetsTLVloose;
+	MET_intree = theMET;
+	LooseElectrons_intree = elesTLVloose;
+	LooseMuons_intree = muonsTLVloose;
+	TightElectrons_intree = elesTLVtight;
+	TightMuons_intree = muonsTLVtight;
+	JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
+		
+	
+	// fill it:
+	summaryTree->Fill();
 	
 
 	
