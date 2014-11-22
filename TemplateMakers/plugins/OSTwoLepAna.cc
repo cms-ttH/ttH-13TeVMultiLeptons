@@ -20,6 +20,23 @@ void OSTwoLepAna::beginJob()
 	//	summaryTree = new TTree("summaryTree", "Summary Event Values");	
 	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
 	
+	summaryTree->Branch("num_muons",&num_preselectedMuons);
+	summaryTree->Branch("num_electrons",&num_preselectedElectrons);
+
+	summaryTree->Branch("",&num_BJetsLoose);
+	summaryTree->Branch("",&num_Jets);
+
+	summaryTree->Branch("",&num_preselectedLeptons);
+	summaryTree->Branch("",&);
+	summaryTree->Branch("",&);
+	summaryTree->Branch("",&);
+	summaryTree->Branch("",&);
+	summaryTree->Branch("",&);
+
+
+
+
+
 	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
 	
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
@@ -244,14 +261,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );		//miniAODhelper.
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );		//miniAODhelper.
-	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, minloosemupt, muonID::muonPreselection );	//miniAODhelper.
+	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );	//miniAODhelper.
 	vecPatMuon selectedMuons_nocuts = GetSelectedMuons( *muons, 10., muonID::muonNoCuts );	//miniAODhelper.
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);		//miniAODhelper.
 	
 	int numTightMuons = int(selectedMuons_tight.size());
 	int numLooseMuons = int(selectedMuons_loose.size());
-
-
+	
+	num_muons = int(selectedMuons_preselected.size());
+	
 	//bool isOS = false;	
 	
 	vecTLorentzVector muonsTLVloose = Get_vecTLorentzVector(selectedMuons_loose);
@@ -275,6 +293,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	//remove electrons that are close (dR <=0.02) to muons
 	selectedElectrons_preselected = cleanObjects(selectedElectrons_preselected,selectedMuons_preselected,0.02);
+	num_electrons = int(selectedElectrons_preselected.size());
 	
 	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
 	vecPatLepton selectedLeptons_nocuts = fillLeptons(selectedMuons_nocuts,selectedElectrons_nocuts);
@@ -517,6 +536,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//     //(*iVar)->evaluate();
 	//   }
 	// // summaryTree->Fill();
+
+	summaryTree->Fill();
 	
 
 	

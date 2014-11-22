@@ -87,11 +87,30 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		TH2D *lep1_lep2_pt;
 
 		//initialize collections
-		//vecPatElectron selectedElectrons_loose_notight;
+		int num_BJetsLoose;
+		int num_Jets;
 
-		//GenericCollectionSizeVariable2<std::vector<pat::Electron>>
-		//numTightElectronz(vecPatElectron &, string);
+		int num_preselectedLeptons;
 
+		int num_preselectedMuons;
+		int mu1_charge;
+		int mu2_charge;
+		float mu1_pt;
+		float mu2_pt;
+		float mu1_lepMVA;
+		float mu2_lepMVA;
+		int mu1_chargeFlip;
+		int mu2_chargeFlip;
+
+		int num_preselectedElectrons;
+		int ele1_charge;
+		int ele2_charge;
+		float ele1_pt;
+		float ele2_pt;
+		float ele1_lepMVA;
+		float ele2_lepMVA;
+		int ele1_chargeFlip;
+		int ele2_chargeFlip;
 
 		
 };
