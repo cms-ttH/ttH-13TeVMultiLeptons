@@ -16,14 +16,15 @@ process.prefer("GlobalTag")
 
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(100) # number of events
+    	input = cms.untracked.int32(-1) # number of events
 )
 
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
 	
 	#new menu
-        'file:/afs/cern.ch/user/m/muell149/work/data_samples/miniAOD.root'
+        'file:/afs/cern.ch/user/m/muell149/work/data_samples/miniAOD_ttH125_sync.root'
+#        'file:/afs/cern.ch/user/m/muell149/work/data_samples/miniAOD.root'
 	
 	#'/store/user/gesmith/samples/custum_miniAOD/HWW/00000/miniAOD-prod_PAT_0C055296-DE6F-E311-A240-008CFA002028.root',
 	#'/store/user/gesmith/samples/custum_miniAOD/HWW/00000/miniAOD-prod_PAT_12EBB80F-A870-E311-9035-7845C4FC3A91.root'

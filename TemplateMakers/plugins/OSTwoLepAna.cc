@@ -20,22 +20,47 @@ void OSTwoLepAna::beginJob()
 	//	summaryTree = new TTree("summaryTree", "Summary Event Values");	
 	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
 	
+
+	summaryTree->Branch("num_BJetsLoose",&num_BJetsLoose);
+	summaryTree->Branch("num_Jets",&num_Jets);
+
+	summaryTree->Branch("num_Leptons",&num_preselectedLeptons);
+
 	summaryTree->Branch("num_muons",&num_preselectedMuons);
+	summaryTree->Branch("mu1_charge",&mu1_charge);
+	summaryTree->Branch("mu2_charge",&mu2_charge);
+	summaryTree->Branch("mu1_pt",&mu1_pt);
+	summaryTree->Branch("mu2_pt",&mu2_pt);
+	summaryTree->Branch("mu1_lepMVA",&mu1_lepMVA);
+	summaryTree->Branch("mu2_lepMVA",&mu2_lepMVA);
+	summaryTree->Branch("mu1_chargeFlip",&mu1_chargeFlip);
+	summaryTree->Branch("mu2_chargeFlip",&mu2_chargeFlip);
+
+	summaryTree->Branch("mu1_chreliso",&mu1_chRelIso);
+	summaryTree->Branch("mu1_nureliso",&mu1_nuRelIso);
+	summaryTree->Branch("mu1_jetdR",&mu1_jetdR);
+	summaryTree->Branch("mu1_jetPtRatio",&mu1_jetPtRatio);
+	summaryTree->Branch("mu1_bTagCSV",&mu1_bTagCSV);
+	summaryTree->Branch("mu1_sip3d",&mu1_sip3d);
+
 	summaryTree->Branch("num_electrons",&num_preselectedElectrons);
+	summaryTree->Branch("ele1_charge",&ele1_charge);
+	summaryTree->Branch("ele2_charge",&ele2_charge);
+	summaryTree->Branch("ele1_pt",&ele1_pt);
+	summaryTree->Branch("ele2_pt",&ele2_pt);
+	summaryTree->Branch("ele1_lepMVA",&ele1_lepMVA);
+	summaryTree->Branch("ele2_lepMVA",&ele2_lepMVA);
+	summaryTree->Branch("ele1_chargeFlip",&ele1_chargeFlip);
+	summaryTree->Branch("ele2_chargeFlip",&ele2_chargeFlip);
 
-	summaryTree->Branch("",&num_BJetsLoose);
-	summaryTree->Branch("",&num_Jets);
+	summaryTree->Branch("ele1_chreliso",&ele1_chRelIso);
+	summaryTree->Branch("ele1_nureliso",&ele1_nuRelIso);
+	summaryTree->Branch("ele1_jetdR",&ele1_jetdR);
+	summaryTree->Branch("ele1_jetPtRatio",&ele1_jetPtRatio);
+	summaryTree->Branch("ele1_bTagCSV",&ele1_bTagCSV);
+	summaryTree->Branch("ele1_sip3d",&ele1_sip3d);
 
-	summaryTree->Branch("",&num_preselectedLeptons);
-	summaryTree->Branch("",&);
-	summaryTree->Branch("",&);
-	summaryTree->Branch("",&);
-	summaryTree->Branch("",&);
-	summaryTree->Branch("",&);
-
-
-
-
+	summaryTree->Branch("event",&eventnum);
 
 	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
 	
@@ -268,8 +293,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	int numTightMuons = int(selectedMuons_tight.size());
 	int numLooseMuons = int(selectedMuons_loose.size());
 	
-	num_muons = int(selectedMuons_preselected.size());
-	
+
+
 	//bool isOS = false;	
 	
 	vecTLorentzVector muonsTLVloose = Get_vecTLorentzVector(selectedMuons_loose);
@@ -293,7 +318,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	//remove electrons that are close (dR <=0.02) to muons
 	selectedElectrons_preselected = cleanObjects(selectedElectrons_preselected,selectedMuons_preselected,0.02);
-	num_electrons = int(selectedElectrons_preselected.size());
 	
 	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
 	vecPatLepton selectedLeptons_nocuts = fillLeptons(selectedMuons_nocuts,selectedElectrons_nocuts);
@@ -315,8 +339,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
 	vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
 	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
+	vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets( cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );   //miniAODhelper.
 	vecPatJet selectedJets_forSync          	= GetSelectedJets( cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
-	
+	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets( cleaned_rawJets, 10., 9.e9, jetID::none, '-' );   //miniAODhelper.
 	
 
 	vecTLorentzVector jetsTLVloose = Get_vecTLorentzVector(selectedJets_loose_noSys_unsorted);
@@ -342,8 +367,118 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	TLorentzVector theMET = Get_TLorentzVector(mets);
 	
+	/////////////////////////
+	//////
+	////// cut flow studies
+	//////
+	/////////////////////////
+
+	
+	num_BJetsLoose = -99;
+	num_Jets = -99;
+	
+	num_preselectedLeptons = -99;
+	
+	num_preselectedMuons = -99;
+	mu1_charge = -99;
+	mu2_charge = -99;
+	mu1_pt = -9.e6;
+	mu2_pt = -9.e6;
+	mu1_lepMVA = -9.e6;
+	mu2_lepMVA = -9.e6;
+	mu1_chargeFlip = -99;
+	mu2_chargeFlip = -99;
+	
+	mu1_chRelIso = -9.e6;
+	mu1_nuRelIso = -9.e6;
+	mu1_jetdR = -9.e6;
+	mu1_jetPtRatio = -9.e6;
+	mu1_bTagCSV = -9.e6;
+	mu1_sip3d = -9.e6;
 	
 	
+	
+	num_preselectedElectrons= -99;
+	ele1_charge= -99;
+	ele2_charge= -99;
+	ele1_pt = -9.e6;
+	ele2_pt = -9.e6;
+	ele1_lepMVA = -9.e6;
+	ele2_lepMVA = -9.e6;
+	ele1_chargeFlip= -99;
+	ele2_chargeFlip= -99;
+	
+	ele1_chRelIso = -9.e6;
+	ele1_nuRelIso = -9.e6;
+	ele1_jetdR = -9.e6;
+	ele1_jetPtRatio = -9.e6;
+	ele1_bTagCSV = -9.e6;
+	ele1_sip3d = -9.e6;
+
+
+	num_BJetsLoose = int(selectedJets_bJetsLoose.size());
+	num_Jets = int(selectedJets_forSync.size());
+	
+	num_preselectedMuons = int(selectedMuons_preselected.size());
+	num_preselectedElectrons = int(selectedElectrons_preselected.size());
+	num_preselectedLeptons = int(selectedLeptons_preselected.size());
+
+	eventnum = event.id().event();
+
+	if (num_preselectedMuons == 2)
+	  {
+	    mu1_charge = selectedMuons_preselected[0].charge();
+	    mu2_charge = selectedMuons_preselected[1].charge();
+	    mu1_pt = selectedMuons_preselected[0].pt();
+	    mu2_pt = selectedMuons_preselected[1].pt();
+	    mu1_lepMVA = GetMuonLepMVA(selectedMuons_preselected[0],selectedJets_forLepMVA);
+	    mu2_lepMVA = GetMuonLepMVA(selectedMuons_preselected[1],selectedJets_forLepMVA);
+	    mu1_chargeFlip = (selectedMuons_preselected[0].innerTrack()->ptError()/selectedMuons_preselected[0].innerTrack()->pt() < 0.2 ) ? 1 : 0;
+	    mu2_chargeFlip = (selectedMuons_preselected[1].innerTrack()->ptError()/selectedMuons_preselected[1].innerTrack()->pt() < 0.2 ) ? 1 : 0;
+	    
+	    mu1_chRelIso = selectedMuons_preselected[0].chargedHadronIso()/selectedMuons_preselected[0].pt();
+	    mu1_nuRelIso = GetMuonRelIsoR04(selectedMuons_preselected[0]) - mu1_chRelIso;
+	    pat::Jet matchedJet = getClosestJet(selectedJets_forLepMVA,selectedMuons_preselected[0]);
+	    double dR = MiniAODHelper::DeltaR(&matchedJet,&selectedMuons_preselected[0]);
+	    mu1_jetdR = min(dR,0.5);
+	    mu1_jetPtRatio =  min(selectedMuons_preselected[0].pt()/matchedJet.pt(), float(1.5));
+	    mu1_bTagCSV = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
+	    mu1_sip3d = fabs(selectedMuons_preselected[0].dB(pat::Muon::PV3D)/selectedMuons_preselected[0].edB(pat::Muon::PV3D));
+
+	  } 
+	
+	if (num_preselectedElectrons == 2)
+	  {
+	    ele1_charge = selectedElectrons_preselected[0].charge();
+	    ele2_charge = selectedElectrons_preselected[1].charge();
+	    ele1_pt = selectedElectrons_preselected[0].pt();
+	    ele2_pt = selectedElectrons_preselected[1].pt();
+	    ele1_lepMVA = GetElectronLepMVA(selectedElectrons_preselected[0],selectedJets_forLepMVA);
+	    ele2_lepMVA = GetElectronLepMVA(selectedElectrons_preselected[1],selectedJets_forLepMVA);
+
+	    bool ele1_chargeFlipA = selectedElectrons_preselected[0].isGsfCtfScPixChargeConsistent();
+	    bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0 );
+	    bool ele1_chargeFlipC = selectedElectrons_preselected[0].passConversionVeto();
+
+	    bool ele2_chargeFlipA = selectedElectrons_preselected[1].isGsfCtfScPixChargeConsistent();
+	    bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0);
+	    bool ele2_chargeFlipC = selectedElectrons_preselected[1].passConversionVeto();
+
+	    ele1_chargeFlip =  (ele1_chargeFlipA && ele1_chargeFlipB && ele1_chargeFlipC) ? 1 : 0;
+	    ele2_chargeFlip =  (ele2_chargeFlipA && ele2_chargeFlipB && ele2_chargeFlipC) ? 1 : 0;
+	    
+	    ele1_chRelIso = selectedElectrons_preselected[0].chargedHadronIso()/selectedElectrons_preselected[0].pt();
+	    ele1_nuRelIso = GetElectronRelIso(selectedElectrons_preselected[0]) - ele1_chRelIso;
+	    pat::Jet matchedJet = getClosestJet(selectedJets_forLepMVA,selectedElectrons_preselected[0]);
+	    double dR = MiniAODHelper::DeltaR(&matchedJet,&selectedElectrons_preselected[0]);
+	    ele1_jetdR = min(dR,0.5);
+	    ele1_jetPtRatio =  min(selectedElectrons_preselected[0].pt()/matchedJet.pt(), float(1.5));
+	    ele1_bTagCSV = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
+	    ele1_sip3d = fabs(selectedElectrons_preselected[0].dB(pat::Electron::PV3D)/selectedElectrons_preselected[0].edB(pat::Electron::PV3D));
+
+	  } 
+	summaryTree->Fill();	
+
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// fill some basic histos:
@@ -537,7 +672,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//   }
 	// // summaryTree->Fill();
 
-	summaryTree->Fill();
+
 	
 
 	
@@ -631,3 +766,5 @@ void OSTwoLepAna::endLuminosityBlock(edm::LuminosityBlock const& lumi, edm::Even
 
 
 DEFINE_FWK_MODULE(OSTwoLepAna);
+
+//  LocalWords:  chargeFlipC

@@ -87,30 +87,46 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		TH2D *lep1_lep2_pt;
 
 		//initialize collections
-		int num_BJetsLoose;
-		int num_Jets;
+		int num_BJetsLoose = -99;
+		int num_Jets = -99;
 
-		int num_preselectedLeptons;
+		int num_preselectedLeptons = -99;
 
-		int num_preselectedMuons;
-		int mu1_charge;
-		int mu2_charge;
-		float mu1_pt;
-		float mu2_pt;
-		float mu1_lepMVA;
-		float mu2_lepMVA;
-		int mu1_chargeFlip;
-		int mu2_chargeFlip;
-
-		int num_preselectedElectrons;
-		int ele1_charge;
-		int ele2_charge;
-		float ele1_pt;
-		float ele2_pt;
-		float ele1_lepMVA;
-		float ele2_lepMVA;
-		int ele1_chargeFlip;
-		int ele2_chargeFlip;
-
+		int num_preselectedMuons = -99;
+		int mu1_charge = -99;
+		int mu2_charge = -99;
+		float mu1_pt = -9.e6;
+		float mu2_pt = -9.e6;
+		float mu1_lepMVA = -9.e6;
+		float mu2_lepMVA = -9.e6;
+		int mu1_chargeFlip = -99;
+		int mu2_chargeFlip = -99;
 		
+		float mu1_chRelIso = -9.e6;
+		float mu1_nuRelIso = -9.e6;
+		float mu1_jetdR = -9.e6;
+		float mu1_jetPtRatio = -9.e6;
+		float mu1_bTagCSV = -9.e6;
+		float mu1_sip3d = -9.e6;
+
+
+
+		int num_preselectedElectrons= -99;
+		int ele1_charge= -99;
+		int ele2_charge= -99;
+		float ele1_pt = -9.e6;
+		float ele2_pt = -9.e6;
+		float ele1_lepMVA = -9.e6;
+		float ele2_lepMVA = -9.e6;
+		int ele1_chargeFlip= -99;
+		int ele2_chargeFlip= -99;
+
+		float ele1_chRelIso = -9.e6;
+		float ele1_nuRelIso = -9.e6;
+		float ele1_jetdR = -9.e6;
+		float ele1_jetPtRatio = -9.e6;
+		float ele1_bTagCSV = -9.e6;
+		float ele1_sip3d = -9.e6;	
+		int eventnum;
+
 };

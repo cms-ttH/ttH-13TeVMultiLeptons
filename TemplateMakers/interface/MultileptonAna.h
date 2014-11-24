@@ -137,6 +137,8 @@ typedef edm::Handle<pat::Muon>		patMuon;
 typedef edm::Handle<pat::Electron>	patElectron;
 typedef edm::Handle<pat::Jet>		patJet;
 typedef edm::Handle<pat::MET>		patMET;
+typedef edm::Handle<reco::GenParticleCollection> prunedGenParticles;
+
 
 typedef std::vector<pat::Muon>	     vecPatMuon;
 typedef std::vector<pat::Electron>   vecPatElectron;
@@ -241,7 +243,8 @@ class MultileptonAna: public MiniAODHelper
   bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID);
   bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
   bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
-  float GetMuonRelIso(const pat::Muon&) const;
+  float GetMuonRelIsoR03(const pat::Muon&) const;
+  float GetMuonRelIsoR04(const pat::Muon&) const;
   
   template <typename T, typename S> std::vector<T> cleanObjects(const std::vector<T>&, const std::vector<S>&, const double);
   
