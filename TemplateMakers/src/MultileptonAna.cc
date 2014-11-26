@@ -13,9 +13,11 @@ void MultileptonAna::parse_params()
       	subjetparams = 		entire_pset.getParameter<edm::ParameterSet> ("fatjets");
       	btagparams = 		entire_pset.getParameter<edm::ParameterSet> ("btags");
       	metparams = 		entire_pset.getParameter<edm::ParameterSet> ("met");
+	prunedparams =          entire_pset.getParameter<edm::ParameterSet> ("prunedgenparticles");
       	variableparams = 	entire_pset.getParameter<edm::ParameterSet> ("variables");
       	systparams = 		entire_pset.getParameter<edm::ParameterSet> ("systematics");
       	selectionparams = 	entire_pset.getParameter<edm::ParameterSet> ("eventselection");
+	
 	
 }
 
@@ -251,8 +253,17 @@ patJets MultileptonAna::GetSubJets (const edm::Event& event)
 	event.getByLabel(subjetCollection,subjetsHandle);
 	return subjetsHandle;
 	
-	
 }
+
+prunedGenParticles MultileptonAna::GetPrunedGenParticles (const edm::Event& event)
+{
+  string pruneCollection = prunedparams.getParameter<string> ("prunedCollection");
+  prunedGenParticles prunedHandle; 
+  event.getByLabel(pruneCollection,prunedHandle);
+  return prunedHandle;
+  
+}
+
 void MultileptonAna::GetBtags (const edm::Event& event)
 {
 	
@@ -331,6 +342,20 @@ void MultileptonAna::EventSelection (const edm::Event& event)
 	
 }
 
+int MultileptonAna::GetHiggsDaughterId(const std::vector<reco::GenParticle>& genParticles, unsigned int daughter)
+{
+  int daughter_id = -9e6;
+  for (std::vector<reco::GenParticle>::const_iterator genParticle = genParticles.begin(); genParticle != genParticles.end(); genParticle++)
+    {
+      if (genParticle->pdgId() == 25 && genParticle->numberOfDaughters() >= 2)
+	{
+	  daughter_id = abs(genParticle->daughter(daughter-1)->pdgId());
+	  break;
+	}
+    }
+  return daughter_id;
+  
+}
 
 
 vecTLorentzVector MultileptonAna::Get_vecTLorentzVector (vecPatMuon theobjs)
@@ -603,7 +628,7 @@ float MultileptonAna::GetMuonRelIsoR04(const pat::Muon& iMuon) const
 bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float iMinPt, const electronID::electronID iElectronID){
 
   CheckVertexSetUp();
-
+  
   double minElectronPt = iMinPt;
 
   float maxLooseElectronAbsEta = electronparams.getParameter<double> ("maxLooseElectronAbsEta");
@@ -672,6 +697,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     //
     //////
     bool passesMVA = false;
+
     bool useFull5x5 = true;
     bool mvaDebug = false;
     double eleMvaNonTrig = mvaID_->mvaValue(iElectron,vertex,rho,useFull5x5,mvaDebug);
@@ -844,10 +870,11 @@ pat::Jet MultileptonAna::getClosestJet(const std::vector<pat::Jet>& jets, const 
 float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pat::Jet>& iJets){
   CheckSetUp();
   
-  //varchRelIso = iMuon.chargedHadronIso()/iMuon.pt();
-  varchRelIso = iMuon.pfIsolationR04().sumChargedHadronPt/iMuon.pt();
-  varneuRelIso = GetMuonRelIsoR04(iMuon) - varchRelIso;
-
+  varchRelIso = iMuon.chargedHadronIso()/iMuon.pt();
+  varneuRelIso = max(0.0,(iMuon.neutralHadronIso()+iMuon.photonIso())-0.5*iMuon.puChargedHadronIso())/iMuon.pt();
+  //varchRelIso = iMuon.pfIsolationR04().sumChargedHadronPt/iMuon.pt();
+  //varneuRelIso = GetMuonRelIsoR04(iMuon) - varchRelIso;
+  
   pat::Jet matchedJet = getClosestJet(iJets,iMuon);
   double dR = MiniAODHelper::DeltaR(&matchedJet,&iMuon);
   varjetDR_in = min(dR,0.5);
@@ -891,10 +918,13 @@ float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pa
 
 float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const std::vector<pat::Jet>& iJets){
   CheckSetUp();
-
+  
   varchRelIso = iElectron.chargedHadronIso()/iElectron.pt();
-  varneuRelIso = GetElectronRelIso(iElectron) - varchRelIso;
-
+  //varchRelIso = iElectron.pfIsolationVariables().sumChargedHadronPt;
+  
+  //varneuRelIso = GetElectronRelIso(iElectron) - varchRelIso;
+  varneuRelIso = max(0.0,(iElectron.neutralHadronIso()+iElectron.photonIso())-0.5*iElectron.puChargedHadronIso())/iElectron.pt();
+  
   pat::Jet matchedJet = getClosestJet(iJets,iElectron);
   double dR = MiniAODHelper::DeltaR(&matchedJet,&iElectron);
   varjetDR_in = min(dR,0.5);
@@ -902,10 +932,12 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   
   varjetBTagCSV_in = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
   varsip3d = fabs(iElectron.dB(pat::Electron::PV3D)/iElectron.edB(pat::Electron::PV3D));
-
+  
   bool useFull5x5 = true;
   bool mvaDebug = false;
+  //  varmvaId = iElectron.electronID("mvaNonTrigV0");
   varmvaId = mvaID_->mvaValue(iElectron,vertex,rho,useFull5x5,mvaDebug);  
+  //  varinnerHits = iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
   varinnerHits = iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
 
   // std::cout << "Ele charged Rel Iso = "<< varchRelIso << std::endl;
@@ -940,5 +972,5 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
     //std::cout << "Electron LepMVA: " << ele_reader_low_ec->EvaluateMVA( "BDTG method" ) << std::endl;
     return ele_reader_low_ec->EvaluateMVA( "BDTG method" );
   }
-
+  
 }

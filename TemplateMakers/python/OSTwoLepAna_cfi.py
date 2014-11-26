@@ -78,7 +78,7 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 		useMuons = cms.bool(True),
 	),
 
-
+                             
 	## met collection
 	met = cms.PSet(
 		METCollection = cms.string("slimmedMETs")
@@ -92,15 +92,21 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 
 
 	## "fat" jet collection -> subjet clustering algo, etc.
-	fatjets = cms.PSet( 
-		fatjetCollection = cms.string("slimmedJetsAK8")
+        fatjets = cms.PSet( 
+                fatjetCollection = cms.string("slimmedJetsAK8")
 	),
 
 	## how are btagged jets defined
-	btags = cms.PSet(
+        btags = cms.PSet(
 	
 	
 	),
+     
+        prunedgenparticles = cms.PSet(
+        
+                prunedCollection = cms.string("prunedGenParticles") 
+        ),
+                             
 
 	## variables to save in the tree (variable defs are elsewhere, sorry)
 	variables = cms.PSet( ),

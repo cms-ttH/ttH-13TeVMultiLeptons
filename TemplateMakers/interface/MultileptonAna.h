@@ -128,8 +128,11 @@ typedef std::vector<std::string> 		vstring;
 typedef edm::Handle<pat::MuonCollection>	patMuons;
 typedef edm::Handle<pat::ElectronCollection>	patElectrons;
 
+
 typedef edm::Handle<pat::JetCollection>		patJets;
 typedef edm::Handle<pat::METCollection>		patMETs;
+typedef edm::Handle<reco::GenParticleCollection> prunedGenParticles;
+
 typedef edm::Handle<std::vector< PileupSummaryInfo > > 	pileupInfo;
 typedef edm::Handle<edm::TriggerResults>	trigRes;
 
@@ -137,7 +140,7 @@ typedef edm::Handle<pat::Muon>		patMuon;
 typedef edm::Handle<pat::Electron>	patElectron;
 typedef edm::Handle<pat::Jet>		patJet;
 typedef edm::Handle<pat::MET>		patMET;
-typedef edm::Handle<reco::GenParticleCollection> prunedGenParticles;
+typedef edm::Handle<reco::GenParticle>  prunedGenParticle;
 
 
 typedef std::vector<pat::Muon>	     vecPatMuon;
@@ -179,11 +182,12 @@ class MultileptonAna: public MiniAODHelper
   edm::ParameterSet jetparams;
   edm::ParameterSet subjetparams;
   edm::ParameterSet btagparams;
+  edm::ParameterSet prunedparams;
   edm::ParameterSet metparams;
   edm::ParameterSet variableparams;
   edm::ParameterSet systparams;
   edm::ParameterSet selectionparams;
-  
+
   void parse_params();
   
   //MiniAODHelper miniAODhelper;
@@ -230,6 +234,7 @@ class MultileptonAna: public MiniAODHelper
   patJets GetJets(const edm::Event& event);
   patJets GetSubJets(const edm::Event& event); 
   patMETs GetMet(const edm::Event& event);
+  prunedGenParticles GetPrunedGenParticles(const edm::Event& event);
   int GetVertices (const edm::Event& event);
   void GetLeptons(const edm::Event& event);
   void GetBtags(const edm::Event& event);
@@ -245,6 +250,7 @@ class MultileptonAna: public MiniAODHelper
   bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
   float GetMuonRelIsoR03(const pat::Muon&) const;
   float GetMuonRelIsoR04(const pat::Muon&) const;
+  int GetHiggsDaughterId(const std::vector<reco::GenParticle>&, unsigned int);
   
   template <typename T, typename S> std::vector<T> cleanObjects(const std::vector<T>&, const std::vector<S>&, const double);
   

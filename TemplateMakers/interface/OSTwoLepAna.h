@@ -128,5 +128,5 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		float ele1_bTagCSV = -9.e6;
 		float ele1_sip3d = -9.e6;	
 		int eventnum;
-
+		int higgs_decay;
 };

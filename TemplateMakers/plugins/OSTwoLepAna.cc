@@ -61,7 +61,8 @@ void OSTwoLepAna::beginJob()
 	summaryTree->Branch("ele1_sip3d",&ele1_sip3d);
 
 	summaryTree->Branch("event",&eventnum);
-
+	summaryTree->Branch("higgs_decay",&higgs_decay);
+	
 	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
 	
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
@@ -225,6 +226,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	patJets pfjets = 		GetJets(event);
 	patElectrons electrons = 	GetElectrons(event);
 	patMETs mets = 			GetMet(event);
+	prunedGenParticles prunedParticles = GetPrunedGenParticles(event);
 	
 	SetRho(rho);
 	
@@ -264,7 +266,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
-	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronPreselection );	//miniAODhelper.
+	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 10., electronID::electronNoCuts );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	
@@ -341,7 +343,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
 	vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets( cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );   //miniAODhelper.
 	vecPatJet selectedJets_forSync          	= GetSelectedJets( cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
-	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets( cleaned_rawJets, 10., 9.e9, jetID::none, '-' );   //miniAODhelper.
+	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets( rawJets, 10., 9.e9, jetID::none, '-' );   //miniAODhelper.
 	
 
 	vecTLorentzVector jetsTLVloose = Get_vecTLorentzVector(selectedJets_loose_noSys_unsorted);
@@ -372,7 +374,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////// cut flow studies
 	//////
 	/////////////////////////
-
 	
 	num_BJetsLoose = -99;
 	num_Jets = -99;
@@ -396,8 +397,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	mu1_bTagCSV = -9.e6;
 	mu1_sip3d = -9.e6;
 	
-	
-	
 	num_preselectedElectrons= -99;
 	ele1_charge= -99;
 	ele2_charge= -99;
@@ -414,8 +413,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	ele1_jetPtRatio = -9.e6;
 	ele1_bTagCSV = -9.e6;
 	ele1_sip3d = -9.e6;
-
-
+	
+	higgs_decay = -9e6;
+	
 	num_BJetsLoose = int(selectedJets_bJetsLoose.size());
 	num_Jets = int(selectedJets_forSync.size());
 	
@@ -423,8 +423,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	num_preselectedElectrons = int(selectedElectrons_preselected.size());
 	num_preselectedLeptons = int(selectedLeptons_preselected.size());
 
-	eventnum = event.id().event();
+	int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles,1);
+	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
 
+	higgs_decay = ((higgs_daughter1==24 && higgs_daughter2==24)||(higgs_daughter1==23 && higgs_daughter2==23)||(higgs_daughter1==15 && higgs_daughter2==15)) ? 1 : 0;
+	
+
+	eventnum = event.id().event();
+	
 	if (num_preselectedMuons == 2)
 	  {
 	    mu1_charge = selectedMuons_preselected[0].charge();
