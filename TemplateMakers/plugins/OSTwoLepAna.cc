@@ -21,47 +21,47 @@ void OSTwoLepAna::beginJob()
 	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
 	
 
-	summaryTree->Branch("num_BJetsLoose",&num_BJetsLoose);
-	summaryTree->Branch("num_Jets",&num_Jets);
+	// summaryTree->Branch("num_BJetsLoose",&num_BJetsLoose);
+	// summaryTree->Branch("num_Jets",&num_Jets);
 
-	summaryTree->Branch("num_Leptons",&num_preselectedLeptons);
+	// summaryTree->Branch("num_Leptons",&num_preselectedLeptons);
 
-	summaryTree->Branch("num_muons",&num_preselectedMuons);
-	summaryTree->Branch("mu1_charge",&mu1_charge);
-	summaryTree->Branch("mu2_charge",&mu2_charge);
-	summaryTree->Branch("mu1_pt",&mu1_pt);
-	summaryTree->Branch("mu2_pt",&mu2_pt);
-	summaryTree->Branch("mu1_lepMVA",&mu1_lepMVA);
-	summaryTree->Branch("mu2_lepMVA",&mu2_lepMVA);
-	summaryTree->Branch("mu1_chargeFlip",&mu1_chargeFlip);
-	summaryTree->Branch("mu2_chargeFlip",&mu2_chargeFlip);
+	// summaryTree->Branch("num_muons",&num_preselectedMuons);
+	// summaryTree->Branch("mu1_charge",&mu1_charge);
+	// summaryTree->Branch("mu2_charge",&mu2_charge);
+	// summaryTree->Branch("mu1_pt",&mu1_pt);
+	// summaryTree->Branch("mu2_pt",&mu2_pt);
+	// summaryTree->Branch("mu1_lepMVA",&mu1_lepMVA);
+	// summaryTree->Branch("mu2_lepMVA",&mu2_lepMVA);
+	// summaryTree->Branch("mu1_chargeFlip",&mu1_chargeFlip);
+	// summaryTree->Branch("mu2_chargeFlip",&mu2_chargeFlip);
 
-	summaryTree->Branch("mu1_chreliso",&mu1_chRelIso);
-	summaryTree->Branch("mu1_nureliso",&mu1_nuRelIso);
-	summaryTree->Branch("mu1_jetdR",&mu1_jetdR);
-	summaryTree->Branch("mu1_jetPtRatio",&mu1_jetPtRatio);
-	summaryTree->Branch("mu1_bTagCSV",&mu1_bTagCSV);
-	summaryTree->Branch("mu1_sip3d",&mu1_sip3d);
+	// summaryTree->Branch("mu1_chreliso",&mu1_chRelIso);
+	// summaryTree->Branch("mu1_nureliso",&mu1_nuRelIso);
+	// summaryTree->Branch("mu1_jetdR",&mu1_jetdR);
+	// summaryTree->Branch("mu1_jetPtRatio",&mu1_jetPtRatio);
+	// summaryTree->Branch("mu1_bTagCSV",&mu1_bTagCSV);
+	// summaryTree->Branch("mu1_sip3d",&mu1_sip3d);
 
-	summaryTree->Branch("num_electrons",&num_preselectedElectrons);
-	summaryTree->Branch("ele1_charge",&ele1_charge);
-	summaryTree->Branch("ele2_charge",&ele2_charge);
-	summaryTree->Branch("ele1_pt",&ele1_pt);
-	summaryTree->Branch("ele2_pt",&ele2_pt);
-	summaryTree->Branch("ele1_lepMVA",&ele1_lepMVA);
-	summaryTree->Branch("ele2_lepMVA",&ele2_lepMVA);
-	summaryTree->Branch("ele1_chargeFlip",&ele1_chargeFlip);
-	summaryTree->Branch("ele2_chargeFlip",&ele2_chargeFlip);
+	// summaryTree->Branch("num_electrons",&num_preselectedElectrons);
+	// summaryTree->Branch("ele1_charge",&ele1_charge);
+	// summaryTree->Branch("ele2_charge",&ele2_charge);
+	// summaryTree->Branch("ele1_pt",&ele1_pt);
+	// summaryTree->Branch("ele2_pt",&ele2_pt);
+	// summaryTree->Branch("ele1_lepMVA",&ele1_lepMVA);
+	// summaryTree->Branch("ele2_lepMVA",&ele2_lepMVA);
+	// summaryTree->Branch("ele1_chargeFlip",&ele1_chargeFlip);
+	// summaryTree->Branch("ele2_chargeFlip",&ele2_chargeFlip);
 
-	summaryTree->Branch("ele1_chreliso",&ele1_chRelIso);
-	summaryTree->Branch("ele1_nureliso",&ele1_nuRelIso);
-	summaryTree->Branch("ele1_jetdR",&ele1_jetdR);
-	summaryTree->Branch("ele1_jetPtRatio",&ele1_jetPtRatio);
-	summaryTree->Branch("ele1_bTagCSV",&ele1_bTagCSV);
-	summaryTree->Branch("ele1_sip3d",&ele1_sip3d);
+	// summaryTree->Branch("ele1_chreliso",&ele1_chRelIso);
+	// summaryTree->Branch("ele1_nureliso",&ele1_nuRelIso);
+	// summaryTree->Branch("ele1_jetdR",&ele1_jetdR);
+	// summaryTree->Branch("ele1_jetPtRatio",&ele1_jetPtRatio);
+	// summaryTree->Branch("ele1_bTagCSV",&ele1_bTagCSV);
+	// summaryTree->Branch("ele1_sip3d",&ele1_sip3d);
 
-	summaryTree->Branch("event",&eventnum);
-	summaryTree->Branch("higgs_decay",&higgs_decay);
+	// summaryTree->Branch("event",&eventnum);
+	// summaryTree->Branch("higgs_decay",&higgs_decay);
 	
 	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
 	
@@ -120,11 +120,6 @@ void OSTwoLepAna::beginJob()
 
 	eventcount=0;
 
-	//	doublmucount=0;
-	//	doubleelecount=0;
-	//	muelecount=0;
-	//	elemucount=0;	    
-
 	doublemucount=0.;
 	doublemucount2=0.;
 	doublemucount3=0.;
@@ -153,29 +148,8 @@ void OSTwoLepAna::beginJob()
 	numpassedmuelcuts=0.;
 	numpassedelmucuts=0.;
 	
-	doublemucount5=0;
+	doublemucount5=0;	
 	
-	// usually this will be parsed elsewhere:
-// 	mumutriggerstostudy.push_back("HLT_Mu17_Mu8_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TkMu8_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1");
-// 	eleltriggerstostudy.push_back("HLT_Ele17_Ele8_Gsf_v1");
-// 	eleltriggerstostudy.push_back("HLT_Ele23_Ele12_CaloId_TrackId_Iso_v1");
-// 	mueltriggerstostudy.push_back("HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1");
-// 	elmutriggerstostudy.push_back("HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1");
-// 	tripeltriggerstostudy.push_back("HLT_Ele17_Ele12_Ele10_CaloId_TrackId_v1");
-	
-	
-// 	mumutriggerstostudy.push_back("HLT_Mu13_Mu8_v23");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_Mu8_v23");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TkMu8_v15");
-// 	mumutriggerstostudy.push_back("HLT_Mu22_TkMu8_v10");
-// 	eleltriggerstostudy.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v20");
-// 	eleltriggerstostudy.push_back("HLT_Ele27_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele15_CaloIdT_CaloIsoVL_trackless_v9");
-// 	mueltriggerstostudy.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10");
-// 	elmutriggerstostudy.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10");
-// 	tripeltriggerstostudy.push_back("HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v7");
 	
 	alltriggerstostudy = HLTInfo();
 	
@@ -191,17 +165,8 @@ void OSTwoLepAna::beginJob()
 	if (numtrigs>7) elmutriggerstostudy.push_back(alltriggerstostudy[7]);
 	if (numtrigs>8) tripeltriggerstostudy.push_back(alltriggerstostudy[8]);
 	
-	//initialize kinematic variables
-	//global var
-	// GenericCollectionSizeVariable2<std::vector<pat::Electron>> 
-	//   numTightElectronz(&selectedElectrons_loose_notight, "numTightElectronzz");
- 
-	// kinVars.push_back(&numTightElectronz);
-	
-	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++) 
-	//   {
-	//     (*iVar)->attachToTree(summaryTree);
-	//   }
+	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");
+	tree_add_branches();
 	
 	
 }
@@ -246,7 +211,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	//wgt = weight; //test
 
-				
+	initialize_variables();	
+			
 	/////////
 	///
 	/// Electrons
@@ -299,18 +265,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	//bool isOS = false;	
 	
-	vecTLorentzVector muonsTLVloose = Get_vecTLorentzVector(selectedMuons_loose);
-	vecTLorentzVector muonsTLVtight = Get_vecTLorentzVector(selectedMuons_tight);
+	vecTLorentzVectorCMS muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_loose);
+	vecTLorentzVectorCMS muonsTLVtight = Get_vecTLorentzVectorCMS(selectedMuons_tight);
 			  
-	vecTLorentzVector elesTLVloose = Get_vecTLorentzVector(selectedElectrons_loose);
-	vecTLorentzVector elesTLVtight = Get_vecTLorentzVector(selectedElectrons_tight);
+	vecTLorentzVectorCMS elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_loose);
+	vecTLorentzVectorCMS elesTLVtight = Get_vecTLorentzVectorCMS(selectedElectrons_tight);
 	
 	
-	vecTLorentzVector leptonsTLVtight = Get_vecTLorentzVector_sorted_leptons (muonsTLVtight, elesTLVtight); 
-	vecTLorentzVector leptonsTLVloose = Get_vecTLorentzVector_sorted_leptons (muonsTLVloose, elesTLVloose); 
+	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
+	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 
 	
-	vecTLorentzVector muonsTLVloosenotight = Get_vecTLorentzVector(selectedMuons_loose_notight);
-	vecTLorentzVector elesTLVloosenotight = Get_vecTLorentzVector(selectedElectrons_loose_notight);
+	vecTLorentzVectorCMS muonsTLVloosenotight = Get_vecTLorentzVectorCMS(selectedMuons_loose_notight);
+	vecTLorentzVectorCMS elesTLVloosenotight = Get_vecTLorentzVectorCMS(selectedElectrons_loose_notight);
 	
 	/////////
 	///
@@ -346,8 +312,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets( rawJets, 10., 9.e9, jetID::none, '-' );   //miniAODhelper.
 	
 
-	vecTLorentzVector jetsTLVloose = Get_vecTLorentzVector(selectedJets_loose_noSys_unsorted);
-	vecTLorentzVector jetsTLVtight = Get_vecTLorentzVector(selectedJets_noSys_unsorted);
+	vecTLorentzVectorCMS jetsTLVloose = Get_vecTLorentzVectorCMS(selectedJets_loose_noSys_unsorted);
+	vecTLorentzVectorCMS jetsTLVtight = Get_vecTLorentzVectorCMS(selectedJets_noSys_unsorted);
 
 	int numRawJets = rawJets.size();
 	int numJetsNoEle = jetsNoEle.size();
@@ -367,54 +333,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////
 	
-	TLorentzVector theMET = Get_TLorentzVector(mets);
+	TLorentzVectorCMS theMET = Get_TLorentzVectorCMS(mets);
 	
 	/////////////////////////
 	//////
 	////// cut flow studies
 	//////
 	/////////////////////////
-	
-	num_BJetsLoose = -99;
-	num_Jets = -99;
-	
-	num_preselectedLeptons = -99;
-	
-	num_preselectedMuons = -99;
-	mu1_charge = -99;
-	mu2_charge = -99;
-	mu1_pt = -9.e6;
-	mu2_pt = -9.e6;
-	mu1_lepMVA = -9.e6;
-	mu2_lepMVA = -9.e6;
-	mu1_chargeFlip = -99;
-	mu2_chargeFlip = -99;
-	
-	mu1_chRelIso = -9.e6;
-	mu1_nuRelIso = -9.e6;
-	mu1_jetdR = -9.e6;
-	mu1_jetPtRatio = -9.e6;
-	mu1_bTagCSV = -9.e6;
-	mu1_sip3d = -9.e6;
-	
-	num_preselectedElectrons= -99;
-	ele1_charge= -99;
-	ele2_charge= -99;
-	ele1_pt = -9.e6;
-	ele2_pt = -9.e6;
-	ele1_lepMVA = -9.e6;
-	ele2_lepMVA = -9.e6;
-	ele1_chargeFlip= -99;
-	ele2_chargeFlip= -99;
-	
-	ele1_chRelIso = -9.e6;
-	ele1_nuRelIso = -9.e6;
-	ele1_jetdR = -9.e6;
-	ele1_jetPtRatio = -9.e6;
-	ele1_bTagCSV = -9.e6;
-	ele1_sip3d = -9.e6;
-	
-	higgs_decay = -9e6;
 	
 	num_BJetsLoose = int(selectedJets_bJetsLoose.size());
 	num_Jets = int(selectedJets_forSync.size());
@@ -483,8 +408,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ele1_sip3d = fabs(selectedElectrons_preselected[0].dB(pat::Electron::PV3D)/selectedElectrons_preselected[0].edB(pat::Electron::PV3D));
 
 	  } 
-	summaryTree->Fill();	
-
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// fill some basic histos:
@@ -660,27 +583,27 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_elmu[i] += wgt;
 	}
 	
-	//	numTightMuons = GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuons(&muons, "numTightMuons");
-	//	GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuonz(&muons, "numTightMuons");
-
-
-	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin();iVar != kinVars.end();iVar++)
-	//   {
-	//     cout << "before reset is called" << endl;
-	//     (*iVar)->reset();
-	//     cout << kinVars.size() << endl;
-	//   }
 	
-	// for (vector<ArbitraryVariable*>::iterator iVar = kinVars.begin(); iVar != kinVars.end();iVar++)
-	//   {
-	//     cout << "here I am "<< endl;
-	//     //(*iVar)->evaluate();
-	//   }
-	// // summaryTree->Fill();
-
-
+	// assign values to tree variables:
+	numLooseMuons_intree = numLooseMuons;
+	numLooseElectrons_intree = numLooseElectrons;
+	numTightMuons_intree = numTightMuons;
+	numTightElectrons_intree = numTightElectrons;
 	
-
+	//testvect.push_back(3.);
+	//testvect.push_back(11.);
+	
+	Jets_intree = jetsTLVloose;
+	MET_intree = theMET;
+	LooseElectrons_intree = elesTLVloose;
+	LooseMuons_intree = muonsTLVloose;
+	TightElectrons_intree = elesTLVtight;
+	TightMuons_intree = muonsTLVtight;
+	JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
+		
+	
+	// fill it:
+	summaryTree->Fill();
 	
 } // end for each event
 

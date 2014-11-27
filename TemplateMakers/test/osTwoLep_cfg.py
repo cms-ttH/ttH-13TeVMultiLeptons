@@ -25,11 +25,13 @@ process.source = cms.Source("PoolSource",
 	#new menu
         'file:/afs/cern.ch/user/m/muell149/work/data_samples/miniAOD_ttH125_sync.root'
 #        'file:/afs/cern.ch/user/m/muell149/work/data_samples/miniAOD.root'
+        #'file:/afs/cern.ch/user/m/muell149/miniAOD.root'
 	
 	#'/store/user/gesmith/samples/custum_miniAOD/HWW/00000/miniAOD-prod_PAT_0C055296-DE6F-E311-A240-008CFA002028.root',
 	#'/store/user/gesmith/samples/custum_miniAOD/HWW/00000/miniAOD-prod_PAT_12EBB80F-A870-E311-9035-7845C4FC3A91.root'
    	
 	#old menu
+#	'file:/afs/cern.ch/work/g/gesmith/CMSSW_7_2_0_pre8/src/output_numEvent100.root'
 #	"/store/user/gesmith/samples/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/1E4F9BDC-3E1E-E411-A56C-001E67396EAA.root",	
 #	"/store/user/gesmith/samples/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/6CF66322-2C1E-E411-85EF-002590A83192.root"
 	
@@ -65,16 +67,17 @@ process.OSTwoLepAna.triggers.hltlabel = "HLT" #"reHLT" #"HLT" # HLT = centrally 
 process.OSTwoLepAna.triggers.trigger_vstring = "HLT_Mu13_Mu8_v23","HLT_Mu17_Mu8_v23","HLT_Mu17_TkMu8_v15","HLT_Mu22_TkMu8_v10","HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v20","HLT_Ele27_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele15_CaloIdT_CaloIsoVL_trackless_v9","HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10","HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v7" # triggers from the 2012 menu
 
 ### example of trivially changing muon isolation:
-looseMuonRelIso = 0.3
-#looseMuonRelIso = sys.argv[2] #or take command line argument -> just run however many cmsRun jobs for isolation study!
-process.OSTwoLepAna.muons.looseRelativeIso = looseMuonRelIso
+#looseMuonRelIso = 0.3
+##looseMuonRelIso = sys.argv[2] #or take command line argument -> just run however many cmsRun jobs for isolation study!
+#process.OSTwoLepAna.muons.looseRelativeIso = looseMuonRelIso
 
 ######################################
 	
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + ".root") # name of output file
-                                   )
+                                   #fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + ".root") # name of output file
+                                   fileName = cms.string("test_100evts.root") # name of output file
+				   )
 
 
 process.p = cms.Path(process.OSTwoLepAna)
