@@ -28,6 +28,10 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		TTree * summaryTree;
 		
 		// declare any histos
+		
+		//TH1D *sampleNumber
+		//TH1D *nGen
+		//TH1D *Xsec
 		TH1D *numtighteles;
 		TH1D *numlooseeles;
 		TH1D *numtightmuons;
@@ -52,7 +56,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		TH1D *met_pt;
 		TH1D *hlt_count_hist;		
 		
-		
 		TH2D *lep1_lep2_pt;
 
 		// tree branches:
@@ -63,11 +66,14 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int numLooseMuons_intree;
 		int numLooseElectrons_intree;
 		int numTightMuons_intree;
-		int numTightElectrons_intree;
-		
-		int numPreselectedLeptons_intree;
+		int numTightElectrons_intree;		
+		//int numPreselectedLeptons_intree;
 		int numTightLeptons_intree;
 		int numLooseLeptons_intree;
+		
+		int num_preselectedLeptons_intree;
+		int num_preselectedMuons_intree;		
+		int num_preselectedElectrons_intree;
 		
 		int numCernMuons_intree;
 		int numCernElectrons_intree;
@@ -75,14 +81,12 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int numCernJets_intree;
 
 		double allJetCSV_intree;
-		int numJets_intree;		
-				
+		//int numJets_intree;			
 		int num_BJetsLoose_intree;
+		int num_BJetsMedium_intree;
+		int num_BJetsTight_intree;
 		int num_Jets_intree;
-
-		int num_preselectedLeptons_intree;
-
-		int num_preselectedMuons_intree;
+		
 		int mu1_charge_intree;
 		int mu2_charge_intree;
 		float mu1_pt_intree;
@@ -98,8 +102,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		float mu1_jetPtRatio_intree;
 		float mu1_bTagCSV_intree;
 		float mu1_sip3d_intree;
-
-		int num_preselectedElectrons_intree;
+		
 		int ele1_charge_intree;
 		int ele2_charge_intree;
 		float ele1_pt_intree;
@@ -115,6 +118,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		float ele1_jetPtRatio_intree;
 		float ele1_bTagCSV_intree;
 		float ele1_sip3d_intree;
+		
 		int eventnum_intree;
 		int higgs_decay_intree;
 
@@ -127,6 +131,76 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vecTLorentzVectorCMS TightElectrons_intree;
 		vecTLorentzVectorCMS TightMuons_intree;
 		vdouble	JetCSV_intree;
+
+
+		// additional variables from 2012
+		double myFinalBDT_OS_2012_intree;
+		
+		int lumiBlock_intree;
+		int runNumber_intree;
+		int numExtraPartons_intree;
+		
+		// PassTwoLepton
+	      	//MuonElectron
+	      	//TwoElectron
+	      	//TwoMuon
+		
+		vint allLeptonGenGrandMotherId_intree;
+		vint allLeptonGenMotherId_intree;
+		vint allLeptonTkCharge_intree;
+		double AvgBtagDiscNonBtags_intree;
+		double AvgBtagDiscBtags_intree;
+		double NumHiggsLikeDijet15_intree;
+		double HiggsLikeDijetMass2_intree;
+		double HiggsLikeDijetMass_intree;
+		double GenHiggsDijetMass_intree;
+		double DeltaPhiMetLepLep_intree;
+		double DeltaRMetLepLep_intree;
+		double MTMetLepLep_intree;
+		double MassMetLepLep_intree;
+		double MaxDeltaPhiMetJet_fromHiggs_intree;
+		double MinDeltaPhiMetJet_fromHiggs_intree;
+		double MaxDeltaPhiMetJet_intree;
+		double MinDeltaPhiMetJet_intree;
+		double DeltaPhiMetLep2_intree;
+		double DeltaPhiMetLep1_intree;
+		double DeltaRJets_FromHiggs_intree;
+		double DeltaPhiJets_FromHiggs_intree;
+		double WLikeDijetMass81_intree;
+		double SumNonTaggedJetMass_intree;
+		double SumJetMass_intree;
+		double SumJetPt_intree;
+		double SumPt_intree;
+		double MinDrJets_intree;
+		double MHT_intree;
+		double DeltaPhiLepLep_intree;
+		double DeltaRLepLep_intree;
+		double Zmass_intree;
+		double MassLepLep_intree;
+		int HiggsDecayType_intree;
+		//checkTrig
+		//double Clean;
+		double LepTrig_intree;
+		double LepIDAndIsoSF_intree;
+		double TopPt_intree;
+		double PU_intree;
+		
+		//numLooseBJets;
+		//numMediumBJets;
+		//numTightBJets;
+		
+		int numJets_fromHiggs_30_intree;
+		int numJets_fromHiggs_intree;
+		
+		
+		
+		//cutvars
+		
+		bool PassZmask_cut;
+		bool numTightLeptons_cut;
+		bool numTightLooseLeptons_cut;
+		bool isOS_cut;
+		bool numJets_cut;
 
 };
 
@@ -194,7 +268,18 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("higgs_decay",&higgs_decay_intree);
 
 
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
