@@ -22,7 +22,8 @@ void OSTwoLepAna::beginJob()
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
 	SetFactorizedJetCorrector();
 	setupMva();
-
+	alltriggerstostudy = HLTInfo();
+	
 	// initialize some variables:
 	electronTightID = electronID::electronTight;
 	electronLooseID = electronID::electronLoose;
@@ -343,8 +344,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	numTightMuons_intree = numTightMuons;
 	numTightElectrons_intree = numTightElectrons;
 	
-	//testvect.push_back(3.);
-	//testvect.push_back(11.);
+	eventnum_intree = event.id().event();
+	lumiBlock_intree = event.id().luminosityBlock();
+	runNumber_intree = event.id().run();
+	
 	
 	Jets_intree = jetsTLVloose;
 	MET_intree = theMET;

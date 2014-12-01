@@ -23,7 +23,7 @@ process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
 	
 	#new menu
-        'file:/afs/cern.ch/user/m/muell149/work/data_samples/miniAOD_ttH125_sync.root'
+#        'file:/afs/cern.ch/user/m/muell149/work/data_samples/miniAOD_ttH125_sync.root'
 #        'file:/afs/cern.ch/user/m/muell149/work/data_samples/miniAOD.root'
         #'file:/afs/cern.ch/user/m/muell149/miniAOD.root'
 	
@@ -31,7 +31,7 @@ process.source = cms.Source("PoolSource",
 	#'/store/user/gesmith/samples/custum_miniAOD/HWW/00000/miniAOD-prod_PAT_12EBB80F-A870-E311-9035-7845C4FC3A91.root'
    	
 	#old menu
-#	'file:/afs/cern.ch/work/g/gesmith/CMSSW_7_2_0_pre8/src/output_numEvent100.root'
+	'file:/afs/cern.ch/work/g/gesmith/CMSSW_7_2_0_pre8/src/output_numEvent100.root'
 #	"/store/user/gesmith/samples/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/1E4F9BDC-3E1E-E411-A56C-001E67396EAA.root",	
 #	"/store/user/gesmith/samples/mc/Spring14miniaod/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/6CF66322-2C1E-E411-85EF-002590A83192.root"
 	
