@@ -93,6 +93,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
 	
+	//patJets testHiggsjets = pfjets;
+	
 	SetRho(rho);
 	
 	int numpvs =				GetVertices(event);
@@ -222,7 +224,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	int numSelJetsLooseCSVM = selectedJets_loose_tag_noSys_unsorted.size();
 
+	// test
+	vecPatJet *testHiggsjets  = &selectedJets_noSys_unsorted;
+	TwoObjectKinematic<vecPatJet,vecPatJet> myNumHiggsLikeDijet15("mass", "num_within", "numHiggsLike_dijet_15_float", &(testHiggsjets), "jets_by_pt", 1, 99, &(testHiggsjets), "jets_by_pt", 1, 99, 115.0, "", "", 15.0);
 	
+
 	/////////
 	///
 	/// MET
@@ -348,6 +354,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	lumiBlock_intree = event.id().luminosityBlock();
 	runNumber_intree = event.id().run();
 	
+	myNumHiggsLikeDijet15.evaluate();
+	if (myNumHiggsLikeDijet15.myVars.size()) NumHiggsLikeDijet15_intree =  myNumHiggsLikeDijet15.myVars[0].branchVal;
 	
 	Jets_intree = jetsTLVloose;
 	MET_intree = theMET;
