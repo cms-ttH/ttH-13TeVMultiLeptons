@@ -596,7 +596,7 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
     passesID        = ((iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && isPFMuon && passesTrackerID);
     break;
   case muonID::muonPreselection:
-    passesKinematics = ((iMuon.pt() > 5.) && (fabs(iMuon.eta()) < 2.4));
+    passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
     passesIso        = (GetMuonRelIsoR03(iMuon) < 0.4);
     isPFMuon         = true;
     if( iMuon.muonBestTrack().isAvailable() ){
@@ -743,7 +743,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
       }
     }
     
-    passesKinematics = ((iElectron.pt() > 7.) && (fabs(iElectron.eta()) < 2.5));
+    passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < 2.5));
     passesIso        = (GetElectronRelIso(iElectron) < 0.400);
     if( iElectron.gsfTrack().isAvailable() ){
       passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1  );
@@ -826,7 +826,7 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
       {
         passesPUJetID = (puMvaId > -0.45);
       }
-    if (passesPUJetID) return true;
+    return passesPUJetID;
     break;
   case jetID::jetMinimal:
   case jetID::jetLooseAOD:
@@ -837,7 +837,7 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
   default:
     break;
   }
-
+  
   if( !PassesCSV(iJet, iCSVworkingPoint) ) return false;
 
   return true;

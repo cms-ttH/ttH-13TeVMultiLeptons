@@ -57,6 +57,9 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		explicit OSTwoLepAna(const edm::ParameterSet&);
 		~OSTwoLepAna();
 		
+		FILE * fp;
+			
+
 		// declare the tree
 		TTree * summaryTree;
 		
@@ -155,9 +158,24 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		float ele1_sip3d = -9.e6;
 		int eventnum;
 		int higgs_decay;
+		
 
-
-
+		//for event dumps sync
+		int lumi_;
+		int run_;
+		
+		int lep1_id;
+		float lep1_pt;
+		float lep1_eta;
+		float lep1_phi;
+		
+		int lep2_id;
+		float lep2_pt;
+		float lep2_eta;
+		float lep2_phi;
+		 
+		float met_pt_;
+		float met_phi;
 
 		TLorentzVectorCMS testTLV_intree;
 		TLorentzVectorCMS MET_intree;
@@ -168,6 +186,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vecTLorentzVectorCMS TightElectrons_intree;
 		vecTLorentzVectorCMS TightMuons_intree;
 		vdouble	JetCSV_intree;
+		
 
 };
 
@@ -239,11 +258,25 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("ele1_bTagCSV",&ele1_bTagCSV);
 	summaryTree->Branch("ele1_sip3d",&ele1_sip3d);
 
+	
 	summaryTree->Branch("event",&eventnum);
 	summaryTree->Branch("higgs_decay",&higgs_decay);
 
-
-
+	summaryTree->Branch("lumi",&lumi_);
+	summaryTree->Branch("run",&run_);
+	
+	summaryTree->Branch("lep1_id",&lep1_id);
+	summaryTree->Branch("lep1_pt",&lep1_pt);
+	summaryTree->Branch("lep1_eta",&lep1_eta);
+	summaryTree->Branch("lep1_phi",&lep1_phi);
+	
+	summaryTree->Branch("lep2_id",&lep2_id);
+	summaryTree->Branch("lep2_pt",&lep2_pt);
+	summaryTree->Branch("lep2_eta",&lep2_eta);
+	summaryTree->Branch("lep2_phi",&lep2_phi);
+	summaryTree->Branch("met_pt",&met_pt_);
+	summaryTree->Branch("met_phi",&met_phi);
+	
 	
 	
 	
@@ -311,5 +344,27 @@ void OSTwoLepAna::initialize_variables()
         ele1_sip3d = -9.e6;
 
         higgs_decay = -9e6;
+
+	//for event dump sync
+	lumi_ = -9e6;
+	run_ = -9e6;
+	lep1_id = -9e6;
+	lep1_pt = -9.e6;
+	lep1_eta = -9.e6;
+	lep1_phi = -9.e6;
+	
+	lep2_id = -9e6;
+	lep2_pt = -9.e6;
+	lep2_eta = -9.e6;
+	lep2_phi = -9.e6;
+	
+	met_pt_ = -9.e6;
+	met_phi = -9.e6;
+
+
+
 	
 }
+
+/*  LocalWords:  lumi
+ */
