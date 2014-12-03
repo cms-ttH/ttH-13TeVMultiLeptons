@@ -8,10 +8,7 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 	cmsrel CMSSW_7_0_7_patch1
 	cd CMSSW_7_0_7_patch1/src/
 	cmsenv	
-	git clone -b ttH_leptons -n git@github.com:muell149/cmssw.git  $CMSSW_BASE/src/
-	git config core.sparsecheckout true
-	echo EgammAnalysis/ElectronTools > .git/info/sparse-checkout
-	git cms-addpkg EgammaAnalysis/ElectronTools
+	git clone git@github.com:muell149/EgammaAnalysis.git
 	git clone git@github.com:cms-ttH/MiniAOD.git
 	git clone git@github.com:cms-ttH/ttHMultileptonAnalysis.git -b 13TeV
 	scram b -j 32

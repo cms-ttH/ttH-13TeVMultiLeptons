@@ -15,29 +15,38 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 
 void OSTwoLepAna::beginJob()
 {
-	edm::Service<TFileService> newfs;
 
 
 	fp = fopen ("file.txt", "w+");
 	
-	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
+	// job setup
 	
 	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
-	
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
-	
 	SetFactorizedJetCorrector();
-	
 	setupMva();
-
+	alltriggerstostudy = HLTInfo();
+	
+	// initialize some variables:
+	electronTightID = electronID::electronTight;
+	electronLooseID = electronID::electronLoose;
+	electronPreselectedID = electronID::electronPreselection;
+	muonTightID = muonID::muonTight;
+	muonLooseID = muonID::muonLoose;
+	muonPreselectedID = muonID::muonNoCuts;
+	tauTightID = tauID::tauMedium;
+	// tauLooseID = tauID::tauVLoose;
+	tauPreselectedID = tauID::tauNonIso;
+	
+	// needed in edanalyzer:
+	edm::Service<TFileService> newfs;
+	
 	// book histos:
-
 	numtighteles = 	newfs->make<TH1D>("numtighteles","numtighteles",6,0,6);
 	numlooseeles = 	newfs->make<TH1D>("numlooseeles","numlooseeles",6,0,6);
 	numtightmuons = newfs->make<TH1D>("numtightmuons","numtightmuons",6,0,6);
 	numloosemuons = newfs->make<TH1D>("numloosemuons","numloosemuons",6,0,6);
 	numrawjets = 	newfs->make<TH1D>("numrawjets","numrawjets",15,0,15);
-
 	numjetsnoele = 			newfs->make<TH1D>("numjetsnoele","numjetsnoele",15,0,15);
 	numjetsnomu = 			newfs->make<TH1D>("numjetsnomu","numjetsnomu",15,0,15);
 	numjetsnomuorele = 		newfs->make<TH1D>("numjetsnomuorele","numjetsnomuorele",15,0,15);
@@ -50,81 +59,16 @@ void OSTwoLepAna::beginJob()
 	subleadingtightelept = 		newfs->make<TH1D>("subleadingtightelept","subleadingtightelept",200,0,400);
 	leadingtightleppt = 		newfs->make<TH1D>("leadingtightleppt","leadingtightleppt",200,0,400);
 	subleadingtightleppt = 		newfs->make<TH1D>("subleadingtightleppt","subleadingtightleppt",200,0,400);
-
 	jet1pt = newfs->make<TH1D>("jet1pt","jet1pt",200,0,400);
 	jet2pt = newfs->make<TH1D>("jet2pt","jet2pt",200,0,400);
 	jet3pt = newfs->make<TH1D>("jet3pt","jet3pt",200,0,400);
 	jet4pt = newfs->make<TH1D>("jet4pt","jet4pt",200,0,400);   
-
 	met_pt = newfs->make<TH1D>("met_pt","met_pt",200,0,400);
-
 	lep1_lep2_pt = newfs->make<TH2D>("lep1_lep2_pt","lep1_lep2_pt",30,0,150,30,0,150);
-
 	hlt_count_hist = newfs->make<TH1D>("hlt_count_hist","hlt_count_hist",1000,0,1000);
-
-
-	// initialize some variables:
-
-	electronTightID = electronID::electronTight;
-	electronLooseID = electronID::electronLoose;
-	electronPreselectedID = electronID::electronPreselection;
-
-	muonTightID = muonID::muonTight;
-	muonLooseID = muonID::muonLoose;
-	muonPreselectedID = muonID::muonNoCuts;
-
-	tauTightID = tauID::tauMedium;
-	// tauLooseID = tauID::tauVLoose;
-	tauPreselectedID = tauID::tauNonIso;
-
-	eventcount=0;
-
-	doublemucount=0.;
-	doublemucount2=0.;
-	doublemucount3=0.;
-	doublemucount4=0.;
-	doubleelecount=0.;
-	doubleelecount2=0.;
-	muelecount=0.;
-	elemucount=0.;	
-	tripelcount=0.;
-	
-	for (int i=0; i<1000; i++)
-	{
-		//allcount[i] = 0.;
 		
-		allcount_mumu[i] = 0.;
-		allcount_elel[i] = 0.;
-		allcount_muel[i] = 0.;
-		allcount_elmu[i] = 0.;
-		
-	}
-
-	numpassedcuts=0;
-
-	numpassedmumucuts=0.;
-	numpassedelelcuts=0.;
-	numpassedmuelcuts=0.;
-	numpassedelmucuts=0.;
-	
-	doublemucount5=0;	
-	
-	
-	alltriggerstostudy = HLTInfo();
-	
-	int numtrigs = alltriggerstostudy.size();
-	
-	if (numtrigs) mumutriggerstostudy.push_back(alltriggerstostudy[0]);
-	if (numtrigs>1) mumutriggerstostudy.push_back(alltriggerstostudy[1]);
-	if (numtrigs>2) mumutriggerstostudy.push_back(alltriggerstostudy[2]);
-	if (numtrigs>3) mumutriggerstostudy.push_back(alltriggerstostudy[3]);
-	if (numtrigs>4) eleltriggerstostudy.push_back(alltriggerstostudy[4]);
-	if (numtrigs>5) eleltriggerstostudy.push_back(alltriggerstostudy[5]);
-	if (numtrigs>6) mueltriggerstostudy.push_back(alltriggerstostudy[6]);
-	if (numtrigs>7) elmutriggerstostudy.push_back(alltriggerstostudy[7]);
-	if (numtrigs>8) tripeltriggerstostudy.push_back(alltriggerstostudy[8]);
-	
-	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");
+	// add the tree:
+	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
 	tree_add_branches();
 	
 	
@@ -148,30 +92,28 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	eventcount++;
 	SetupOptions(event);
   
-	trigRes triggerResults = 	GetTriggers(event);
-	patMuons muons = 		GetMuons(event);
-	patJets pfjets = 		GetJets(event);
-	patElectrons electrons = 	GetElectrons(event);
-	patMETs mets = 			GetMet(event);
-	prunedGenParticles prunedParticles = GetPrunedGenParticles(event);
+	trigRes triggerResults = 		GetTriggers(event);
+	patMuons muons = 			GetMuons(event);
+	patJets pfjets = 			GetJets(event);
+	patElectrons electrons = 		GetElectrons(event);
+	patMETs mets = 				GetMet(event);
+	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
+	
+	//patJets testHiggsjets = pfjets;
 	
 	SetRho(rho);
 	
-	int numpvs =			GetVertices(event);
+	int numpvs =				GetVertices(event);
+	
 	if (debug) cout << "numpvs: " << numpvs << endl;
 		
 	edm::Handle<GenEventInfoProduct> GenInfo;
     	event.getByLabel("generator",GenInfo);
-    	double wgt = GenInfo->weight();		// <- gen-level weight
+    	double mcwgt_intree = GenInfo->weight();		// <- gen-level weight
 	
 	double weight = 1.;			// <- analysis weight 
-	//  int numEvents = 0;
-	//  int numEventsFailCuts = 0;
-	//  int numEventsPassCuts = 0;
-	//  int printEvery = 1;
-  
-	
-	//wgt = weight; //test
+
+	weight *= mcwgt_intree;				// MC-only (flag to be added)
 
 	initialize_variables();	
 			
@@ -203,6 +145,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	int numLooseElectrons = int(selectedElectrons_loose.size());
 
 
+
+	vecTLorentzVectorCMS elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_loose);
+	vecTLorentzVectorCMS elesTLVtight = Get_vecTLorentzVectorCMS(selectedElectrons_tight);
+	vecTLorentzVectorCMS elesTLVloosenotight = Get_vecTLorentzVectorCMS(selectedElectrons_loose_notight);
+
+
+
+
 	/////////
 	///
 	/// Muons
@@ -224,22 +174,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	int numTightMuons = int(selectedMuons_tight.size());
 	int numLooseMuons = int(selectedMuons_loose.size());
 	
-
-
-	//bool isOS = false;	
 	
 	vecTLorentzVectorCMS muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_loose);
-	vecTLorentzVectorCMS muonsTLVtight = Get_vecTLorentzVectorCMS(selectedMuons_tight);
-			  
-	vecTLorentzVectorCMS elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_loose);
-	vecTLorentzVectorCMS elesTLVtight = Get_vecTLorentzVectorCMS(selectedElectrons_tight);
-	
-	
-	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
-	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 
-	
+	vecTLorentzVectorCMS muonsTLVtight = Get_vecTLorentzVectorCMS(selectedMuons_tight);	
 	vecTLorentzVectorCMS muonsTLVloosenotight = Get_vecTLorentzVectorCMS(selectedMuons_loose_notight);
-	vecTLorentzVectorCMS elesTLVloosenotight = Get_vecTLorentzVectorCMS(selectedElectrons_loose_notight);
+
 	
 	/////////
 	///
@@ -248,10 +187,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////
 	
 	//remove electrons that are close (dR <=0.02) to muons
+
 	selectedElectrons_preselected = cleanObjects(selectedElectrons_preselected,selectedMuons_preselected,0.02);
-	
 	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
 	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
+	
+	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
+	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 	
+
 	
 	/////////
 	///
@@ -267,12 +210,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatJet jetsNoLep			       	= RemoveOverlaps(selectedElectrons_loose, jetsNoMu);			    //miniAODhelper.
 	vecPatJet correctedJets_noSys		       	= GetCorrectedJets(jetsNoLep);  					    //miniAODhelper.
 	vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
-	vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
+	vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
 	vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
-	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
-	vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets( cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );   //miniAODhelper.
-	vecPatJet selectedJets_forSync          	= GetSelectedJets( cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
-	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets( rawJets, 10., 9.e9, jetID::none, '-' );   //miniAODhelper.
+	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
+	vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );   //miniAODhelper.
+	vecPatJet selectedJets_forSync          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
+	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(rawJets, 10., 9.e9, jetID::none, '-' );   //miniAODhelper.
 	
 
 	vecTLorentzVectorCMS jetsTLVloose = Get_vecTLorentzVectorCMS(selectedJets_loose_noSys_unsorted);
@@ -289,7 +232,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	int numSelJetsLooseCSVM = selectedJets_loose_tag_noSys_unsorted.size();
 
+	// test
+	vecPatJet *testHiggsjets  = &selectedJets_noSys_unsorted;
+	TwoObjectKinematic<vecPatJet,vecPatJet> myNumHiggsLikeDijet15("mass", "num_within", "numHiggsLike_dijet_15_float", &(testHiggsjets), "jets_by_pt", 1, 99, &(testHiggsjets), "jets_by_pt", 1, 99, 115.0, "", "", 15.0);
 	
+
 	/////////
 	///
 	/// MET
@@ -304,42 +251,40 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//////
 	/////////////////////////
 	
-	num_BJetsLoose = int(selectedJets_bJetsLoose.size());
-	num_Jets = int(selectedJets_forSync.size());
+	num_BJetsLoose_intree = int(selectedJets_bJetsLoose.size());
+	num_Jets_intree = int(selectedJets_forSync.size());
 	
-	num_preselectedMuons = int(selectedMuons_preselected.size());
-	num_preselectedElectrons = int(selectedElectrons_preselected.size());
-	num_preselectedLeptons = int(selectedLeptons_preselected.size());
-
+	num_preselectedMuons_intree = int(selectedMuons_preselected.size());
+	num_preselectedElectrons_intree = int(selectedElectrons_preselected.size());
+	num_preselectedLeptons_intree = int(selectedLeptons_preselected.size());
+	
 	int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles,1);
 	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
 
-	higgs_decay = ((higgs_daughter1==24 && higgs_daughter2==24)||(higgs_daughter1==23 && higgs_daughter2==23)||(higgs_daughter1==15 && higgs_daughter2==15)) ? 1 : 0;
-
-	eventnum = event.id().event();
-
-	//for sync and event dump
-	lumi_ = event.id().luminosityBlock();
-	run_ = event.id().run();
+	higgs_decay_intree = ((higgs_daughter1==24 && higgs_daughter2==24)||(higgs_daughter1==23 && higgs_daughter2==23)||(higgs_daughter1==15 && higgs_daughter2==15)) ? 1 : 0;
 	
-	met_pt_ = floor(theMET.Pt()*100+0.5)/100;
-	met_phi = floor(theMET.Phi()*100+0.5)/100;
+	eventnum_intree = event.id().event();
+	lumiBlock_intree = event.id().luminosityBlock();
+	runNumber_intree = event.id().run();
+
+	met_pt_intree = floor(theMET.Pt()*100+0.5)/100;
+	met_phi_intree = floor(theMET.Phi()*100+0.5)/100;
 	
-	if (num_preselectedLeptons >=1 ){
-	  lep1_id = selectedLeptons_preselected[0].pdgId();
-	  lep1_pt = selectedLeptons_preselected[0].pt();
-	  lep1_eta = selectedLeptons_preselected[0].eta();
-	  lep1_phi = selectedLeptons_preselected[0].phi();
+	if (num_preselectedLeptons_intree >=1 ){
+	  lep1_id_intree = selectedLeptons_preselected[0].pdgId();
+	  lep1_pt_intree = selectedLeptons_preselected[0].pt();
+	  lep1_eta_intree = selectedLeptons_preselected[0].eta();
+	  lep1_phi_intree = selectedLeptons_preselected[0].phi();
 	}
 	
-	if (num_preselectedLeptons >=2 ){
-	  lep2_id = selectedLeptons_preselected[1].pdgId();
-	  lep2_pt = selectedLeptons_preselected[1].pt();
-	  lep2_eta = selectedLeptons_preselected[1].eta();
-	  lep2_phi = selectedLeptons_preselected[1].phi();
+	if (num_preselectedLeptons_intree >=2 ){
+	  lep2_id_intree = selectedLeptons_preselected[1].pdgId();
+	  lep2_pt_intree = selectedLeptons_preselected[1].pt();
+	  lep2_eta_intree = selectedLeptons_preselected[1].eta();
+	  lep2_phi_intree = selectedLeptons_preselected[1].phi();
 	}
 	
-	if (eventnum == 24007 ) 
+	if (eventnum_intree == 24007 ) 
 	  {
 	    for (unsigned int count = 0; count <+ selectedElectrons_nocuts.size(); ++count)
 	      {
@@ -350,38 +295,38 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		
 	      }
 	  }
+	
 
-
-	if (num_preselectedMuons == 2)
+	if (num_preselectedMuons_intree == 2)
 	  {
-	    mu1_charge = selectedMuons_preselected[0].charge();
-	    mu2_charge = selectedMuons_preselected[1].charge();
-	    mu1_pt = selectedMuons_preselected[0].pt();
-	    mu2_pt = selectedMuons_preselected[1].pt();
-	    mu1_lepMVA = GetMuonLepMVA(selectedMuons_preselected[0],selectedJets_forLepMVA);
-	    mu2_lepMVA = GetMuonLepMVA(selectedMuons_preselected[1],selectedJets_forLepMVA);
-	    mu1_chargeFlip = (selectedMuons_preselected[0].innerTrack()->ptError()/selectedMuons_preselected[0].innerTrack()->pt() < 0.2 ) ? 1 : 0;
-	    mu2_chargeFlip = (selectedMuons_preselected[1].innerTrack()->ptError()/selectedMuons_preselected[1].innerTrack()->pt() < 0.2 ) ? 1 : 0;
+	    mu1_charge_intree = selectedMuons_preselected[0].charge();
+	    mu2_charge_intree = selectedMuons_preselected[1].charge();
+	    mu1_pt_intree = selectedMuons_preselected[0].pt();
+	    mu2_pt_intree = selectedMuons_preselected[1].pt();
+	    mu1_lepMVA_intree = GetMuonLepMVA(selectedMuons_preselected[0],selectedJets_forLepMVA);
+	    mu2_lepMVA_intree = GetMuonLepMVA(selectedMuons_preselected[1],selectedJets_forLepMVA);
+	    mu1_chargeFlip_intree = (selectedMuons_preselected[0].innerTrack()->ptError()/selectedMuons_preselected[0].innerTrack()->pt() < 0.2 ) ? 1 : 0;
+	    mu2_chargeFlip_intree = (selectedMuons_preselected[1].innerTrack()->ptError()/selectedMuons_preselected[1].innerTrack()->pt() < 0.2 ) ? 1 : 0;
 	    
-	    mu1_chRelIso = selectedMuons_preselected[0].chargedHadronIso()/selectedMuons_preselected[0].pt();
-	    mu1_nuRelIso = GetMuonRelIsoR04(selectedMuons_preselected[0]) - mu1_chRelIso;
+	    mu1_chRelIso_intree = selectedMuons_preselected[0].chargedHadronIso()/selectedMuons_preselected[0].pt();
+	    mu1_nuRelIso_intree = GetMuonRelIsoR04(selectedMuons_preselected[0]) - mu1_chRelIso_intree;
 	    pat::Jet matchedJet = getClosestJet(selectedJets_forLepMVA,selectedMuons_preselected[0]);
 	    double dR = MiniAODHelper::DeltaR(&matchedJet,&selectedMuons_preselected[0]);
-	    mu1_jetdR = min(dR,0.5);
-	    mu1_jetPtRatio =  min(selectedMuons_preselected[0].pt()/matchedJet.pt(), float(1.5));
-	    mu1_bTagCSV = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
-	    mu1_sip3d = fabs(selectedMuons_preselected[0].dB(pat::Muon::PV3D)/selectedMuons_preselected[0].edB(pat::Muon::PV3D));
+	    mu1_jetdR_intree = min(dR,0.5);
+	    mu1_jetPtRatio_intree =  min(selectedMuons_preselected[0].pt()/matchedJet.pt(), float(1.5));
+	    mu1_bTagCSV_intree = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
+	    mu1_sip3d_intree = fabs(selectedMuons_preselected[0].dB(pat::Muon::PV3D)/selectedMuons_preselected[0].edB(pat::Muon::PV3D));
 
 	  } 
 	
-	if (num_preselectedElectrons == 2)
+	if (num_preselectedElectrons_intree == 2)
 	  {
-	    ele1_charge = selectedElectrons_preselected[0].charge();
-	    ele2_charge = selectedElectrons_preselected[1].charge();
-	    ele1_pt = selectedElectrons_preselected[0].pt();
-	    ele2_pt = selectedElectrons_preselected[1].pt();
-	    ele1_lepMVA = GetElectronLepMVA(selectedElectrons_preselected[0],selectedJets_forLepMVA);
-	    ele2_lepMVA = GetElectronLepMVA(selectedElectrons_preselected[1],selectedJets_forLepMVA);
+	    ele1_charge_intree = selectedElectrons_preselected[0].charge();
+	    ele2_charge_intree = selectedElectrons_preselected[1].charge();
+	    ele1_pt_intree = selectedElectrons_preselected[0].pt();
+	    ele2_pt_intree = selectedElectrons_preselected[1].pt();
+	    ele1_lepMVA_intree = GetElectronLepMVA(selectedElectrons_preselected[0],selectedJets_forLepMVA);
+	    ele2_lepMVA_intree = GetElectronLepMVA(selectedElectrons_preselected[1],selectedJets_forLepMVA);
 
 	    bool ele1_chargeFlipA = selectedElectrons_preselected[0].isGsfCtfScPixChargeConsistent();
 	    bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0 );
@@ -391,30 +336,30 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0);
 	    bool ele2_chargeFlipC = selectedElectrons_preselected[1].passConversionVeto();
 
-	    ele1_chargeFlip =  (ele1_chargeFlipA && ele1_chargeFlipB && ele1_chargeFlipC) ? 1 : 0;
-	    ele2_chargeFlip =  (ele2_chargeFlipA && ele2_chargeFlipB && ele2_chargeFlipC) ? 1 : 0;
+	    ele1_chargeFlip_intree =  (ele1_chargeFlipA && ele1_chargeFlipB && ele1_chargeFlipC) ? 1 : 0;
+	    ele2_chargeFlip_intree =  (ele2_chargeFlipA && ele2_chargeFlipB && ele2_chargeFlipC) ? 1 : 0;
 	    
-	    ele1_chRelIso = selectedElectrons_preselected[0].chargedHadronIso()/selectedElectrons_preselected[0].pt();
-	    ele1_nuRelIso = GetElectronRelIso(selectedElectrons_preselected[0]) - ele1_chRelIso;
+	    ele1_chRelIso_intree = selectedElectrons_preselected[0].chargedHadronIso()/selectedElectrons_preselected[0].pt();
+	    ele1_nuRelIso_intree = GetElectronRelIso(selectedElectrons_preselected[0]) - ele1_chRelIso_intree;
 	    pat::Jet matchedJet = getClosestJet(selectedJets_forLepMVA,selectedElectrons_preselected[0]);
 	    double dR = MiniAODHelper::DeltaR(&matchedJet,&selectedElectrons_preselected[0]);
-	    ele1_jetdR = min(dR,0.5);
-	    ele1_jetPtRatio =  min(selectedElectrons_preselected[0].pt()/matchedJet.pt(), float(1.5));
-	    ele1_bTagCSV = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
-	    ele1_sip3d = fabs(selectedElectrons_preselected[0].dB(pat::Electron::PV3D)/selectedElectrons_preselected[0].edB(pat::Electron::PV3D));
+	    ele1_jetdR_intree = min(dR,0.5);
+	    ele1_jetPtRatio_intree =  min(selectedElectrons_preselected[0].pt()/matchedJet.pt(), float(1.5));
+	    ele1_bTagCSV_intree = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
+	    ele1_sip3d_intree = fabs(selectedElectrons_preselected[0].dB(pat::Electron::PV3D)/selectedElectrons_preselected[0].edB(pat::Electron::PV3D));
 
 	  } 
 
 	//cout <<"run"<<"lumi"<<"event"<<"l1 id"<<"l1 pt"<<"l1 eta"<<"l1 phi"<<"l2 id"<<"l2 pt"<<"l2 eta"<<"l2 phi"<<"met pt"<<"met phi"<<"n jets"<< event_list.txt;
 	
-	if (num_preselectedLeptons >= 2 && higgs_decay ==1)
+	if (num_preselectedLeptons_intree >= 2 && higgs_decay_intree ==1)
 	  {
 	    fprintf(fp,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-		   run_, lumi_, eventnum,
-		   lep1_id, lep1_pt, lep1_eta, lep1_phi,
-		   lep2_id, lep2_pt, lep2_eta, lep2_phi,
-		   met_pt_, met_phi,
-		   num_Jets);
+		    runNumber_intree, lumiBlock_intree, eventnum_intree,
+		    lep1_id_intree, lep1_pt_intree, lep1_eta_intree, lep1_phi_intree,
+		    lep2_id_intree, lep2_pt_intree, lep2_eta_intree, lep2_phi_intree,
+		    met_pt_intree, met_phi_intree,
+		    num_Jets_intree);
 	  }
 	
 
@@ -422,176 +367,35 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// fill some basic histos:
 
-	numtighteles->Fill					(numTightElectrons,weight);
-	numlooseeles->Fill					(numLooseElectrons,weight);
-	numtightmuons->Fill					(numTightMuons,weight);
-	numloosemuons->Fill					(numLooseMuons,weight);
-	numrawjets->Fill					(numRawJets,weight);
-	numjetsnoele->Fill					(numJetsNoEle,weight);
-	numjetsnomu->Fill					(numJetsNoMu,weight);
-	numjetsnomuorele->Fill					(numJetsNoLep,weight);
-	numjetscorrected->Fill					(numJetsCorr,weight);
-	numjetsselectedloose->Fill				(numSelJetsLoose,weight);
-	numbtagsselectedlooseCSVM->Fill				(numSelJetsLooseCSVM,weight);
-	if (numTightMuons) leadingtightmupt->Fill		(muonsTLVtight[0].Pt(),weight);
-	if (numTightMuons>1) subleadingtightmupt->Fill		(muonsTLVtight[1].Pt(),weight);
-	if (numTightElectrons) leadingtightelept->Fill		(elesTLVtight[0].Pt(),weight);
-	if (numTightElectrons>1) subleadingtightelept->Fill	(elesTLVtight[1].Pt(),weight);
-	if (leptonsTLVtight.size()) leadingtightleppt->Fill	(leptonsTLVtight[0].Pt(),weight);
-	if (leptonsTLVtight.size()>1) subleadingtightleppt->Fill(leptonsTLVtight[1].Pt(),weight);
-	if (jetsTLVloose.size())jet1pt->Fill			(jetsTLVloose[0].Pt(),weight);
-	if (jetsTLVloose.size()>1)jet2pt->Fill			(jetsTLVloose[1].Pt(),weight);
-	if (jetsTLVloose.size()>2)jet3pt->Fill			(jetsTLVloose[2].Pt(),weight);
-	if (jetsTLVloose.size()>3)jet4pt->Fill			(jetsTLVloose[3].Pt(),weight);
-	met_pt->Fill						(theMET.Pt(),weight);
-	// .....
-
-
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	// Do anything else specific to the analysis (like apply event selection, evaluate variables, loop over systematics, save things to a tree)
-	// In this case, I'm doing some trigger studies:
-	// ////////////////////////////////////////////////////////////////////////////////////////////
-	
-	
-	
-	edm::Handle<trigger::TriggerEvent> aodTriggerEvent;   
-	event.getByLabel(edm::InputTag("hltTriggerSummaryAOD", "", hltTag), aodTriggerEvent); // this won't be in a regular miniAOD sample!
-	
-	if (numLooseMuons>1)
-	{
-		for (int i=0; i<(numLooseMuons-1); i++)
-		{
-			if (muonsTLVloose[i+1].Pt()>muonsTLVloose[i].Pt()) cout << "hey!" << endl; // are they sorted by pt? yes.
-		}
-	}
-	
-	if (!triggerResults.isValid())
-	{
-		std::cout << "Trigger results not valid" << std::endl;
-	}
-
-	std::vector<std::string> myTriggernames = hltConfig_.triggerNames();
-	
-	int triggersize = myTriggernames.size();
-
-	for (int j=0; j<triggersize; j++)
-	{	
-		unsigned int path__index = hltConfig_.triggerIndex(myTriggernames[j]);
-	
-		if (eventcount==1)
-		{
-			cout << myTriggernames[j] << endl;
-		}
-	
-		if(triggerResults->accept(path__index))
-		{
-			hlt_count_hist->Fill(j);
-		}
-	}
-
-
+	numtighteles->						Fill(numTightElectrons,weight);
+	numlooseeles->						Fill(numLooseElectrons,weight);
+	numtightmuons->						Fill(numTightMuons,weight);
+	numloosemuons->						Fill(numLooseMuons,weight);
+	numrawjets->						Fill(numRawJets,weight);
+	numjetsnoele->						Fill(numJetsNoEle,weight);
+	numjetsnomu->						Fill(numJetsNoMu,weight);
+	numjetsnomuorele->					Fill(numJetsNoLep,weight);
+	numjetscorrected->					Fill(numJetsCorr,weight);
+	numjetsselectedloose->					Fill(numSelJetsLoose,weight);
+	numbtagsselectedlooseCSVM->				Fill(numSelJetsLooseCSVM,weight);
+	if (numTightMuons) leadingtightmupt->			Fill(muonsTLVtight[0].Pt(),weight);
+	if (numTightMuons>1) subleadingtightmupt->		Fill(muonsTLVtight[1].Pt(),weight);
+	if (numTightElectrons) leadingtightelept->		Fill(elesTLVtight[0].Pt(),weight);
+	if (numTightElectrons>1) subleadingtightelept->		Fill(elesTLVtight[1].Pt(),weight);
+	if (leptonsTLVtight.size()) leadingtightleppt->		Fill(leptonsTLVtight[0].Pt(),weight);
+	if (leptonsTLVtight.size()>1) subleadingtightleppt->	Fill(leptonsTLVtight[1].Pt(),weight);
+	if (jetsTLVloose.size())jet1pt->			Fill(jetsTLVloose[0].Pt(),weight);
+	if (jetsTLVloose.size()>1)jet2pt->			Fill(jetsTLVloose[1].Pt(),weight);
+	if (jetsTLVloose.size()>2)jet3pt->			Fill(jetsTLVloose[2].Pt(),weight);
+	if (jetsTLVloose.size()>3)jet4pt->			Fill(jetsTLVloose[3].Pt(),weight);
+	met_pt->						Fill(theMET.Pt(),weight);
 
 	
-	if (leptonsTLVloose.size()>1)
-	{
-		for (int i=0; i<30; i++)
-		{
-			for (int j=0; j<30; j++)
-			{
-				double amount = 5.;
-				
-				double leadingcut = (double)i*amount;
-				double subleadingcut = (double)j*amount;
-				
-				if (leptonsTLVloose[0].Pt()>leadingcut&&leptonsTLVloose[1].Pt()>subleadingcut) lep1_lep2_pt->Fill(leadingcut,subleadingcut);
-			}
-		}
-	}
-	
-	//if(numLooseElectrons>1&&numTightElectrons>0) lep1_lep2_pt->Fill(elesTLVtight[0].Pt(),elesTLVloosenotight[0].Pt());
-	
-	// if(numLooseMuons>1&&numTightMuons>0)
-// 	{
-// 		if (muonsTLVloose[0].Pt()!=muonsTLVtight[0].Pt()) lep1_lep2_pt->Fill(muonsTLVtight[0].Pt(),muonsTLVloose[0].Pt());
-// 		else lep1_lep2_pt->Fill(muonsTLVtight[0].Pt(),muonsTLVloose[1].Pt());
-// 	}
-	
-	
-	double leg1 = 20.; //pt
-	double leg2 = 10.; //pt
-	
-	bool tightmupass = false;
-	if ((numTightMuons>0)&&(muonsTLVtight[0].Pt()>leg1)) tightmupass = true;
-	
-	bool tightelepass = false;
-	if ((numTightElectrons>0)&&(elesTLVtight[0].Pt()>leg1)) tightelepass = true;
-	
-	bool loosedubmupass = false;
-	if (tightmupass&&(numLooseMuons>1))
-	{
-		if ((muonsTLVtight[0].Pt()!=muonsTLVloose[0].Pt())&&(muonsTLVloose[0].Pt()>leg2)) loosedubmupass=true;
-		if ((muonsTLVtight[0].Pt()==muonsTLVloose[0].Pt())&&(muonsTLVloose[1].Pt()>leg2)) loosedubmupass=true;
-	}
-	
-	bool loosedubelepass = false;
-	if (tightelepass&&(numLooseElectrons>1))
-	{
-		if ((elesTLVtight[0].Pt()!=elesTLVloose[0].Pt())&&(elesTLVloose[0].Pt()>leg2)) loosedubelepass=true;
-		if ((elesTLVtight[0].Pt()==elesTLVloose[0].Pt())&&(elesTLVloose[1].Pt()>leg2)) loosedubelepass=true;
-	}
-	
-	bool muele_looseelepass = false;
-	if (numLooseElectrons) if (tightmupass&&(elesTLVloose[0].Pt()>leg2)) muele_looseelepass = true;
-	
-	bool muele_loosemupass = false;
-	if (numLooseMuons) if (tightelepass&&(muonsTLVloose[0].Pt()>leg2)) muele_loosemupass = true;
-	
-	
-	string extra_trig = "HLT_IsoMu30_v12";
-
-	if (tightmupass&&loosedubmupass)
-	{
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount += wgt; // doublemucount++;
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount2 += wgt; // doublemucount2++;
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount3 += wgt; // doublemucount3++;
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[3]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount4 += wgt; // doublemucount4++;
-		
-		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1]))||triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2]))) doublemucount5 += wgt;
-
-		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_mumu[i] += wgt;
-
-		cout << wgt << endl;
-
-		numpassedmumucuts += wgt; //numpassedmumucuts++;
-	}
-
-	if (tightelepass&&loosedubelepass)
-	{
-		if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doubleelecount += wgt; //doubleelecount++;
-		if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[1]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doubleelecount2 += wgt; //doubleelecount2++;
-		numpassedelelcuts += wgt; //numpassedelelcuts++;
-		
-		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_elel[i] += wgt;
-		
-		
-	}
-
-	if (tightmupass&&muele_looseelepass)
-	{
-		if (triggerResults->accept(hltConfig_.triggerIndex(mueltriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) muelecount += wgt; //muelecount++;
-		numpassedmuelcuts += wgt; //numpassedmuelcuts++;
-		
-		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_muel[i] += wgt;
-		
-	}
-
-	if (tightelepass&&muele_loosemupass)
-	{
-		if (triggerResults->accept(hltConfig_.triggerIndex(elmutriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) elemucount += wgt; //elemucount++;
-		numpassedelmucuts += wgt; //numpassedelmucuts++;
-		
-		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_elmu[i] += wgt;
-	}
+// 	TwoMuon = 0; TwoElectron = 0; MuonElectron = 0; PassTwoLepton = 0; 
+// 	if ( numTightMuons >= 1 && numTightLooseMuons == 2 && numTightLooseElectrons == 0 ) TwoMuon = 1; 
+// 	if ( numTightElectrons >= 1 && numTightLooseElectrons == 2 && numTightLooseMuons == 0 ) TwoElectron = 1; 
+// 	if ( ( numTightMuons + numTightElectrons ) >= 1 && numTightLooseMuons == 1 && numTightLooseElectrons == 1 ) MuonElectron = 1; 
+// 	if ( TwoMuon + TwoElectron + MuonElectron == 1 ) PassTwoLepton = 1;
 	
 	
 	// assign values to tree variables:
@@ -600,8 +404,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	numTightMuons_intree = numTightMuons;
 	numTightElectrons_intree = numTightElectrons;
 	
-	//testvect.push_back(3.);
-	//testvect.push_back(11.);
+	
+	myNumHiggsLikeDijet15.evaluate();
+	if (myNumHiggsLikeDijet15.myVars.size()) NumHiggsLikeDijet15_intree =  myNumHiggsLikeDijet15.myVars[0].branchVal;
 	
 	Jets_intree = jetsTLVloose;
 	MET_intree = theMET;
@@ -611,13 +416,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	TightMuons_intree = muonsTLVtight;
 	JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
 		
+	wgt_intree = weight;
 	
 	// fill it:
 	summaryTree->Fill();
 	
 } // end for each event
 
-void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup){
+void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
+{
 		
 	// This has to be done here (not at beginjob):
 	
@@ -629,72 +436,10 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup){
 	std::cout << " HLTConfig processName " << hltConfig_.processName() << " tableName " << hltConfig_.tableName() << " size " << hltConfig_.size() << std::endl; // " globalTag: " << hltConfig_.globalTag() << std::endl;
 	
 }
-void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup){
+void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup)
+{
 
-	//cout << doublmucount << endl;
-	//cout << numpassedcuts << endl;
 	cout << "total events processed: " << eventcount << endl;
-	
-	cout << "trigger results" << endl;
-// 	cout << mumutriggerstostudy[0] << "  " << doublemucount << "out of " << numpassedmumucuts << endl;
-// 	cout << mumutriggerstostudy[1] << "  " << doublemucount2 << "out of " << numpassedmumucuts << endl;
-// 	cout << mumutriggerstostudy[2] << "  " << doublemucount3 << "out of " << numpassedmumucuts << endl;
-// 	cout << mumutriggerstostudy[3] << "  " << doublemucount4 << "out of " << numpassedmumucuts << endl;
-// 	cout << "  " << endl;
-// 	cout << eleltriggerstostudy[0] << "  " << doubleelecount << "out of " << numpassedelelcuts << endl;
-// 	cout << eleltriggerstostudy[1] << "  " << doubleelecount2 << "out of " << numpassedelelcuts << endl;
-// 	cout << "  " << endl;
-// 	cout << mueltriggerstostudy[0] << "  " << muelecount << "out of " << numpassedmuelcuts << endl;
-// 	cout << "  " << endl;
-// 	cout << elmutriggerstostudy[0] << "  " << elemucount << "out of " << numpassedelmucuts << endl;
-
-
-	cout << mumutriggerstostudy[0] << "  " << doublemucount << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount/numpassedmumucuts << endl;
-	cout << mumutriggerstostudy[1] << "  " << doublemucount2 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount2/numpassedmumucuts << endl;
-	cout << mumutriggerstostudy[2] << "  " << doublemucount3 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount3/numpassedmumucuts << endl;
-	cout << mumutriggerstostudy[3] << "  " << doublemucount4 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount4/numpassedmumucuts << endl;
-	cout << "  " << endl;
-	cout << eleltriggerstostudy[0] << "  " << doubleelecount << "out of " << numpassedelelcuts << ", fraction: " << (double)doubleelecount/numpassedelelcuts << endl;
-	cout << eleltriggerstostudy[1] << "  " << doubleelecount2 << "out of " << numpassedelelcuts << ", fraction: " << (double)doubleelecount2/numpassedelelcuts << endl;
-	cout << "  " << endl;
-	cout << mueltriggerstostudy[0] << "  " << muelecount << "out of " << numpassedmuelcuts << ", fraction: " << (double)muelecount/numpassedmuelcuts << endl;
-	cout << "  " << endl;
-	cout << elmutriggerstostudy[0] << "  " << elemucount << "out of " << numpassedelmucuts << ", fraction: " << (double)elemucount/numpassedelmucuts << endl;
-	cout << "  " << endl;
-	cout << doublemucount5 <<  "  "  << numpassedmumucuts << endl;
-	cout << "  " << endl;
-	cout << "  " << endl;
-	
-	int numtrigs = hltConfig_.size();
-	std::vector<std::string> myTriggernames = hltConfig_.triggerNames();
-	
-	cout << "mumu: " << endl;
-	for (int i =0; i<numtrigs; i++) cout << myTriggernames[i] << ":  " << allcount_mumu[i] << endl;
-	cout << "elel: " << endl;
-	for (int i =0; i<numtrigs; i++) cout << myTriggernames[i] << ":  " << allcount_elel[i] << endl;
-	cout << "muel: " << endl;
-	for (int i =0; i<numtrigs; i++) cout << myTriggernames[i] << ":  " << allcount_muel[i] << endl;
-	cout << "elmu: " << endl;
-	for (int i =0; i<numtrigs; i++) cout << myTriggernames[i] << ":  " << allcount_elmu[i] << endl;
-	
-
-	
-// 	std::vector<std::string> the_saved_tag_modules = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Mu17_Mu8_v1"));
-// 	cout << "HLT_Mu17_Mu8_v1" << ": " << the_saved_tag_modules[0] << endl;
-// 	std::vector<std::string> the_saved_tag_modules2 = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Mu17_TkMu8_v1"));
-// 	cout << "HLT_Mu17_TkMu8_v1" << ": " << the_saved_tag_modules2[0] << endl;
-// 	std::vector<std::string> the_saved_tag_modules3 = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1"));
-// 	cout << "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1" << ": " << the_saved_tag_modules3[0] << endl;
-// 	std::vector<std::string> the_saved_tag_modules4 = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1"));
-// 	cout << "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1" << ": " << the_saved_tag_modules4[0] << endl;
-// 	std::vector<std::string> the_saved_tag_modules5 = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Ele17_Ele8_Gsf_v1"));
-// 	cout << "HLT_Ele17_Ele8_Gsf_v1" << ": " << the_saved_tag_modules5[0] << endl;
-// 	std::vector<std::string> the_saved_tag_modules6 = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Ele23_Ele12_CaloId_TrackId_Iso_v1"));
-// 	cout << "HLT_Ele23_Ele12_CaloId_TrackId_Iso_v1" << ": " << the_saved_tag_modules6[0] << endl;
-// 	std::vector<std::string> the_saved_tag_modules7 = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1"));
-// 	cout << "HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1" << ": " << the_saved_tag_modules7[0] << endl;
-// 	std::vector<std::string> the_saved_tag_modules8 = hltConfig_.saveTagsModules(hltConfig_.triggerIndex("HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1"));
-// 	cout << "HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1" << ": " << the_saved_tag_modules8[0] << endl;
 	
 	
 

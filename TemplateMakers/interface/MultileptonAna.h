@@ -200,7 +200,6 @@ class MultileptonAna: public MiniAODHelper
   HLTConfigProvider hltConfig_;
   std::string hltTag;	
   
-  
  public:
   
   MultileptonAna();
