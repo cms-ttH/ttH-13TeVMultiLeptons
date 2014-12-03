@@ -16,52 +16,11 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 void OSTwoLepAna::beginJob()
 {
 	edm::Service<TFileService> newfs;
-		
-	//	summaryTree = new TTree("summaryTree", "Summary Event Values");	
-	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
+
+
+	fp = fopen ("file.txt", "w+");
 	
-
-	// summaryTree->Branch("num_BJetsLoose",&num_BJetsLoose);
-	// summaryTree->Branch("num_Jets",&num_Jets);
-
-	// summaryTree->Branch("num_Leptons",&num_preselectedLeptons);
-
-	// summaryTree->Branch("num_muons",&num_preselectedMuons);
-	// summaryTree->Branch("mu1_charge",&mu1_charge);
-	// summaryTree->Branch("mu2_charge",&mu2_charge);
-	// summaryTree->Branch("mu1_pt",&mu1_pt);
-	// summaryTree->Branch("mu2_pt",&mu2_pt);
-	// summaryTree->Branch("mu1_lepMVA",&mu1_lepMVA);
-	// summaryTree->Branch("mu2_lepMVA",&mu2_lepMVA);
-	// summaryTree->Branch("mu1_chargeFlip",&mu1_chargeFlip);
-	// summaryTree->Branch("mu2_chargeFlip",&mu2_chargeFlip);
-
-	// summaryTree->Branch("mu1_chreliso",&mu1_chRelIso);
-	// summaryTree->Branch("mu1_nureliso",&mu1_nuRelIso);
-	// summaryTree->Branch("mu1_jetdR",&mu1_jetdR);
-	// summaryTree->Branch("mu1_jetPtRatio",&mu1_jetPtRatio);
-	// summaryTree->Branch("mu1_bTagCSV",&mu1_bTagCSV);
-	// summaryTree->Branch("mu1_sip3d",&mu1_sip3d);
-
-	// summaryTree->Branch("num_electrons",&num_preselectedElectrons);
-	// summaryTree->Branch("ele1_charge",&ele1_charge);
-	// summaryTree->Branch("ele2_charge",&ele2_charge);
-	// summaryTree->Branch("ele1_pt",&ele1_pt);
-	// summaryTree->Branch("ele2_pt",&ele2_pt);
-	// summaryTree->Branch("ele1_lepMVA",&ele1_lepMVA);
-	// summaryTree->Branch("ele2_lepMVA",&ele2_lepMVA);
-	// summaryTree->Branch("ele1_chargeFlip",&ele1_chargeFlip);
-	// summaryTree->Branch("ele2_chargeFlip",&ele2_chargeFlip);
-
-	// summaryTree->Branch("ele1_chreliso",&ele1_chRelIso);
-	// summaryTree->Branch("ele1_nureliso",&ele1_nuRelIso);
-	// summaryTree->Branch("ele1_jetdR",&ele1_jetdR);
-	// summaryTree->Branch("ele1_jetPtRatio",&ele1_jetPtRatio);
-	// summaryTree->Branch("ele1_bTagCSV",&ele1_bTagCSV);
-	// summaryTree->Branch("ele1_sip3d",&ele1_sip3d);
-
-	// summaryTree->Branch("event",&eventnum);
-	// summaryTree->Branch("higgs_decay",&higgs_decay);
+	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
 	
 	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
 	
@@ -171,11 +130,13 @@ void OSTwoLepAna::beginJob()
 	
 }
 void OSTwoLepAna::endJob() {
+  
 
-//  cout << "Num Events processed " << numEvents << endl;
-//       << "Passed cuts " << numEventsPassCuts << endl;
-//       << "Failed cuts " << numEventsFailCuts << endl;
-       
+  fclose(fp);
+  //  cout << "Num Events processed " << numEvents << endl;
+  //       << "Passed cuts " << numEventsPassCuts << endl;
+  //       << "Failed cuts " << numEventsFailCuts << endl;
+  
 } // job completion (cutflow table, etc.)
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
@@ -183,6 +144,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	// analysis goes here
 	if (debug) cout << "event: " << event.id().event() << endl;
 	
+
 	eventcount++;
 	SetupOptions(event);
   
@@ -233,7 +195,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
 	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
-	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 10., electronID::electronNoCuts );	//miniAODhelper.
+	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 7., electronID::electronNoCuts );	//miniAODhelper.
+	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons( *electrons, 10., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	
 	int numTightElectrons = int(selectedElectrons_tight.size());
@@ -255,7 +218,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );		//miniAODhelper.
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );		//miniAODhelper.
 	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );	//miniAODhelper.
-	vecPatMuon selectedMuons_nocuts = GetSelectedMuons( *muons, 10., muonID::muonNoCuts );	//miniAODhelper.
+	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );	//miniAODhelper.
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);		//miniAODhelper.
 	
 	int numTightMuons = int(selectedMuons_tight.size());
@@ -288,7 +251,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	selectedElectrons_preselected = cleanObjects(selectedElectrons_preselected,selectedMuons_preselected,0.02);
 	
 	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
-	vecPatLepton selectedLeptons_nocuts = fillLeptons(selectedMuons_nocuts,selectedElectrons_nocuts);
+	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
 	
 	/////////
 	///
@@ -298,7 +261,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
  	
 	vecPatJet rawJets				= GetUncorrectedJets(*pfjets);  					  //miniAODhelper.
-	vecPatJet cleaned_rawJets                       = cleanObjects(rawJets,selectedLeptons_nocuts,0.4);
+	vecPatJet cleaned_rawJets                       = cleanObjects(rawJets,selectedLeptons_forcleaning,0.4);
 	vecPatJet jetsNoMu			       	= RemoveOverlaps(selectedMuons_loose, rawJets); 			    //miniAODhelper.
 	vecPatJet jetsNoEle			       	= RemoveOverlaps(selectedElectrons_loose, rawJets);			    //miniAODhelper.
 	vecPatJet jetsNoLep			       	= RemoveOverlaps(selectedElectrons_loose, jetsNoMu);			    //miniAODhelper.
@@ -352,10 +315,43 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
 
 	higgs_decay = ((higgs_daughter1==24 && higgs_daughter2==24)||(higgs_daughter1==23 && higgs_daughter2==23)||(higgs_daughter1==15 && higgs_daughter2==15)) ? 1 : 0;
-	
 
 	eventnum = event.id().event();
+
+	//for sync and event dump
+	lumi_ = event.id().luminosityBlock();
+	run_ = event.id().run();
 	
+	met_pt_ = floor(theMET.Pt()*100+0.5)/100;
+	met_phi = floor(theMET.Phi()*100+0.5)/100;
+	
+	if (num_preselectedLeptons >=1 ){
+	  lep1_id = selectedLeptons_preselected[0].pdgId();
+	  lep1_pt = selectedLeptons_preselected[0].pt();
+	  lep1_eta = selectedLeptons_preselected[0].eta();
+	  lep1_phi = selectedLeptons_preselected[0].phi();
+	}
+	
+	if (num_preselectedLeptons >=2 ){
+	  lep2_id = selectedLeptons_preselected[1].pdgId();
+	  lep2_pt = selectedLeptons_preselected[1].pt();
+	  lep2_eta = selectedLeptons_preselected[1].eta();
+	  lep2_phi = selectedLeptons_preselected[1].phi();
+	}
+	
+	if (eventnum == 24007 ) 
+	  {
+	    for (unsigned int count = 0; count <+ selectedElectrons_nocuts.size(); ++count)
+	      {
+		
+		cout << "Electron # " << count << endl;
+		cout <<"pt= "<<selectedElectrons_nocuts[count].pt()<<" eta= "<<selectedElectrons_nocuts[count].eta()<<" phi = "<<selectedElectrons_nocuts[count].phi()<<endl;
+		cout <<"mvaID= "<< mvaID_->mvaValue(selectedElectrons_nocuts[count],vertex,rho,true,false) << endl;
+		
+	      }
+	  }
+
+
 	if (num_preselectedMuons == 2)
 	  {
 	    mu1_charge = selectedMuons_preselected[0].charge();
@@ -408,6 +404,20 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ele1_sip3d = fabs(selectedElectrons_preselected[0].dB(pat::Electron::PV3D)/selectedElectrons_preselected[0].edB(pat::Electron::PV3D));
 
 	  } 
+
+	//cout <<"run"<<"lumi"<<"event"<<"l1 id"<<"l1 pt"<<"l1 eta"<<"l1 phi"<<"l2 id"<<"l2 pt"<<"l2 eta"<<"l2 phi"<<"met pt"<<"met phi"<<"n jets"<< event_list.txt;
+	
+	if (num_preselectedLeptons >= 2 && higgs_decay ==1)
+	  {
+	    fprintf(fp,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+		   run_, lumi_, eventnum,
+		   lep1_id, lep1_pt, lep1_eta, lep1_phi,
+		   lep2_id, lep2_pt, lep2_eta, lep2_phi,
+		   met_pt_, met_phi,
+		   num_Jets);
+	  }
+	
+
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// fill some basic histos:
