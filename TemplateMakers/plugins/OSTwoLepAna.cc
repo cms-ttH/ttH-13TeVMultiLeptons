@@ -329,11 +329,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ele2_lepMVA_intree = GetElectronLepMVA(selectedElectrons_preselected[1],selectedJets_forLepMVA);
 
 	    bool ele1_chargeFlipA = selectedElectrons_preselected[0].isGsfCtfScPixChargeConsistent();
-	    bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0 );
+	    //bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0 ); // 70X
+	    bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS) == 0 ); // 72X
 	    bool ele1_chargeFlipC = selectedElectrons_preselected[0].passConversionVeto();
 
 	    bool ele2_chargeFlipA = selectedElectrons_preselected[1].isGsfCtfScPixChargeConsistent();
-	    bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0);
+	    //bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0);  // 70X
+	    bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS) == 0 ); // 72X
 	    bool ele2_chargeFlipC = selectedElectrons_preselected[1].passConversionVeto();
 
 	    ele1_chargeFlip_intree =  (ele1_chargeFlipA && ele1_chargeFlipB && ele1_chargeFlipC) ? 1 : 0;

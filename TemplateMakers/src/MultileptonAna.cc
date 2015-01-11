@@ -1035,7 +1035,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < 2.5));
     passesIso        = (GetElectronRelIso(iElectron) < 0.400);
     if( iElectron.gsfTrack().isAvailable() ){
-      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1  );
+      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS) <= 1  );
     }
     
     passesID         = ( passGsfTrackID && passesMVA);    
@@ -1203,8 +1203,9 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   bool mvaDebug = false;
   //  varmvaId = iElectron.electronID("mvaNonTrigV0");
   varmvaId = mvaID_->mvaValue(iElectron,vertex,rho,useFull5x5,mvaDebug);  
-  //  varinnerHits = iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-  varinnerHits = iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+  
+  //varinnerHits = iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits(); // 70X
+  varinnerHits = iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS); // 72X
 
   // std::cout << "Ele charged Rel Iso = "<< varchRelIso << std::endl;
   // std::cout << "Ele neutral Rel Iso = "<< varneuRelIso << std::endl;

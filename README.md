@@ -5,12 +5,18 @@ See the [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NovaDilWorkfl
 
 To get started tree-making from miniAOD (on an SL6 machine) do:
 
-	cmsrel CMSSW_7_0_7_patch1
-	cd CMSSW_7_0_7_patch1/src/
+	cmsrel CMSSW_7_2_3
+	cd CMSSW_7_2_3/src/
 	cmsenv	
-	git clone git@github.com:muell149/EgammaAnalysis.git
 	git clone git@github.com:cms-ttH/MiniAOD.git
 	git clone git@github.com:cms-ttH/ttHMultileptonAnalysis.git -b 13TeV
+	git clone git@github.com:CERN-PH-CMG/cmg-cmssw.git
+	cd cmg-cmssw
+	git checkout -b noheppybranch CMGTools-NoHeppy-from-CMSSW_7_2_3
+	cd ..
+	mv cmg-cmssw/EgammaAnalysis .
+	rm -rf cmg-cmssw
+	gzip -d EgammaAnalysis/ElectronTools/data/*.gz
 	scram b -j 32
 
 
