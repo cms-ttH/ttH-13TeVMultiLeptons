@@ -857,50 +857,50 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	//TriggerEvent::
 	//TriggerObjectRefVector pathObjects( const std::string & namePath, bool firing = true ) const;
 	
-	if (selectedElectrons_tight.size())
-	{
-	
-		//const pat::TriggerObjectStandAloneCollection eleHLTMatches = eleHLTMatchesallpaths.triggerObjectMatchesByPath( eleltriggerstostudy[0]); // ,false,false 
-	
-	
-		int trigobjsize = eleHLTMatches.size();
-	
-		cout << "trigobjsize " << trigobjsize << "path was run: " << triggerResults->wasrun(hltConfig_.triggerIndex(eleltriggerstostudy[0])) << "path was accept: " << triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0])) << endl;
-	
-		//if (trigobjsize) 
-		for (int i=0; i<trigobjsize; i++)
-		//for (
-		{			
-			//if (eleHLTMatches[i].path(eleltriggerstostudy[0])) {
-			//if (eleHLTMatches[i].pathIndices[0]==10) {
-			
-			vector<int> ridiculous = eleHLTMatches[i].return_pathIndices();
-			
-			bool foundit = false;
-			
-			for (int j=0; j<(int)ridiculous.size(); j++)
-			{
-				if ((int)ridiculous[j]==(int)hltConfig_.triggerIndex(eleltriggerstostudy[0])) foundit = true;
-			}
-			
-			
-			//if (!ridiculous.size()) break;
-			
-			//bool continueit = false;
-			
-			//for (int j=0; j<ridiculous.size(); j++)
-			//{
-				//bool thepathishere = false;
-				if (foundit) {
-			cout << ridiculous.size() << endl;
-			cout << eleHLTMatches[i].pdgId() << endl;
-			cout << eleHLTMatches[i].pt() << endl;
-			cout << eleHLTMatches[i].eta() << endl;
-			cout << eleHLTMatches[i].phi() << endl;
-			cout << " " << endl; }
-		}
-	
-	}
+	// if (selectedElectrons_tight.size())
+// 	{
+// 	
+// 		//const pat::TriggerObjectStandAloneCollection eleHLTMatches = eleHLTMatchesallpaths.triggerObjectMatchesByPath( eleltriggerstostudy[0]); // ,false,false 
+// 	
+// 	
+// 		int trigobjsize = eleHLTMatches.size();
+// 	
+// 		cout << "trigobjsize " << trigobjsize << "path was run: " << triggerResults->wasrun(hltConfig_.triggerIndex(eleltriggerstostudy[0])) << "path was accept: " << triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0])) << endl;
+// 	
+// 		//if (trigobjsize) 
+// 		for (int i=0; i<trigobjsize; i++)
+// 		//for (
+// 		{			
+// 			//if (eleHLTMatches[i].path(eleltriggerstostudy[0])) {
+// 			//if (eleHLTMatches[i].pathIndices[0]==10) {
+// 			
+// 			vector<int> ridiculous = eleHLTMatches[i].return_pathIndices();
+// 			
+// 			bool foundit = false;
+// 			
+// 			for (int j=0; j<(int)ridiculous.size(); j++)
+// 			{
+// 				if ((int)ridiculous[j]==(int)hltConfig_.triggerIndex(eleltriggerstostudy[0])) foundit = true;
+// 			}
+// 			
+// 			
+// 			//if (!ridiculous.size()) break;
+// 			
+// 			//bool continueit = false;
+// 			
+// 			//for (int j=0; j<ridiculous.size(); j++)
+// 			//{
+// 				//bool thepathishere = false;
+// 				if (foundit) {
+// 			cout << ridiculous.size() << endl;
+// 			cout << eleHLTMatches[i].pdgId() << endl;
+// 			cout << eleHLTMatches[i].pt() << endl;
+// 			cout << eleHLTMatches[i].eta() << endl;
+// 			cout << eleHLTMatches[i].phi() << endl;
+// 			cout << " " << endl; }
+// 		}
+// 	
+// 	}
 	
 	
 //////////////////// getting hlt objects from aodTriggerEvent:///////////////////////////////////////////
