@@ -17,7 +17,8 @@ void OSTwoLepAna::beginJob()
 {
 
 
-	fp = fopen ("file.txt", "w+");
+	ep = fopen ("ele_SS.txt", "w+");
+	mp = fopen ("mu_SS.txt", "w+");
 	
 	// job setup
 	
@@ -76,7 +77,8 @@ void OSTwoLepAna::beginJob()
 void OSTwoLepAna::endJob() {
   
 
-  fclose(fp);
+  fclose(ep);
+  fclose(mp);
   //  cout << "Num Events processed " << numEvents << endl;
   //       << "Passed cuts " << numEventsPassCuts << endl;
   //       << "Failed cuts " << numEventsFailCuts << endl;
@@ -168,6 +170,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );		//miniAODhelper.
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );		//miniAODhelper.
 	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );	//miniAODhelper.
+	vecPatMuon selectedMuons_nocuts = GetSelectedMuons( *muons, 5., muonID::muonNoCuts );	//miniAODhelper.
 	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );	//miniAODhelper.
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);		//miniAODhelper.
 	
@@ -189,7 +192,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//remove electrons that are close (dR <=0.02) to muons
 
 	selectedElectrons_preselected = cleanObjects(selectedElectrons_preselected,selectedMuons_preselected,0.02);
+	//selectedElectrons_nocuts = cleanObjects(selectedElectrons_nocuts,selectedMuons_nocuts,0.02);
+
 	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
+	selectedLeptons_preselected = MiniAODHelper::GetSortedByPt(selectedLeptons_preselected);
+	
+	vecPatLepton selectedLeptons_nocuts = fillLeptons(selectedMuons_nocuts,selectedElectrons_nocuts);
+	selectedLeptons_nocuts = MiniAODHelper::GetSortedByPt(selectedLeptons_nocuts);
+	
 	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
 	
 	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
@@ -215,7 +225,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
 	vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );   //miniAODhelper.
 	vecPatJet selectedJets_forSync          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
-	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(rawJets, 10., 9.e9, jetID::none, '-' );   //miniAODhelper.
+	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );   //miniAODhelper.
 	
 
 	vecTLorentzVectorCMS jetsTLVloose = Get_vecTLorentzVectorCMS(selectedJets_loose_noSys_unsorted);
@@ -228,7 +238,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	int numJetsCorr = correctedJets_noSys.size();
 
 	int numSelJetsLoose = selectedJets_loose_noSys_unsorted.size();
-	//int numSelJets = selectedJets_noSys_unsorted.size();
 
 	int numSelJetsLooseCSVM = selectedJets_loose_tag_noSys_unsorted.size();
 
@@ -258,15 +267,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	num_preselectedElectrons_intree = int(selectedElectrons_preselected.size());
 	num_preselectedLeptons_intree = int(selectedLeptons_preselected.size());
 	
-	int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles,1);
-	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
+	int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles);
+	//	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
 
-	higgs_decay_intree = ((higgs_daughter1==24 && higgs_daughter2==24)||(higgs_daughter1==23 && higgs_daughter2==23)||(higgs_daughter1==15 && higgs_daughter2==15)) ? 1 : 0;
+	higgs_decay_intree = (higgs_daughter1==24 || higgs_daughter1==23 || higgs_daughter1==15) ? 1 : 0;
 	
 	eventnum_intree = event.id().event();
 	lumiBlock_intree = event.id().luminosityBlock();
 	runNumber_intree = event.id().run();
-
+	
 	met_pt_intree = floor(theMET.Pt()*100+0.5)/100;
 	met_phi_intree = floor(theMET.Phi()*100+0.5)/100;
 	
@@ -284,29 +293,17 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	  lep2_phi_intree = selectedLeptons_preselected[1].phi();
 	}
 	
-	if (eventnum_intree == 24007 ) 
-	  {
-	    for (unsigned int count = 0; count <+ selectedElectrons_nocuts.size(); ++count)
-	      {
-		
-		cout << "Electron # " << count << endl;
-		cout <<"pt= "<<selectedElectrons_nocuts[count].pt()<<" eta= "<<selectedElectrons_nocuts[count].eta()<<" phi = "<<selectedElectrons_nocuts[count].phi()<<endl;
-		cout <<"mvaID= "<< mvaID_->mvaValue(selectedElectrons_nocuts[count],vertex,rho,true,false) << endl;
-		
-	      }
-	  }
 	
-
-	if (num_preselectedMuons_intree == 2)
+	if (num_preselectedMuons_intree >= 1)
 	  {
 	    mu1_charge_intree = selectedMuons_preselected[0].charge();
-	    mu2_charge_intree = selectedMuons_preselected[1].charge();
 	    mu1_pt_intree = selectedMuons_preselected[0].pt();
-	    mu2_pt_intree = selectedMuons_preselected[1].pt();
+	    mu1_eta_intree = selectedMuons_preselected[0].eta();
+	    mu1_phi_intree = selectedMuons_preselected[0].phi();
+	    mu1_id_intree = selectedMuons_preselected[0].pdgId();
+
 	    mu1_lepMVA_intree = GetMuonLepMVA(selectedMuons_preselected[0],selectedJets_forLepMVA);
-	    mu2_lepMVA_intree = GetMuonLepMVA(selectedMuons_preselected[1],selectedJets_forLepMVA);
 	    mu1_chargeFlip_intree = (selectedMuons_preselected[0].innerTrack()->ptError()/selectedMuons_preselected[0].innerTrack()->pt() < 0.2 ) ? 1 : 0;
-	    mu2_chargeFlip_intree = (selectedMuons_preselected[1].innerTrack()->ptError()/selectedMuons_preselected[1].innerTrack()->pt() < 0.2 ) ? 1 : 0;
 	    
 	    mu1_chRelIso_intree = selectedMuons_preselected[0].chargedHadronIso()/selectedMuons_preselected[0].pt();
 	    mu1_nuRelIso_intree = GetMuonRelIsoR04(selectedMuons_preselected[0]) - mu1_chRelIso_intree;
@@ -316,28 +313,36 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    mu1_jetPtRatio_intree =  min(selectedMuons_preselected[0].pt()/matchedJet.pt(), float(1.5));
 	    mu1_bTagCSV_intree = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
 	    mu1_sip3d_intree = fabs(selectedMuons_preselected[0].dB(pat::Muon::PV3D)/selectedMuons_preselected[0].edB(pat::Muon::PV3D));
-
+	    
 	  } 
 	
-	if (num_preselectedElectrons_intree == 2)
+	if (num_preselectedMuons_intree >= 2)
 	  {
-	    ele1_charge_intree = selectedElectrons_preselected[0].charge();
-	    ele2_charge_intree = selectedElectrons_preselected[1].charge();
-	    ele1_pt_intree = selectedElectrons_preselected[0].pt();
-	    ele2_pt_intree = selectedElectrons_preselected[1].pt();
-	    ele1_lepMVA_intree = GetElectronLepMVA(selectedElectrons_preselected[0],selectedJets_forLepMVA);
-	    ele2_lepMVA_intree = GetElectronLepMVA(selectedElectrons_preselected[1],selectedJets_forLepMVA);
+	    mu2_eta_intree = selectedMuons_preselected[1].eta();
+	    mu2_phi_intree = selectedMuons_preselected[1].phi();
+	    mu2_id_intree = selectedMuons_preselected[1].pdgId();
+	    mu2_charge_intree = selectedMuons_preselected[1].charge();
+            mu2_pt_intree = selectedMuons_preselected[1].pt();
+            mu2_lepMVA_intree = GetMuonLepMVA(selectedMuons_preselected[1],selectedJets_forLepMVA);
+            mu2_chargeFlip_intree = (selectedMuons_preselected[1].innerTrack()->ptError()/selectedMuons_preselected[1].innerTrack()->pt() < 0.2 ) ? 1 : 0;
+	  }
 
+	if (num_preselectedElectrons_intree >= 1)
+	  {								
+
+	    ele1_eta_intree = selectedElectrons_preselected[0].eta();
+	    ele1_phi_intree = selectedElectrons_preselected[0].phi();
+	    ele1_id_intree = selectedElectrons_preselected[0].pdgId();
+
+	    ele1_charge_intree = selectedElectrons_preselected[0].charge();
+	    ele1_pt_intree = selectedElectrons_preselected[0].pt();
+	    ele1_lepMVA_intree = GetElectronLepMVA(selectedElectrons_preselected[0],selectedJets_forLepMVA);
+	    
 	    bool ele1_chargeFlipA = selectedElectrons_preselected[0].isGsfCtfScPixChargeConsistent();
 	    bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0 );
 	    bool ele1_chargeFlipC = selectedElectrons_preselected[0].passConversionVeto();
 
-	    bool ele2_chargeFlipA = selectedElectrons_preselected[1].isGsfCtfScPixChargeConsistent();
-	    bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0);
-	    bool ele2_chargeFlipC = selectedElectrons_preselected[1].passConversionVeto();
-
 	    ele1_chargeFlip_intree =  (ele1_chargeFlipA && ele1_chargeFlipB && ele1_chargeFlipC) ? 1 : 0;
-	    ele2_chargeFlip_intree =  (ele2_chargeFlipA && ele2_chargeFlipB && ele2_chargeFlipC) ? 1 : 0;
 	    
 	    ele1_chRelIso_intree = selectedElectrons_preselected[0].chargedHadronIso()/selectedElectrons_preselected[0].pt();
 	    ele1_nuRelIso_intree = GetElectronRelIso(selectedElectrons_preselected[0]) - ele1_chRelIso_intree;
@@ -350,11 +355,104 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	  } 
 
-	//cout <<"run"<<"lumi"<<"event"<<"l1 id"<<"l1 pt"<<"l1 eta"<<"l1 phi"<<"l2 id"<<"l2 pt"<<"l2 eta"<<"l2 phi"<<"met pt"<<"met phi"<<"n jets"<< event_list.txt;
-	
-	if (num_preselectedLeptons_intree >= 2 && higgs_decay_intree ==1)
+	if (num_preselectedElectrons_intree >= 2)
 	  {
-	    fprintf(fp,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+	    bool ele2_chargeFlipA = selectedElectrons_preselected[1].isGsfCtfScPixChargeConsistent();
+	    bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0);
+	    bool ele2_chargeFlipC = selectedElectrons_preselected[1].passConversionVeto();
+
+	    ele2_charge_intree = selectedElectrons_preselected[1].charge();
+            ele2_pt_intree = selectedElectrons_preselected[1].pt();
+            ele2_lepMVA_intree = GetElectronLepMVA(selectedElectrons_preselected[1],selectedJets_forLepMVA);
+            ele2_chargeFlip_intree =  (ele2_chargeFlipA && ele2_chargeFlipB && ele2_chargeFlipC) ? 1 : 0;
+	    
+	    ele2_eta_intree = selectedElectrons_preselected[1].eta();
+	    ele2_phi_intree = selectedElectrons_preselected[1].phi();
+	    ele2_id_intree = selectedElectrons_preselected[1].pdgId();
+
+	  }
+	//	cout <<"run"<<"lumi"<<"event"<<"l1 id"<<"l1 pt"<<"l1 eta"<<"l1 phi"<<"l2 id"<<"l2 pt"<<"l2 eta"<<"l2 phi"<<"met pt"<<"met phi"<<"n jets"<< event_list.txt;
+
+
+	if ( eventnum_intree == 156980)
+	  {
+	    for (unsigned int count = 0; count < selectedElectrons_nocuts.size(); ++count)
+	      {
+		cout << "event # " << eventnum_intree << endl;
+		cout << "Electron # " << count <<" Electron ID = " << selectedElectrons_nocuts[count].pdgId() <<endl;
+		cout <<"pt= "<<selectedElectrons_nocuts[count].pt()<<" eta= "<<selectedElectrons_nocuts[count].eta()<<" phi = "<<selectedLeptons_preselected[count].phi()<<endl;
+		cout << "higgs decay = " << higgs_decay_intree << endl;
+		cout << "decay type " << higgs_daughter1 << endl;
+		cout <<" dxy= "<< fabs(selectedElectrons_nocuts[count].gsfTrack()->dxy(vertex.position()))<<" dz = "<< fabs(selectedElectrons_nocuts[count].gsfTrack()->dz(vertex.position()))<<endl;
+		cout << "Super Cluster Eta = " << selectedElectrons_nocuts[count].superCluster()->position().eta() << endl;
+		cout <<"mvaID= "<< mvaID_->mvaValue(selectedElectrons_nocuts[count],vertex,rho,true,false) << endl;
+		cout << "ELE RelIso = " << GetElectronRelIso(selectedElectrons_nocuts[count]) << endl; 
+		cout << "lep MVA = " << GetElectronLepMVA(selectedElectrons_nocuts[count],selectedJets_forLepMVA) << endl;
+		// cout << "==== lep MVA Input variables ====" << endl;
+		// pat::Jet matchedJet = getClosestJet(selectedJets_forLepMVA,selectedElectrons_nocuts[count]);
+		// double dR = MiniAODHelper::DeltaR(&matchedJet,&selectedElectrons_nocuts[count]);
+		
+		// cout << "neuRelIso = " << max(0.0,(selectedElectrons_nocuts[count].neutralHadronIso()+selectedElectrons_nocuts[count].photonIso())-0.5*selectedElectrons_nocuts[count].puChargedHadronIso())/selectedElectrons_nocuts[count].pt() << endl;
+		// cout << "chRelIso = " << selectedElectrons_nocuts[count].chargedHadronIso()/selectedElectrons_nocuts[count].pt() << endl;
+		// cout << "jetDR_in = " << min(dR,0.5) << endl;
+		// cout << "jetPtRatio_in = " << min(selectedElectrons_nocuts[count].pt()/matchedJet.pt(), float(1.5)) << endl;
+		// cout << "jetBTagCSV_in = " << max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0)) << endl;
+		// cout << "sip3d = " << fabs(selectedElectrons_nocuts[count].dB(pat::Electron::PV3D)/selectedElectrons_nocuts[count].edB(pat::Electron::PV3D)) << endl;
+		
+		// for (unsigned int count = 0; count < selectedJets_bJetsLoose.size(); ++count)
+		//   {
+		//     cout << "=== " << count << " ===" << endl;
+		//     cout << "jet pt = " << selectedJets_bJetsLoose[count].pt() << endl;
+		//     cout << "jet eta = " << selectedJets_bJetsLoose[count].eta() << endl;
+		//     cout << "jet phi = " << selectedJets_bJetsLoose[count].phi() << endl;
+		//     cout << "jet CSV = " << selectedJets_bJetsLoose[count].bDiscriminator("combinedSecondaryVertexBJetTags") << endl;
+		//     cout << "  " << endl;
+		//   }
+	      }
+	    
+	    for (unsigned int count = 0; count < selectedMuons_nocuts.size(); ++count)
+	      {
+		cout << "event # " << eventnum_intree << endl;
+		cout << "Muon # " << count <<" Muon ID = " << selectedMuons_nocuts[count].pdgId() <<endl;
+		cout <<"pt= "<<selectedMuons_nocuts[count].pt()<<" eta= "<<selectedMuons_nocuts[count].eta()<<" phi = "<<selectedLeptons_nocuts[count].phi()<<endl;
+		cout << "higgs decay = " << higgs_decay_intree << endl;
+		cout << "decay type "  << higgs_daughter1 << endl;
+		
+		cout <<"reliso03= "<< GetMuonRelIsoR03(selectedMuons_nocuts[count]) << endl;
+		if( selectedMuons_nocuts[count].innerTrack().isAvailable() ){
+		  cout <<" dxy= "<< fabs(selectedMuons_nocuts[count].innerTrack()->dxy(vertex.position()))<<" dz = "<< fabs(selectedMuons_nocuts[count].innerTrack()->dz(vertex.position()))<<endl;
+		}
+		else {
+		  cout << "no muon inner track available " << endl;
+		}
+		
+		cout << "PFmuon " << selectedMuons_nocuts[count].isPFMuon() <<endl;
+		cout << "Trackermuon " << selectedMuons_nocuts[count].isTrackerMuon() <<endl;
+		cout << "Globalmuon " << selectedMuons_nocuts[count].isGlobalMuon() <<endl;
+		
+		cout << "lep MVA = " << GetMuonLepMVA(selectedMuons_nocuts[count],selectedJets_forLepMVA) << endl;
+		cout << "==== lep MVA Input variables ====" << endl;
+		pat::Jet matchedJet = getClosestJet(selectedJets_forLepMVA,selectedMuons_nocuts[count]);
+		double dR = MiniAODHelper::DeltaR(&matchedJet,&selectedMuons_nocuts[count]);
+		
+		cout << "neuRelIso = " << max(0.0,(selectedMuons_nocuts[count].neutralHadronIso()+selectedMuons_nocuts[count].photonIso())-0.5*selectedMuons_nocuts[count].puChargedHadronIso())/selectedMuons_nocuts[count].pt() << endl;
+		cout << "chRelIso = " << selectedMuons_nocuts[count].chargedHadronIso()/selectedMuons_nocuts[count].pt() << endl;
+		cout << "jetDR_in = " << min(dR,0.5) << endl;
+		cout << "jetPtRatio_in = " << min(selectedMuons_nocuts[count].pt()/matchedJet.pt(), float(1.5)) << endl;
+		cout << "jetBTagCSV_in = " << max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0)) << endl;
+		cout << "sip3d = " << fabs(selectedMuons_nocuts[count].dB(pat::Muon::PV3D)/selectedMuons_nocuts[count].edB(pat::Muon::PV3D)) << endl;
+
+
+
+	      }
+	    
+	  }
+	
+
+	
+	if (num_preselectedLeptons_intree >= 2 && higgs_decay_intree == 1 && lep1_id_intree == lep2_id_intree && abs(lep1_id_intree) == 11 && ele1_lepMVA_intree > 0.7 && ele2_lepMVA_intree > 0.7)
+	  {
+	    fprintf(ep,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
 		    runNumber_intree, lumiBlock_intree, eventnum_intree,
 		    lep1_id_intree, lep1_pt_intree, lep1_eta_intree, lep1_phi_intree,
 		    lep2_id_intree, lep2_pt_intree, lep2_eta_intree, lep2_phi_intree,
@@ -362,6 +460,16 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		    num_Jets_intree);
 	  }
 	
+
+	if (num_preselectedLeptons_intree >= 2 && higgs_decay_intree == 1 && lep1_id_intree == lep2_id_intree && abs(lep1_id_intree) == 13 && mu1_lepMVA_intree > 0.7 && mu2_lepMVA_intree > 0.7 && mu1_chargeFlip_intree ==1 && mu2_chargeFlip_intree == 1 && num_BJetsLoose_intree >=2)
+	  {
+	    fprintf(mp,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+		    runNumber_intree, lumiBlock_intree, eventnum_intree,
+		    lep1_id_intree, lep1_pt_intree, lep1_eta_intree, lep1_phi_intree,
+		    lep2_id_intree, lep2_pt_intree, lep2_eta_intree, lep2_phi_intree,
+		    met_pt_intree, met_phi_intree,
+		    num_Jets_intree);
+	  }
 
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////

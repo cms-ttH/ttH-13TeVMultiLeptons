@@ -342,19 +342,25 @@ void MultileptonAna::EventSelection (const edm::Event& event)
 	
 }
 
-int MultileptonAna::GetHiggsDaughterId(const std::vector<reco::GenParticle>& genParticles, unsigned int daughter)
+int MultileptonAna::GetHiggsDaughterId(const std::vector<reco::GenParticle>& genParticles)
 {
-  int daughter_id = -9e6;
+  int daughter_id = -99e6;
   for (std::vector<reco::GenParticle>::const_iterator genParticle = genParticles.begin(); genParticle != genParticles.end(); genParticle++)
     {
-      if (genParticle->pdgId() == 25 && genParticle->numberOfDaughters() >= 2)
+      
+      if (genParticle->pdgId() == 25 && genParticle->numberOfDaughters() > 0 && abs(genParticle->daughter(0)->pdgId()) != 25)
 	{
-	  daughter_id = abs(genParticle->daughter(daughter-1)->pdgId());
+	  daughter_id = abs(genParticle->daughter(0)->pdgId());
+	  // if (daughter_id == 25 && genParticle->numberOfDaughters() >= 1)
+	  //   {
+	  //     daughter_id = abs(genParticle->daughter(1)->pdgId());
+	  //   }
 	  break;
 	}
     }
   return daughter_id;
 }
+
 vector<double> MultileptonAna::ReturnBTagDisc (vecPatJet theobjs)
 {
 	vector<double> thediscs;
@@ -565,6 +571,8 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonPtEtaIsoOnly:
   case muonID::muonPtEtaIsoTrackerOnly:
   case muonID::muonNoCuts:
+    return true;
+    break;
   case muonID::muonLoose:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) <= maxLooseMuonAbsEta));
     passesIso        = (GetMuonRelIsoR03(iMuon) < looseRelativeIso);
@@ -598,13 +606,14 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonPreselection:
     passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
     passesIso        = (GetMuonRelIsoR03(iMuon) < 0.4);
-    isPFMuon         = true;
-    if( iMuon.muonBestTrack().isAvailable() ){
-      passesMuonBestTrackID = ( (fabs(iMuon.muonBestTrack()->dxy(vertex.position())) < 0.05)
-                                && (fabs(iMuon.muonBestTrack()->dz(vertex.position())) < 0.2)
+    isPFMuon         = iMuon.isPFMuon();
+    if( iMuon.innerTrack().isAvailable() ){
+      passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
+                                && (fabs(iMuon.innerTrack()->dz(vertex.position())) < 0.2)
                                 );
     }
     //need charge flip cuts...
+    //    passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon && passesMuonBestTrackID );
     passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon && passesMuonBestTrackID );
     break;
   }
@@ -698,6 +707,8 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   case electronID::electronSideTightMVA:
   case electronID::electronLooseMinusTrigPresel:
   case electronID::electronNoCuts:
+    return true;
+    break;
   case electronID::electronLoose:
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxLooseElectronAbsEta) && !inCrack);
     passesIso        = (GetElectronRelIso(iElectron) < looseElectronIso);
@@ -716,29 +727,31 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     //
     //////
     bool passesMVA = false;
-
     bool useFull5x5 = true;
     bool mvaDebug = false;
     double eleMvaNonTrig = mvaID_->mvaValue(iElectron,vertex,rho,useFull5x5,mvaDebug);
+
+    float SCeta = abs(iElectron.superCluster()->position().eta());
+
     if ( iElectron.pt() < 10 ){
-      if ( abs(iElectron.eta()) > 0. && abs(iElectron.eta()) < 0.8){
+      if ( SCeta < 0.8){
 	passesMVA = ( eleMvaNonTrig > 0.47 );
       }
-      else if ( abs(iElectron.eta()) >= 0.8 && abs(iElectron.eta()) < 1.479){
+      else if ( SCeta < 1.479){
 	passesMVA = ( eleMvaNonTrig > 0.004 );
       }
-      else if ( abs(iElectron.eta()) >= 1.479 && abs(iElectron.eta()) <= 2.5){
+      else {
 	passesMVA = ( eleMvaNonTrig > 0.295 );
       }
     }
-    else if ( iElectron.pt() >= 10 ) {
-      if ( abs(iElectron.eta()) > 0. && abs(iElectron.eta()) < 0.8){
+    else {
+      if ( SCeta < 0.8){
 	passesMVA = ( eleMvaNonTrig > 0.5 );
       }
-      else if ( abs(iElectron.eta()) >= 0.8 && abs(iElectron.eta()) < 1.479){
+      else if ( SCeta < 1.479){
 	passesMVA = ( eleMvaNonTrig > 0.12 );
       }
-      else if ( abs(iElectron.eta()) >= 1.479 && abs(iElectron.eta()) <= 2.5){
+      else {
 	passesMVA = ( eleMvaNonTrig > 0.60 );
       }
     }
@@ -804,11 +817,12 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
 	      );
   }
 
-  bool passesPUJetID = false;
+  bool passesPUJetID = true;
   float puMvaId = iJet.userFloat("pileupJetId:fullDiscriminant");
   // Jet ID
   switch(iJetID){
   case jetID::none:
+    break;
   case jetID::jetPU:
     if (fabs(iJet.eta()) > 0. && fabs(iJet.eta()) <2.5)
       {
@@ -826,7 +840,7 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
       {
         passesPUJetID = (puMvaId > -0.45);
       }
-    return passesPUJetID;
+    //    return passesPUJetID;
     break;
   case jetID::jetMinimal:
   case jetID::jetLooseAOD:
@@ -838,9 +852,10 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
     break;
   }
   
-  if( !PassesCSV(iJet, iCSVworkingPoint) ) return false;
-
-  return true;
+  //  if( !PassesCSV(iJet, iCSVworkingPoint) ) return false;
+  //  return true;
+  
+  return (PassesCSV(iJet, iCSVworkingPoint) && passesPUJetID);
 }
 
 template <typename obj1, typename obj2>

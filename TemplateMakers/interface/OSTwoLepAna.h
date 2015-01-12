@@ -24,7 +24,8 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		explicit OSTwoLepAna(const edm::ParameterSet&);
 		~OSTwoLepAna();
 		
-		FILE * fp;
+		FILE * ep;
+		FILE * mp;
 			
 
 		vstring alltriggerstostudy;
@@ -96,6 +97,12 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int mu2_charge_intree;
 		float mu1_pt_intree;
 		float mu2_pt_intree;
+		float mu1_eta_intree;
+		float mu2_eta_intree;
+		float mu1_phi_intree;
+		float mu2_phi_intree;
+		int mu1_id_intree;
+		int mu2_id_intree;
 		float mu1_lepMVA_intree;
 		float mu2_lepMVA_intree;
 		int mu1_chargeFlip_intree;
@@ -128,6 +135,12 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int ele2_charge_intree;
 		float ele1_pt_intree;
 		float ele2_pt_intree;
+		float ele1_eta_intree;
+		float ele2_eta_intree;
+		float ele1_phi_intree;
+		float ele2_phi_intree;
+		int ele1_id_intree;
+		int ele2_id_intree;
 		float ele1_lepMVA_intree;
 		float ele2_lepMVA_intree;
 		int ele1_chargeFlip_intree;
@@ -300,6 +313,12 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("mu2_charge",&mu2_charge_intree);
 	summaryTree->Branch("mu1_pt",&mu1_pt_intree);
 	summaryTree->Branch("mu2_pt",&mu2_pt_intree);
+	summaryTree->Branch("mu1_eta",&mu1_eta_intree);
+	summaryTree->Branch("mu2_eta",&mu2_eta_intree);
+	summaryTree->Branch("mu1_phi",&mu1_phi_intree);
+	summaryTree->Branch("mu2_phi",&mu2_phi_intree);
+	summaryTree->Branch("mu1_id",&mu1_id_intree);
+	summaryTree->Branch("mu2_id",&mu2_id_intree);
 	summaryTree->Branch("mu1_lepMVA",&mu1_lepMVA_intree);
 	summaryTree->Branch("mu2_lepMVA",&mu2_lepMVA_intree);
 	summaryTree->Branch("mu1_chargeFlip",&mu1_chargeFlip_intree);
@@ -317,6 +336,14 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("ele2_charge",&ele2_charge_intree);
 	summaryTree->Branch("ele1_pt",&ele1_pt_intree);
 	summaryTree->Branch("ele2_pt",&ele2_pt_intree);
+
+	summaryTree->Branch("ele1_eta",&ele1_eta_intree);
+	summaryTree->Branch("ele2_eta",&ele2_eta_intree);
+	summaryTree->Branch("ele1_phi",&ele1_phi_intree);
+	summaryTree->Branch("ele2_phi",&ele2_phi_intree);
+	summaryTree->Branch("ele1_id",&ele1_id_intree);
+	summaryTree->Branch("ele2_id",&ele2_id_intree);
+
 	summaryTree->Branch("ele1_lepMVA",&ele1_lepMVA_intree);
 	summaryTree->Branch("ele2_lepMVA",&ele2_lepMVA_intree);
 	summaryTree->Branch("ele1_chargeFlip",&ele1_chargeFlip_intree);

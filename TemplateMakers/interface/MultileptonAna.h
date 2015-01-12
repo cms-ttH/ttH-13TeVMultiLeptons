@@ -253,7 +253,7 @@ class MultileptonAna: public MiniAODHelper
   bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
   float GetMuonRelIsoR03(const pat::Muon&) const;
   float GetMuonRelIsoR04(const pat::Muon&) const;
-  int GetHiggsDaughterId(const std::vector<reco::GenParticle>&, unsigned int);
+  int GetHiggsDaughterId(const std::vector<reco::GenParticle>&);
   
   template <typename T, typename S> std::vector<T> cleanObjects(const std::vector<T>&, const std::vector<S>&, const double);
   
