@@ -13,6 +13,6 @@
 <use   name="FWCore/Utilities"/>
 <use   name="ttHMultileptonAnalysis/TemplateMakers" />
 <!--<use   name="HLTrigger/HLTcore"/>!-->
-<library name="multilepton_plugins" file="OSTwoLepAna.cc">
+<library name="multilepton_plugins" file="*.cc">
 	<flags   EDM_PLUGIN="1"/>
 </library>

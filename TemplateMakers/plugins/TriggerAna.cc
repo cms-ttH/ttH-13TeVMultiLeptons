@@ -431,6 +431,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	
 	edm::Handle<trigger::TriggerEvent> aodTriggerEvent;   
 	event.getByLabel(edm::InputTag("hltTriggerSummaryAOD", "", hltTag), aodTriggerEvent); // this won't be in a regular miniAOD sample!
+	//const trigger::TriggerObjectCollection objects = aodTriggerEvent->getObjects();
 	
 	if (numLooseMuons>1)
 	{
@@ -571,7 +572,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	
 	//string extra_trig = "HLT_IsoMu30_v12";
 	string extra_trig = "HLT_Ele27_WP80_v13";
-
+	//int extratrigindex = hltConfig_.triggerIndex(extra_trig);
 
 	if (tightmupass&&loosedubmupass)
 	{
@@ -584,7 +585,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 
 		for (int i=0; i<triggersize; i++) if (triggerResults->accept(i)) allcount_mumu[i] += wgt;
 
-		cout << wgt << endl;
+		cout << "wgt: " << wgt << endl;
 
 		numpassedmumucuts += wgt; //numpassedmumucuts++;
 		
@@ -831,6 +832,137 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 		
 		
 	}
+
+	
+	
+	edm::Handle<pat::TriggerObjectStandAloneCollection> eleHLTMatcheshand;
+	event.getByLabel("selectedPatTrigger",eleHLTMatcheshand);
+	pat::TriggerObjectStandAloneCollection eleHLTMatches = *eleHLTMatcheshand;
+	//pat::TriggerObjectStandAloneCollection eleHLTMatches = eleHLTMatchesallpaths.pathindices[hltConfig_.triggerIndex(eleltriggerstostudy[0])];
+	
+	//eleHLTMatches.unpackPathNames( hltConfig_.triggerNames );
+	
+	//const edm::TriggerNames triggerNames = event.triggerNames(*triggerResults);
+	
+	
+	
+	//trigRes theTrigRes = GetTriggers(event);
+	
+	///const edm::TriggerNames triggerNames = event.triggerNames(*theTrigRes);
+	
+	//eleHLTMatches.unpackPathNames( triggerNames );
+	
+	
+	//pat::
+	//TriggerEvent::
+	//TriggerObjectRefVector pathObjects( const std::string & namePath, bool firing = true ) const;
+	
+	// if (selectedElectrons_tight.size())
+// 	{
+// 	
+// 		//const pat::TriggerObjectStandAloneCollection eleHLTMatches = eleHLTMatchesallpaths.triggerObjectMatchesByPath( eleltriggerstostudy[0]); // ,false,false 
+// 	
+// 	
+// 		int trigobjsize = eleHLTMatches.size();
+// 	
+// 		cout << "trigobjsize " << trigobjsize << "path was run: " << triggerResults->wasrun(hltConfig_.triggerIndex(eleltriggerstostudy[0])) << "path was accept: " << triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0])) << endl;
+// 	
+// 		//if (trigobjsize) 
+// 		for (int i=0; i<trigobjsize; i++)
+// 		//for (
+// 		{			
+// 			//if (eleHLTMatches[i].path(eleltriggerstostudy[0])) {
+// 			//if (eleHLTMatches[i].pathIndices[0]==10) {
+// 			
+// 			vector<int> ridiculous = eleHLTMatches[i].return_pathIndices();
+// 			
+// 			bool foundit = false;
+// 			
+// 			for (int j=0; j<(int)ridiculous.size(); j++)
+// 			{
+// 				if ((int)ridiculous[j]==(int)hltConfig_.triggerIndex(eleltriggerstostudy[0])) foundit = true;
+// 			}
+// 			
+// 			
+// 			//if (!ridiculous.size()) break;
+// 			
+// 			//bool continueit = false;
+// 			
+// 			//for (int j=0; j<ridiculous.size(); j++)
+// 			//{
+// 				//bool thepathishere = false;
+// 				if (foundit) {
+// 			cout << ridiculous.size() << endl;
+// 			cout << eleHLTMatches[i].pdgId() << endl;
+// 			cout << eleHLTMatches[i].pt() << endl;
+// 			cout << eleHLTMatches[i].eta() << endl;
+// 			cout << eleHLTMatches[i].phi() << endl;
+// 			cout << " " << endl; }
+// 		}
+// 	
+// 	}
+	
+	
+//////////////////// getting hlt objects from aodTriggerEvent:///////////////////////////////////////////
+	
+// 	int last_module_run_index = triggerResults->index(extratrigindex);
+// 	
+// 	vstring the_saved_tag_modules = hltConfig_.saveTagsModules(extratrigindex);
+// 	
+// 	string mod_label = hltConfig_.moduleLabel(extratrigindex,last_module_run_index);
+// 	
+// 	vint last_module_with_saved_tags_obj_ID;
+// 	vdouble last_module_with_saved_tags_obj_pt;
+// 	vdouble last_module_with_saved_tags_obj_eta;
+// 	vdouble last_module_with_saved_tags_obj_phi;
+// 	int objs_found = 0;
+// 	//char dummy = "";
+// 	char last_module_with_saved_tags_label[] = "";
+// 	//int last_module_with_saved_tags_index;
+// 	
+// 	if (the_saved_tag_modules.size()>0)
+// 	{
+// 		for (int mods = (the_saved_tag_modules.size() - 1); mods>=0; mods--)
+// 		{
+// 			edm::InputTag moduleWhoseResultsWeWant(the_saved_tag_modules[mods], "", hltTag);
+// 						
+// 			strcpy (last_module_with_saved_tags_label,the_saved_tag_modules[mods].c_str());						
+// 			
+// 			//last_module_with_saved_tags_index = hltConfig_.moduleIndex(extratrigindex,the_saved_tag_modules[mods]);
+// 
+// 			unsigned int indexOfModuleInAodTriggerEvent = aodTriggerEvent->filterIndex(moduleWhoseResultsWeWant);
+// 			
+// 			if (indexOfModuleInAodTriggerEvent < aodTriggerEvent->sizeFilters())
+// 			{
+// 				const trigger::Keys &keys = aodTriggerEvent->filterKeys( indexOfModuleInAodTriggerEvent );
+// 				
+// 				if (objs_found<(int)keys.size()) objs_found = keys.size();
+// 				
+// 				for ( size_t iKey = 0; iKey < keys.size(); iKey++ )
+// 				{
+// 					trigger::TriggerObject foundObject = objects[keys[iKey]];					
+// 
+// 					//int object_number = iKey;
+// 
+// 					last_module_with_saved_tags_obj_ID.push_back(foundObject.id());
+// 					last_module_with_saved_tags_obj_pt.push_back(foundObject.pt());
+// 					last_module_with_saved_tags_obj_eta.push_back(foundObject.eta());
+// 					last_module_with_saved_tags_obj_phi.push_back(foundObject.phi());
+// 
+// 				}
+// 
+// 				if (last_module_with_saved_tags_obj_ID.size())
+// 				{
+// 					break;
+// 				}
+// 			}
+// 		}
+// 	}
+// 
+// 	if (objs_found) cout << objs_found << endl;
+//////////////////////////////////////////////////////////////////////////////////////
+
+	
 	
 	// variables->numLooseMuons = numLooseMuons;
 // 	variables->numLooseElectrons = numLooseElectrons;	

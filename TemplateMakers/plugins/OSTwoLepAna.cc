@@ -191,9 +191,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	//remove electrons that are close (dR <=0.02) to muons
 
-	selectedElectrons_preselected = cleanObjects(selectedElectrons_preselected,selectedMuons_preselected,0.02);
 	//selectedElectrons_nocuts = cleanObjects(selectedElectrons_nocuts,selectedMuons_nocuts,0.02);
-
+	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.02);
 	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
 	selectedLeptons_preselected = MiniAODHelper::GetSortedByPt(selectedLeptons_preselected);
 	
@@ -214,7 +213,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
  	
 	vecPatJet rawJets				= GetUncorrectedJets(*pfjets);  					  //miniAODhelper.
-	vecPatJet cleaned_rawJets                       = cleanObjects(rawJets,selectedLeptons_forcleaning,0.4);
+	std::vector<pat::Jet> cleaned_rawJets           = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	vecPatJet jetsNoMu			       	= RemoveOverlaps(selectedMuons_loose, rawJets); 			    //miniAODhelper.
 	vecPatJet jetsNoEle			       	= RemoveOverlaps(selectedElectrons_loose, rawJets);			    //miniAODhelper.
 	vecPatJet jetsNoLep			       	= RemoveOverlaps(selectedElectrons_loose, jetsNoMu);			    //miniAODhelper.
@@ -339,8 +338,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ele1_lepMVA_intree = GetElectronLepMVA(selectedElectrons_preselected[0],selectedJets_forLepMVA);
 	    
 	    bool ele1_chargeFlipA = selectedElectrons_preselected[0].isGsfCtfScPixChargeConsistent();
-	    bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0 );
+	    //bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0 ); // 70X
+	    bool ele1_chargeFlipB = ( selectedElectrons_preselected[0].gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS) == 0 ); // 72X
 	    bool ele1_chargeFlipC = selectedElectrons_preselected[0].passConversionVeto();
+
+	    bool ele2_chargeFlipA = selectedElectrons_preselected[1].isGsfCtfScPixChargeConsistent();
+	    //bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->trackerExpectedHitsInner().numberOfHits() == 0);  // 70X
+	    bool ele2_chargeFlipB = (selectedElectrons_preselected[1].gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS) == 0 ); // 72X
+	    bool ele2_chargeFlipC = selectedElectrons_preselected[1].passConversionVeto();
 
 	    ele1_chargeFlip_intree =  (ele1_chargeFlipA && ele1_chargeFlipB && ele1_chargeFlipC) ? 1 : 0;
 	    
@@ -371,8 +376,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ele2_id_intree = selectedElectrons_preselected[1].pdgId();
 
 	  }
-	//	cout <<"run"<<"lumi"<<"event"<<"l1 id"<<"l1 pt"<<"l1 eta"<<"l1 phi"<<"l2 id"<<"l2 pt"<<"l2 eta"<<"l2 phi"<<"met pt"<<"met phi"<<"n jets"<< event_list.txt;
-
 
 	if ( eventnum_intree == 156980)
 	  {

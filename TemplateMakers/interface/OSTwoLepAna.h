@@ -1,6 +1,6 @@
 // created by Geoff Smith
 
-#include "ttHMultileptonAnalysis/TemplateMakers/src/MultileptonAna.cc"
+#include "ttHMultileptonAnalysis/TemplateMakers/interface/MultileptonAna.h"
 #include "ttHMultileptonAnalysis/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
 
 class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
