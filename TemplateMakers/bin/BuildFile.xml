@@ -14,7 +14,7 @@
 <use   name="PhysicsTools/KinFitter" />
 <use   name="CondFormats/JetMETObjects"  />
 <lib   name="TMVA" />
-<use   name="ttHMultileptonAnalysis/TemplateMakers" />
+<use   name="ttH-13TeVMultiLeptons/TemplateMakers" />
 <environment>
   <bin file="osTwoLep.C">
   </bin>

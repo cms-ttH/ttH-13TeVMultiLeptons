@@ -1,8 +1,8 @@
 #ifndef _BTagShapeWeights_h
 #define _BTagShapeWeights_h
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h" 
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h" 
 
 class BTagShapeWeights: public KinematicVariable<double> {
   

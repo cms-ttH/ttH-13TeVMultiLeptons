@@ -5,8 +5,8 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h"
 #include <typeinfo>
 
 class FinalBDT_ttZ_3l: public KinematicVariable<double> {
@@ -78,7 +78,7 @@ FinalBDT_ttZ_3l::FinalBDT_ttZ_3l(BNjetCollection **_jets,
       reader[jj]->AddVariable( "Match_ttZ_3l_Bbqq", &varMatch_ttZ_3l_Bbqq ); }
     reader[jj]->AddVariable( "ZLike_mass_leplep_SFOS_all", &varZLike_mass_leplep_SFOS_all );
 
-    TString dir = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVa/BDT_weights_ttZ_3l/").c_str();
+    TString dir = (string(getenv("CMSSW_BASE"))+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/BDT_weights_ttZ_3l/").c_str();
     TString label = catList[jj];
     TString file_name = "TMVAClassification_BDTG.weights.xml";
     //TString file_name = "TMVAClassification_CFMlpANN.weights.xml";

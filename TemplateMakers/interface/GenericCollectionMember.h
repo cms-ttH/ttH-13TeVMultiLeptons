@@ -2,8 +2,8 @@
 #define _GenericCollectionMember_h
 
 #include <functional>
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h"
 
 #include "Reflex/Object.h"
 #include "Reflex/Type.h"

@@ -101,17 +101,17 @@
 
 // Multilepton
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMember.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionMethod.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollectionSizeVariable2.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenericCollection.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BTagDiscrim.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/TwoObjectKinematic.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/GenPt.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/GenericCollectionMember.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/GenericCollectionMethod.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/GenericCollectionSizeVariable2.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/GenericCollection.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BTagDiscrim.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/TwoObjectKinematic.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/GenPt.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/JobParameters.h"
 
 // hack for ele mva id
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
 
 // end includes
 // -----------------------------------------------

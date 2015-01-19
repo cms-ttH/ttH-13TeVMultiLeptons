@@ -1,9 +1,9 @@
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BEANFileInterface.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/HelperLeptonCore.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BEANFileInterface.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/HelperLeptonCore.h"
 
 ///-------------- Kinematic Variables ------------------
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/EveryVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/JobParameters.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EveryVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/JobParameters.h"
 
 #include "BEAN/BEANmaker/interface/BtagWeight.h"
 #include "BEAN/BEANmaker/interface/BEANhelper.h"

@@ -1,8 +1,8 @@
 #ifndef _MatchTester_ttbar_fake_3l_h
 #define _MatchTester_ttbar_fake_3l_h
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h"
 //#include <typeinfo>
 
 class MatchTester_ttbar_fake_3l: public KinematicVariable<double> {
@@ -68,7 +68,7 @@ MatchTester_ttbar_fake_3l::MatchTester_ttbar_fake_3l(BNleptonCollection **_lepto
   branches["ttbar_fake_3l_top_mass_lep_blep"].branchVal = KinematicVariableConstants::FLOAT_INIT;
 
   //std::cout << "Getting weight file" << std::endl;
-  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVa/matchbox/").c_str();
+  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/matchbox/").c_str();
   TString weight_file_name = Form("%smatch_ttbar_ll_fake_3l.root", directory.c_str());
   weight_file = TFile::Open(weight_file_name);
   //std::cout << weight_file_name << std::endl;

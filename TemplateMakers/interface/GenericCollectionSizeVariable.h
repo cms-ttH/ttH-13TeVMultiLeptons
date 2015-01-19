@@ -1,8 +1,8 @@
 #ifndef _GenericCollectionSizeVariable_h
 #define _GenericCollectionSizeVariable_h
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h"
 
 template <class collectionType> 
 class GenericCollectionSizeVariable: public KinematicVariable<int> {

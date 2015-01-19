@@ -1,8 +1,8 @@
 #ifndef _DataDrivenFRLepCut_h
 #define _DataDrivenFRLepCut_h
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h"
 #include <typeinfo>
 
 template <class collectionType>
@@ -70,7 +70,7 @@ DataDrivenFRLepCut<collectionType>::DataDrivenFRLepCut(BEANhelper * _beanHelper,
   branches[branchNameQF_sel_fail].branchVal = 1.0;
   branches[branchNameQF_sel].branchVal = 1.0;
 
-  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVa/lepCut_weights/").c_str();
+  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/lepCut_weights/").c_str();
 //   TString weight_file_name_NP = Form("%s%s.root", directory.c_str(), file_name_NP.c_str());
 //   weight_file_NP = TFile::Open(weight_file_name_NP);
 

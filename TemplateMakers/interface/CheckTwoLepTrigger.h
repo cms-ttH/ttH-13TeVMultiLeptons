@@ -1,7 +1,7 @@
 #ifndef _CheckTwoLepTrigger_h
 #define _CheckTwoLepTrigger_h
 
-#include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include  "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
 #include <set>
 #include "TRegexp.h"
 

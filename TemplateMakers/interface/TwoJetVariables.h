@@ -1,8 +1,8 @@
 #ifndef _TwoJetVariables_h
 #define _TwoJetVariables_h
 
-#include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include  "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h"
 
 //Takes two jet collections; may be the same, or different
 class TwoJetVariables: public KinematicVariable<double> {

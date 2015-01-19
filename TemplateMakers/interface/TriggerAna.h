@@ -1,7 +1,7 @@
 // created by Geoff Smith
 
-//#include "ttHMultileptonAnalysis/TemplateMakers/src/MultileptonAna.cc"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/MultileptonAna.h"
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/src/MultileptonAna.cc"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MultileptonAna.h"
 
 // #ifdef __MAKECINT__
 // 
@@ -11,7 +11,7 @@
 
 //#if !defined(__CINT__) && !defined(__MAKECINT__)
 
-//#include "ttHMultileptonAnalysis/TemplateMakers/interface/Variables.h"
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/Variables.h"
 
 //#endif
 

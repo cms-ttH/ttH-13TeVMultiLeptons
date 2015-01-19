@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import os, sys
 import re
-from ttHMultileptonAnalysis.DrawPlots.utilities.configparser import *
-from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import *
+from ttH-13TeVMultiLeptons.DrawPlots.utilities.configparser import *
+from ttH-13TeVMultiLeptons.DrawPlots.utilities.ordereddict import *
 from argparse import ArgumentParser
 from collections import defaultdict
 

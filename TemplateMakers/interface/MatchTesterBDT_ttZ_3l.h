@@ -5,8 +5,8 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h"
 //#include <typeinfo>
 
 class MatchTesterBDT_ttZ_3l: public KinematicVariable<double> {
@@ -166,7 +166,7 @@ MatchTesterBDT_ttZ_3l::MatchTesterBDT_ttZ_3l(BNleptonCollection **_leptons, BNje
       reader[jj]->AddVariable("ttbar_MT_mass_ratio_B_b_qq", &varttbar_MT_mass_ratio_B_b_qq ); }
 
     //std::cout << "Here" << std::endl;
-    TString dir = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVa/matchbox/ttbarZ_3l_BDT/").c_str();
+    TString dir = (string(getenv("CMSSW_BASE"))+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/matchbox/ttbarZ_3l_BDT/").c_str();
     //std::cout << "Here" << std::endl;
     TString label = catList[jj];
     //std::cout << "Here" << std::endl;

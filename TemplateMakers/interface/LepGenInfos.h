@@ -1,7 +1,7 @@
 #ifndef _LepGenInfo_h
 #define _LepGenInfo_h
 
-#include  "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
+#include  "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
 
 //
 //  Loops over selected leptons and saves generator level info for each.  For now I'm attaching to tree inside the constructor

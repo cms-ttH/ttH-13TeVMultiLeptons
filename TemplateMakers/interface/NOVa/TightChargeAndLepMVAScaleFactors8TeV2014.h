@@ -26,8 +26,8 @@ public:
 };
 
 TightChargeAndLepMVAScaleFactors8TeV2014::TightChargeAndLepMVAScaleFactors8TeV2014 (int _numLeps, BNleptonCollection **_leptonsPtr, string _label = ""):
-  electronFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVA/lepMVA_weights/MVAandTightChargeSF_ele.root").c_str()),
-  muonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVA/lepMVA_weights/MVAandTightChargeSF_mu.root").c_str()),
+  electronFile((string(getenv("CMSSW_BASE"))+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVA/lepMVA_weights/MVAandTightChargeSF_ele.root").c_str()),
+  muonFile((string(getenv("CMSSW_BASE"))+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVA/lepMVA_weights/MVAandTightChargeSF_mu.root").c_str()),
   numLeps(_numLeps),
   leptonsPtr(_leptonsPtr),
   label(_label)

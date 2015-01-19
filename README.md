@@ -23,6 +23,6 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 Then try running over some miniAOD:
 
 	voms-proxy-init -voms cms
-	cd ttHMultileptonAnalysis/TemplateMakers/test/
+	cd ttH-13TeVMultiLeptons/TemplateMakers/test/
 	osTwoLep ssCondor.py ttH125_miniAOD <your_label_here>
 

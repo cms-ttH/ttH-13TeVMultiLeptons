@@ -1,8 +1,8 @@
 #ifndef _MatchTester_ttW_SS_h
 #define _MatchTester_ttW_SS_h
 
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/KinematicVariable.h"
-#include "ttHMultileptonAnalysis/TemplateMakers/interface/BranchInfo.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/KinematicVariable.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/BranchInfo.h"
 //#include <typeinfo>
 
 class MatchTester_ttW_SS: public KinematicVariable<double> {
@@ -153,7 +153,7 @@ MatchTester_ttW_SS::MatchTester_ttW_SS(BNleptonCollection **_leptons, BNjetColle
   branches["ttW_SS_ttbar_4j_MT_mass_ratio_Bbqq"].branchVal = KinematicVariableConstants::FLOAT_INIT;
 
   //std::cout << "Getting weight file" << std::endl;
-  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVa/matchbox/").c_str();
+  string directory = (string(getenv("CMSSW_BASE"))+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/matchbox/").c_str();
   //TString weight_file_name = Form("%smatch_ttbarZ_3l.root", directory.c_str());
   //TString weight_file_name = Form("%smatch_ttbar_lj.root", directory.c_str());
   TString weight_file_name = Form("%smatch_ttbar_lj_by_nJet.root", directory.c_str());

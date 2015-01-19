@@ -26,7 +26,7 @@ public:
 };
 
 TightChargeAndLepCutScaleFactorsPerLepton::TightChargeAndLepCutScaleFactorsPerLepton (int _numLeps, BNleptonCollection **_leptonsPtr, string _label = ""):
-  leptonFile((string(getenv("CMSSW_BASE"))+"/src/ttHMultileptonAnalysis/TemplateMakers/data/NOVa/lepCut_weights/LepCutAndTightChargeSF.root").c_str()),
+  leptonFile((string(getenv("CMSSW_BASE"))+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/lepCut_weights/LepCutAndTightChargeSF.root").c_str()),
   numLeps(_numLeps),
   leptonsPtr(_leptonsPtr),
   label(_label)
