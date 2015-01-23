@@ -636,7 +636,25 @@ vector<double> MultileptonAna::ReturnBTagDisc (vecPatJet theobjs)
 	
 }
  
-
+vector<MySpace::MyClass2> MultileptonAna::GetCollection (vecPatLepton theobjs)
+{
+  vector<MySpace::MyClass2> lepCollection;
+  for (vecPatLepton::const_iterator iLep = theobjs.begin(); iLep != theobjs.end(); iLep++)
+    //  for (eleit iEle= theobjs.begin(); iEle != theobjs.end(); ++iEle)
+    {
+      MySpace::MyClass2 lep;
+      lep.pt = iLep->pt();
+      lep.px = iLep->px();
+      lep.py = iLep->py();
+      lep.pz = iLep->pz();
+      lep.energy = iLep->energy();
+      lep.eta = iLep->eta();
+      lep.phi = iLep->phi();
+      lep.id = iLep->pdgId();
+      lepCollection.push_back(lep);
+    }
+  return lepCollection;
+}
 
 vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatMuon theobjs)
 {
@@ -1048,9 +1066,9 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < 2.5));
     passesIso        = (GetElectronRelIso(iElectron) < 0.400);
     if( iElectron.gsfTrack().isAvailable() ){
-      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS) <= 1  );
+      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1 );
     }
-    
+    //    iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS) <= 1  );
     passesID         = ( passGsfTrackID && passesMVA);    
     break;
   }
