@@ -201,6 +201,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
 	
+        vector<MySpace::MyClass2>     leptonsVpreselected = GetCollection(selectedLeptons_preselected);
 	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
 	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 	
 
@@ -520,6 +521,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	myNumHiggsLikeDijet15.evaluate();
 	if (myNumHiggsLikeDijet15.myVars.size()) NumHiggsLikeDijet15_intree =  myNumHiggsLikeDijet15.myVars[0].branchVal;
 	
+        PreselectedLeptons_intree = leptonsVpreselected;
 	Jets_intree = jetsTLVloose;
 	MET_intree = theMET;
 	LooseElectrons_intree = elesTLVloose;

@@ -156,6 +156,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int eventnum_intree;
 		int higgs_decay_intree;
 
+                vector<MySpace::MyClass2> PreselectedLeptons_intree;
 		TLorentzVectorCMS testTLV_intree;
 		TLorentzVectorCMS MET_intree;
 		vecTLorentzVectorCMS Jets_intree;
@@ -285,7 +286,7 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("TightMuons", &TightMuons_intree);
 	summaryTree->Branch("JetCSV", &JetCSV_intree);
 
-
+	summaryTree->Branch("PreselectedLeptons", &PreselectedLeptons_intree);
 
 	summaryTree->Branch("lep1_id",&lep1_id_intree);
 	summaryTree->Branch("lep1_pt",&lep1_pt_intree);
@@ -427,7 +428,8 @@ void OSTwoLepAna::initialize_variables()
 	num_preselectedElectrons_intree = -1;
 	num_preselectedLeptons_intree = -1;
 	
-	
+	PreselectedLeptons_intree.clear();
+
 	Jets_intree.clear();
 	MET_intree.SetPxPyPzE(0.,0.,0.,0.);
 	LooseElectrons_intree.clear();
