@@ -223,7 +223,7 @@ class MultileptonAna: public MiniAODHelper
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
   
-  vector<MySpace::MyClass2> GetCollection(vecPatLepton theobjs);
+  vector<ttH::Lepton> GetCollection(vecPatLepton theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatMuon theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatElectron theobjs);

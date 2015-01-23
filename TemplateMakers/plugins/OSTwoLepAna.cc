@@ -201,7 +201,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
 	
-        vector<MySpace::MyClass2>     leptonsVpreselected = GetCollection(selectedLeptons_preselected);
+        vector<ttH::Lepton>     leptonsVpreselected = GetCollection(selectedLeptons_preselected);
 	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
 	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 	
 
@@ -326,6 +326,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             mu2_lepMVA_intree = GetMuonLepMVA(selectedMuons_preselected[1],selectedJets_forLepMVA);
             mu2_chargeFlip_intree = (selectedMuons_preselected[1].innerTrack()->ptError()/selectedMuons_preselected[1].innerTrack()->pt() < 0.2 ) ? 1 : 0;
 	  }
+
+	
 
 	if (num_preselectedElectrons_intree >= 1)
 	  {								

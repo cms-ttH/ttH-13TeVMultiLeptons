@@ -2,7 +2,7 @@
 
 #include "TObject.h"
 
-namespace MySpace
+namespace ttH
 {
   class MyClass1
   {
@@ -11,12 +11,13 @@ namespace MySpace
     int i;
   };
   
-  class MyClass2
+  class Lepton
   {
   public:
-    MyClass2(int ii = 0) {i = ii;} // default constructor
+    //    Lepton(int ii = 0) {i = ii;} // default constructor
+    Lepton(){} // default constructor
     
-    int i;
+    //    int i;
     double px;
     double py;
     double pz;
@@ -26,8 +27,8 @@ namespace MySpace
     double phi;
     double id;
     
-    virtual ~MyClass2(){};
-    ClassDef(MyClass2, 1); // MyClass2
+    virtual ~Lepton(){};
+    ClassDef(Lepton, 1); // Lepton
 
   };
   
@@ -40,4 +41,4 @@ namespace MySpace
     
     ClassDef(MyClass3, 1); // MyClass3
   };
-} // end of namespace MySpace
+} // end of namespace ttH

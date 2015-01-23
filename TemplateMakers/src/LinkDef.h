@@ -12,20 +12,20 @@
 #pragma link C++ class std::vector< std::vector< double > >+;
 #pragma link C++ class std::vector< std::vector< std::vector< double > > >+;
 
-#pragma link C++ namespace MySpace;
+#pragma link C++ namespace ttH;
 // #pragma link C++ nestedclass;
 // #pragma link C++ nestedtypedef;
 
-#pragma link C++ class MySpace::MyClass1+;
-#pragma link C++ class std::vector< MySpace::MyClass1 >+;
-#pragma link C++ class std::vector< std::vector< MySpace::MyClass1 > >+;
+#pragma link C++ class ttH::MyClass1+;
+#pragma link C++ class std::vector< ttH::MyClass1 >+;
+#pragma link C++ class std::vector< std::vector< ttH::MyClass1 > >+;
 
-#pragma link C++ class MySpace::MyClass2+;
-#pragma link C++ class std::vector< MySpace::MyClass2 >+;
-#pragma link C++ class std::vector< std::vector< MySpace::MyClass2 > >+;
+#pragma link C++ class ttH::Lepton+;
+#pragma link C++ class std::vector< ttH::Lepton >+;
+#pragma link C++ class std::vector< std::vector< ttH::Lepton > >+;
 
-#pragma link C++ class MySpace::MyClass3+;
-#pragma link C++ class std::vector< MySpace::MyClass3 >+;
-#pragma link C++ class std::vector< std::vector< MySpace::MyClass3 > >+;
+#pragma link C++ class ttH::MyClass3+;
+#pragma link C++ class std::vector< ttH::MyClass3 >+;
+#pragma link C++ class std::vector< std::vector< ttH::MyClass3 > >+;
 
 #endif /* __MAKECINT__ */

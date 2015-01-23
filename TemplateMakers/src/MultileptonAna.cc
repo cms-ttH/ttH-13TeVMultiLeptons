@@ -636,13 +636,13 @@ vector<double> MultileptonAna::ReturnBTagDisc (vecPatJet theobjs)
 	
 }
  
-vector<MySpace::MyClass2> MultileptonAna::GetCollection (vecPatLepton theobjs)
+vector<ttH::Lepton> MultileptonAna::GetCollection (vecPatLepton theobjs)
 {
-  vector<MySpace::MyClass2> lepCollection;
+  vector<ttH::Lepton> lepCollection;
   for (vecPatLepton::const_iterator iLep = theobjs.begin(); iLep != theobjs.end(); iLep++)
     //  for (eleit iEle= theobjs.begin(); iEle != theobjs.end(); ++iEle)
     {
-      MySpace::MyClass2 lep;
+      ttH::Lepton lep;
       lep.pt = iLep->pt();
       lep.px = iLep->px();
       lep.py = iLep->py();

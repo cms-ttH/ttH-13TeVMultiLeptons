@@ -156,7 +156,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int eventnum_intree;
 		int higgs_decay_intree;
 
-                vector<MySpace::MyClass2> PreselectedLeptons_intree;
+                vector<ttH::Lepton> PreselectedLeptons_intree;
 		TLorentzVectorCMS testTLV_intree;
 		TLorentzVectorCMS MET_intree;
 		vecTLorentzVectorCMS Jets_intree;

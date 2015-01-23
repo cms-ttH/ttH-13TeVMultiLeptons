@@ -5,15 +5,15 @@
 
 #if 1 /* 0 or 1 */
 
-ClassImp(MySpace::MyClass2);
+ClassImp(ttH::Lepton);
 
-ClassImp(MySpace::MyClass3);
+ClassImp(ttH::MyClass3);
 
 #else /* 0 or 1 */
 
-using namespace MySpace;
+using namespace ttH;
 
-ClassImp(MyClass2);
+ClassImp(Lepton);
 
 ClassImp(MyClass3);
 
