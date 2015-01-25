@@ -6,15 +6,18 @@
 #if 1 /* 0 or 1 */
 
 ClassImp(ttH::Lepton);
+ClassImp(ttH::Electron);
+ClassImp(ttH::Muon);
+ClassImp(ttH::Jet);
 
-ClassImp(ttH::MyClass3);
 
 #else /* 0 or 1 */
 
 using namespace ttH;
 
 ClassImp(Lepton);
-
-ClassImp(MyClass3);
+ClassImp(Electron);
+ClassImp(Muon);
+ClassImp(Jet);
 
 #endif /* 0 or 1 */

@@ -4,17 +4,9 @@
 
 namespace ttH
 {
-  class MyClass1
-  {
-  public:
-    MyClass1(int ii = 0) {i = ii;} // default constructor
-    int i;
-  };
-  
   class Lepton
   {
   public:
-    //    Lepton(int ii = 0) {i = ii;} // default constructor
     Lepton(){} // default constructor
     
     //    int i;
@@ -31,14 +23,92 @@ namespace ttH
     ClassDef(Lepton, 1); // Lepton
 
   };
-  
-  class MyClass3 : public TObject
+
+  class Electron
   {
   public:
-    MyClass3(int ii = 0) {i = ii;} // default constructor
+    Electron(){} // default constructor
     
-    int i;
+    double px;
+    double py;
+    double pz;
+    double pt;
+    double energy;
+    double eta;
+    double phi;
+    double id;
     
-    ClassDef(MyClass3, 1); // MyClass3
+    int charge;
+    bool charge1;
+    bool charge2;
+    bool charge3;
+
+    //lepMVA variables
+    double lepMVA;
+    double chreliso;
+    double nureliso;
+    double matchedJetdR;
+    double jetPtRatio;
+    double btagCSV;
+    double sip3d;
+
+    virtual ~Electron(){};
+    ClassDef(Electron, 1); 
+
   };
+
+  class Muon
+  {
+  public:
+    Muon(){} // default constructor
+    
+    double px;
+    double py;
+    double pz;
+    double pt;
+    double energy;
+    double eta;
+    double phi;
+    double id;
+    
+    int charge;
+    bool charge1;
+    bool charge2;
+    bool charge3;
+
+    //lepMVA variables
+    double lepMVA;
+    double chreliso;
+    double nureliso;
+    double matchedJetdR;
+    double jetPtRatio;
+    double btagCSV;
+    double sip3d;
+
+    virtual ~Muon(){};
+    ClassDef(Muon, 1); 
+
+  };
+  
+  class Jet
+  {
+  public:
+    Jet(){} // default constructor
+    
+    double px;
+    double py;
+    double pz;
+    double pt;
+    double energy;
+    double eta;
+    double phi;
+    
+    virtual ~Jet(){};
+    ClassDef(Jet, 1); 
+
+  };
+
+
+
+
 } // end of namespace ttH

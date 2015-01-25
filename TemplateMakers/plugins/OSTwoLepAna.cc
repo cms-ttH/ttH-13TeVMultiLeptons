@@ -259,6 +259,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////// cut flow studies
 	//////
 	/////////////////////////
+
+	vector<ttH::Electron> electronsVpreselected = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
+
 	
 	num_BJetsLoose_intree = int(selectedJets_bJetsLoose.size());
 	num_Jets_intree = int(selectedJets_forSync.size());
@@ -524,6 +527,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	if (myNumHiggsLikeDijet15.myVars.size()) NumHiggsLikeDijet15_intree =  myNumHiggsLikeDijet15.myVars[0].branchVal;
 	
         PreselectedLeptons_intree = leptonsVpreselected;
+        PreselectedElectrons_intree = electronsVpreselected;
+
 	Jets_intree = jetsTLVloose;
 	MET_intree = theMET;
 	LooseElectrons_intree = elesTLVloose;

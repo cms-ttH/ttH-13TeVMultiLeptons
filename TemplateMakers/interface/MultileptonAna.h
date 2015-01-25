@@ -224,6 +224,10 @@ class MultileptonAna: public MiniAODHelper
   vector<ArbitraryVariable*> cutVars;
   
   vector<ttH::Lepton> GetCollection(vecPatLepton theobjs);
+  vector<ttH::Electron> GetCollection(vecPatElectron theobjs, vecPatJet jets);
+  //  vector<ttH::Muon> GetCollection(vecPatMuon theobjs);
+  //  vector<ttH::Jet> GetCollection(vecPatJet theobjs);
+
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatMuon theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatElectron theobjs);

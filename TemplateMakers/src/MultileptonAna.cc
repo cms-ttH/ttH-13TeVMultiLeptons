@@ -656,6 +656,37 @@ vector<ttH::Lepton> MultileptonAna::GetCollection (vecPatLepton theobjs)
   return lepCollection;
 }
 
+vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vecPatJet jets)
+{
+  vector<ttH::Electron> eleCollection;
+  //  for (pat::Electron iEle = theobjs.begin(); iEle != theobjs.end(); iEle++)
+  for (vecPatElectron::const_iterator iEle = theobjs.begin(); iEle != theobjs.end(); iEle++)
+  //  for (eleit iEle= theobjs.begin(); iEle != theobjs.end(); ++iEle)
+    {
+      ttH::Electron ele;
+      pat::Electron iElectron;
+      iElectron = (*iEle);
+      
+      ele.pt = iElectron.pt();
+      ele.px = iElectron.px();
+      ele.py = iElectron.py();
+      ele.pz = iElectron.pz();
+      ele.energy = iElectron.energy();
+      ele.eta = iElectron.eta();
+      ele.phi = iElectron.phi();
+      ele.id = iElectron.pdgId();
+      ele.charge = iElectron.charge();
+      ele.charge1 = iElectron.isGsfCtfScPixChargeConsistent();
+      ele.charge2 = (iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) == 0 );
+      ele.charge3 = iElectron.passConversionVeto();
+      ele.lepMVA = GetElectronLepMVA(iElectron, jets);
+      
+      eleCollection.push_back(ele);
+    }
+  return eleCollection;
+}
+
+
 vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatMuon theobjs)
 {
 	//int nobjs = theobjcollection.size();
