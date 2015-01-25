@@ -667,20 +667,32 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       pat::Electron iElectron;
       iElectron = (*iEle);
       
+      //calculate closest jet
+      pat::Jet matchedJet = getClosestJet(jets,iElectron);
+      double dR = MiniAODHelper::DeltaR(&matchedJet,&iElectron);
+
       ele.pt = iElectron.pt();
       ele.px = iElectron.px();
       ele.py = iElectron.py();
       ele.pz = iElectron.pz();
       ele.energy = iElectron.energy();
       ele.eta = iElectron.eta();
+      ele.SCeta = abs(iElectron.superCluster()->position().eta());
       ele.phi = iElectron.phi();
-      ele.id = iElectron.pdgId();
+      ele.pdgID = iElectron.pdgId();
       ele.charge = iElectron.charge();
-      ele.charge1 = iElectron.isGsfCtfScPixChargeConsistent();
-      ele.charge2 = (iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) == 0 );
-      ele.charge3 = iElectron.passConversionVeto();
+      ele.isGsfCtfScPixChargeConsistent = iElectron.isGsfCtfScPixChargeConsistent();
+      ele.numMissingInnerHits = (iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) == 0 );
+      ele.passConversioVeto = iElectron.passConversionVeto();
       ele.lepMVA = GetElectronLepMVA(iElectron, jets);
-      
+      ele.chreliso = iElectron.chargedHadronIso()/iElectron.pt();
+      ele.nureliso = max(0.0,(iElectron.neutralHadronIso()+iElectron.photonIso())-0.5*iElectron.puChargedHadronIso())/iElectron.pt();
+      ele.matchedJetdR = min(dR,0.5);
+      ele.jetPtRatio = min(iElectron.pt()/matchedJet.pt(), float(1.5));
+      ele.btagCSV = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
+      ele.sip3D = fabs(iElectron.dB(pat::Electron::PV3D)/iElectron.edB(pat::Electron::PV3D));
+      ele.mvaID = mvaID_->mvaValue(iElectron,vertex,rho,true,false); //use full5x5=true, debug=false
+
       eleCollection.push_back(ele);
     }
   return eleCollection;

@@ -35,13 +35,14 @@ namespace ttH
     double pt;
     double energy;
     double eta;
+    double SCeta;
     double phi;
-    double id;
+    double pdgID;
     
     int charge;
-    bool charge1;
-    bool charge2;
-    bool charge3;
+    bool isGsfCtfScPixChargeConsistent;
+    bool numMissingInnerHits;
+    bool passConversioVeto;
 
     //lepMVA variables
     double lepMVA;
@@ -50,7 +51,8 @@ namespace ttH
     double matchedJetdR;
     double jetPtRatio;
     double btagCSV;
-    double sip3d;
+    double sip3D;
+    double mvaID;
 
     virtual ~Electron(){};
     ClassDef(Electron, 1); 
