@@ -158,7 +158,9 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 
                 vector<ttH::Lepton> PreselectedLeptons_intree;
                 vector<ttH::Electron> PreselectedElectrons_intree;
-
+                vector<ttH::Muon> PreselectedMuons_intree;
+                vector<ttH::Jet> PreselectedJets_intree;
+		
 		TLorentzVectorCMS testTLV_intree;
 		TLorentzVectorCMS MET_intree;
 		vecTLorentzVectorCMS Jets_intree;
@@ -290,6 +292,8 @@ void OSTwoLepAna::tree_add_branches()
 
 	summaryTree->Branch("PreselectedLeptons", &PreselectedLeptons_intree);
 	summaryTree->Branch("PreselectedElectrons", &PreselectedElectrons_intree);
+	summaryTree->Branch("PreselectedMuons", &PreselectedMuons_intree);
+	summaryTree->Branch("PreselectedJets", &PreselectedJets_intree);
 
 	summaryTree->Branch("lep1_id",&lep1_id_intree);
 	summaryTree->Branch("lep1_pt",&lep1_pt_intree);
@@ -433,6 +437,8 @@ void OSTwoLepAna::initialize_variables()
 	
 	PreselectedLeptons_intree.clear();
 	PreselectedElectrons_intree.clear();
+	PreselectedMuons_intree.clear();
+	PreselectedJets_intree.clear();
 
 	Jets_intree.clear();
 	MET_intree.SetPxPyPzE(0.,0.,0.,0.);

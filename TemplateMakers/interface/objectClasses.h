@@ -38,12 +38,13 @@ namespace ttH
     double SCeta;
     double phi;
     double pdgID;
-    
+    double dxy;
+    double dz;
     int charge;
     bool isGsfCtfScPixChargeConsistent;
-    bool numMissingInnerHits;
+    int numMissingInnerHits;
     bool passConversioVeto;
-
+    double mvaID;
     //lepMVA variables
     double lepMVA;
     double chreliso;
@@ -52,7 +53,7 @@ namespace ttH
     double jetPtRatio;
     double btagCSV;
     double sip3D;
-    double mvaID;
+
 
     virtual ~Electron(){};
     ClassDef(Electron, 1); 
@@ -71,13 +72,11 @@ namespace ttH
     double energy;
     double eta;
     double phi;
-    double id;
-    
+    double pdgID;
+    double dxy;
+    double dz;
     int charge;
-    bool charge1;
-    bool charge2;
-    bool charge3;
-
+    double chargeFlip;
     //lepMVA variables
     double lepMVA;
     double chreliso;
@@ -85,7 +84,7 @@ namespace ttH
     double matchedJetdR;
     double jetPtRatio;
     double btagCSV;
-    double sip3d;
+    double sip3D;
 
     virtual ~Muon(){};
     ClassDef(Muon, 1); 
@@ -97,14 +96,15 @@ namespace ttH
   public:
     Jet(){} // default constructor
     
-    double px;
-    double py;
-    double pz;
     double pt;
     double energy;
+    double mass;
     double eta;
     double phi;
-    
+    int charge;
+    int pdgID;
+    double csv;
+
     virtual ~Jet(){};
     ClassDef(Jet, 1); 
 

@@ -1,7 +1,7 @@
 #include "TObject.h"
 
 
-#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MyClass.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
 #if 1 /* 0 or 1 */
 

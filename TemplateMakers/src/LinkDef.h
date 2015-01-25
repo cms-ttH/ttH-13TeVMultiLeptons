@@ -1,4 +1,4 @@
-#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MyClass.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
 
 #ifdef __CINT__

@@ -109,7 +109,7 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/TwoObjectKinematic.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/GenPt.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/JobParameters.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MyClass.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
 // hack for ele mva id
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
@@ -225,8 +225,8 @@ class MultileptonAna: public MiniAODHelper
   
   vector<ttH::Lepton> GetCollection(vecPatLepton theobjs);
   vector<ttH::Electron> GetCollection(vecPatElectron theobjs, vecPatJet jets);
-  //  vector<ttH::Muon> GetCollection(vecPatMuon theobjs);
-  //  vector<ttH::Jet> GetCollection(vecPatJet theobjs);
+  vector<ttH::Muon> GetCollection(vecPatMuon theobjs, vecPatJet jets);
+  vector<ttH::Jet> GetCollection(vecPatJet theobjs);
 
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatMuon theobjs);

@@ -659,9 +659,7 @@ vector<ttH::Lepton> MultileptonAna::GetCollection (vecPatLepton theobjs)
 vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vecPatJet jets)
 {
   vector<ttH::Electron> eleCollection;
-  //  for (pat::Electron iEle = theobjs.begin(); iEle != theobjs.end(); iEle++)
   for (vecPatElectron::const_iterator iEle = theobjs.begin(); iEle != theobjs.end(); iEle++)
-  //  for (eleit iEle= theobjs.begin(); iEle != theobjs.end(); ++iEle)
     {
       ttH::Electron ele;
       pat::Electron iElectron;
@@ -680,9 +678,11 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.SCeta = abs(iElectron.superCluster()->position().eta());
       ele.phi = iElectron.phi();
       ele.pdgID = iElectron.pdgId();
+      ele.dxy = fabs(iElectron.gsfTrack()->dxy(vertex.position()));
+      ele.dz = fabs(iElectron.gsfTrack()->dz(vertex.position()));
       ele.charge = iElectron.charge();
       ele.isGsfCtfScPixChargeConsistent = iElectron.isGsfCtfScPixChargeConsistent();
-      ele.numMissingInnerHits = (iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) == 0 );
+      ele.numMissingInnerHits = iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
       ele.passConversioVeto = iElectron.passConversionVeto();
       ele.lepMVA = GetElectronLepMVA(iElectron, jets);
       ele.chreliso = iElectron.chargedHadronIso()/iElectron.pt();
@@ -697,6 +697,68 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
     }
   return eleCollection;
 }
+
+vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet jets)
+{
+  vector<ttH::Muon> muCollection;
+  for (vecPatMuon::const_iterator iMu = theobjs.begin(); iMu != theobjs.end(); iMu++)
+    {
+      ttH::Muon mu;
+      pat::Muon iMuon;
+      iMuon = (*iMu);
+      
+      //calculate closest jet
+      pat::Jet matchedJet = getClosestJet(jets,iMuon);
+      double dR = MiniAODHelper::DeltaR(&matchedJet,&iMuon);
+
+      mu.pt = iMuon.pt();
+      mu.px = iMuon.px();
+      mu.py = iMuon.py();
+      mu.pz = iMuon.pz();
+      mu.energy = iMuon.energy();
+      mu.eta = iMuon.eta();
+      mu.phi = iMuon.phi();
+      mu.pdgID = iMuon.pdgId();
+      mu.charge = iMuon.charge();
+      mu.dxy = fabs(iMuon.innerTrack()->dxy(vertex.position()));
+      mu.dz =fabs(iMuon.innerTrack()->dz(vertex.position()));
+      mu.chargeFlip = iMuon.innerTrack()->ptError()/iMuon.innerTrack()->pt();
+      mu.lepMVA = GetMuonLepMVA(iMuon, jets);
+      mu.chreliso = iMuon.chargedHadronIso()/iMuon.pt();
+      mu.nureliso = max(0.0,(iMuon.neutralHadronIso()+iMuon.photonIso())-0.5*iMuon.puChargedHadronIso())/iMuon.pt();
+      mu.matchedJetdR = min(dR,0.5);
+      mu.jetPtRatio = min(iMuon.pt()/matchedJet.pt(), float(1.5));
+      mu.btagCSV = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
+      mu.sip3D = fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D));
+
+      muCollection.push_back(mu);
+    }
+  return muCollection;
+}
+
+vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
+{
+  vector<ttH::Jet> jetCollection;
+  for (vecPatJet::const_iterator iJt = theobjs.begin(); iJt != theobjs.end(); iJt++)
+    {
+      ttH::Jet jet;
+      pat::Jet iJet;
+      iJet = (*iJt);
+
+      jet.pt = iJet.pt();
+      jet.energy = iJet.energy();
+      jet.mass = iJet.mass();
+      jet.eta = iJet.eta();
+      jet.phi = iJet.phi();
+      jet.pdgID = iJet.pdgId();
+      jet.charge = iJet.jetCharge();
+      jet.csv = iJet.bDiscriminator("combinedSecondaryVertexBJetTags");
+      jetCollection.push_back(jet);
+
+    }
+  return jetCollection;
+}
+
 
 
 vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatMuon theobjs)

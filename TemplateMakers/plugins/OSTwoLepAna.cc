@@ -227,7 +227,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatJet selectedJets_forSync          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
 	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );   //miniAODhelper.
 	
-
+        vector<ttH::Jet> jetsVpreselected = GetCollection(selectedJets_forSync);
 	vecTLorentzVectorCMS jetsTLVloose = Get_vecTLorentzVectorCMS(selectedJets_loose_noSys_unsorted);
 	vecTLorentzVectorCMS jetsTLVtight = Get_vecTLorentzVectorCMS(selectedJets_noSys_unsorted);
 
@@ -261,6 +261,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	/////////////////////////
 
 	vector<ttH::Electron> electronsVpreselected = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
+	vector<ttH::Muon> muonsVpreselected = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
 
 	
 	num_BJetsLoose_intree = int(selectedJets_bJetsLoose.size());
@@ -528,6 +529,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
         PreselectedLeptons_intree = leptonsVpreselected;
         PreselectedElectrons_intree = electronsVpreselected;
+        PreselectedMuons_intree = muonsVpreselected;
+	PreselectedJets_intree = jetsVpreselected;
 
 	Jets_intree = jetsTLVloose;
 	MET_intree = theMET;
