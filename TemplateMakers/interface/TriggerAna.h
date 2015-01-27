@@ -1,26 +1,6 @@
 // created by Geoff Smith
 
-//#include "ttH-13TeVMultiLeptons/TemplateMakers/src/MultileptonAna.cc"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MultileptonAna.h"
-
-// #ifdef __MAKECINT__
-// 
-// #pragma link C++ class Variables+;
-// 
-// #endif
-
-//#if !defined(__CINT__) && !defined(__MAKECINT__)
-
-//#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/Variables.h"
-
-//#endif
-
-//#pragma link C++ class std::vector< TLorentzVector >+;
-
-
-//struct Variables { int test; int testt; };
-
-
 
 class TriggerAna: public MultileptonAna, public edm::EDAnalyzer
 {
@@ -67,7 +47,9 @@ class TriggerAna: public MultileptonAna, public edm::EDAnalyzer
 		vstring eleltriggerstostudy;
 		vstring mueltriggerstostudy;
 		vstring elmutriggerstostudy;
-		vstring tripeltriggerstostudy;		
+		vstring tripeltriggerstostudy;	
+		
+		string extra_trig;	
 		
 		//Variables variables;
 		//TTree *summaryTree; //("summaryTree", "Summary Event Values");
@@ -79,6 +61,9 @@ class TriggerAna: public MultileptonAna, public edm::EDAnalyzer
 		explicit TriggerAna(const edm::ParameterSet&);
 		~TriggerAna();
 		
+		FILE * ep;
+		FILE * mp;
+		
 		// declare the tree
 		TTree *summaryTree;
 		//struct Variables variables;
@@ -89,6 +74,8 @@ class TriggerAna: public MultileptonAna, public edm::EDAnalyzer
 		TH1D *numlooseeles;
 		TH1D *numtightmuons;
 		TH1D *numloosemuons;
+		TH1D *numtightleptons;
+		TH1D *numlooseleptons;
 		TH1D *numrawjets;
 		TH1D *numjetsnoele;
 		TH1D *numjetsnomu;
@@ -102,6 +89,14 @@ class TriggerAna: public MultileptonAna, public edm::EDAnalyzer
 		TH1D *subleadingtightelept;
 		TH1D *leadingtightleppt;
 		TH1D *subleadingtightleppt;
+		
+		TH1D *leadingloosemupt;
+		TH1D *subleadingloosemupt;
+		TH1D *leadinglooseelept;
+		TH1D *subleadinglooseelept;
+		TH1D *leadinglooseleppt;
+		TH1D *subleadinglooseleppt;
+		
 		TH1D *jet1pt;
 		TH1D *jet2pt;
 		TH1D *jet3pt;
@@ -109,8 +104,41 @@ class TriggerAna: public MultileptonAna, public edm::EDAnalyzer
 		TH1D *met_pt;
 		TH1D *hlt_count_hist;		
 		
+		TH1D *numraweles;
+		TH1D *numrawmuons;
+		TH1D *numrawleps;
+		TH1D *rawele1pt;
+		TH1D *rawele2pt;
+		TH1D *rawmu1pt;
+		TH1D *rawmu2pt;
+		TH1D *rawlep1pt;
+		TH1D *rawlep2pt;
+		TH1D *rawlep3ormorept;
+		
+		
+		
 		
 		TH2D *lep1_lep2_pt;
+		
+		TH1D *genparticle_IDs;
+		TH2D *gen_ele_info_vs_hlt;
+		TH2D *gen_mu_info_vs_hlt;
+		TH2D *genstatusinfo;
+		
+		TH1D *leadingEle_pat_gen_chosen_reso;
+		TH1D *subleadingEle_pat_gen_chosen_reso;
+		TH1D *leadingEle_pat_gen_dpt;
+		TH1D *subleadingEle_pat_gen_dpt;
+		TH2D *leadingEle_pat_gen_deta_dphi;
+		TH2D *subleadingEle_pat_gen_deta_dphi;
+		
+		TH1D *leadingMuon_pat_gen_dpt;
+		TH1D *subleadingMuon_pat_gen_dpt;
+		TH2D *leadingMuon_pat_gen_deta_dphi;
+		TH2D *subleadingMuon_pat_gen_deta_dphi;
+		
+		
+		
 		
 		//GenericCollection<pat::MuonCollection> tightMuons;
 		
@@ -146,6 +174,20 @@ class TriggerAna: public MultileptonAna, public edm::EDAnalyzer
 		TH1D *elmu_lep2_denom;
 		
 		
+		
+		TH2D *lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y[10];
+		TH2D *lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y[10];
+		TH2D *lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[10];
+		TH2D *lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[10];
+		
+		TH2D *lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y[10];
+		TH2D *lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y[10];
+		TH2D *lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[10];
+		TH2D *lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[10];
+		
+		
+		
+		
 		// tree branches:
 				
 		double mcwgt_intree;
@@ -167,28 +209,31 @@ class TriggerAna: public MultileptonAna, public edm::EDAnalyzer
 
 		double allJetCSV_intree;
 		int numJets_intree;
-
-
 		
-		vdouble testvect;
-		
-		TLorentzVectorCMS testTLV_intree;
-		
-		
-		TLorentzVectorCMS	  MET_intree;
-		std::vector<math::XYZTLorentzVectorD> Jets_intree;
-		vecTLorentzVectorCMS LooseElectrons_intree;
-		vecTLorentzVectorCMS LooseMuons_intree;
-		vecTLorentzVectorCMS TightElectrons_intree;
-		vecTLorentzVectorCMS TightMuons_intree;
-		vdouble		  JetCSV_intree;
+		char last_module_with_saved_tags_label[500];
+		char last_module_with_2objs_label[500];
+		int last_module_with_saved_tags_index;
 		
 		
 		
+		vint 					jetpartonflavor_intree;
 		
+		vdouble 				testvect;
+		
+		TLorentzVectorCMS 			testTLV_intree;
+		
+		TLorentzVectorCMS	  		MET_intree;
+		std::vector<math::XYZTLorentzVectorD> 	Jets_intree;
+		vecTLorentzVectorCMS 			LooseElectrons_intree;
+		vecTLorentzVectorCMS 			LooseMuons_intree;
+		vecTLorentzVectorCMS 			TightElectrons_intree;
+		vecTLorentzVectorCMS 			TightMuons_intree;
+		vdouble		  			JetCSV_intree;
+		vdouble pileup_jet_ID_intree;
+		
+				
 
 		// Variables *variables;
-		
 		//GenericCollectionSizeVariable<std::vector<pat::Muon>> numTightMuons(const GenericCollection<pat::MuonCollection> &, const string);
 		
 };
@@ -220,6 +265,12 @@ void TriggerAna::tree_add_branches()
 	summaryTree->Branch("TightElectrons", &TightElectrons_intree);
 	summaryTree->Branch("TightMuons", &TightMuons_intree);
 	summaryTree->Branch("JetCSV", &JetCSV_intree);
+	summaryTree->Branch("pileup_jet_ID", &pileup_jet_ID_intree);
+	summaryTree->Branch("jetpartonflavor", &jetpartonflavor_intree);
+	
+	summaryTree->Branch("last_module_with_saved_tags_label",last_module_with_saved_tags_label,"last_module_with_saved_tags_label/C");
+	summaryTree->Branch("last_module_with_2objs_label",last_module_with_2objs_label,"last_module_with_2objs_label/C");
+	summaryTree->Branch("last_module_with_saved_tags_index",&last_module_with_saved_tags_index,"last_module_with_saved_tags_index/I");
 	
 	
 // 	numPreselectedLeptons_intree;
@@ -241,7 +292,6 @@ void TriggerAna::tree_add_branches()
 // 	numJets_intree;
 	
 	
-
 	
 	//summaryTree->Branch("variables.","Variables",&variables);
 	
@@ -268,8 +318,8 @@ void TriggerAna::initialize_variables()
 	TightElectrons_intree.clear();
 	TightMuons_intree.clear();
 	JetCSV_intree.clear();
-	
-	
+	pileup_jet_ID_intree.clear();
+	jetpartonflavor_intree.clear();
 	
 	
 	
