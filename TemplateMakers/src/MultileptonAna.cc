@@ -712,6 +712,9 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.obj = iMu.p4();
       mu.pdgID = iMu.pdgId();
       mu.charge = iMu.charge();
+      mu.isPFMuon = iMu.isPFMuon();
+      mu.isTrackerMuon = iMu.isTrackerMuon();
+      mu.isGlobalMuon = iMu.isGlobalMuon();
       mu.dxy = fabs(iMu.innerTrack()->dxy(vertex.position()));
       mu.dz =fabs(iMu.innerTrack()->dz(vertex.position()));
       mu.chargeFlip = iMu.innerTrack()->ptError()/iMu.innerTrack()->pt();

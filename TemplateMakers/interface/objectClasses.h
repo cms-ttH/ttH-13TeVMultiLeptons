@@ -1,16 +1,7 @@
 #include <vector>
 
 #include "TObject.h"
-//#include "TLorentzVector.h"
-
-//#include "DataFormats/Math/interface/LorentzVectorFwd.h"
-//#include "DataFormats/Math/interface/LorentzVector.h"
-//#include "TMath.h"
-//#include "Math/Vector3D.h"
-//#include "Math/Vector4D.h"
 #include "Math/LorentzVector.h"
-
-//typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > myLorentzVector;
 
 namespace ttH
 {
@@ -70,6 +61,9 @@ namespace ttH
     double dz;
     int charge;
     double chargeFlip;
+    bool isPFMuon;
+    bool isTrackerMuon;
+    bool isGlobalMuon;
     //lepMVA variables
     double lepMVA;
     double chreliso;
