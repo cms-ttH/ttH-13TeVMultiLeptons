@@ -69,98 +69,22 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		double mcwgt_intree;
 		double wgt_intree;
 		
-		int numLooseMuons_intree;
-		int numLooseElectrons_intree;
-		int numTightMuons_intree;
-		int numTightElectrons_intree;		
-		//int numPreselectedLeptons_intree;
-		int numTightLeptons_intree;
-		int numLooseLeptons_intree;
-		
-		int num_preselectedLeptons_intree;
-		int num_preselectedMuons_intree;		
-		int num_preselectedElectrons_intree;
-		
-		int numCernMuons_intree;
-		int numCernElectrons_intree;
-		int numCernLeptons_intree;
-		int numCernJets_intree;
-
 		double allJetCSV_intree;
 		//int numJets_intree;			
-		int num_BJetsLoose_intree;
-		int num_BJetsMedium_intree;
-		int num_BJetsTight_intree;
-		int num_Jets_intree;
-		
-		int mu1_charge_intree;
-		int mu2_charge_intree;
-		float mu1_pt_intree;
-		float mu2_pt_intree;
-		float mu1_eta_intree;
-		float mu2_eta_intree;
-		float mu1_phi_intree;
-		float mu2_phi_intree;
-		int mu1_id_intree;
-		int mu2_id_intree;
-		float mu1_lepMVA_intree;
-		float mu2_lepMVA_intree;
-		int mu1_chargeFlip_intree;
-		int mu2_chargeFlip_intree;
-		
 
-		//for event dumps sync
-		
-		int lep1_id_intree;
-		float lep1_pt_intree;
-		float lep1_eta_intree;
-		float lep1_phi_intree;
-		
-		int lep2_id_intree;
-		float lep2_pt_intree;
-		float lep2_eta_intree;
-		float lep2_phi_intree;
-		 
 		float met_pt_intree;
 		float met_phi_intree;
 
-		float mu1_chRelIso_intree;
-		float mu1_nuRelIso_intree;
-		float mu1_jetdR_intree;
-		float mu1_jetPtRatio_intree;
-		float mu1_bTagCSV_intree;
-		float mu1_sip3d_intree;
-		
-		int ele1_charge_intree;
-		int ele2_charge_intree;
-		float ele1_pt_intree;
-		float ele2_pt_intree;
-		float ele1_eta_intree;
-		float ele2_eta_intree;
-		float ele1_phi_intree;
-		float ele2_phi_intree;
-		int ele1_id_intree;
-		int ele2_id_intree;
-		float ele1_lepMVA_intree;
-		float ele2_lepMVA_intree;
-		int ele1_chargeFlip_intree;
-		int ele2_chargeFlip_intree;
-
-		float ele1_chRelIso_intree;
-		float ele1_nuRelIso_intree;
-		float ele1_jetdR_intree;
-		float ele1_jetPtRatio_intree;
-		float ele1_bTagCSV_intree;
-		float ele1_sip3d_intree;
-		
 		int eventnum_intree;
 		int higgs_decay_intree;
 
-                vector<ttH::Lepton> PreselectedLeptons_intree;
-                vector<ttH::Electron> PreselectedElectrons_intree;
-                vector<ttH::Muon> PreselectedMuons_intree;
-                vector<ttH::Jet> PreselectedJets_intree;
+                vector<ttH::Lepton> preselected_leptons_intree;
+                vector<ttH::Electron> preselected_electrons_intree;
+                vector<ttH::Muon> preselected_muons_intree;
+                vector<ttH::Jet> preselected_jets_intree;
+		vector<ttH::Jet> loose_bJets_intree;
 		
+
 		TLorentzVectorCMS testTLV_intree;
 		TLorentzVectorCMS MET_intree;
 		vecTLorentzVectorCMS Jets_intree;
@@ -227,10 +151,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		double PU_intree;
 		double PUCorr_intree;
 		
-		//numLooseBJets;
-		//numMediumBJets;
-		//numTightBJets;
-		
 		int numJets_fromHiggs_30_intree;
 		int numJets_fromHiggs_intree;
 				
@@ -274,14 +194,6 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("allLeptonGenMotherId", &allLeptonGenMotherId_intree);
 	summaryTree->Branch("allLeptonTkCharge", &allLeptonTkCharge_intree);
 
-	summaryTree->Branch("numLooseMuons", &numLooseMuons_intree, "numLooseMuons/I");
-      	summaryTree->Branch("numLooseElectrons", &numLooseElectrons_intree, "numLooseElectrons/I");
-      	summaryTree->Branch("numTightMuons", &numTightMuons_intree, "numTightMuons/I");
-      	summaryTree->Branch("numTightElectrons", &numTightElectrons_intree, "numTightElectrons/I");
-	summaryTree->Branch("num_preselectedMuons", &num_preselectedMuons_intree, "num_preselectedMuons/I");
-      	summaryTree->Branch("num_preselectedElectrons", &num_preselectedElectrons_intree, "num_preselectedElectrons/I");	
-	summaryTree->Branch("num_preselectedLeptons",&num_preselectedLeptons_intree);
-	
 	summaryTree->Branch("Jets", &Jets_intree);
 	summaryTree->Branch("MET", &MET_intree);
 	summaryTree->Branch("LooseElectrons", &LooseElectrons_intree);
@@ -290,82 +202,16 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("TightMuons", &TightMuons_intree);
 	summaryTree->Branch("JetCSV", &JetCSV_intree);
 
-	summaryTree->Branch("PreselectedLeptons", &PreselectedLeptons_intree);
-	summaryTree->Branch("PreselectedElectrons", &PreselectedElectrons_intree);
-	summaryTree->Branch("PreselectedMuons", &PreselectedMuons_intree);
-	summaryTree->Branch("PreselectedJets", &PreselectedJets_intree);
+	summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
+	summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
+	summaryTree->Branch("preselected_muons", &preselected_muons_intree);
+	summaryTree->Branch("preselected_jets", &preselected_jets_intree);
+	summaryTree->Branch("loose_bJets", &loose_bJets_intree);
 
-	summaryTree->Branch("lep1_id",&lep1_id_intree);
-	summaryTree->Branch("lep1_pt",&lep1_pt_intree);
-	summaryTree->Branch("lep1_eta",&lep1_eta_intree);
-	summaryTree->Branch("lep1_phi",&lep1_phi_intree);
-	
-	summaryTree->Branch("lep2_id",&lep2_id_intree);
-	summaryTree->Branch("lep2_pt",&lep2_pt_intree);
-	summaryTree->Branch("lep2_eta",&lep2_eta_intree);
-	summaryTree->Branch("lep2_phi",&lep2_phi_intree);
-	summaryTree->Branch("met_pt",&met_pt_intree);
-	summaryTree->Branch("met_phi",&met_phi_intree);
-	
-	summaryTree->Branch("num_Jets",&num_Jets_intree);
-	summaryTree->Branch("num_BJetsLoose",&num_BJetsLoose_intree);
-	summaryTree->Branch("num_BJetsMedium_intree",&num_BJetsMedium_intree);
-	summaryTree->Branch("num_BJetsTight_intree",&num_BJetsTight_intree);
-	
 	summaryTree->Branch("numJets_fromHiggs_30", &numJets_fromHiggs_30_intree, "numJets_fromHiggs_30/I");
 	summaryTree->Branch("numJets_fromHiggs", &numJets_fromHiggs_intree, "numJets_fromHiggs/I");
 		
 	
-	//summaryTree->Branch("num_muons",&num_preselectedMuons_intree);
-	summaryTree->Branch("mu1_charge",&mu1_charge_intree);
-	summaryTree->Branch("mu2_charge",&mu2_charge_intree);
-	summaryTree->Branch("mu1_pt",&mu1_pt_intree);
-	summaryTree->Branch("mu2_pt",&mu2_pt_intree);
-	summaryTree->Branch("mu1_eta",&mu1_eta_intree);
-	summaryTree->Branch("mu2_eta",&mu2_eta_intree);
-	summaryTree->Branch("mu1_phi",&mu1_phi_intree);
-	summaryTree->Branch("mu2_phi",&mu2_phi_intree);
-	summaryTree->Branch("mu1_id",&mu1_id_intree);
-	summaryTree->Branch("mu2_id",&mu2_id_intree);
-	summaryTree->Branch("mu1_lepMVA",&mu1_lepMVA_intree);
-	summaryTree->Branch("mu2_lepMVA",&mu2_lepMVA_intree);
-	summaryTree->Branch("mu1_chargeFlip",&mu1_chargeFlip_intree);
-	summaryTree->Branch("mu2_chargeFlip",&mu2_chargeFlip_intree);
-
-	summaryTree->Branch("mu1_chreliso",&mu1_chRelIso_intree);
-	summaryTree->Branch("mu1_nureliso",&mu1_nuRelIso_intree);
-	summaryTree->Branch("mu1_jetdR",&mu1_jetdR_intree);
-	summaryTree->Branch("mu1_jetPtRatio",&mu1_jetPtRatio_intree);
-	summaryTree->Branch("mu1_bTagCSV",&mu1_bTagCSV_intree);
-	summaryTree->Branch("mu1_sip3d",&mu1_sip3d_intree);
-
-	//summaryTree->Branch("num_electrons",&num_preselectedElectrons_intree);
-	summaryTree->Branch("ele1_charge",&ele1_charge_intree);
-	summaryTree->Branch("ele2_charge",&ele2_charge_intree);
-	summaryTree->Branch("ele1_pt",&ele1_pt_intree);
-	summaryTree->Branch("ele2_pt",&ele2_pt_intree);
-
-	summaryTree->Branch("ele1_eta",&ele1_eta_intree);
-	summaryTree->Branch("ele2_eta",&ele2_eta_intree);
-	summaryTree->Branch("ele1_phi",&ele1_phi_intree);
-	summaryTree->Branch("ele2_phi",&ele2_phi_intree);
-	summaryTree->Branch("ele1_id",&ele1_id_intree);
-	summaryTree->Branch("ele2_id",&ele2_id_intree);
-
-	summaryTree->Branch("ele1_lepMVA",&ele1_lepMVA_intree);
-	summaryTree->Branch("ele2_lepMVA",&ele2_lepMVA_intree);
-	summaryTree->Branch("ele1_chargeFlip",&ele1_chargeFlip_intree);
-	summaryTree->Branch("ele2_chargeFlip",&ele2_chargeFlip_intree);
-
-	summaryTree->Branch("ele1_chreliso",&ele1_chRelIso_intree);
-	summaryTree->Branch("ele1_nureliso",&ele1_nuRelIso_intree);
-	summaryTree->Branch("ele1_jetdR",&ele1_jetdR_intree);
-	summaryTree->Branch("ele1_jetPtRatio",&ele1_jetPtRatio_intree);
-	summaryTree->Branch("ele1_bTagCSV",&ele1_bTagCSV_intree);
-	summaryTree->Branch("ele1_sip3d",&ele1_sip3d_intree);
-
-	//summaryTree->Branch("event",&eventnum_intree);
-
 	summaryTree->Branch("AvgBtagDiscNonBtags", &AvgBtagDiscNonBtags_intree);
 	summaryTree->Branch("AvgBtagDiscBtags", &AvgBtagDiscBtags_intree);
 	summaryTree->Branch("NumHiggsLikeDijet15", &NumHiggsLikeDijet15_intree);
@@ -427,18 +273,11 @@ void OSTwoLepAna::initialize_variables()
 	allLeptonGenMotherId_intree.clear();
 	allLeptonTkCharge_intree.clear();
 	
-	numLooseMuons_intree = -1;
-	numLooseElectrons_intree = -1;
-	numTightMuons_intree = -1;
-	numTightElectrons_intree = -1;
-	num_preselectedMuons_intree = -1;
-	num_preselectedElectrons_intree = -1;
-	num_preselectedLeptons_intree = -1;
-	
-	PreselectedLeptons_intree.clear();
-	PreselectedElectrons_intree.clear();
-	PreselectedMuons_intree.clear();
-	PreselectedJets_intree.clear();
+	preselected_leptons_intree.clear();
+	preselected_electrons_intree.clear();
+	preselected_muons_intree.clear();
+	preselected_jets_intree.clear();
+	loose_bJets_intree.clear();
 
 	Jets_intree.clear();
 	MET_intree.SetPxPyPzE(0.,0.,0.,0.);
@@ -448,64 +287,11 @@ void OSTwoLepAna::initialize_variables()
 	TightMuons_intree.clear();
 	JetCSV_intree.clear();
 	
-	lep1_id_intree = -9e6;
-	lep1_pt_intree = -9.e6;
-	lep1_eta_intree = -9.e6;
-	lep1_phi_intree = -9.e6;
-	
-	lep2_id_intree = -9e6;
-	lep2_pt_intree = -9.e6;
-	lep2_eta_intree = -9.e6;
-	lep2_phi_intree = -9.e6;
-	
 	met_pt_intree = -9.e6;
 	met_phi_intree = -9.e6;
 
-
-
-	num_Jets_intree= -99;
-	num_BJetsLoose_intree = -99;
-	num_BJetsMedium_intree = -99;
-	num_BJetsTight_intree = -99;
-	
 	numJets_fromHiggs_30_intree = -99;
 	numJets_fromHiggs_intree = -99;
-
-	num_preselectedLeptons_intree = -99;
-
-	num_preselectedMuons_intree = -99;
-        mu1_charge_intree = -99;
-        mu2_charge_intree = -99;
-        mu1_pt_intree = -9.e6;
-        mu2_pt_intree = -9.e6;
-        mu1_lepMVA_intree = -9.e6;
-        mu2_lepMVA_intree = -9.e6;
-        mu1_chargeFlip_intree = -99;
-	mu2_chargeFlip_intree = -99;
-
-        mu1_chRelIso_intree = -9.e6;
-        mu1_nuRelIso_intree = -9.e6;
-        mu1_jetdR_intree = -9.e6;
-        mu1_jetPtRatio_intree = -9.e6;
-        mu1_bTagCSV_intree = -9.e6;
-        mu1_sip3d_intree = -9.e6;
-
-	num_preselectedElectrons_intree= -99;
-	ele1_charge_intree= -99;
-	ele2_charge_intree= -99;
-        ele1_pt_intree = -9.e6;
-        ele2_pt_intree = -9.e6;
-        ele1_lepMVA_intree = -9.e6;
-        ele2_lepMVA_intree = -9.e6;
-        ele1_chargeFlip_intree= -99;
-        ele2_chargeFlip_intree= -99;
-
-	ele1_chRelIso_intree = -9.e6;
-	ele1_nuRelIso_intree = -9.e6;
-        ele1_jetdR_intree = -9.e6;
-        ele1_jetPtRatio_intree = -9.e6;
-        ele1_bTagCSV_intree = -9.e6;
-        ele1_sip3d_intree = -9.e6;
 
         higgs_decay_intree = -9e6;
 	
