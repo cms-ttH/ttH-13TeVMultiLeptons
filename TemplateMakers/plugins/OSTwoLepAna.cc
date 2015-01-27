@@ -201,7 +201,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
 	
-        vector<ttH::Lepton>     leptonsVpreselected = GetCollection(selectedLeptons_preselected);
+        vector<ttH::Lepton> leptonsVpreselected = GetCollection(selectedLeptons_preselected);
 	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
 	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 	
 
@@ -262,7 +262,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	vector<ttH::Electron> electronsVpreselected = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
 	vector<ttH::Muon> muonsVpreselected = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
-
+	
+	// if( int(selectedLeptons_preselected.size()) > 0)
+	//   {
+	//     cout << "leptons_preselected 0 pt " << leptonsVpreselected[0].obj.Pt() << endl;
+	//   }
 	
 	num_BJetsLoose_intree = int(selectedJets_bJetsLoose.size());
 	num_Jets_intree = int(selectedJets_forSync.size());
@@ -273,7 +277,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles);
 	//	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
-
+	
 	higgs_decay_intree = (higgs_daughter1==24 || higgs_daughter1==23 || higgs_daughter1==15) ? 1 : 0;
 	
 	eventnum_intree = event.id().event();

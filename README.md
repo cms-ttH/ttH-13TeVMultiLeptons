@@ -17,7 +17,7 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 	mv cmg-cmssw/EgammaAnalysis .
 	rm -rf cmg-cmssw
 	gzip -d EgammaAnalysis/ElectronTools/data/*.gz
-	scram b -j 32
+	scram b -j 8
 
 
 Then try running over some miniAOD:
@@ -26,3 +26,6 @@ Then try running over some miniAOD:
 	cd ttH-13TeVMultiLeptons/TemplateMakers/test/
 	osTwoLep ssCondor.py ttH125_miniAOD <your_label_here>
 
+To view the tth-specific classes' TLorentzVectors in the TBrowser, add the following to your rootlogon.C file (assuming you've setup cmssw):
+   	
+	gSystem->Load("libttH-13TeVMultiLeptonsTemplateMakers.so");

@@ -1,6 +1,5 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
-
 #ifdef __CINT__
 
 #pragma link off all typedefs;
@@ -13,8 +12,9 @@
 #pragma link C++ class std::vector< std::vector< std::vector< double > > >+;
 
 #pragma link C++ namespace ttH;
-// #pragma link C++ nestedclass;
-// #pragma link C++ nestedtypedef;
+
+//#pragma link C++ nestedclass;
+//#pragma link C++ nestedtypedef;
 
 #pragma link C++ class ttH::Lepton+;
 #pragma link C++ class std::vector< ttH::Lepton >+;

@@ -1,6 +1,16 @@
 #include <vector>
 
 #include "TObject.h"
+//#include "TLorentzVector.h"
+
+//#include "DataFormats/Math/interface/LorentzVectorFwd.h"
+//#include "DataFormats/Math/interface/LorentzVector.h"
+//#include "TMath.h"
+//#include "Math/Vector3D.h"
+//#include "Math/Vector4D.h"
+#include "Math/LorentzVector.h"
+
+//typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > myLorentzVector;
 
 namespace ttH
 {
@@ -9,19 +19,13 @@ namespace ttH
   public:
     Lepton(){} // default constructor
     
-    //    int i;
-    double px;
-    double py;
-    double pz;
-    double pt;
-    double energy;
-    double eta;
-    double phi;
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     double id;
     
     virtual ~Lepton(){};
-    ClassDef(Lepton, 1); // Lepton
-
+    ClassDef(Lepton, 1);
+    
   };
 
   class Electron
@@ -29,14 +33,9 @@ namespace ttH
   public:
     Electron(){} // default constructor
     
-    double px;
-    double py;
-    double pz;
-    double pt;
-    double energy;
-    double eta;
-    double SCeta;
-    double phi;
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
+    double SCeta; //supercluster eta
     double pdgID;
     double dxy;
     double dz;
@@ -54,7 +53,6 @@ namespace ttH
     double btagCSV;
     double sip3D;
 
-
     virtual ~Electron(){};
     ClassDef(Electron, 1); 
 
@@ -65,13 +63,8 @@ namespace ttH
   public:
     Muon(){} // default constructor
     
-    double px;
-    double py;
-    double pz;
-    double pt;
-    double energy;
-    double eta;
-    double phi;
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     double pdgID;
     double dxy;
     double dz;
@@ -96,11 +89,8 @@ namespace ttH
   public:
     Jet(){} // default constructor
     
-    double pt;
-    double energy;
-    double mass;
-    double eta;
-    double phi;
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     int charge;
     int pdgID;
     double csv;
