@@ -22,7 +22,7 @@ void OSTwoLepAna::beginJob()
 	
 	// job setup
 	
-	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
+	sampleNumber = convertSampleNameToNumber(sampleName);
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
 	SetFactorizedJetCorrector();
 	setupMva();
@@ -43,30 +43,30 @@ void OSTwoLepAna::beginJob()
 	edm::Service<TFileService> newfs;
 	
 	// book histos:
-	numtighteles = 	newfs->make<TH1D>("numtighteles","numtighteles",6,0,6);
-	numlooseeles = 	newfs->make<TH1D>("numlooseeles","numlooseeles",6,0,6);
-	numtightmuons = newfs->make<TH1D>("numtightmuons","numtightmuons",6,0,6);
-	numloosemuons = newfs->make<TH1D>("numloosemuons","numloosemuons",6,0,6);
-	numrawjets = 	newfs->make<TH1D>("numrawjets","numrawjets",15,0,15);
-	numjetsnoele = 			newfs->make<TH1D>("numjetsnoele","numjetsnoele",15,0,15);
-	numjetsnomu = 			newfs->make<TH1D>("numjetsnomu","numjetsnomu",15,0,15);
-	numjetsnomuorele = 		newfs->make<TH1D>("numjetsnomuorele","numjetsnomuorele",15,0,15);
-	numjetscorrected = 		newfs->make<TH1D>("numjetscorrected","numjetscorrected",15,0,15);
-	numjetsselectedloose = 		newfs->make<TH1D>("numjetsselectedloose","numjetsselectedloose",15,0,15);
-	numbtagsselectedlooseCSVM = 	newfs->make<TH1D>("numbtagsselectedlooseCSVM","numbtagsselectedlooseCSVM",12,0,12);
-	leadingtightmupt = 		newfs->make<TH1D>("leadingtightmupt","leadingtightmupt",200,0,400);
-	subleadingtightmupt = 		newfs->make<TH1D>("subleadingtightmupt","subleadingtightmupt",200,0,400);
-	leadingtightelept = 		newfs->make<TH1D>("leadingtightelept","leadingtightelept",200,0,400);
-	subleadingtightelept = 		newfs->make<TH1D>("subleadingtightelept","subleadingtightelept",200,0,400);
-	leadingtightleppt = 		newfs->make<TH1D>("leadingtightleppt","leadingtightleppt",200,0,400);
-	subleadingtightleppt = 		newfs->make<TH1D>("subleadingtightleppt","subleadingtightleppt",200,0,400);
-	jet1pt = newfs->make<TH1D>("jet1pt","jet1pt",200,0,400);
-	jet2pt = newfs->make<TH1D>("jet2pt","jet2pt",200,0,400);
-	jet3pt = newfs->make<TH1D>("jet3pt","jet3pt",200,0,400);
-	jet4pt = newfs->make<TH1D>("jet4pt","jet4pt",200,0,400);   
-	met_pt = newfs->make<TH1D>("met_pt","met_pt",200,0,400);
-	lep1_lep2_pt = newfs->make<TH2D>("lep1_lep2_pt","lep1_lep2_pt",30,0,150,30,0,150);
-	hlt_count_hist = newfs->make<TH1D>("hlt_count_hist","hlt_count_hist",1000,0,1000);
+	// numtighteles = 	newfs->make<TH1D>("numtighteles","numtighteles",6,0,6);
+// 	numlooseeles = 	newfs->make<TH1D>("numlooseeles","numlooseeles",6,0,6);
+// 	numtightmuons = newfs->make<TH1D>("numtightmuons","numtightmuons",6,0,6);
+// 	numloosemuons = newfs->make<TH1D>("numloosemuons","numloosemuons",6,0,6);
+// 	numrawjets = 	newfs->make<TH1D>("numrawjets","numrawjets",15,0,15);
+// 	numjetsnoele = 			newfs->make<TH1D>("numjetsnoele","numjetsnoele",15,0,15);
+// 	numjetsnomu = 			newfs->make<TH1D>("numjetsnomu","numjetsnomu",15,0,15);
+// 	numjetsnomuorele = 		newfs->make<TH1D>("numjetsnomuorele","numjetsnomuorele",15,0,15);
+// 	numjetscorrected = 		newfs->make<TH1D>("numjetscorrected","numjetscorrected",15,0,15);
+// 	numjetsselectedloose = 		newfs->make<TH1D>("numjetsselectedloose","numjetsselectedloose",15,0,15);
+// 	numbtagsselectedlooseCSVM = 	newfs->make<TH1D>("numbtagsselectedlooseCSVM","numbtagsselectedlooseCSVM",12,0,12);
+// 	leadingtightmupt = 		newfs->make<TH1D>("leadingtightmupt","leadingtightmupt",200,0,400);
+// 	subleadingtightmupt = 		newfs->make<TH1D>("subleadingtightmupt","subleadingtightmupt",200,0,400);
+// 	leadingtightelept = 		newfs->make<TH1D>("leadingtightelept","leadingtightelept",200,0,400);
+// 	subleadingtightelept = 		newfs->make<TH1D>("subleadingtightelept","subleadingtightelept",200,0,400);
+// 	leadingtightleppt = 		newfs->make<TH1D>("leadingtightleppt","leadingtightleppt",200,0,400);
+// 	subleadingtightleppt = 		newfs->make<TH1D>("subleadingtightleppt","subleadingtightleppt",200,0,400);
+// 	jet1pt = newfs->make<TH1D>("jet1pt","jet1pt",200,0,400);
+// 	jet2pt = newfs->make<TH1D>("jet2pt","jet2pt",200,0,400);
+// 	jet3pt = newfs->make<TH1D>("jet3pt","jet3pt",200,0,400);
+// 	jet4pt = newfs->make<TH1D>("jet4pt","jet4pt",200,0,400);   
+// 	met_pt = newfs->make<TH1D>("met_pt","met_pt",200,0,400);
+// 	lep1_lep2_pt = newfs->make<TH2D>("lep1_lep2_pt","lep1_lep2_pt",30,0,150,30,0,150);
+// 	hlt_count_hist = newfs->make<TH1D>("hlt_count_hist","hlt_count_hist",1000,0,1000);
 		
 	// add the tree:
 	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
@@ -111,12 +111,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		
 	edm::Handle<GenEventInfoProduct> GenInfo;
     	event.getByLabel("generator",GenInfo);
-    	double mcwgt_intree = GenInfo->weight();		// <- gen-level weight
+    	
+	///////////////////////////
+	double mcwgt_intree = GenInfo->weight();		// <- gen-level weight
+	double weight = 1.;					// <- analysis weight 
+	weight *= mcwgt_intree;					// MC-only (flag to be added)
+	///////////////////////////
 	
-	double weight = 1.;			// <- analysis weight 
-
-	weight *= mcwgt_intree;				// MC-only (flag to be added)
-
+	
 	initialize_variables();	
 			
 	/////////
@@ -143,8 +145,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons( *electrons, 10., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	
-	int numTightElectrons = int(selectedElectrons_tight.size());
-	int numLooseElectrons = int(selectedElectrons_loose.size());
+	//int numTightElectrons = int(selectedElectrons_tight.size());
+	//int numLooseElectrons = int(selectedElectrons_loose.size());
 
 
 
@@ -174,8 +176,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );	//miniAODhelper.
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);		//miniAODhelper.
 	
-	int numTightMuons = int(selectedMuons_tight.size());
-	int numLooseMuons = int(selectedMuons_loose.size());
+	//int numTightMuons = int(selectedMuons_tight.size());
+	//int numLooseMuons = int(selectedMuons_loose.size());
 	
 	
 	vecTLorentzVectorCMS muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_loose);
@@ -231,15 +233,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecTLorentzVectorCMS jetsTLVloose = Get_vecTLorentzVectorCMS(selectedJets_loose_noSys_unsorted);
 	vecTLorentzVectorCMS jetsTLVtight = Get_vecTLorentzVectorCMS(selectedJets_noSys_unsorted);
 
-	int numRawJets = rawJets.size();
-	int numJetsNoEle = jetsNoEle.size();
-	int numJetsNoMu = jetsNoMu.size();
-	int numJetsNoLep = jetsNoLep.size();
-	int numJetsCorr = correctedJets_noSys.size();
+	//int numRawJets = rawJets.size();
+	//int numJetsNoEle = jetsNoEle.size();
+	//int numJetsNoMu = jetsNoMu.size();
+	//int numJetsNoLep = jetsNoLep.size();
+	//int numJetsCorr = correctedJets_noSys.size();
 
-	int numSelJetsLoose = selectedJets_loose_noSys_unsorted.size();
+	//int numSelJetsLoose = selectedJets_loose_noSys_unsorted.size();
 
-	int numSelJetsLooseCSVM = selectedJets_loose_tag_noSys_unsorted.size();
+	//int numSelJetsLooseCSVM = selectedJets_loose_tag_noSys_unsorted.size();
 
 	// test
 	vecPatJet *testHiggsjets  = &selectedJets_noSys_unsorted;
@@ -490,28 +492,28 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// fill some basic histos:
 
-	numtighteles->						Fill(numTightElectrons,weight);
-	numlooseeles->						Fill(numLooseElectrons,weight);
-	numtightmuons->						Fill(numTightMuons,weight);
-	numloosemuons->						Fill(numLooseMuons,weight);
-	numrawjets->						Fill(numRawJets,weight);
-	numjetsnoele->						Fill(numJetsNoEle,weight);
-	numjetsnomu->						Fill(numJetsNoMu,weight);
-	numjetsnomuorele->					Fill(numJetsNoLep,weight);
-	numjetscorrected->					Fill(numJetsCorr,weight);
-	numjetsselectedloose->					Fill(numSelJetsLoose,weight);
-	numbtagsselectedlooseCSVM->				Fill(numSelJetsLooseCSVM,weight);
-	if (numTightMuons) leadingtightmupt->			Fill(muonsTLVtight[0].Pt(),weight);
-	if (numTightMuons>1) subleadingtightmupt->		Fill(muonsTLVtight[1].Pt(),weight);
-	if (numTightElectrons) leadingtightelept->		Fill(elesTLVtight[0].Pt(),weight);
-	if (numTightElectrons>1) subleadingtightelept->		Fill(elesTLVtight[1].Pt(),weight);
-	if (leptonsTLVtight.size()) leadingtightleppt->		Fill(leptonsTLVtight[0].Pt(),weight);
-	if (leptonsTLVtight.size()>1) subleadingtightleppt->	Fill(leptonsTLVtight[1].Pt(),weight);
-	if (jetsTLVloose.size())jet1pt->			Fill(jetsTLVloose[0].Pt(),weight);
-	if (jetsTLVloose.size()>1)jet2pt->			Fill(jetsTLVloose[1].Pt(),weight);
-	if (jetsTLVloose.size()>2)jet3pt->			Fill(jetsTLVloose[2].Pt(),weight);
-	if (jetsTLVloose.size()>3)jet4pt->			Fill(jetsTLVloose[3].Pt(),weight);
-	met_pt->						Fill(theMET.Pt(),weight);
+// 	numtighteles->						Fill(numTightElectrons,weight);
+// 	numlooseeles->						Fill(numLooseElectrons,weight);
+// 	numtightmuons->						Fill(numTightMuons,weight);
+// 	numloosemuons->						Fill(numLooseMuons,weight);
+// 	numrawjets->						Fill(numRawJets,weight);
+// 	numjetsnoele->						Fill(numJetsNoEle,weight);
+// 	numjetsnomu->						Fill(numJetsNoMu,weight);
+// 	numjetsnomuorele->					Fill(numJetsNoLep,weight);
+// 	numjetscorrected->					Fill(numJetsCorr,weight);
+// 	numjetsselectedloose->					Fill(numSelJetsLoose,weight);
+// 	numbtagsselectedlooseCSVM->				Fill(numSelJetsLooseCSVM,weight);
+// 	if (numTightMuons) leadingtightmupt->			Fill(muonsTLVtight[0].Pt(),weight);
+// 	if (numTightMuons>1) subleadingtightmupt->		Fill(muonsTLVtight[1].Pt(),weight);
+// 	if (numTightElectrons) leadingtightelept->		Fill(elesTLVtight[0].Pt(),weight);
+// 	if (numTightElectrons>1) subleadingtightelept->		Fill(elesTLVtight[1].Pt(),weight);
+// 	if (leptonsTLVtight.size()) leadingtightleppt->		Fill(leptonsTLVtight[0].Pt(),weight);
+// 	if (leptonsTLVtight.size()>1) subleadingtightleppt->	Fill(leptonsTLVtight[1].Pt(),weight);
+// 	if (jetsTLVloose.size())jet1pt->			Fill(jetsTLVloose[0].Pt(),weight);
+// 	if (jetsTLVloose.size()>1)jet2pt->			Fill(jetsTLVloose[1].Pt(),weight);
+// 	if (jetsTLVloose.size()>2)jet3pt->			Fill(jetsTLVloose[2].Pt(),weight);
+// 	if (jetsTLVloose.size()>3)jet4pt->			Fill(jetsTLVloose[3].Pt(),weight);
+// 	met_pt->						Fill(theMET.Pt(),weight);
 
 	
 // 	TwoMuon = 0; TwoElectron = 0; MuonElectron = 0; PassTwoLepton = 0; 
@@ -522,10 +524,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	
 	// assign values to tree variables:
-	numLooseMuons_intree = numLooseMuons;
-	numLooseElectrons_intree = numLooseElectrons;
-	numTightMuons_intree = numTightMuons;
-	numTightElectrons_intree = numTightElectrons;
+	// numLooseMuons_intree = numLooseMuons;
+// 	numLooseElectrons_intree = numLooseElectrons;
+// 	numTightMuons_intree = numTightMuons;
+// 	numTightElectrons_intree = numTightElectrons;
 	
 	
 	myNumHiggsLikeDijet15.evaluate();
@@ -534,16 +536,17 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         PreselectedLeptons_intree = leptonsVpreselected;
         PreselectedElectrons_intree = electronsVpreselected;
         PreselectedMuons_intree = muonsVpreselected;
-	PreselectedJets_intree = jetsVpreselected;
+ 	PreselectedJets_intree = jetsVpreselected;
+// 
+// 	Jets_intree = jetsTLVloose;
+// 	MET_intree = theMET;
+// 	LooseElectrons_intree = elesTLVloose;
+// 	LooseMuons_intree = muonsTLVloose;
+// 	TightElectrons_intree = elesTLVtight;
+// 	TightMuons_intree = muonsTLVtight;
+// 	JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
+	
 
-	Jets_intree = jetsTLVloose;
-	MET_intree = theMET;
-	LooseElectrons_intree = elesTLVloose;
-	LooseMuons_intree = muonsTLVloose;
-	TightElectrons_intree = elesTLVtight;
-	TightMuons_intree = muonsTLVtight;
-	JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
-		
 	wgt_intree = weight;
 	
 	// fill it:
