@@ -635,7 +635,21 @@ vector<double> MultileptonAna::ReturnBTagDisc (vecPatJet theobjs)
 	return thediscs;
 	
 }
- 
+
+vector<double> MultileptonAna::ReturnPUJetID (vecPatJet theobjs)
+{
+	vector<double> thePUIDs;
+	
+	for (jetit iJet = theobjs.begin(); iJet != theobjs.end(); ++iJet)
+	{
+		double output = iJet->userFloat("pileupJetId:fullDiscriminant");
+		thePUIDs.push_back(output);
+	}
+	
+	return thePUIDs;
+} 
+
+
 vector<ttH::Lepton> MultileptonAna::GetCollection (vecPatLepton theobjs)
 {
   vector<ttH::Lepton> lepCollection;
@@ -825,80 +839,54 @@ vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS_sorted_leptons (ve
 {	
 
 	vecTLorentzVectorCMS newvecTLV;
+	newvecTLV.clear();
 	
 	// assuming they are already sorted by pt, respectively:
 	
 	int size1 = leps1.size();
  	int size2 = leps2.size();
  	
- 	if (size1==0||size2!=0) return leps2;
-	if (size2==0||size1!=0) return leps1;
-	if (size1==0&&size2==0) { TLorentzVectorCMS ret(0.,0.,0.,0.); newvecTLV.push_back(ret); return newvecTLV; } // <- should figure out something else for this case..
+ 	if (size1==0 && size2!=0) return leps2;
+	if (size2==0 && size1!=0) return leps1;
+	if (size1==0 && size2==0) return newvecTLV;
 	
-	int maxsize = max(size1,size2);
-	int minsize = min(size1,size2);
-	
-	bool smallestis1 = (size1<size2) ? true : false;
+	//int maxsize = max(size1,size2);
+	//int minsize = min(size1,size2);
 	
 	int i = 0;
 	int j = 0;
 	
 	while (true)
 	{
-		if ((i==minsize&&smallestis1)||(j==minsize&&(!smallestis1))) break;
-
-		if (leps1[i].Pt() < leps2[j].Pt())
-		{
-			newvecTLV.push_back(leps2[j]);
-			j++;
-		}
+		if ((i==size1)||(j==size2)) break;
 		else
 		{
-			newvecTLV.push_back(leps1[i]);
-			i++;
+			if (leps1[i].Pt() < leps2[j].Pt())
+			{
+				newvecTLV.push_back(leps2[j]);
+				j++;
+			}
+			else
+			{
+				newvecTLV.push_back(leps1[i]);
+				i++;
+			}
 		}
-	}		
-	if (smallestis1)
+	}
+
+	while (true)
 	{
-		while (true)
-		{
-			if (j==maxsize) break;
-			newvecTLV.push_back(leps2[j]);
-			j++;
-		}								
+		if (j==size2) break;
+		newvecTLV.push_back(leps2[j]);
+		j++;
+	}								
+
+	while (true)
+	{
+		if (i==size1) break;
+		newvecTLV.push_back(leps1[i]);
+		i++;
 	}
-	if (!smallestis1)
-	{			
-		while (true)
-		{
-			if (i==maxsize) break;
-			newvecTLV.push_back(leps1[i]);
-			i++;
-		}
-	}
-	
-//// above takes a time that is linear with size of the vectors.
-//// brute force (if you aren't sure if they are sorted beforehand), takes
-//// a time that is quadratic in size of the vector:
-// 	
-// 	leps1.insert(leps1.end(),leps2.begin(),leps2.end());
-// 	vecTLorentzVector newvecTLV;
-// 	
-// 	//int startingpoint = 0;
-// 	int size = leps1.size();
-// 	
-// 	for (int i=0; i<size; i++)
-// 	{
-// 		for (int j=0; j<size; j++)
-// 		{
-// 			bool isprevious = false;
-// 			
-// 			int max
-			
-	
-//	TLorentzVector dummy;
-//	dummy.SetPxPyPzE(0.,0.,0.,0.);
-//	newvecTLV.push_back(dummy);
 
 	return newvecTLV;
 	
@@ -1062,7 +1050,22 @@ float MultileptonAna::GetMuonRelIsoR04(const pat::Muon& iMuon) const
   return result;
 }
 
-
+vint MultileptonAna::Get_JetPartonFlavor(vecPatJet theobjs)
+{	
+	vint theflavors;
+	
+	int jetsize = theobjs.size();
+	
+	for (int i=0; i<jetsize; i++)
+	{
+		pat::Jet thejet = theobjs[i];
+		int theflavor = thejet.partonFlavour();
+		theflavors.push_back(theflavor);
+	}
+	
+	return theflavors;
+	
+}
 
 
 bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float iMinPt, const electronID::electronID iElectronID){
@@ -1107,6 +1110,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < tightDxy );
     d04 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < looseDxy );
     //no_exp_inner_trkr_hits = ( iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 0 ); // deprecated in 7_2_0 .. replace with ..?
+    no_exp_inner_trkr_hits = ( iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) <= 1 ); // replace with this.
     dZ = ( fabs(iElectron.gsfTrack()->dz(vertex.position())) < dz );
   }
 
@@ -1383,6 +1387,28 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
     return ele_reader_low_ec->EvaluateMVA( "BDTG method" );
   }
   
+}
+
+vecPatElectron MultileptonAna::Get_vecPatElectron_Passing_ElectronLepMVA(const vecPatElectron& electrons, const std::vector<pat::Jet>& iJets, double MVA_Cut)
+{
+	vecPatElectron passobjs;
+	for (vecPatElectron::const_iterator iEle = electrons.begin(); iEle != electrons.end(); ++iEle)
+  	{
+		double value = GetElectronLepMVA(*iEle,iJets);
+		if (value>MVA_Cut) passobjs.push_back(*iEle);
+    	}
+  	return passobjs;
+}
+
+vecPatMuon MultileptonAna::Get_vecPatMuon_Passing_MuonLepMVA(const vecPatMuon& muons, const std::vector<pat::Jet>& iJets, double MVA_Cut)
+{
+	vecPatMuon passobjs;
+	for (vecPatMuon::const_iterator iMu = muons.begin(); iMu != muons.end(); ++iMu)
+  	{
+		double value = GetMuonLepMVA(*iMu,iJets);
+		if (value>MVA_Cut) passobjs.push_back(*iMu);
+    	}
+  	return passobjs;
 }
 
 //// #endif // !defined( MULTILEPTONANA_CC ) 

@@ -248,13 +248,17 @@ class MultileptonAna: public MiniAODHelper
   void GetLeptons(const edm::Event& event);
   void GetBtags(const edm::Event& event);
   vector<double> ReturnBTagDisc (vecPatJet theobjs);
+  vector<double> ReturnPUJetID (vecPatJet theobjs);
   //void Variables(const edm::Event& event); 
   void Systematics(const edm::Event& event);
   void EventSelection(const edm::Event& event);
   vstring HLTInfo ();
   vdouble Get_Isos(vecPatMuon theobjs);
   vdouble Get_Isos(vecPatElectron theobjs);
-  
+  vint Get_JetPartonFlavor(vecPatJet theobjs);
+  vecPatElectron Get_vecPatElectron_Passing_ElectronLepMVA(const vecPatElectron& electrons, const std::vector<pat::Jet>& iJets, double MVA_Cut);
+  vecPatMuon Get_vecPatMuon_Passing_MuonLepMVA(const vecPatMuon& muons, const std::vector<pat::Jet>& iJets, double MVA_Cut);
+
   
 
   // replace virtual members from inherited miniAODhelper:

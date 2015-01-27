@@ -1,7 +1,7 @@
 // created by Geoff Smith
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/TriggerAna.h"
-
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
 
 	
 TriggerAna::TriggerAna(const edm::ParameterSet& constructparams){ //Anything that needs to be done at creation time
@@ -16,33 +16,26 @@ void TriggerAna::beginJob()
 {
 	edm::Service<TFileService> newfs;
 	
-	
-	
-	//variables = new Variables;
-	//summaryTree = new TTree("summaryTree", "Summary Event Values");
-	///summaryTree("summaryTree", "Summary Event Values");	
-	
-	//variables->initialize();
-	//variables=0;
-	//summaryTree->Branch("variables.","Variables",&variables,8000,1);
-	
-	
-	
-	//initialize_tree(summaryTree, variables);
-	//initialize_tree();
-	
-	
-	sampleNumber=9120; //hack for now -> to include in parameterset. Right now there is only one sample.
+	sampleNumber=9120;
+	ep = fopen ("ele_SS.txt", "w+");
+	mp = fopen ("mu_SS.txt", "w+");
 	
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
 	SetFactorizedJetCorrector();
-
+	setupMva();
+	
 	// book histos:
 
 	numtighteles = 	newfs->make<TH1D>("numtighteles","numtighteles",6,0,6);
 	numlooseeles = 	newfs->make<TH1D>("numlooseeles","numlooseeles",6,0,6);
 	numtightmuons = newfs->make<TH1D>("numtightmuons","numtightmuons",6,0,6);
 	numloosemuons = newfs->make<TH1D>("numloosemuons","numloosemuons",6,0,6);
+	
+	numtightleptons = newfs->make<TH1D>("numtightleptons","numtightleptons",12,0,12);
+	numlooseleptons = newfs->make<TH1D>("numlooseleptons","numlooseleptons",12,0,12);
+	
+	
+	
 	numrawjets = 	newfs->make<TH1D>("numrawjets","numrawjets",15,0,15);
 
 	numjetsnoele = 			newfs->make<TH1D>("numjetsnoele","numjetsnoele",15,0,15);
@@ -57,6 +50,27 @@ void TriggerAna::beginJob()
 	subleadingtightelept = 		newfs->make<TH1D>("subleadingtightelept","subleadingtightelept",200,0,400);
 	leadingtightleppt = 		newfs->make<TH1D>("leadingtightleppt","leadingtightleppt",200,0,400);
 	subleadingtightleppt = 		newfs->make<TH1D>("subleadingtightleppt","subleadingtightleppt",200,0,400);
+	
+	leadingloosemupt = 		newfs->make<TH1D>("leadingloosemupt","leadingloosemupt",200,0,400);
+	subleadingloosemupt = 		newfs->make<TH1D>("subleadingloosemupt","subleadingloosemupt",200,0,400);
+	leadinglooseelept = 		newfs->make<TH1D>("leadinglooseelept","leadinglooseelept",200,0,400);
+	subleadinglooseelept = 		newfs->make<TH1D>("subleadinglooseelept","subleadinglooseelept",200,0,400);
+	leadinglooseleppt = 		newfs->make<TH1D>("leadinglooseleppt","leadinglooseleppt",200,0,400);
+	subleadinglooseleppt = 		newfs->make<TH1D>("subleadinglooseleppt","subleadinglooseleppt",200,0,400);
+	
+	genparticle_IDs = 		newfs->make<TH1D>("genparticle_IDs","genparticle_IDs",200,-100,100);		
+	
+	numraweles = 			newfs->make<TH1D>("numraweles","numraweles",10,0,10);
+	numrawmuons = 			newfs->make<TH1D>("numrawmuons","numrawmuons",10,0,10);
+	numrawleps = 			newfs->make<TH1D>("numrawleps","numrawleps",10,0,10);
+	rawele1pt = 			newfs->make<TH1D>("rawele1pt","rawele1pt",200,0,400);
+	rawele2pt = 			newfs->make<TH1D>("rawele2pt","rawele2pt",200,0,400);
+	rawmu1pt = 			newfs->make<TH1D>("rawmu1pt","rawmu1pt",200,0,400);
+	rawmu2pt = 			newfs->make<TH1D>("rawmu2pt","rawmu2pt",200,0,400);
+	rawlep1pt = 			newfs->make<TH1D>("rawlep1pt","rawlep1pt",200,0,400);
+	rawlep2pt = 			newfs->make<TH1D>("rawlep2pt","rawlep2pt",200,0,400);
+	rawlep3ormorept = 		newfs->make<TH1D>("rawlep3ormorept","rawlep3ormorept",200,0,400);
+
 
 	jet1pt = newfs->make<TH1D>("jet1pt","jet1pt",200,0,400);
 	jet2pt = newfs->make<TH1D>("jet2pt","jet2pt",200,0,400);
@@ -68,6 +82,27 @@ void TriggerAna::beginJob()
 	lep1_lep2_pt = newfs->make<TH2D>("lep1_lep2_pt","lep1_lep2_pt",30,0,150,30,0,150);
 
 	hlt_count_hist = newfs->make<TH1D>("hlt_count_hist","hlt_count_hist",1000,0,1000);
+	
+	gen_ele_info_vs_hlt = newfs->make<TH2D>("gen_ele_info_vs_hlt","gen_ele_info_vs_hlt",4,0,4,3,0,3);
+	gen_mu_info_vs_hlt = newfs->make<TH2D>("gen_mu_info_vs_hlt","gen_mu_info_vs_hlt",4,0,4,3,0,3);
+	
+	genstatusinfo = newfs->make<TH2D>("genstatusinfo","genstatusinfo",200,-100,100,200,-100,100);
+	
+	leadingEle_pat_gen_chosen_reso = newfs->make<TH1D>("leadingEle_pat_gen_chosen_reso","leadingEle_pat_gen_chosen_reso",1000,0,10);
+	subleadingEle_pat_gen_chosen_reso = newfs->make<TH1D>("subleadingEle_pat_gen_chosen_reso","subleadingEle_pat_gen_chosen_reso",1000,0,10);
+	leadingEle_pat_gen_dpt = newfs->make<TH1D>("leadingEle_pat_gen_pt","leadingEle_pat_gen_pt",200,-2,2);
+	subleadingEle_pat_gen_dpt = newfs->make<TH1D>("subleadingEle_pat_gen_pt","subleadingEle_pat_gen_pt",200,-2,2);
+	leadingEle_pat_gen_deta_dphi = newfs->make<TH2D>("leadingEle_pat_gen_eta_phi","leadingEle_pat_gen_eta_phi",100,-5,5,100,-5,5);
+	subleadingEle_pat_gen_deta_dphi = newfs->make<TH2D>("subleadingEle_pat_gen_eta_phi","subleadingEle_pat_gen_eta_phi",100,-5,5,100,-5,5);
+	
+	leadingMuon_pat_gen_dpt = newfs->make<TH1D>("leadingMuon_pat_gen_pt","leadingMuon_pat_gen_pt",200,-2,2);
+	subleadingMuon_pat_gen_dpt = newfs->make<TH1D>("subleadingMuon_pat_gen_pt","subleadingMuon_pat_gen_pt",200,-2,2);
+	leadingMuon_pat_gen_deta_dphi = newfs->make<TH2D>("leadingMuon_pat_gen_eta_phi","leadingMuon_pat_gen_eta_phi",100,-5,5,100,-5,5);
+	subleadingMuon_pat_gen_deta_dphi = newfs->make<TH2D>("subleadingMuon_pat_gen_eta_phi","subleadingMuon_pat_gen_eta_phi",100,-5,5,100,-5,5);
+	
+	
+	
+	
 	
 	
 
@@ -87,10 +122,6 @@ void TriggerAna::beginJob()
 
 	eventcount=0;
 
-	//	doublmucount=0;
-	//	doubleelecount=0;
-	//	muelecount=0;
-	//	elemucount=0;	    
 
 	doublemucount=0.;
 	doublemucount2=0.;
@@ -122,27 +153,6 @@ void TriggerAna::beginJob()
 	
 	doublemucount5=0;
 	
-	// usually this will be parsed elsewhere:
-// 	mumutriggerstostudy.push_back("HLT_Mu17_Mu8_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TkMu8_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1");
-// 	eleltriggerstostudy.push_back("HLT_Ele17_Ele8_Gsf_v1");
-// 	eleltriggerstostudy.push_back("HLT_Ele23_Ele12_CaloId_TrackId_Iso_v1");
-// 	mueltriggerstostudy.push_back("HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1");
-// 	elmutriggerstostudy.push_back("HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1");
-// 	tripeltriggerstostudy.push_back("HLT_Ele17_Ele12_Ele10_CaloId_TrackId_v1");
-	
-	
-// 	mumutriggerstostudy.push_back("HLT_Mu13_Mu8_v23");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_Mu8_v23");
-// 	mumutriggerstostudy.push_back("HLT_Mu17_TkMu8_v15");
-// 	mumutriggerstostudy.push_back("HLT_Mu22_TkMu8_v10");
-// 	eleltriggerstostudy.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v20");
-// 	eleltriggerstostudy.push_back("HLT_Ele27_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele15_CaloIdT_CaloIsoVL_trackless_v9");
-// 	mueltriggerstostudy.push_back("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10");
-// 	elmutriggerstostudy.push_back("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10");
-// 	tripeltriggerstostudy.push_back("HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v7");
 	
 	alltriggerstostudy = HLTInfo();
 	
@@ -183,7 +193,18 @@ void TriggerAna::beginJob()
 			lep1_iso_didntpass_double_lep_but_passed_single_lep[i] = newfs->make<TH1D>(alltriggerstostudy[i].c_str(),("lep1_iso_didntpass_double_lep_but_passed_single_lep_" + alltriggerstostudy[i]).c_str(),100,0,0.25);
 			lep2_iso_didntpass_double_lep_but_passed_single_lep[i] = newfs->make<TH1D>(alltriggerstostudy[i].c_str(),("lep2_iso_didntpass_double_lep_but_passed_single_lep_" + alltriggerstostudy[i]).c_str(),100,0,0.25);
 		
+			
 
+			lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),("lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),100,0,200,100,0,200);
+			lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),("lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),100,0,200,100,0,200);
+			lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),("lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),100,0,200,100,0,200);
+			lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),("lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),100,0,200,100,0,200);
+
+			lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),("lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),100,-3,3,100,-3,3);
+			lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),("lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),100,-3,3,100,-3,3);
+			lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),("lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),100,-3,3,100,-3,3);
+			lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),("lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + alltriggerstostudy[i]).c_str(),100,-3,3,100,-3,3);	
+			
 		
 		
 		}
@@ -213,6 +234,19 @@ void TriggerAna::beginJob()
 			lep2_iso_didntpass_double_lep_but_passed_single_lep[i] = newfs->make<TH1D>(os.str().c_str(),("lep2_iso_didntpass_double_lep_but_passed_single_lep_" + os.str()).c_str(),100,0,0.25);
 		
 		
+			
+			lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),("lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),100,0,200,100,0,200);
+			lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),("lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),100,0,200,100,0,200);
+			lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),("lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),100,0,200,100,0,200);
+			lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),("lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),100,0,200,100,0,200);
+
+			lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),("lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),100,-3,3,100,-3,3);
+			lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),("lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),100,-3,3,100,-3,3);
+			lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),("lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),100,-3,3,100,-3,3);
+			lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[i] = newfs->make<TH2D>(("lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),("lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y_" + os.str()).c_str(),100,-3,3,100,-3,3);	
+			
+			
+
 		
 		
 		}
@@ -227,17 +261,13 @@ void TriggerAna::beginJob()
 	elmu_lep1_denom = newfs->make<TH1D>("elmu_lep1_denom","elmu_lep1_denom",100,0,200);
 	elmu_lep2_denom = newfs->make<TH1D>("elmu_lep2_denom","elmu_lep2_denom",100,0,200);
 	
-	//TFileDirectory results = TFileDirectory( newfs->mkdir("anotherdir") ); // doesn't actually make the dir, but for some reason needed to save the tree
+
 	
 	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");
 	tree_add_branches();
 	
 	
-	//summaryTree = new TTree("summaryTree", "Summary Event Values");
-	
-	// variables = new Variables();
-// 	
-// 	
+
 	
 }
 void TriggerAna::endJob() {
@@ -245,11 +275,15 @@ void TriggerAna::endJob() {
 //  cout << "Num Events processed " << numEvents << endl;
 //       << "Passed cuts " << numEventsPassCuts << endl;
 //       << "Failed cuts " << numEventsFailCuts << endl;
-       
+
+	fclose(ep);
+	fclose(mp);       
 } // job completion (cutflow table, etc.)
 
 void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
+
+	if (debug) cout << "hey0" << endl;
 	// analysis goes here
 	if (debug) cout << "event: " << event.id().event() << endl;
 	
@@ -261,7 +295,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	patJets pfjets = 		GetJets(event);
 	patElectrons electrons = 	GetElectrons(event);
 	patMETs mets = 			GetMet(event);
-	
+	prunedGenParticles genparticles=GetPrunedGenParticles(event);
 	SetRho(rho);
 	
 	int numpvs =			GetVertices(event);
@@ -271,7 +305,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
     	event.getByLabel("generator",GenInfo);
     	double wgt = GenInfo->weight();		// <- gen-level weight
 	
-	double weight = 1.;			// <- analysis weight 
+	double weight = wgt; // 1.;			// <- analysis weight 
 	//  int numEvents = 0;
 	//  int numEventsFailCuts = 0;
 	//  int numEventsPassCuts = 0;
@@ -284,14 +318,47 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	
 	/////////
 	///
+	/// genparticles
+	///
+	////////
+	
+	//pdgId()
+	//status()
+	//pt()
+	//eta()
+	//phi()
+	
+	int genpartsize = genparticles->size();
+	
+	for (int i=0; i<genpartsize; i++)
+	{	
+		if (abs(genparticles->at(i).pdgId())==6) genparticle_IDs->Fill(genparticles->at(i).status());
+		genstatusinfo->Fill(genparticles->at(i).pdgId(),genparticles->at(i).status());
+	}
+	
+	
+	if (debug) cout << "hey1" << endl;
+	
+	/////////
+	///
 	/// Electrons
 	///
 	////////
 	
-	//double minTightLeptonPt = 20.;
-	//double minLooseLeptonPt = 10.;
-	double minTightLeptonPt = 10.;
-	double minLooseLeptonPt = 5.;
+	
+	//double minTightLeptonPt = 25.;  // usual
+	double minTightLeptonPt = 15.; // when setting looseleptons = tightleptons in test below
+	double minLooseLeptonPt = 15.; // usual
+	
+	//double minTightLeptonPt = 20.; // 8 TeV
+	//double minLooseLeptonPt = 10.; // 8 TeV
+	//double minLooseLeptonPt = 2.;
+	
+	// baseline (other cuts below)
+	//double minTightLeptonPt = 10.;
+	//double minLooseLeptonPt = 5.;
+
+
 
 	double mintightelept = minTightLeptonPt;
 	double minlooseelept = minLooseLeptonPt;
@@ -299,13 +366,24 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	//double mintightelept = 10.;
 	//double minlooseelept = 5.;
 
-	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper.
-	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
+	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper. // old
+	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper. // old
+	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
+	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 7., electronID::electronNoCuts );	//miniAODhelper.
+	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons( *electrons, 10., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
+	
+	
 	
 	int numTightElectrons = int(selectedElectrons_tight.size());
 	int numLooseElectrons = int(selectedElectrons_loose.size());
-
+	
+	
+	//vecTLorentzVectorCMS elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_loose);
+	vecTLorentzVectorCMS elesTLVtight = Get_vecTLorentzVectorCMS(selectedElectrons_tight);
+	vecTLorentzVectorCMS elesTLVloose = elesTLVtight; // test
+	numLooseElectrons = elesTLVloose.size(); // test
+	vecTLorentzVectorCMS elesTLVloosenotight = Get_vecTLorentzVectorCMS(selectedElectrons_loose_notight);
 
 	/////////
 	///
@@ -313,7 +391,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	///
 	////////
 
-
+	if (debug) cout << "hey2" << endl;
 
 	//double mintightmupt = 10.;
 	double mintightmupt = minTightLeptonPt;
@@ -321,31 +399,57 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 
 	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );		//miniAODhelper.
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );		//miniAODhelper.
+	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );	//miniAODhelper.
+	vecPatMuon selectedMuons_nocuts = GetSelectedMuons( *muons, 5., muonID::muonNoCuts );	//miniAODhelper.
+	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );	//miniAODhelper.
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);		//miniAODhelper.
 
 	int numTightMuons = int(selectedMuons_tight.size());
-	int numLooseMuons = int(selectedMuons_loose.size());
+	int numLooseMuons = int(selectedMuons_loose.size());	
 
-
-	//bool isOS = false;	
-	
-	vecTLorentzVectorCMS muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_loose);
+	//vecTLorentzVectorCMS muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_loose);
 	vecTLorentzVectorCMS muonsTLVtight = Get_vecTLorentzVectorCMS(selectedMuons_tight);
+	vecTLorentzVectorCMS muonsTLVloose = muonsTLVtight; // test
+	numLooseMuons = muonsTLVloose.size(); //test
+	vecTLorentzVectorCMS muonsTLVloosenotight = Get_vecTLorentzVectorCMS(selectedMuons_loose_notight);		  
 			  
-	vecTLorentzVectorCMS elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_loose);
-	vecTLorentzVectorCMS elesTLVtight = Get_vecTLorentzVectorCMS(selectedElectrons_tight);
 	
-	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
-	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 
+	if (debug) cout << "hey3" << endl;
+	/////////
+	///
+	/// Leptons
+	///
+	////////
 	
-	vecTLorentzVectorCMS muonsTLVloosenotight = Get_vecTLorentzVectorCMS(selectedMuons_loose_notight);
-	vecTLorentzVectorCMS elesTLVloosenotight = Get_vecTLorentzVectorCMS(selectedElectrons_loose_notight);
+	if (debug) cout << "eles preselected: " << selectedElectrons_preselected.size() << " muons preselected: " << selectedMuons_preselected.size() << endl;
+	
+	
+	//remove electrons that are close (dR <=0.02) to muons		  
+	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.02);
+	
+	// fill leptons
+	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
+	selectedLeptons_preselected = MiniAODHelper::GetSortedByPt(selectedLeptons_preselected);
+	
+	vecPatLepton selectedLeptons_nocuts = fillLeptons(selectedMuons_nocuts,selectedElectrons_nocuts);
+	selectedLeptons_nocuts = MiniAODHelper::GetSortedByPt(selectedLeptons_nocuts);
+	
+	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);		  
+
+
+
+	// Geoff
+	//vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons(muonsTLVtight, elesTLVtight); 
+	//vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons(muonsTLVloose, elesTLVloose); 
 	
 	vdouble muonIsosLoose = Get_Isos(selectedMuons_loose);
 	vdouble muonIsosTight = Get_Isos(selectedMuons_tight);
-	
 	vdouble electronIsosLoose = Get_Isos(selectedElectrons_loose);
 	vdouble electronIsosTight = Get_Isos(selectedElectrons_tight);
+	if (debug) cout << "eles preselected: " << selectedElectrons_preselected.size() << " muons preselected: " << selectedMuons_preselected.size() << endl;
+
+	if (debug) cout << "hey4" << endl;
+
 	
 		
 	/////////
@@ -356,20 +460,23 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 
  	
 	vecPatJet rawJets				= GetUncorrectedJets(*pfjets);  					  //miniAODhelper.
+	vecPatJet cleaned_rawJets           		= cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	vecPatJet jetsNoMu			       	= RemoveOverlaps(selectedMuons_loose, rawJets); 			    //miniAODhelper.
 	vecPatJet jetsNoEle			       	= RemoveOverlaps(selectedElectrons_loose, rawJets);			    //miniAODhelper.
 	vecPatJet jetsNoLep			       	= RemoveOverlaps(selectedElectrons_loose, jetsNoMu);			    //miniAODhelper.
 	vecPatJet correctedJets_noSys		       	= GetCorrectedJets(jetsNoLep);  					    //miniAODhelper.
 	vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
-	vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
+	vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
 	vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
-	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets( correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
-
+	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
+	vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );   //miniAODhelper.
+	vecPatJet selectedJets_forSync          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
+	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );   //miniAODhelper.
+	
 	vecTLorentzVectorCMS jetsTLVloose = Get_vecTLorentzVectorCMS(selectedJets_loose_noSys_unsorted);
 	vecTLorentzVectorCMS jetsTLVtight = Get_vecTLorentzVectorCMS(selectedJets_noSys_unsorted);
 	
-	
-	
+	vint vecJetPdgIDs = Get_JetPartonFlavor(selectedJets_loose_noSys_unsorted);
 
 	int numRawJets = rawJets.size();
 	int numJetsNoEle = jetsNoEle.size();
@@ -378,10 +485,10 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	int numJetsCorr = correctedJets_noSys.size();
 
 	int numSelJetsLoose = selectedJets_loose_noSys_unsorted.size();
-	//int numSelJets = selectedJets_noSys_unsorted.size();
-
 	int numSelJetsLooseCSVM = selectedJets_loose_tag_noSys_unsorted.size();
 
+	
+	if (debug) cout << "hey5" << endl;
 	
 	/////////
 	///
@@ -392,33 +499,134 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	TLorentzVectorCMS theMET = Get_TLorentzVectorCMS(mets);
 	
 	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///// doing this here instead of above .... note that you are changing the loose, tight vecTLV's
 	
+	vecPatElectron selectedElectrons_preselected_pass_tight_mva = Get_vecPatElectron_Passing_ElectronLepMVA(selectedElectrons_preselected,selectedJets_forLepMVA,0.7); // tight=0.7, loose=-0.3
+	vecPatElectron selectedElectrons_preselected_pass_loose_mva = Get_vecPatElectron_Passing_ElectronLepMVA(selectedElectrons_preselected,selectedJets_forLepMVA,0.7); // tight=0.7, loose=-0.3
 	
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	// fill some basic histos:
+// 	elesTLVloose.clear();
+// 	elesTLVtight.clear();
+// 	//elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_preselected);
+// 	elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_preselected_pass_loose_mva);
+// 	elesTLVtight = Get_vecTLorentzVectorCMS(selectedElectrons_preselected_pass_tight_mva);
+	
+	vecPatMuon selectedMuons_preselected_pass_tight_mva = Get_vecPatMuon_Passing_MuonLepMVA(selectedMuons_preselected,selectedJets_forLepMVA,0.7); // tight=0.7, loose=-0.3
+	vecPatMuon selectedMuons_preselected_pass_loose_mva = Get_vecPatMuon_Passing_MuonLepMVA(selectedMuons_preselected,selectedJets_forLepMVA,0.7); // tight=0.7, loose=-0.3
+	
+// 	muonsTLVloose.clear();
+//  	muonsTLVtight.clear();
+// 	//muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_preselected);
+// 	muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_preselected_pass_loose_mva);
+// 	muonsTLVtight = Get_vecTLorentzVectorCMS(selectedMuons_preselected_pass_tight_mva);
+		
+	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons(muonsTLVtight, elesTLVtight);
+	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons(muonsTLVloose, elesTLVloose);
+	
+// 	numTightMuons = muonsTLVtight.size();
+// 	numLooseMuons = muonsTLVloose.size();
+// 	numTightElectrons = elesTLVtight.size();
+// 	numLooseElectrons = elesTLVloose.size();
+// 	
+// 		
+// 	muonIsosLoose = Get_Isos(selectedMuons_preselected_pass_loose_mva);
+// 	muonIsosTight = Get_Isos(selectedMuons_preselected_pass_tight_mva);
+// 	electronIsosLoose = Get_Isos(selectedElectrons_preselected_pass_loose_mva);
+// 	electronIsosTight = Get_Isos(selectedElectrons_preselected_pass_tight_mva);
 
-	numtighteles->Fill					(numTightElectrons,weight);
-	numlooseeles->Fill					(numLooseElectrons,weight);
-	numtightmuons->Fill					(numTightMuons,weight);
-	numloosemuons->Fill					(numLooseMuons,weight);
-	numrawjets->Fill					(numRawJets,weight);
-	numjetsnoele->Fill					(numJetsNoEle,weight);
-	numjetsnomu->Fill					(numJetsNoMu,weight);
-	numjetsnomuorele->Fill					(numJetsNoLep,weight);
-	numjetscorrected->Fill					(numJetsCorr,weight);
-	numjetsselectedloose->Fill				(numSelJetsLoose,weight);
-	numbtagsselectedlooseCSVM->Fill				(numSelJetsLooseCSVM,weight);
-	if (numTightMuons) leadingtightmupt->Fill		(muonsTLVtight[0].Pt(),weight);
-	if (numTightMuons>1) subleadingtightmupt->Fill		(muonsTLVtight[1].Pt(),weight);
-	if (numTightElectrons) leadingtightelept->Fill		(elesTLVtight[0].Pt(),weight);
-	if (numTightElectrons>1) subleadingtightelept->Fill	(elesTLVtight[1].Pt(),weight);
-	if (leptonsTLVtight.size()) leadingtightleppt->Fill	(leptonsTLVtight[0].Pt(),weight);
-	if (leptonsTLVtight.size()>1) subleadingtightleppt->Fill(leptonsTLVtight[1].Pt(),weight);
-	if (jetsTLVloose.size())jet1pt->Fill			(jetsTLVloose[0].Pt(),weight);
-	if (jetsTLVloose.size()>1)jet2pt->Fill			(jetsTLVloose[1].Pt(),weight);
-	if (jetsTLVloose.size()>2)jet3pt->Fill			(jetsTLVloose[2].Pt(),weight);
-	if (jetsTLVloose.size()>3)jet4pt->Fill			(jetsTLVloose[3].Pt(),weight);
-	met_pt->Fill						(theMET.Pt(),weight);
+	
+	
+	if (debug) cout << "hey6" << endl;
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// assign values to tree variables:
+	numLooseMuons_intree = numLooseMuons;
+	numLooseElectrons_intree = numLooseElectrons;
+	numTightMuons_intree = numTightMuons;
+	numTightElectrons_intree = numTightElectrons;
+	
+	//testvect.push_back(3.);
+	//testvect.push_back(11.);	
+	//testTLV_intree = theMET;
+	
+	mcwgt_intree = wgt;
+	
+	jetpartonflavor_intree = vecJetPdgIDs;
+	
+	Jets_intree = jetsTLVloose;
+	MET_intree = theMET;
+	LooseElectrons_intree = elesTLVloose;
+	LooseMuons_intree = muonsTLVloose;
+	TightElectrons_intree = elesTLVtight;
+	TightMuons_intree = muonsTLVtight;
+	JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
+	pileup_jet_ID_intree = ReturnPUJetID(selectedJets_loose_noSys_unsorted);
+	
+	
+	// fill it:
+	//summaryTree->Fill();
+	
+	if (debug) cout << "hey7" << endl;
+	
+	if ((numTightMuons+numTightElectrons)>0 && (numLooseMuons+numLooseElectrons)>1)
+	{
+	
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		// fill some basic histos:
+
+		numtighteles->Fill					(numTightElectrons,weight);
+		numlooseeles->Fill					(numLooseElectrons,weight);
+		numtightmuons->Fill					(numTightMuons,weight);
+		numloosemuons->Fill					(numLooseMuons,weight);
+		numtightleptons->Fill					(numTightMuons+numTightElectrons,weight);
+		numlooseleptons->Fill					(numLooseMuons+numLooseElectrons,weight);
+		numrawjets->Fill					(numRawJets,weight);
+		numjetsnoele->Fill					(numJetsNoEle,weight);
+		numjetsnomu->Fill					(numJetsNoMu,weight);
+		numjetsnomuorele->Fill					(numJetsNoLep,weight);
+		numjetscorrected->Fill					(numJetsCorr,weight);
+		numjetsselectedloose->Fill				(numSelJetsLoose,weight);
+		numbtagsselectedlooseCSVM->Fill				(numSelJetsLooseCSVM,weight);
+		if (numTightMuons) leadingtightmupt->Fill		(muonsTLVtight[0].Pt(),weight);
+		if (numTightMuons>1) subleadingtightmupt->Fill		(muonsTLVtight[1].Pt(),weight);
+		if (numTightElectrons) leadingtightelept->Fill		(elesTLVtight[0].Pt(),weight);
+		if (numTightElectrons>1) subleadingtightelept->Fill	(elesTLVtight[1].Pt(),weight);
+		if (leptonsTLVtight.size()) leadingtightleppt->Fill	(leptonsTLVtight[0].Pt(),weight);
+		if (leptonsTLVtight.size()>1) subleadingtightleppt->Fill(leptonsTLVtight[1].Pt(),weight);
+		if (jetsTLVloose.size())jet1pt->Fill			(jetsTLVloose[0].Pt(),weight);
+		if (jetsTLVloose.size()>1)jet2pt->Fill			(jetsTLVloose[1].Pt(),weight);
+		if (jetsTLVloose.size()>2)jet3pt->Fill			(jetsTLVloose[2].Pt(),weight);
+		if (jetsTLVloose.size()>3)jet4pt->Fill			(jetsTLVloose[3].Pt(),weight);
+		met_pt->Fill						(theMET.Pt(),weight);
+		if (numLooseMuons) leadingloosemupt->Fill		(muonsTLVloose[0].Pt(),weight);
+		if (numLooseMuons>1) subleadingloosemupt->Fill		(muonsTLVloose[1].Pt(),weight);
+		if (numLooseElectrons) leadinglooseelept->Fill		(elesTLVloose[0].Pt(),weight);
+		if (numLooseElectrons>1) subleadinglooseelept->Fill	(elesTLVloose[1].Pt(),weight);
+		if (leptonsTLVloose.size()) leadinglooseleppt->Fill	(leptonsTLVloose[0].Pt(),weight);
+		if (leptonsTLVloose.size()>1) subleadinglooseleppt->Fill(leptonsTLVloose[1].Pt(),weight);
+
+
+
+		numraweles->Fill  					(electrons->size(),weight);
+		numrawmuons->Fill  					(muons->size(),weight);
+		numrawleps->Fill  					(muons->size() + electrons->size(),weight);
+		double ele1pt=0., ele2pt=0., mu1pt=0., mu2pt=0.;
+		if (electrons->size()) ele1pt = electrons->at(0).pt();
+		if (electrons->size()>1) ele2pt = electrons->at(1).pt();
+		if (muons->size()) mu1pt = muons->at(0).pt();
+		if (muons->size()>1) mu2pt = muons->at(1).pt();
+		if (ele1pt) rawele1pt->Fill  				(ele1pt,weight);
+		if (ele2pt) rawele2pt->Fill  				(ele2pt,weight);
+		if (mu1pt) rawmu1pt->Fill  				(mu1pt,weight);
+		if (mu2pt) rawmu2pt->Fill  				(mu2pt,weight);
+		if (mu1pt + ele1pt) rawlep1pt->Fill			(std::max(mu1pt,ele1pt),weight);
+		if (mu2pt + ele2pt) rawlep2pt->Fill			(std::max(mu2pt,ele2pt),weight);
+
+		for (int i=2; i<(int)electrons->size(); i++) rawlep3ormorept->Fill(electrons->at(i).pt(),weight);
+		for (int i=2; i<(int)muons->size(); i++) rawlep3ormorept->Fill(muons->at(i).pt(),weight);
+	 
+	}
+
 	// .....
 
 
@@ -427,11 +635,12 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	// In this case, I'm doing some trigger studies:
 	// ////////////////////////////////////////////////////////////////////////////////////////////
 	
-	
+	if (debug) cout << "hey8" << endl;
+
 	
 	edm::Handle<trigger::TriggerEvent> aodTriggerEvent;   
 	event.getByLabel(edm::InputTag("hltTriggerSummaryAOD", "", hltTag), aodTriggerEvent); // this won't be in a regular miniAOD sample!
-	//const trigger::TriggerObjectCollection objects = aodTriggerEvent->getObjects();
+	const trigger::TriggerObjectCollection objects = aodTriggerEvent->getObjects();
 	
 	if (numLooseMuons>1)
 	{
@@ -484,18 +693,112 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 		}
 	}
 	
-	//if(numLooseElectrons>1&&numTightElectrons>0) lep1_lep2_pt->Fill(elesTLVtight[0].Pt(),elesTLVloosenotight[0].Pt());
-	
-	// if(numLooseMuons>1&&numTightMuons>0)
-// 	{
-// 		if (muonsTLVloose[0].Pt()!=muonsTLVtight[0].Pt()) lep1_lep2_pt->Fill(muonsTLVtight[0].Pt(),muonsTLVloose[0].Pt());
-// 		else lep1_lep2_pt->Fill(muonsTLVtight[0].Pt(),muonsTLVloose[1].Pt());
-// 	}
-	
 
+
+
+
+	if (debug) cout << "hey9" << endl;
+
+
+////////////////////// getting hlt objects from aodTriggerEvent:///////////////////////////////////////////
+	
+	strcpy (last_module_with_saved_tags_label,"none");
+	
+	int last_module_run_index = triggerResults->index(hltConfig_.triggerIndex(eleltriggerstostudy[0])); // NOT nec. same as last saved tags module
+	
+	vstring the_saved_tag_modules = hltConfig_.saveTagsModules(hltConfig_.triggerIndex(eleltriggerstostudy[0]));
+	
+	string mod_label = hltConfig_.moduleLabel(hltConfig_.triggerIndex(eleltriggerstostudy[0]),last_module_run_index);
+	
+ 	vint last_module_with_saved_tags_obj_ID;
+ 	vdouble last_module_with_saved_tags_obj_pt;
+ 	vdouble last_module_with_saved_tags_obj_eta;
+ 	vdouble last_module_with_saved_tags_obj_phi;
+ 	int objs_found = 0;
+	//char dummy = "";
+	//char last_module_with_saved_tags_label[] = "";
+	//int last_module_with_saved_tags_index;
+	
+	if (the_saved_tag_modules.size()>0)
+	{
+		for (int mods = (the_saved_tag_modules.size() - 1); mods>=0; mods--) // loop backwards through the modules
+		{
+			edm::InputTag moduleWhoseResultsWeWant(the_saved_tag_modules[mods], "", hltTag); // get the input tag of this module
+						
+			strcpy (last_module_with_saved_tags_label,the_saved_tag_modules[mods].c_str()); // get the name (char array) of this module				
+			
+			last_module_with_saved_tags_index = hltConfig_.moduleIndex(hltConfig_.triggerIndex(eleltriggerstostudy[0]),the_saved_tag_modules[mods]); // get this index of this module
+
+			unsigned int indexOfModuleInAodTriggerEvent = aodTriggerEvent->filterIndex(moduleWhoseResultsWeWant); // get the index as saved in aodtriggerevent
+			
+			if (indexOfModuleInAodTriggerEvent < aodTriggerEvent->sizeFilters())
+			{
+				const trigger::Keys &keys = aodTriggerEvent->filterKeys( indexOfModuleInAodTriggerEvent ); // get the keys to the objects
+				
+				if (objs_found<(int)keys.size()) objs_found = keys.size(); // the number of saved objects in this module is == the size of the keys
+				
+				//if (objs_found>1)
+				//{	
+				
+					for ( size_t iKey = 0; iKey < keys.size(); iKey++ )
+					{
+						trigger::TriggerObject foundObject = objects[keys[iKey]];					
+
+						//int object_number = iKey;
+
+						last_module_with_saved_tags_obj_ID.push_back(foundObject.id()); // save the object(s) info
+						last_module_with_saved_tags_obj_pt.push_back(foundObject.pt());
+						last_module_with_saved_tags_obj_eta.push_back(foundObject.eta());
+						last_module_with_saved_tags_obj_phi.push_back(foundObject.phi());
+
+					}
+
+					if (last_module_with_saved_tags_obj_ID.size())
+					{
+						cout << last_module_with_saved_tags_label << endl;
+						break;
+					} // once ANY objects are found, break the loop (we want the objects of the last filter module that had saved object info, and then stop once we get them)
+			
+				//}
+			}
+		}
+	}
+
+// 	if (objs_found)
+// 	{
+// 		cout << " " << endl;
+// 		cout << "the found objects: " << endl;
+// 		
+// 		for (int obit=0; obit<(int)last_module_with_saved_tags_obj_ID.size(); obit++)
+// 		{
+// 			cout << "  " << endl;
+// 			cout << last_module_with_saved_tags_obj_ID[obit] << endl;
+// 			cout << last_module_with_saved_tags_obj_pt[obit] << endl;
+// 			cout << last_module_with_saved_tags_obj_eta[obit] << endl;
+// 			cout << last_module_with_saved_tags_obj_phi[obit] << endl;
+// 			cout << "  " << endl;
+// 			cout << "  " << endl;
+// 						
+// 			
+// 		}
+// 	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	
+	if (debug) cout << "hey10" << endl;
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	//
 	// select events with one tight lepton with pt > 20, and one additional loose lepton with pt >10 :
-	double leg1 = 20.; //pt
-	double leg2 = 10.; //pt
+	//
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//double leg1 = 20.; //pt	// 2012 menu
+	//double leg2 = 10.; //pt	// 2012 menu
+	
+	double leg1 = 25.; //pt		// new 1.4 menu (electrons)
+	double leg2 = 15.; //pt	// new 1.4 menu (electrons)
+	//double leg2 = 10.; //pt		// trying something
 	
 	double loosedubmu2pt = -1.;
 	double loosedubel2pt = -1.;
@@ -571,11 +874,138 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	// also, pt of leps that passed, didn't pass certain triggers:
 	
 	//string extra_trig = "HLT_IsoMu30_v12";
-	string extra_trig = "HLT_Ele27_WP80_v13";
+	//string extra_trig = "HLT_Ele27_WP80_v13";
+	//extra_trig = "HLT_Ele27_eta2p1_WP85_Gsf_v1";
+	extra_trig = alltriggerstostudy[9];
 	//int extratrigindex = hltConfig_.triggerIndex(extra_trig);
+
+	
+	// find gen electrons:
+	
+	int gen_ele_count = 0;
+	//bool foundgenleading = false;
+	//bool foundgensubleading = false;
+	int leadinggenindex = -1;
+	int subleadinggenindex = -1;
+	
+	//double matchedpt = -99.
+	//double matchedeta = -999.
+	//double matchedphi = -999.
+	double minamount = 99999.;
+	
+/////////// Electrons //////////////////////////	
+	for (int i=0; i<genpartsize; i++)
+	{		
+		if (!tightelepass) continue;
+		//if (!((genparticles->at(i).status()>20)&&(genparticles->at(i).status()<30))) continue; // if you include 0-10, much more electrons pass this whole thing. but, 20-30 is supposed to be hard scatter process...
+		if (!((genparticles->at(i).status()>0)&&(genparticles->at(i).status()<10))) continue; // after looking at print statements, determined that 20-30 range is copy of some particles in 1-9 range
+		//cout << "hey1" << endl;
+		if (abs(genparticles->at(i).pdgId())!=11) continue;
+		//cout << "hey2" << endl;
+		//if (fabs(genparticles->at(i).eta())>2.5) continue;
+		//cout << "hey3" << endl;
+		if ( !(abs(genparticles->at(i).mother()->pdgId())==25 || abs(genparticles->at(i).mother()->pdgId())==24 || abs(genparticles->at(i).mother()->pdgId())==23) ) continue;
+		
+		gen_ele_count++; // trying something
+		
+		double dR = sqrt((elesTLVtight[0].Eta() - genparticles->at(i).eta())*(elesTLVtight[0].Eta() - genparticles->at(i).eta()) + (elesTLVtight[0].Phi() - genparticles->at(i).phi())*(elesTLVtight[0].Phi() - genparticles->at(i).phi()));
+		double dptoverpt = fabs((elesTLVtight[0].Pt() - genparticles->at(i).pt()) / elesTLVtight[0].Pt());
+		//double amount = dR + dptoverpt;
+		double amount = dptoverpt;
+		
+		//if (amount<minamount)
+		if (amount<minamount && dR<0.5)
+		{
+			minamount = amount;
+			leadinggenindex = i;
+		}
+		
+	}
+	
+	double minamount2 = 99999.;
+	
+	for (int i=0; i<genpartsize; i++)
+	{		
+		if (!loosedubelepass) continue;
+		if (!((genparticles->at(i).status()>0)&&(genparticles->at(i).status()<10))) continue;
+		if (i==leadinggenindex) continue;
+		if (abs(genparticles->at(i).pdgId())!=11) continue;
+		if ( !(abs(genparticles->at(i).mother()->pdgId())==25 || abs(genparticles->at(i).mother()->pdgId())==24 || abs(genparticles->at(i).mother()->pdgId())==23) ) continue;
+		
+		double dR = sqrt((loosedubel2eta - genparticles->at(i).eta())*(loosedubel2eta - genparticles->at(i).eta()) + (loosedubel2phi - genparticles->at(i).phi())*(loosedubel2phi - genparticles->at(i).phi()));
+		double dptoverpt = fabs((loosedubel2pt - genparticles->at(i).pt()) / loosedubel2pt);
+		//double amount = dR + dptoverpt;
+		double amount = dptoverpt;
+		
+		//if (amount<minamount2)
+		if (amount<minamount2 && dR<0.5)
+		{
+			minamount2 = amount;
+			subleadinggenindex = i;
+		}
+	}
+
+	if (debug) cout << "hey11" << endl;
+	
+/////////////////////// Muons //////////////////////////
+
+// 	for (int i=0; i<genpartsize; i++)
+// 	{		
+// 		if (!tightmupass) continue;
+// 		//if (!((genparticles->at(i).status()>20)&&(genparticles->at(i).status()<30))) continue; // if you include 0-10, much more electrons pass this whole thing. but, 20-30 is supposed to be hard scatter process...
+// 		if (!((genparticles->at(i).status()>0)&&(genparticles->at(i).status()<10))) continue; // after looking at print statements, determined that 20-30 range is copy of some particles in 1-9 range
+// 		//cout << "hey1" << endl;
+// 		if (abs(genparticles->at(i).pdgId())!=13) continue;
+// 		//cout << "hey2" << endl;
+// 		//if (fabs(genparticles->at(i).eta())>2.5) continue;
+// 		//cout << "hey3" << endl;
+// 		
+// 		gen_ele_count++; // trying something
+// 		
+// 		double dR = sqrt((muonsTLVtight[0].Eta() - genparticles->at(i).eta())*(muonsTLVtight[0].Eta() - genparticles->at(i).eta()) + (muonsTLVtight[0].Phi() - genparticles->at(i).phi())*(muonsTLVtight[0].Phi() - genparticles->at(i).phi()));
+// 		double dptoverpt = fabs((muonsTLVtight[0].Pt() - genparticles->at(i).pt()) / muonsTLVtight[0].Pt());
+// 		//double amount = dR + dptoverpt;
+// 		double amount = dptoverpt;
+// 		
+// 		//if (amount<minamount)
+// 		if (amount<minamount && dR<0.5)
+// 		{
+// 			minamount = amount;
+// 			leadinggenindex = i;
+// 		}
+// 		
+// 	}
+// 	
+// 	double minamount2 = 99999.;
+// 	
+// 	for (int i=0; i<genpartsize; i++)
+// 	{		
+// 		if (!loosedubmupass) continue;
+// 		if (!((genparticles->at(i).status()>0)&&(genparticles->at(i).status()<10))) continue;
+// 		if (i==leadinggenindex) continue;
+// 		if (abs(genparticles->at(i).pdgId())!=13) continue;
+// 
+// 		double dR = sqrt((loosedubmu2eta - genparticles->at(i).eta())*(loosedubmu2eta - genparticles->at(i).eta()) + (loosedubmu2phi - genparticles->at(i).phi())*(loosedubmu2phi - genparticles->at(i).phi()));
+// 		double dptoverpt = fabs((loosedubmu2pt - genparticles->at(i).pt()) / loosedubmu2pt);
+// 		//double amount = dR + dptoverpt;
+// 		double amount = dptoverpt;
+// 		
+// 		//if (amount<minamount2)
+// 		if (amount<minamount2 && dR<0.5)
+// 		{
+// 			minamount2 = amount;
+// 			subleadinggenindex = i;
+// 		}
+// 	}	
+
+
+
+
 
 	if (tightmupass&&loosedubmupass)
 	{
+		if (debug) cout << "hey11.00" << endl;
+		
 		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[0]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount += wgt; // doublemucount++;
 		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount2 += wgt; // doublemucount2++;
 		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2]))||triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) doublemucount3 += wgt; // doublemucount3++;
@@ -592,6 +1022,26 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 		mumu_lep1_denom->Fill(muonsTLVtight[0].Pt());
 		mumu_lep2_denom->Fill(loosedubmu2pt);
 		
+		if (debug) cout << "hey11.01" << endl;
+		
+		if ((leadinggenindex>-1) && genpartsize)
+		{
+
+			leadingMuon_pat_gen_dpt->Fill((muonsTLVtight[0].Pt() - genparticles->at(leadinggenindex).pt()) / muonsTLVtight[0].Pt());
+			leadingMuon_pat_gen_deta_dphi->Fill( muonsTLVtight[0].Eta() - genparticles->at(leadinggenindex).eta(), muonsTLVtight[0].Phi() - genparticles->at(leadinggenindex).phi());
+			if (debug) cout << "hey11.02" << endl;
+		}
+		
+		if (debug) cout << "hey11.02b" << endl;
+		
+		if ((subleadinggenindex>-1) && genpartsize) 
+		{
+
+			subleadingMuon_pat_gen_dpt->Fill((loosedubmu2pt - genparticles->at(subleadinggenindex).pt()) / loosedubmu2pt);
+			subleadingMuon_pat_gen_deta_dphi->Fill( loosedubmu2eta - genparticles->at(subleadinggenindex).eta(), loosedubmu2phi - genparticles->at(subleadinggenindex).phi());
+			if (debug) cout << "hey11.03" << endl;
+		}
+		if (debug) cout << "hey11.03b" << endl;
 		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[0]))) 
 		{ 
 			lep1_pt_didpass_double_lep[0]->Fill(muonsTLVtight[0].Pt()); 
@@ -602,8 +1052,10 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_phi_didpass_double_lep[0]->Fill(loosedubmu2phi);
 			lep1_iso_didpass_double_lep[0]->Fill(muonIsosTight[0]); 
 			lep2_iso_didpass_double_lep[0]->Fill(loosedubmu2iso);
+			if (debug) cout << "hey11.04" << endl;
 			 
 		}
+		if (debug) cout << "hey11.04b" << endl;
 		if ((!triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[0])))&&triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) 
 		{ 
 			lep1_pt_didntpass_double_lep_but_passed_single_lep[0]->Fill(muonsTLVtight[0].Pt()); 
@@ -614,9 +1066,10 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_phi_didntpass_double_lep_but_passed_single_lep[0]->Fill(loosedubmu2phi);
 			lep1_iso_didntpass_double_lep_but_passed_single_lep[0]->Fill(muonIsosTight[0]); 
 			lep2_iso_didntpass_double_lep_but_passed_single_lep[0]->Fill(loosedubmu2iso);
-			
+			if (debug) cout << "hey11.05" << endl;
 
 		}
+		if (debug) cout << "hey11.05b" << endl;
 		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1]))) 
 		{ 
 			lep1_pt_didpass_double_lep[1]->Fill(muonsTLVtight[0].Pt()); 
@@ -627,8 +1080,9 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_phi_didpass_double_lep[1]->Fill(loosedubmu2phi);
 			lep1_iso_didpass_double_lep[1]->Fill(muonIsosTight[0]); 
 			lep2_iso_didpass_double_lep[1]->Fill(loosedubmu2iso);			
-			 
+			 if (debug) cout << "hey11.06" << endl;
 		}
+		if (debug) cout << "hey11.06b" << endl;
 		if ((!triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[1])))&&triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) 
 		{ 
 			lep1_pt_didntpass_double_lep_but_passed_single_lep[1]->Fill(muonsTLVtight[0].Pt()); 
@@ -639,8 +1093,9 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_phi_didntpass_double_lep_but_passed_single_lep[1]->Fill(loosedubmu2phi);
 			lep1_iso_didntpass_double_lep_but_passed_single_lep[1]->Fill(muonIsosTight[0]); 
 			lep2_iso_didntpass_double_lep_but_passed_single_lep[1]->Fill(loosedubmu2iso);
-									 
+			if (debug) cout << "hey11.07" << endl;				 
 		}
+		if (debug) cout << "hey11.07b" << endl;
 		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2]))) 
 		{ 
 			lep1_pt_didpass_double_lep[2]->Fill(muonsTLVtight[0].Pt()); 
@@ -651,9 +1106,10 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_phi_didpass_double_lep[2]->Fill(loosedubmu2phi);
 			lep1_iso_didpass_double_lep[2]->Fill(muonIsosTight[0]); 
 			lep2_iso_didpass_double_lep[2]->Fill(loosedubmu2iso);
-			
+			if (debug) cout << "hey11.08" << endl;
 			 
 		}
+		if (debug) cout << "hey11.08b" << endl;
 		if ((!triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2])))&&triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) 
 		{ 
 			lep1_pt_didntpass_double_lep_but_passed_single_lep[2]->Fill(muonsTLVtight[0].Pt()); 
@@ -664,8 +1120,9 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_phi_didntpass_double_lep_but_passed_single_lep[2]->Fill(loosedubmu2phi);
 			lep1_iso_didntpass_double_lep_but_passed_single_lep[2]->Fill(muonIsosTight[0]); 
 			lep2_iso_didntpass_double_lep_but_passed_single_lep[2]->Fill(loosedubmu2iso);
-			
+			if (debug) cout << "hey11.09" << endl;
 		}
+		if (debug) cout << "hey11.09b" << endl;
 		if (triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[3]))) 
 		{ 
 			lep1_pt_didpass_double_lep[3]->Fill(muonsTLVtight[0].Pt()); 
@@ -676,8 +1133,9 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_phi_didpass_double_lep[3]->Fill(loosedubmu2phi);
 			lep1_iso_didpass_double_lep[3]->Fill(muonIsosTight[0]); 
 			lep2_iso_didpass_double_lep[3]->Fill(loosedubmu2iso);			
-			 
+			if (debug) cout << "hey11.10" << endl;
 		}
+		if (debug) cout << "hey11.10b" << endl;
 		if ((!triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[3])))&&triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) 
 		{ 
 			lep1_pt_didntpass_double_lep_but_passed_single_lep[3]->Fill(muonsTLVtight[0].Pt()); 
@@ -688,9 +1146,46 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_phi_didntpass_double_lep_but_passed_single_lep[3]->Fill(loosedubmu2phi);
 			lep1_iso_didntpass_double_lep_but_passed_single_lep[3]->Fill(muonIsosTight[0]); 
 			lep2_iso_didntpass_double_lep_but_passed_single_lep[3]->Fill(loosedubmu2iso);
-			 
+			if (debug) cout << "hey11.11" << endl;
+		}
+		if (debug) cout << "hey11.11b" << endl;
+		// gen stuff
+		if ((!triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2])))&&(!triggerResults->accept(hltConfig_.triggerIndex(extra_trig))))
+		{			
+			
+			if (leadinggenindex==-1 && subleadinggenindex==-1) gen_mu_info_vs_hlt->Fill(0.,0.,wgt);
+			if ((leadinggenindex>=-1 && subleadinggenindex==-1) || (leadinggenindex==-1 && subleadinggenindex>=-1)) gen_mu_info_vs_hlt->Fill(0.,1.,wgt);
+			if (leadinggenindex>=-1 && subleadinggenindex>=-1) gen_mu_info_vs_hlt->Fill(0.,2.,wgt);
+			if (debug) cout << "hey11.12" << endl;
+			
+		}
+		if (debug) cout << "hey11.12b" << endl;
+		if ((!triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2])))&&(triggerResults->accept(hltConfig_.triggerIndex(extra_trig))))
+		{
+			if (leadinggenindex==-1 && subleadinggenindex==-1) gen_mu_info_vs_hlt->Fill(1.,0.,wgt);
+			if ((leadinggenindex>=-1 && subleadinggenindex==-1) || (leadinggenindex==-1 && subleadinggenindex>=-1)) gen_mu_info_vs_hlt->Fill(1.,1.,wgt);
+			if (leadinggenindex>=-1 && subleadinggenindex>=-1) gen_mu_info_vs_hlt->Fill(1.,2.,wgt);
+			if (debug) cout << "hey11.13" << endl;
+		}
+		if (debug) cout << "hey11.13b" << endl;
+		if ((triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2])))&&(!triggerResults->accept(hltConfig_.triggerIndex(extra_trig))))
+		{
+			if (leadinggenindex==-1 && subleadinggenindex==-1) gen_mu_info_vs_hlt->Fill(2.,0.,wgt);
+			if ((leadinggenindex>=-1 && subleadinggenindex==-1) || (leadinggenindex==-1 && subleadinggenindex>=-1)) gen_mu_info_vs_hlt->Fill(2.,1.,wgt);
+			if (leadinggenindex>=-1 && subleadinggenindex>=-1) gen_mu_info_vs_hlt->Fill(2.,2.,wgt);
+			if (debug) cout << "hey11.14" << endl;
+		}
+		if (debug) cout << "hey11.14b" << endl;
+		if ((triggerResults->accept(hltConfig_.triggerIndex(mumutriggerstostudy[2])))&&(triggerResults->accept(hltConfig_.triggerIndex(extra_trig))))
+		{
+			
+			if (leadinggenindex==-1 && subleadinggenindex==-1) gen_mu_info_vs_hlt->Fill(3.,0.,wgt);
+			if ((leadinggenindex>=-1 && subleadinggenindex==-1) || (leadinggenindex==-1 && subleadinggenindex>=-1)) gen_mu_info_vs_hlt->Fill(3.,1.,wgt);
+			if (leadinggenindex>=-1 && subleadinggenindex>=-1) gen_mu_info_vs_hlt->Fill(3.,2.,wgt);
+			if (debug) cout << "hey11.15" << endl;
 		}
 		
+		if (debug) cout << "hey11.1" << endl;
 	}
 
 	if (tightelepass&&loosedubelepass)
@@ -704,6 +1199,52 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 		elel_lep1_denom->Fill(elesTLVtight[0].Pt());
 		elel_lep2_denom->Fill(loosedubel2pt);
 		
+		// cout << "  " << endl;
+// 		cout << "  " << endl;
+// 		cout << "tight ele kine: " << elesTLVtight[0].Pt() << "  " << elesTLVtight[0].Eta() << "  " << elesTLVtight[0].Phi() << endl;
+// 		cout << "loose ele kine: " << loosedubel2pt << "  " << loosedubel2eta << "  " << loosedubel2phi << endl;
+// 		cout << "gen eles: " << endl;
+// 		for (int i=0; i<genpartsize; i++)
+// 		{
+// 			if (abs(genparticles->at(i).pdgId())!=11) continue;
+// 			cout << "pdgId: " << genparticles->at(i).pdgId() << "status: " << genparticles->at(i).status() << "kine: " << genparticles->at(i).pt() << "  " << genparticles->at(i).eta() << "  " << genparticles->at(i).phi() << endl;
+// 		}
+		
+		if ((leadinggenindex>-1) && genpartsize)
+		{
+			leadingEle_pat_gen_chosen_reso->Fill(minamount);
+			leadingEle_pat_gen_dpt->Fill((elesTLVtight[0].Pt() - genparticles->at(leadinggenindex).pt()) / elesTLVtight[0].Pt());
+			leadingEle_pat_gen_deta_dphi->Fill( elesTLVtight[0].Eta() - genparticles->at(leadinggenindex).eta(), elesTLVtight[0].Phi() - genparticles->at(leadinggenindex).phi());
+		}
+			
+		if ((subleadinggenindex>-1) && genpartsize) 
+		{
+			subleadingEle_pat_gen_chosen_reso->Fill(minamount2);
+			subleadingEle_pat_gen_dpt->Fill((loosedubel2pt - genparticles->at(subleadinggenindex).pt()) / loosedubel2pt);
+			subleadingEle_pat_gen_deta_dphi->Fill( loosedubel2eta - genparticles->at(subleadinggenindex).eta(), loosedubel2phi - genparticles->at(subleadinggenindex).phi());
+		}
+		
+		
+		double leadingpt = -99.;
+		double subleadingpt = -99.;
+		double leadingeta = -99.;
+		double subleadingeta = -99.;
+		
+		if (elesTLVtight[0].Pt() > loosedubel2pt)
+		{
+			leadingpt = elesTLVtight[0].Pt(); 
+			subleadingpt = loosedubel2pt;
+			leadingeta = elesTLVtight[0].Eta(); 
+			subleadingeta = loosedubel2eta;
+		}
+		if (elesTLVtight[0].Pt() <= loosedubel2pt)
+		{
+			leadingpt = loosedubel2pt;
+			subleadingpt = elesTLVtight[0].Pt(); 
+			leadingeta = loosedubel2eta;
+			subleadingeta = elesTLVtight[0].Eta();
+		}
+		
 		if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0]))) 
 		{ 
 			lep1_pt_didpass_double_lep[4]->Fill(elesTLVtight[0].Pt()); 
@@ -713,9 +1254,15 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep1_phi_didpass_double_lep[4]->Fill(elesTLVtight[0].Phi()); 
 			lep2_phi_didpass_double_lep[4]->Fill(loosedubel2phi);
 			lep1_iso_didpass_double_lep[4]->Fill(electronIsosTight[0]); 
-			lep2_iso_didpass_double_lep[4]->Fill(loosedubel2iso);			
+			lep2_iso_didpass_double_lep[4]->Fill(loosedubel2iso);	
+			
+			if (objs_found) lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(leadingpt,last_module_with_saved_tags_obj_pt[0]);
+			if (objs_found>1) lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingpt,last_module_with_saved_tags_obj_pt[1]);
+			if (objs_found) lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(leadingeta,last_module_with_saved_tags_obj_eta[0]);
+			if (objs_found>1) lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingeta,last_module_with_saved_tags_obj_eta[1]);
 			 
 		}
+		
 		if ((!triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0])))&&triggerResults->accept(hltConfig_.triggerIndex(extra_trig))) 
 		{ 
 			lep1_pt_didntpass_double_lep_but_passed_single_lep[4]->Fill(elesTLVtight[0].Pt()); 
@@ -725,8 +1272,16 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep1_phi_didntpass_double_lep_but_passed_single_lep[4]->Fill(elesTLVtight[0].Phi());
 			lep2_phi_didntpass_double_lep_but_passed_single_lep[4]->Fill(loosedubel2phi);
 			lep1_iso_didntpass_double_lep_but_passed_single_lep[4]->Fill(electronIsosTight[0]); 
-			lep2_iso_didntpass_double_lep_but_passed_single_lep[4]->Fill(loosedubel2iso);
-						 
+			lep2_iso_didntpass_double_lep_but_passed_single_lep[4]->Fill(loosedubel2iso);  		// 107
+			
+			
+			if (objs_found) lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(leadingpt,last_module_with_saved_tags_obj_pt[0]);
+			if (objs_found>1) lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingpt,last_module_with_saved_tags_obj_pt[1]);
+			if (objs_found) lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(leadingeta,last_module_with_saved_tags_obj_eta[0]);	// 93
+			if (objs_found>1) lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingeta,last_module_with_saved_tags_obj_eta[1]);	// 93		
+				
+			//if (objs_found) summaryTree->Fill();	// 
+					 
 		}
 		
 		if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[1]))) 
@@ -755,6 +1310,45 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			 
 		}
 		
+		
+		
+		// gen stuff
+		if ((!triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0])))&&(!triggerResults->accept(hltConfig_.triggerIndex(extra_trig))))
+		{
+			//if (gen_ele_count==0) gen_ele_info_vs_hlt->Fill(0.,0.);
+			//if (gen_ele_count==1) gen_ele_info_vs_hlt->Fill(0.,1.);
+			//if (gen_ele_count>=2) gen_ele_info_vs_hlt->Fill(0.,2.);			
+			
+			if (leadinggenindex==-1 && subleadinggenindex==-1) gen_ele_info_vs_hlt->Fill(0.,0.,wgt);
+			if ((leadinggenindex>=-1 && subleadinggenindex==-1) || (leadinggenindex==-1 && subleadinggenindex>=-1)) gen_ele_info_vs_hlt->Fill(0.,1.,wgt);
+			if (leadinggenindex>=-1 && subleadinggenindex>=-1) gen_ele_info_vs_hlt->Fill(0.,2.,wgt);
+			
+			
+		}
+		if ((!triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0])))&&(triggerResults->accept(hltConfig_.triggerIndex(extra_trig))))
+		{
+			if (leadinggenindex==-1 && subleadinggenindex==-1) gen_ele_info_vs_hlt->Fill(1.,0.,wgt);
+			if ((leadinggenindex>=-1 && subleadinggenindex==-1) || (leadinggenindex==-1 && subleadinggenindex>=-1)) gen_ele_info_vs_hlt->Fill(1.,1.,wgt);
+			if (leadinggenindex>=-1 && subleadinggenindex>=-1) gen_ele_info_vs_hlt->Fill(1.,2.,wgt);
+			
+		}
+		if ((triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0])))&&(!triggerResults->accept(hltConfig_.triggerIndex(extra_trig))))
+		{
+			if (leadinggenindex==-1 && subleadinggenindex==-1) gen_ele_info_vs_hlt->Fill(2.,0.,wgt);
+			if ((leadinggenindex>=-1 && subleadinggenindex==-1) || (leadinggenindex==-1 && subleadinggenindex>=-1)) gen_ele_info_vs_hlt->Fill(2.,1.,wgt);
+			if (leadinggenindex>=-1 && subleadinggenindex>=-1) gen_ele_info_vs_hlt->Fill(2.,2.,wgt);
+			
+		}
+		if ((triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0])))&&(triggerResults->accept(hltConfig_.triggerIndex(extra_trig))))
+		{
+			
+			if (leadinggenindex==-1 && subleadinggenindex==-1) gen_ele_info_vs_hlt->Fill(3.,0.,wgt);
+			if ((leadinggenindex>=-1 && subleadinggenindex==-1) || (leadinggenindex==-1 && subleadinggenindex>=-1)) gen_ele_info_vs_hlt->Fill(3.,1.,wgt);
+			if (leadinggenindex>=-1 && subleadinggenindex>=-1) gen_ele_info_vs_hlt->Fill(3.,2.,wgt);
+		}
+
+		if (debug) cout << "hey11.2" << endl;
+	
 	}
 
 	if (tightmupass&&muele_looseelepass)
@@ -792,7 +1386,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_iso_didntpass_double_lep_but_passed_single_lep[6]->Fill(electronIsosLoose[0]);
 						 
 		}	
-		
+		if (debug) cout << "hey11.3" << endl;
 	}
 
 	if (tightelepass&&muele_loosemupass)
@@ -829,35 +1423,31 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 			lep2_iso_didntpass_double_lep_but_passed_single_lep[7]->Fill(muonIsosLoose[0]);			
 			 
 		}	
-		
+		if (debug) cout << "hey11.4" << endl;
 		
 	}
 
 	
 	
-	edm::Handle<pat::TriggerObjectStandAloneCollection> eleHLTMatcheshand;
-	event.getByLabel("selectedPatTrigger",eleHLTMatcheshand);
-	pat::TriggerObjectStandAloneCollection eleHLTMatches = *eleHLTMatcheshand;
-	//pat::TriggerObjectStandAloneCollection eleHLTMatches = eleHLTMatchesallpaths.pathindices[hltConfig_.triggerIndex(eleltriggerstostudy[0])];
-	
-	//eleHLTMatches.unpackPathNames( hltConfig_.triggerNames );
-	
-	//const edm::TriggerNames triggerNames = event.triggerNames(*triggerResults);
-	
-	
-	
-	//trigRes theTrigRes = GetTriggers(event);
-	
-	///const edm::TriggerNames triggerNames = event.triggerNames(*theTrigRes);
-	
-	//eleHLTMatches.unpackPathNames( triggerNames );
-	
-	
-	//pat::
-	//TriggerEvent::
-	//TriggerObjectRefVector pathObjects( const std::string & namePath, bool firing = true ) const;
-	
-	// if (selectedElectrons_tight.size())
+// 	edm::Handle<pat::TriggerObjectStandAloneCollection> eleHLTMatcheshand;
+// 	event.getByLabel("selectedPatTrigger",eleHLTMatcheshand);
+// 	pat::TriggerObjectStandAloneCollection eleHLTMatches = *eleHLTMatcheshand;
+// 	//pat::TriggerObjectStandAloneCollection eleHLTMatches = eleHLTMatchesallpaths.pathindices[hltConfig_.triggerIndex(eleltriggerstostudy[0])];
+// 	
+// 	//eleHLTMatches.unpackPathNames( hltConfig_.triggerNames );
+// 	//const edm::TriggerNames triggerNames = event.triggerNames(*triggerResults);
+// 	
+// 	
+// 	//trigRes theTrigRes = GetTriggers(event);
+// 	///const edm::TriggerNames triggerNames = event.triggerNames(*theTrigRes);
+// 	//eleHLTMatches.unpackPathNames( triggerNames );
+// 	
+// 	
+// 	//pat::
+// 	//TriggerEvent::
+// 	//TriggerObjectRefVector pathObjects( const std::string & namePath, bool firing = true ) const;
+// 	
+// 	if (selectedElectrons_tight.size())
 // 	{
 // 	
 // 		//const pat::TriggerObjectStandAloneCollection eleHLTMatches = eleHLTMatchesallpaths.triggerObjectMatchesByPath( eleltriggerstostudy[0]); // ,false,false 
@@ -901,66 +1491,11 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 // 		}
 // 	
 // 	}
-	
-	
-//////////////////// getting hlt objects from aodTriggerEvent:///////////////////////////////////////////
-	
-// 	int last_module_run_index = triggerResults->index(extratrigindex);
 // 	
-// 	vstring the_saved_tag_modules = hltConfig_.saveTagsModules(extratrigindex);
 // 	
-// 	string mod_label = hltConfig_.moduleLabel(extratrigindex,last_module_run_index);
-// 	
-// 	vint last_module_with_saved_tags_obj_ID;
-// 	vdouble last_module_with_saved_tags_obj_pt;
-// 	vdouble last_module_with_saved_tags_obj_eta;
-// 	vdouble last_module_with_saved_tags_obj_phi;
-// 	int objs_found = 0;
-// 	//char dummy = "";
-// 	char last_module_with_saved_tags_label[] = "";
-// 	//int last_module_with_saved_tags_index;
-// 	
-// 	if (the_saved_tag_modules.size()>0)
-// 	{
-// 		for (int mods = (the_saved_tag_modules.size() - 1); mods>=0; mods--)
-// 		{
-// 			edm::InputTag moduleWhoseResultsWeWant(the_saved_tag_modules[mods], "", hltTag);
-// 						
-// 			strcpy (last_module_with_saved_tags_label,the_saved_tag_modules[mods].c_str());						
-// 			
-// 			//last_module_with_saved_tags_index = hltConfig_.moduleIndex(extratrigindex,the_saved_tag_modules[mods]);
-// 
-// 			unsigned int indexOfModuleInAodTriggerEvent = aodTriggerEvent->filterIndex(moduleWhoseResultsWeWant);
-// 			
-// 			if (indexOfModuleInAodTriggerEvent < aodTriggerEvent->sizeFilters())
-// 			{
-// 				const trigger::Keys &keys = aodTriggerEvent->filterKeys( indexOfModuleInAodTriggerEvent );
-// 				
-// 				if (objs_found<(int)keys.size()) objs_found = keys.size();
-// 				
-// 				for ( size_t iKey = 0; iKey < keys.size(); iKey++ )
-// 				{
-// 					trigger::TriggerObject foundObject = objects[keys[iKey]];					
-// 
-// 					//int object_number = iKey;
-// 
-// 					last_module_with_saved_tags_obj_ID.push_back(foundObject.id());
-// 					last_module_with_saved_tags_obj_pt.push_back(foundObject.pt());
-// 					last_module_with_saved_tags_obj_eta.push_back(foundObject.eta());
-// 					last_module_with_saved_tags_obj_phi.push_back(foundObject.phi());
-// 
-// 				}
-// 
-// 				if (last_module_with_saved_tags_obj_ID.size())
-// 				{
-// 					break;
-// 				}
-// 			}
-// 		}
-// 	}
-// 
-// 	if (objs_found) cout << objs_found << endl;
-//////////////////////////////////////////////////////////////////////////////////////
+	if (debug) cout << "hey12" << endl;
+		
+////////////////////////////////////////////////////////////////////////////////////
 
 	
 	
@@ -969,33 +1504,35 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 // 	variables->numTightMuons = numTightMuons;
 // 	variables->numTightElectrons = numTightElectrons;
 	
-	// assign values to tree variables:
-	numLooseMuons_intree = numLooseMuons;
-	numLooseElectrons_intree = numLooseElectrons;
-	numTightMuons_intree = numTightMuons;
-	numTightElectrons_intree = numTightElectrons;
+// 	// assign values to tree variables:
+// 	numLooseMuons_intree = numLooseMuons;
+// 	numLooseElectrons_intree = numLooseElectrons;
+// 	numTightMuons_intree = numTightMuons;
+// 	numTightElectrons_intree = numTightElectrons;
+// 	
+// 	//testvect.push_back(3.);
+// 	//testvect.push_back(11.);
+// 	
+// 	//testTLV_intree = theMET;
+// 	
+// 	mcwgt_intree = wgt;
+// 	
+// 	jetpartonflavor_intree = vecJetPdgIDs;
+// 	
+// 	Jets_intree = jetsTLVloose;
+// 	MET_intree = theMET;
+// 	LooseElectrons_intree = elesTLVloose;
+// 	LooseMuons_intree = muonsTLVloose;
+// 	TightElectrons_intree = elesTLVtight;
+// 	TightMuons_intree = muonsTLVtight;
+// 	JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
+// 		
+// 	
+// 	
+// 	// fill it:
+ 	summaryTree->Fill();
 	
-	//testvect.push_back(3.);
-	//testvect.push_back(11.);
-	
-	//testTLV_intree = theMET;
-	
-	
-	
-	Jets_intree = jetsTLVloose;
-	MET_intree = theMET;
-	LooseElectrons_intree = elesTLVloose;
-	LooseMuons_intree = muonsTLVloose;
-	TightElectrons_intree = elesTLVtight;
-	TightMuons_intree = muonsTLVtight;
-	JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
-		
-	
-	
-	// fill it:
-	//summaryTree->Fill();
-	
-
+	if (debug) cout << "hey13" << endl;
 	
 	
 } // end for each event
@@ -1019,6 +1556,7 @@ void TriggerAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup){
 	cout << "total events processed: " << eventcount << endl;
 	
 	cout << "trigger results" << endl;
+	
 // 	cout << mumutriggerstostudy[0] << "  " << doublemucount << "out of " << numpassedmumucuts << endl;
 // 	cout << mumutriggerstostudy[1] << "  " << doublemucount2 << "out of " << numpassedmumucuts << endl;
 // 	cout << mumutriggerstostudy[2] << "  " << doublemucount3 << "out of " << numpassedmumucuts << endl;
@@ -1031,11 +1569,13 @@ void TriggerAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup){
 // 	cout << "  " << endl;
 // 	cout << elmutriggerstostudy[0] << "  " << elemucount << "out of " << numpassedelmucuts << endl;
 
-
+	cout << "  " << endl;
+	cout << "triggers or'd with " << extra_trig << ": " << endl;
 	cout << mumutriggerstostudy[0] << "  " << doublemucount << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount/numpassedmumucuts << endl;
 	cout << mumutriggerstostudy[1] << "  " << doublemucount2 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount2/numpassedmumucuts << endl;
 	cout << mumutriggerstostudy[2] << "  " << doublemucount3 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount3/numpassedmumucuts << endl;
 	cout << mumutriggerstostudy[3] << "  " << doublemucount4 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount4/numpassedmumucuts << endl;
+	//cout << mumutriggerstostudy[1] << " or " <<  mumutriggerstostudy[2]  << "  " << doublemucount5 << "out of " << numpassedmumucuts << ", fraction: " << (double)doublemucount5/numpassedmumucuts << endl;
 	cout << "  " << endl;
 	cout << eleltriggerstostudy[0] << "  " << doubleelecount << "out of " << numpassedelelcuts << ", fraction: " << (double)doubleelecount/numpassedelelcuts << endl;
 	cout << eleltriggerstostudy[1] << "  " << doubleelecount2 << "out of " << numpassedelelcuts << ", fraction: " << (double)doubleelecount2/numpassedelelcuts << endl;
@@ -1046,18 +1586,28 @@ void TriggerAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup){
 	cout << "  " << endl;
 	cout << doublemucount5 <<  "  "  << numpassedmumucuts << endl;
 	cout << "  " << endl;
+	cout << "for individual trigger counts, see below (offline selection is given)" << endl;
+	cout << "  " << endl;
 	cout << "  " << endl;
 	
 	int numtrigs = hltConfig_.size();
 	std::vector<std::string> myTriggernames = hltConfig_.triggerNames();
-	
-	cout << "mumu: " << endl;
+	cout << "  " << endl;
+	cout << "  " << endl;
+	cout << "triggers firing on mumu selection: " << endl;
+	cout << "  " << endl;
 	for (int i =0; i<numtrigs; i++) cout << myTriggernames[i] << ":  " << allcount_mumu[i] << endl;
-	cout << "elel: " << endl;
+	cout << "  " << endl;
+	cout << "  " << endl;
+	cout << "triggers firing on elel selection: " << endl;
 	for (int i =0; i<numtrigs; i++) cout << myTriggernames[i] << ":  " << allcount_elel[i] << endl;
-	cout << "muel: " << endl;
+	cout << "  " << endl;
+	cout << "  " << endl;
+	cout << "triggers firing on muel selection: " << endl;
 	for (int i =0; i<numtrigs; i++) cout << myTriggernames[i] << ":  " << allcount_muel[i] << endl;
-	cout << "elmu: " << endl;
+	cout << "  " << endl;
+	cout << "  " << endl;
+	cout << "triggers firing on elmu selection: " << endl;
 	for (int i =0; i<numtrigs; i++) cout << myTriggernames[i] << ":  " << allcount_elmu[i] << endl;
 	
 
