@@ -94,7 +94,19 @@ namespace ttH
 
   };
 
+  class MET
+  {
+  public:
+    MET(){} // default constructor
 
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
+    float pt_forSync;
+    float phi_forSync;
+    
+    virtual ~MET(){};
+    ClassDef(MET, 1); 
+  };
 
 
 } // end of namespace ttH

@@ -1,6 +1,7 @@
 // created by Geoff Smith
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MultileptonAna.h"
+#include <algorithm>
 
 //// #if !defined( MULTILEPTONANA_CC )
 
@@ -858,6 +859,8 @@ vector<double> MultileptonAna::ReturnPUJetID (vecPatJet theobjs)
 	return thePUIDs;
 } 
 
+// bool sortByPt(const ttH::Lepton &lep1, const ttH::Lepton &lep2)
+// { return (lep1.obj.Pt() > lep2.obj.Pt()); }
 
 vector<ttH::Lepton> MultileptonAna::GetCollection (vecPatLepton theobjs)
 {
@@ -871,6 +874,12 @@ vector<ttH::Lepton> MultileptonAna::GetCollection (vecPatLepton theobjs)
 
       lepCollection.push_back(lep);
     }
+  // cout << "Unsorted..." << endl;
+  // for (const auto & lep: lepCollection) {cout << "lepton pt = "<< lep.obj.Pt() << endl;}
+  // std::sort(lepCollection.begin(),lepCollection.end(),sortByPt);
+  // cout << "Sorted..." << endl;
+  // for (const auto & lep: lepCollection) {cout << "lepton pt = "<< lep.obj.Pt() << endl;}
+
   return lepCollection;
 }
 
@@ -957,125 +966,19 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
   return jetCollection;
 }
 
-
-
-vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatMuon theobjs)
+vector<ttH::MET> MultileptonAna::GetCollection (patMETs theobjs)
 {
-	//int nobjs = theobjcollection.size();
-	vecTLorentzVectorCMS theobjs_vecTLV;
-	
-	for (muit iMuon= theobjs.begin(); iMuon != theobjs.end(); ++iMuon)
-	{
-		TLorentzVectorCMS tempTLV;
-		tempTLV.SetPxPyPzE(iMuon->px(),iMuon->py(),iMuon->pz(),iMuon->energy());
-		theobjs_vecTLV.push_back(tempTLV);
-	}
-		
-	return theobjs_vecTLV;
-		
+  vector<ttH::MET> theMETs;
+  ttH::MET theMET;
+  pat::MET patMET = theobjs->front();
+
+  theMET.obj = patMET.p4();
+  theMET.pt_forSync = floor(patMET.pt()*100+0.5)/100;
+  theMET.phi_forSync = floor(patMET.phi()*100+0.5)/100;
+
+  theMETs.push_back(theMET);
+  return theMETs;
 }
-vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatElectron theobjs)
-{
-	vecTLorentzVectorCMS theobjs_vecTLV;
-	
-	for (eleit iEle= theobjs.begin(); iEle != theobjs.end(); ++iEle)
-	{
-		TLorentzVectorCMS tempTLV;
-		tempTLV.SetPxPyPzE(iEle->px(),iEle->py(),iEle->pz(),iEle->energy());
-		theobjs_vecTLV.push_back(tempTLV);
-	}
-		
-	return theobjs_vecTLV;
-}
-vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatJet theobjs)
-{
-	vecTLorentzVectorCMS theobjs_vecTLV;
-	
-	for (jetit iJet = theobjs.begin(); iJet != theobjs.end(); ++iJet)
-	{
-		TLorentzVectorCMS tempTLV;
-		tempTLV.SetPxPyPzE(iJet->px(),iJet->py(),iJet->pz(),iJet->energy());
-		theobjs_vecTLV.push_back(tempTLV);
-	}
-		
-	return theobjs_vecTLV;
-	
-	
-}
-//vecTLorentzVector Get_vecTLorentzVector_SubJets ()
-
-TLorentzVectorCMS MultileptonAna::Get_TLorentzVectorCMS (patMETs theobjs)
-{
-	pat::MET theMET = theobjs->front();
-	TLorentzVectorCMS metTLV(theMET.px(),theMET.py(),0.0,theMET.pt());
-	return metTLV;
-	
-}
-TLorentzVectorCMS MultileptonAna::Get_TLorentzVectorCMS (pat::MET theMET)
-{
-	//pat::MET theMET = theobj;
-	TLorentzVectorCMS metTLV(theMET.px(),theMET.py(),0.0,theMET.pt());
-	return metTLV;
-	
-}
-
-vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS_sorted_leptons (vecTLorentzVectorCMS leps1, vecTLorentzVectorCMS leps2)
-{	
-
-	vecTLorentzVectorCMS newvecTLV;
-	newvecTLV.clear();
-	
-	// assuming they are already sorted by pt, respectively:
-	
-	int size1 = leps1.size();
- 	int size2 = leps2.size();
- 	
- 	if (size1==0 && size2!=0) return leps2;
-	if (size2==0 && size1!=0) return leps1;
-	if (size1==0 && size2==0) return newvecTLV;
-	
-	//int maxsize = max(size1,size2);
-	//int minsize = min(size1,size2);
-	
-	int i = 0;
-	int j = 0;
-	
-	while (true)
-	{
-		if ((i==size1)||(j==size2)) break;
-		else
-		{
-			if (leps1[i].Pt() < leps2[j].Pt())
-			{
-				newvecTLV.push_back(leps2[j]);
-				j++;
-			}
-			else
-			{
-				newvecTLV.push_back(leps1[i]);
-				i++;
-			}
-		}
-	}
-
-	while (true)
-	{
-		if (j==size2) break;
-		newvecTLV.push_back(leps2[j]);
-		j++;
-	}								
-
-	while (true)
-	{
-		if (i==size1) break;
-		newvecTLV.push_back(leps1[i]);
-		i++;
-	}
-
-	return newvecTLV;
-	
-}
-
 
 vdouble MultileptonAna::Get_Isos(vecPatMuon theobjs)
 {
@@ -1593,6 +1496,103 @@ vecPatMuon MultileptonAna::Get_vecPatMuon_Passing_MuonLepMVA(const vecPatMuon& m
 		if (value>MVA_Cut) passobjs.push_back(*iMu);
     	}
   	return passobjs;
+}
+
+
+
+
+///stuff for TriggerAna.cc
+vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatMuon theobjs)
+{
+  //int nobjs = theobjcollection.size();
+  vecTLorentzVectorCMS theobjs_vecTLV;
+  for (muit iMuon= theobjs.begin(); iMuon != theobjs.end(); ++iMuon)
+    {
+      TLorentzVectorCMS tempTLV;
+      tempTLV.SetPxPyPzE(iMuon->px(),iMuon->py(),iMuon->pz(),iMuon->energy());
+      theobjs_vecTLV.push_back(tempTLV);
+    }
+  return theobjs_vecTLV;
+}
+vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatElectron theobjs)
+{
+  vecTLorentzVectorCMS theobjs_vecTLV;
+  for (eleit iEle= theobjs.begin(); iEle != theobjs.end(); ++iEle)
+    {
+      TLorentzVectorCMS tempTLV;
+      tempTLV.SetPxPyPzE(iEle->px(),iEle->py(),iEle->pz(),iEle->energy());
+      theobjs_vecTLV.push_back(tempTLV);
+    }
+  return theobjs_vecTLV;
+}
+vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatJet theobjs)
+{
+  vecTLorentzVectorCMS theobjs_vecTLV;
+  for (jetit iJet = theobjs.begin(); iJet != theobjs.end(); ++iJet)
+    {
+      TLorentzVectorCMS tempTLV;
+      tempTLV.SetPxPyPzE(iJet->px(),iJet->py(),iJet->pz(),iJet->energy());
+      theobjs_vecTLV.push_back(tempTLV);
+    }
+  return theobjs_vecTLV;
+}
+
+TLorentzVectorCMS MultileptonAna::Get_TLorentzVectorCMS (patMETs theobjs)
+{
+  pat::MET theMET = theobjs->front();
+  TLorentzVectorCMS metTLV(theMET.px(),theMET.py(),0.0,theMET.pt());
+  return metTLV;
+}
+TLorentzVectorCMS MultileptonAna::Get_TLorentzVectorCMS (pat::MET theMET)
+{
+  //pat::MET theMET = theobj;
+  TLorentzVectorCMS metTLV(theMET.px(),theMET.py(),0.0,theMET.pt());
+  return metTLV;
+}
+vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS_sorted_leptons (vecTLorentzVectorCMS leps1, vecTLorentzVectorCMS leps2)
+{
+  vecTLorentzVectorCMS newvecTLV;
+  newvecTLV.clear();
+  // assuming they are already sorted by pt, respectively:
+  int size1 = leps1.size();
+  int size2 = leps2.size();
+  if (size1==0 && size2!=0) return leps2;
+  if (size2==0 && size1!=0) return leps1;
+  if (size1==0 && size2==0) return newvecTLV;
+  //int maxsize = max(size1,size2);
+  //int minsize = min(size1,size2);
+  int i = 0;
+  int j = 0;
+  while (true)
+    {
+      if ((i==size1)||(j==size2)) break;
+      else
+	{
+	  if (leps1[i].Pt() < leps2[j].Pt())
+	    {
+	      newvecTLV.push_back(leps2[j]);
+	      j++;
+	    }
+	  else
+	    {
+	      newvecTLV.push_back(leps1[i]);
+	      i++;
+	    }
+	}
+    }
+  while (true)
+    {
+      if (j==size2) break;
+      newvecTLV.push_back(leps2[j]);
+      j++;
+    }
+  while (true)
+    {
+      if (i==size1) break;
+      newvecTLV.push_back(leps1[i]);
+      i++;
+    }
+  return newvecTLV;
 }
 
 //// #endif // !defined( MULTILEPTONANA_CC ) 

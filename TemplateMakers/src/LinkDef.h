@@ -32,4 +32,7 @@
 #pragma link C++ class std::vector< ttH::Jet >+;
 #pragma link C++ class std::vector< std::vector< ttH::Jet > >+;
 
+#pragma link C++ class ttH::MET+;
+#pragma link C++ class std::vector< ttH::MET >+;
+
 #endif /* __MAKECINT__ */

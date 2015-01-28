@@ -70,43 +70,33 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		double wgt_intree;
 		
 		double allJetCSV_intree;
-		//int numJets_intree;			
-
-		float met_pt_intree;
-		float met_phi_intree;
 
 		int eventnum_intree;
 		int higgs_decay_intree;
 
                 vector<ttH::Lepton> preselected_leptons_intree;
-                vector<ttH::Electron> preselected_electrons_intree;
+		vector<ttH::Lepton> loose_leptons_intree;
+		vector<ttH::Lepton> tight_leptons_intree;
+                
+		vector<ttH::Electron> preselected_electrons_intree;
+		vector<ttH::Electron> loose_electrons_intree;
+		vector<ttH::Electron> tight_electrons_intree;
+
                 vector<ttH::Muon> preselected_muons_intree;
+                vector<ttH::Muon> loose_muons_intree;
+                vector<ttH::Muon> tight_muons_intree;
+
                 vector<ttH::Jet> preselected_jets_intree;
 		vector<ttH::Jet> loose_bJets_intree;
 		
-
-		TLorentzVectorCMS testTLV_intree;
-		TLorentzVectorCMS MET_intree;
-		vecTLorentzVectorCMS Jets_intree;
-		vecTLorentzVectorCMS LooseElectrons_intree;
-		vecTLorentzVectorCMS LooseMuons_intree;
-		vecTLorentzVectorCMS TightElectrons_intree;
-		vecTLorentzVectorCMS TightMuons_intree;
-		vdouble	JetCSV_intree;
+		vector<ttH::MET> met_intree;
 		
-
-
 		// additional variables from 2012
 		double myFinalBDT_OS_2012_intree;
 		
 		int lumiBlock_intree;
 		int runNumber_intree;
 		int numExtraPartons_intree;
-		
-		// PassTwoLepton
-	      	//MuonElectron
-	      	//TwoElectron
-	      	//TwoMuon
 		
 		vint allLeptonGenGrandMotherId_intree;
 		vint allLeptonGenMotherId_intree;
@@ -194,19 +184,20 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("allLeptonGenMotherId", &allLeptonGenMotherId_intree);
 	summaryTree->Branch("allLeptonTkCharge", &allLeptonTkCharge_intree);
 
-	summaryTree->Branch("Jets", &Jets_intree);
-	summaryTree->Branch("MET", &MET_intree);
-	summaryTree->Branch("LooseElectrons", &LooseElectrons_intree);
-	summaryTree->Branch("LooseMuons", &LooseMuons_intree);
-	summaryTree->Branch("TightElectrons", &TightElectrons_intree);
-	summaryTree->Branch("TightMuons", &TightMuons_intree);
-	summaryTree->Branch("JetCSV", &JetCSV_intree);
 
 	summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
 	summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
 	summaryTree->Branch("preselected_muons", &preselected_muons_intree);
+	summaryTree->Branch("loose_leptons", &loose_leptons_intree);
+	summaryTree->Branch("loose_electrons", &loose_electrons_intree);
+	summaryTree->Branch("loose_muons", &loose_muons_intree);
+	summaryTree->Branch("tight_leptons", &tight_leptons_intree);
+	summaryTree->Branch("tight_electrons", &tight_electrons_intree);
+	summaryTree->Branch("tight_muons", &tight_muons_intree);
 	summaryTree->Branch("preselected_jets", &preselected_jets_intree);
 	summaryTree->Branch("loose_bJets", &loose_bJets_intree);
+	summaryTree->Branch("met", &met_intree);
+	
 
 	summaryTree->Branch("numJets_fromHiggs_30", &numJets_fromHiggs_30_intree, "numJets_fromHiggs_30/I");
 	summaryTree->Branch("numJets_fromHiggs", &numJets_fromHiggs_intree, "numJets_fromHiggs/I");
@@ -276,19 +267,19 @@ void OSTwoLepAna::initialize_variables()
 	preselected_leptons_intree.clear();
 	preselected_electrons_intree.clear();
 	preselected_muons_intree.clear();
+
+	loose_leptons_intree.clear();
+	loose_electrons_intree.clear();
+	loose_muons_intree.clear();
+
+	tight_leptons_intree.clear();
+	tight_electrons_intree.clear();
+	tight_muons_intree.clear();
+
 	preselected_jets_intree.clear();
 	loose_bJets_intree.clear();
-
-	Jets_intree.clear();
-	MET_intree.SetPxPyPzE(0.,0.,0.,0.);
-	LooseElectrons_intree.clear();
-	LooseMuons_intree.clear();
-	TightElectrons_intree.clear();
-	TightMuons_intree.clear();
-	JetCSV_intree.clear();
 	
-	met_pt_intree = -9.e6;
-	met_phi_intree = -9.e6;
+	met_intree.clear();
 
 	numJets_fromHiggs_30_intree = -99;
 	numJets_fromHiggs_intree = -99;

@@ -144,13 +144,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 7., electronID::electronNoCuts );	//miniAODhelper.
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons( *electrons, 10., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
-	
-	//int numTightElectrons = int(selectedElectrons_tight.size());
-	//int numLooseElectrons = int(selectedElectrons_loose.size());
-
-	vecTLorentzVectorCMS elesTLVloose = Get_vecTLorentzVectorCMS(selectedElectrons_loose);
-	vecTLorentzVectorCMS elesTLVtight = Get_vecTLorentzVectorCMS(selectedElectrons_tight);
-	vecTLorentzVectorCMS elesTLVloosenotight = Get_vecTLorentzVectorCMS(selectedElectrons_loose_notight);
 
 	/////////
 	///
@@ -167,10 +160,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_nocuts = GetSelectedMuons( *muons, 5., muonID::muonNoCuts );
 	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
-	
-	vecTLorentzVectorCMS muonsTLVloose = Get_vecTLorentzVectorCMS(selectedMuons_loose);
-	vecTLorentzVectorCMS muonsTLVtight = Get_vecTLorentzVectorCMS(selectedMuons_tight);	
-	vecTLorentzVectorCMS muonsTLVloosenotight = Get_vecTLorentzVectorCMS(selectedMuons_loose_notight);
 	
 	/////////
 	///
@@ -197,10 +186,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
 	
-	vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVtight, elesTLVtight); 
-	vecTLorentzVectorCMS leptonsTLVloose = Get_vecTLorentzVectorCMS_sorted_leptons (muonsTLVloose, elesTLVloose); 	
-
-	
 	/////////
 	///
 	/// Jets
@@ -221,9 +206,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatJet selectedJets_forSync          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
 	vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );   //miniAODhelper.
 	
-	vecTLorentzVectorCMS jetsTLVloose = Get_vecTLorentzVectorCMS(selectedJets_loose_noSys_unsorted);
-	vecTLorentzVectorCMS jetsTLVtight = Get_vecTLorentzVectorCMS(selectedJets_noSys_unsorted);
-
 	// test
 	vecPatJet *testHiggsjets  = &selectedJets_noSys_unsorted;
 	TwoObjectKinematic<vecPatJet,vecPatJet> myNumHiggsLikeDijet15("mass", "num_within", "numHiggsLike_dijet_15_float", &(testHiggsjets), "jets_by_pt", 1, 99, &(testHiggsjets), "jets_by_pt", 1, 99, 115.0, "", "", 15.0);
@@ -234,10 +216,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	/// MET
 	///
 	////////
-	
-	TLorentzVectorCMS theMET = Get_TLorentzVectorCMS(mets);
 
-	
+	//do anything to pat met here
+
 	/////////////////////////
 	//////
 	////// fill the collections
@@ -259,18 +240,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_forSync);
 	vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
 
-	//need tight muons
-	//need loose muons
-	//need tight eles
-	//need loose eles
-	
+	vector<ttH::MET> theMET = GetCollection(mets);
+
 	/////////////////////////
 	//////
 	////// cut flow studies
 	//////
 	/////////////////////////
-
-
 	
 	// if( int(selectedLeptons_preselected.size()) > 0)
 	//   {
@@ -288,8 +264,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	lumiBlock_intree = event.id().luminosityBlock();
 	runNumber_intree = event.id().run();
 	
-	met_pt_intree = floor(theMET.Pt()*100+0.5)/100;
-	met_phi_intree = floor(theMET.Phi()*100+0.5)/100;
+	// met_pt_intree = floor(theMET.Pt()*100+0.5)/100;
+	// met_phi_intree = floor(theMET.Phi()*100+0.5)/100;
 	
 	// if (num_preselected_leptons_intree >=1 ){
 	//   lep1_id_intree = selectedLeptons_preselected[0].pdgId();
@@ -531,22 +507,26 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         preselected_leptons_intree = preselected_leptons;
         preselected_electrons_intree = preselected_electrons;
         preselected_muons_intree = preselected_muons;
-	preselected_jets_intree = preselected_jets;
 
-	// Jets_intree = jetsTLVloose;
-	// MET_intree = theMET;
-	// LooseElectrons_intree = elesTLVloose;
-	// LooseMuons_intree = muonsTLVloose;
-	// TightElectrons_intree = elesTLVtight;
-	// TightMuons_intree = muonsTLVtight;
-	// JetCSV_intree = ReturnBTagDisc(selectedJets_loose_noSys_unsorted);
-		
+        loose_leptons_intree = loose_leptons;
+        loose_electrons_intree = loose_electrons;
+        loose_muons_intree = loose_muons;
+
+        tight_leptons_intree = tight_leptons;
+        tight_electrons_intree = tight_electrons;
+        tight_muons_intree = tight_muons;
+
+	preselected_jets_intree = preselected_jets;
+	loose_bJets_intree = loose_bJets;
+	
+	met_intree = theMET;
+
 	wgt_intree = weight;
 	
 	// fill it:
 	summaryTree->Fill();
 	
-} // end for each event
+} // end event loop
 
 void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
 {

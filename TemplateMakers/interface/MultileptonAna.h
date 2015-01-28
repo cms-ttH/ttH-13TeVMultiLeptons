@@ -227,13 +227,17 @@ class MultileptonAna: public MiniAODHelper
   vector<ttH::Electron> GetCollection(vecPatElectron theobjs, vecPatJet jets);
   vector<ttH::Muon> GetCollection(vecPatMuon theobjs, vecPatJet jets);
   vector<ttH::Jet> GetCollection(vecPatJet theobjs);
+  vector<ttH::MET> GetCollection(patMETs theobjs);
 
+
+  //only used for triggerana
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatMuon theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatElectron theobjs);
   TLorentzVectorCMS Get_TLorentzVectorCMS (patMETs theobjs);
   TLorentzVectorCMS Get_TLorentzVectorCMS (pat::MET theMET);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS_sorted_leptons(vecTLorentzVectorCMS leps1, vecTLorentzVectorCMS leps2);
+
   vecPatLepton fillLeptons(vecPatMuon& mus, vecPatElectron& eles);
 
   void SetupOptions(const edm::Event& event);
@@ -269,6 +273,7 @@ class MultileptonAna: public MiniAODHelper
   float GetMuonRelIsoR03(const pat::Muon&) const;
   float GetMuonRelIsoR04(const pat::Muon&) const;
   int GetHiggsDaughterId(const std::vector<reco::GenParticle>&);
+  //  bool sortByPt(const ttH::Lepton &lep1, const ttH::Lepton &lep2);
   
   template <typename obj1, typename obj2> std::vector<obj1> cleanObjects(const std::vector<obj1>&, const std::vector<obj2>&, const double);
   

@@ -9,6 +9,7 @@ ClassImp(ttH::Lepton);
 ClassImp(ttH::Electron);
 ClassImp(ttH::Muon);
 ClassImp(ttH::Jet);
+ClassImp(ttH::MET);
 
 
 #else /* 0 or 1 */
@@ -19,5 +20,6 @@ ClassImp(Lepton);
 ClassImp(Electron);
 ClassImp(Muon);
 ClassImp(Jet);
+ClassImp(MET);
 
 #endif /* 0 or 1 */
