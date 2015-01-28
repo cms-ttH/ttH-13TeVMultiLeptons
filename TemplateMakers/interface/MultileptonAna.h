@@ -207,7 +207,7 @@ class MultileptonAna: public MiniAODHelper
   MultileptonAna();
   ~MultileptonAna();
   
-  string analysisYear = "2012_53x"; // "2015_74X"!
+  string analysisYear = "2015_72x"; // "2015_73x, 2015_74x ..."
 		
   electronID::electronID electronTightID;
   electronID::electronID electronLooseID;
