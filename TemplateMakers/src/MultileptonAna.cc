@@ -907,7 +907,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.nureliso = max(0.0,(iEle.neutralHadronIso()+iEle.photonIso())-0.5*iEle.puChargedHadronIso())/iEle.pt();
       ele.matchedJetdR = min(dR,0.5);
       ele.jetPtRatio = min(iEle.pt()/matchedJet.pt(), float(1.5));
-      ele.btagCSV = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
+      ele.csv = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
       ele.sip3D = fabs(iEle.dB(pat::Electron::PV3D)/iEle.edB(pat::Electron::PV3D));
       ele.mvaID = mvaID_->mvaValue(iEle,vertex,rho,true,false); //use full5x5=true, debug=false
 
@@ -941,7 +941,7 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.nureliso = max(0.0,(iMu.neutralHadronIso()+iMu.photonIso())-0.5*iMu.puChargedHadronIso())/iMu.pt();
       mu.matchedJetdR = min(dR,0.5);
       mu.jetPtRatio = min(iMu.pt()/matchedJet.pt(), float(1.5));
-      mu.btagCSV = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
+      mu.csv = max(matchedJet.bDiscriminator("combinedSecondaryVertexBJetTags"), float(0.0));
       mu.sip3D = fabs(iMu.dB(pat::Muon::PV3D)/iMu.edB(pat::Muon::PV3D));
 
       muCollection.push_back(mu);

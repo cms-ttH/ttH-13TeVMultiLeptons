@@ -41,7 +41,7 @@ namespace ttH
     double nureliso;
     double matchedJetdR;
     double jetPtRatio;
-    double btagCSV;
+    double csv;
     double sip3D;
 
     virtual ~Electron(){};
@@ -70,7 +70,7 @@ namespace ttH
     double nureliso;
     double matchedJetdR;
     double jetPtRatio;
-    double btagCSV;
+    double csv;
     double sip3D;
 
     virtual ~Muon(){};

@@ -101,6 +101,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
 	
+	edm::Handle<reco::BeamSpot> bsHandle;
+	event.getByLabel("offlineBeamSpot", bsHandle);
+	const reco::BeamSpot &beamspot = *bsHandle.product();
+
+
+	edm::Handle<reco::ConversionCollection> hConversions;
+	//	edm::EDGetTokenT<reco::ConversionCollection> conversionsToken_;
+	// conversionsToken_ = consumes<reco::ConversionCollection>(ps.getParameter<edm::InputTag>("reducedConversions"));
+	// event.getByToken(conversionsToken_, hConversions);
+	//	event.getByLabel("reducedEgamma",hConversions);
+	event.getByLabel("reducedEgamma","reducedConversions",hConversions);
+	
 	//patJets testHiggsjets = pfjets;
 	
 	SetRho(rho);
@@ -254,6 +266,16 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//   }
 	
 	//	cout << "num loose b jets " << bJets_loose.size() << endl;
+	bool allowCkfMatch = true;
+	float lxyMin = 2.0;
+	float probMin = 1e-6;
+	uint nHitsBeforeVtxMax = 0;
+	
+	for (const auto & ele: selectedElectrons_preselected)
+	  {
+	    //	    static bool hasMatchedConversion(ele,hConversions,beamspot,bool allowCkfMatch=true, float lxyMin=2.0, float probMin=1e-6, uint nHitsBeforeVtxMax=0);
+	    cout << "hasMatchedConversion? " <<	ConversionTools::hasMatchedConversion(ele,hConversions,beamspot.position(),allowCkfMatch,lxyMin,probMin,nHitsBeforeVtxMax) << endl;
+	  }
 	
 	int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles);
 	//	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
