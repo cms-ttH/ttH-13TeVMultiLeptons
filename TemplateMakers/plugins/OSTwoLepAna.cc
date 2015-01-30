@@ -150,12 +150,30 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//double mintightelept = 10.;
 	//double minlooseelept = 5.;
 
-	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper.
+	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight);	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
 	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 7., electronID::electronNoCuts );	//miniAODhelper.
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons( *electrons, 10., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
+	
+	//special stuff for sync, need to add fancy converstion veto
+	//with vtx fit probability which uses beamspon and conversion collections
+	//and i'm too lazy to add them to isGoodElectron in MiniAODhelper (temporary)
+	vecPatElectron selectedElectrons_tightcb = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTightCutBased);	//miniAODhelper.
+	vecPatElectron selectedElectrons_tightCutBased;
+
+	bool allowCkfMatch = true;
+	float lxyMin = 2.0;
+	float probMin = 1e-6;
+	uint nHitsBeforeVtxMax = 0;
+	for(const auto & ele: selectedElectrons_tightcb)
+	  {
+	    if (!ConversionTools::hasMatchedConversion(ele,hConversions,beamspot.position(),allowCkfMatch,lxyMin,probMin,nHitsBeforeVtxMax))
+	      {
+		selectedElectrons_tightCutBased.push_back(ele);
+	      }
+	  }
 
 	/////////
 	///
@@ -266,16 +284,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//   }
 	
 	//	cout << "num loose b jets " << bJets_loose.size() << endl;
-	bool allowCkfMatch = true;
-	float lxyMin = 2.0;
-	float probMin = 1e-6;
-	uint nHitsBeforeVtxMax = 0;
-	
-	for (const auto & ele: selectedElectrons_preselected)
-	  {
-	    //	    static bool hasMatchedConversion(ele,hConversions,beamspot,bool allowCkfMatch=true, float lxyMin=2.0, float probMin=1e-6, uint nHitsBeforeVtxMax=0);
-	    cout << "hasMatchedConversion? " <<	ConversionTools::hasMatchedConversion(ele,hConversions,beamspot.position(),allowCkfMatch,lxyMin,probMin,nHitsBeforeVtxMax) << endl;
-	  }
 	
 	int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles);
 	//	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);

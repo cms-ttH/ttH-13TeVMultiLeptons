@@ -1062,13 +1062,13 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
     break;
   case muonID::muonLoose:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) <= maxLooseMuonAbsEta));
-    passesIso        = (GetMuonRelIsoR03(iMuon) < looseRelativeIso);
+    passesIso        = (GetMuonRelIso(iMuon,coneSize::R03,corrType::deltaBeta) < looseRelativeIso);
     isPFMuon         = true;
     passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon);
     break;
   case muonID::muonTight:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) <= maxTightMuonAbsEta));
-    passesIso        = (GetMuonRelIsoR03(iMuon) < tightRelativeIso);
+    passesIso        = (GetMuonRelIso(iMuon,coneSize::R03,corrType::deltaBeta) < tightRelativeIso);
     isPFMuon         = true;
 
     if( iMuon.globalTrack().isAvailable() ){
@@ -1092,7 +1092,7 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
     break;
   case muonID::muonPreselection:
     passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
-    passesIso        = (GetMuonRelIsoR03(iMuon) < 0.4);
+    passesIso        = (GetMuonRelIso(iMuon,coneSize::R03,corrType::deltaBeta) < 0.4);
     isPFMuon         = iMuon.isPFMuon();
     if( iMuon.innerTrack().isAvailable() ){
       passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
@@ -1106,35 +1106,6 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   }
   
   return (passesKinematics && passesIso && passesID);
-}
-
-float MultileptonAna::GetMuonRelIsoR03(const pat::Muon& iMuon) const
-{
-  float result = 9999;
-  
-  double pfIsoCharged = iMuon.pfIsolationR03().sumChargedHadronPt;
-  double pfIsoNeutral = iMuon.pfIsolationR03().sumNeutralHadronEt + iMuon.pfIsolationR03().sumPhotonEt;
-  
-  double pfIsoPUSubtracted = std::max( 0.0, pfIsoNeutral - 0.5*iMuon.pfIsolationR03().sumPUPt );
-  
-  result = (pfIsoCharged + pfIsoPUSubtracted)/iMuon.pt();
-  
-  return result;
-}
-
-
-float MultileptonAna::GetMuonRelIsoR04(const pat::Muon& iMuon) const
-{
-  float result = 9999;
-  
-  double pfIsoCharged = iMuon.pfIsolationR04().sumChargedHadronPt;
-  double pfIsoNeutral = iMuon.pfIsolationR04().sumNeutralHadronEt + iMuon.pfIsolationR04().sumPhotonEt;
-  
-  double pfIsoPUSubtracted = std::max( 0.0, pfIsoNeutral - 0.5*iMuon.pfIsolationR04().sumPUPt );
-  
-  result = (pfIsoCharged + pfIsoPUSubtracted)/iMuon.pt();
-  
-  return result;
 }
 
 vint MultileptonAna::Get_JetPartonFlavor(vecPatJet theobjs)
@@ -1212,6 +1183,8 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   case electronID::electronNoCuts:
     return true;
     break;
+  case electronID::electronLooseCutBased:
+  case electronID::electronTightCutBased:
   case electronID::electronLoose:
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxLooseElectronAbsEta) && !inCrack);
     passesIso        = (GetElectronRelIso(iElectron) < looseElectronIso);
@@ -1372,8 +1345,6 @@ float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pa
   
   varchRelIso = iMuon.chargedHadronIso()/iMuon.pt();
   varneuRelIso = max(0.0,(iMuon.neutralHadronIso()+iMuon.photonIso())-0.5*iMuon.puChargedHadronIso())/iMuon.pt();
-  //varchRelIso = iMuon.pfIsolationR04().sumChargedHadronPt/iMuon.pt();
-  //varneuRelIso = GetMuonRelIsoR04(iMuon) - varchRelIso;
   
   pat::Jet matchedJet = getClosestJet(iJets,iMuon);
   double dR = MiniAODHelper::DeltaR(&matchedJet,&iMuon);
@@ -1387,29 +1358,17 @@ float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pa
   vardxy = log(fabs(iMuon.innerTrack()->dxy(vertex.position())));
   vardz = log(fabs(iMuon.innerTrack()->dz(vertex.position())));
 
-  // std::cout << "Mu charged Rel Iso = "<< varchRelIso << std::endl;
-  // std::cout << "Mu neutral Rel Iso = "<< varneuRelIso << std::endl;
-  // std::cout << "Mu jet dR = " << varjetDR_in << std::endl;
-  // std::cout << "Mu jet pt ratio = "<< varjetPtRatio_in << std::endl;
-  // std::cout << "Mu btag jet csv = " << varjetBTagCSV_in << std::endl;
-  // std::cout << "Mu sip 3d = "<< varsip3d << std::endl;
-  // std::cout << "Mu dxy = "<< vardxy << std::endl;
-  // std::cout << "Mu dz = "<< vardz << std::endl;
   
   if (iMuon.pt() > 15 && fabs(iMuon.eta()) < 1.5) {
-    //  std::cout << "Muon LepMVA: " << mu_reader_high_b->EvaluateMVA( "BDTG method" ) << std::endl;
     return mu_reader_high_b->EvaluateMVA( "BDTG method" );
   }
   else if (iMuon.pt() > 15 && fabs(iMuon.eta()) >= 1.5) {
-    //std::cout << "Muon LepMVA: " << mu_reader_high_e->EvaluateMVA( "BDTG method" ) << std::endl;
     return mu_reader_high_e->EvaluateMVA( "BDTG method" );
   }
   else if (iMuon.pt() <= 15 && fabs(iMuon.eta()) < 1.5) {
-    //std::cout << "Muon LepMVA: " << mu_reader_low_b->EvaluateMVA( "BDTG method" ) << std::endl;
     return mu_reader_low_b->EvaluateMVA( "BDTG method" );
   }
   else {
-    //std::cout << "Muon LepMVA: " << mu_reader_low_e->EvaluateMVA( "BDTG method" ) << std::endl;
     return mu_reader_low_e->EvaluateMVA( "BDTG method" );
   }
  
@@ -1441,36 +1400,22 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   //varinnerHits = iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits(); // 70X
   varinnerHits = iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS); // 72X
 
-  // std::cout << "Ele charged Rel Iso = "<< varchRelIso << std::endl;
-  // std::cout << "Ele neutral Rel Iso = "<< varneuRelIso << std::endl;
-  // std::cout << "Ele jet dR = " << varjetDR_in << std::endl;
-  // std::cout << "Ele jet pt ratio = "<< varjetPtRatio_in << std::endl;
-  // std::cout << "Ele btag jet csv = " << varjetBTagCSV_in << std::endl;
-  // std::cout << "Ele sip 3d = "<< varsip3d << std::endl;
-  // std::cout << "Ele mva id = "<< varmvaId << std::endl;
-  
   if (iElectron.pt() >= 10 && fabs(iElectron.eta()) <= 0.8) {
-    //std::cout << "Electron LepMVA: " << ele_reader_high_cb->EvaluateMVA( "BDTG method" ) << std::endl;
     return ele_reader_high_cb->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() >= 10 && fabs(iElectron.eta()) > 0.8 && fabs(iElectron.eta()) <= 1.479) {
-    //std::cout << "Electron LepMVA: " << ele_reader_high_fb->EvaluateMVA( "BDTG method" ) << std::endl;
     return ele_reader_high_fb->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() >= 10 && fabs(iElectron.eta()) > 1.479) {
-    ///std::cout << "Electron LepMVA: " << ele_reader_high_ec->EvaluateMVA( "BDTG method" ) << std::endl;
     return ele_reader_high_ec->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() < 10 && fabs(iElectron.eta()) <= 0.8) {
-    //std::cout << "Electron LepMVA: " << ele_reader_low_cb->EvaluateMVA( "BDTG method" ) << std::endl;
     return ele_reader_low_cb->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() < 10 && fabs(iElectron.eta()) > 0.8 && fabs(iElectron.eta()) <= 1.479) {
-    //std::cout << "Electron LepMVA: " << ele_reader_low_fb->EvaluateMVA( "BDTG method" ) << std::endl;
     return ele_reader_low_fb->EvaluateMVA( "BDTG method" );
   }
   else {
-    //std::cout << "Electron LepMVA: " << ele_reader_low_ec->EvaluateMVA( "BDTG method" ) << std::endl;
     return ele_reader_low_ec->EvaluateMVA( "BDTG method" );
   }
   
@@ -1504,7 +1449,6 @@ vecPatMuon MultileptonAna::Get_vecPatMuon_Passing_MuonLepMVA(const vecPatMuon& m
 ///stuff for TriggerAna.cc
 vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatMuon theobjs)
 {
-  //int nobjs = theobjcollection.size();
   vecTLorentzVectorCMS theobjs_vecTLV;
   for (muit iMuon= theobjs.begin(); iMuon != theobjs.end(); ++iMuon)
     {

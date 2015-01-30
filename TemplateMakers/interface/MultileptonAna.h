@@ -210,6 +210,10 @@ class MultileptonAna: public MiniAODHelper
   
   string analysisYear = "2015_72x"; // "2015_73x, 2015_74x ..."
 		
+
+  electronID::electronID electronTightCutBasedID;
+  electronID::electronID electronLooseCutBasedID;
+
   electronID::electronID electronTightID;
   electronID::electronID electronLooseID;
   electronID::electronID electronPreselectedID;
@@ -271,10 +275,7 @@ class MultileptonAna: public MiniAODHelper
   bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID);
   bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
   bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
-  float GetMuonRelIsoR03(const pat::Muon&) const;
-  float GetMuonRelIsoR04(const pat::Muon&) const;
   int GetHiggsDaughterId(const std::vector<reco::GenParticle>&);
-  //  bool sortByPt(const ttH::Lepton &lep1, const ttH::Lepton &lep2);
   
   template <typename obj1, typename obj2> std::vector<obj1> cleanObjects(const std::vector<obj1>&, const std::vector<obj2>&, const double);
   
