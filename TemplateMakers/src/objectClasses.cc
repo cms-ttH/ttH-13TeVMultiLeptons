@@ -10,6 +10,7 @@ ClassImp(ttH::Electron);
 ClassImp(ttH::Muon);
 ClassImp(ttH::Jet);
 ClassImp(ttH::MET);
+ClassImp(ttH::GenParticle);
 
 
 #else /* 0 or 1 */
@@ -21,5 +22,6 @@ ClassImp(Electron);
 ClassImp(Muon);
 ClassImp(Jet);
 ClassImp(MET);
+ClassImp(GenParticle);
 
 #endif /* 0 or 1 */

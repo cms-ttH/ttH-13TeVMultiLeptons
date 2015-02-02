@@ -233,7 +233,7 @@ class MultileptonAna: public MiniAODHelper
   vector<ttH::Muon> GetCollection(vecPatMuon theobjs, vecPatJet jets);
   vector<ttH::Jet> GetCollection(vecPatJet theobjs);
   vector<ttH::MET> GetCollection(patMETs theobjs);
-
+  vector<ttH::GenParticle> GetCollection(std::vector<reco::GenParticle> theobjs);
 
   //only used for triggerana
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);

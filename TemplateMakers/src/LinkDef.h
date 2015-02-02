@@ -35,4 +35,7 @@
 #pragma link C++ class ttH::MET+;
 #pragma link C++ class std::vector< ttH::MET >+;
 
+#pragma link C++ class ttH::GenParticle+;
+#pragma link C++ class std::vector< ttH::GenParticle >+;
+
 #endif /* __MAKECINT__ */

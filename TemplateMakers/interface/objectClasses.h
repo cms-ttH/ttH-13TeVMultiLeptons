@@ -12,7 +12,7 @@ namespace ttH
     
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
-    double id;
+    int pdgID;
     
     virtual ~Lepton(){};
     ClassDef(Lepton, 1);
@@ -27,7 +27,7 @@ namespace ttH
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     double SCeta; //supercluster eta
-    double pdgID;
+    int pdgID;
     double dxy;
     double dz;
     int charge;
@@ -56,7 +56,7 @@ namespace ttH
     
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
-    double pdgID;
+    int pdgID;
     double dxy;
     double dz;
     int charge;
@@ -106,6 +106,21 @@ namespace ttH
     
     virtual ~MET(){};
     ClassDef(MET, 1); 
+  };
+
+  class GenParticle
+  {
+  public:
+    GenParticle(){} // default constructor
+
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
+    int pdgID;
+    int status;
+    int mother_pdgID;
+    int grandmother_pdgID;
+    virtual ~GenParticle(){};
+    ClassDef(GenParticle, 1); 
   };
 
 

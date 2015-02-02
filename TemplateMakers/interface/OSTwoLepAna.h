@@ -24,10 +24,21 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		explicit OSTwoLepAna(const edm::ParameterSet&);
 		~OSTwoLepAna();
 		
-		FILE * ep;
-		FILE * mp;
-			
+		FILE * el1;
+		FILE * el2;
+		FILE * el3;
+	
+		FILE * ml2;
+		FILE * ml3;
+		
+		FILE * et1;
+		FILE * et2;
+		FILE * et3;
+	
+		FILE * mt2;
+		FILE * mt3;
 
+		
 		vstring alltriggerstostudy;
 		
 		// declare the tree
@@ -90,6 +101,8 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::Jet> loose_bJets_intree;
 		
 		vector<ttH::MET> met_intree;
+		
+		vector<ttH::GenParticle> pruned_genParticles_intree;
 		
 		// additional variables from 2012
 		double myFinalBDT_OS_2012_intree;
@@ -197,6 +210,7 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("preselected_jets", &preselected_jets_intree);
 	summaryTree->Branch("loose_bJets", &loose_bJets_intree);
 	summaryTree->Branch("met", &met_intree);
+	summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
 	
 
 	summaryTree->Branch("numJets_fromHiggs_30", &numJets_fromHiggs_30_intree, "numJets_fromHiggs_30/I");
@@ -280,6 +294,8 @@ void OSTwoLepAna::initialize_variables()
 	loose_bJets_intree.clear();
 	
 	met_intree.clear();
+
+	pruned_genParticles_intree.clear();
 
 	numJets_fromHiggs_30_intree = -99;
 	numJets_fromHiggs_intree = -99;
