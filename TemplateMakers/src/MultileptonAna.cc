@@ -1095,7 +1095,10 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonLooseCutBased:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
     passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.5);
-    passesID        = ((iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && iMuon.isPFMuon());
+    passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
+			      && (fabs(iMuon.innerTrack()->dz(vertex.position())) < 0.1)
+			      );
+    passesID        = (passesMuonBestTrackID && (iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && iMuon.isPFMuon());
     break;
   case muonID::muonTightCutBased:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));

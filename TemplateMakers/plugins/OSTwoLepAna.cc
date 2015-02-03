@@ -95,6 +95,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	patElectrons electrons = 		GetElectrons(event);
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
+	//	packedGenParticles packedParticles =    GenPackedGenParticles(event);
 	
 	edm::Handle<reco::BeamSpot> bsHandle;
 	event.getByLabel("offlineBeamSpot", bsHandle);
