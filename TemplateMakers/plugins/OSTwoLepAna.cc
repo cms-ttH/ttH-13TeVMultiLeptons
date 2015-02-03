@@ -399,8 +399,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         tight_electrons_intree = tightCutBased_electrons;
         tight_muons_intree = tightCutBased_muons;
 
-	//raw_electrons_intree = raw_electrons;
-	//raw_muons_intree = raw_muons;
+	raw_electrons_intree = raw_electrons;
+	raw_muons_intree = raw_muons;
 
 	preselected_jets_intree = preselected_jets;
 	loose_bJets_intree = loose_bJets;
