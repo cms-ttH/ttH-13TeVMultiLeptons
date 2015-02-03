@@ -24,7 +24,7 @@ Then try running over some miniAOD:
 
 	voms-proxy-init -voms cms
 	cd ttH-13TeVMultiLeptons/TemplateMakers/test/
-	osTwoLep ssCondor.py ttH125_miniAOD <your_label_here>
+	cmsRun osTwoLep_cfg.py
 
 To view the tth-specific classes' TLorentzVectors in the TBrowser, add the following to your rootlogon.C file (assuming you've setup cmssw):
    	
