@@ -1,0 +1,294 @@
+label: ss_v30
+output label: ss_v30
+luminosity: 19450.0
+input_trees_directory: /hadoop/users/awoodard/tree_files
+output directory: histos/ss_v30
+
+#options
+skip systematics: true
+
+#cuts
+common cuts:
+    lt_three_tight_leptons: '!((all_leptons_by_pt_1_lepMVA > 0.7) && (all_leptons_by_pt_2_lepMVA > 0.7) && (all_leptons_by_pt_3_lepMVA > 0.7))'
+    eq_two_good_leptons: ((numAllLeptons==2) || ((-1.0 <= all_leptons_by_pt_3_lepMVA) && (all_leptons_by_pt_3_lepMVA < 0.7)))
+    cleanup: min_mass_leplep > 12
+    pt_20_10: all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10
+    pt20_20_htllv100: all_leptons_by_pt_2_pt > 20 && ((all_leptons_by_pt_1_pt + all_leptons_by_pt_2_pt + met_pt) > 100)
+    nJets25_ge_2: numJets>=2
+    2b_loose: (numLooseBJets >= 2 || numMediumBJets >= 1)
+    trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleElectronTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+              (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+              (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+              (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+    lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
+    same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
+
+jet tag categories:
+    eq3j: ['numJets == 3']
+    #eq3j_pos: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge>0']
+    #eq3j_neg: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge<0']
+    ge4j: ['numJets >= 4']
+    #ge4j_pos: ['numJets >= 4', 'all_leptons_by_pt_1_tkCharge>0']
+    #ge4j_neg: '[numJets >= 4', 'all_leptons_by_pt_1_tkCharge<0']
+
+lepton categories:
+    mu_mu:
+        data samples: [inclusive_data]
+        #data samples: [DoubleMu]
+        cuts:
+            mu_mu: all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isMuon
+            muon_tight_charge: all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5 && all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5
+            #isDoubleMuTriggerPass: isDoubleMuTriggerPass
+    mu_ele:
+        data samples: [inclusive_data]
+        #data samples: [MuEG]
+        cuts:
+            mu_ele: ((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_2_isElectron) || (all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isMuon))
+            conv_veto: all_electrons_by_pt_1_passConvVeto==1 && all_electrons_by_pt_1_numberOfExpectedInnerHits==0
+            muon_tight_charge: ((all_leptons_by_pt_1_isMuon && all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5) || (all_leptons_by_pt_2_isMuon && all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5))
+            electron_tight_charge: ((all_leptons_by_pt_1_isElectron && all_leptons_by_pt_1_CERN_tight_charge) || (all_leptons_by_pt_2_isElectron && all_leptons_by_pt_2_CERN_tight_charge))
+            #isMuEGTriggerPass: isMuEGTriggerPass
+    ele_ele:
+        data samples: [inclusive_data]
+        #data samples: [DoubleElectron]
+        cuts:
+            ele_ele: all_leptons_by_pt_1_isElectron && all_leptons_by_pt_2_isElectron
+            conv_veto: all_electrons_by_pt_1_passConvVeto==1 && all_electrons_by_pt_2_passConvVeto==1 && all_electrons_by_pt_1_numberOfExpectedInnerHits==0 && all_electrons_by_pt_2_numberOfExpectedInnerHits==0
+            z_veto: abs(min_mass_leplep-91.2) > 10
+            met_ld: met_ld > 0.2
+            electron_tight_charge: all_leptons_by_pt_1_CERN_tight_charge && all_leptons_by_pt_2_CERN_tight_charge
+            #isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
+
+weights:
+    - RecoIDIsoSIPSF_2lep #CERN lepton SF
+    #- lepIDAndIsoSF #ND lepton SF
+    - weight_PU
+    - topPtWgt
+    - csvWeight
+    - triggerSF
+    #- lepMVALoose2LepSF
+    - lepMVATight2LepSF
+    - tightCharge2LepSF
+
+systematics:
+    - nominal
+    - weight_PUUp
+    - weight_PUDown
+    - topPtWgtDown
+    - topPtWgtUp
+    - csvWeightHFUp
+    - csvWeightHFDown
+    - csvWeightLFUp
+    - csvWeightLFDown
+
+# Samples can indicate customized weights (default is common), systematics (default is common), additional cuts (default is none), and
+# cuts to remove (default is none), and tree sample (default is same as sample name.) If an entry is missing, the default will be used.
+# Options for weight/systematic customization are:
+# none, common (use all listed in the common entry above), or a list.  Example: assume the common weights are weight1 and weight2.
+# weights: common               --> weights = [weight1, weight2]
+# weights: [common, weight3]    --> weights = [weight1, weight2, weight3]
+# weights: [weight3]            --> weights = [weight3]
+samples:
+    wz_lll:
+    zz_llll:
+    www:
+    wwz:
+    ttbarW:
+    ttbarWW:
+    ttbarZ:
+    ttbarG:
+    ttbarGStar_ee:
+    ttbarGStar_mm:
+    ttbarGStar_tt:
+    tbZ_ll:
+    WpWpqq:
+#    WmWmqq:
+    WWDPI:
+    ttH125:
+    ttH125_tt:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 4]
+    ttH125_WW:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 2]
+    ttH125_ZZ:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 3]
+    inclusive_data:
+        weights: none
+        systematics: nominal
+#     DoubleMu:
+#         weights: none
+#         systematics: nominal
+#     MuEG:
+#         weights: none
+#         systematics: nominal
+#     DoubleElectron:
+#         weights: none
+#         systematics: nominal
+    inclusive_data_NP_sideband:
+        additional cuts: ['(all_leptons_by_pt_1_lepMVA < 0.7 || all_leptons_by_pt_2_lepMVA < 0.7)']
+        cuts to remove: ['all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7']
+        weights: DataDrivenFR_NP
+        systematics: [40PercentRateUp, 40PercentRateDown]
+#     DoubleMu_NP_sideband:
+#         weights: DataDrivenFR_NP
+#         systematics: [40PercentRateUp, 40PercentRateDown]
+#     MuEG_NP_sideband:
+#         weights: DataDrivenFR_NP
+#         systematics: [40PercentRateUp, 40PercentRateDown]
+#     DoubleElectron_NP_sideband:
+#         weights: DataDrivenFR_NP
+#         systematics: [40PercentRateUp, 40PercentRateDown]
+    inclusive_data_QF_sideband:
+        additional cuts: ['((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) < 0)']
+        cuts to remove: ['((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)']
+        weights: DataDrivenFR_QF
+        systematics: nominal
+#     MuEG_QF_sideband:
+#         weights: DataDrivenFR_QF
+#         systematics: nominal
+#     DoubleElectron_QF_sideband:
+#         weights: DataDrivenFR_QF
+#         systematics: nominal
+
+aliases:
+    - &default_num_bins 11
+
+distributions:
+    numAllLeptons:
+        expression: numAllLeptons
+        axis labels: [number of preselected leptons, Events]
+        binning: [3, 1.5, 4.5]
+
+    numJets:
+        expression: numJets
+        axis labels: [number of jets, Events]
+        binning: [5, 2.5, 7.5]
+
+    numLooseBJets:
+        expression: numLooseBJets
+        axis labels: [number of loose b-tagged jets, Events]
+        binning: [5, 0.5, 5.5]
+
+    numMediumBJets:
+        expression: numMediumBJets
+        axis labels: [number of medium b-tagged jets, Events]
+        binning: [5, -0.5, 4.5]
+
+    sum_lep1pt_lep2pt_met:
+        expression: sum_lep1pt_lep2pt_met
+        axis labels: ['Sum pT (lepton 1, lepton 2, MET)', Events]
+        binning: [*default_num_bins, 100, 600]
+
+    mht:
+        expression: mht
+        axis labels: ['MHT', Events]
+        binning: [*default_num_bins, 0, 250]
+
+#     mindr_lep2_jet:
+#         expression: mindr_lep2_jet
+#         axis labels: ['min dR (lepton 2, jet)', Events]
+#         binning: [*default_num_bins, 0, 3]
+
+    met_1_all_leptons_by_pt_1_MT:
+        expression: met_1_all_leptons_by_pt_1_MT
+        axis labels: ['MT (lepton 1, MET)', Events]
+        binning: [*default_num_bins, 0, 300]
+
+    met_1_all_leptons_by_pt_2_MT:
+        expression: met_1_all_leptons_by_pt_2_MT
+        axis labels: ['MT (lepton 2, MET)', Events]
+        binning: [*default_num_bins, 0, 200]
+
+    sum_pt:
+        expression: sum_pt
+        axis labels: ['Sum pT (leptons, jets)', Events]
+        binning: [*default_num_bins, 200, 1200]
+
+    FinalBDT:
+        expression: (FinalBDT_TwoMuon*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 2) + FinalBDT_MuonElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 1) + FinalBDT_TwoElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 0))
+        axis labels: ['BDT output', Events]
+        binning: [*default_num_bins, -0.8, 0.8]
+
+    FinalBDT_pos:
+        expression: ((all_leptons_by_pt_1_tkCharge>0)*(FinalBDT_TwoMuon*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 2) + FinalBDT_MuonElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 1) + FinalBDT_TwoElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 0))) - 99*(all_leptons_by_pt_1_tkCharge<0)
+        axis labels: ['BDT output, positive charge', Events]
+        binning: [6, -0.8, 0.8]
+
+    FinalBDT_neg:
+        expression: ((all_leptons_by_pt_1_tkCharge<0)*(FinalBDT_TwoMuon*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 2) + FinalBDT_MuonElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 1) + FinalBDT_TwoElectron*(all_leptons_by_pt_1_isMuon+all_leptons_by_pt_2_isMuon == 0))) - 99*(all_leptons_by_pt_1_tkCharge>0)
+        axis labels: ['BDT output, negative charge', Events]
+        binning: [4, -0.8, 0.8]
+
+#     all_leptons_by_pt_1_lepMVA:
+#         expression: all_leptons_by_pt_1_lepMVA
+#         axis labels: [First lepton MVA, Events]
+#         binning: [*default_num_bins, 0.7, 1.0]
+
+#     all_leptons_by_pt_2_lepMVA:
+#         expression: all_leptons_by_pt_2_lepMVA
+#         axis labels: [Second lepton MVA, Events]
+#         binning: [*default_num_bins, 0.7, 1.0]
+
+    all_leptons_by_pt_1_pt:
+        expression: all_leptons_by_pt_1_pt
+        axis labels: [First lepton pT, Events]
+        binning: [*default_num_bins, 20, 220]
+
+    all_leptons_by_pt_2_pt:
+        expression: all_leptons_by_pt_2_pt
+        axis labels: [Second lepton pT, Events]
+        binning: [*default_num_bins, 20, 120]
+
+    all_leptons_by_pt_1_eta:
+        expression: abs(all_leptons_by_pt_1_eta)
+        axis labels: [First lepton pseudorapidity, Events]
+        binning: [*default_num_bins, 0, 2.5]
+
+    all_leptons_by_pt_2_eta:
+        expression: abs(all_leptons_by_pt_2_eta)
+        axis labels: [Second lepton pseudorapidity, Events]
+        binning: [*default_num_bins, 0, 2.5]
+
+    all_leptons_by_pt_1_SIP:
+        expression: abs(all_leptons_by_pt_1_SIP)
+        axis labels: ['lepton 1 S_{IP}3D', Events]
+        binning: [*default_num_bins, 0, 5]
+        
+    all_leptons_by_pt_2_SIP:
+        expression: abs(all_leptons_by_pt_2_SIP)
+        axis labels: ['lepton 2 S_{IP}3D', Events]
+        binning: [*default_num_bins, 0, 5]
+        
+    all_leptons_by_pt_1_jetBTagCSV:
+        expression: all_leptons_by_pt_1_jetBTagCSV
+        axis labels: ['lepton 1 jetBTagCSV', Events]
+        binning: [*default_num_bins, 0, 1]
+        
+    all_leptons_by_pt_2_jetBTagCSV:
+        expression: all_leptons_by_pt_2_jetBTagCSV
+        axis labels: ['lepton 2 jetBTagCSV', Events]
+        binning: [*default_num_bins, 0, 1]
+
+#     jets_by_CSV_1_btagCombinedSecVertex:
+#         expression: jets_by_CSV_1_btagCombinedSecVertex
+#         axis labels: [First jet b-tag discriminant, Events]
+#         binning: [*default_num_bins, 0, 1]
+
+#     jets_by_CSV_4_btagCombinedSecVertex:
+#         expression: jets_by_CSV_4_btagCombinedSecVertex
+#         axis labels: [Fourth jet b-tag discriminant, Events]
+#         binning: [*default_num_bins, 0, 1]
+
+#     jets_by_pt_1_pt:
+#         expression: jets_by_pt_1_pt
+#         axis labels: [First jet pT, Events]
+#         binning: [*default_num_bins, 20, 300]
+
+#     jets_by_pt_4_pt:
+#         expression: jets_by_pt_4_pt
+#         axis labels: [Fourth jet pT, Events]
+#         binning: [*default_num_bins, 20, 120]
+
+

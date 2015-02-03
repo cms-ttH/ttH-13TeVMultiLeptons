@@ -1,0 +1,452 @@
+label: os_v1
+output label: os_v1
+luminosity: 19450.0
+input_trees_directory: tree_files
+output directory: histos_OS_studies
+
+#options
+skip systematics: true
+
+#cuts
+common cuts:
+    cleanup: mass_leplep > 12 && dR_leplep > 0.2 && isCleanEvent
+    OS: leptons_by_pt_1_tkCharge * leptons_by_pt_2_tkCharge == -1
+    z_veto: PassZmask_mht
+    lepton_pt: leptons_by_pt_1_pt > 20 && leptons_by_pt_2_pt > 10 
+#     trigger: '((dataset.length() == 2 && (isDoubleMuTriggerPass || isDoubleElectronTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) || # 
+#               (dataset.length() == 8 && isDoubleMuTriggerPass) ||
+#               (dataset.length() == 14 && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass) ) ||
+#               (dataset.length() == 4 && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass) )'
+#    2b_loose: (numLooseBJets >=2 || numMediumBJets >= 1)
+
+lepton categories:
+    mu_mu:
+        data samples: [DoubleMu]
+        #data sample: [inclusive_data]
+        cuts:
+            mu_mu: TwoMuon
+            isDoubleMuTriggerPass: isDoubleMuTriggerPass
+    mu_ele:
+        data samples: [MuEG]
+        #data sample: [inclusive_data]
+        cuts:
+            mu_ele: MuonElectron
+            isMuEGTriggerPass: isMuEGTriggerPass
+    ele_ele:
+        data samples: [DoubleElectron]
+        #data sample: [inclusive_data]
+        cuts:
+            ele_ele: TwoElectron
+            isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
+
+jet tag categories:
+    eq3jeq2t: ['numJets == 3 && numMediumBJets == 2']
+    eq4jeq2t: ['numJets == 4 && numMediumBJets == 2']
+    ge3t: ['numMediumBJets >= 3']
+    eq4j_bloose: ['numJets == 4 && ((numLooseBJets >= 2 || numMediumBJets >= 1) && numMediumBJets < 3)']
+    eq5j_bloose: ['numJets == 5 && ((numLooseBJets >= 2 || numMediumBJets >= 1) && numMediumBJets < 3)']
+    ge6j_bloose: ['numJets >= 6 && ((numLooseBJets >= 2 || numMediumBJets >= 1) && numMediumBJets < 3)']
+    
+weights:
+    - lepIDAndIsoSF #Is there no lepton efficiency weight applied?
+    - weight_PU
+    - topPtWgt
+    - csvWgtlf
+    - csvWgthf
+    - triggerSF
+
+systematics:
+    - nominal
+    #- weight_PUup #PUUp
+    #- topPtWgtUp #topPtcorrUp
+    ##- not yet implemented #CMS_scale_jUp; need separate files?
+    ##- not yet implemented #Q2scale_ttH_[sample name]Up; ttbar, tt+HF only
+    #- csvWgtlf_HFUp #CMS_ttH_CSVHFUp
+    #- csvWgtlf_Stats1Up #CMS_ttH_CSVLFStats1Up
+    #- csvWgtlf_Stats2Up #CMS_ttH_CSVLFStats2Up
+    #- csvWgthf_LFUp #CMS_ttH_CSVLFUp
+    #- csvWgthf_Stats1Up #CMS_ttH_CSVHFStats1Up
+    #- csvWgthf_Stats2Up #CMS_ttH_CSVHFStats2Up
+    #- csvWgtc_Err1Up #CMS_ttH_CSVCErr1Up
+    #- csvWgtc_Err2Up #CMS_ttH_CSVCErr2Up
+    #- weight_PUdown #PUDown
+    ##- topPtWgtDown #topPtcorrDown
+    ##- not yet implemented #CMS_scale_jDown; need separate files?
+    ##- not yet implemented #Q2scale_ttH_[sample name]Down; ttbar, tt+HF only
+    #- csvWgtlf_HFDown #CMS_ttH_CSVHFDown
+    #- csvWgtlf_Stats1Down #CMS_ttH_CSVLFStats1Down
+    #- csvWgtlf_Stats2Down #CMS_ttH_CSVLFStats2Down
+    #- csvWgthf_LFDown #CMS_ttH_CSVLFDown
+    #- csvWgthf_Stats1Down #CMS_ttH_CSVHFStats1Down
+    #- csvWgthf_Stats2Down #CMS_ttH_CSVHFStats2Down
+    #- csvWgtc_Err1Down #CMS_ttH_CSVCErr1Down
+    #- csvWgtc_Err2Down #CMS_ttH_CSVCErr2Down
+    ##IMPORTANT: Do weights like 'csvWgtlf_HFDown' just get multiplied, or divide by csvWgtlf as well?
+
+
+#weights: all ---> weight by everything in "weights" section above
+#weights: none ---> don't apply any weight
+#weights: all+weight1 ---> weight by everything in the "weights" section above, and also by weight1
+#weights: all+weight1-weight2 ---> weight by everything in the "weights" section above except for weight2, and also by weight1
+#weights: weight1+weight2 ---> weight only by weight1 and weight2
+#same idea for systematics
+samples:
+    ttH125_bb:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 0]
+    ttH125_tt:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 4]
+    ttH125_WW:
+        tree sample: ttH125
+        additional cuts: [higgs_decay_type == 2]
+#     ttH125_WW_ll:
+#         tree sample: ttH125
+#         additional cuts: [higgs_decay_type == 2 && ( (abs(leptons_by_pt_1_genGrandMother00Id) == 6) + (abs(leptons_by_pt_2_genGrandMother00Id) == 6) ) == 0]
+#     ttH125_WW_lj:
+#         tree sample: ttH125
+#         additional cuts: [higgs_decay_type == 2 && ( (abs(leptons_by_pt_1_genGrandMother00Id) == 6) + (abs(leptons_by_pt_2_genGrandMother00Id) == 6) ) == 1]
+#     ttH125_WW_jj:
+#         tree sample: ttH125
+#         additional cuts: [higgs_decay_type == 2 && ( (abs(leptons_by_pt_1_genGrandMother00Id) == 6) + (abs(leptons_by_pt_2_genGrandMother00Id) == 6) ) == 2]
+    ttbar_jj:
+        weights: common
+        systematics: all
+    ttbar_cc_jj:
+        weights: common
+        systematics: all
+    ttbar_b_jj:
+        weights: common
+        systematics: all
+    ttbar_bb_jj:
+        weights: common
+        systematics: all
+    ttbar_lj:
+        weights: common
+        systematics: all
+    ttbar_cc_lj:
+        weights: common
+        systematics: all
+    ttbar_b_lj:
+        weights: common
+        systematics: all
+    ttbar_bb_lj:
+        weights: common
+        systematics: all
+    ttbar_ll:
+        weights: common
+        systematics: all
+    ttbar_cc_ll:
+        weights: common
+        systematics: all
+    ttbar_b_ll:
+        weights: common
+        systematics: all
+    ttbar_bb_ll:
+        weights: common
+        systematics: all
+    singlet_s:
+        weights: common
+        systematics: all
+    singlet_t:
+        weights: common
+        systematics: all
+    singlet_tW:
+        weights: common
+        systematics: all
+    singletbar_s:
+        weights: common
+        systematics: all
+    singletbar_t:
+        weights: common
+        systematics: all
+    singletbar_tW:
+        weights: common
+        systematics: all
+    ttbarW:
+        weights: common
+        systematics: all
+    ttbarZ:
+        weights: common
+        systematics: all
+    ww:
+        weights: common
+        systematics: all
+    wz:
+        weights: common
+        systematics: all
+    zz:
+        weights: common
+        systematics: all
+    wjets_0p:
+        weights: common
+        systematics: all
+    wjets_1p:
+        weights: common
+        systematics: all
+    wjets_2p:
+        weights: common
+        systematics: all
+    wjets_3p:
+        weights: common
+        systematics: all
+    wjets_4p:
+        weights: common
+        systematics: all
+    zjets_0p:
+        weights: common
+        systematics: all
+    zjets_1p:
+        weights: common
+        systematics: all
+    zjets_2p:
+        weights: common
+        systematics: all
+    zjets_3p:
+        weights: common
+        systematics: all
+    zjets_4p:
+        weights: common
+        systematics: all
+    zjets_lowmass:
+        weights: common
+        systematics: all
+    DoubleMu:
+        weights: none
+        systematics: nominal
+    MuEG:
+        weights: none
+        systematics: nominal
+    DoubleElectron:
+        weights: none
+        systematics: nominal
+#     inclusive_data:
+#         weights: none
+#         systematics: nominal
+
+aliases:
+    - &default_num_bins 20
+
+distributions:
+
+    numJets:
+        expression: numJets
+        plot type: TH1F
+        axis labels: [number of 25GeV jets, Events]
+        binning: [5, 2.5, 7.5]
+
+    numJets_30:
+        expression: numJets_30
+        plot type: TH1F
+        axis labels: [number of 30GeV jets, Events]
+        binning: [7, 0.5, 7.5]
+
+    numJets_fromHiggs:
+        expression: numJets_fromHiggs
+        plot type: TH1F
+        axis labels: [number of 25GeV jets from Higgs, Events]
+        binning: [11, -0.5, 10.5]
+
+    numJets_fromHiggs_30:
+        expression: numJets_fromHiggs_30
+        plot type: TH1F
+        axis labels: [number of 30GeV jets from Higgs, Events]
+        binning: [7, -0.5, 7.5]
+
+    numMediumBJets:
+        expression: numMediumBJets
+        plot type: TH1F
+        axis labels: [number of medium b-tagged jets, Events]
+        binning: [7, -0.5, 7.5]
+
+    numLooseBJets:
+        expression: numLooseBJets
+        plot type: TH1F
+        axis labels: [number of loose b-tagged jets, Events]
+        binning: [6, 0.5, 6.5]
+
+    numAllLeptons:
+        expression: numAllLeptons
+        plot type: TH1F
+        axis labels: [number of leptons, Events]
+        binning: [3, 1.5, 4.5]
+
+    numTightLeptons:
+        expression: numTightLeptons
+        plot type: TH1F
+        axis labels: [number of tight leptons, Events]
+        binning: [3, 0.5, 3.5]
+
+    leptons_by_pt_1_pt:
+        expression: leptons_by_pt_1_pt
+        plot type: TH1F
+        axis labels: [First lepton pT, Events]
+        binning: [*default_num_bins, 20, 220]
+
+    leptons_by_pt_2_pt:
+        expression: leptons_by_pt_2_pt
+        plot type: TH1F
+        axis labels: [Second lepton pT, Events]
+        binning: [*default_num_bins, 10, 110]
+
+    leptons_by_pt_1_eta:
+        expression: leptons_by_pt_1_eta
+        plot type: TH1F
+        axis labels: [First lepton eta, Events]
+        binning: [*default_num_bins, -2.5, 2.5]
+
+    leptons_by_pt_2_eta:
+        expression: leptons_by_pt_2_eta
+        plot type: TH1F
+        axis labels: [Second lepton eta, Events]
+        binning: [*default_num_bins, -2.5, 2.5]
+
+    jets_by_pt_1_pt:
+        expression: jets_by_pt_1_pt
+        plot type: TH1F
+        axis labels: [First jet pT, Events]
+        binning: [*default_num_bins, 30, 380]
+
+    jets_by_pt_2_pt:
+        expression: jets_by_pt_2_pt
+        plot type: TH1F
+        axis labels: [Second jet pT, Events]
+        binning: [*default_num_bins, 30, 280]
+
+    jets_by_pt_3_pt:
+        expression: jets_by_pt_3_pt
+        plot type: TH1F
+        axis labels: [Third jet pT, Events]
+        binning: [*default_num_bins, 30, 200]
+
+    mass_leplep:
+        expression: mass_leplep
+        plot type: TH1F
+        axis labels: [dilepton mass, Events]
+        binning: [*default_num_bins, 0, 300]
+
+    dR_leplep:
+        expression: dR_leplep
+        plot type: TH1F
+        axis labels: [dR between leptons, Events]
+        binning: [*default_num_bins, 0, 5]
+
+    dPhi_leplep:
+        expression: dPhi_leplep
+        plot type: TH1F
+        axis labels: [dPhi between leptons, Events]
+        binning: [*default_num_bins, 0, 7]
+
+    mht:
+        expression: mht
+        plot type: TH1F
+        axis labels: [MHT, Events] 
+        binning: [*default_num_bins, 0, 300] 
+
+    met_pt:
+        expression: met_pt
+        plot type: TH1F
+        axis labels: [MET, Events]
+        binning: [*default_num_bins, 0, 300] 
+
+    sum_pt:
+        expression: sum_pt
+        plot type: TH1F
+        axis labels: [Sum pT (all), Events]
+        binning: [*default_num_bins, 100, 1100]
+
+    sum_jet_pt:
+        expression: sum_jet_pt
+        plot type: TH1F
+        axis labels: [Sum jet pt, Events]
+        binning: [*default_num_bins, 0, 700]
+
+    sum_jet_mass:
+        expression: sum_jet_mass
+        plot type: TH1F
+        axis labels: [Sum Mass (jets), Events]
+        binning: [*default_num_bins, 0, 1200]
+
+    sum_non_tagged_jet_mass:
+        expression: sum_non_tagged_jet_mass
+        plot type: TH1F
+        axis labels: [Sum Mass (non-tagged jets), Events]
+        binning: [*default_num_bins, 0, 1000]
+
+    WLike_dijet_mass:
+        expression: WLike_dijet_mass
+        plot type: TH1F
+        axis labels: [Pt closest to 81GeV, Events]
+        binning: [*default_num_bins, 0, 220]
+
+    dPhi_jets_fromHiggs:
+        expression: dPhi_jets_fromHiggs
+        plot type: TH1F
+        axis labels: [dPhi between jets from Higgs, Events]
+        binning: [*default_num_bins, 0, 8]
+
+    dR_jets_fromHiggs:
+        expression: dR_jets_fromHiggs
+        plot type: TH1F
+        axis labels: [dR between jets from Higgs, Events]
+        binning: [*default_num_bins, 0, 8]
+
+    dPhi_met_lep1:
+        expression: dPhi_met_lep1
+        plot type: TH1F
+        axis labels: [dPhi between MET and lepton 1, Events]
+        binning: [*default_num_bins, 0, 8]
+
+    dPhi_met_lep2:
+        expression: dPhi_met_lep2
+        plot type: TH1F
+        axis labels: [dPhi between MET and lepton 2, Events]
+        binning: [*default_num_bins, 0, 8]
+
+    min_dPhi_metjet:
+        expression: min_dPhi_metjet
+        plot type: TH1F
+        axis labels: [Minimum dPhi between MET and jets, Events]
+        binning: [*default_num_bins, 0, 5]
+
+    max_dPhi_metjet:
+        expression: max_dPhi_metjet
+        plot type: TH1F
+        axis labels: [Maximum dPhi between MET and jets, Events]
+        binning: [*default_num_bins, 0, 8]
+
+    min_dPhi_metjet_fromHiggs:
+        expression: min_dPhi_metjet_fromHiggs
+        plot type: TH1F
+        axis labels: [Minimum dPhi between MET and jets from Higgs, Events]
+        binning: [*default_num_bins, 0, 5]
+
+    max_dPhi_metjet_fromHiggs:
+        expression: max_dPhi_metjet_fromHiggs
+        plot type: TH1F
+        axis labels: [Maximum dPhi between MET and jets from Higgs, Events]
+        binning: [*default_num_bins, 0, 8]
+
+    mass_met_leplep:
+        expression: mass_met_leplep
+        plot type: TH1F
+        axis labels: [mass, Events]
+        binning: [*default_num_bins, 0, 500]
+
+    MT_met_leplep:
+        expression: MT_met_leplep
+        plot type: TH1F
+        axis labels: [MT, Events]
+        binning: [*default_num_bins, 0, 600]
+
+    dR_met_leplep:
+        expression: dR_met_leplep
+        plot type: TH1F
+        axis labels: [delta R, Events]
+        binning: [*default_num_bins, 0, 5]
+
+    dPhi_met_leplep:
+        expression: dPhi_met_leplep
+        plot type: TH1F
+        axis labels: [delta Phi, Events]
+        binning: [*default_num_bins, 0, 8]

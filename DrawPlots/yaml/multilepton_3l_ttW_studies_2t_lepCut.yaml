@@ -1,0 +1,365 @@
+label: ttV_Nov14
+output label: ttV_Nov14
+luminosity: 19450.0
+input_trees_directory: tree_files
+output directory: histos/3l_ttW_studies_2t_lepCut
+limits output directory: histos/3l_ttW_studies_2t_lepCut_forLimits
+
+#options
+skip systematics: true
+limits skip systematics: false
+
+#cuts
+common cuts:
+    cleanup: min_mass_leplep_all > 12
+    3_leptons: numAllLeptons == 3
+    z_mask: abs(ZLike_mass_leplep_SFOS_all-91.0) > 10
+    lepton_pt: all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10
+    lepCSV: all_SS_leptons_by_pt_1_lepCut > -1 && all_SS_leptons_by_pt_2_lepCut > -1 && all_OS_leptons_by_pt_1_lepCut > -1
+    2tight: all_SS_leptons_by_pt_1_lepCut == 2 && all_SS_leptons_by_pt_2_lepCut == 2
+    right_charge: abs(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge+all_leptons_by_pt_3_tkCharge) == 1
+    tight_charge: all_SS_leptons_by_pt_1_CERN_tight_charge == 1 && all_SS_leptons_by_pt_2_CERN_tight_charge == 1
+    
+jet tag categories:
+#     ge0j: ['numJets >= 0']
+#     ge1j: ['numJets >= 1']
+#     ge2j: ['numJets >= 2']
+#     ge0j_metLD: ['numJets >= 0 && met_ld > 0.3']
+#     ge1j_metLD: ['numJets >= 1 && met_ld > 0.3']
+#     ge2j_metLD: ['numJets >= 2 && met_ld > 0.3']
+#     ge1j_bloose: ['numJets >= 1 && (numLooseBJets >= 2 || numMediumBJets >= 1)']
+#     ge2j_bloose: ['numJets >= 2 && (numLooseBJets >= 2 || numMediumBJets >= 1)']
+
+#     eq0j: ['numJets == 0']
+#     eq1j_lf: ['numJets == 1 && numLooseBJets < 2 && numMediumBJets == 0']
+#     ge2j_lf: ['numJets >= 2 && numLooseBJets < 2 && numMediumBJets == 0']
+    eq1j_bloose: ['numJets == 1 && (numLooseBJets >= 2 || numMediumBJets >= 1)']
+    ge2j_bloose: ['numJets >= 2 && (numLooseBJets >= 2 || numMediumBJets >= 1)']
+
+#     ttbar: ['numJets == 1 && numMediumBJets == 1']
+    
+lepton categories:
+#     mu_mu:
+#         data samples: [inclusive_data]
+#         cuts:
+#             mu_mu: all_SS_leptons_by_pt_1_isMuon == 1 && all_SS_leptons_by_pt_2_isMuon == 1
+#             trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleMuTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+#                 (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+#                 (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+#                 (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+#     ele_ele:
+#         data samples: [inclusive_data]
+#         cuts:
+#             ele_ele: all_SS_leptons_by_pt_1_isMuon == 0 && all_SS_leptons_by_pt_2_isMuon == 0
+#             trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleMuTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+#                 (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+#                 (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+#                 (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+    3l:
+        data samples: [inclusive_data]
+        cuts:
+            trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleMuTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+                (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+                (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+                (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+
+weights:
+    - RecoIDIsoSIPSF_3lep
+    - weight_PU
+    - csvWgtlf
+    - csvWgthf
+    - triggerSF ##Do we even need a triggerSF?
+    #- lepCutTight3LepSF
+    - lepCutTightSF_SS_Lep1
+    - lepCutTightSF_SS_Lep2
+    - tightChargeSF_SS_Lep1
+    - tightChargeSF_SS_Lep2
+
+systematics:
+    - nominal
+    - JESUp
+    - JESDown
+    - weight_PUUp
+    - weight_PUDown
+    - csvWgtlf_HFUp
+    - csvWgtlf_HFDown
+    - csvWgtlf_Stats1Up
+    - csvWgtlf_Stats1Down
+    - csvWgtlf_Stats2Up
+    - csvWgtlf_Stats2Down
+    - csvWgthf_LFUp
+    - csvWgthf_LFDown
+    - csvWgthf_Stats1Up
+    - csvWgthf_Stats1Down
+    - csvWgthf_Stats2Up
+    - csvWgthf_Stats2Down
+    - csvWgtc_Err1Up
+    - csvWgtc_Err1Down
+    - csvWgtc_Err2Up
+    - csvWgtc_Err2Down
+                                                                
+
+#weights: all ---> weight by everything in "weights" section above
+#weights: none ---> don't apply any weight
+#weights: all+weight1 ---> weight by everything in the "weights" section above, and also by weight1
+#weights: all+weight1-weight2 ---> weight by everything in the "weights" section above except for weight2, and also by weight1
+#weights: weight1+weight2 ---> weight only by weight1 and weight2
+#same idea for systematics
+samples:
+    #VH_TauMu:
+    ttH125:
+    wz_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    wz_lf_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    wz_cc_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    wz_b_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    wz_bb_lll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_lowmll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_lf_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_cc_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_b_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    zz_bb_llll:
+        weights: ['common', '( 1.0+ 0.4*(numJets == 3) + 0.6*(numJets >= 4) )']
+    www:
+    wwz:
+    #zjets_0p:
+    #zjets_1p:
+    #zjets_2p:
+    #zjets_3p:
+    #zjets_4p:
+    #ttbar_lj:
+    #ttbar_ll:
+    ttbarW:
+    ttbarWW:
+    ttbarZ:
+    ttbarG:
+    ttbarGStar_ee:
+    ttbarGStar_mm:
+    ttbarGStar_tt:
+    tbZ_ll:
+    inclusive_data:
+        weights: none
+        systematics: nominal
+    DoubleMu:
+        weights: none
+        systematics: nominal
+    DoubleElectron:
+        weights: none
+        systematics: nominal
+    inclusive_data_NP_sideband:
+        tree sample: inclusive_data
+        additional cuts: ['(all_SS_leptons_by_pt_1_lepCut < 2 || all_SS_leptons_by_pt_2_lepCut < 2)']
+        cuts to remove: ['all_SS_leptons_by_pt_1_lepCut == 2 && all_SS_leptons_by_pt_2_lepCut == 2']
+        weights: DataDrivenFRLepCut_NP_2_tight_SS
+        systematics: [NP_FR_lepCut_3l_2t_mu_rateUp, NP_FR_lepCut_3l_2t_mu_rateDown, NP_FR_lepCut_3l_2t_ele_rateUp, NP_FR_lepCut_3l_2t_ele_rateDown, NP_FR_lepCut_3l_2t_mu_pt_20_30_rateUp, NP_FR_lepCut_3l_2t_mu_pt_20_30_rateDown, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateUp, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateDown, NP_FR_lepCut_3l_2t_ele_pt_20_40_rateUp, NP_FR_lepCut_3l_2t_ele_pt_20_40_rateDown, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateUp, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateDown]
+    DoubleMu_NP_sideband:
+        tree sample: DoubleMu
+        additional cuts: ['(all_SS_leptons_by_pt_1_lepCut < 2 || all_SS_leptons_by_pt_2_lepCut < 2)']
+        cuts to remove: ['all_SS_leptons_by_pt_1_lepCut == 2 && all_SS_leptons_by_pt_2_lepCut == 2']
+        weights: DataDrivenFRLepCut_NP_2_tight_SS
+        systematics: [NP_FR_lepCut_3l_2t_mu_rateUp, NP_FR_lepCut_3l_2t_mu_rateDown, NP_FR_lepCut_3l_2t_ele_rateUp, NP_FR_lepCut_3l_2t_ele_rateDown, NP_FR_lepCut_3l_2t_mu_pt_20_30_rateUp, NP_FR_lepCut_3l_2t_mu_pt_20_30_rateDown, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateUp, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateDown, NP_FR_lepCut_3l_2t_ele_pt_20_40_rateUp, NP_FR_lepCut_3l_2t_ele_pt_20_40_rateDown, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateUp, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateDown]
+    DoubleElectron_NP_sideband:
+        tree sample: DoubleElectron
+        additional cuts: ['(all_SS_leptons_by_pt_1_lepCut < 2 || all_SS_leptons_by_pt_2_lepCut < 2)']
+        cuts to remove: ['all_SS_leptons_by_pt_1_lepCut == 2 && all_SS_leptons_by_pt_2_lepCut == 2']
+        weights: DataDrivenFRLepCut_NP_2_tight_SS
+        systematics: [NP_FR_lepCut_3l_2t_mu_rateUp, NP_FR_lepCut_3l_2t_mu_rateDown, NP_FR_lepCut_3l_2t_ele_rateUp, NP_FR_lepCut_3l_2t_ele_rateDown, NP_FR_lepCut_3l_2t_mu_pt_20_30_rateUp, NP_FR_lepCut_3l_2t_mu_pt_20_30_rateDown, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateUp, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateDown, NP_FR_lepCut_3l_2t_ele_pt_20_40_rateUp, NP_FR_lepCut_3l_2t_ele_pt_20_40_rateDown, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateUp, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateDown]
+    inclusive_data_NP_sideband_HF_NP_lep:
+        tree sample: inclusive_data
+        additional cuts: ['(all_SS_leptons_by_pt_1_lepCut < 0 || all_SS_leptons_by_pt_2_lepCut < 0)', 'all_OS_leptons_by_pt_1_lepCut > -1']
+        cuts to remove: ['all_SS_leptons_by_pt_1_lepCut == 2 && all_SS_leptons_by_pt_2_lepCut == 2', 'all_SS_leptons_by_pt_1_lepCut > -1 && all_SS_leptons_by_pt_2_lepCut > -1 && all_OS_leptons_by_pt_1_lepCut > -1']
+        weights: none
+        systematics: [noNominal, HF_NP_lep]
+    inclusive_data_NP_sideband_pos_unscaled:
+        tree sample: inclusive_data
+        additional cuts: ['(all_SS_leptons_by_pt_1_lepCut == 2) + (all_SS_leptons_by_pt_2_lepCut == 2) == 1']
+        cuts to remove: ['all_SS_leptons_by_pt_1_lepCut == 2 && all_SS_leptons_by_pt_2_lepCut == 2']
+        weights: none
+        systematics: [NP_FR_lepCut_3l_2t_mu_rateUp, NP_FR_lepCut_3l_2t_mu_rateDown, NP_FR_lepCut_3l_2t_ele_rateUp, NP_FR_lepCut_3l_2t_ele_rateDown, NP_FR_lepCut_3l_2t_mu_pt_20_30_rateUp, NP_FR_lepCut_3l_2t_mu_pt_20_30_rateDown, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateUp, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rateDown, NP_FR_lepCut_3l_2t_ele_pt_20_40_rateUp, NP_FR_lepCut_3l_2t_ele_pt_20_40_rateDown, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateUp, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rateDown]
+
+
+aliases:
+    - &default_num_bins 10
+
+distributions:
+    numAllMuons:
+        expression: numAllMuons
+        axis labels: ['number of muons', Events]
+        binning: [4, -0.5, 3.5]
+
+    numJets:
+        expression: numJets
+        axis labels: ['number of jets', Events]
+        binning: [8, -0.5, 7.5]
+
+    numLooseBJets:
+        expression: numLooseBJets
+        axis labels: ['number of loose b-tagged jets', Events]
+        binning: [5, -0.5, 4.5]
+
+    numMediumBJets:
+        expression: numMediumBJets
+        axis labels: ['number of medium b-tagged jets', Events]
+        binning: [4, -0.5, 3.5]
+
+#     numTightBJets:
+#         expression: numTightBJets
+#         axis labels: ['number of tight b-tagged jets', Events]
+#         binning: [4, -0.5, 3.5]
+
+#     all_SS_leptons_by_pt_1_pt:
+#         expression: all_SS_leptons_by_pt_1_pt
+#         axis labels: ['First SS lepton pT', Events]
+#         binning: [*default_num_bins, 0, 300]
+
+#     all_SS_leptons_by_pt_2_pt:
+#         expression: all_SS_leptons_by_pt_2_pt
+#         axis labels: ['Second SS lepton pT', Events]
+#         binning: [*default_num_bins, 0, 100]
+
+#     all_OS_leptons_by_pt_1_pt:
+#         expression: all_OS_leptons_by_pt_1_pt
+#         axis labels: ['Non-Z lepton pT', Events]
+#         binning: [*default_num_bins, 0, 200]
+
+#     all_SS_leptons_by_pt_2_eta:
+#         expression: abs(all_SS_leptons_by_pt_2_eta)
+#         axis labels: ['Non-Z lepton eta', Events]
+#         binning: [*default_num_bins, 0, 2.5]
+
+# #     all_SS_leptons_by_pt_2_jetBTagCSV:
+# #         expression: abs(all_SS_leptons_by_pt_2_jetBTagCSV)
+# #         axis labels: ['Non-Z lepton jetBTagCSV', Events]
+# #         binning: [11, -0.1, 1]
+
+#     jets_by_pt_1_pt:
+#         expression: jets_by_pt_1_pt
+#         axis labels: ['First jet pT', Events]
+#         binning: [*default_num_bins, 20, 300]
+
+#     jets_by_pt_2_pt:
+#         expression: jets_by_pt_2_pt
+#         axis labels: ['Second jet pT', Events]
+#         binning: [*default_num_bins, 20, 250]
+
+#     min_mass_leplep_all:
+#         expression: min_mass_leplep_all
+#         axis labels: ['min dilepton mass', Events]
+#         binning: [*default_num_bins, 10, 110]
+
+#     min_mass_leplep_OS:
+#         expression: min_mass_leplep_OS
+#         axis labels: ['min OS dilepton mass', Events]
+#         binning: [*default_num_bins, 10, 210]
+
+#     met_pt:
+#         expression: met_pt
+#         axis labels: ['MET', Events]
+#         binning: [*default_num_bins, 0, 200]
+
+#     mht:
+#         expression: mht
+#         axis labels: ['MHT', Events]
+#         binning: [*default_num_bins, 0, 200]
+
+#     met_ld:
+#         expression: met_pt*0.6 + mht*0.4
+#         axis labels: ['MetLD', Events]
+#         binning: [*default_num_bins, 0, 200]
+
+#     sum_pt:
+#         expression: sum_pt
+#         axis labels: ['Sum pT', Events]
+#         binning: [*default_num_bins, 0, 1200]
+
+#     sum_jet_pt:
+#         expression: sum_jet_pt
+#         axis labels: ['Sum jet pT', Events]
+#         binning: [*default_num_bins, 0, 1000]
+
+#     mass_of_jets:
+#         expression: mass_of_jets
+#         axis labels: ['Mass of all jets', Events]
+#         binning: [*default_num_bins, 0, 1000]
+
+#     jets_MT_mass_ratio:
+#         expression: MT_of_jets / mass_of_jets
+#         axis labels: ['MT/mass of all jets', Events]
+#         binning: [*default_num_bins, 0, 1]
+
+#     everything_MT_mass_ratio:
+#         expression: MT_of_everything / mass_of_everything
+#         axis labels: ['MT/mass of all jets', Events]
+#         binning: [*default_num_bins, 0, 1]
+
+#     Match_ttW_3l_Bb:
+#         expression: Match_ttW_3l_Bb
+#         axis labels: ['match score Bb', Events]
+#         binning: [*default_num_bins, -4, 2]
+
+    FinalBDT:
+        expression: max(-0.9, min(0.9, FinalBDT_ttW_3l))
+        axis labels: ['final BDT', Events]
+        binning: [6, -0.9, 0.9]
+
+    FinalBDT_Oct31:
+        expression: max(-0.9, min(0.6, FinalBDT_ttW_3l_Oct31))
+        axis labels: ['final BDT Oct 31', Events]
+        binning: [5, -0.9, 0.6]
+
+    FinalBDT_blind:
+        expression: max(-0.9, min(0.9, FinalBDT_ttW_3l))
+        axis labels: ['final BDT', Events]
+        binning: [4, -0.9, 0.3]
+
+    FinalBDT_Oct31_blind:
+        expression: max(-0.9, min(0.6, FinalBDT_ttW_3l_Oct31))
+        axis labels: ['final BDT Oct 31', Events]
+        binning: [3, -0.9, 0]
+
+limits distributions:
+#     twoBins:
+#         expression: all_Z_leptons_by_pt_1_eta
+#         axis labels: ['first Z lepton eta', Events]
+#         binning: [2, -5, 5]
+
+#     numJets:
+#         expression: max(1, min(4, numJets))
+#         axis labels: ['number of jets', Events]
+#         binning: [4, 0.5, 4.5]
+
+#     numMediumBJets:
+#         expression: max(0, min(2, numMediumBJets))
+#         axis labels: ['number of medium b-tagged jets', Events]
+#         binning: [3, -0.5, 2.5]
+
+    FinalBDT:
+        expression: max(-0.9, min(0.9, FinalBDT_ttW_3l))
+        axis labels: ['final BDT', Events]
+        binning: [6, -0.9, 0.9]
+
+    FinalBDT_Oct31:
+        expression: max(-0.9, min(0.6, FinalBDT_ttW_3l_Oct31))
+        axis labels: ['final BDT Oct 31', Events]
+        binning: [5, -0.9, 0.6]
+        
+    FinalBDT_blind:
+        expression: max(-0.9, min(0.9, FinalBDT_ttW_3l))
+        axis labels: ['final BDT', Events]
+        binning: [4, -0.9, 0.3]
+
+    FinalBDT_Oct31_blind:
+        expression: max(-0.9, min(0.6, FinalBDT_ttW_3l_Oct31))
+        axis labels: ['final BDT Oct 31', Events]
+        binning: [3, -0.9, 0]
+        

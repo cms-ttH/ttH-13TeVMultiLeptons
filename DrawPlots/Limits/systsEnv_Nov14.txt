@@ -1,0 +1,161 @@
+## Compare to AN_13_360 uncertainties
+## as seen in systsEnv_new_AN_13_360_like.txt
+
+## Final datacard: https://svnweb.cern.ch/cern/wsvn/cmshcg/trunk/summer2013/couplings/tth/125/ttH_hbb_8TeV.txt
+
+## luminosity
+lumi_8TeV      : ttH.*|T.*|V.*|W.*|Z.* : .* : 1.026
+
+## Template uncertainties
+weight_PU       : ttH.*|T.*|V.*|W.*|Z.* : .* : weight_PU       : templates
+topPtWgt        : TTJets.*              : .* : topPtWgt        : templates
+Q2ScaleWgt      : TTJets.*              : .*2los.* : Q2ScaleWgt      : templates ## Don't have in 4l ttbar_ll
+
+JES             : ttH.*|T.*|V.*|W.*|Z.* : .* : JES             : templates
+csvWgtlf_HF     : ttH.*|T.*|V.*|W.*|Z.* : .* : csvWgtlf_HF     : templates
+csvWgtlf_Stats1 : ttH.*|T.*|V.*|W.*|Z.* : .* : csvWgtlf_Stats1 : templates
+csvWgtlf_Stats2 : ttH.*|T.*|V.*|W.*|Z.* : .* : csvWgtlf_Stats2 : templates
+csvWgthf_LF     : ttH.*|T.*|V.*|W.*|Z.* : .* : csvWgthf_LF     : templates
+csvWgthf_Stats1 : ttH.*|T.*|V.*|W.*|Z.* : .* : csvWgthf_Stats1 : templates
+csvWgthf_Stats2 : ttH.*|T.*|V.*|W.*|Z.* : .* : csvWgthf_Stats2 : templates
+csvWgtc_Err1    : ttH.*|T.*|V.*|W.*|Z.* : .* : csvWgtc_Err1    : templates
+csvWgtc_Err2    : ttH.*|T.*|V.*|W.*|Z.* : .* : csvWgtc_Err2    : templates
+
+## lepton efficiencies
+lepCutT_mumu_rate : ttH.*|T.*|V.*|W.*|Z.* : .*2lss.*_mumu.*        : 1.03
+lepCutT_em_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*2lss.*_em.*          : 1.03
+lepCutT_ee_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*2lss.*_ee.*          : 1.03
+lepCutT_3l_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*3l.*                 : 1.03
+lepCutL_mumu_rate : ttH.*|T.*|V.*|W.*|Z.* : .*2los.*_mumu.*        : 1.03
+lepCutL_em_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*2los.*_em.*          : 1.03
+lepCutL_ee_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*2los.*_ee.*          : 1.03
+lepCutL_llsf_rate : ttH.*|T.*|V.*|W.*|Z.* : .*2los.*_llsf.*        : 1.03
+lepCutL_4l_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*4l.*                 : 1.06
+trigger_mumu_rate : ttH.*|T.*|V.*|W.*|Z.* : .*2l.*_mumu.*          : 1.03
+trigger_em_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*2l.*_em.*            : 1.03
+trigger_ee_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*2l.*_ee.*            : 1.03
+trigger_llsf_rate : ttH.*|T.*|V.*|W.*|Z.* : .*2l.*_llsf.*          : 1.03
+trigger_3l_rate   : ttH.*|T.*|V.*|W.*|Z.* : .*3l.*                 : 1.01
+
+## common theoretical uncertainties (fully correlated everywhere)
+## note: pdf_gg is entered as 1/kappa since it has to be anti-correlated with Hgg
+QCDscale_ttH   : ttH.* : .* : 1.06
+QCDscale_ttW   : TTW   : .* : 1.10
+QCDscale_ttZ   : TTZ   : .* : 1.11
+pdf_gg         : ttH.* : .* : 0.926
+pdf_gg         : TTZ   : .* : 0.919
+pdf_qqbar      : TTW   : .* : 1.072
+##pdf_gg         : TTJets.*   : .* : ?
+##pdf_qqbar      : ZJets.*   : .* : ?
+
+## shape theoretical uncertainties (private to this channel)
+pdf_shape_ttH_SS  : ttH.* : .*2lss.* : 1.03: shapeOnly
+pdf_shape_ttW_SS  : TTW   : .*2lss.* : 1.05: shapeOnly
+pdf_shape_ttZ_SS  : TTZ   : .*2lss.* : 1.03: shapeOnly
+thu_shape_ttH_SS  : ttH.* : .*2lss.* : 1.10: shapeOnly
+thu_shape_ttW_SS  : TTW   : .*2lss.* : 1.10: shapeOnly
+thu_shape_ttZ_SS  : TTZ   : .*2lss.* : 1.10: shapeOnly
+pdf_shape_ttH_3l  : ttH.* : .*3l.* : 1.03: shapeOnly
+pdf_shape_ttW_3l  : TTW   : .*3l.* : 1.05: shapeOnly
+pdf_shape_ttZ_3l  : TTZ   : .*3l.* : 1.03: shapeOnly
+thu_shape_ttH_3l  : ttH.* : .*3l.* : 1.10: shapeOnly
+thu_shape_ttW_3l  : TTW   : .*3l.* : 1.10: shapeOnly
+thu_shape_ttZ_3l  : TTZ   : .*3l.* : 1.10: shapeOnly
+pdf_shape_ttH_4l  : ttH.* : .*4l.* : 1.03: shapeOnly
+pdf_shape_ttZ_4l  : TTZ   : .*4l.* : 1.03: shapeOnly
+thu_shape_ttH_4l  : ttH.* : .*4l.* : 1.10: shapeOnly
+thu_shape_ttZ_4l  : TTZ   : .*4l.* : 1.10: shapeOnly
+pdf_shape_ttH_OS  : ttH.* : .*2los.* : 1.03: shapeOnly
+pdf_shape_ttW_OS  : TTW   : .*2los.* : 1.05: shapeOnly
+pdf_shape_ttZ_OS  : TTZ   : .*2los.* : 1.03: shapeOnly
+thu_shape_ttH_OS  : ttH.* : .*2los.* : 1.10: shapeOnly
+thu_shape_ttW_OS  : TTW   : .*2los.* : 1.10: shapeOnly
+thu_shape_ttZ_OS  : TTZ   : .*2los.* : 1.10: shapeOnly
+
+
+## Sample uncertainties
+WZ_norm      : WZ.*     : .* : 1.2
+ZZ_norm      : ZZ.*     : .* : 1.2
+WWqq_norm    : WWqq     : .* : 1.5
+VVV_norm     : VVV      : .* : 1.5
+TBZ_norm     : TBZ      : .* : 1.5
+TTG_norm     : TTG      : .* : 1.5  
+TTStarG_norm : TTStarG  : .* : 1.5
+TT2W_norm    : TT2W     : .* : 1.5
+TTX_norm     : TTX      : .* : 1.5
+TTJets_norm  : TTJets.* : .* : 1.1
+ZJets_norm   : ZJets.*  : .* : 1.05
+
+## Parton uncertainties
+WZ_3j     : WZ.*     : .*3j.* : 1.4
+WZ_4j     : WZ.*     : .*4j.* : 1.6
+ZZ_3j     : ZZ.*     : .*3j.* : 1.4
+ZZ_4j     : ZZ.*     : .*4j.* : 1.6
+ZJets_5j  : ZJets.*  : .*5j.* : 1.3
+ZJets_6j  : ZJets.*  : .*6j.* : 1.3
+
+## Heavy flavor uncertainties
+WZ_CC_norm     : WZ_CC.*     : .* : 1.5
+WZ_B_norm      : WZ_B.*      : .* : 1.5
+WZ_2B_norm     : WZ_2B.*     : .* : 1.5
+ZZ_CC_norm     : ZZ_CC.*     : .* : 1.5
+ZZ_B_norm      : ZZ_B.*      : .* : 1.5
+ZZ_2B_norm     : ZZ_2B.*     : .* : 1.5
+ZJets_CC_norm  : ZJets_CC.*  : .* : 1.3
+ZJets_B_norm   : ZJets_B.*   : .* : 1.3
+ZJets_2B_norm  : ZJets_2B.*  : .* : 1.3
+TTJets_CC_norm : TTJets_CC.* : .* : 1.5
+TTJets_B_norm  : TTJets_B.*  : .* : 1.5
+TTJets_2B_norm : TTJets_2B.* : .* : 1.5
+
+## TTJets shape uncertainties
+TTJets_5j_MT_shape : TTJets.* : .*5j.* : MT_mass_ratio : alternateShapeOnly
+TTJets_6j_MT_shape : TTJets.* : .*6j.* : MT_mass_ratio : alternateShapeOnly
+
+## ZJets shape uncertainties
+ZJets_5j_LF_MT_shape : ZJets_LF.* : .*5j.* : MT_mass_ratio : alternateShapeOnly
+ZJets_5j_CC_MT_shape : ZJets_CC.* : .*5j.* : MT_mass_ratio : alternateShapeOnly
+ZJets_5j_B_MT_shape  : ZJets_B.*  : .*5j.* : MT_mass_ratio : alternateShapeOnly
+ZJets_5j_2B_MT_shape : ZJets_2B.* : .*5j.* : MT_mass_ratio : alternateShapeOnly
+ZJets_6j_LF_MT_shape : ZJets_LF.* : .*6j.* : MT_mass_ratio : alternateShapeOnly
+ZJets_6j_CC_MT_shape : ZJets_CC.* : .*6j.* : MT_mass_ratio : alternateShapeOnly
+ZJets_6j_B_MT_shape  : ZJets_B.*  : .*6j.* : MT_mass_ratio : alternateShapeOnly
+ZJets_6j_2B_MT_shape : ZJets_2B.* : .*6j.* : MT_mass_ratio : alternateShapeOnly
+
+ZJets_5j_LF_MHT_shape : ZJets_LF.* : .*5j.* : MHT : alternateShapeOnly
+ZJets_5j_CC_MHT_shape : ZJets_CC.* : .*5j.* : MHT : alternateShapeOnly
+ZJets_5j_B_MHT_shape  : ZJets_B.*  : .*5j.* : MHT : alternateShapeOnly
+ZJets_5j_2B_MHT_shape : ZJets_2B.* : .*5j.* : MHT : alternateShapeOnly
+ZJets_6j_LF_MHT_shape : ZJets_LF.* : .*6j.* : MHT : alternateShapeOnly
+ZJets_6j_CC_MHT_shape : ZJets_CC.* : .*6j.* : MHT : alternateShapeOnly
+ZJets_6j_B_MHT_shape  : ZJets_B.*  : .*6j.* : MHT : alternateShapeOnly
+ZJets_6j_2B_MHT_shape : ZJets_2B.* : .*6j.* : MHT : alternateShapeOnly
+
+##ZJets_5j_LF_shape : ZJets_LF.* : .*5j.* : 1.2 : shapeOnly
+##ZJets_5j_CC_shape : ZJets_CC.* : .*5j.* : 1.2 : shapeOnly
+##ZJets_5j_B_shape  : ZJets_B.*  : .*5j.* : 1.2 : shapeOnly
+##ZJets_5j_2B_shape : ZJets_2B.* : .*5j.* : 1.2 : shapeOnly
+##ZJets_6j_LF_shape : ZJets_LF.* : .*6j.* : 1.2 : shapeOnly
+##ZJets_6j_CC_shape : ZJets_CC.* : .*6j.* : 1.2 : shapeOnly
+##ZJets_6j_B_shape  : ZJets_B.*  : .*6j.* : 1.2 : shapeOnly
+##ZJets_6j_2B_shape : ZJets_2B.* : .*6j.* : 1.2 : shapeOnly
+
+## Charge flip
+QF_FR_lepCut_SS_2t_ele_rate : QF_.*  : .* : QF_FR_lepCut_SS_2t_ele_rate : templates
+
+## NP FR
+##HF_NP_lep                             : FR_.*       : .*2lss.*|.*3l.*           : HF_NP_lep                           : alternateShapeOnly
+NP_FR_lepCut_SS_2t_mu_rate            : FR_.*       : .*2lss_mumu.*|.*2lss_em.* : NP_FR_lepCut_SS_2t_mu_rate            : templates
+NP_FR_lepCut_SS_2t_ele_rate           : FR_.*       : .*2lss_ee.*|.*2lss_em.*   : NP_FR_lepCut_SS_2t_ele_rate           : templates
+NP_FR_lepCut_SS_2t_mu_pt_20_30_rate   : FR_.*       : .*2lss_mumu.*|.*2lss_em.* : NP_FR_lepCut_SS_2t_mu_pt_20_30_rate   : alternateShapeOnly
+NP_FR_lepCut_SS_2t_mu_pt_30_inf_rate  : FR_.*       : .*2lss_mumu.*|.*2lss_em.* : NP_FR_lepCut_SS_2t_mu_pt_30_inf_rate  : alternateShapeOnly
+NP_FR_lepCut_SS_2t_ele_pt_20_40_rate  : FR_.*       : .*2lss_ee.*|.*2lss_em.*   : NP_FR_lepCut_SS_2t_ele_pt_20_40_rate  : alternateShapeOnly
+NP_FR_lepCut_SS_2t_ele_pt_40_inf_rate : FR_.*       : .*2lss_ee.*|.*2lss_em.*   : NP_FR_lepCut_SS_2t_ele_pt_40_inf_rate : alternateShapeOnly
+NP_FR_lepCut_3l_2t_mu_rate            : FR_.*       : .*3l.*                    : NP_FR_lepCut_3l_2t_mu_rate            : templates
+NP_FR_lepCut_3l_2t_ele_rate           : FR_.*       : .*3l.*                    : NP_FR_lepCut_3l_2t_ele_rate           : templates
+NP_FR_lepCut_3l_2t_mu_pt_20_30_rate   : FR_.*       : .*3l.*                    : NP_FR_lepCut_3l_2t_mu_pt_20_30_rate   : alternateShapeOnly
+NP_FR_lepCut_3l_2t_mu_pt_30_inf_rate  : FR_.*       : .*3l.*                    : NP_FR_lepCut_3l_2t_mu_pt_30_inf_rate  : alternateShapeOnly
+NP_FR_lepCut_3l_2t_ele_pt_20_40_rate  : FR_.*       : .*3l.*                    : NP_FR_lepCut_3l_2t_ele_pt_20_40_rate  : alternateShapeOnly
+NP_FR_lepCut_3l_2t_ele_pt_40_inf_rate : FR_.*       : .*3l.*                    : NP_FR_lepCut_3l_2t_ele_pt_40_inf_rate : alternateShapeOnly
+FR_4l_WZ_norm                         : FR_WZ.*     : .*4l.*                    : 2.0 
+FR_4l_TTJets_norm                     : FR_TTJets.* : .*4l.*                    : 2.0 

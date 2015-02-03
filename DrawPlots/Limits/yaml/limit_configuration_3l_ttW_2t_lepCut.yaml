@@ -1,0 +1,149 @@
+#input and output file names
+input file location: ../histos/3l_ttW_studies_2t_lepCut_forLimits
+input file label: ttV_Nov14
+
+lepton categories:
+    3l:
+        data sample: inclusive_data
+        excluded samples: [] #[ttbarG]
+        category name: 'ttW_3l'
+        
+#Jet-tag categories: "draw name"
+jet tag categories:
+    eq1j_bloose: " + #eq3 jets"
+    ge2j_bloose: " + #geq4 jets"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - JES
+    - weight_PU
+    - csvWgtlf_HF
+    - csvWgtlf_Stats1
+    - csvWgtlf_Stats2
+    - csvWgthf_LF
+    - csvWgthf_Stats1
+    - csvWgthf_Stats2
+    - csvWgtc_Err1
+    - csvWgtc_Err2
+
+ttH mass points: ##New code to automate masses
+    - '125'
+    
+data samples:
+    inclusive_data:
+        datacard name: "data_obs"
+        systematics: none
+        samples: [inclusive_data]
+
+signal samples:
+    ttbarW:
+        datacard name: "TTW"
+        systematics: common
+        samples: [ttbarW]
+
+#Samples, ordered bottom-to-top
+background samples:
+    inclusive_data_NP_sideband:
+        datacard name: "FR_data"
+        systematics: [NP_FR_lepCut_3l_2t_mu_rate, NP_FR_lepCut_3l_2t_ele_rate, NP_FR_lepCut_3l_2t_mu_pt_20_30_rate, NP_FR_lepCut_3l_2t_mu_pt_30_inf_rate, NP_FR_lepCut_3l_2t_ele_pt_20_40_rate, NP_FR_lepCut_3l_2t_ele_pt_40_inf_rate]
+        samples: [inclusive_data_NP_sideband]
+
+#     wz_lll:
+#         datacard name: "WZ"
+#         systematics: common
+#         samples: [wz_lll]
+
+    wz_lf_lll:
+        datacard name: "WZ_LF"
+        systematics: common
+        samples: [wz_lf_lll]
+        
+    wz_cc_lll:
+        datacard name: "WZ_CC"
+        systematics: common
+        samples: [wz_cc_lll]
+
+    wz_b_lll:
+        datacard name: "WZ_B"
+        systematics: common
+        samples: [wz_b_lll]
+        
+    wz_bb_lll:
+        datacard name: "WZ_2B"
+        systematics: common
+        samples: [wz_bb_lll]
+
+#     zz_llll:
+#         datacard name: "ZZ"
+#         systematics: common
+#         samples: [zz_llll]
+
+    zz_lf_llll:
+        datacard name: "ZZ_LF"
+        systematics: common
+        samples: [zz_lf_llll]
+        
+    zz_cc_llll:
+        datacard name: "ZZ_CC"
+        systematics: common
+        samples: [zz_cc_llll]
+
+    zz_b_llll:
+        datacard name: "ZZ_B"
+        systematics: common
+        samples: [zz_b_llll]
+        
+    zz_bb_llll:
+        datacard name: "ZZ_2B"
+        systematics: common
+        samples: [zz_bb_llll]
+
+    triboson:
+        datacard name: "VVV"
+        systematics: common
+        samples: [www, wwz] #wzz, zzz
+ 
+#     multiboson:
+#         datacard name: "VVV"
+#         systematics: common
+#         samples: [www, wwz, WpWpqq] #wzz, zzz
+ 
+    tbZ_ll:
+        datacard name: "TBZ"
+        systematics: common
+        samples: [tbZ_ll]
+
+    ttbarG:
+        datacard name: "TTG"
+        systematics: common
+        samples: [ttbarG]
+
+    ttbarGStar:
+        datacard name: "TTStarG"
+        systematics: common
+        samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
+
+    ttbarWW:
+        datacard name: "TT2W"
+        systematics: common
+        samples: [ttbarWW]
+
+#     ttbarX:
+#         datacard name: "TTX"
+#         systematics: common
+#         samples: [tbZ_ll, ttbarG, ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt, ttbarWW]
+#         scale: 1.0
+
+    ttbarH:
+        datacard name: "TTH"
+        systematics: common
+        samples: [ttH125]
+        scale: 1.0
+
+    ttbarZ:
+        datacard name: "TTZ"
+        systematics: common
+        samples: [ttbarZ]
+        scale: 1.0
+
