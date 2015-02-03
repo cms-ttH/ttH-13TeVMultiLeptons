@@ -896,13 +896,15 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.obj = iEle.p4();
       ele.SCeta = abs(iEle.superCluster()->position().eta());
       ele.pdgID = iEle.pdgId();
-      ele.dxy = fabs(iEle.gsfTrack()->dxy(vertex.position()));
-      ele.dz = fabs(iEle.gsfTrack()->dz(vertex.position()));
+
+      if (iEle.gsfTrack().isAvailable()){
+	ele.dxy = fabs(iEle.gsfTrack()->dxy(vertex.position()));
+	ele.dz = fabs(iEle.gsfTrack()->dz(vertex.position()));
+	ele.numMissingInnerHits = iEle.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
+      }
       ele.charge = iEle.charge();
       ele.isGsfCtfScPixChargeConsistent = iEle.isGsfCtfScPixChargeConsistent();
-      ele.numMissingInnerHits = iEle.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
       ele.passConversioVeto = iEle.passConversionVeto();
-      
       ele.relIso = GetElectronRelIso(iEle,coneSize::R03,corrType::rhoEA);
       ele.dEtaIn = iEle.deltaEtaSuperClusterTrackAtVtx();
       ele.dPhiIn = iEle.deltaPhiSuperClusterTrackAtVtx();
@@ -940,20 +942,24 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.isPFMuon = iMu.isPFMuon();
       mu.isTrackerMuon = iMu.isTrackerMuon();
       mu.isGlobalMuon = iMu.isGlobalMuon();
-      mu.dxy = fabs(iMu.innerTrack()->dxy(vertex.position()));
-      mu.dz =fabs(iMu.innerTrack()->dz(vertex.position()));
-
       mu.relIso = GetMuonRelIso(iMu,coneSize::R03,corrType::rhoEA);
+      
+      if (iMu.innerTrack().isAvailable()){
+	mu.dxy = fabs(iMu.innerTrack()->dxy(vertex.position()));
+	mu.dz =fabs(iMu.innerTrack()->dz(vertex.position()));
+	mu.numberOfValidPixelHits = iMu.innerTrack()->hitPattern().numberOfValidPixelHits();
+	mu.trackerLayersWithMeasurement = iMu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+	mu.chargeFlip = iMu.innerTrack()->ptError()/iMu.innerTrack()->pt();
+	mu.lepMVA = GetMuonLepMVA(iMu, jets);
+      
+      }
+      
       if(iMu.globalTrack().isAvailable()){
 	mu.normalizedChi2 = iMu.globalTrack()->normalizedChi2();
 	mu.numberOfValidMuonHits = iMu.globalTrack()->hitPattern().numberOfValidMuonHits();
       }
       mu.numberOfMatchedStations = iMu.numberOfMatchedStations();
-      mu.numberOfValidPixelHits = iMu.innerTrack()->hitPattern().numberOfValidPixelHits();
-      mu.trackerLayersWithMeasurement = iMu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
-
-      mu.chargeFlip = iMu.innerTrack()->ptError()/iMu.innerTrack()->pt();
-      mu.lepMVA = GetMuonLepMVA(iMu, jets);
+      
       mu.chreliso = iMu.chargedHadronIso()/iMu.pt();
       mu.nureliso = max(0.0,(iMu.neutralHadronIso()+iMu.photonIso())-0.5*iMu.puChargedHadronIso())/iMu.pt();
       mu.matchedJetdR = min(dR,0.5);
@@ -1089,7 +1095,7 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonPtEtaOnly:
   case muonID::muonPtEtaIsoOnly:
   case muonID::muonPtEtaIsoTrackerOnly:
-  case muonID::muonNoCuts:
+  case muonID::muonRaw:
     return true;
     break;
   case muonID::muonLooseCutBased:
@@ -1105,19 +1111,20 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonTightCutBased:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
     passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.1);
-    if( iMuon.innerTrack().isAvailable() ){
+    
+    if( iMuon.innerTrack().isAvailable() && iMuon.globalTrack().isAvailable() ){
       passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
 				&& (fabs(iMuon.innerTrack()->dz(vertex.position())) < 0.1)
 				);
+      passesPOGcuts = (iMuon.isGlobalMuon() && iMuon.isPFMuon() && 
+		       iMuon.globalTrack()->normalizedChi2() < 10. &&
+		       iMuon.globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
+		       iMuon.numberOfMatchedStations() > 1 &&
+		       iMuon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0 &&
+		       iMuon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 && 
+		       fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D)) < 4.
+		       );
     }
-    passesPOGcuts = (iMuon.isGlobalMuon() && iMuon.isPFMuon() && 
-		     iMuon.globalTrack()->normalizedChi2() < 10. &&
-		     iMuon.globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
-		     iMuon.numberOfMatchedStations() > 1 &&
-		     iMuon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0 &&
-		     iMuon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 && 
-		     fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D)) < 4.
-		     );
     passesID = (passesMuonBestTrackID && passesPOGcuts);
     break;
   case muonID::muonLoose:
@@ -1241,7 +1248,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   case electronID::electronSideLooseMVA:
   case electronID::electronSideTightMVA:
   case electronID::electronLooseMinusTrigPresel:
-  case electronID::electronNoCuts:
+  case electronID::electronRaw:
     return true;
     break;
   case electronID::electronLooseCutBased:

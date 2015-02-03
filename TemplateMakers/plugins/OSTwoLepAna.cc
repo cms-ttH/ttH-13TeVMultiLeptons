@@ -46,7 +46,7 @@ void OSTwoLepAna::beginJob()
 	electronPreselectedID = electronID::electronPreselection;
 	muonTightID = muonID::muonTight;
 	muonLooseID = muonID::muonLoose;
-	muonPreselectedID = muonID::muonNoCuts;
+	muonPreselectedID = muonID::muonRaw;
 	tauTightID = tauID::tauMedium;
 	// tauLooseID = tauID::tauVLoose;
 	tauPreselectedID = tauID::tauNonIso;
@@ -145,7 +145,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight);	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
 	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
-	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 7., electronID::electronNoCuts );	//miniAODhelper.
+	vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, 7., electronID::electronRaw );	//miniAODhelper.
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons( *electrons, 10., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	vecPatElectron selectedElectrons_looseCutBased = GetSelectedElectrons( *electrons, 7., electronID::electronLooseCutBased);	//miniAODhelper.
@@ -173,14 +173,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	/// Muons
 	///
 	////////
-
 	double mintightmupt = minTightLeptonPt;
 	double minloosemupt = minLooseLeptonPt;
 
 	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );
 	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );
-	vecPatMuon selectedMuons_nocuts = GetSelectedMuons( *muons, 5., muonID::muonNoCuts );
+	vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, 5., muonID::muonRaw );
 	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
 	vecPatMuon selectedMuons_looseCutBased = GetSelectedMuons( *muons, 5., muonID::muonLooseCutBased );
@@ -210,8 +209,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatLepton selectedLeptons_tightCutBased = fillLeptons(selectedMuons_tightCutBased,selectedElectrons_tightCutBased);
 	selectedLeptons_tightCutBased = MiniAODHelper::GetSortedByPt(selectedLeptons_tightCutBased);
 
-	vecPatLepton selectedLeptons_nocuts = fillLeptons(selectedMuons_nocuts,selectedElectrons_nocuts);
-	selectedLeptons_nocuts = MiniAODHelper::GetSortedByPt(selectedLeptons_nocuts);
+	vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
+	selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 	
 	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
 	
@@ -260,12 +259,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vector<ttH::Lepton> looseCutBased_leptons = GetCollection(selectedLeptons_looseCutBased);
         vector<ttH::Lepton> tightCutBased_leptons = GetCollection(selectedLeptons_tightCutBased);
 
+	vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw,selectedJets_forLepMVA);
 	vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
 	vector<ttH::Electron> loose_electrons = GetCollection(selectedElectrons_loose,selectedJets_forLepMVA);
 	vector<ttH::Electron> looseCutBased_electrons = GetCollection(selectedElectrons_looseCutBased,selectedJets_forLepMVA);
 	vector<ttH::Electron> tight_electrons = GetCollection(selectedElectrons_tight,selectedJets_forLepMVA);
 	vector<ttH::Electron> tightCutBased_electrons = GetCollection(selectedElectrons_tightCutBased,selectedJets_forLepMVA);
 
+	vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw,selectedJets_forLepMVA);
 	vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
 	vector<ttH::Muon> loose_muons = GetCollection(selectedMuons_loose,selectedJets_forLepMVA);
 	vector<ttH::Muon> looseCutBased_muons = GetCollection(selectedMuons_looseCutBased,selectedJets_forLepMVA);
@@ -397,6 +398,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         tight_leptons_intree = tightCutBased_leptons;
         tight_electrons_intree = tightCutBased_electrons;
         tight_muons_intree = tightCutBased_muons;
+
+	//raw_electrons_intree = raw_electrons;
+	//raw_muons_intree = raw_muons;
 
 	preselected_jets_intree = preselected_jets;
 	loose_bJets_intree = loose_bJets;

@@ -110,11 +110,11 @@ void TriggerAna::beginJob()
 
 	electronTightID = electronID::electronTight;
 	electronLooseID = electronID::electronLoose;
-	electronPreselectedID = electronID::electronNoCuts;
+	electronPreselectedID = electronID::electronRaw;
 
 	muonTightID = muonID::muonTight;
 	muonLooseID = muonID::muonLoose;
-	muonPreselectedID = muonID::muonNoCuts;
+	muonPreselectedID = muonID::muonRaw;
 
 	tauTightID = tauID::tauMedium;
 	// tauLooseID = tauID::tauVLoose;
@@ -369,7 +369,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight );	//miniAODhelper. // old
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper. // old
 	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
-	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 7., electronID::electronNoCuts );	//miniAODhelper.
+	vecPatElectron selectedElectrons_nocuts = GetSelectedElectrons( *electrons, 7., electronID::electronRaw );	//miniAODhelper.
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons( *electrons, 10., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	
@@ -400,7 +400,7 @@ void TriggerAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup
 	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );		//miniAODhelper.
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );		//miniAODhelper.
 	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );	//miniAODhelper.
-	vecPatMuon selectedMuons_nocuts = GetSelectedMuons( *muons, 5., muonID::muonNoCuts );	//miniAODhelper.
+	vecPatMuon selectedMuons_nocuts = GetSelectedMuons( *muons, 5., muonID::muonRaw );	//miniAODhelper.
 	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );	//miniAODhelper.
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);		//miniAODhelper.
 

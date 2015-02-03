@@ -88,11 +88,13 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
                 vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> loose_leptons_intree;
 		vector<ttH::Lepton> tight_leptons_intree;
-                
+ 
+		vector<ttH::Electron> raw_electrons_intree;               
 		vector<ttH::Electron> preselected_electrons_intree;
 		vector<ttH::Electron> loose_electrons_intree;
 		vector<ttH::Electron> tight_electrons_intree;
 
+		vector<ttH::Muon> raw_muons_intree;
                 vector<ttH::Muon> preselected_muons_intree;
                 vector<ttH::Muon> loose_muons_intree;
                 vector<ttH::Muon> tight_muons_intree;
@@ -207,6 +209,8 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("tight_leptons", &tight_leptons_intree);
 	summaryTree->Branch("tight_electrons", &tight_electrons_intree);
 	summaryTree->Branch("tight_muons", &tight_muons_intree);
+	summaryTree->Branch("raw_electrons", &raw_electrons_intree);
+	summaryTree->Branch("raw_muons", &raw_muons_intree);
 	summaryTree->Branch("preselected_jets", &preselected_jets_intree);
 	summaryTree->Branch("loose_bJets", &loose_bJets_intree);
 	summaryTree->Branch("met", &met_intree);
@@ -281,14 +285,14 @@ void OSTwoLepAna::initialize_variables()
 	preselected_leptons_intree.clear();
 	preselected_electrons_intree.clear();
 	preselected_muons_intree.clear();
-
 	loose_leptons_intree.clear();
 	loose_electrons_intree.clear();
 	loose_muons_intree.clear();
-
 	tight_leptons_intree.clear();
 	tight_electrons_intree.clear();
 	tight_muons_intree.clear();
+	raw_electrons_intree.clear();
+	raw_muons_intree.clear();
 
 	preselected_jets_intree.clear();
 	loose_bJets_intree.clear();
