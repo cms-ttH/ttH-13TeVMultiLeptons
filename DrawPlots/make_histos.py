@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import sys
 import os
-import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
+import importlib
+plot_helper = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.plot_helper', None)
 from argparse import ArgumentParser
 import ROOT
 import yaml

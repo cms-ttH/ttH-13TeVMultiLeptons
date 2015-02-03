@@ -1,7 +1,7 @@
 label: ss_v30
 output label: ss_v30
 luminosity: 19450.0
-input_trees_directory: /hadoop/users/awoodard/tree_files
+input_trees_directory: /afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/newversionofAna_check_out_for_first_time/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/
 output directory: histos/ss_v30
 
 #options
