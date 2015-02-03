@@ -6,6 +6,7 @@ plot_helper = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities
 from argparse import ArgumentParser
 import ROOT
 import yaml
+ROOT.gSystem.Load('libttH-13TeVMultiLeptonsTemplateMakers.so')
 
 def main():
     ROOT.gROOT.SetBatch(1)
@@ -104,15 +105,17 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                     if args.file:
                         source_file_name = args.file
                     source_file = ROOT.TFile(source_file_name)
-                    tree = source_file.Get('summaryTree')
-
+                    #tree = source_file.Get('OSTwoLepAna/summaryTree')
+		    tree = source_file.Get('summaryTree')
                     draw_string_maker = plot_helper.DrawStringMaker()
-                    draw_string_maker.append_selection_requirements(config['common cuts'].values(),
-                                                                    lepton_category_cut_strings,
-                                                                    jet_tag_category_cut_strings,
-                                                                    additional_cuts) #additional_cuts is empty by default
+                    # uncomment this eventually:
+		    #draw_string_maker.append_selection_requirements(config['common cuts'].values(),
+                    #                            lepton_category_cut_strings,
+                    #                            jet_tag_category_cut_strings,
+                    #                            additional_cuts) #additional_cuts is empty by default
 
                     draw_string_maker.remove_selection_requirements(cuts_to_remove)
+		    #draw_string_maker.append_selection_requirements('true') # hack
 
                     if not args.no_weights:
                         weights = plot_helper.customize_list(config['weights'], sample_dict.get('weights', ['common']))
@@ -134,7 +137,11 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                         draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
                         draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
                         plot_name = '%s%s' % (distribution, systematic_label)
-                        plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string)
+                        
+			##################################################################################################
+			plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, '') ## hack: replaced draw_string_maker.draw_string with ''
+			##################################################################################################
+			
                         if sample_info.sample_type == 'MC':
                             plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
                         output_file.Write()
