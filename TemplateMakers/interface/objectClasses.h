@@ -34,6 +34,11 @@ namespace ttH
     bool isGsfCtfScPixChargeConsistent;
     int numMissingInnerHits;
     bool passConversioVeto;
+    double relIso;
+    double dEtaIn;
+    double dPhiIn;
+    double full5x5_sigmaIetaIeta;
+    double hadronicOverEm;
     double mvaID;
     //lepMVA variables
     double lepMVA;
@@ -64,6 +69,14 @@ namespace ttH
     bool isPFMuon;
     bool isTrackerMuon;
     bool isGlobalMuon;
+
+    double relIso;
+    double normalizedChi2;
+    int numberOfValidMuonHits;
+    int numberOfMatchedStations;
+    int numberOfValidPixelHits;
+    int trackerLayersWithMeasurement;
+
     //lepMVA variables
     double lepMVA;
     double chreliso;

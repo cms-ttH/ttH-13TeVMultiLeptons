@@ -902,6 +902,13 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.isGsfCtfScPixChargeConsistent = iEle.isGsfCtfScPixChargeConsistent();
       ele.numMissingInnerHits = iEle.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
       ele.passConversioVeto = iEle.passConversionVeto();
+      
+      ele.relIso = GetElectronRelIso(iEle,coneSize::R03,corrType::rhoEA);
+      ele.dEtaIn = iEle.deltaEtaSuperClusterTrackAtVtx();
+      ele.dPhiIn = iEle.deltaPhiSuperClusterTrackAtVtx();
+      ele.full5x5_sigmaIetaIeta = iEle.full5x5_sigmaIetaIeta();
+      ele.hadronicOverEm = iEle.hadronicOverEm();
+      
       ele.lepMVA = GetElectronLepMVA(iEle, jets);
       ele.chreliso = iEle.chargedHadronIso()/iEle.pt();
       ele.nureliso = max(0.0,(iEle.neutralHadronIso()+iEle.photonIso())-0.5*iEle.puChargedHadronIso())/iEle.pt();
@@ -935,6 +942,16 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.isGlobalMuon = iMu.isGlobalMuon();
       mu.dxy = fabs(iMu.innerTrack()->dxy(vertex.position()));
       mu.dz =fabs(iMu.innerTrack()->dz(vertex.position()));
+
+      mu.relIso = GetMuonRelIso(iMu,coneSize::R03,corrType::rhoEA);
+      if(iMu.globalTrack().isAvailable()){
+	mu.normalizedChi2 = iMu.globalTrack()->normalizedChi2();
+	mu.numberOfValidMuonHits = iMu.globalTrack()->hitPattern().numberOfValidMuonHits();
+      }
+      mu.numberOfMatchedStations = iMu.numberOfMatchedStations();
+      mu.numberOfValidPixelHits = iMu.innerTrack()->hitPattern().numberOfValidPixelHits();
+      mu.trackerLayersWithMeasurement = iMu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
+
       mu.chargeFlip = iMu.innerTrack()->ptError()/iMu.innerTrack()->pt();
       mu.lepMVA = GetMuonLepMVA(iMu, jets);
       mu.chreliso = iMu.chargedHadronIso()/iMu.pt();
@@ -979,12 +996,10 @@ vector<ttH::MET> MultileptonAna::GetCollection (patMETs theobjs)
   return theMETs;
 }
 
-//vector<ttH::GenParticle> MultileptonAna::GetCollection (prunedGenParticles theobjs)
 vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::GenParticle> theobjs)
 {
   vector<ttH::GenParticle> theGenParticles;
   for (const auto & iGenParticle: theobjs)
-  //  for (std::vector<reco::GenParticle>::const_iterator iGenParticle = theobjs.begin(); iGenParticle != theobjs.end(); iGenParticle++)
     {
       ttH::GenParticle genParticle;
       genParticle.obj = iGenParticle.p4();
