@@ -1,0 +1,149 @@
+#input and output file names
+input file location: ../histos/OS_ttZ_studies_2l_lepCut_forLimits
+input file label: ttV_OS_Nov14
+
+lepton categories:
+#     mu_mu:
+#         data sample: DoubleMu
+#         excluded samples: []
+#         category name: 'ttZ_2los_mumu'
+    mu_ele:
+        data sample: MuEG
+        excluded samples: []
+        category name: 'ttZ_2los_em'
+#     ele_ele:
+#         data sample: DoubleElectron
+#         excluded samples: []
+#         category name: 'ttZ_2los_ee'
+    lep_lep_SF:
+        data sample: DoubleLepton
+        excluded samples: []
+        category name: 'ttZ_2los_llsf'
+
+        
+#Jet-tag categories: "draw name"
+jet tag categories:
+    #eq5j_eq0t: " + #eq5 jets #eq0 tags"
+    #ge6j_eq0t: " + #geq6 jets #eq0 tags"
+    eq5j_ge1t: " + #eq5 jets #geq1 tag"
+    ge6j_ge1t: " + #geq6 jets #geq1 tag"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - JES
+    - weight_PU
+    - topPtWgt
+    - MT_mass_ratio
+    - MHT
+    - Q2ScaleWgt
+    - csvWgtlf_HF
+    - csvWgtlf_Stats1
+    - csvWgtlf_Stats2
+    - csvWgthf_LF
+    - csvWgthf_Stats1
+    - csvWgthf_Stats2
+    - csvWgtc_Err1
+    - csvWgtc_Err2
+
+    
+ttH mass points: ##New code to automate masses
+    - '125'
+    
+data samples:
+    DoubleMu:
+        datacard name: "data_obs"
+        systematics: none
+        samples: [DoubleMu]
+    MuEG:
+        datacard name: "data_obs"
+        systematics: none
+        samples: [MuEG]
+    DoubleElectron:
+        datacard name: "data_obs"
+        systematics: none
+        samples: [DoubleElectron]
+    DoubleLepton:
+        datacard name: "data_obs"
+        systematics: none
+        samples: [DoubleMu, DoubleElectron]
+
+signal samples:
+    ttbarZ:
+        datacard name: "TTZ"
+        systematics: common
+        samples: [ttbarZ]
+
+#Samples, ordered bottom-to-top
+background samples:
+
+#     zjets:
+#         datacard name: "ZJets"
+#         systematics: common
+#         samples: [zjets]
+
+    zjets_lf:
+        datacard name: "ZJets_LF"
+        systematics: common
+        #samples: [zjets_lf_0p, zjets_lf_1p, zjets_lf_2p, zjets_lf_3p, zjets_lf_4p]
+        samples: [zjets_lf_4p]
+        
+    zjets_cc:
+        datacard name: "ZJets_CC"
+        systematics: common
+        samples: [zjets_cc_0p, zjets_cc_1p, zjets_cc_2p, zjets_cc_3p, zjets_cc_4p]
+        #samples: [zjets_cc_3p, zjets_cc_4p]
+
+    zjets_b:
+        datacard name: "ZJets_B"
+        systematics: common
+        samples: [zjets_b_0p, zjets_b_1p, zjets_b_2p, zjets_b_3p, zjets_b_4p]
+        #samples: [zjets_b_3p, zjets_b_4p]
+        
+    zjets_bb:
+        datacard name: "ZJets_2B"
+        systematics: common
+        samples: [zjets_bb_0p, zjets_bb_1p, zjets_bb_2p, zjets_bb_3p, zjets_bb_4p]
+        #samples: [zjets_bb_3p, zjets_bb_4p]
+
+    tbZ_ll:
+        datacard name: "TBZ"
+        systematics: common
+        samples: [tbZ_ll]
+
+    ttbar_ll:
+        datacard name: "TTJets_LF"
+        systematics: common
+        samples: [ttbar_ll]
+        
+    ttbar_cc_ll:
+        datacard name: "TTJets_CC"
+        systematics: common
+        samples: [ttbar_cc_ll]
+        
+    ttbar_b_ll:
+        datacard name: "TTJets_B"
+        systematics: common
+        samples: [ttbar_b_ll]
+        
+    ttbar_bb_ll:
+        datacard name: "TTJets_2B"
+        systematics: common
+        samples: [ttbar_bb_ll]
+
+    ttbarWW:
+        datacard name: "TT2W"
+        systematics: common
+        samples: [ttbarWW]
+
+    ttbarH:
+        datacard name: "TTH"
+        systematics: common
+        samples: [ttH125]
+        scale: 1.0
+
+    ttbarW:
+        datacard name: "TTW"
+        systematics: common
+        samples: [ttbarW]
+        scale: 1.0

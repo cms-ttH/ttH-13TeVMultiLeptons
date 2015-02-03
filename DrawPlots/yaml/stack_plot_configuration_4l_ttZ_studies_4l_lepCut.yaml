@@ -1,0 +1,205 @@
+#input and output file names
+input file location: histos/4l_ttZ_studies_4l_lepCut
+input file label: ttV_Nov14
+output file location: pdf/4l_ttZ_studies_4l_lepCut
+
+#drawing options
+skip systematics: true
+draw ratio plot: true
+draw legend: true
+log scale: false
+save png: true
+save pdf: true
+blinded: false
+KS test: false
+selection info : false
+SF info: false
+
+#luminosity and era
+luminosity: 19.5
+luminosity error: 0.044
+trigger SF error: 0.02
+lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
+
+#Lepton categories: "draw name"
+lepton categories:
+#     mu_mu:
+#         data samples: [inclusive_data]
+#         excluded samples: []
+#         tex name: " #mu #mu "
+#     ele_ele:
+#         data samples: [inclusive_data]
+#         excluded samples: []
+#         tex name: " e e "
+    4l:
+        data samples: [inclusive_data]
+        excluded samples: []
+        tex name: " 4 lepton "
+
+#Jet-tag categories: "draw name"
+jet tag categories:
+
+    #ge0j_Zmask_Zmask: " + Z mask + Z mask"
+    #ge0j_Zpeak_Zmask: " + Z peak + Z mask"
+    ge0j_Zpeak_Zpeak: " + Z peak + Z peak"
+
+#     ge1j_Zpeak_mht30_1bloose: " + #geq1 jets + Z peak + MHT30 + #geq1 loose tag"
+#     ge1j_Zmask_mht30_1bloose: " + #geq1 jets + Z mask + MHT30 + #geq1 loose tag"
+    
+#     ge1j_Zpeak_mht30_ge1t: " + #geq1 jets + Z peak + MHT30 + #geq1 tag"
+#     ge1j_Zmask_mht30_ge1t: " + #geq1 jets + Z mask + MHT30 + #geq1 tag"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - weight_PUUp
+    - weight_PUDown
+    - topPtWgtDown
+    - topPtWgtUp
+    - csvWeightHFUp
+    - csvWeightHFDown
+    - csvWeightLFUp
+    - csvWeightLFDown
+    
+# Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized) 
+
+signal samples:
+    ttbarZ:
+        draw name: "t#bar{t}Z"
+        color: kSpring+2
+        samples: [ttbarZ]
+        stack or line: stack
+        line width: 2 # must be integer
+        scale: 1.0
+
+#Samples in each group will be added together and appear as a single entry in the stack plot
+background samples:
+    ttbar:
+        draw name: "t#bar{t}"
+        color: kRed
+        systematics: all
+        samples: [ttbar_ll]
+        
+#     zjets:
+#         draw name: "Z"
+#         color: kBlue
+#         systematics: all
+#         samples: [zjets_0p, zjets_1p, zjets_2p, zjets_3p, zjets_4p]
+        
+    wz_lll:
+        draw name: "Z + WZ"
+        color: kViolet-4
+        samples: [wz_lf_lll, wz_cc_lll, wz_b_lll, wz_bb_lll]
+        
+#     zz_lowmll:
+#         draw name: "ZZ low mass"
+#         color: kAzure-8
+#         samples: [zz_lowmll]
+        
+    zz_llll:
+        draw name: "ZZ"
+        color: kAzure-9
+        samples: [zz_lf_llll, zz_cc_llll, zz_b_llll, zz_bb_llll]
+        
+#     zz_lf_llll:
+#         draw name: "ZZ_lf"
+#         color: kAzure-9
+#         samples: [zz_lf_llll]
+        
+#     zz_cc_llll:
+#         draw name: "ZZ_cc"
+#         color: kAzure-8
+#         samples: [zz_cc_llll]
+        
+#     zz_b_llll:
+#         draw name: "ZZ_b"
+#         color: kAzure-7
+#         samples: [zz_b_llll]
+        
+#     zz_bb_llll:
+#         draw name: "ZZ_bb"
+#         color: kAzure-6
+#         samples: [zz_bb_llll]
+        
+    multiboson:
+        draw name: "multiboson"
+        color: kViolet
+        samples: [wwz] #wzz, zzz
+        
+    ttbarX:
+        draw name: "t#bar{t}+X"
+        color: kSpring+8
+        samples: [ttbarG, ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt, ttbarWW]
+                                        
+    ttH125:
+        draw name: "t#bar{t}H"
+        color: kRed
+        samples: [ttH125]
+                                        
+    ttbarW:
+        draw name: "t#bar{t}W"
+        color: kGreen-5
+        samples: [ttbarW]
+                                        
+#distribution: [title, underflow, overflow]
+distributions:
+    numAllMuons: ['number of muons', true, true]
+    numAllNonZMuons: ['number of non-Z muons', true, true]
+    numExtraPartons: ['number of extra partons', true, true]
+    numJets: ['number of jets', true, true]
+    numLooseBJets: ['number of loose b-tagged jets', true, true]
+    numMediumBJets: ['number of medium b-tagged jets', true, true]
+    #numMediumBJets_blind: ['number of medium b-tagged jets', true, false]
+    numTightBJets: ['number of tight b-tagged jets', true, true]
+    mass_of_leptons: ['Mass of all leptons', true, true]
+    all_nonZ_leptons_by_pt_1_pt: ['First non-Z lepton pT', true, true]
+    #all_nonZ_leptons_by_pt_1_pt_med: ['First non-Z lepton pT', true, true]
+    #all_nonZ_leptons_by_pt_1_pt_low: ['First non-Z lepton pT', true, true]
+    all_nonZ_leptons_by_pt_2_pt: ['Second non-Z lepton pT', true, true]
+    #all_nonZ_leptons_by_pt_2_pt_med: ['Second non-Z lepton pT', true, true]
+    #all_nonZ_leptons_by_pt_2_pt_low: ['Second non-Z lepton pT', true, true]
+##     all_nonZ_leptons_by_pt_1_eta: ['Non-Z lepton eta', true, true]
+##     all_nonZ_leptons_by_pt_1_jetBTagCSV: ['Non-Z lepton jetBTagCSV', true, true]
+    ZLike_pt_leplep_SFOS_all: ['Z pT', true, true]
+    #ZLike_pt_leplep_SFOS_all_low: ['Z pT', true, true]
+    met_ld: ['MetLD', true, true]
+    #met_ld_low: ['MetLD', true, true]
+    #WLike_MT_met_lep: ['MT(met, lep)', true, true]
+    #WLike_MT_met_lep_low: ['MT(met, lep)', true, true]
+#    ## ttZ
+    all_Z_leptons_by_pt_1_pt: ['First Z lepton pT', true, true]
+    #all_Z_leptons_by_pt_1_pt_med: ['First Z lepton pT', true, true]
+    #all_Z_leptons_by_pt_1_pt_low: ['First Z lepton pT', true, true]
+    all_Z_leptons_by_pt_2_pt: ['Second Z lepton pT', true, true]
+    #all_Z_leptons_by_pt_2_pt_med: ['Second Z lepton pT', true, true]
+    #all_Z_leptons_by_pt_2_pt_low: ['Second Z lepton pT', true, true]
+    min_nonZ_lepton_eta: ['Min non-Z lepton eta', true, true]
+    max_nonZ_lepton_eta: ['Max non-Z lepton eta', true, true]
+    jets_by_pt_1_pt: ['First jet pT', false, true]
+    jets_by_pt_2_pt: ['Second jet pT', false, true]
+#     min_mass_leplep_all: ['min dilepton mass', true, true]
+    ZLike_mass_leplep_SFOS_all: ['Z mass', true, true]
+    ZLike_mass_leplep_SFOS_all_narrow: ['Z mass', true, true]
+    #ZLike_mass_leplep_SFOS_all_med: ['Z mass med', true, true]
+    #ZLike_mass_leplep_SFOS_all_low: ['Z mass low', true, true]
+    ZLike_eta_leplep_SFOS_all: ['Z eta', true, true]
+    ZLike_mass_leplep_SFOS_all_2: ['Second Z mass', false, true]
+    ZLike_mass_leplep_SFOS_all_2_narrow: ['Second Z mass', true, true]
+    #ZLike_mass_leplep_SFOS_all_2_med: ['Second Z mass med', false, true]
+    #ZLike_mass_leplep_SFOS_all_2_low: ['Second Z mass low', false, false]
+    met_pt: ['MET', true, true]
+    #met_pt_low: ['MET', true, true]
+    mht: ['MHT', true, true]
+    #mht_low: ['MHT', true, true]
+    sum_pt: ['Sum pT', false, true]
+    sum_jet_pt: ['Sum jet pT', false, true]
+    mass_of_jets: ['Mass of all jets', false, true]
+# #     WLike_dijet_mass_X1b: ['W mass (exclude one b-jet)', true, true]
+# #     WLike_dijet_mass_X2b: ['W mass (exclude two b-jets)', true, true]
+#     topLike_MT_met_lep_b_175: ['top MT(met, lep, b)', false, true]
+#     topLike_mass_lep_b_100: ['top mass(lep, b)', false, true]
+# #     topLike_multijet_mass_b1: ['top mass(jets, b1)', true, true]
+# #     topLike_multijet_mass_b2: ['top mass(jets, b2)', true, true]
+# #     topPairLike_MT_met_lep_jets: ['top pair MT(met, lep, jets)', true, true]
+# #     topPairLike_mass_lep_jets: ['top pair mass(lep, jets)', true, true]
+                                                                

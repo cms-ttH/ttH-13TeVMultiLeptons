@@ -1,0 +1,458 @@
+SS label: ttV_SS_match_v5
+3l label: ttV_match_v5
+output label: FR_match_v5
+luminosity: 19450.0
+input_trees_directory: tree_files
+output directory: fakerate_ttbar_SS_3l
+
+CERN FR:
+    file: '.../TemplateMakers/data/CERN/fakerate/FR_merged_data.root'
+    #FR_tight_mu, FR_tight_el, FR_loose_mu, FR_loose_el, FR_tight2_mu, FR_tight2_el, FR_loose2_mu, FR_loose2_el
+
+#options
+skip systematics: true
+
+#cuts
+common cuts SS:
+    cleanup: min_mass_leplep_all > 12
+    #2_leptons: numAllLeptons == 2
+    2_leptons: (numAllLeptons == 2 || numAllLeptons == 3)
+    3rd_lepton: (numAllLeptons == 2 || (all_leptons_by_pt_3_lepMVA < 0.7 || all_leptons_by_pt_3_pt < 10 ))
+    z_mask: (numAllElectrons < 2 || abs(ZLike_mass_leplep_SF_all-91.0) > 10)
+    lepton_pt: all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10
+    tight_charge: all_leptons_by_pt_1_CERN_tight_charge && all_leptons_by_pt_2_CERN_tight_charge ##Now includes conv_veto and inner_hits
+    same_charge: abs(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge) == 2
+    #2_tight: all_leptons_by_pt_1_lepMVA > 0.7 && all_leptons_by_pt_2_lepMVA > 0.7
+
+common cuts 3l:
+    cleanup: min_mass_leplep_all > 12
+    #3_leptons: numAllLeptons == 3
+    3_leptons: (numAllLeptons == 3 || numAllLeptons == 4)
+    4th_lepton: (numAllLeptons == 3 || (all_leptons_by_pt_4_lepMVA < -0.3 || all_leptons_by_pt_4_pt < 10))
+    z_mask: abs(ZLike_mass_leplep_SFOS_all-91.0) > 10
+    lepton_pt: all_leptons_by_pt_1_pt > 20 && all_leptons_by_pt_2_pt > 10 && all_leptons_by_pt_3_pt > 10
+    right_charge: abs(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge+all_leptons_by_pt_3_tkCharge) == 1
+    1loose: all_OS_leptons_by_pt_1_lepMVA > -0.3
+    #2tight1loose: all_SS_leptons_by_pt_1_lepMVA > 0.7 && all_SS_leptons_by_pt_2_lepMVA > 0.7 && all_OS_leptons_by_pt_1_lepMVA > -0.3                                    
+
+lepton categories:
+    mu_mu:
+        data samples: [DoubleMu]
+        cuts:
+            ttbar: ((numJets == 2 && numMediumBJets >= 1) || (numJets == 3 && numMediumBJets == 1))
+            mu_mu: (all_leptons_by_pt_1_isMuon + all_leptons_by_pt_2_isMuon) == 2
+            isDoubleMuTriggerPass: isDoubleMuTriggerPass
+    mu_ele:
+        data samples: [MuEG]
+        cuts:
+            ttbar: ((numJets == 2 && numMediumBJets >= 1) || (numJets == 3 && numMediumBJets == 1))
+            mu_ele: (all_leptons_by_pt_1_isMuon + all_leptons_by_pt_2_isMuon) == 1
+            isMuEGTriggerPass: isMuEGTriggerPass
+    ele_ele:
+        data samples: [DoubleElectron]
+        cuts:
+            ttbar: ((numJets == 2 && numMediumBJets >= 1) || (numJets == 3 && numMediumBJets == 1))
+            ele_ele: (all_leptons_by_pt_1_isMuon + all_leptons_by_pt_2_isMuon) == 0
+            isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
+            
+    3l:
+        data samples: [inclusive_data]
+        cuts:
+            ttbar: numJets == 1 && numMediumBJets == 1
+            trigger: '((dataset == "MC" && (isDoubleMuTriggerPass || isDoubleMuTriggerPass || isMuEGTriggerPass || isTripleElectronTriggerPass)) ||
+            (dataset == "DoubleMu" && isDoubleMuTriggerPass) ||
+            (dataset == "DoubleElectron" && (!isDoubleMuTriggerPass) && (isDoubleElectronTriggerPass || isTripleElectronTriggerPass)) ||
+            (dataset == "MuEG" && (!isDoubleMuTriggerPass) && (!isDoubleElectronTriggerPass) && (!isTripleElectronTriggerPass) && isMuEGTriggerPass))'
+
+muon pt eta csv categories:
+
+# ## ------- One bin ----------------
+
+#     mu_1_1: [1, 10, 1000, 0.0, 2.5, -100, 1]
+#     ele_1_1: [0, 10, 1000, 0.0, 2.5, -100, 1]
+
+# ## ------- Eta bins ----------------
+
+#     mu_1: [1, 10, 1000, 0.0, 1.5, -100, 1]
+#     mu_2: [1, 10, 1000, 1.5, 2.5, -100, 1]
+#     ele_1: [0, 10, 1000, 0.0, 0.8, -100, 1]
+#     ele_2: [0, 10, 1000, 0.8, 1.479, -100, 1]
+#     ele_3: [0, 10, 1000, 1.479, 2.5, -100, 1]
+
+# ## ------- Pt bins ----------------
+
+#     mu_1_1: [1, 10, 20, 0.0, 2.5, -100, 1]
+#     mu_2_1: [1, 20, 40, 0.0, 2.5, -100, 1]
+#     mu_3_1: [1, 40, 1000, 0.0, 2.5, -100, 1]
+    
+#     ele_1_1: [0, 10, 20, 0.0, 2.5, -100, 1]
+#     ele_2_1: [0, 20, 40, 0.0, 2.5, -100, 1]
+#     ele_3_1: [0, 40, 1000, 0.0, 2.5, -100, 1]
+    
+# ## ------- jetBTagCSV bins ----------------
+
+#     mu_1: [1, 10, 1000, 0.0, 2.5, -100, 0.244]
+#     mu_2: [1, 10, 1000, 0.0, 2.5, 0.244, 0.679]
+#     mu_3: [1, 10, 1000, 0.0, 2.5, 0.679, 1]
+#     ele_1: [0, 10, 1000, 0.0, 2.5, -100, 0.244]
+#     ele_2: [0, 10, 1000, 0.0, 2.5, 0.244, 0.679]
+#     ele_3: [0, 10, 1000, 0.0, 2.5, 0.679, 1]
+
+# ## ------- Pt fine bins ----------------
+
+#     mu_1_1: [1, 10, 15, 0.0, 2.5, -100, 1]
+#     mu_2_1: [1, 15, 20, 0.0, 2.5, -100, 1]
+#     mu_3_1: [1, 20, 30, 0.0, 2.5, -100, 1]
+#     mu_4_1: [1, 30, 50, 0.0, 2.5, -100, 1]
+#     mu_5_1: [1, 50, 1000, 0.0, 2.5, -100, 1]
+    
+#     ele_1_1: [0, 10, 15, 0.0, 2.5, -100, 1]
+#     ele_2_1: [0, 15, 20, 0.0, 2.5, -100, 1]
+#     ele_3_1: [0, 20, 30, 0.0, 2.5, -100, 1]
+#     ele_4_1: [0, 30, 50, 0.0, 2.5, -100, 1]
+#     ele_5_1: [0, 50, 1000, 0.0, 2.5, -100, 1]
+
+## ------- Pt Eta CSV binning ----------------
+
+    mu_1_1_1: [1, 10, 20, 0.0, 1.5, -100, 0.244]
+    mu_2_1_1: [1, 20, 40, 0.0, 1.5, -100, 0.244]
+    mu_3_1_1: [1, 40, 1000, 0.0, 1.5, -100, 0.244]
+    
+    mu_1_1_2: [1, 10, 20, 0.0, 1.5, 0.244, 0.679]
+    mu_2_1_2: [1, 20, 40, 0.0, 1.5, 0.244, 0.679]
+    mu_3_1_2: [1, 40, 1000, 0.0, 1.5, 0.244, 0.679]
+    
+    mu_1_1_3: [1, 10, 20, 0.0, 1.5, 0.679, 1]
+    mu_2_1_3: [1, 20, 40, 0.0, 1.5, 0.679, 1]
+    mu_3_1_3: [1, 40, 1000, 0.0, 1.5, 0.679, 1]
+    
+    mu_1_2_1: [1, 10, 20, 1.5, 2.5, -100, 0.244]
+    mu_2_2_1: [1, 20, 40, 1.5, 2.5, -100, 0.244]
+    mu_3_2_1: [1, 40, 1000, 1.5, 2.5, -100, 0.244]
+    
+    mu_1_2_2: [1, 10, 20, 1.5, 2.5, 0.244, 0.679]
+    mu_2_2_2: [1, 20, 40, 1.5, 2.5, 0.244, 0.679]
+    mu_3_2_2: [1, 40, 1000, 1.5, 2.5, 0.244, 0.679]
+    
+    mu_1_2_3: [1, 10, 20, 1.5, 2.5, 0.679, 1]
+    mu_2_2_3: [1, 20, 40, 1.5, 2.5, 0.679, 1]
+    mu_3_2_3: [1, 40, 1000, 1.5, 2.5, 0.679, 1]
+    
+    ele_1_1_1: [0, 10, 20, 0.0, 0.8, -100, 0.244]
+    ele_2_1_1: [0, 20, 40, 0.0, 0.8, -100, 0.244]
+    ele_3_1_1: [0, 40, 1000, 0.0, 0.8, -100, 0.244]
+    
+    ele_1_1_2: [0, 10, 20, 0.0, 0.8, 0.244, 0.679]
+    ele_2_1_2: [0, 20, 40, 0.0, 0.8, 0.244, 0.679]
+    ele_3_1_2: [0, 40, 1000, 0.0, 0.8, 0.244, 0.679]
+    
+    ele_1_1_3: [0, 10, 20, 0.0, 0.8, 0.679, 1]
+    ele_2_1_3: [0, 20, 40, 0.0, 0.8, 0.679, 1]
+    ele_3_1_3: [0, 40, 1000, 0.0, 0.8, 0.679, 1]
+    
+    ele_1_2_1: [0, 10, 20, 0.8, 1.479, -100, 0.244]
+    ele_2_2_1: [0, 20, 40, 0.8, 1.479, -100, 0.244]
+    ele_3_2_1: [0, 40, 1000, 0.8, 1.479, -100, 0.244]
+    
+    ele_1_2_2: [0, 10, 20, 0.8, 1.479, 0.244, 0.679]
+    ele_2_2_2: [0, 20, 40, 0.8, 1.479, 0.244, 0.679]
+    ele_3_2_2: [0, 40, 1000, 0.8, 1.479, 0.244, 0.679]
+    
+    ele_1_2_3: [0, 10, 20, 0.8, 1.479, 0.679, 1]
+    ele_2_2_3: [0, 20, 40, 0.8, 1.479, 0.679, 1]
+    ele_3_2_3: [0, 40, 1000, 0.8, 1.479, 0.679, 1]
+    
+    ele_1_3_1: [0, 10, 20, 1.479, 2.5, -100, 0.244]
+    ele_2_3_1: [0, 20, 40, 1.479, 2.5, -100, 0.244]
+    ele_3_3_1: [0, 40, 1000, 1.479, 2.5, -100, 0.244]
+    
+    ele_1_3_2: [0, 10, 20, 1.479, 2.5, 0.244, 0.679]
+    ele_2_3_2: [0, 20, 40, 1.479, 2.5, 0.244, 0.679]
+    ele_3_3_2: [0, 40, 1000, 1.479, 2.5, 0.244, 0.679]
+    
+    ele_1_3_3: [0, 10, 20, 1.479, 2.5, 0.679, 1]
+    ele_2_3_3: [0, 20, 40, 1.479, 2.5, 0.679, 1]
+    ele_3_3_3: [0, 40, 1000, 1.479, 2.5, 0.679, 1]
+    
+
+# ## ------- Fine pT eta binning ----------------
+
+#     mu_1_1: [1, 10, 15, 0.0, 1.5, -100, 1]
+#     mu_2_1: [1, 15, 20, 0.0, 1.5, -100, 1]
+#     mu_3_1: [1, 20, 30, 0.0, 1.5, -100, 1]
+#     mu_4_1: [1, 30, 50, 0.0, 1.5, -100, 1]
+#     mu_5_1: [1, 50, 1000, 0.0, 1.5, -100, 1]
+    
+#     mu_1_2: [1, 10, 15, 1.5, 2.5, -100, 1]
+#     mu_2_2: [1, 15, 20, 1.5, 2.5, -100, 1]
+#     mu_3_2: [1, 20, 30, 1.5, 2.5, -100, 1]
+#     mu_4_2: [1, 30, 50, 1.5, 2.5, -100, 1]
+#     mu_5_2: [1, 50, 1000, 1.5, 2.5, -100, 1]
+
+#     ele_1_1: [0, 10, 15, 0.0, 0.8, -100, 1]
+#     ele_2_1: [0, 15, 20, 0.0, 0.8, -100, 1]
+#     ele_3_1: [0, 20, 30, 0.0, 0.8, -100, 1]
+#     ele_4_1: [0, 30, 50, 0.0, 0.8, -100, 1]
+#     ele_5_1: [0, 50, 1000, 0.0, 0.8, -100, 1]
+    
+#     ele_1_2: [0, 10, 15, 0.8, 1.479, -100, 1]
+#     ele_2_2: [0, 15, 20, 0.8, 1.479, -100, 1]
+#     ele_3_2: [0, 20, 30, 0.8, 1.479, -100, 1]
+#     ele_4_2: [0, 30, 50, 0.8, 1.479, -100, 1]
+#     ele_5_2: [0, 50, 1000, 0.8, 1.479, -100, 1]
+    
+#     ele_1_3: [0, 10, 15, 1.479, 2.5, -100, 1]
+#     ele_2_3: [0, 15, 20, 1.479, 2.5, -100, 1]
+#     ele_3_3: [0, 20, 30, 1.479, 2.5, -100, 1]
+#     ele_4_3: [0, 30, 50, 1.479, 2.5, -100, 1]
+#     ele_5_3: [0, 50, 1000, 1.479, 2.5, -100, 1]
+
+binning:
+# ## ------- One bin ----------------
+#     mu:
+#         pT: [10, 1000]
+#         eta: [0.0, 2.5]
+#         jetBTagCSV: [-100, 1]
+#     ele:
+#         pT: [10, 1000]
+#         eta: [0.0, 2.5]
+#         jetBTagCSV: [-100, 1]
+
+# ## ------- Eta bins ----------------
+#     mu:
+#         pT: [10, 1000]
+#         eta: [0.0, 1.5, 2.5]
+#         jetBTagCSV: [-100, 1]
+#     ele:
+#         pT: [10, 1000]
+#         eta: [0.0, 0.8, 1.479, 2.5]
+#         jetBTagCSV: [-100, 1]
+
+# ## ------- Pt bins ----------------
+#     mu:
+#         pT: [10, 20, 40, 1000]
+#         eta: [0.0, 2.5]
+#         jetBTagCSV: [-100, 1]
+#     ele:
+#         pT: [10, 20, 40, 1000]
+#         eta: [0.0, 2.5]
+#         jetBTagCSV: [-100, 1]
+
+# ## ------- jetBTagCSV bins ----------------
+#     mu:
+#         pT: [10, 1000]
+#         eta: [0.0, 2.5]
+#         jetBTagCSV: [-100, 0.244, 0.679, 1]
+#     ele:
+#         pT: [10, 1000]
+#         eta: [0.0, 2.5]
+#         jetBTagCSV: [-100, 0.244, 0.679, 1]
+
+# ## ------- Pt fine bins ----------------
+#     mu:
+#         pT: [10, 15, 20, 30, 50, 1000]
+#         eta: [0.0, 2.5]
+#         jetBTagCSV: [-100, 1]
+#     ele:
+#         pT: [10, 15, 20, 30, 50, 1000]
+#         eta: [0.0, 2.5]
+#         jetBTagCSV: [-100, 1]
+
+## ------- Pt Eta CSV binning ----------------
+    mu:
+        pT: [10, 20, 40, 1000]
+        eta: [0.0, 1.5, 2.5]
+        jetBTagCSV: [-100, 0.244, 0.679, 1]
+    ele:
+        pT: [10, 20, 40, 1000]
+        eta: [0.0, 0.8, 1.479, 2.5]
+        jetBTagCSV: [-100, 0.244, 0.679, 1]
+
+# ## ------- Fine pT eta binning ----------------
+#     mu:
+#         pT: [10, 15, 20, 30, 50, 1000]
+#         eta: [0.0, 1.5, 2.5]
+#         jetBTagCSV: [-100, 1]
+#     ele:
+#         pT: [10, 15, 20, 30, 50, 1000]
+#         eta: [0.0, 0.8, 1.479, 2.5]
+#         jetBTagCSV: [-100, 1]
+
+leptons:
+    SS: all_leptons_by_pt_
+    3l: all_SS_leptons_by_pt_
+    
+lepMVA cuts:
+    #loose: -0.3
+    tight: 0.7
+
+initial FR:
+    tight mu: 0.079
+    tight ele: 0.087
+
+iterations: 20
+
+weights:
+    - weight_PU
+    - topPtWgt
+    - csvWgtlf
+    - csvWgthf
+    - triggerSF
+
+weights SS:
+    - RecoIDIsoSIPSF_2lep
+    - lepMVATight2LepSF
+    - tightCharge2LepSF
+
+weights 3l:
+    - RecoIDIsoSIPSF_3lep
+    - lepMVATightSF_SS_Lep1
+    - lepMVATightSF_SS_Lep2
+    - lepMVALooseSF_OS_Lep1
+    
+systematics:
+    - nominal
+    - weight_PUUp
+    - weight_PUDown
+    - topPtWgtDown
+    - topPtWgtUp
+    - csvWeightHFUp
+    - csvWeightHFDown
+    - csvWeightLFUp
+    - csvWeightLFDown
+
+#weights: all ---> weight by everything in "weights" section above
+#weights: none ---> don't apply any weight
+#weights: all+weight1 ---> weight by everything in the "weights" section above, and also by weight1
+#weights: all+weight1-weight2 ---> weight by everything in the "weights" section above except for weight2, and also by weight1
+#weights: weight1+weight2 ---> weight only by weight1 and weight2
+#same idea for systematics
+samples:
+
+    ## data samples
+    DoubleMu:
+        weights: none
+        systematics: nominal
+    MuEG:
+        weights: none
+        systematics: nominal
+    DoubleElectron:
+        weights: none
+        systematics: nominal
+    inclusive_data:
+        weights: none
+        systematics: nominal
+
+    ## MC samples:
+    ttH125:
+    wz_lll:
+    zz_llll:
+    www:
+    wwz:
+    ttbarW:
+    ttbarWW:
+    ttbarZ:
+    ttbarG:
+    ttbarGStar_ee:
+    ttbarGStar_mm:
+    ttbarGStar_tt:
+    tbZ_ll:
+    WpWpqq:
+    ##WmWmqq: #Does not exist yet
+    WWDPI:
+
+
+    ## QF samples
+    MuEG_QF_sideband:
+        additional cuts: ['abs(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge) == 0']
+        cuts to remove: ['abs(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge) == 2']
+        weights: DataDrivenFR_QF_2_tight
+        systematics: [40PercentRateUp, 40PercentRateDown]
+    DoubleElectron_QF_sideband:
+        additional cuts: ['abs(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge) == 0']
+        cuts to remove: ['abs(all_leptons_by_pt_1_tkCharge+all_leptons_by_pt_2_tkCharge) == 2']
+        weights: DataDrivenFR_QF_2_tight
+        systematics: [40PercentRateUp, 40PercentRateDown]
+
+    ## NP samples
+    DoubleMu_NP_sideband:
+        weights: none
+        systematics: nominal
+    MuEG_NP_sideband:
+        weights: none
+        systematics: nominal
+    DoubleElectron_NP_sideband:
+        weights: none
+        systematics: nominal
+    inclusive_data_NP_sideband:
+        tree sample: inclusive_data
+        weights: none
+        systematics: nominal
+
+distribution:
+    expression: numAllLeptons
+    axis labels: ['number of leptons', Events]
+    binning: [4, 1.5, 5.5]
+
+
+#     ## CERN binning    
+#     mu_1_1: [1, 0, 12, 0.0, 1.5, -100, 1]     #0.0199
+#     mu_2_1: [1, 12, 19, 0.0, 1.5, -100, 1]    #0.0478
+#     mu_3_1: [1, 19, 24, 0.0, 1.5, -100, 1]    #0.0750
+#     mu_4_1: [1, 24, 33, 0.0, 1.5, -100, 1]    #0.0772
+#     mu_5_1: [1, 33, 38, 0.0, 1.5, -100, 1]    #0.0771
+#     mu_6_1: [1, 38, 44, 0.0, 1.5, -100, 1]    #0.124
+#     mu_7_1: [1, 44, 47, 0.0, 1.5, -100, 1]    #0.114
+#     mu_8_1: [1, 47, 55, 0.0, 1.5, -100, 1]    #0.103
+#     mu_9_1: [1, 55, 66, 0.0, 1.5, -100, 1]    #0.0824
+#     mu_10_1: [1, 66, 74, 0.0, 1.5, -100, 1]   #0.0447
+#     mu_11_1: [1, 74, 1000, 0.0, 1.5, -100, 1] #0.0314
+
+#     mu_1_2: [1, 0, 12, 1.5, 2.5, -100, 1]     #0.0063
+#     mu_2_2: [1, 12, 19, 1.5, 2.5, -100, 1]    #0.0139
+#     mu_3_2: [1, 19, 24, 1.5, 2.5, -100, 1]    #0.0221
+#     mu_4_2: [1, 24, 33, 1.5, 2.5, -100, 1]    #0.0246
+#     mu_5_2: [1, 33, 38, 1.5, 2.5, -100, 1]    #0.0245
+#     mu_6_2: [1, 38, 44, 1.5, 2.5, -100, 1]    #0.0306
+#     mu_7_2: [1, 44, 47, 1.5, 2.5, -100, 1]    #0.0299
+#     mu_8_2: [1, 47, 55, 1.5, 2.5, -100, 1]    #0.0384
+#     mu_9_2: [1, 55, 66, 1.5, 2.5, -100, 1]    #0.0371
+#     mu_10_2: [1, 66, 74, 1.5, 2.5, -100, 1]   #0.0510
+#     mu_11_2: [1, 74, 1000, 1.5, 2.5, -100, 1] #0.0458
+        
+#     ele_1_1: [0, 0, 12, 0.0, 0.8, -100, 1]     # ---- PROBLEM!!!
+#     ele_2_1: [0, 12, 19, 0.0, 0.8, -100, 1]    #0.0617
+#     ele_3_1: [0, 19, 24, 0.0, 0.8, -100, 1]    #0.100
+#     ele_4_1: [0, 24, 33, 0.0, 0.8, -100, 1]    #0.119
+#     ele_5_1: [0, 33, 38, 0.0, 0.8, -100, 1]    #0.119
+#     ele_6_1: [0, 38, 44, 0.0, 0.8, -100, 1]    #0.109
+#     ele_7_1: [0, 44, 47, 0.0, 0.8, -100, 1]    #0.109
+#     ele_8_1: [0, 47, 55, 0.0, 0.8, -100, 1]    #0.099
+#     ele_9_1: [0, 55, 66, 0.0, 0.8, -100, 1]    #0.119
+#     ele_10_1: [0, 66, 74, 0.0, 0.8, -100, 1]   #0.122
+#     ele_11_1: [0, 74, 1000, 0.0, 0.8, -100, 1] #0.122
+
+#     ele_1_2: [0, 0, 12, 0.8, 1.479, -100, 1]     # ---- PROBLEM!!!
+#     ele_2_2: [0, 12, 19, 0.8, 1.479, -100, 1]    #0.0607
+#     ele_3_2: [0, 19, 24, 0.8, 1.479, -100, 1]    #0.115
+#     ele_4_2: [0, 24, 33, 0.8, 1.479, -100, 1]    #0.0648
+#     ele_5_2: [0, 33, 38, 0.8, 1.479, -100, 1]    #0.0648
+#     ele_6_2: [0, 38, 44, 0.8, 1.479, -100, 1]    #0.0736
+#     ele_7_2: [0, 44, 47, 0.8, 1.479, -100, 1]    #0.0736
+#     ele_8_2: [0, 47, 55, 0.8, 1.479, -100, 1]    #0.0546
+#     ele_9_2: [0, 55, 66, 0.8, 1.479, -100, 1]    #0.0662
+#     ele_10_2: [0, 66, 74, 0.8, 1.479, -100, 1]   #0.0739
+#     ele_11_2: [0, 74, 1000, 0.8, 1.479, -100, 1] #0.0739
+
+#     ele_1_3: [0, 0, 12, 1.479, 2.5, -100, 1]     # ---- PROBLEM!!!
+#     ele_2_3: [0, 12, 19, 1.479, 2.5, -100, 1]    #0.0326
+#     ele_3_3: [0, 19, 24, 1.479, 2.5, -100, 1]    #0.0554
+#     ele_4_3: [0, 24, 33, 1.479, 2.5, -100, 1]    #0.0253
+#     ele_5_3: [0, 33, 38, 1.479, 2.5, -100, 1]    #0.0253
+#     ele_6_3: [0, 38, 44, 1.479, 2.5, -100, 1]    #0.0207
+#     ele_7_3: [0, 44, 47, 1.479, 2.5, -100, 1]    #0.0207
+#     ele_8_3: [0, 47, 55, 1.479, 2.5, -100, 1]    #0.0180
+#     ele_9_3: [0, 55, 66, 1.479, 2.5, -100, 1]    #0.0244
+#     ele_10_3: [0, 66, 74, 1.479, 2.5, -100, 1]   #0.0269
+#     ele_11_3: [0, 74, 1000, 1.479, 2.5, -100, 1] #0.0269
+

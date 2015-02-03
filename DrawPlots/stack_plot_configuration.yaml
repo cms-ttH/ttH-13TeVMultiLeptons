@@ -1,0 +1,187 @@
+#input and output file names
+input file location: histos_testCodeV1
+input file label: testCodeV1
+output file location: pdf_testCodeV1
+
+#drawing options
+skip systematics: true
+draw ratio plot: true
+draw legend: true
+log scale: false
+save png: true
+save pdf: true
+blinded: false
+KS test: false
+selection info : false
+SF info: false
+
+#luminosity and era
+luminosity: 19.5
+luminosity error: 0.044
+trigger SF error: 0.02
+lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
+
+lepton categories:
+    mu_mu:
+        #data sample: DoubleMu
+        data samples: [inclusive_data]
+        excluded samples: [inclusive_data_QF_sideband]
+        tex name: " #mu #mu "
+
+    mu_ele:
+        #data sample: MuEG
+        data samples: [inclusive_data]
+        excluded samples: []
+        tex name: " #mu e "
+    ele_ele:
+        #data sample: DoubleElectron
+        data samples: [inclusive_data]
+        excluded samples: []
+        tex name: " e e "
+
+#Jet-tag categories: "draw name"
+jet tag categories:
+    ge4j: " + #geq4 jets"
+    eq3j: " + 3 jets"
+    #eq2jeq2t : " + 2 jets + 2 b-tags"
+    #eq3jeq2t : " + 3 jets + 2 b-tags"
+    #ge4jeq2t : " + #geq4 jets + 2 b-tags"
+    #ge3t : " + #geq3 jets + #geq3 b-tags"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - weight_PUUp
+    - weight_PUDown
+    - topPtWgtDown
+    - topPtWgtUp
+    - csvWeightHFUp
+    - csvWeightHFDown
+    - csvWeightLFUp
+    - csvWeightLFDown
+
+# Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized)
+signal samples:
+    ttH125:
+        draw name: "t#bar{t}H125"
+        color: kRed
+        samples: [ttH125]
+        stack or line: stack
+        line width: 2 # must be integer
+        scale: 1.0
+
+#Samples, ordered bottom-to-top
+background samples:
+    inclusive_data_QF_sideband:
+        draw name: "Q flip"
+        color: kGray+1
+        systematics: nominal
+        samples: [inclusive_data_QF_sideband]
+
+    MuEG_QF_sideband:
+        draw name: "Q flip"
+        color: kGray+1
+        systematics: nominal
+        samples: [MuEG_QF_sideband]
+
+    DoubleElectron_QF_sideband:
+        draw name: "Q flip"
+        color: kGray+1
+        systematics: nominal
+        samples: [DoubleElectron_QF_sideband]
+
+    DoubleMu_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+        systematics: [40PercentRateUp, 40PercentRateDown]
+        samples: [DoubleMu_NP_sideband]
+
+    inclusive_data_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+        systematics: [40PercentRateUp, 40PercentRateDown]
+        samples: [inclusive_data_NP_sideband]
+
+    MuEG_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+        systematics: [40PercentRateUp, 40PercentRateDown]
+        samples: [MuEG_NP_sideband]
+
+    DoubleElectron_NP_sideband:
+        draw name: "Fakes"
+        color: kGray
+        systematics: [40PercentRateUp, 40PercentRateDown]
+        samples: [DoubleElectron_NP_sideband]
+
+    Others:
+        draw name: "Rare SM"
+        color: kSpring+8
+        samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
+
+    ttbarGStar:
+        draw name: "t#bar{t}G*"
+        color: kCyan-3
+        samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
+
+    wz_lll:
+        draw name: "WZ"
+        color: kViolet-4
+        samples: [wz_lll]
+
+    zz_llll:
+        draw name: "ZZ"
+        color: kAzure-9
+        samples: [zz_llll]
+
+    ttbarG:
+        draw name: "t#bar{t}G"
+        color: kGray+3
+        samples: [ttbarG]
+
+    ttbarZ:
+        draw name: "t#bar{t}Z"
+        color: kSpring+2
+        samples: [ttbarZ]
+
+    ttbarW:
+        draw name: "t#bar{t}W"
+        color: kGreen-5
+        samples: [ttbarW]
+
+    ttbarWW:
+        draw name: "t#bar{t}WW"
+        color: kBlue-9
+        samples: [ttbarWW]
+
+#distribution: [title, underflow, overflow]
+distributions:
+    numAllLeptons: ['number of preselected leptons', true, true]
+    numJets: ['number of jets', true, true]
+    numLooseBJets: ['number of loose b-tagged jets', true, true]
+    numMediumBJets: ['number of medium b-tagged jets', true, true]
+    sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', true, true]
+    mht: ['MHT', true, true]
+#    mindr_lep2_jet: ['min dR (lepton 2, jet)', true, true]
+    met_1_all_leptons_by_pt_1_MT: ['MT (lepton 1, MET)', true, true]
+    met_1_all_leptons_by_pt_2_MT: ['MT (lepton 2, MET)', true, true]
+    sum_pt: ['Sum pT (leptons, jets)', true, true]
+    FinalBDT: ['BDT output', true, true]
+    FinalBDT_pos: ['BDT output, positive charge', false, false]
+    FinalBDT_neg: ['BDT output, negative charge', false, false]
+#     all_leptons_by_pt_1_lepMVA: ['First lepton MVA', true, true]
+#     all_leptons_by_pt_2_lepMVA: ['Second lepton MVA', true, true]
+    all_leptons_by_pt_1_pt: ['First lepton pT', 20, true, true]
+    all_leptons_by_pt_2_pt: ['Second lepton pT', 20, true, true]
+    all_leptons_by_pt_1_eta: ['First lepton pseudorapidity', true, true]
+    all_leptons_by_pt_2_eta: ['Second lepton pseudorapidity', true, true]
+    all_leptons_by_pt_1_SIP: ['First lepton SIP', true, true]
+    all_leptons_by_pt_2_SIP: ['Second lepton SIP', true, true]
+    all_leptons_by_pt_1_jetBTagCSV: ['First lepton jetBtagCSV', true, true]
+    all_leptons_by_pt_2_jetBTagCSV: ['Second lepton jetBtagCSV', true, true]
+#     jets_by_pt_1_btagCombinedSecVertex: ['First jet b-tag discriminant', true, true]
+#     jets_by_pt_2_btagCombinedSecVertex: ['Second jet b-tag discriminant', true, true]
+#     jets_by_pt_3_btagCombinedSecVertex: ['Third jet b-tag discriminant', true, true]
+#     jets_by_pt_1_pt: ['First jet pT', true, true]
+#     jets_by_pt_2_pt: ['Second jet pT', true, true]
+#     jets_by_pt_3_pt: ['Third jet pT', true, true]

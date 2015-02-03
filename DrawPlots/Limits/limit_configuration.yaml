@@ -1,0 +1,132 @@
+#input and output file names
+input file location: ../histos_ss_v17_taus_forLimits
+input file label: ss_v17_taus
+
+lepton categories:
+    mu_mu:
+        #data sample: DoubleMu
+        data sample: inclusive_data
+        excluded samples: [inclusive_data_QF_sideband, ttbarG, 3rd_spot]
+        category name: 'ttH_2lss_mumuBCat_MVA'
+    mu_ele:
+        #data sample: MuEG
+        data sample: inclusive_data
+        excluded samples: [3rd_spot]
+        category name: 'ttH_2lss_emBCat_MVA'
+    ele_ele:
+        #data sample: DoubleElectron
+        data sample: inclusive_data
+        excluded samples: [3rd_spot]
+        category name: 'ttH_2lss_eeBCat_MVA'
+
+#Jet-tag categories: "draw name"
+jet tag categories:
+    ge4j_pos: " + #geq4 jets positive"
+    ge4j_neg: " + #geq4 jets negative"
+
+#Systematics used in error bars
+systematics:
+    - nominal
+    - weight_PU
+    - topPtWgt
+    - csvWeightHF
+    - csvWeightLF
+
+ttH mass points: ##New code to automate masses
+    - '125'
+                                    
+data samples:
+    inclusive_data:
+        datacard name: "data_obs"
+        systematics: common
+        samples: [inclusive_data]
+
+signal samples:
+    ttH_tt:
+        datacard name: "ttH_htt"
+        systematics: common
+        samples: [ttH_tt]
+
+    ttH_ZZ:
+        datacard name: "ttH_hzz"
+        systematics: common
+        samples: [ttH_ZZ]
+
+    ttH_WW:
+        datacard name: "ttH_hww"
+        systematics: common
+        samples: [ttH_WW]
+
+background samples:
+    inclusive_data_QF_sideband:
+        datacard name: "QF_data"
+        systematics: nominal
+        samples: [inclusive_data_QF_sideband]
+
+    inclusive_data_NP_sideband:
+        datacard name: "FR_data"
+        systematics: 40PercentRate
+        samples: [inclusive_data_NP_sideband]
+
+#     Others:
+#         datacard name: "Rare SM"
+#         systematics: common
+#         samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
+
+    3rd_spot:
+        datacard name: "3rd_spot"
+        systematics: common
+        samples: [3rd_spot] #WmWmqq
+
+#     ## Not enough MC events; makes combine tool seg fault
+#     WWqq:
+#         datacard name: "WWqq"
+#         systematics: common
+#         samples: [WpWpqq] #WmWmqq
+
+    tbZ_ll:
+        datacard name: "TBZ"
+        systematics: common
+        samples: [tbZ_ll]
+
+    zz_llll:
+        datacard name: "ZZ"
+        systematics: common
+        samples: [zz_llll]
+
+    wz_lll:
+        datacard name: "WZ"
+        systematics: common
+        samples: [wz_lll]
+
+    triboson:
+        datacard name: "VVV"
+        systematics: common
+        samples: [www, wwz] #wzz, zzz
+ 
+#     ## Not enough MC events; makes combine tool seg fault
+#     ttbarG:
+#         datacard name: "TTG"
+#         systematics: common
+#         samples: [ttbarG]
+
+#     ## Not enough MC events; makes combine tool seg fault
+#     ttbarGStar:
+#         datacard name: "TTGStar"
+#         systematics: common
+#         samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
+
+    ttbarWW:
+        datacard name: "TTWW"
+        systematics: common
+        samples: [ttbarWW]
+
+    ttbarZ:
+        datacard name: "TTZ"
+        systematics: common
+        samples: [ttbarZ]
+
+    ttbarW:
+        datacard name: "TTW"
+        systematics: common
+        samples: [ttbarW]
