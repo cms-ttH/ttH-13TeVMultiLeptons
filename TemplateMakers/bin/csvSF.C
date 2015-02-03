@@ -125,10 +125,10 @@ int main (int argc, char** argv) {
 
   muonID::muonID muonTightID = muonID::muonTight;
   muonID::muonID muonLooseID = muonID::muonLoose;
-  muonID::muonID muonPreselectedID = muonID::muonNoCuts;
+  muonID::muonID muonPreselectedID = muonID::muonRaw;
   electronID::electronID electronTightID = electronID::electronTight;
   electronID::electronID electronLooseID = electronID::electronLoose;
-  electronID::electronID electronPreselectedID = electronID::electronNoCuts;
+  electronID::electronID electronPreselectedID = electronID::electronRaw;
 
   // collections
   GenericCollection<BNelectronCollection> tightElectrons(beanHelper);
