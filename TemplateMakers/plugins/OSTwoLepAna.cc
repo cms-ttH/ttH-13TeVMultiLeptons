@@ -261,11 +261,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
 	vector<ttH::Electron> loose_electrons = GetCollection(selectedElectrons_loose,selectedJets_forLepMVA);
+	vector<ttH::Electron> looseCutBased_electrons = GetCollection(selectedElectrons_looseCutBased,selectedJets_forLepMVA);
 	vector<ttH::Electron> tight_electrons = GetCollection(selectedElectrons_tight,selectedJets_forLepMVA);
+	vector<ttH::Electron> tightCutBased_electrons = GetCollection(selectedElectrons_tightCutBased,selectedJets_forLepMVA);
 
 	vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
 	vector<ttH::Muon> loose_muons = GetCollection(selectedMuons_loose,selectedJets_forLepMVA);
+	vector<ttH::Muon> looseCutBased_muons = GetCollection(selectedMuons_looseCutBased,selectedJets_forLepMVA);
 	vector<ttH::Muon> tight_muons = GetCollection(selectedMuons_tight,selectedJets_forLepMVA);
+	vector<ttH::Muon> tightCutBased_muons = GetCollection(selectedMuons_tightCutBased,selectedJets_forLepMVA);
 
 	vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_forSync);
 	vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
@@ -385,13 +389,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         preselected_electrons_intree = preselected_electrons;
         preselected_muons_intree = preselected_muons;
 
-        loose_leptons_intree = loose_leptons;
-        loose_electrons_intree = loose_electrons;
-        loose_muons_intree = loose_muons;
+        loose_leptons_intree = looseCutBased_leptons;
+        loose_electrons_intree = looseCutBased_electrons;
+        loose_muons_intree = looseCutBased_muons;
 
-        tight_leptons_intree = tight_leptons;
-        tight_electrons_intree = tight_electrons;
-        tight_muons_intree = tight_muons;
+        tight_leptons_intree = tightCutBased_leptons;
+        tight_electrons_intree = tightCutBased_electrons;
+        tight_muons_intree = tightCutBased_muons;
 
 	preselected_jets_intree = preselected_jets;
 	loose_bJets_intree = loose_bJets;

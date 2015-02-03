@@ -1245,16 +1245,16 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesIso        =  (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.5);
     if (scEta <= 1.479)
       {
-	passesPOGcuts = ( iElectron.deltaEtaSuperClusterTrackAtVtx() < 0.007 &&
-			  iElectron.deltaPhiSuperClusterTrackAtVtx() < 0.8 &&
+	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.007 &&
+			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.8 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.01 &&
 			  iElectron.hadronicOverEm() < 0.15
 			  );
       }
     else if (scEta > 1.479 && scEta < 2.5)
       {
-	passesPOGcuts = ( iElectron.deltaEtaSuperClusterTrackAtVtx() < 0.01 &&
-			  iElectron.deltaPhiSuperClusterTrackAtVtx() < 0.7 &&
+	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.01 &&
+			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.7 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.03
 			  );
       }
@@ -1266,16 +1266,16 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesIso        =  (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.1);
     if (scEta <= 1.479)
       {
-	passesPOGcuts = ( iElectron.deltaEtaSuperClusterTrackAtVtx() < 0.004 &&
-			  iElectron.deltaPhiSuperClusterTrackAtVtx() < 0.6 &&
+	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.004 &&
+			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.6 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.01 &&
 			  iElectron.hadronicOverEm() < 0.12
 			  );
       }
     else if (scEta > 1.479 && scEta < 2.5)
       {
-	passesPOGcuts = ( iElectron.deltaEtaSuperClusterTrackAtVtx() < 0.007 &&
-			  iElectron.deltaPhiSuperClusterTrackAtVtx() < 0.03 &&
+	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.007 &&
+			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.03 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.03 && 
 			  iElectron.hadronicOverEm() < 0.10 && 
 			  fabs(iElectron.dB(pat::Electron::PV3D)/iElectron.edB(pat::Electron::PV3D)) < 4
