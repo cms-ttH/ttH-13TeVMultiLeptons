@@ -1,25 +1,30 @@
 #input and output file names
-input file location: histos_testCodeV1
-input file label: testCodeV1
+#input file location: histos_testCodeV1
+input file location: histos/ss_v30
+#input file label: testCodeV1
+input file label: ss_v30
 output file location: pdf_testCodeV1
 
 #drawing options
 skip systematics: true
-draw ratio plot: true
+#draw ratio plot: true
+draw ratio plot: false
 draw legend: true
 log scale: false
 save png: true
 save pdf: true
 blinded: false
+draw mc error histo: false
+
 KS test: false
 selection info : false
 SF info: false
 
 #luminosity and era
-luminosity: 19.5
+luminosity: 10.0
 luminosity error: 0.044
 trigger SF error: 0.02
-lumi era string: "                #sqrt{s} = 8 TeV, L = 19.5 fb^{-1}"
+lumi era string: "                #sqrt{s} = 13 TeV, L = 10.0 fb^{-1}"
 
 lepton categories:
     mu_mu:
