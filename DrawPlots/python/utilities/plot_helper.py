@@ -9,7 +9,7 @@ import time
 import itertools
 import numpy
 import importlib
-DefaultOrderedDict = importlib.import_module('13TeVMultiLeptons.DrawPlots.utilities.ordereddict', None)
+DefaultOrderedDict = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.ordereddict', None)
 #from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import DefaultOrderedDict
 
 def append_integral_histo(config):

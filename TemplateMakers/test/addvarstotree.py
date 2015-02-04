@@ -4,7 +4,7 @@ from variables import *
 
 gSystem.Load('libttH-13TeVMultiLeptonsTemplateMakers.so')
 
-infile = TFile( 'test_100evts.root' )
+infile = TFile( 'test_200evts.root' )
 tree = infile.Get('OSTwoLepAna/summaryTree')
 entries = tree.GetEntries()
 print entries

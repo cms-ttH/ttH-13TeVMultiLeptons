@@ -79,7 +79,7 @@ def getdR( object1, object2 ):
    #dR += (object1.obj.Phi() - object2.obj.Phi())*(object1.obj.Phi() - object2.obj.Phi()) 	## which one is correct?
    dR += (getdPhi(object1,object2))*(getdPhi(object1,object2))					## which one is correct? this one.
    dR = math.sqrt(dR)
-   print object1.obj
+   #print object1.obj
    return dR
 
 #############################################################################
