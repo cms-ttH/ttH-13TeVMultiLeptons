@@ -26,18 +26,18 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
 
-        'file:/afs/cern.ch/user/m/muell149/work/data_samples/ttH_phys14_sync.root'
+        #'file:/afs/cern.ch/user/m/muell149/work/data_samples/ttH_phys14_sync.root'
 
 	# Phys14 ttH
 	# PU 40:
-	# miniaodfiledirPU40 + '1034F24B-1A78-E411-9D64-001E67398C1E.root',
-	# miniaodfiledirPU40 + '6856B40F-0C77-E411-893D-D8D385FF7678.root',
-	# miniaodfiledirPU40 + 'A8D5A514-DD77-E411-95AB-002481E14D64.root',
-	# miniaodfiledirPU40 + 'C20B68E7-0277-E411-85E5-001E67396A22.root',
-	# miniaodfiledirPU40 + 'E601D324-FA76-E411-B2A3-0025B3E066A4.root',
-	# miniaodfiledirPU40 + 'EC51B40A-0F77-E411-AB65-002590A831AA.root',
-	# miniaodfiledirPU40 + 'ECF2804E-F476-E411-A097-001E67398110.root',
-	
+	 miniaodfiledirPU40 + '1034F24B-1A78-E411-9D64-001E67398C1E.root',
+	 miniaodfiledirPU40 + '6856B40F-0C77-E411-893D-D8D385FF7678.root',
+	 miniaodfiledirPU40 + 'A8D5A514-DD77-E411-95AB-002481E14D64.root',
+	 miniaodfiledirPU40 + 'C20B68E7-0277-E411-85E5-001E67396A22.root',
+	 miniaodfiledirPU40 + 'E601D324-FA76-E411-B2A3-0025B3E066A4.root',
+	 miniaodfiledirPU40 + 'EC51B40A-0F77-E411-AB65-002590A831AA.root',
+	 miniaodfiledirPU40 + 'ECF2804E-F476-E411-A097-001E67398110.root',
+
 	# PU 20:
 #	miniaodfiledirPU20 + '00000/08B36E8F-5E7F-E411-9D5A-002590200AE4.root',
 #	miniaodfiledirPU20 + '00000/FC4E6E16-5C7F-E411-8843-002590200AE4.root',
@@ -86,10 +86,10 @@ process.OSTwoLepAna.triggers.trigger_vstring = ( "HLT_Mu17_Mu8_v1",
 
 ######################################
 	
-
+## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
                                    #fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + ".root") # name of output file
-                                   fileName = cms.string("test_100evts.root") # name of output file
+                                   fileName = cms.string("multileptree.root") # name of output file
 				   )
 
 
@@ -102,6 +102,6 @@ process.options = cms.untracked.PSet(
 	)
 
 ## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
-outfile = open('config.py','w')
-print >> outfile,process.dumpPython()
-outfile.close()
+#outfile = open('config.py','w')
+#print >> outfile,process.dumpPython()
+#outfile.close()

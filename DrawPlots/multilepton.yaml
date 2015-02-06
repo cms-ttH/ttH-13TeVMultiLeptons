@@ -4,6 +4,9 @@ luminosity: 10000.0
 input_trees_directory: /afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/newversionofAna_check_out_for_first_time/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/
 output directory: histos/ss_v30
 
+# tree format is input_trees_directory/sample_lable_all.root ("all" comes from hadd-ing them)
+
+
 #options
 skip systematics: true
 
@@ -157,9 +160,9 @@ aliases:
 
 distributions:
     numAllLeptons:
-        expression: numAllLeptons
+        expression: '@preselected_leptons.size()'
         axis labels: [number of preselected leptons, Events]
-        binning: [3, 1.5, 4.5]
+        binning: [4, 0.5, 4.5]
 
     numJets:
         #expression: numJets

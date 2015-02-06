@@ -100,13 +100,21 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
 
                     systematic_weight_string, systematic_label = plot_helper.get_systematic_info(systematic)
                     source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], tree_sample, config['label'])
+		    #source_file_name = '*.root' % (config['input_trees_directory'], tree_sample, config['label']) ## will this work?
                     if 'JES' in systematic:
                         source_file_name = '%s/%s_%s_%s_all.root' % (config['input_trees_directory'], tree_sample, config['label'], systematic)
+			
                     if args.file:
                         source_file_name = args.file
-                    source_file = ROOT.TFile(source_file_name)
-                    #tree = source_file.Get('OSTwoLepAna/summaryTree')
-		    tree = source_file.Get('summaryTree')
+                    
+		    #source_file = ROOT.TFile(source_file_name)
+		    #tree = source_file.Get('summaryTree')
+		    
+		    ## this is much better:
+		    source_chain = ROOT.TChain('summaryTree')
+		    source_chain.Add(source_file_name)
+		    tree = source_chain
+
                     draw_string_maker = plot_helper.DrawStringMaker()
                     # uncomment this eventually:
 		    #draw_string_maker.append_selection_requirements(config['common cuts'].values(),
@@ -149,7 +157,8 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                             plot.save_image('pdf')
                         if args.web:
                             plot.post_to_web(config, lepton_category)
-                    source_file.Close() #end systematic
+                    #source_file.Close() #end systematic
+		    source_chain.Reset() #end systematic
                 config_file = ROOT.TObjString(args.config_file_name)
                 output_file.cd()
                 config_file.Write('config_file')
