@@ -486,7 +486,6 @@ void MultileptonAna::parse_params()
       	systparams = 		entire_pset.getParameter<edm::ParameterSet> ("systematics");
       	selectionparams = 	entire_pset.getParameter<edm::ParameterSet> ("eventselection");
 	
-	
 }
 
 void MultileptonAna::SetupOptions (const edm::Event& event)
@@ -733,6 +732,24 @@ prunedGenParticles MultileptonAna::GetPrunedGenParticles (const edm::Event& even
   
 }
 
+packedGenParticles MultileptonAna::GetPackedGenParticles (const edm::Event& event)
+{
+  packedGenParticles packedHandle; 
+  event.getByLabel("packedPFCandidates",packedHandle);
+  return packedHandle;  
+}
+
+// recoBeamSpot MultileptonAna::GetBeamSpot (const edm::Event& event, const edm::ParameterSet& pset)
+// {
+//   //edm::EDGetTokenT<reco::BeamSpot> bsToken_;
+//   //bsToken_(consumes<reco::BeamSpot>(pset.getParameter<edm::InputTag>("offlineBeamSpot")));
+//   recoBeamSpot bsHandle;
+//   event.getByToken(bsToken_,bsHandle);
+//   return bsHandle;  
+// }
+
+
+
 void MultileptonAna::GetBtags (const edm::Event& event)
 {
 	
@@ -946,18 +963,30 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       
       if (iMu.innerTrack().isAvailable()){
 	mu.dxy = fabs(iMu.innerTrack()->dxy(vertex.position()));
-	mu.dz =fabs(iMu.innerTrack()->dz(vertex.position()));
+	mu.dz = fabs(iMu.innerTrack()->dz(vertex.position()));
 	mu.numberOfValidPixelHits = iMu.innerTrack()->hitPattern().numberOfValidPixelHits();
 	mu.trackerLayersWithMeasurement = iMu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
 	mu.chargeFlip = iMu.innerTrack()->ptError()/iMu.innerTrack()->pt();
 	mu.lepMVA = GetMuonLepMVA(iMu, jets);
-      
+      }
+      else {
+	mu.dxy = -9.e5;
+	mu.dz =  -9.e5;
+	mu.numberOfValidPixelHits =  -9e5;
+	mu.trackerLayersWithMeasurement = -9e5;
+	mu.chargeFlip =  -9e5;
+	mu.lepMVA =  -9.e5;
       }
       
       if(iMu.globalTrack().isAvailable()){
 	mu.normalizedChi2 = iMu.globalTrack()->normalizedChi2();
 	mu.numberOfValidMuonHits = iMu.globalTrack()->hitPattern().numberOfValidMuonHits();
       }
+      else {
+	mu.normalizedChi2 = -9.e5;
+	mu.numberOfValidMuonHits = -9e5; 
+      }
+      
       mu.numberOfMatchedStations = iMu.numberOfMatchedStations();
       
       mu.chreliso = iMu.chargedHadronIso()/iMu.pt();
@@ -974,10 +1003,10 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
 
 vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
 {
+  ttH::Jet jet;
   vector<ttH::Jet> jetCollection;
   for(const auto & iJet: theobjs)
     {
-      ttH::Jet jet;
       jet.obj = iJet.p4();
       jet.pdgID = iJet.pdgId();
       jet.charge = iJet.jetCharge();
@@ -1004,15 +1033,24 @@ vector<ttH::MET> MultileptonAna::GetCollection (patMETs theobjs)
 
 vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::GenParticle> theobjs)
 {
+  ttH::GenParticle genParticle;
   vector<ttH::GenParticle> theGenParticles;
+  const reco::Candidate* child;
+  const reco::Candidate* mother;
+  const reco::Candidate* grandMother;
+  
   for (const auto & iGenParticle: theobjs)
     {
-      ttH::GenParticle genParticle;
+      child = &iGenParticle; 
+      mother = GetGenMotherNoFsr(child);
+      grandMother = GetGenMotherNoFsr(mother);
+
       genParticle.obj = iGenParticle.p4();
       genParticle.pdgID = iGenParticle.pdgId();
       genParticle.status = iGenParticle.status();
-      if (iGenParticle.mother()) genParticle.mother_pdgID = iGenParticle.mother()->pdgId();
-      //      if (iGenParticle.mother()->numberOfMothers() > 0) genParticle.grandmother_pdgID = iGenParticle.mother()->mother()->pdgId();
+      genParticle.mother_pdgID = mother->pdgId();
+      genParticle.grandmother_pdgID = grandMother->pdgId();
+
       theGenParticles.push_back(genParticle);
     }
   return theGenParticles;
@@ -1555,7 +1593,19 @@ vecPatMuon MultileptonAna::Get_vecPatMuon_Passing_MuonLepMVA(const vecPatMuon& m
 }
 
 
-
+const reco::Candidate* MultileptonAna::GetGenMotherNoFsr(const reco::Candidate* theobj)
+{
+  if (theobj->numberOfMothers()>0)
+    {
+      const reco::Candidate* mother = theobj->mother(0);
+      if (mother->pdgId() != theobj->pdgId()) return mother;
+      else return GetGenMotherNoFsr(mother);
+    }
+  else 
+    {
+      return theobj;
+    }
+}
 
 ///stuff for TriggerAna.cc
 vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vecPatMuon theobjs)

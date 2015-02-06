@@ -19,7 +19,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		// OSTwoLep-specific
 		void tree_add_branches();
 		void initialize_variables();
-	
+		
 	public:
 		explicit OSTwoLepAna(const edm::ParameterSet&);
 		~OSTwoLepAna();
@@ -166,6 +166,9 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		bool numTightLooseLeptons_cut;
 		bool isOS_cut;
 		bool numJets_cut;
+
+       edm::EDGetTokenT<reco::BeamSpot> bsToken_;		
+       edm::EDGetTokenT<reco::ConversionCollection> conversionToken_;
 
 };
 

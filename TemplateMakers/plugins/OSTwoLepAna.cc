@@ -8,6 +8,8 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything t
 	entire_pset = constructparams;
 	parse_params();
 
+	bsToken_ = consumes <reco::BeamSpot> (edm::InputTag(std::string("offlineBeamSpot")));
+	conversionToken_ = consumes <reco::ConversionCollection> (edm::InputTag(std::string("reducedEgamma"),std::string("reducedConversions")));
 
 }
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
@@ -15,7 +17,6 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 
 void OSTwoLepAna::beginJob()
 {
-
 
 	el1 = fopen ("ele_loose1.txt", "w+");
 	el2 = fopen ("ele_loose2.txt", "w+");
@@ -31,8 +32,6 @@ void OSTwoLepAna::beginJob()
 	mt2 = fopen ("mu_tight2.txt", "w+");
 	mt3 = fopen ("mu_tight3.txt", "w+");
 
-
-
 	// job setup	
 	sampleNumber = convertSampleNameToNumber(sampleName);
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
@@ -40,24 +39,12 @@ void OSTwoLepAna::beginJob()
 	setupMva();
 	alltriggerstostudy = HLTInfo();
 	
-	// initialize some variables:
-	electronTightID = electronID::electronTight;
-	electronLooseID = electronID::electronLoose;
-	electronPreselectedID = electronID::electronPreselection;
-	muonTightID = muonID::muonTight;
-	muonLooseID = muonID::muonLoose;
-	muonPreselectedID = muonID::muonRaw;
-	tauTightID = tauID::tauMedium;
-	// tauLooseID = tauID::tauVLoose;
-	tauPreselectedID = tauID::tauNonIso;
-	
 	// needed in edanalyzer:
 	edm::Service<TFileService> newfs;
 	
 	// add the tree:
 	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
 	tree_add_branches();
-	
 	
 }
 void OSTwoLepAna::endJob() {
@@ -84,7 +71,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 {
 	// analysis goes here
 	if (debug) cout << "event: " << event.id().event() << endl;
-	
 
 	eventcount++;
 	SetupOptions(event);
@@ -95,17 +81,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	patElectrons electrons = 		GetElectrons(event);
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
-	//	packedGenParticles packedParticles =    GenPackedGenParticles(event);
+	packedGenParticles packedParticles =    GetPackedGenParticles(event);
 	
-	edm::Handle<reco::BeamSpot> bsHandle;
-	event.getByLabel("offlineBeamSpot", bsHandle);
+	//this needs to be cleaned up eventually
+	recoBeamSpot bsHandle;
+	event.getByToken(bsToken_,bsHandle);
 	const reco::BeamSpot &beamspot = *bsHandle.product();
 
-
 	edm::Handle<reco::ConversionCollection> hConversions;
-	event.getByLabel("reducedEgamma","reducedConversions",hConversions);
-	
-	//patJets testHiggsjets = pfjets;
+	event.getByToken(conversionToken_,hConversions);
 	
 	SetRho(rho);
 	
@@ -279,8 +263,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vector<ttH::MET> theMET = GetCollection(mets);
 	vector<ttH::GenParticle> pruned_genParticles = GetCollection(*prunedParticles);
 	
-
-
 	/////////////////////////
 	//////
 	////// cut flow studies
