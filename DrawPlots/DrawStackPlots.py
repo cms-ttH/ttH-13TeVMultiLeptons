@@ -3,11 +3,27 @@ import os, sys
 from argparse import ArgumentParser
 import math
 import yaml
-import ttHMultileptonAnalysis.DrawPlots.utilities.plot_helper as plot_helper
-from ttHMultileptonAnalysis.DrawPlots.utilities.yamlhelpers import ttHMultileptonYAMLLoader
-from ttHMultileptonAnalysis.DrawPlots.utilities.prettytable import PrettyTable
-from ttHMultileptonAnalysis.DrawPlots.utilities.ordereddict import DefaultOrderedDict
-from ttHMultileptonAnalysis.DrawPlots.utilities.pie import make_yield_pie_charts
+import importlib
+plot_helper = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.plot_helper', None)
+
+#from ttH-13TeVMultiLeptons.DrawPlots.utilities.yamlhelpers import ttHMultileptonYAMLLoader
+#ttHMultileptonYAMLLoader = importlib.import_module('.ttHMultileptonYAMLLoader','ttH-13TeVMultiLeptons.DrawPlots.utilities.yamlhelpers')
+#from ttH-13TeVMultiLeptons.DrawPlots.utilities.prettytable import PrettyTable
+#PrettyTable = importlib.import_module('PrettyTable','ttH-13TeVMultiLeptons.DrawPlots.utilities.prettytable')
+#from ttH-13TeVMultiLeptons.DrawPlots.utilities.ordereddict import DefaultOrderedDict
+#DefaultOrderedDict = importlib.import_module('DefaultOrderedDict','ttH-13TeVMultiLeptons.DrawPlots.utilities.ordereddict')
+#from ttH-13TeVMultiLeptons.DrawPlots.utilities.pie import make_yield_pie_charts
+#make_yield_pie_charts = importlib.import_module('make_yield_pie_charts','ttH-13TeVMultiLeptons.DrawPlots.utilities.pie')
+
+ttHMultileptonYAMLLoadermod = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.yamlhelpers', None)
+PrettyTablemod = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.prettytable', None)
+DefaultOrderedDictmod = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.ordereddict', None)
+make_yield_pie_chartsmod = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.pie', None)
+
+ttHMultileptonYAMLLoader = getattr(ttHMultileptonYAMLLoadermod, 'ttHMultileptonYAMLLoader')
+PrettyTable = getattr(PrettyTablemod, 'PrettyTable')
+DefaultOrderedDict = getattr(DefaultOrderedDictmod, 'DefaultOrderedDict')
+make_yield_pie_charts = getattr(make_yield_pie_chartsmod, 'make_yield_pie_charts')
 
 parser = ArgumentParser(description='Make stack plots from histogram files.')
 parser.add_argument('config_file_name', nargs='?', default='stack_plot_configuration.yaml', help='Configuration file to process.')

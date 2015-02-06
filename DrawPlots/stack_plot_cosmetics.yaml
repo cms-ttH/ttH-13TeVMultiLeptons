@@ -46,7 +46,8 @@ top canvas y2: 0.99999
 bottom canvas x1: 0.00001
 bottom canvas y1: 0.00001
 bottom canvas x2: 0.99999
-bottom canvas y2: 0.29999
+#bottom canvas y2: 0.29999
+bottom canvas y2: 0.09999
 
 top canvas left margin: 0.11
 bottom canvas left margin: 0.11
@@ -60,6 +61,9 @@ pad top margin: 0.00001
 
 stack y axis title size: 0.05
 stack y axis title offset: 1.1
+stack x axis title size: 0.14
+stack x axis title offset: 0.92
+
 
 mc error histogram draw style: 'e2same'
 signal histogram draw style: 'histsame'

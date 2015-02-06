@@ -3,7 +3,11 @@ import os
 import collections
 import matplotlib.pyplot as plt
 import plot_helper
-from ttHMultileptonAnalysis.DrawPlots.utilities.prettytable import PrettyTable
+#from ttHMultileptonAnalysis.DrawPlots.utilities.prettytable import PrettyTable
+import importlib
+PrettyTablemod = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.prettytable', None)
+PrettyTable = getattr(PrettyTablemod, 'PrettyTable')
+
 
 def make_yield_pie_charts(yields_object, dir, signals, jet_tag_categories):
     colors = ['#490A3D', '#BD1550', '#E97F02', '#F8CA00', '#8A9B0F', '#FEB89F', '#E23D75', '#5F0D3B', '#742365', '#909A92', '#744F78', '#30091E']

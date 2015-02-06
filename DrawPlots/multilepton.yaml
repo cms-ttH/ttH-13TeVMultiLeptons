@@ -1,6 +1,6 @@
 label: ss_v30
 output label: ss_v30
-luminosity: 19450.0
+luminosity: 10000.0 
 input_trees_directory: /afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/newversionofAna_check_out_for_first_time/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/
 output directory: histos/ss_v30
 
@@ -165,7 +165,7 @@ distributions:
         #expression: numJets
         expression: '@preselected_jets.size()'
         axis labels: [number of jets, Events]
-        binning: [5, 2.5, 7.5]
+        binning: [12, 0.5, 12.5]
 
     numLooseBJets:
         expression: numLooseBJets
