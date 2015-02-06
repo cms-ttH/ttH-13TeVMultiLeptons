@@ -902,13 +902,16 @@ vector<ttH::Lepton> MultileptonAna::GetCollection (vecPatLepton theobjs)
 
 vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vecPatJet jets)
 {
+  ttH::Electron ele;
   vector<ttH::Electron> eleCollection;
+  pat::Jet matchedJet;
+  double dR;
+
   for (const auto & iEle: theobjs)
     {
-      ttH::Electron ele;
       //calculate closest jet
-      pat::Jet matchedJet = getClosestJet(jets,iEle);
-      double dR = MiniAODHelper::DeltaR(&matchedJet,&iEle);
+      matchedJet = getClosestJet(jets,iEle);
+      dR = MiniAODHelper::DeltaR(&matchedJet,&iEle);
 
       ele.obj = iEle.p4();
       ele.SCeta = abs(iEle.superCluster()->position().eta());
@@ -919,6 +922,12 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
 	ele.dz = fabs(iEle.gsfTrack()->dz(vertex.position()));
 	ele.numMissingInnerHits = iEle.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
       }
+      else {
+	ele.dxy = -9.e5;
+	ele.dz = -9.e5;
+	ele.numMissingInnerHits = -9e5;
+      }
+
       ele.charge = iEle.charge();
       ele.isGsfCtfScPixChargeConsistent = iEle.isGsfCtfScPixChargeConsistent();
       ele.passConversioVeto = iEle.passConversionVeto();
@@ -944,14 +953,16 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
 
 vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet jets)
 {
+  ttH::Muon mu;
+  pat::Jet matchedJet;
+  double dR;
+
   vector<ttH::Muon> muCollection;
   for(const auto & iMu: theobjs)
     {
-      ttH::Muon mu;
-      
       //calculate closest jet
-      pat::Jet matchedJet = getClosestJet(jets,iMu);
-      double dR = MiniAODHelper::DeltaR(&matchedJet,&iMu);
+      matchedJet = getClosestJet(jets,iMu);
+      dR = MiniAODHelper::DeltaR(&matchedJet,&iMu);
       
       mu.obj = iMu.p4();
       mu.pdgID = iMu.pdgId();
