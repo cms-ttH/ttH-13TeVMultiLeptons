@@ -13,78 +13,59 @@ namespace ttH
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     int pdgID;
+    double dxy;
+    double dz;
+    int charge;
+    double relIso;
+
+    //lepMVA variables
+    double lepMVA;
+    double chreliso;
+    double nureliso;
+    double matchedJetdR;
+    double jetPtRatio;
+    double csv;
+    double sip3D;
     
     virtual ~Lepton(){};
     ClassDef(Lepton, 1);
     
   };
 
-  class Electron
+  class Electron : public Lepton
   {
   public:
     Electron(){} // default constructor
     
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     double SCeta; //supercluster eta
-    int pdgID;
-    double dxy;
-    double dz;
-    int charge;
     bool isGsfCtfScPixChargeConsistent;
     int numMissingInnerHits;
     bool passConversioVeto;
-    double relIso;
     double dEtaIn;
     double dPhiIn;
     double full5x5_sigmaIetaIeta;
     double hadronicOverEm;
     double mvaID;
-    //lepMVA variables
-    double lepMVA;
-    double chreliso;
-    double nureliso;
-    double matchedJetdR;
-    double jetPtRatio;
-    double csv;
-    double sip3D;
 
     virtual ~Electron(){};
     ClassDef(Electron, 1); 
 
   };
 
-  class Muon
+  class Muon : public Lepton
   {
   public:
     Muon(){} // default constructor
-    
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
-    int pdgID;
-    double dxy;
-    double dz;
-    int charge;
+
     double chargeFlip;
     bool isPFMuon;
     bool isTrackerMuon;
     bool isGlobalMuon;
-
-    double relIso;
     double normalizedChi2;
     int numberOfValidMuonHits;
     int numberOfMatchedStations;
     int numberOfValidPixelHits;
     int trackerLayersWithMeasurement;
-
-    //lepMVA variables
-    double lepMVA;
-    double chreliso;
-    double nureliso;
-    double matchedJetdR;
-    double jetPtRatio;
-    double csv;
-    double sip3D;
 
     virtual ~Muon(){};
     ClassDef(Muon, 1); 

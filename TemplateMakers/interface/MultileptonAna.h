@@ -1,3 +1,4 @@
+
 // MultileptonAna base class: to be inherited by the EDAnalyzers for the individual channels
 // created Oct. 9 2014
 // Geoff Smith
@@ -230,7 +231,8 @@ class MultileptonAna: public MiniAODHelper
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
   
-  vector<ttH::Lepton> GetCollection(vecPatLepton theobjs);
+  //  vector<ttH::Lepton> GetCollection(vecPatLepton theobjs);
+  vector<ttH::Lepton> GetCollection(vector<ttH::Muon> muObjs, vector<ttH::Electron> eleObjs);
   vector<ttH::Electron> GetCollection(vecPatElectron theobjs, vecPatJet jets);
   vector<ttH::Muon> GetCollection(vecPatMuon theobjs, vecPatJet jets);
   vector<ttH::Jet> GetCollection(vecPatJet theobjs);

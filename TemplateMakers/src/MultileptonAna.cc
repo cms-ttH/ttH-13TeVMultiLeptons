@@ -876,27 +876,11 @@ vector<double> MultileptonAna::ReturnPUJetID (vecPatJet theobjs)
 	return thePUIDs;
 } 
 
-// bool sortByPt(const ttH::Lepton &lep1, const ttH::Lepton &lep2)
-// { return (lep1.obj.Pt() > lep2.obj.Pt()); }
-
-vector<ttH::Lepton> MultileptonAna::GetCollection (vecPatLepton theobjs)
+vector<ttH::Lepton> MultileptonAna::GetCollection (vector<ttH::Muon> muObjs, vector<ttH::Electron>eleObjs)
 {
-  vector<ttH::Lepton> lepCollection;
-  for (const auto & iLep: theobjs)
-    {
-      ttH::Lepton lep;
-      
-      lep.pdgID = iLep.pdgId();
-      lep.obj = iLep.p4();
-
-      lepCollection.push_back(lep);
-    }
-  // cout << "Unsorted..." << endl;
-  // for (const auto & lep: lepCollection) {cout << "lepton pt = "<< lep.obj.Pt() << endl;}
-  // std::sort(lepCollection.begin(),lepCollection.end(),sortByPt);
-  // cout << "Sorted..." << endl;
-  // for (const auto & lep: lepCollection) {cout << "lepton pt = "<< lep.obj.Pt() << endl;}
-
+  vector<ttH::Lepton> lepCollection(muObjs.begin(),muObjs.end());
+  lepCollection.insert(lepCollection.end(),eleObjs.begin(),eleObjs.end());
+  std::sort(lepCollection.begin(), lepCollection.end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.obj.Pt() > b.obj.Pt();});
   return lepCollection;
 }
 

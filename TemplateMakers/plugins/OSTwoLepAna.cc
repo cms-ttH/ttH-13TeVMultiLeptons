@@ -236,13 +236,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//////
 	/////////////////////////
 
-        vector<ttH::Lepton> preselected_leptons = GetCollection(selectedLeptons_preselected);
-        vector<ttH::Lepton> loose_leptons = GetCollection(selectedLeptons_loose);
-        vector<ttH::Lepton> tight_leptons = GetCollection(selectedLeptons_tight);
-
-	vector<ttH::Lepton> looseCutBased_leptons = GetCollection(selectedLeptons_looseCutBased);
-        vector<ttH::Lepton> tightCutBased_leptons = GetCollection(selectedLeptons_tightCutBased);
-
 	vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw,selectedJets_forLepMVA);
 	vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
 	vector<ttH::Electron> loose_electrons = GetCollection(selectedElectrons_loose,selectedJets_forLepMVA);
@@ -256,6 +249,19 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vector<ttH::Muon> looseCutBased_muons = GetCollection(selectedMuons_looseCutBased,selectedJets_forLepMVA);
 	vector<ttH::Muon> tight_muons = GetCollection(selectedMuons_tight,selectedJets_forLepMVA);
 	vector<ttH::Muon> tightCutBased_muons = GetCollection(selectedMuons_tightCutBased,selectedJets_forLepMVA);
+
+        // vector<ttH::Lepton> preselected_leptons = GetCollection(selectedLeptons_preselected);
+        // vector<ttH::Lepton> loose_leptons = GetCollection(selectedLeptons_loose);
+        // vector<ttH::Lepton> tight_leptons = GetCollection(selectedLeptons_tight);
+	// vector<ttH::Lepton> looseCutBased_leptons = GetCollection(selectedLeptons_looseCutBased);
+        // vector<ttH::Lepton> tightCutBased_leptons = GetCollection(selectedLeptons_tightCutBased);
+
+        vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
+	vector<ttH::Lepton> looseCutBased_leptons = GetCollection(looseCutBased_muons,looseCutBased_electrons);
+        vector<ttH::Lepton> tightCutBased_leptons = GetCollection(tightCutBased_muons,tightCutBased_electrons);
+
+
+
 
 	vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_forSync);
 	vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
