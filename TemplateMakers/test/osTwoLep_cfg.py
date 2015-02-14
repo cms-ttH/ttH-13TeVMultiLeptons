@@ -20,7 +20,7 @@ miniaodfiledirPU40 = str("root://xrootd.ba.infn.it//store/mc/Phys14DR/TTbarH_M-1
 
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(-1) # number of events
+    	input = cms.untracked.int32(200) # number of events
 )
 
 process.source = cms.Source("PoolSource",

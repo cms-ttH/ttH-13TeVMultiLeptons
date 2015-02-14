@@ -99,31 +99,32 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                     print 'Beginning next loop iteration. Sample: %10s Jet tag category: %-10s  Lepton category: %-10s Systematic: %-10s' % (sample, jet_tag_category, lepton_category, systematic)
 
                     systematic_weight_string, systematic_label = plot_helper.get_systematic_info(systematic)
-                    source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], tree_sample, config['label'])
-		    #source_file_name = '*.root' % (config['input_trees_directory'], tree_sample, config['label']) ## will this work?
+                    #source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], tree_sample, config['label'])
+                    source_file_name = '%s/%s/*.root' % (config['input_trees_directory'], tree_sample) ## will this work?
                     if 'JES' in systematic:
                         source_file_name = '%s/%s_%s_%s_all.root' % (config['input_trees_directory'], tree_sample, config['label'], systematic)
 			
                     if args.file:
                         source_file_name = args.file
                     
-		    #source_file = ROOT.TFile(source_file_name)
-		    #tree = source_file.Get('summaryTree')
-		    
-		    ## this is much better:
-		    source_chain = ROOT.TChain('summaryTree')
-		    source_chain.Add(source_file_name)
-		    tree = source_chain
-
+		    		#source_file = ROOT.TFile(source_file_name)
+		    		#tree = source_file.Get('summaryTree')
+                    ## this is much better:
+                    source_chain = ROOT.TChain('summaryTree')
+                    source_chain.Add(source_file_name)
+                    tree = source_chain
+                    thechainentries = tree.GetEntries()
+                    #thechainentries = source_chain.GetEntries()
+                    print thechainentries
                     draw_string_maker = plot_helper.DrawStringMaker()
                     # uncomment this eventually:
-		    #draw_string_maker.append_selection_requirements(config['common cuts'].values(),
-                    #                            lepton_category_cut_strings,
-                    #                            jet_tag_category_cut_strings,
-                    #                            additional_cuts) #additional_cuts is empty by default
+                    draw_string_maker.append_selection_requirements(config['common cuts'].values(),
+                                                lepton_category_cut_strings,
+                                                jet_tag_category_cut_strings,
+                                                additional_cuts) #additional_cuts is empty by default
 
                     draw_string_maker.remove_selection_requirements(cuts_to_remove)
-		    #draw_string_maker.append_selection_requirements('true') # hack
+		    		#draw_string_maker.append_selection_requirements('true') # hack
 
                     if not args.no_weights:
                         weights = plot_helper.customize_list(config['weights'], sample_dict.get('weights', ['common']))
@@ -145,20 +146,22 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                         draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
                         draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
                         plot_name = '%s%s' % (distribution, systematic_label)
-                        
-			##################################################################################################
-			plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, '') ## hack: replaced draw_string_maker.draw_string with ''
-			##################################################################################################
-			
+                        print " " 
+                        print draw_string_maker.draw_string
+                        print " "
+					    ##################################################################################################
+                        plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string) ## hack: replaced draw_string_maker.draw_string with ''
+					    ##################################################################################################
+					    
                         if sample_info.sample_type == 'MC':
                             plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
                         output_file.Write()
                         if args.pdf:
-                            plot.save_image('pdf')
+					        plot.save_image('pdf')
                         if args.web:
                             plot.post_to_web(config, lepton_category)
                     #source_file.Close() #end systematic
-		    source_chain.Reset() #end systematic
+                    source_chain.Reset() #end systematic
                 config_file = ROOT.TObjString(args.config_file_name)
                 output_file.cd()
                 config_file.Write('config_file')

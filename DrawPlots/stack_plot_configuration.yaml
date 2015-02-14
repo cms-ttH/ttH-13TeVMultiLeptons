@@ -1,20 +1,17 @@
 #input and output file names
-#input file location: histos_testCodeV1
-input file location: histos/ss_v30
-#input file label: testCodeV1
-input file label: ss_v30
-output file location: pdf_testCodeV1
+input file location: histos/os_v2
+input file label: os_v2
+output file location: os_v2_test_plots_OScuts_weights
 
 #drawing options
-skip systematics: true
-#draw ratio plot: true
-draw ratio plot: false
+skip systematics: false
+draw ratio plot: true
 draw legend: true
 log scale: false
 save png: true
 save pdf: true
-blinded: false
-draw mc error histo: false
+blinded: true #we don't have any data yet!
+draw mc error histo: true
 
 KS test: false
 selection info : false
@@ -56,14 +53,14 @@ jet tag categories:
 #Systematics used in error bars
 systematics:
     - nominal
-    - weight_PUUp
-    - weight_PUDown
-    - topPtWgtDown
-    - topPtWgtUp
-    - csvWeightHFUp
-    - csvWeightHFDown
-    - csvWeightLFUp
-    - csvWeightLFDown
+#    - weight_PUUp
+#    - weight_PUDown
+#    - topPtWgtDown
+#    - topPtWgtUp
+#    - csvWeightHFUp
+#    - csvWeightHFDown
+#    - csvWeightLFUp
+#    - csvWeightLFDown
 
 # Samples drawn on top, scaling (1.0, 2.0, "norm" for area-normalized)
 signal samples:
@@ -71,100 +68,120 @@ signal samples:
         draw name: "t#bar{t}H125"
         color: kRed
         samples: [ttH125]
-        stack or line: stack
+        #stack or line: stack
+        stack or line: line
         line width: 2 # must be integer
         scale: 1.0
 
 #Samples, ordered bottom-to-top
 background samples:
-    inclusive_data_QF_sideband:
-        draw name: "Q flip"
-        color: kGray+1
-        systematics: nominal
-        samples: [inclusive_data_QF_sideband]
+#    inclusive_data_QF_sideband:
+#        draw name: "Q flip"
+#        color: kGray+1
+#        systematics: nominal
+#        samples: [inclusive_data_QF_sideband]
+#
+#    MuEG_QF_sideband:
+#        draw name: "Q flip"
+#        color: kGray+1
+#        systematics: nominal
+#        samples: [MuEG_QF_sideband]
+#
+#    DoubleElectron_QF_sideband:
+#        draw name: "Q flip"
+#        color: kGray+1
+#        systematics: nominal
+#        samples: [DoubleElectron_QF_sideband]
+#
+#    DoubleMu_NP_sideband:
+#        draw name: "Fakes"
+#        color: kGray
+#        systematics: [40PercentRateUp, 40PercentRateDown]
+#        samples: [DoubleMu_NP_sideband]
+#
+#    inclusive_data_NP_sideband:
+#        draw name: "Fakes"
+#        color: kGray
+#        systematics: [40PercentRateUp, 40PercentRateDown]
+#        samples: [inclusive_data_NP_sideband]
+#
+#    MuEG_NP_sideband:
+#        draw name: "Fakes"
+#        color: kGray
+#        systematics: [40PercentRateUp, 40PercentRateDown]
+#        samples: [MuEG_NP_sideband]
+#
+#    DoubleElectron_NP_sideband:
+#        draw name: "Fakes"
+#        color: kGray
+#        systematics: [40PercentRateUp, 40PercentRateDown]
+#        samples: [DoubleElectron_NP_sideband]
 
-    MuEG_QF_sideband:
-        draw name: "Q flip"
-        color: kGray+1
-        systematics: nominal
-        samples: [MuEG_QF_sideband]
+#    Others:
+#        draw name: "Rare SM"
+#        color: kSpring+8
+#        samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
+#
+#    ttbarGStar:
+#        draw name: "t#bar{t}G*"
+#        color: kCyan-3
+#        samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
 
-    DoubleElectron_QF_sideband:
-        draw name: "Q flip"
-        color: kGray+1
-        systematics: nominal
-        samples: [DoubleElectron_QF_sideband]
-
-    DoubleMu_NP_sideband:
-        draw name: "Fakes"
-        color: kGray
-        systematics: [40PercentRateUp, 40PercentRateDown]
-        samples: [DoubleMu_NP_sideband]
-
-    inclusive_data_NP_sideband:
-        draw name: "Fakes"
-        color: kGray
-        systematics: [40PercentRateUp, 40PercentRateDown]
-        samples: [inclusive_data_NP_sideband]
-
-    MuEG_NP_sideband:
-        draw name: "Fakes"
-        color: kGray
-        systematics: [40PercentRateUp, 40PercentRateDown]
-        samples: [MuEG_NP_sideband]
-
-    DoubleElectron_NP_sideband:
-        draw name: "Fakes"
-        color: kGray
-        systematics: [40PercentRateUp, 40PercentRateDown]
-        samples: [DoubleElectron_NP_sideband]
-
-    Others:
-        draw name: "Rare SM"
-        color: kSpring+8
-        samples: [www, wwz, tbZ_ll, WpWpqq, WWDPI] #WmWmqq
-
-    ttbarGStar:
-        draw name: "t#bar{t}G*"
-        color: kCyan-3
-        samples: [ttbarGStar_ee, ttbarGStar_mm, ttbarGStar_tt]
-
-    wz_lll:
-        draw name: "WZ"
-        color: kViolet-4
-        samples: [wz_lll]
-
-    zz_llll:
-        draw name: "ZZ"
-        color: kAzure-9
-        samples: [zz_llll]
-
-    ttbarG:
-        draw name: "t#bar{t}G"
-        color: kGray+3
-        samples: [ttbarG]
-
-    ttbarZ:
-        draw name: "t#bar{t}Z"
-        color: kSpring+2
-        samples: [ttbarZ]
-
-    ttbarW:
+    TTWJets:
         draw name: "t#bar{t}W"
         color: kGreen-5
-        samples: [ttbarW]
+        samples: [TTWJets]
 
-    ttbarWW:
-        draw name: "t#bar{t}WW"
+    TTZJets:
+        draw name: "t#bar{t}Z"
+        color: kSpring+2
+        samples: [TTZJets]
+
+    WZJets:
+        draw name: "WZ"
+        color: kViolet-4
+        samples: [WZJets]
+
+#    zz_llll:
+#        draw name: "ZZ"
+#        color: kAzure-9
+#        samples: [zz_llll]
+#
+#    ttbarG:
+#        draw name: "t#bar{t}G"
+#        color: kGray+3
+#        samples: [ttbarG]
+
+
+    TTJets:
+        draw name: "t#bar{t}+Jets"
         color: kBlue-9
-        samples: [ttbarWW]
+        samples: [TTJets]
+    
+    
+    ZJets:
+        draw name: "Z+Jets"
+        color: kCyan-3
+        samples: [ZJets]
+    
+    WJets:
+        draw name: "W+Jets"
+        color: kAzure-9
+        samples: [WJets]
+    
+
+
+#    ttbarWW:
+#        draw name: "t#bar{t}WW"
+#        color: kBlue-9
+#        samples: [ttbarWW]
 
 #distribution: [title, underflow, overflow]
 distributions:
-    numAllLeptons: ['number of preselected leptons', true, true]
-    numJets: ['number of jets', true, true]
-    numLooseBJets: ['number of loose b-tagged jets', true, true]
-    numMediumBJets: ['number of medium b-tagged jets', true, true]
+    numAllLeptons: ['number of preselected leptons', false, true]
+    numJets: ['number of jets', false, true]
+    numLooseBJets: ['number of loose b-tagged jets', false, true]
+    numMediumBJets: ['number of medium b-tagged jets', false, true]
     sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', true, true]
     mht: ['MHT', true, true]
 #    mindr_lep2_jet: ['min dR (lepton 2, jet)', true, true]
@@ -190,3 +207,22 @@ distributions:
 #     jets_by_pt_1_pt: ['First jet pT', true, true]
 #     jets_by_pt_2_pt: ['Second jet pT', true, true]
 #     jets_by_pt_3_pt: ['Third jet pT', true, true]
+
+    SumJetPt: ["SumJetPt", true, true]
+    AvgBtagDiscNonBtags: ["AvgBtagDiscNonBtags", true, true]
+    AvgBtagDiscBtags: ["AvgBtagDiscBtags", true, true]   
+    MinDrJets: ["MinDrJets", true, true]
+    SumNonTaggedJetMass: ["SumNonTaggedJetMass", true, true]
+    HiggsLikeDijetMass2: ["HiggsLikeDijetMass2", true, true]
+    HiggsLikeDijetMass: ["HiggsLikeDijetMass", true, true]
+    NumHiggsLikeDijet15: ["NumHiggsLikeDijet15", true, true]
+    MaxDeltaPhiMetJet: ["MaxDeltaPhiMetJet", true, true]
+    MinDeltaPhiMetJet: ["MinDeltaPhiMetJet", true, true]
+    DeltaPhiMetLep2: ["DeltaPhiMetLep2", true, true]
+    DeltaPhiMetLep1: ["DeltaPhiMetLep1", true, true]
+    WLikeDijetMass81: ["WLikeDijetMass81", true, true]
+    DeltaPhiLepLep: ["DeltaPhiLepLep", true, true]
+    DeltaRLepLep: ["DeltaRLepLep", true, true]
+    Zmass: ["Zmass", true, true]
+    MassLepLep: ["MassLepLep", true, true]
+
