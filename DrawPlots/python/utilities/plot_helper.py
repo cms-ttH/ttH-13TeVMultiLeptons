@@ -235,12 +235,15 @@ class SampleInformation:
                    'x_section_error': 54.8*0.035, #ND x_sec error
                    'num_generated': 9955089}, #ND number processed
 
-            #ND uses WZ_TuneZ2star
+
+
             'wz': {'sample_type': 'MC',
                    'is_signal': False,
-                   'x_section': 32.3, #ND x_sec
-                   'x_section_error': 54.8*0.035, #ND x_sec error
-                   'num_generated': 9931257}, #ND number processed
+                   'x_section': 32.3, 
+                   'x_section_error': 54.8*0.035, 
+                   'num_generated': 237484}, # update(d)
+
+
 
             #CERN uses WZJetsTo3LNu_TuneZ2
             'wz_lll': {'sample_type': 'MC',
@@ -387,12 +390,15 @@ class SampleInformation:
                       'x_section_error_ttV': 0.5879*0.5, #Just an unmotivated guess
                       'num_generated': 833755}, 
 
-            ##All wjets, zjets, and ttbar_* samples use ND x_sec, x_sec error, and number processed
+           
+	   
             'wjets': {'sample_type': 'MC',
                       'is_signal': False,
                       'x_section': 36257,
                       'x_section_error': 36257*0.013,
-                      'num_generated': 57536319},
+                      'num_generated': 246521}, #update(d)
+
+
 
             'wjets_0p': {'sample_type': 'MC',
                          'is_signal': False,
@@ -429,7 +435,7 @@ class SampleInformation:
                       'x_section': 3505.7, 
                       'x_section_error': 3505.7*0.012, 
                       'x_section_error_ttV': 3505.7*0.3, 
-                      'num_generated': 30072710}, 
+                      'num_generated': 249275},  #<- wrong
 
             'zjets_0p': {'sample_type': 'MC',
                       'is_signal': False,
@@ -669,12 +675,25 @@ class SampleInformation:
                               'x_section_error_ttV': 14702*0.7,
                               'num_generated': 37828841},
 
-            'ttbar': {'sample_type': 'MC',
+            #
+#	    'ttbar': {'sample_type': 'MC',
+#                      'is_signal': False,
+#                      'x_section': 245.8, 
+#                      'x_section_error': 245.8*0.03,
+#                      'x_section_error_ttV': 245.8*0.3,
+#                      'num_generated': 6912438+1362471},
+
+
+
+   'ttbar': {'sample_type': 'MC',
                       'is_signal': False,
-                      'x_section': 245.8, 
-                      'x_section_error': 245.8*0.03,
-                      'x_section_error_ttV': 245.8*0.3,
-                      'num_generated': 6912438+1362471},
+                      'x_section': 815.96, # at 173.2 GeV
+                      'x_section_error': 25., # +19.37,-28.61 <- change
+                      'x_section_error_ttV': 815.96*0.3,# ?
+                      'num_generated': 4974383}, # update(d)
+		      
+
+
 
             'ttbar_cc': {'sample_type': 'MC',
                      'is_signal': False,
@@ -773,19 +792,24 @@ class SampleInformation:
                        'x_section_error_ttV': 0.105*245.8*0.6,
                        'num_generated': 12100452},
 
+
+
+
             'ttbarW': {'sample_type': 'MC',
                        'is_signal': False,
-                       'x_section': 0.208, #New NLO result; old number was 0.249 - AWB Feb 12, 2014
-                       'x_section_error': 0.208*0.2, #CERN x_sec error; ND x_sec error = 0.208*0.1
-                       'x_section_error_ttV': 0.208*0.123, 
-                       'num_generated': 195396}, #ND number processed
+                       'x_section': 1.152, 
+                       'x_section_error': 1.152*0.2, 
+                       'x_section_error_ttV': 2.232*0.123, 
+                       'num_generated': 246521}, #update(d)
 
             'ttbarZ': {'sample_type': 'MC',
                        'is_signal': False,
-                       'x_section': 0.206, #CERN x_sec; ND x_sec error = 0.208
-                       'x_section_error': 0.206*0.2, #CERN x_sec error; ND x_sec error = 0.208*0.11
-                       'x_section_error_ttV': 0.206*0.137, 
-                       'num_generated': 209512},
+                       'x_section': 2.232, 
+                       'x_section_error': 2.232*0.2, 
+                       'x_section_error_ttV': 2.232*0.137, 
+                       'num_generated': 249275}, #update(d)
+
+
 
             'ttbarG': {'sample_type': 'MC',
                        'is_signal': False,
@@ -944,10 +968,10 @@ class SampleInformation:
             
 	    'ttH125': {'sample_type': 'MC',
                        'is_signal': True,
-                       'x_section': 0.8696,
-                       'x_section_error': 0.0,
+                       'x_section': 0.5085,
+                       'x_section_error': 0.09,
                        'x_section_error_ttV': 0.095,
-                       'num_generated': 200},
+                       'num_generated': 200},		#update!
 
             'ttH125_NP': {'sample_type': 'MC',
                           'is_signal': True,

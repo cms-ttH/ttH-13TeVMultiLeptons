@@ -9,7 +9,8 @@ tree = infile.Get('OSTwoLepAna/summaryTree')
 entries = tree.GetEntries()
 print entries
 
-copiedfile = TFile( 'newfile.root' , 'RECREATE' )
+#copiedfile = TFile( 'newfile.root' , 'RECREATE' )
+copiedfile = TFile( 'ttH125_ss_v30_all.root' , 'RECREATE' )
 newtree = tree.CloneTree(0)
 
 #testthing = {0.,0.,0.,0.,} ROOT.ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
