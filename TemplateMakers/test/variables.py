@@ -182,6 +182,11 @@ def getTwoObjKineExtreme( collection1, collection2, extremetype='min', quantity=
 						testvalue = abs(getdPhi(obj1,obj2)) ## <- really finds the closest one in phi
 						if (testvalue<minvalue):
 							minvalue = testvalue
+					if quantity is 'mass':
+						obj12 = obj1.obj + obj2.obj
+						testvalue = obj12.M()
+						if (testvalue<minvalue):
+							minvalue = testvalue
 				if extremetype is 'max':
 					if quantity is 'dR':
 						testvalue = getdR(obj1,obj2)
@@ -193,6 +198,11 @@ def getTwoObjKineExtreme( collection1, collection2, extremetype='min', quantity=
 							maxvalue = testvalue
 					if quantity is 'dPhi':
 						testvalue = abs(getdPhi(obj1,obj2)) ## <- really finds the furthest one in phi
+						if (testvalue>maxvalue):
+							maxvalue = testvalue
+					if quantity is 'mass':
+						obj12 = obj1.obj + obj2.obj
+						testvalue = obj12.M()
 						if (testvalue>maxvalue):
 							maxvalue = testvalue
 			#else:
@@ -228,7 +238,6 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
 					if quantity is 'mass':
 						obj12 = obj1 + obj2
 						kineRawCollecion.append(abj12.M())
-	else:
 		if (size1>=2):
 			for i in xrange(0,size1-2):
 				 for j in xrange(i+1,size1-1):

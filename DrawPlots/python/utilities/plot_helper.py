@@ -16,7 +16,7 @@ DefaultOrderedDict = getattr(DefaultOrderedDictmod, 'DefaultOrderedDict')
 def append_integral_histo(config):
     if not config['distributions'].has_key('integral_histo'):
         config['distributions']['integral_histo'] = {'axis labels': ['isCleanEvent', 'Events'],
-                                                     'expression': 'isCleanEvent',
+                                                     'expression': 'eventnum>0',
                                                      'plot type': 'TH1D',
                                                      'binning': [2, 0, 2]}
 
@@ -228,6 +228,20 @@ class DrawStringMaker:
 class SampleInformation:
     def __init__(self, sample):
         dictionary = {
+        
+        	# note: for the num_generated, at amc@nlo, you're going to have to do something like:
+        	#
+        	#summaryTree->Project("testhist","numMediumBJets","wgt")
+			#(Long64_t)199700
+			#testhist->Integral()
+			#(const Double_t)8.96683955898284912e+04
+        	#
+        	#and store this as a "mcwgted_events" hist or something (note that we should add a dedicated mcwgt branch.) 
+        	#Then get it in much the same way as the "integral" hist, 
+        	#and set num_generated equal to mcwgted_events->integral()
+        	#
+        
+        
             #ND uses WW_TuneZ2Star, CERN uses WWJetsTo2L2Nu_TuneZ2star with x_section 5.995
             'ww': {'sample_type': 'MC',
                    'is_signal': False,
@@ -236,10 +250,10 @@ class SampleInformation:
                    'num_generated': 9955089}, #ND number processed
 
 
-
-            'wz': {'sample_type': 'MC',
+			# 13 TeV
+            'WZJets': {'sample_type': 'MC',
                    'is_signal': False,
-                   'x_section': 32.3, 
+                   'x_section': 32.3, # wzjets to 3lnu ## not clear where this value is coming from ..
                    'x_section_error': 54.8*0.035, 
                    'num_generated': 237484}, # update(d)
 
@@ -391,12 +405,18 @@ class SampleInformation:
                       'num_generated': 833755}, 
 
            
-	   
-            'wjets': {'sample_type': 'MC',
+           
+           
+           
+           
+	   		# 13 TeV
+            'WJets': {'sample_type': 'MC',
                       'is_signal': False,
-                      'x_section': 36257,
-                      'x_section_error': 36257*0.013,
-                      'num_generated': 246521}, #update(d)
+                      'x_section': 20508.9, #from sm xsecs twiki (total W->lnu)
+                      'x_section_error': 800, #approx
+                      'num_generated': 9992462}, #update(d)
+
+
 
 
 
@@ -430,12 +450,18 @@ class SampleInformation:
                          'x_section_error': 255.2*0.013, 
                          'num_generated': 13365439},
 
-            'zjets': {'sample_type': 'MC',
+			# 13 TeV
+            'ZJets': {'sample_type': 'MC',
                       'is_signal': False,
-                      'x_section': 3505.7, 
-                      'x_section_error': 3505.7*0.012, 
-                      'x_section_error_ttV': 3505.7*0.3, 
-                      'num_generated': 249275},  #<- wrong
+                      #'x_section': 3205.6, #from sm xsecs twiki (Z->ll, mll>20 GeV)
+                      'x_section': 2008.4, #from sm xsecs twiki (Z->ll, mll>50 GeV)
+                      #'x_section_error': 150, #approx
+                      'x_section_error': 75, #approx
+                      'x_section_error_ttV': 3505.7*0.3, #???
+                      'num_generated': 2829164},  #update(d)
+
+
+
 
             'zjets_0p': {'sample_type': 'MC',
                       'is_signal': False,
@@ -471,6 +497,10 @@ class SampleInformation:
                       'x_section_error': 27.38*0.012,
                       'x_section_error_ttV': 27.38*0.3,
                       'num_generated': 6370630},
+                      
+                      
+                      
+                      
 
             'zjets_lowmass': {'sample_type': 'MC',
                               'is_signal': False,
@@ -684,10 +714,10 @@ class SampleInformation:
 #                      'num_generated': 6912438+1362471},
 
 
-
-   'ttbar': {'sample_type': 'MC',
+			# 13 TeV
+   	        'TTJets': {'sample_type': 'MC',
                       'is_signal': False,
-                      'x_section': 815.96, # at 173.2 GeV
+                      'x_section': 815.96, # at 173.2 GeV (top group twiki)
                       'x_section_error': 25., # +19.37,-28.61 <- change
                       'x_section_error_ttV': 815.96*0.3,# ?
                       'num_generated': 4974383}, # update(d)
@@ -794,17 +824,17 @@ class SampleInformation:
 
 
 
-
-            'ttbarW': {'sample_type': 'MC',
+			# 13 TeV
+            'TTWJets': {'sample_type': 'MC',
                        'is_signal': False,
-                       'x_section': 1.152, 
+                       'x_section': 1.152, #from top slides jan 20 2015
                        'x_section_error': 1.152*0.2, 
                        'x_section_error_ttV': 2.232*0.123, 
                        'num_generated': 246521}, #update(d)
-
-            'ttbarZ': {'sample_type': 'MC',
+			# 13 TeV
+            'TTZJets': {'sample_type': 'MC',
                        'is_signal': False,
-                       'x_section': 2.232, 
+                       'x_section': 2.232,  #from top slides jan 20 2015
                        'x_section_error': 2.232*0.2, 
                        'x_section_error_ttV': 2.232*0.137, 
                        'num_generated': 249275}, #update(d)
@@ -903,7 +933,9 @@ class SampleInformation:
                           'x_section': (0.7046+0.4153)*0.0632, #Approx inclusive
                           'x_section_error': 0.0,
                           'num_generated': 59000}, #Inclusive
-            
+
+
+## need to do this section            
             #All single top samples use ND x_sec, x_sec error, and number processed
             'singlet_s': {'sample_type': 'MC',
                     'is_signal': False,
@@ -941,6 +973,9 @@ class SampleInformation:
                         'x_section_error': 7.87*0.02,
                         'num_generated': 492779},
 
+
+#####
+
             'ttH110': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.1887,
@@ -966,12 +1001,14 @@ class SampleInformation:
 #                       'x_section_error_ttV': 0.095,
 #                       'num_generated': 992997},
             
-	    'ttH125': {'sample_type': 'MC',
+            # 13 TeV
+	        'ttH125': {'sample_type': 'MC',
                        'is_signal': True,
                        'x_section': 0.5085,
                        'x_section_error': 0.09,
                        'x_section_error_ttV': 0.095,
-                       'num_generated': 200},		#update!
+                       'num_generated': 199700},		#update(d)
+
 
             'ttH125_NP': {'sample_type': 'MC',
                           'is_signal': True,

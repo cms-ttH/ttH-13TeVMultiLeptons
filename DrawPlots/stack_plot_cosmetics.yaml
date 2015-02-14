@@ -46,8 +46,8 @@ top canvas y2: 0.99999
 bottom canvas x1: 0.00001
 bottom canvas y1: 0.00001
 bottom canvas x2: 0.99999
-#bottom canvas y2: 0.29999
-bottom canvas y2: 0.09999
+bottom canvas y2: 0.29999
+#bottom canvas y2: 0.09999
 
 top canvas left margin: 0.11
 bottom canvas left margin: 0.11
