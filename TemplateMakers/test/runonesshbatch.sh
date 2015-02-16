@@ -10,10 +10,8 @@ thisdir=$5
 
 export SCRAM_ARCH=slc6_amd64_gcc481
 source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
-#cd /afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/newversionofAna_check_out_for_first_time/CMSSW_7_2_3/src
 cd $cmsenvdir
 eval `scramv1 runtime -sh`
-#cd ttH-13TeVMultiLeptons/TemplateMakers/test #this should not change
 cd $thisdir
 
 # Note:

@@ -5,8 +5,14 @@
 # Use this on lxplus
 # if you don't have an eos store/user space,
 # you can use store/temp/user, or anywhere else on lxplus
-# before using for first time, add the following line to ~/.ssh/
-# 
+# before using for first time, your .ssh/config should look like this:
+# Host *
+#	StrictHostKeyChecking no
+#	GSSAPIAuthentication yes
+#	GSSAPIDelegateCredentials yes
+#	GSSAPITrustDNS yes
+#	ForwardAgent yes
+#
 # then do kinit
 # 
 # **** You have to be on lxplus and do kinit first for this script to work! ****
@@ -23,7 +29,6 @@ declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'ZJets' 'WJets' 'WZJets')
 pfx='root://eoscms.cern.ch/'								# prefix (can be xrootd, if you save certificate in afs area, see runonesshbatch.sh)
 
 source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
-#alias eos="/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
 eos mkdir $destbasedir/$joblabel
 rootdestbasedir=$pfx$destbasedir/$joblabel
 logdir='crawlog'
