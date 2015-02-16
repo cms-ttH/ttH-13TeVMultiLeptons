@@ -11,14 +11,11 @@ gROOT.SetBatch(1)
 
 infilestring = sys.argv[2]
 outfilestring = sys.argv[3]
-#infilestring += '*.root'
-
+#infilestring += '*.root'    #<- uncomment for non-batch
 
 print infilestring
 print outfilestring
 
-
-#infile = TFile( 'test_200evts.root' )
 filetest = False
 # while True:
 # 
@@ -46,8 +43,8 @@ exitcount = 0
 # 		print "doesnt exist"
 # 		filetest = True
 # 		exitcount += 1
-# 		if exitcount is 20:
-# 			print "been at this for 1 minute; exiting..."
+# 		if exitcount is 24:
+# 			print "been at this for 2 minutes; exiting..."
 # 			sys.exit(1)
 # 	else:
 # 		#infile = TFile(infilestring)
@@ -57,23 +54,19 @@ exitcount = 0
 # if filetest:
 # 	print "made it out!"
 
+
 tree.Add(infilestring)
-#tree = infile.Get('OSTwoLepAna/summaryTree')	
 	
 entries = tree.GetEntries()
 print " "
 print entries
 
-#copiedfile = TFile( 'newfile.root' , 'RECREATE' )
-#copiedfile = TFile( 'ttH125_ss_v30_all.root' , 'RECREATE' )
 copiedfile = TFile.Open( outfilestring , 'RECREATE', 'test' )
 newtree = tree.CloneTree(0)
 
-#testthing = {0.,0.,0.,0.,} ROOT.ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
-#testthing = TLorentzVector(0.,0.,0.,0.)
 
 ############################################################
-## if the tree has these branches already, overwrite them:
+## the tree has these branches already; overwrite them:
 
 
 SumPt_handle = n.array([-99],dtype=float)
@@ -84,7 +77,6 @@ SumJetPt_handle = n.array([-99],dtype=float)
 AvgBtagDiscNonBtags_handle = n.array([-99],dtype=float)
 AvgBtagDiscBtags_handle = n.array([-99],dtype=float)
 MinDrJets_handle = n.array([-99],dtype=float)
-
 NumHiggsLikeDijet15_handle = n.zeros(1,dtype=float)
 HiggsLikeDijetMass2_handle = n.array([-99],dtype=float)
 HiggsLikeDijetMass_handle = n.array([-99],dtype=float)
@@ -106,8 +98,7 @@ DeltaPhiLepLep_handle = n.array([-99],dtype=float)
 DeltaRLepLep_handle = n.array([-99],dtype=float)
 Zmass_handle = n.array([-99],dtype=float)
 MassLepLep_handle = n.array([-99],dtype=float)
-numLooseBJets_handle = n.zeros(1,dtype=float)
-numMediumBJets_handle = n.zeros(1,dtype=float)
+
 
 newtree.SetBranchAddress("MHT", MHT_handle)
 newtree.SetBranchAddress("SumJetMass", SumJetMass_handle)
@@ -138,12 +129,20 @@ newtree.SetBranchAddress("DeltaPhiLepLep", DeltaPhiLepLep_handle)
 newtree.SetBranchAddress("DeltaRLepLep", DeltaRLepLep_handle)
 newtree.SetBranchAddress("Zmass", Zmass_handle)
 newtree.SetBranchAddress("MassLepLep", MassLepLep_handle)
+
+
+############################################################
+## add any new branches:
+
+numLooseBJets_handle = n.zeros(1,dtype=float)
+numMediumBJets_handle = n.zeros(1,dtype=float)
+
 newtree.Branch("numLooseBJets", numLooseBJets_handle, "numLooseBJets/D")
-newtree.Branch("numMediumBJets", numMediumBJets_handle, "numMediumBJets/D")		  
+newtree.Branch("numMediumBJets", numMediumBJets_handle, "numMediumBJets/D")
 
 
 ############################################################	  
-## (re)calculate vars from variables.py:
+## (re)calculate vars using variables.py:
 			  
 for entry in tree:
 	preselelectrons = entry.preselected_electrons
@@ -170,15 +169,10 @@ for entry in tree:
 
 	if (leptons.size()<2):
 		continue
-	
-#	for electron in thing:
-#		eleTLV = electron.obj
-#		print eleTLV.Px()
-	#sumjethandle[0] = 5.0
-	#entry.SumJetPt = 5.0	
+	######################
 	
 	
-	# need the [0] for branch handles !!!!
+	# need the [0] for branch "pointers" !!!
 	SumJetPt_handle[0] = getsumpt(jets)	# A.K.A. 'HT'
 	AvgBtagDiscNonBtags_handle[0] = getAvgCSV(jets,'M',False)   
 	AvgBtagDiscBtags_handle[0] = getAvgCSV(jets,'M',True)
@@ -220,10 +214,10 @@ for entry in tree:
 	
 
 	WLikeDijetMass81_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass',1,81.)
-	DeltaPhiLepLep_handle[0] = 		getTwoObjKineExtreme(leptons,leptons,'min','dPhi')
-	DeltaRLepLep_handle[0] = 		getTwoObjKineExtreme(leptons,leptons,'min','dR')	
-	Zmass_handle[0] = 				pickFromSortedTwoObjKine(leptons,leptons,'mass',1,91.2) #trying loose
-	MassLepLep_handle[0] = 			getTwoObjKineExtreme(leptons,leptons,'min','mass')
+	DeltaPhiLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dPhi')
+	DeltaRLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dR')	
+	Zmass_handle[0] = 		pickFromSortedTwoObjKine(leptons,leptons,'mass',1,91.2) #trying loose
+	MassLepLep_handle[0] = 		getTwoObjKineExtreme(leptons,leptons,'min','mass')
 	
 	
 	
@@ -233,7 +227,6 @@ for entry in tree:
 ## save new values to tree:
 
 newtree.Write()
-#infile.Close()
 copiedfile.Close()
 print '  '
 print 'done'
@@ -242,31 +235,3 @@ print 'done'
 ############################################################
 		
 
-		
-#		
-#
-#
-#  TwoObjectKinematic<BNleptonCollection,BNjetCollection> myMHT("pt", "vector_sum", "mht",
-#                                                               &(selectedCollections.tightLooseLeptonCollection), "leptons_by_pt", 1, 99,
-#                                                               &(selectedCollections.jetCollection), "jets_by_pt", 1, 99);
-#
-#
-
-
-#		int HiggsDecayType_intree;		
-#		int checkTrig_intree;
-#		
-#
-##		double LepTrigCorr_intree;
-##		double LepIDAndIsoSF_intree;
-##		double TopPt_intree;
-##		double TopPtCorr_intree;
-##		double PU_intree;
-##		double PUCorr_intree;
-#		
-#		//numLooseBJets;
-#		//numMediumBJets;
-#		//numTightBJets;
-#		
-#		int numJets_fromHiggs_30_intree;
-#		int numJets_fromHiggs_intree;
