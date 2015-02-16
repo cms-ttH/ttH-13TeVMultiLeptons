@@ -1318,7 +1318,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     if (scEta <= 1.479) 
       {
 	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.004 &&
-			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.6 &&
+			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.06 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.01 &&
 			  iElectron.hadronicOverEm() < 0.12);
       }
