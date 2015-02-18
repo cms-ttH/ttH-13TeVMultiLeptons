@@ -1,13 +1,13 @@
 #input and output file names
-input file location: histos/os_v2
-input file label: os_v2
-output file location: os_v2_test_plots_OScuts_weights
+input file location: histos/os_v9
+input file label: os_v9
+output file location: os_v9_test1_plots_OScuts_weights_log
 
 #drawing options
 skip systematics: false
 draw ratio plot: true
 draw legend: true
-log scale: false
+log scale: true
 save png: true
 save pdf: true
 blinded: true #we don't have any data yet!
@@ -157,18 +157,18 @@ background samples:
         draw name: "t#bar{t}+Jets"
         color: kBlue-9
         samples: [TTJets]
-    
-    
+   
+   
     ZJets:
         draw name: "Z+Jets"
         color: kCyan-3
         samples: [ZJets]
-    
+   
     WJets:
         draw name: "W+Jets"
         color: kAzure-9
         samples: [WJets]
-    
+
 
 
 #    ttbarWW:
@@ -182,25 +182,25 @@ distributions:
     numJets: ['number of jets', false, true]
     numLooseBJets: ['number of loose b-tagged jets', false, true]
     numMediumBJets: ['number of medium b-tagged jets', false, true]
-    sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', true, true]
+#    sum_lep1pt_lep2pt_met: ['Sum pT (lepton 1, lepton 2, MET)', true, true]
     mht: ['MHT', true, true]
 #    mindr_lep2_jet: ['min dR (lepton 2, jet)', true, true]
-    met_1_all_leptons_by_pt_1_MT: ['MT (lepton 1, MET)', true, true]
-    met_1_all_leptons_by_pt_2_MT: ['MT (lepton 2, MET)', true, true]
-    sum_pt: ['Sum pT (leptons, jets)', true, true]
-    FinalBDT: ['BDT output', true, true]
-    FinalBDT_pos: ['BDT output, positive charge', false, false]
-    FinalBDT_neg: ['BDT output, negative charge', false, false]
+#    met_1_all_leptons_by_pt_1_MT: ['MT (lepton 1, MET)', true, true]
+#    met_1_all_leptons_by_pt_2_MT: ['MT (lepton 2, MET)', true, true]
+#    sum_pt: ['Sum pT (leptons, jets)', true, true]
+#    FinalBDT: ['BDT output', true, true]
+#    FinalBDT_pos: ['BDT output, positive charge', false, false]
+#    FinalBDT_neg: ['BDT output, negative charge', false, false]
 #     all_leptons_by_pt_1_lepMVA: ['First lepton MVA', true, true]
 #     all_leptons_by_pt_2_lepMVA: ['Second lepton MVA', true, true]
-    all_leptons_by_pt_1_pt: ['First lepton pT', 20, true, true]
-    all_leptons_by_pt_2_pt: ['Second lepton pT', 20, true, true]
-    all_leptons_by_pt_1_eta: ['First lepton pseudorapidity', true, true]
-    all_leptons_by_pt_2_eta: ['Second lepton pseudorapidity', true, true]
-    all_leptons_by_pt_1_SIP: ['First lepton SIP', true, true]
-    all_leptons_by_pt_2_SIP: ['Second lepton SIP', true, true]
-    all_leptons_by_pt_1_jetBTagCSV: ['First lepton jetBtagCSV', true, true]
-    all_leptons_by_pt_2_jetBTagCSV: ['Second lepton jetBtagCSV', true, true]
+#    all_leptons_by_pt_1_pt: ['First lepton pT', 20, true, true]
+#    all_leptons_by_pt_2_pt: ['Second lepton pT', 20, true, true]
+#    all_leptons_by_pt_1_eta: ['First lepton pseudorapidity', true, true]
+#    all_leptons_by_pt_2_eta: ['Second lepton pseudorapidity', true, true]
+#    all_leptons_by_pt_1_SIP: ['First lepton SIP', true, true]
+#    all_leptons_by_pt_2_SIP: ['Second lepton SIP', true, true]
+#    all_leptons_by_pt_1_jetBTagCSV: ['First lepton jetBtagCSV', true, true]
+#    all_leptons_by_pt_2_jetBTagCSV: ['Second lepton jetBtagCSV', true, true]
 #     jets_by_pt_1_btagCombinedSecVertex: ['First jet b-tag discriminant', true, true]
 #     jets_by_pt_2_btagCombinedSecVertex: ['Second jet b-tag discriminant', true, true]
 #     jets_by_pt_3_btagCombinedSecVertex: ['Third jet b-tag discriminant', true, true]

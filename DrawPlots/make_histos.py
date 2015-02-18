@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import sys
+import socket
+import time
 import os
 import importlib
 plot_helper = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.plot_helper', None)
@@ -24,7 +26,7 @@ def main():
     parser.add_argument('-lm', '--limits', action='store_true', help='Limit mode: this uses systematics and distributions for limits.')
     args = parser.parse_args()
 
-    print os.environ['HOSTNAME']
+    #print os.environ['HOSTNAME']
 
     with open(args.config_file_name) as config_file:
         config = yaml.load(config_file)
@@ -54,11 +56,20 @@ def main():
     if args.web:
         www_plot_directories = [os.path.join('plots', config['label'], output_directory, lepton_category) for lepton_category in lepton_categories]
         plot_helper.setup_web_posting(www_plot_directories, 4, args.config_file_name)
-
+    
+    fileid = ''
+    if args.file:
+        tempfilestr=args.file
+        strpos = tempfilestr.rfind("/")
+        fileid = '_'+tempfilestr[strpos+1:-5] # keeps string between last "/" and ".root"
+	print fileid
+    
     if args.batch:
-        submit_batch_jobs(config, samples, lepton_categories, jet_tag_categories)
+        #submit_batch_jobs(config, samples, lepton_categories, jet_tag_categories)
+	#os.popen('printenv')
+	submit_batch_jobs_lxplus(config, samples, lepton_categories, jet_tag_categories)
     else:
-        make_histos(args, config, samples, lepton_categories, jet_tag_categories)
+        make_histos(args, config, samples, lepton_categories, jet_tag_categories, fileid)
 
     if args.web:
         if args.batch:
@@ -67,8 +78,10 @@ def main():
             plot_helper.update_indexes(output_directory)
             print '\nFinished processing.  Plots will be posted to: http://www.crc.nd.edu/~%s/plots/%s/' % (os.environ['USER'], config['label'])
 
-def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
+def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fileid):
     for sample, sample_dict in samples.items():
+        print " "
+	print(socket.gethostname())
         tree_sample = sample_dict.get('tree sample', sample)
         additional_cuts = sample_dict.get('additional cuts', [])
         cuts_to_remove = sample_dict.get('cuts to remove', [])
@@ -85,7 +98,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
 
             for jet_tag_category, jet_tag_category_cut_strings in jet_tag_categories.items():
                 systematics_list = plot_helper.customize_systematics(config['systematics'], sample_dict.get('systematics', 'common'))
-                output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['output label'])
+                output_file_name = '%s/%s/%s_%s_%s_%s%s.root' % (config['output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['output label'], fileid)
                 if args.limits:
                     output_file_name = '%s/%s/%s_%s_%s_%s.root' % (config['limits output directory'], lepton_category, lepton_category, jet_tag_category, sample, config['output label'])
                     if config['limits skip systematics']:
@@ -140,32 +153,71 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories):
                     distribution_items = config['distributions'].items()
                     if args.limits:
                         distribution_items = config['limits distributions'].items()
-                    for distribution, parameters in distribution_items:
-                        if sample not in parameters.get('samples', [sample]):
+		    
+#                    for distribution, parameters in distribution_items:
+#                        if sample not in parameters.get('samples', [sample]):
+#                            continue
+#                        draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
+#                        draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
+#                        plot_name = '%s%s' % (distribution, systematic_label)
+#                        print " " 
+#                        print draw_string_maker.draw_string
+#                        print " "
+#					    ##################################################################################################
+#                        plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string) ## hack: replaced draw_string_maker.draw_string with ''
+#					    ##################################################################################################
+#					    
+#                        if sample_info.sample_type == 'MC':
+#                            plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
+#                        output_file.Write()
+#                        if args.pdf:
+#					        plot.save_image('pdf')
+#                        if args.web:
+#                            plot.post_to_web(config, lepton_category)
+		    
+		    theplots = []
+		    plotdict = {}
+		    plotcount = 0
+		    for distribution, parameters in distribution_items:
+                	if sample not in parameters.get('samples', [sample]):
                             continue
-                        draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
-                        draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
+                	
+			draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
+                	draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
                         plot_name = '%s%s' % (distribution, systematic_label)
-                        print " " 
-                        print draw_string_maker.draw_string
-                        print " "
-					    ##################################################################################################
-                        plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string) ## hack: replaced draw_string_maker.draw_string with ''
-					    ##################################################################################################
-					    
-                        if sample_info.sample_type == 'MC':
-                            plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
-                        output_file.Write()
-                        if args.pdf:
-					        plot.save_image('pdf')
-                        if args.web:
-                            plot.post_to_web(config, lepton_category)
+
+			##################################################################################################
+                	plot = plot_helper.GeoffPlot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string)
+			##################################################################################################
+			
+			plotdict[plot_name] = plotcount
+			theplots.append(plot)
+			plotcount += 1
+		    
+		    #print draw_string_maker.draw_string
+		    
+		    for entrynumber, entry in enumerate(tree):
+			for distribution, parameters in distribution_items:
+			    plot_name = '%s%s' % (distribution, systematic_label)
+			    #print parameters
+			    theplots[plotdict[plot_name]].fill(parameters, draw_string_maker.draw_string, entry)
+			if ((entrynumber % 10000)==0):
+			    print entrynumber
+			    
+		    for thisplot in theplots:
+		        if sample_info.sample_type == 'MC':
+                            thisplot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
+                    
+		    output_file.Write()		    
+		    
                     #source_file.Close() #end systematic
                     source_chain.Reset() #end systematic
                 config_file = ROOT.TObjString(args.config_file_name)
                 output_file.cd()
                 config_file.Write('config_file')
                 output_file.Close() #end jet tag category
+    print " "
+    print "done"
 
 def submit_batch_jobs(config, samples, lepton_categories, jet_tag_categories):
     plot_helper.make_sure_directories_exist(['batch_logs/%s' % config['label']])
@@ -191,6 +243,24 @@ def submit_batch_jobs(config, samples, lepton_categories, jet_tag_categories):
 
                 os.popen('condor_submit make_histos_batch.submit')
                 print '\nSubmitting batch jobs for sample %s, lepton category %s, jet tag category %s... ' % (sample, lepton_category, jet_tag_category)
+
+
+def submit_batch_jobs_lxplus(config, samples, lepton_categories, jet_tag_categories):
+    
+    thispwd = os.getcwd()
+    plot_helper.make_sure_directories_exist(['batch_logs/%s' % config['label']])
+    argument_string = ' '.join([a for a in sys.argv[1:] if a != '-b' and a != '-batch'])
+    
+    for sample in samples:
+        
+        for lepton_category in lepton_categories:
+            for jet_tag_category in jet_tag_categories:             
+		thecommand = 'ssh -f lxplus "cd %s; cmsenv; ./make_histos.py -s %s -l %s -j %s %s >& batch_logs/%s/%s_%s_%s_%s.log"' % (thispwd, sample, lepton_category, jet_tag_category, argument_string, config['label'], config['label'], sample, jet_tag_category, lepton_category)
+                os.popen(thecommand)
+                print '\nSubmitting batch jobs for sample %s, lepton category %s, jet tag category %s... ' % (sample, lepton_category, jet_tag_category)
+		time.sleep(5)
+	time.sleep(60)
+
 
 if __name__ == '__main__':
     main()

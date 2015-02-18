@@ -16,7 +16,7 @@ DefaultOrderedDict = getattr(DefaultOrderedDictmod, 'DefaultOrderedDict')
 def append_integral_histo(config):
     if not config['distributions'].has_key('integral_histo'):
         config['distributions']['integral_histo'] = {'axis labels': ['isCleanEvent', 'Events'],
-                                                     'expression': 'eventnum>0',
+                                                     'expression': 'entry.eventnum>0',
                                                      'plot type': 'TH1D',
                                                      'binning': [2, 0, 2]}
 
@@ -170,6 +170,82 @@ class Plot:
         ROOT.gStyle.SetHistLineWidth(2)
         #self.plot.GetYaxis().SetNoExponent(ROOT.kTRUE)
 
+class GeoffPlot:
+    def __init__(self, sample, output_file, tree, plot_name, parameters, draw_string):
+        self.plot_name = plot_name
+        title = '%s;%s;%s' % (sample, parameters['axis labels'][0], parameters['axis labels'][1])
+        bins = parameters['binning']
+        if len(bins) == 2 or len(bins) == 4: #Manual binning for 1D or 2D
+            bins[1] = numpy.array(bins[1],numpy.dtype(float))
+        if len(bins) == 4: #Manual binning for 2D
+            bins[3] = numpy.array(bins[3],numpy.dtype(float))
+
+        if parameters.get('plot type', 'TH1D') == 'TH1D':
+            self.plot = ROOT.TH1D(plot_name, title, *bins)
+            self.plot.Sumw2()
+            if parameters.get('can rebin'):
+                self.plot.SetBit(ROOT.TH1.kCanRebin)
+        elif parameters.get('plot type', 'TH1D') == 'TH2D':
+            self.plot = ROOT.TH2D(plot_name, title, *bins)
+            self.plot.Sumw2()
+            if parameters.get('can rebin'):
+                self.plot.SetBit(ROOT.TH2.kCanRebin)
+        else:
+            print 'ERROR [plot_helper.py]: Method Plot::__init__ currently only supports TH1D and TH2D histograms.  Please add support for other types if you wish to use them.'
+            sys.exit(2)
+        self.plot.SetDirectory(output_file)
+    
+    
+    def fill(self, parameters, draw_string, entry):
+        histweight=0.
+        filler=-9999.
+	try:
+	    exec("histweight = %s" % (draw_string))
+	    
+	    try:
+	        exec("filler = %s" % (parameters['expression']))
+	    except IndexError:
+	        filler=-9999.
+	    
+	except IndexError:
+	    histweight=0.
+            filler=-9999.
+	    
+	if (histweight!=0):
+	    self.plot.Fill(filler, histweight)
+
+
+    def save_image(self, *image_types): #I am choosing for now not to add the option in make_plots to save pngs (though it can be called here), since pdfs look nicer
+        if not os.path.exists('plot_pdfs'):
+            os.makedirs('plot_pdfs')
+        self.set_style()
+        ROOT.gROOT.SetBatch(ROOT.kTRUE)
+        canvas = ROOT.TCanvas('canvas', 'canvas', 700, 800)
+        self.plot.Draw()
+        for type in image_types:
+            canvas.Print('plot_pdfs/%s.%s' % (self.plot_name, type))
+
+    def post_to_web(self, config, lepton_category):
+        www_base_directory = get_www_base_directory()
+
+        self.save_image('png', 'pdf')
+
+        www_plot_directory = '%s/plots/%s/%s/%s' % (www_base_directory, config['label'], config['output directory'], lepton_category)
+        copy_to_www_area('plot_pdfs', www_plot_directory, self.plot_name)
+
+    def set_style(self): #later we can add arguments for different style sets if needed
+        #ROOT.gStyle.SetOptStat(0)
+        ROOT.gStyle.SetPadBorderMode(0)
+        ROOT.gStyle.SetFrameBorderMode(0)
+        ROOT.gStyle.SetLineWidth(2)
+        ROOT.gStyle.SetLabelOffset(0.01)
+        ROOT.gStyle.SetLabelSize(0.035)
+        ROOT.gStyle.SetHistLineWidth(2)
+        #self.plot.GetYaxis().SetNoExponent(ROOT.kTRUE)
+    
+    
+
+
 class DrawStringMaker:
     def __init__(self):
         self.draw_string = ''
@@ -177,7 +253,8 @@ class DrawStringMaker:
         self.factors = []
 
     def update_draw_string(self):
-        requirements_string = ' && '.join(self.requirements)
+        #requirements_string = ' && '.join(self.requirements)
+        requirements_string = ' and '.join(self.requirements) #python
         self.draw_string = '(' + requirements_string + ')'
 
         if len(self.factors) > 0:
@@ -720,7 +797,8 @@ class SampleInformation:
                       'x_section': 815.96, # at 173.2 GeV (top group twiki)
                       'x_section_error': 25., # +19.37,-28.61 <- change
                       'x_section_error_ttV': 815.96*0.3,# ?
-                      'num_generated': 4974383}, # update(d)
+                      #'num_generated': 4974383}, # update(d)
+		      'num_generated': 16777216}, #weighted amcatnlo events (raw is 25296990)
 		      
 
 
@@ -1007,7 +1085,8 @@ class SampleInformation:
                        'x_section': 0.5085,
                        'x_section_error': 0.09,
                        'x_section_error_ttV': 0.095,
-                       'num_generated': 199700},		#update(d)
+                       #'num_generated': 199700},		#update(d)
+		       'num_generated': 89900}, # weighted amcatnlo events (raw is 199700)
 
 
             'ttH125_NP': {'sample_type': 'MC',
