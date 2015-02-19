@@ -285,7 +285,7 @@ def getNumTwoObjKineInRange( collection1, collection2, quantity='mass', comparis
 	thelist = getTwoObjKineRawCollection( collection1, collection2, quantity)
 	count = 0
 	for item in thelist:
-		if ((item - comparisonValue)<withinrange):
+		if (abs(item - comparisonValue)<withinrange):
 			count += 1
 	return count
 

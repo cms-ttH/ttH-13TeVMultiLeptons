@@ -1,9 +1,9 @@
-label: os_v9
-output label: os_v9
+label: os_v10
+output label: os_v10
 luminosity: 10000.0 
 #input_trees_directory: /store/smallfiles/gsmith15/trees/test5
 input_trees_directory: root://eoscms.cern.ch//eos/cms/store/user/gesmith/treedir/test1
-output directory: histos/os_v9
+output directory: histos/os_v10
 #output direcotry: root://eoscms.cern.ch//eos/cms/store/user/gesmith/histdir/os_v2
 
 # tree format is input_trees_directory/sample_lable_all.root ("all" comes from hadd-ing them)

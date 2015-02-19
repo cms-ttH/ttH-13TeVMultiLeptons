@@ -3,6 +3,7 @@ import sys
 import socket
 import time
 import os
+import numpy as n
 import importlib
 plot_helper = importlib.import_module('ttH-13TeVMultiLeptons.DrawPlots.utilities.plot_helper', None)
 from argparse import ArgumentParser
@@ -125,7 +126,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
                     ## this is much better:
                     source_chain = ROOT.TChain('summaryTree')
                     source_chain.Add(source_file_name)
-                    tree = source_chain
+                    tree = source_chain.CloneTree()
                     thechainentries = tree.GetEntries()
                     #thechainentries = source_chain.GetEntries()
                     print thechainentries
@@ -175,6 +176,69 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 #                        if args.web:
 #                            plot.post_to_web(config, lepton_category)
 		    
+		    
+		    if (tree.GetEntries()<=0):
+		    	continue
+		    
+		    #failed experiment:
+		    
+#		    # set up pointers to branches:
+#		    branchlist = tree.GetListOfBranches()
+#		    branchstrlist = []
+#		    for ibranch in branchlist:
+#		    	branchstrlist.append(ibranch.GetName())
+#		    branch = {}
+#		    tree.GetEntry(0)
+#		    for branchstr in branchstrlist:
+#		        dummy = -9999.
+#			#adummy = []
+#			exec("dummy = tree.%s" % (branchstr))
+#			#adummy.append(dummy)
+#		    	adummy = n.array([dummy])
+#			branch[branchstr] = adummy
+#			print branchstr
+#			print branch[branchstr]
+#			tree.SetBranchAddress(branchstr, branch[branchstr])
+#		    		    
+#		    dummy = [0]
+#		    adummy = n.array([dummy])
+#		    branch["allLeptonGenGrandMotherId"] = adummy
+#		    tree.SetBranchAddress("allLeptonGenGrandMotherId", branch["allLeptonGenGrandMotherId"])
+#		    dummy = [0]
+#		    adummy = n.array([dummy])
+#		    branch["allLeptonGenMotherId"] = adummy
+#		    tree.SetBranchAddress("allLeptonGenMotherId", branch["allLeptonGenMotherId"])
+#		    dummy = [0]
+#		    adummy = n.array([dummy])
+#		    branch["allLeptonTkCharge"] = adummy
+#		    tree.SetBranchAddress("allLeptonTkCharge", branch["allLeptonTkCharge"])
+#		    dummy = tree.raw_electrons
+#		    adummy = n.array([dummy])
+#		    branch["preselected_electrons"] = adummy
+#		    tree.SetBranchAddress("preselected_electrons", branch["preselected_electrons"])
+#		    dummy = tree.raw_electrons
+#		    adummy = n.array([dummy])
+#		    branch["loose_electrons"] = adummy
+#		    tree.SetBranchAddress("loose_electrons", branch["loose_electrons"])
+#		    dummy = tree.loose_leptons
+#		    adummy = n.array([dummy])
+#		    branch["tight_leptons"] = adummy
+#		    tree.SetBranchAddress("tight_leptons", branch["tight_leptons"])
+#		    dummy = tree.raw_electrons
+#		    adummy = n.array([dummy])
+#		    branch["tight_electrons"] = adummy
+#		    tree.SetBranchAddress("tight_electrons", branch["tight_electrons"])
+#		    dummy = tree.raw_muons
+#		    adummy = n.array([dummy])
+#		    branch["tight_muons"] = adummy
+#		    tree.SetBranchAddress("tight_muons", branch["tight_muons"])
+#		    dummy = tree.preselected_jets
+#		    adummy = n.array([dummy])
+#		    branch["loose_bJets"] = adummy
+#		    tree.SetBranchAddress("loose_bJets", branch["loose_bJets"])
+		    
+		    
+		    # set up hists:
 		    theplots = []
 		    plotdict = {}
 		    plotcount = 0
@@ -185,10 +249,15 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 			draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
                 	draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
                         plot_name = '%s%s' % (distribution, systematic_label)
-
+			
+			#print "hey"
+			#print parameters
+			#print draw_string_maker.draw_string
 			##################################################################################################
-                	plot = plot_helper.GeoffPlot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string)
+                	plot = plot_helper.GeoffPlot(sample, output_file, plot_name, parameters, draw_string_maker.draw_string)
 			##################################################################################################
+			
+			#print "hey2"
 			
 			plotdict[plot_name] = plotcount
 			theplots.append(plot)
@@ -196,13 +265,25 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 		    
 		    #print draw_string_maker.draw_string
 		    
-		    for entrynumber, entry in enumerate(tree):
+		    #print "blah"
+		    
+		    treecount = 0
+		    
+		    for entry in tree:
+		        #print "blah2"
+			treecount += 1
+			thecut = plot_helper.CheckCuts(draw_string_maker.draw_string, entry)
+			
+			if thecut is 0:
+			    continue;
+			
 			for distribution, parameters in distribution_items:
 			    plot_name = '%s%s' % (distribution, systematic_label)
 			    #print parameters
-			    theplots[plotdict[plot_name]].fill(parameters, draw_string_maker.draw_string, entry)
-			if ((entrynumber % 10000)==0):
-			    print entrynumber
+			    #print draw_string_maker.draw_string
+			    theplots[plotdict[plot_name]].fill(parameters, draw_string_maker.draw_string, entry, thecut) #, branch)
+			if ((treecount % 10000)==0):
+			    print treecount
 			    
 		    for thisplot in theplots:
 		        if sample_info.sample_type == 'MC':

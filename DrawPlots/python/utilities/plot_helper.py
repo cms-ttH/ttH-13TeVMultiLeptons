@@ -171,7 +171,7 @@ class Plot:
         #self.plot.GetYaxis().SetNoExponent(ROOT.kTRUE)
 
 class GeoffPlot:
-    def __init__(self, sample, output_file, tree, plot_name, parameters, draw_string):
+    def __init__(self, sample, output_file, plot_name, parameters, draw_string):
         self.plot_name = plot_name
         title = '%s;%s;%s' % (sample, parameters['axis labels'][0], parameters['axis labels'][1])
         bins = parameters['binning']
@@ -196,23 +196,37 @@ class GeoffPlot:
         self.plot.SetDirectory(output_file)
     
     
-    def fill(self, parameters, draw_string, entry):
-        histweight=0.
-        filler=-9999.
+    def fill(self, parameters, draw_string, entry, thecut): #, branch):
+        #histweight=0.
+#        filler=-9999.
+#	try:
+#	    exec("histweight = %s" % (draw_string))
+#	    
+#	    try:
+#	        exec("filler = %s" % (parameters['expression']))
+#	    except (IndexError, KeyError):
+#	        filler=-9999.
+#	    
+#	except (IndexError, KeyError):
+#	    histweight=0.
+#            filler=-9999.
+#	    
+#	if (histweight!=0):
+#	    self.plot.Fill(filler, histweight)
+        
+	histweight=thecut
+        if histweight is 0:
+	    return
+	
+	filler=-9999.
+	    
 	try:
-	    exec("histweight = %s" % (draw_string))
+	    exec("filler = %s" % (parameters['expression']))
+	except (IndexError, KeyError):
+	    filler=-9999.	    
 	    
-	    try:
-	        exec("filler = %s" % (parameters['expression']))
-	    except IndexError:
-	        filler=-9999.
-	    
-	except IndexError:
-	    histweight=0.
-            filler=-9999.
-	    
-	if (histweight!=0):
-	    self.plot.Fill(filler, histweight)
+	self.plot.Fill(filler, histweight)
+	
 
 
     def save_image(self, *image_types): #I am choosing for now not to add the option in make_plots to save pngs (though it can be called here), since pdfs look nicer
@@ -243,7 +257,25 @@ class GeoffPlot:
         ROOT.gStyle.SetHistLineWidth(2)
         #self.plot.GetYaxis().SetNoExponent(ROOT.kTRUE)
     
-    
+#def SetBranches(tree):
+#    
+#    treearray = [-9999] * 1000
+#    branchlist = tree.getlistofbranches
+#    
+#    for branchindex, branch in enumerate(branchlist):
+#        
+#	tree.setbranchaddress(branch, branchindex)
+#	
+
+def CheckCuts(draw_string, entry):
+	
+    thecut=0
+    try:
+        exec("thecut = %s" % (draw_string))
+    except (IndexError, KeyError):
+        thecut=0
+    return thecut
+       
 
 
 class DrawStringMaker:
