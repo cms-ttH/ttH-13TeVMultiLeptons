@@ -7,8 +7,8 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 
 	cmsrel CMSSW_7_2_3
 	cd CMSSW_7_2_3/src/
-	cmsenv	
-        git cms-merge-topic HuguesBrun:trigElecIdInCommonIsoSelection720	
+	cmsenv
+	git cms-merge-topic HuguesBrun:trigElecIdInCommonIsoSelection720	
 	git clone git@github.com:cms-ttH/MiniAOD.git
 	git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
 	scram b -j 8
