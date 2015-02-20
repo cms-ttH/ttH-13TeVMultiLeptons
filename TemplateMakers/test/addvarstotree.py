@@ -183,8 +183,8 @@ for entry in tree:
 
 	# need the [0] for branch "pointers" !!!
 	SumJetPt_handle[0] = getsumpt(jets)	# A.K.A. 'HT'
-	AvgBtagDiscNonBtags_handle[0] = getAvgCSV(jets,'M',False)   			#<-
-	AvgBtagDiscBtags_handle[0] = getAvgCSV(jets,'M',True)				#<-
+	AvgBtagDiscNonBtags_handle[0] = getAvgCSV(jets,'M',False)   			
+	AvgBtagDiscBtags_handle[0] = getAvgCSV(jets,'M',True)				
 	MinDrJets_handle[0] = getTwoObjKineExtreme(jets,jets,'min','dR')
 	SumPt_handle[0] = getsumpt(jets, electrons, muons)	
 	#mySumLep1Lep2MetPt
@@ -200,9 +200,9 @@ for entry in tree:
 	numLooseBJets_handle[0] = len(loosetaggedjets)
 
 	SumNonTaggedJetMass_handle[0] = getsumpt(taggedjets)
-	HiggsLikeDijetMass2_handle[0] = pickFromSortedTwoObjKine(jets,jets,'mass', 2, 125.) #<---------- fix
-	HiggsLikeDijetMass_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass', 1, 125.) #<---------- fix
-	NumHiggsLikeDijet15_handle[0] = getNumTwoObjKineInRange(jets,jets,'mass',125.,15.) #<---------- fix
+	HiggsLikeDijetMass2_handle[0] = pickFromSortedTwoObjKine(jets,jets,'mass', 2, 125.)
+	HiggsLikeDijetMass_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass', 1, 125.)
+	NumHiggsLikeDijet15_handle[0] = getNumTwoObjKineInRange(jets,jets,'mass',125.,15.)
 
 
 	#newtree.SetBranchAddress("GenHiggsDijetMass", GenHiggsDijetMass_handle)
@@ -226,10 +226,10 @@ for entry in tree:
 	#newtree.SetBranchAddress("DeltaPhiJets_FromHiggs", DeltaPhiJets_FromHiggs_handle)
 
 
-	WLikeDijetMass81_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass',1,81.) #<---------- fix
+	WLikeDijetMass81_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass',1,81.)
 	DeltaPhiLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dPhi')
 	DeltaRLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dR')	
-	Zmass_handle[0] = 		pickFromSortedTwoObjKine(leptons,leptons,'mass',1,91.2) #<---------- fix
+	Zmass_handle[0] = 		pickFromSortedTwoObjKine(leptons,leptons,'mass',1,91.2)
 	MassLepLep_handle[0] = 		getTwoObjKineExtreme(leptons,leptons,'min','mass')
 
 
@@ -254,11 +254,6 @@ for entry in tree:
 	#myMinDeltaRTau1Jet # taus!
 	#myMassTau1Leptons
 
-	
-	
-	
-	
-	
 	
 	
 	
@@ -298,21 +293,10 @@ for entry in tree:
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	newtree.Fill()
 
-	if (count>10000):
-		break
+	#if (count>10000):
+	#	break
 
 ############################################################
 ## save new values to tree:

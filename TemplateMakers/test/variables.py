@@ -222,26 +222,26 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
 	size1 = len(collection1)
 	size2 = len(collection2)
 	kineRawCollecion = []
-	print " "
-	print "inside getTwoObjKineRawCollection"
-	print size1
-	print size2
-	print collection1
-	print collection2
-	print " " 
+	#print " "
+	#print "inside getTwoObjKineRawCollection"
+	#print size1
+	#print size2
+	#print collection1
+	#print collection2
+	#print " " 
 	
 	if collection1 is not collection2:
 		
-		print "coll1 != coll2"
-		print collection1
-		print collection2
+		#print "coll1 != coll2"
+		#print collection1
+		#print collection2
 		
 		for obj1 in collection1:
 			for obj2 in collection2:
 				if not(obj1==obj2):
 					
-					print obj1
-					print obj2
+					#print obj1
+					#print obj2
 				
 				
 					if quantity is 'dR':
@@ -257,22 +257,22 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
 						obj12 = obj1.obj + obj2.obj
 						kineRawCollecion.append(obj12.M())
 	else:
-		print "coll1 = coll2"
-		print collection1
-		print collection2
+		#print "coll1 = coll2"
+		#print collection1
+		#print collection2
 		
 		
 		if (size1>=2):
 			
-			print "here"
+			#print "here"
 			for i in xrange(0,size1-1): # 0 <= i < (size1-1)
-				print i
+				#print i
 				for j in xrange(i+1,size1): # i+1 <= j < size1
-					print j
+					#print j
 					obj1 = collection1[i]
 					obj2 = collection2[j]
-					print obj1
-					print obj2
+					#print obj1
+					#print obj2
 					
 					if quantity is 'dR':
 						value = getdR(obj1,obj2)
@@ -285,10 +285,10 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
 						kineRawCollecion.append(value)
 					if quantity is 'mass':
 						obj12 = obj1.obj + obj2.obj
-						print obj12
+						#print obj12
 						kineRawCollecion.append(obj12.M())
-	print kineRawCollecion
-	print "end kinerawcoll"
+	#print kineRawCollecion
+	#print "end kinerawcoll"
 	return kineRawCollecion
 
 
@@ -298,12 +298,12 @@ def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichIn
 	"if no comparison value, whichInOrder picks the ith quanity from the list (in decending order). If comparison value provided, whichInOrder picks the ith quanity closest to the value."
 	thelist = getTwoObjKineRawCollection( collection1, collection2, quantity)
 	size = len(thelist)
-	print " " 
-	print "inside pickFromSortedTwoObjKine"
-	print collection1
-	print collection2
-	print size
-	print " "
+	#print " " 
+	#print "inside pickFromSortedTwoObjKine"
+	#print collection1
+	#print collection2
+	#print size
+	#print " "
 	if size is 0:
 		return -99999.
 	if size<whichInOrder:
@@ -315,12 +315,12 @@ def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichIn
 	for index, item in enumerate(thelist):
 		keyvalue = [index,item]
 		keyvaluelist.append(keyvalue)
-	print keyvaluelist
+	#print keyvaluelist
 	thesortedlist = sorted(keyvaluelist, key=lambda i: abs(i[1]-comparisonValue))
-	print thesortedlist
+	#print thesortedlist
 	theresult = thesortedlist[whichInOrder-1]
-	print theresult
-	print "end pickfromsorted.."
+	#print theresult
+	#print "end pickfromsorted.."
 	return theresult[1]
 	
 #############################################################################
