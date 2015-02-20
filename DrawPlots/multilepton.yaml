@@ -20,7 +20,7 @@ common cuts:
     
     #13 TeV
     lt_three_tight_leptons: 'entry.tight_leptons.size()<3'
-    eq_two_good_leptons: 'entry.tight_leptons.size()==2 and entry.loose_leptons.size()==2 and entry.preselected_leptons.size()==2' #<-check
+    eq_two_good_leptons: 'entry.tight_leptons.size()==2 and entry.loose_leptons.size()==2' # and entry.preselected_leptons.size()==2' #<-check
     
     #8TeV
     #cleanup: min_mass_leplep > 12
@@ -64,15 +64,16 @@ lepton categories:
         cuts:
             mu_mu: 'entry.tight_muons.size()==2 and entry.loose_muons.size()==2 and entry.preselected_muons.size()==2'
             #muon_tight_charge: all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5 and all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5
-            z_veto: abs(entry.MassLepLep-91.2) > 10
+            z_veto: abs(entry.Zmass-91.2) > 10
             #isDoubleMuTriggerPass: isDoubleMuTriggerPass
             opposite_sign: (entry.tight_muons[0].charge * entry.tight_muons[1].charge) < 0
     mu_ele:
         data samples: [inclusive_data]
         #data samples: [MuEG]
         cuts:
-            mu_ele: 'entry.tight_muons.size()==1 and entry.loose_muons.size()==1 and entry.preselected_muons.size()==1 and entry.tight_electrons.size()==1 and entry.loose_electrons.size()==1 and entry.preselected_electrons.size()==1'
-            #conv_veto: all_electrons_by_pt_1_passConvVeto==1 and all_electrons_by_pt_1_numberOfExpectedInnerHits==0
+            #mu_ele: 'entry.tight_muons.size()==1 and entry.loose_muons.size()==1 and entry.preselected_muons.size()==1 and entry.tight_electrons.size()==1 and entry.loose_electrons.size()==1 and entry.preselected_electrons.size()==1'
+            mu_ele: 'entry.tight_muons.size()==1 and entry.loose_muons.size()==1 and entry.tight_electrons.size()==1 and entry.loose_electrons.size()==1'
+	    #conv_veto: all_electrons_by_pt_1_passConvVeto==1 and all_electrons_by_pt_1_numberOfExpectedInnerHits==0
             #muon_tight_charge: ((all_leptons_by_pt_1_isMuon and all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5) or (all_leptons_by_pt_2_isMuon and all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5))
             #electron_tight_charge: ((all_leptons_by_pt_1_isElectron and all_leptons_by_pt_1_CERN_tight_charge) or (all_leptons_by_pt_2_isElectron and all_leptons_by_pt_2_CERN_tight_charge))
             #isMuEGTriggerPass: isMuEGTriggerPass
@@ -82,9 +83,9 @@ lepton categories:
         data samples: [inclusive_data]
         #data samples: [DoubleElectron]
         cuts:
-            ele_ele: 'entry.tight_electrons.size()==2 and entry.loose_electrons.size()==2 and entry.preselected_electrons.size()==2'
+            ele_ele: 'entry.tight_electrons.size()==2 and entry.loose_electrons.size()==2' # and entry.preselected_electrons.size()==2'
             #conv_veto: all_electrons_by_pt_1_passConvVeto==1 and all_electrons_by_pt_2_passConvVeto==1 and all_electrons_by_pt_1_numberOfExpectedInnerHits==0 and all_electrons_by_pt_2_numberOfExpectedInnerHits==0
-            z_veto: abs(entry.MassLepLep-91.2) > 10
+            z_veto: abs(entry.Zmass-91.2) > 10
             #met_ld: met_ld > 0.2
             #electron_tight_charge: all_leptons_by_pt_1_CERN_tight_charge and all_leptons_by_pt_2_CERN_tight_charge
             #isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
