@@ -512,14 +512,17 @@ void MultileptonAna::setupMva(){
   mvaID_ = new EGammaMvaEleEstimatorFWLite();
   bool useBinnedVersion_ = true;
   string method_ = "BDT";
-  EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrig;
+  EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrigPhys14;
   std::vector<std::string> mvaWeightFiles_;
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat1.weights.xml");
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat2.weights.xml");
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat3.weights.xml");
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat4.weights.xml");
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat5.weights.xml");
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/Electrons_BDTG_NonTrigV0_Cat6.weights.xml");
+
+
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_10_oldscenario2phys14_BDT.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_5_oldscenario2phys14_BDT.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_10_oldscenario2phys14_BDT.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_10_oldscenario2phys14_BDT.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_5_oldscenario2phys14_BDT.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_5_oldscenario2phys14_BDT.weights.xml");
+
   mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_);
 
   mu_reader_high_b = new TMVA::Reader( "!Color:!Silent" );
@@ -928,7 +931,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.jetPtRatio = min(iEle.pt()/matchedJet.pt(), float(1.5));
       ele.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       ele.sip3D = fabs(iEle.dB(pat::Electron::PV3D)/iEle.edB(pat::Electron::PV3D));
-      ele.mvaID = mvaID_->mvaValue(iEle,vertex,rho,true,false); //use full5x5=true, debug=false
+      ele.mvaID = mvaID_->mvaValue(iEle,false); //debug=false
 
       eleCollection.push_back(ele);
     }
@@ -1109,8 +1112,11 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   bool passesMuonBestTrackID = false;
   bool passesInnerTrackID    = false;
   bool passesTrackID         = false;
-  bool passesPOGcuts         = false;
-  
+  bool passesCuts            = false;
+  // bool mediumID              = false;
+  // bool goodGlb               = false;
+
+
   double tightRelativeIso = muonparams.getParameter<double> ("tightRelativeIso");
   double looseRelativeIso = muonparams.getParameter<double> ("looseRelativeIso");
   double tightTrackNormalizedChi2 = muonparams.getParameter<double> ("tightTrackNormalizedChi2");
@@ -1131,6 +1137,17 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonRaw:
     return true;
     break;
+  // case muonID::muonCutBased:
+  //   passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
+  //   passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.1);
+  //   passesCuts = (fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D)) < 4.);
+  //   goodGlb = (iMuon.isGlobalMuon() &&  iMuon.globalTrack()->normalizedChi2() < 3
+  // 	       && iMuon.combinedQuality().chi2LocalPosition < 12 &&
+  // 	       iMuon.combinedQuality().trkKink < 20)
+  //   mediumID = (iMuon.innerTrack()->validFraction() >= 0.8 &&
+  // 		iMuon.segmentCompatibility() >= (goodGlb ? 0.303 : 0.451));
+  //   passesID = (passesCuts && mediumID);
+  //   break;
   case muonID::muonLooseCutBased:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
     passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.5);
@@ -1149,7 +1166,7 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
       passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
 				&& (fabs(iMuon.innerTrack()->dz(vertex.position())) < 0.1)
 				);
-      passesPOGcuts = (iMuon.isGlobalMuon() && iMuon.isPFMuon() && 
+      passesCuts = (iMuon.isGlobalMuon() && iMuon.isPFMuon() && 
 		       iMuon.globalTrack()->normalizedChi2() < 10. &&
 		       iMuon.globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
 		       iMuon.numberOfMatchedStations() > 1 &&
@@ -1158,7 +1175,7 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
 		       fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D)) < 4.
 		       );
     }
-    passesID = (passesMuonBestTrackID && passesPOGcuts);
+    passesID = (passesMuonBestTrackID && passesCuts);
     break;
   case muonID::muonLoose:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) <= maxLooseMuonAbsEta));
@@ -1262,7 +1279,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   bool dZ  = false;
   bool no_exp_inner_trkr_hits = true; //false; // see below
   bool passGsfTrackID = false;
-  bool passesPOGcuts = false; 
+  bool passesCuts = false; 
 
   if( iElectron.gsfTrack().isAvailable() ){
     d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < tightDxy );
@@ -1290,7 +1307,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesIso        =  (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.5);
     if (scEta <= 1.479)
       {
-	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.007 &&
+	passesCuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.007 &&
 			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.8 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.01 &&
 			  iElectron.hadronicOverEm() < 0.15
@@ -1298,12 +1315,12 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
       }
     else if (scEta > 1.479 && scEta < 2.5)
       {
-	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.01 &&
+	passesCuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.01 &&
 			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.7 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.03
 			  );
       }
-    passesID = (passesPOGcuts && passGsfTrackID);
+    passesID = (passesCuts && passGsfTrackID);
     break;
   case electronID::electronTightCutBased:
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) < 2.5));
@@ -1317,19 +1334,19 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     
     if (scEta <= 1.479) 
       {
-	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.004 &&
+	passesCuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.004 &&
 			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.06 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.01 &&
 			  iElectron.hadronicOverEm() < 0.12);
       }
     else if (scEta > 1.479 && scEta < 2.5)
       {
-	passesPOGcuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.007 &&
+	passesCuts = ( fabs(iElectron.deltaEtaSuperClusterTrackAtVtx()) < 0.007 &&
 			  fabs(iElectron.deltaPhiSuperClusterTrackAtVtx()) < 0.03 &&
 			  iElectron.full5x5_sigmaIetaIeta() < 0.03 && 
 			  iElectron.hadronicOverEm() < 0.10);
       }
-    passesID = (passesPOGcuts && passGsfTrackID);
+    passesID = (passesCuts && passGsfTrackID);
     break;
   case electronID::electronLoose:
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxLooseElectronAbsEta) && !inCrack);
@@ -1349,9 +1366,9 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     //
     //////
     bool passesMVA = false;
-    bool useFull5x5 = true;
+    //    bool useFull5x5 = true;
     bool mvaDebug = false;
-    double eleMvaNonTrig = mvaID_->mvaValue(iElectron,vertex,rho,useFull5x5,mvaDebug);
+    double eleMvaNonTrig = mvaID_->mvaValue(iElectron,mvaDebug);
 
     if ( iElectron.pt() < 10 ){
       if ( scEta < 0.8){
@@ -1536,10 +1553,9 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   varjetBTagCSV_in = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
   varsip3d = fabs(iElectron.dB(pat::Electron::PV3D)/iElectron.edB(pat::Electron::PV3D));
   
-  bool useFull5x5 = true;
+  //  bool useFull5x5 = true;
   bool mvaDebug = false;
-  //  varmvaId = iElectron.electronID("mvaNonTrigV0");
-  varmvaId = mvaID_->mvaValue(iElectron,vertex,rho,useFull5x5,mvaDebug);  
+  varmvaId = mvaID_->mvaValue(iElectron,mvaDebug);  
   
   //varinnerHits = iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits(); // 70X
   varinnerHits = iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS); // 72X

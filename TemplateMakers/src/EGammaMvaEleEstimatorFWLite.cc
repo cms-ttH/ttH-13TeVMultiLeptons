@@ -1,5 +1,5 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
-#include "EgammaAnalysis/ElectronTools/interface/EGammaMvaEleEstimator.h"
+#include "EgammaAnalysis/ElectronTools/interface/EGammaMvaEleEstimatorCSA14.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 EGammaMvaEleEstimatorFWLite::EGammaMvaEleEstimatorFWLite() :
   estimator_(0)
@@ -14,26 +14,22 @@ void EGammaMvaEleEstimatorFWLite::initialize( std::string methodName,
 					      bool useBinnedVersion,
 					      std::vector<std::string> weightsfiles )
 {
-  EGammaMvaEleEstimator::MVAType pogType;
+  EGammaMvaEleEstimatorCSA14::MVAType pogType;
   switch(type) {
-  case EGammaMvaEleEstimatorFWLite::kTrig: pogType = EGammaMvaEleEstimator::kTrig; break;
-  case EGammaMvaEleEstimatorFWLite::kTrigNoIP: pogType = EGammaMvaEleEstimator::kTrigNoIP; break;
-  case EGammaMvaEleEstimatorFWLite::kNonTrig: pogType = EGammaMvaEleEstimator::kNonTrig; break;
+  case EGammaMvaEleEstimatorFWLite::kTrig: pogType = EGammaMvaEleEstimatorCSA14::kTrig; break;
+  case EGammaMvaEleEstimatorFWLite::kNonTrig: pogType = EGammaMvaEleEstimatorCSA14::kNonTrig; break;
+  case EGammaMvaEleEstimatorFWLite::kNonTrigPhys14: pogType = EGammaMvaEleEstimatorCSA14::kNonTrigPhys14; break;
   default:
     return;
   }
-  estimator_ = new EGammaMvaEleEstimator();
+  estimator_ = new EGammaMvaEleEstimatorCSA14();
   std::vector<std::string> weightspaths;
   for (const std::string &s : weightsfiles) {
     weightspaths.push_back( edm::FileInPath(s).fullPath() );
   }
   estimator_->initialize(methodName, pogType, useBinnedVersion, weightspaths);
 }
-float EGammaMvaEleEstimatorFWLite::mvaValue(const pat::Electron& ele,
-					    const reco::Vertex& vertex,
-					    double rho,
-					    bool full5x5,
-					    bool printDebug)
+float EGammaMvaEleEstimatorFWLite::mvaValue(const pat::Electron& ele, bool printDebug)
 {
-  return estimator_->mvaValue(ele,vertex,rho,full5x5,printDebug);
+  return estimator_->mvaValue(ele, printDebug);
 }

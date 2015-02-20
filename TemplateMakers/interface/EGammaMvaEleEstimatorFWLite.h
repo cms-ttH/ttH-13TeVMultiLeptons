@@ -1,7 +1,7 @@
 #ifndef _EGammaMvaEleEstimatorFWLite_h
 #define _EGammaMvaEleEstimatorFWLite_h
 
-struct EGammaMvaEleEstimator;
+struct EGammaMvaEleEstimatorCSA14;
 namespace reco { struct Vertex; }
 namespace pat { struct Electron; }
 #include <vector>
@@ -13,19 +13,16 @@ class EGammaMvaEleEstimatorFWLite {
   ~EGammaMvaEleEstimatorFWLite();
   enum MVAType {
     kTrig = 0, // MVA for triggering electrons
-    kTrigNoIP = 1, // MVA for triggering electrons without IP info
-    kNonTrig = 2, // MVA for non-triggering electrons
+    kNonTrig = 1, // MVA for non-triggering electrons
+    kNonTrigPhys14 = 2 // MVA for non-triggering electrons in phys14
+
   };
   void initialize( std::string methodName,
 		   MVAType type,
 		   bool useBinnedVersion,
 		   std::vector<std::string> weightsfiles );
-  float mvaValue(const pat::Electron& ele,
-		 const reco::Vertex& vertex,
-		 double rho,
-		 bool full5x5,
-		 bool printDebug = false);
+  float mvaValue(const pat::Electron& ele, bool printDebug = false);
  private:
-  EGammaMvaEleEstimator *estimator_;
+  EGammaMvaEleEstimatorCSA14 *estimator_;
 };
 #endif

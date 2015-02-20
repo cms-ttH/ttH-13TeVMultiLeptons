@@ -1,5 +1,6 @@
 from ROOT import TFile, TChain, TTree, TH1, gSystem, TLorentzVector, gROOT
 import numpy as n
+import math
 from variables import *
 import sys
 from time import sleep
@@ -99,7 +100,6 @@ DeltaRLepLep_handle = n.array([-99],dtype=float)
 Zmass_handle = n.array([-99],dtype=float)
 MassLepLep_handle = n.array([-99],dtype=float)
 
-
 newtree.SetBranchAddress("MHT", MHT_handle)
 newtree.SetBranchAddress("SumJetMass", SumJetMass_handle)
 newtree.SetBranchAddress("SumNonTaggedJetMass", SumNonTaggedJetMass_handle)
@@ -136,15 +136,21 @@ newtree.SetBranchAddress("MassLepLep", MassLepLep_handle)
 
 numLooseBJets_handle = n.zeros(1,dtype=float)
 numMediumBJets_handle = n.zeros(1,dtype=float)
+deltaR_boosted_daughters_handle = n.zeros(1,dtype=float)
 
 newtree.Branch("numLooseBJets", numLooseBJets_handle, "numLooseBJets/D")
 newtree.Branch("numMediumBJets", numMediumBJets_handle, "numMediumBJets/D")
-
+newtree.Branch("deltaR_boostedDaughters",deltaR_boosted_daughters_handle,"deltaR_boostedDaughters/D")
 
 ############################################################	  
 ## (re)calculate vars using variables.py:
+
+
+
 			  
 for entry in tree:
+	higgs_daughters = []
+	top_daughters = []
 	preselelectrons = entry.preselected_electrons
 	looseelectrons = entry.loose_electrons
 	tightelectrons = entry.tight_electrons
@@ -161,6 +167,8 @@ for entry in tree:
 	loosebtags = entry.loose_bJets
 	met = entry.met
 	
+	genParticles = entry.pruned_genParticles
+
 	######################
 	electrons = looseelectrons
 	muons = loosemuons
@@ -193,6 +201,21 @@ for entry in tree:
 	NumHiggsLikeDijet15_handle[0] = getNumTwoObjKineInRange(jets,jets,'mass',125.,15.)
 
 
+	for genParticle in genParticles:
+		if abs(genParticle.grandmother_pdgID) ==6:
+			top_daughters.append(genParticle)
+		elif abs(genParticle.grandmother_pdgID) ==25:
+			higgs_daughters.append(genParticle)
+			
+	if len(higgs_daughters) > 0 and len(top_daughters) >0:
+		higgs_gChild = higgs_daughters[0]
+		top_gChild = top_daughters[0]
+		deltaPhi = higgs_gChild.obj.Phi() - top_gChild.obj.Phi()
+		deltaEta = higgs_gChild.obj.Eta() - top_gChild.obj.Eta()
+#	print " phi = ",top_gChild.obj.Phi()
+#	deltaR = math.sqrt((deltaPhi,2)+(deltaEta,2))
+		deltaR_boosted_daughters_handle[0] = math.sqrt(math.pow(deltaPhi,2)+math.pow(deltaEta,2))
+#		deltaR_boosted_daughters_handle[0] = getTwoObjKineExtreme(higgs_daughters,top_daughters,'min','dR')
 #newtree.SetBranchAddress("GenHiggsDijetMass", GenHiggsDijetMass_handle)
 
 ## three obj kine:
