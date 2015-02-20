@@ -27,7 +27,7 @@ def getsumpt( collection1, collection2=None, collection3=None ):
    if collection3 is not None:
       for theobj in collection3:
          thesum += theobj.obj.Pt()
-  
+
    return thesum
 
 #############################################################################
@@ -222,27 +222,28 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
 	size1 = len(collection1)
 	size2 = len(collection2)
 	kineRawCollecion = []
+	#print " "
+	#print "inside getTwoObjKineRawCollection"
+	#print size1
+	#print size2
+	#print collection1
+	#print collection2
+	#print " " 
+	
 	if collection1 is not collection2:
+		
+		#print "coll1 != coll2"
+		#print collection1
+		#print collection2
+		
 		for obj1 in collection1:
 			for obj2 in collection2:
 				if not(obj1==obj2):
-					if quantity is 'dR':
-						value = getdR(obj1,obj2)
-						kineRawCollecion.append(value)
-					if quantity is 'dEta':
-						value = obj2.obj.Eta()-obj1.obj.Eta()
-						kineRawCollecion.append(value)
-					if quantity is 'dPhi':
-						value = getdPhi(obj1,obj2)
-						kineRawCollecion.append(value)
-					if quantity is 'mass':
-						obj12 = obj1 + obj2
-						kineRawCollecion.append(abj12.M())
-		if (size1>=2):
-			for i in xrange(0,size1-2):
-				 for j in xrange(i+1,size1-1):
-					obj1 = collection1[i]
-					obj2 = collection2[j]
+					
+					#print obj1
+					#print obj2
+				
+				
 					if quantity is 'dR':
 						value = getdR(obj1,obj2)
 						kineRawCollecion.append(value)
@@ -255,6 +256,39 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
 					if quantity is 'mass':
 						obj12 = obj1.obj + obj2.obj
 						kineRawCollecion.append(obj12.M())
+	else:
+		#print "coll1 = coll2"
+		#print collection1
+		#print collection2
+		
+		
+		if (size1>=2):
+			
+			#print "here"
+			for i in xrange(0,size1-1): # 0 <= i < (size1-1)
+				#print i
+				for j in xrange(i+1,size1): # i+1 <= j < size1
+					#print j
+					obj1 = collection1[i]
+					obj2 = collection2[j]
+					#print obj1
+					#print obj2
+					
+					if quantity is 'dR':
+						value = getdR(obj1,obj2)
+						kineRawCollecion.append(value)
+					if quantity is 'dEta':
+						value = obj2.obj.Eta()-obj1.obj.Eta()
+						kineRawCollecion.append(value)
+					if quantity is 'dPhi':
+						value = getdPhi(obj1,obj2)
+						kineRawCollecion.append(value)
+					if quantity is 'mass':
+						obj12 = obj1.obj + obj2.obj
+						#print obj12
+						kineRawCollecion.append(obj12.M())
+	#print kineRawCollecion
+	#print "end kinerawcoll"
 	return kineRawCollecion
 
 
@@ -264,6 +298,12 @@ def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichIn
 	"if no comparison value, whichInOrder picks the ith quanity from the list (in decending order). If comparison value provided, whichInOrder picks the ith quanity closest to the value."
 	thelist = getTwoObjKineRawCollection( collection1, collection2, quantity)
 	size = len(thelist)
+	#print " " 
+	#print "inside pickFromSortedTwoObjKine"
+	#print collection1
+	#print collection2
+	#print size
+	#print " "
 	if size is 0:
 		return -99999.
 	if size<whichInOrder:
@@ -275,8 +315,12 @@ def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichIn
 	for index, item in enumerate(thelist):
 		keyvalue = [index,item]
 		keyvaluelist.append(keyvalue)
+	#print keyvaluelist
 	thesortedlist = sorted(keyvaluelist, key=lambda i: abs(i[1]-comparisonValue))
+	#print thesortedlist
 	theresult = thesortedlist[whichInOrder-1]
+	#print theresult
+	#print "end pickfromsorted.."
 	return theresult[1]
 	
 #############################################################################
