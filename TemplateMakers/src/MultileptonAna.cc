@@ -1366,7 +1366,6 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     //
     //////
     bool passesMVA = false;
-    //    bool useFull5x5 = true;
     bool mvaDebug = false;
     double eleMvaNonTrig = mvaID_->mvaValue(iElectron,mvaDebug);
 
@@ -1553,7 +1552,6 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   varjetBTagCSV_in = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
   varsip3d = fabs(iElectron.dB(pat::Electron::PV3D)/iElectron.edB(pat::Electron::PV3D));
   
-  //  bool useFull5x5 = true;
   bool mvaDebug = false;
   varmvaId = mvaID_->mvaValue(iElectron,mvaDebug);  
   
