@@ -12,7 +12,7 @@ gROOT.SetBatch(1)
 
 infilestring = sys.argv[2]
 outfilestring = sys.argv[3]
-infilestring += '*.root'    #<- uncomment for non-batch
+#infilestring += '*.root'    #<- uncomment for non-batch
 
 print infilestring
 print outfilestring
@@ -138,8 +138,8 @@ numLooseBJets_handle = n.zeros(1,dtype=float)
 numMediumBJets_handle = n.zeros(1,dtype=float)
 deltaR_boosted_daughters_handle = n.zeros(1,dtype=float)
 
-#newtree.Branch("numLooseBJets", numLooseBJets_handle, "numLooseBJets/D")
-#newtree.Branch("numMediumBJets", numMediumBJets_handle, "numMediumBJets/D")
+newtree.Branch("numLooseBJets", numLooseBJets_handle, "numLooseBJets/D")
+newtree.Branch("numMediumBJets", numMediumBJets_handle, "numMediumBJets/D")
 newtree.Branch("deltaR_boostedDaughters",deltaR_boosted_daughters_handle,"deltaR_boostedDaughters/D")
 
 ############################################################	  
