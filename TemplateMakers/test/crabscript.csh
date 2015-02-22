@@ -1,14 +1,14 @@
 #! /bin/csh
 
-#crab -create -cfg crab_ttH125.cfg	#done
-#crab -submit
+crab -create -cfg crab_ttH125.cfg
+crab -submit
 crab -create -cfg crab_ttjets.cfg
-crab -submit 			#25M events; using ~1/5 of that
+crab -submit
 crab -create -cfg crab_ttwjets.cfg 
 crab -submit 
 crab -create -cfg crab_ttzjets.cfg
 crab -submit
-crab -create -cfg crab_wzjets.cfg	#done
+crab -create -cfg crab_wzjets.cfg
 crab -submit
 
 
