@@ -1,6 +1,6 @@
 #Notre Dame ttH Multi-lepton Framework
 
-## Installation
+## 0. Installation
 
 See [here](https://github.com/cms-ttH/BEAN#boson-exploration-analysis-ntuple) for instructions to set up your `CMSSW` area.
 See the [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NovaDilWorkflow) for more information about how to use some of these scripts.
@@ -26,16 +26,29 @@ To view the tth-specific classes' TLorentzVectors in the TBrowser, add the follo
    	
 	gSystem->Load("libttH-13TeVMultiLeptonsTemplateMakers.so");
 
-## Run Analysis Chain
+## 1. Make trees
 
-### [Interative]()
+To make trees:
 
-### Batch
+   	cd ttH-13TeVMultiLeptons/TemplateMakers/test/
+        cmsRun osTwoLep_cfg.py
 
-#### ssh-batch
+The output tree file will be called multileptree.root
 
-#### lx-batch
+## 2. Make histograms
 
-#### crab
+To make histograms from trees:
 
-#### lobster
+   	python make_histos.py -f multileptree.root -s <sample> multilepton.yaml 
+
+Where <sample> options:
+
+      ttH125 TTZJets TTWJets ZJets WJets WZJets TTJets
+
+## 3. Make stack plots
+
+To make stack plots from histograms:
+
+   	./DrawStackPlots.py -w stack_plot_configuration.yaml
+
+## 4. Run limits with combine
