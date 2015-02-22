@@ -26,16 +26,10 @@ To view the tth-specific classes' TLorentzVectors in the TBrowser, add the follo
    	
 	gSystem->Load("libttH-13TeVMultiLeptonsTemplateMakers.so");
 
-## Run Analysis Chain
+## Running the full analysis chain
 
-### [Interative]()
+Several options exist for making trees and turning them into limits. 
 
-### Batch
+### [Interative](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/INTERACTIVE.md)
 
-#### ssh-batch
-
-#### lx-batch
-
-#### crab
-
-#### lobster
+### [Batch-ssh](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/SSH-BATCH.md)
