@@ -30,6 +30,6 @@ To view the tth-specific classes' TLorentzVectors in the TBrowser, add the follo
 
 Several options exist for making trees and turning them into limits. 
 
-### [Interative](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/INTERACTIVE.md)
+### [Interative](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/doc/INTERACTIVE.md)
 
-### [Batch-ssh](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/SSH-BATCH.md)
+### [Batch-ssh](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/doc/SSH-BATCH.md)

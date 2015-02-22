@@ -5,7 +5,7 @@
 To make trees:
 
    	cd ttH-13TeVMultiLeptons/TemplateMakers/test/
-        cmsRun osTwoLep_cfg.py
+	cmsRun osTwoLep_cfg.py
 
 The output tree file will be called multileptree.root
 
