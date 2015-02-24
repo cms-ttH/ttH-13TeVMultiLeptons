@@ -18,7 +18,8 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 void OSTwoLepAna::beginJob()
 {
 
-	el1 = fopen ("ele_loose1.txt", "w+");
+  
+        el1 = fopen ("ele_loose1.txt", "w+");
 	el2 = fopen ("ele_loose2.txt", "w+");
 	el3 = fopen ("ele_loose3.txt", "w+");
 	
@@ -32,6 +33,14 @@ void OSTwoLepAna::beginJob()
 	mt2 = fopen ("mu_tight2.txt", "w+");
 	mt3 = fopen ("mu_tight3.txt", "w+");
 
+	fout.open("preselEventDump.csv");
+	string header[19] = {"event","pdgId","pT","Eta","Phi","dxy","dz","relIso","sip3D","prompt MVA",
+			 "ele MVA ID / isPFMuon","lost hits / isGlobalMuon","isGsfCtfScPixChargeConsistent / chargeFlip",
+			 "passConversionVeto / isTrackerMuon","global normalized chi2","chi2 local","track kink","valid Frac",
+			 "segment compatibility"};
+	for (const auto & title : header) fout << title << ',';
+	fout << "\n";
+	
 	// job setup	
 	sampleNumber = convertSampleNameToNumber(sampleName);
 	SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
@@ -271,6 +280,20 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	lumiBlock_intree = event.id().luminosityBlock();
 	runNumber_intree = event.id().run();
 	
+	for (const auto & ele : preselected_electrons)
+	  {
+	    fout << eventnum_intree << ','<< ele.pdgID << ','<< ele.obj.Pt() <<','
+		 << ele.obj.Eta() <<','<< ele.obj.Phi() <<','<< ele.dxy<<','<<ele.dz<<','
+		 <<ele.relIso<<','<<ele.sip3D<<','<<ele.lepMVA<<','<<ele.mvaID<<','
+		 <<ele.numMissingInnerHits<<','<<ele.isGsfCtfScPixChargeConsistent<<','<<ele.passConversioVeto<<'\n';
+	  }
+	for (const auto & mu : preselected_muons)
+	  {
+	    fout << eventnum_intree << ','<<mu.pdgID<<','<<mu.obj.Pt()<<','<<mu.obj.Eta()<<','<<mu.obj.Phi()<<','
+		 <<mu.dxy<<','<<mu.dz<<','<<mu.relIso<<','<<mu.sip3D<<','<<mu.lepMVA<<','<<mu.isPFMuon<<','
+		 <<mu.isGlobalMuon<<','<<mu.chargeFlip<<','<<mu.isTrackerMuon<<','<<mu.normalizedChi2<<','
+		 <<mu.localChi2<<','<<mu.trKink<<','<<mu.validFrac<<','<<mu.segCompatibility<<'\n';
+	  }
 
 	if (looseCutBased_leptons.size() >= 2 && higgs_decay_intree == 1)
 	  {
@@ -406,12 +429,11 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
 }
 void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup)
 {
-
-	cout << "total events processed: " << eventcount << endl;
-	
-	
-
-} // anything special for the end of a run
+  
+  cout << "total events processed: " << eventcount << endl;
+  fout.close();
+}
+// anything special for the end of a run
 
 void OSTwoLepAna::beginLuminosityBlock(edm::LuminosityBlock const& lumi, edm::EventSetup const& evsetup){} // anything special for the beginning of a lumi block
 void OSTwoLepAna::endLuminosityBlock(edm::LuminosityBlock const& lumi, edm::EventSetup const& evsetup){} // anything special for the end of a lumi block

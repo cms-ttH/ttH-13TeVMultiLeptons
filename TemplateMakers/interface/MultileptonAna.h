@@ -1,4 +1,3 @@
-
 // MultileptonAna base class: to be inherited by the EDAnalyzers for the individual channels
 // created Oct. 9 2014
 // Geoff Smith
@@ -224,7 +223,7 @@ class MultileptonAna: public MiniAODHelper
   muonID::muonID muonTightID;
   muonID::muonID muonLooseID;
   muonID::muonID muonPreselectedID;
-  
+
   tauID::tauID tauTightID;
   // tauID::tauID tauLooseID = tauID::tauVLoose;
   tauID::tauID tauPreselectedID;

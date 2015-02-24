@@ -66,6 +66,12 @@ namespace ttH
     int numberOfMatchedStations;
     int numberOfValidPixelHits;
     int trackerLayersWithMeasurement;
+    //adding for medium ID
+    double localChi2;
+    double trKink;
+    double validFrac;
+    double segCompatibility;
+
 
     virtual ~Muon(){};
     ClassDef(Muon, 1); 

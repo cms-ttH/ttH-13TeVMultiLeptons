@@ -958,6 +958,9 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.isTrackerMuon = iMu.isTrackerMuon();
       mu.isGlobalMuon = iMu.isGlobalMuon();
       mu.relIso = GetMuonRelIso(iMu,coneSize::R03,corrType::rhoEA);
+      mu.localChi2 = iMu.combinedQuality().chi2LocalPosition;
+      mu.trKink = iMu.combinedQuality().trkKink;
+      mu.segCompatibility = iMu.segmentCompatibility();
       
       if (iMu.innerTrack().isAvailable()){
 	mu.dxy = fabs(iMu.innerTrack()->dxy(vertex.position()));
@@ -966,6 +969,7 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
 	mu.trackerLayersWithMeasurement = iMu.innerTrack()->hitPattern().trackerLayersWithMeasurement();
 	mu.chargeFlip = iMu.innerTrack()->ptError()/iMu.innerTrack()->pt();
 	mu.lepMVA = GetMuonLepMVA(iMu, jets);
+	mu.validFrac = iMu.innerTrack()->validFraction();
       }
       else {
 	mu.dxy = -9.e5;
@@ -1105,7 +1109,6 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   bool passesKinematics	= false;
   bool passesIso        = false;
   bool passesID         = false;
-  bool isPFMuon         = false;
   bool passesTrackerID  = false;
 
   bool passesGlobalTrackID   = false;
@@ -1113,9 +1116,6 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   bool passesInnerTrackID    = false;
   bool passesTrackID         = false;
   bool passesCuts            = false;
-  // bool mediumID              = false;
-  // bool goodGlb               = false;
-
 
   double tightRelativeIso = muonparams.getParameter<double> ("tightRelativeIso");
   double looseRelativeIso = muonparams.getParameter<double> ("looseRelativeIso");
@@ -1137,7 +1137,11 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonRaw:
     return true;
     break;
-  // case muonID::muonCutBased:
+  case muonID::muonCutBased:
+  //  bool mediumID              = false;
+  //  bool goodGlb               = false;
+
+
   //   passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
   //   passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.1);
   //   passesCuts = (fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D)) < 4.);
@@ -1180,13 +1184,11 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonLoose:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) <= maxLooseMuonAbsEta));
     passesIso        = (GetMuonRelIso(iMuon,coneSize::R03,corrType::deltaBeta) < looseRelativeIso);
-    isPFMuon         = true;
-    passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon);
+    passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && iMuon.isPFMuon());
     break;
   case muonID::muonTight:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) <= maxTightMuonAbsEta));
     passesIso        = (GetMuonRelIso(iMuon,coneSize::R03,corrType::deltaBeta) < tightRelativeIso);
-    isPFMuon         = true;
 
     if( iMuon.globalTrack().isAvailable() ){
       passesGlobalTrackID = ( (iMuon.globalTrack()->normalizedChi2() < tightTrackNormalizedChi2) 
@@ -1205,18 +1207,16 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
 
     passesTrackerID = ( passesGlobalTrackID && passesMuonBestTrackID && passesInnerTrackID && passesTrackID && (iMuon.numberOfMatchedStations() > 1) );
 
-    passesID        = ((iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && isPFMuon && passesTrackerID);
+    passesID        = ((iMuon.isGlobalMuon() || iMuon.isTrackerMuon()) && iMuon.isPFMuon() && passesTrackerID);
     break;
   case muonID::muonPreselection:
     passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
-    passesIso        = (GetMuonRelIso(iMuon,coneSize::R03,corrType::deltaBeta) < 0.4);
-    isPFMuon         = iMuon.isPFMuon();
+    passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.5);
     if( iMuon.innerTrack().isAvailable() ){
       passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
                                 && (fabs(iMuon.innerTrack()->dz(vertex.position())) < 0.1)
-                                );
-    }
-    passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && isPFMuon && passesMuonBestTrackID );
+                                );}
+    passesID         = (( iMuon.isGlobalMuon() || iMuon.isTrackerMuon() ) && iMuon.isPFMuon() && passesMuonBestTrackID );
     break;
   }
   
@@ -1247,50 +1247,46 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   
   double minElectronPt = iMinPt;
 
-  float maxLooseElectronAbsEta = electronparams.getParameter<double> ("maxLooseElectronAbsEta");
-  float maxTightElectronAbsEta = electronparams.getParameter<double> ("maxTightElectronAbsEta");
-  string theElectronMVA = electronparams.getParameter<string> ("theElectronMVA");
-  double passMVAcut = electronparams.getParameter<double> ("passMVAcut");
-  double tightElectronIso = electronparams.getParameter<double> ("tightElectronIso");
-  double looseElectronIso = electronparams.getParameter<double> ("looseElectronIso");  
-  double tightDxy = electronparams.getParameter<double> ("tightDxy");
-  double looseDxy = electronparams.getParameter<double> ("looseDxy");
-  double dz = electronparams.getParameter<double> ("dZ");
+  // float maxLooseElectronAbsEta = electronparams.getParameter<double> ("maxLooseElectronAbsEta");
+  // float maxTightElectronAbsEta = electronparams.getParameter<double> ("maxTightElectronAbsEta");
+
+  // string theElectronMVA = electronparams.getParameter<string> ("theElectronMVA");
+  // double passMVAcut = electronparams.getParameter<double> ("passMVAcut");
+
+  // double tightElectronIso = electronparams.getParameter<double> ("tightElectronIso");
+  // double looseElectronIso = electronparams.getParameter<double> ("looseElectronIso");  
+  // double tightDxy = electronparams.getParameter<double> ("tightDxy");
+  // double looseDxy = electronparams.getParameter<double> ("looseDxy");
+  // double dz = electronparams.getParameter<double> ("dZ");
   
   // Be skeptical about this electron making it through
   bool passesKinematics	= false;
   bool passesIso        = false;
   bool passesID         = false;
 
-  bool inCrack = false;
-  if( iElectron.superCluster().isAvailable() )
-    inCrack = ( fabs(iElectron.superCluster()->position().eta())>1.4442 && fabs(iElectron.superCluster()->position().eta())<1.5660 ); // doesn't change
+  // bool inCrack = false;
+  // if( iElectron.superCluster().isAvailable() )
+  //   inCrack = ( fabs(iElectron.superCluster()->position().eta())>1.4442 && fabs(iElectron.superCluster()->position().eta())<1.5660 ); // doesn't change
 
+  //  bool myTrigPresel = true;
 
-  // below should be made less confusing ...
+  // double eleID      = iElectron.electronID(theElectronMVA);
+  // bool passMVAId53x = ( eleID > passMVAcut );  // For 2012_53x, tighter selection
 
-  bool myTrigPresel = true;
-
-  double eleID      = iElectron.electronID(theElectronMVA);
-  bool passMVAId53x = ( eleID > passMVAcut );  // For 2012_53x, tighter selection
-
-  bool d02 = false; 
-  bool d04 = false;
-  bool dZ  = false;
-  bool no_exp_inner_trkr_hits = true; //false; // see below
+  // bool d02 = false; 
+  // bool d04 = false;
+  // bool dZ  = false;
   bool passGsfTrackID = false;
   bool passesCuts = false; 
 
-  if( iElectron.gsfTrack().isAvailable() ){
-    d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < tightDxy );
-    d04 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < looseDxy );
-    //no_exp_inner_trkr_hits = ( iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 0 ); // deprecated in 7_2_0 .. replace with ..?
-    no_exp_inner_trkr_hits = ( iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) <= 1 ); // replace with this.
-    dZ = ( fabs(iElectron.gsfTrack()->dz(vertex.position())) < dz );
-  }
-
-  bool notConv = ( iElectron.passConversionVeto() );
-  bool id      = ( passMVAId53x && d02 && dZ && notConv );
+  // if( iElectron.gsfTrack().isAvailable() ){
+  //   d02 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < tightDxy );
+  //   d04 = ( fabs(iElectron.gsfTrack()->dxy(vertex.position())) < looseDxy );
+  //   dZ = ( fabs(iElectron.gsfTrack()->dz(vertex.position())) < dz );
+  // }
+  bool passesMVA = false;
+  bool mvaDebug = false;
+  double eleMvaNonTrig = mvaID_->mvaValue(iElectron,mvaDebug);
   float scEta = abs(iElectron.superCluster()->position().eta());
 
   switch(iElectronID){
@@ -1300,6 +1296,17 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   case electronID::electronLooseMinusTrigPresel:
   case electronID::electronRaw:
     return true;
+    break;
+  case electronID::electronCutBased:
+    //Phys14 MVA ID (only for pT > 10 GeV) for now
+    passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) < 2.5));
+    if (iElectron.pt() > 10) {    //tight WP
+      if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.73 );
+      else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.57 );
+      else passesMVA = ( eleMvaNonTrig > 0.05 );
+    }
+    passesIso = (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.1);
+    passesID = (passesMVA && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS)==0 && iElectron.passConversionVeto());
     break;
   case electronID::electronLooseCutBased:
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) < 2.5));
@@ -1349,60 +1356,20 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesID = (passesCuts && passGsfTrackID);
     break;
   case electronID::electronLoose:
-    passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxLooseElectronAbsEta) && !inCrack);
-    passesIso        = (GetElectronRelIso(iElectron) < looseElectronIso);
-    passesID         = ( passMVAId53x && no_exp_inner_trkr_hits && d04 && notConv && myTrigPresel );
-    break;
   case electronID::electronTightMinusTrigPresel:
   case electronID::electronTight:
-    passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) <= maxTightElectronAbsEta) && !inCrack);
-    passesIso        = (GetElectronRelIso(iElectron) < tightElectronIso);
-    passesID         = ( id && no_exp_inner_trkr_hits && myTrigPresel );
-    break;
   case electronID::electronPreselection:
-    ///////
-    //
-    // ele mva id hack
-    //
-    //////
-    bool passesMVA = false;
-    bool mvaDebug = false;
-    double eleMvaNonTrig = mvaID_->mvaValue(iElectron,mvaDebug);
-
-    if ( iElectron.pt() < 10 ){
-      if ( scEta < 0.8){
-	passesMVA = ( eleMvaNonTrig > 0.47 );
-      }
-      else if ( scEta < 1.479){
-	passesMVA = ( eleMvaNonTrig > 0.004 );
-      }
-      else {
-	passesMVA = ( eleMvaNonTrig > 0.295 );
-      }
+    //Phys14 MVA ID (only for pT > 10 GeV) for now
+    if (iElectron.pt() > 10) {    //loose WP
+      if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.35 );
+      else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.2 );
+      else passesMVA = ( eleMvaNonTrig > -0.52 );
     }
-    else {
-      if ( scEta < 0.8){
-	passesMVA = ( eleMvaNonTrig > 0.5 );
-      }
-      else if ( scEta < 1.479){
-	passesMVA = ( eleMvaNonTrig > 0.12 );
-      }
-      else {
-	passesMVA = ( eleMvaNonTrig > 0.60 );
-      }
-    }
-    
-    passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < 2.5));
-    passesIso        = (GetElectronRelIso(iElectron) < 0.400);
     if( iElectron.gsfTrack().isAvailable() ){
-      //old
-      //      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits() <= 1 );
-      //new
-      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) <= 1 );
-      //temporary
-      //      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.2) );
+      passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.1) && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) <= 1 );
     }
-
+    passesKinematics = ((iElectron.pt() > 10) && (fabs(iElectron.eta()) < 2.5));
+    passesIso        =  (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.5);
     passesID         = ( passGsfTrackID && passesMVA);    
     break;
   }

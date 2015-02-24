@@ -37,7 +37,8 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 	
 		FILE * mt2;
 		FILE * mt3;
-
+		
+		ofstream fout;
 		
 		vstring alltriggerstostudy;
 		
