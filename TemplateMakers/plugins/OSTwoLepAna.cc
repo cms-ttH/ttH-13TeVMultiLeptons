@@ -17,21 +17,14 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 
 void OSTwoLepAna::beginJob()
 {
-
   
-        el1 = fopen ("ele_loose1.txt", "w+");
-	el2 = fopen ("ele_loose2.txt", "w+");
-	el3 = fopen ("ele_loose3.txt", "w+");
-	
-	ml2 = fopen ("mu_loose2.txt", "w+");
-	ml3 = fopen ("mu_loose3.txt", "w+");
-
-	et1 = fopen ("ele_tight1.txt", "w+");
-	et2 = fopen ("ele_tight2.txt", "w+");
-	et3 = fopen ("ele_tight3.txt", "w+");
-	
-	mt2 = fopen ("mu_tight2.txt", "w+");
-	mt3 = fopen ("mu_tight3.txt", "w+");
+        lep1 = fopen ("lep1.txt", "w+");
+	el2 = fopen ("ele_2.txt", "w+");
+	el3 = fopen ("ele_3.txt", "w+");
+	el4 = fopen ("ele_4.txt", "w+");
+	ml2 = fopen ("mu_2.txt", "w+");
+	ml3 = fopen ("mu_3.txt", "w+");
+	ml4 = fopen ("mu_4.txt", "w+");
 
 	fout.open("preselEventDump.csv");
 	string header[19] = {"event","pdgId","pT","Eta","Phi","dxy","dz","relIso","sip3D","prompt MVA",
@@ -58,18 +51,14 @@ void OSTwoLepAna::beginJob()
 }
 void OSTwoLepAna::endJob() {
 
-  fclose(el1);
+  fout.close();
+  fclose(lep1);
   fclose(el2);
   fclose(el3);
+  fclose(el4);
   fclose(ml2);
   fclose(ml3);
-
-  fclose(et1);
-  fclose(et2);
-  fclose(et3);
-  fclose(mt2);
-  fclose(mt3);
-
+  fclose(ml4);
   //  cout << "Num Events processed " << numEvents << endl;
   //       << "Passed cuts " << numEventsPassCuts << endl;
   //       << "Failed cuts " << numEventsFailCuts << endl;
@@ -139,7 +128,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
 	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, 7., electronID::electronRaw );	//miniAODhelper.
-	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons( *electrons, 10., electronID::electronPreselection );	//miniAODhelper.
+
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	vecPatElectron selectedElectrons_looseCutBased = GetSelectedElectrons( *electrons, 7., electronID::electronLooseCutBased);	//miniAODhelper.
 
@@ -178,13 +167,29 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_looseCutBased = GetSelectedMuons( *muons, 5., muonID::muonLooseCutBased );
 	vecPatMuon selectedMuons_tightCutBased = GetSelectedMuons( *muons, 5., muonID::muonTightCutBased );
 
+
+
+	/////////
+	///
+	/// Cleaning 
+	///
+	////////
+
+	
+	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.02); 	//remove electrons that are close (dR <=0.02) to muons
+	//make sure the electrons used for jet cleaning are already cleaned of muons
+	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronPreselection);
+
+	vecPatElectron selectedElectrons_cutBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronCutBased);
+	vecPatMuon selectedMuons_cutBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonCutBased);
+
 	/////////
 	///
 	/// Leptons
 	///
-	////////
+	////////	
 	
-	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.02); 	//remove electrons that are close (dR <=0.02) to muons
+
 	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
 	selectedLeptons_preselected = MiniAODHelper::GetSortedByPt(selectedLeptons_preselected);
 
@@ -202,6 +207,45 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatLepton selectedLeptons_tightCutBased = fillLeptons(selectedMuons_tightCutBased,selectedElectrons_tightCutBased);
 	selectedLeptons_tightCutBased = MiniAODHelper::GetSortedByPt(selectedLeptons_tightCutBased);
 
+	vecPatLepton selectedLeptons_cutBased = fillLeptons(selectedMuons_cutBased,selectedElectrons_cutBased);
+	selectedLeptons_cutBased = MiniAODHelper::GetSortedByPt(selectedLeptons_cutBased);
+
+
+	/// ONLY SELECT TWO LEADING PRESELECTED LEPTONS FOR FINAL SELECTION
+	if (selectedLeptons_cutBased.size() >2)
+	  {
+	    vecPatLepton selectedLeptons_cutBased_temp;
+	    vecPatElectron selectedElectrons_cutBased_temp;
+	    vecPatMuon selectedMuons_cutBased_temp;
+	    selectedLeptons_cutBased_temp.push_back(selectedLeptons_cutBased[0]);
+	    selectedLeptons_cutBased_temp.push_back(selectedLeptons_cutBased[1]);
+	    selectedLeptons_cutBased = selectedLeptons_cutBased_temp;
+	    if (abs(selectedLeptons_cutBased[0].pdgId()) == 11){
+	      selectedElectrons_cutBased_temp.push_back(selectedElectrons_cutBased[0]);
+	      if (abs(selectedLeptons_cutBased[1].pdgId()) == 11){
+		selectedElectrons_cutBased_temp.push_back(selectedElectrons_cutBased[1]);
+	      }
+	      else if (abs(selectedLeptons_cutBased[1].pdgId()) == 13){
+		selectedMuons_cutBased_temp.push_back(selectedMuons_cutBased[0]);
+		selectedMuons_cutBased = selectedMuons_cutBased_temp;
+	      }
+	      selectedElectrons_cutBased = selectedElectrons_cutBased_temp;
+	    }
+	    else if (abs(selectedLeptons_cutBased[0].pdgId()) == 13){
+	      selectedMuons_cutBased_temp.push_back(selectedMuons_cutBased[0]);
+	      if (abs(selectedLeptons_cutBased[1].pdgId()) == 13){
+		selectedMuons_cutBased_temp.push_back(selectedMuons_cutBased[1]);
+	      }
+	      else if (abs(selectedLeptons_cutBased[1].pdgId()) == 11){
+		selectedElectrons_cutBased_temp.push_back(selectedElectrons_cutBased[0]);
+		selectedElectrons_cutBased = selectedElectrons_cutBased_temp;
+	      }
+	      selectedMuons_cutBased = selectedMuons_cutBased_temp;
+	    }
+	    selectedMuons_cutBased_temp.clear();
+	    selectedElectrons_cutBased_temp.clear();
+	 } 
+	
 	vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
 	selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 	
@@ -249,15 +293,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
 	vector<ttH::Electron> looseCutBased_electrons = GetCollection(selectedElectrons_looseCutBased,selectedJets_forLepMVA);
 	vector<ttH::Electron> tightCutBased_electrons = GetCollection(selectedElectrons_tightCutBased,selectedJets_forLepMVA);
+	vector<ttH::Electron> cutBased_electrons = GetCollection(selectedElectrons_cutBased,selectedJets_forLepMVA);
 
 	vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw,selectedJets_forLepMVA);
 	vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
 	vector<ttH::Muon> looseCutBased_muons = GetCollection(selectedMuons_looseCutBased,selectedJets_forLepMVA);
 	vector<ttH::Muon> tightCutBased_muons = GetCollection(selectedMuons_tightCutBased,selectedJets_forLepMVA);
+	vector<ttH::Muon> cutBased_muons = GetCollection(selectedMuons_cutBased,selectedJets_forLepMVA);
 
         vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
 	vector<ttH::Lepton> looseCutBased_leptons = GetCollection(looseCutBased_muons,looseCutBased_electrons);
         vector<ttH::Lepton> tightCutBased_leptons = GetCollection(tightCutBased_muons,tightCutBased_electrons);
+        vector<ttH::Lepton> cutBased_leptons = GetCollection(cutBased_muons,cutBased_electrons);
 
 	vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_forSync);
 	vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
@@ -295,95 +342,66 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		 <<mu.localChi2<<','<<mu.trKink<<','<<mu.validFrac<<','<<mu.segCompatibility<<'\n';
 	  }
 
-	if (looseCutBased_leptons.size() >= 2 && higgs_decay_intree == 1)
+
+	if (preselected_leptons.size() >= 2 && higgs_decay_intree == 1)
 	  {
-	    fprintf(el1,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+	    fprintf(lep1,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
 		    runNumber_intree, lumiBlock_intree, eventnum_intree,
-		    looseCutBased_leptons[0].pdgID, looseCutBased_leptons[0].obj.Pt(), looseCutBased_leptons[0].obj.Eta(), looseCutBased_leptons[0].obj.Phi(),
-		    looseCutBased_leptons[1].pdgID, looseCutBased_leptons[1].obj.Pt(), looseCutBased_leptons[1].obj.Eta(), looseCutBased_leptons[1].obj.Phi(),
+		    preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+		    preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
 		    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-	    if ( looseCutBased_leptons[0].pdgID == looseCutBased_leptons[1].pdgID && abs(looseCutBased_leptons[0].pdgID) == 11)
+	    if ( preselected_leptons[0].pdgID == preselected_leptons[1].pdgID && abs(preselected_leptons[0].pdgID) == 11)
 	      {
 		fprintf(el2,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
 			runNumber_intree, lumiBlock_intree, eventnum_intree,
-			looseCutBased_leptons[0].pdgID, looseCutBased_leptons[0].obj.Pt(), looseCutBased_leptons[0].obj.Eta(), looseCutBased_leptons[0].obj.Phi(),
-			looseCutBased_leptons[1].pdgID, looseCutBased_leptons[1].obj.Pt(), looseCutBased_leptons[1].obj.Eta(), looseCutBased_leptons[1].obj.Phi(),
+			preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+			preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
 			theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
 		
-		if ( looseCutBased_leptons[0].obj.Pt() > 20 && looseCutBased_leptons[1].obj.Pt() > 20)
+		if ( preselected_leptons[0].obj.Pt() > 20 && preselected_leptons[1].obj.Pt() > 20)
 		  {
 		    fprintf(el3,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
 			    runNumber_intree, lumiBlock_intree, eventnum_intree,
-			    looseCutBased_leptons[0].pdgID, looseCutBased_leptons[0].obj.Pt(), looseCutBased_leptons[0].obj.Eta(), looseCutBased_leptons[0].obj.Phi(),
-			    looseCutBased_leptons[1].pdgID, looseCutBased_leptons[1].obj.Pt(), looseCutBased_leptons[1].obj.Eta(), looseCutBased_leptons[1].obj.Phi(),
+			    preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+			    preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
 			    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		    if (cutBased_leptons.size() ==2 && cutBased_electrons[0].isGsfCtfScPixChargeConsistent && cutBased_electrons[1].isGsfCtfScPixChargeConsistent){
+		      fprintf(el4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+			      runNumber_intree, lumiBlock_intree, eventnum_intree,
+			      cutBased_leptons[0].pdgID, cutBased_leptons[0].obj.Pt(), cutBased_leptons[0].obj.Eta(), cutBased_leptons[0].obj.Phi(),
+			      cutBased_leptons[1].pdgID, cutBased_leptons[1].obj.Pt(), cutBased_leptons[1].obj.Eta(), cutBased_leptons[1].obj.Phi(),
+			      theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		    }
 		  }
 	      }
-	    else if (looseCutBased_leptons[0].pdgID == looseCutBased_leptons[1].pdgID && abs(looseCutBased_leptons[0].pdgID) == 13)
+	    else if (preselected_leptons[0].pdgID == preselected_leptons[1].pdgID && abs(preselected_leptons[0].pdgID) == 13)
 	      {
 		fprintf(ml2,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
 			runNumber_intree, lumiBlock_intree, eventnum_intree,
-			looseCutBased_leptons[0].pdgID, looseCutBased_leptons[0].obj.Pt(), looseCutBased_leptons[0].obj.Eta(), looseCutBased_leptons[0].obj.Phi(),
-			looseCutBased_leptons[1].pdgID, looseCutBased_leptons[1].obj.Pt(), looseCutBased_leptons[1].obj.Eta(), looseCutBased_leptons[1].obj.Phi(),
+			preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+			preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
 			theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-		if (looseCutBased_leptons[0].obj.Pt() > 20 && looseCutBased_leptons[1].obj.Pt() > 20 )
+		if (preselected_leptons[0].obj.Pt() > 20 && preselected_leptons[1].obj.Pt() > 20 )
 		  {
 		    fprintf(ml3,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
 			    runNumber_intree, lumiBlock_intree, eventnum_intree,
-			    looseCutBased_leptons[0].pdgID, looseCutBased_leptons[0].obj.Pt(), looseCutBased_leptons[0].obj.Eta(), looseCutBased_leptons[0].obj.Phi(),
-			    looseCutBased_leptons[1].pdgID, looseCutBased_leptons[1].obj.Pt(), looseCutBased_leptons[1].obj.Eta(), looseCutBased_leptons[1].obj.Phi(),
+			    preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+			    preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
 			    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-		  }
-	      }
-	  }
-	
-	
-	//tight cut based print outs
-	if (tightCutBased_leptons.size() >= 2 && higgs_decay_intree == 1)
-	  {
-	    fprintf(et1,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-		    runNumber_intree, lumiBlock_intree, eventnum_intree,
-		    tightCutBased_leptons[0].pdgID, tightCutBased_leptons[0].obj.Pt(), tightCutBased_leptons[0].obj.Eta(), tightCutBased_leptons[0].obj.Phi(),
-		    tightCutBased_leptons[1].pdgID, tightCutBased_leptons[1].obj.Pt(), tightCutBased_leptons[1].obj.Eta(), tightCutBased_leptons[1].obj.Phi(),
-		    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-	    if ( tightCutBased_leptons[0].pdgID == tightCutBased_leptons[1].pdgID && abs(tightCutBased_leptons[0].pdgID) == 11)
-	      {
-		fprintf(et2,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-			runNumber_intree, lumiBlock_intree, eventnum_intree,
-			tightCutBased_leptons[0].pdgID, tightCutBased_leptons[0].obj.Pt(), tightCutBased_leptons[0].obj.Eta(), tightCutBased_leptons[0].obj.Phi(),
-			tightCutBased_leptons[1].pdgID, tightCutBased_leptons[1].obj.Pt(), tightCutBased_leptons[1].obj.Eta(), tightCutBased_leptons[1].obj.Phi(),
-			theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-		
-		if ( tightCutBased_leptons[0].obj.Pt() > 20 && tightCutBased_leptons[1].obj.Pt() > 20)
-		  {
-		    fprintf(et3,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-			    runNumber_intree, lumiBlock_intree, eventnum_intree,
-			    tightCutBased_leptons[0].pdgID, tightCutBased_leptons[0].obj.Pt(), tightCutBased_leptons[0].obj.Eta(), tightCutBased_leptons[0].obj.Phi(),
-			    tightCutBased_leptons[1].pdgID, tightCutBased_leptons[1].obj.Pt(), tightCutBased_leptons[1].obj.Eta(), tightCutBased_leptons[1].obj.Phi(),
-			    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-		  }
-	      }
-	    else if (tightCutBased_leptons[0].pdgID == tightCutBased_leptons[1].pdgID && abs(tightCutBased_leptons[0].pdgID) == 13)
-	      {
-		fprintf(mt2,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-			runNumber_intree, lumiBlock_intree, eventnum_intree,
-			tightCutBased_leptons[0].pdgID, tightCutBased_leptons[0].obj.Pt(), tightCutBased_leptons[0].obj.Eta(), tightCutBased_leptons[0].obj.Phi(),
-			tightCutBased_leptons[1].pdgID, tightCutBased_leptons[1].obj.Pt(), tightCutBased_leptons[1].obj.Eta(), tightCutBased_leptons[1].obj.Phi(),
-			theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-		if (tightCutBased_leptons[0].obj.Pt() > 20 && tightCutBased_leptons[1].obj.Pt() > 20 )
-		  {
-		    fprintf(mt3,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-			    runNumber_intree, lumiBlock_intree, eventnum_intree,
-			    tightCutBased_leptons[0].pdgID, tightCutBased_leptons[0].obj.Pt(), tightCutBased_leptons[0].obj.Eta(), tightCutBased_leptons[0].obj.Phi(),
-			    tightCutBased_leptons[1].pdgID, tightCutBased_leptons[1].obj.Pt(), tightCutBased_leptons[1].obj.Eta(), tightCutBased_leptons[1].obj.Phi(),
-			    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		    if (cutBased_leptons.size() ==2 && cutBased_muons[0].chargeFlip < 0.2 && cutBased_muons[1].chargeFlip < 0.2){
+		      fprintf(ml4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+			      runNumber_intree, lumiBlock_intree, eventnum_intree,
+			      cutBased_leptons[0].pdgID, cutBased_leptons[0].obj.Pt(), cutBased_leptons[0].obj.Eta(), cutBased_leptons[0].obj.Phi(),
+			      cutBased_leptons[1].pdgID, cutBased_leptons[1].obj.Pt(), cutBased_leptons[1].obj.Eta(), cutBased_leptons[1].obj.Phi(),
+			      theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		    }
 		  }
 	      }
 	  }
 
-	
 	myNumHiggsLikeDijet15.evaluate();
 	if (myNumHiggsLikeDijet15.myVars.size()) NumHiggsLikeDijet15_intree =  myNumHiggsLikeDijet15.myVars[0].branchVal;
+
 	
         preselected_leptons_intree = preselected_leptons;
         preselected_electrons_intree = preselected_electrons;
@@ -431,7 +449,6 @@ void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup)
 {
   
   cout << "total events processed: " << eventcount << endl;
-  fout.close();
 }
 // anything special for the end of a run
 

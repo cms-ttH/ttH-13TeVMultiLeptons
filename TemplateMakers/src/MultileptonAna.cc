@@ -1292,6 +1292,9 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   switch(iElectronID){
   case electronID::electronSide:
   case electronID::electronSideLooseMVA:
+  case electronID::electronPhys14L:
+  case electronID::electronPhys14M:
+  case electronID::electronPhys14T:
   case electronID::electronSideTightMVA:
   case electronID::electronLooseMinusTrigPresel:
   case electronID::electronRaw:

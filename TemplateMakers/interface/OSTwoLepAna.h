@@ -24,29 +24,21 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		explicit OSTwoLepAna(const edm::ParameterSet&);
 		~OSTwoLepAna();
 		
-		FILE * el1;
+		ofstream fout;
+		FILE * lep1;
 		FILE * el2;
 		FILE * el3;
-	
+		FILE * el4;
 		FILE * ml2;
 		FILE * ml3;
-		
-		FILE * et1;
-		FILE * et2;
-		FILE * et3;
-	
-		FILE * mt2;
-		FILE * mt3;
-		
-		ofstream fout;
+		FILE * ml4;
 		
 		vstring alltriggerstostudy;
 		
 		// declare the tree
 		TTree * summaryTree;
 		
-		// declare any histos
-		
+		// declare any histos		
 		//TH1D *sampleNumber
 		//TH1D *nGen
 		//TH1D *Xsec
