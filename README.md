@@ -16,7 +16,7 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 	git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
 	scram b -j 8
 
-Install [[http://pyyaml.org/wiki/PyYAML][PyYAML]]:
+Install [PyYAML](http://pyyaml.org/wiki/PyYAML):
 
 	cd /tmp
 	wget --no-check-certificate -O - http://pyyaml.org/download/pyyaml/PyYAML-3.10.tar.gz|tar xzf -
