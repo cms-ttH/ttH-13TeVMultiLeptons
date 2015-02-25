@@ -14,27 +14,15 @@ skip systematics: true
 
 #cuts
 common cuts:
-    #8TeV
-    #lt_three_tight_leptons: '!((all_leptons_by_pt_1_lepMVA > 0.7) and (all_leptons_by_pt_2_lepMVA > 0.7) and (all_leptons_by_pt_3_lepMVA > 0.7))'
-    #eq_two_good_leptons: ((numAllLeptons==2) or ((-1.0 <= all_leptons_by_pt_3_lepMVA) and (all_leptons_by_pt_3_lepMVA < 0.7)))
-    
-    #13 TeV
+
     lt_three_tight_leptons: 'entry.tight_leptons.size()<3'
     eq_two_good_leptons: 'entry.tight_leptons.size()==2 and entry.loose_leptons.size()==2' # and entry.preselected_leptons.size()==2' #<-check
     
-    #8TeV
-    #cleanup: min_mass_leplep > 12
-    #pt_20_10: all_leptons_by_pt_1_pt > 20 and all_leptons_by_pt_2_pt > 10
-    #pt20_20_htllv100: all_leptons_by_pt_2_pt > 20 and ((all_leptons_by_pt_1_pt + all_leptons_by_pt_2_pt + met_pt) > 100)
-    #nJets25_ge_2: numJets>=2
-    #2b_loose: (numLooseBJets >= 2 or numMediumBJets >= 1)
-    
-    #13TeV
     cleanup: 'entry.MassLepLep > 12'
     pt_20_10: '(entry.tight_leptons[0].obj.Pt() > 20) and (entry.tight_leptons[1].obj.Pt() > 10)'
     pt20_20_htllv100: '((entry.tight_leptons[0].obj.Pt() + entry.tight_leptons[1].obj.Pt() + entry.met[0].obj.Pt()) > 100)'
     nJets25_ge_2: 'entry.preselected_jets.size()>=2' # these are gt 25
-    2b_loose: ((entry.numLooseBJets >= 2) or (entry.numMediumBJets >= 1))
+#    2b_loose: ((entry.numLooseBJets >= 2) or (entry.numMediumBJets >= 1))
     
     #8TeV (none for 13 TeV yet)
     #trigger: '((dataset == "MC" and (isDoubleMuTriggerPass or isDoubleElectronTriggerPass or isMuEGTriggerPass or isTripleElectronTriggerPass)) or
@@ -73,7 +61,7 @@ lepton categories:
         cuts:
             #mu_ele: 'entry.tight_muons.size()==1 and entry.loose_muons.size()==1 and entry.preselected_muons.size()==1 and entry.tight_electrons.size()==1 and entry.loose_electrons.size()==1 and entry.preselected_electrons.size()==1'
             mu_ele: 'entry.tight_muons.size()==1 and entry.loose_muons.size()==1 and entry.tight_electrons.size()==1 and entry.loose_electrons.size()==1'
-	    #conv_veto: all_electrons_by_pt_1_passConvVeto==1 and all_electrons_by_pt_1_numberOfExpectedInnerHits==0
+            #conv_veto: all_electrons_by_pt_1_passConvVeto==1 and all_electrons_by_pt_1_numberOfExpectedInnerHits==0
             #muon_tight_charge: ((all_leptons_by_pt_1_isMuon and all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5) or (all_leptons_by_pt_2_isMuon and all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5))
             #electron_tight_charge: ((all_leptons_by_pt_1_isElectron and all_leptons_by_pt_1_CERN_tight_charge) or (all_leptons_by_pt_2_isElectron and all_leptons_by_pt_2_CERN_tight_charge))
             #isMuEGTriggerPass: isMuEGTriggerPass
@@ -221,17 +209,17 @@ distributions:
         axis labels: [number of jets, Events]
         binning: [20, -0.5, 19.5]
 
-    numLooseBJets:
-        #expression: numLooseBJets
-        expression: entry.numLooseBJets
-        axis labels: [number of loose b-tagged jets, Events]
-        binning: [5, 0.5, 5.5]
+    # numLooseBJets:
+    #     #expression: numLooseBJets
+    #     expression: entry.numLooseBJets
+    #     axis labels: [number of loose b-tagged jets, Events]
+    #     binning: [5, 0.5, 5.5]
 
-    numMediumBJets:
-        #expression: numMediumBJets
-        expression: entry.numMediumBJets
-        axis labels: [number of medium b-tagged jets, Events]
-        binning: [5, -0.5, 4.5]
+    # numMediumBJets:
+    #     #expression: numMediumBJets
+    #     expression: entry.numMediumBJets
+    #     axis labels: [number of medium b-tagged jets, Events]
+    #     binning: [5, -0.5, 4.5]
 
 #    sum_lep1pt_lep2pt_met:
 #        expression: preselected(@preselected_leptons.size()>0)

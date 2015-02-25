@@ -124,7 +124,7 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 		    		#source_file = ROOT.TFile(source_file_name)
 		    		#tree = source_file.Get('summaryTree')
                     ## this is much better:
-                    source_chain = ROOT.TChain('summaryTree')
+                    source_chain = ROOT.TChain('OSTwoLepAna/summaryTree')
                     source_chain.Add(source_file_name)
                     tree = source_chain.CloneTree()
                     thechainentries = tree.GetEntries()
