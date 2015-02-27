@@ -67,9 +67,10 @@ void OSTwoLepAna::endJob() {
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
+  
 	// analysis goes here
 	if (debug) cout << "event: " << event.id().event() << endl;
-
+	clock_t startTime = clock();
 	eventcount++;
 	SetupOptions(event);
   
@@ -428,6 +429,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	wgt_intree = weight;
 	
 	// fill it:
+	wallTimePerEvent_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
+	
 	summaryTree->Fill();
 	
 } // end event loop

@@ -138,6 +138,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		double DeltaRLepLep_intree;
 		double Zmass_intree;
 		double MassLepLep_intree;
+		double wallTimePerEvent_intree;
 		int HiggsDecayType_intree;
 		
 		int checkTrig_intree;
@@ -182,6 +183,7 @@ void OSTwoLepAna::tree_add_branches()
 	
 	summaryTree->Branch("mcwgt", &mcwgt_intree, "mcwgt/D");
 	summaryTree->Branch("wgt", &wgt_intree, "wgt/D");
+	summaryTree->Branch("wallTimePerEvent", &wallTimePerEvent_intree, "wallTimePerEvent/D");
 	
 	
 	summaryTree->Branch("eventnum", &eventnum_intree, "eventnum/I");
@@ -267,7 +269,8 @@ void OSTwoLepAna::initialize_variables()
 	
 	mcwgt_intree = -9999.;
 	wgt_intree = -9999.;
-	
+	wallTimePerEvent_intree = -9999.;
+
 	eventnum_intree = -99;
 	lumiBlock_intree = -99;
 	runNumber_intree = -99;
