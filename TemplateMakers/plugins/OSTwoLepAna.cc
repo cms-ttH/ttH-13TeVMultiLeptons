@@ -400,10 +400,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	      }
 	  }
 
-	myNumHiggsLikeDijet15.evaluate();
-	if (myNumHiggsLikeDijet15.myVars.size()) NumHiggsLikeDijet15_intree =  myNumHiggsLikeDijet15.myVars[0].branchVal;
-
-	
         preselected_leptons_intree = preselected_leptons;
         preselected_electrons_intree = preselected_electrons;
         preselected_muons_intree = preselected_muons;
@@ -428,10 +424,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	wgt_intree = weight;
 	
-	// fill it:
 	wallTimePerEvent_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
-	
-	summaryTree->Fill();
+
+	summaryTree->Fill();// fill tree;
 	
 } // end event loop
 
