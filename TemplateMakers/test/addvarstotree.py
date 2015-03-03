@@ -67,77 +67,72 @@ newtree = tree.CloneTree(0)
 
 
 ############################################################
-## the tree has these branches already; overwrite them:
-
-
-SumPt_handle = n.array([-99],dtype=float)
-MHT_handle = n.array([-99],dtype=float)
-SumJetMass_handle = n.array([-99],dtype=float)
-SumNonTaggedJetMass_handle = n.array([-99],dtype=float)
-SumJetPt_handle = n.array([-99],dtype=float)
-AvgBtagDiscNonBtags_handle = n.array([-99],dtype=float)
-AvgBtagDiscBtags_handle = n.array([-99],dtype=float)
-MinDrJets_handle = n.array([-99],dtype=float)
-NumHiggsLikeDijet15_handle = n.zeros(1,dtype=float)
-HiggsLikeDijetMass2_handle = n.array([-99],dtype=float)
-HiggsLikeDijetMass_handle = n.array([-99],dtype=float)
-GenHiggsDijetMass_handle = n.array([-99],dtype=float)
-DeltaPhiMetLepLep_handle = n.array([-99],dtype=float)
-DeltaRMetLepLep_handle = n.array([-99],dtype=float)
-MTMetLepLep_handle = n.array([-99],dtype=float)
-MassMetLepLep_handle = n.array([-99],dtype=float)
-MaxDeltaPhiMetJet_fromHiggs_handle = n.array([-99],dtype=float)
-MinDeltaPhiMetJet_fromHiggs_handle = n.array([-99],dtype=float)
-MaxDeltaPhiMetJet_handle = n.array([-99],dtype=float)
-MinDeltaPhiMetJet_handle = n.array([-99],dtype=float)
-DeltaPhiMetLep2_handle = n.array([-99],dtype=float)
-DeltaPhiMetLep1_handle = n.array([-99],dtype=float)
-DeltaRJets_FromHiggs_handle = n.array([-99],dtype=float)
-DeltaPhiJets_FromHiggs_handle = n.array([-99],dtype=float)
-WLikeDijetMass81_handle = n.array([-99],dtype=float)
-DeltaPhiLepLep_handle = n.array([-99],dtype=float)
-DeltaRLepLep_handle = n.array([-99],dtype=float)
-Zmass_handle = n.array([-99],dtype=float)
-MassLepLep_handle = n.array([-99],dtype=float)
-
-newtree.SetBranchAddress("MHT", MHT_handle)
-newtree.SetBranchAddress("SumJetMass", SumJetMass_handle)
-newtree.SetBranchAddress("SumNonTaggedJetMass", SumNonTaggedJetMass_handle)
-newtree.SetBranchAddress("SumPt", SumPt_handle)
-newtree.SetBranchAddress("SumJetPt", SumJetPt_handle)
-newtree.SetBranchAddress("AvgBtagDiscNonBtags", AvgBtagDiscNonBtags_handle)
-newtree.SetBranchAddress("AvgBtagDiscBtags", AvgBtagDiscBtags_handle)
-newtree.SetBranchAddress("MinDrJets", MinDrJets_handle)
-newtree.SetBranchAddress("NumHiggsLikeDijet15", NumHiggsLikeDijet15_handle)
-newtree.SetBranchAddress("HiggsLikeDijetMass2", HiggsLikeDijetMass2_handle)
-newtree.SetBranchAddress("HiggsLikeDijetMass", HiggsLikeDijetMass_handle)
-newtree.SetBranchAddress("GenHiggsDijetMass", GenHiggsDijetMass_handle)
-newtree.SetBranchAddress("DeltaPhiMetLepLep", DeltaPhiMetLepLep_handle)
-newtree.SetBranchAddress("DeltaRMetLepLep", DeltaRMetLepLep_handle)
-newtree.SetBranchAddress("MTMetLepLep", MTMetLepLep_handle)
-newtree.SetBranchAddress("MassMetLepLep", MassMetLepLep_handle)
-#newtree.SetBranchAddress("MaxDeltaPhiMetJet", MaxDeltaPhiMetJet_handle)
-#newtree.SetBranchAddress("MinDeltaPhiMetJet", MinDeltaPhiMetJet_handle)
-newtree.SetBranchAddress("MaxDeltaPhiMetJet", MaxDeltaPhiMetJet_handle)
-newtree.SetBranchAddress("MinDeltaPhiMetJet", MinDeltaPhiMetJet_handle)
-newtree.SetBranchAddress("DeltaPhiMetLep2", DeltaPhiMetLep2_handle)
-newtree.SetBranchAddress("DeltaPhiMetLep1", DeltaPhiMetLep1_handle)
-newtree.SetBranchAddress("DeltaRJets_FromHiggs", DeltaRJets_FromHiggs_handle)
-newtree.SetBranchAddress("DeltaPhiJets_FromHiggs", DeltaPhiJets_FromHiggs_handle)
-newtree.SetBranchAddress("WLikeDijetMass81", WLikeDijetMass81_handle)
-newtree.SetBranchAddress("DeltaPhiLepLep", DeltaPhiLepLep_handle)
-newtree.SetBranchAddress("DeltaRLepLep", DeltaRLepLep_handle)
-newtree.SetBranchAddress("Zmass", Zmass_handle)
-newtree.SetBranchAddress("MassLepLep", MassLepLep_handle)
-
-
 ############################################################
-## add any new branches:
+## add new branch handles:
 
 numLooseBJets_handle = n.zeros(1,dtype=float)
 numMediumBJets_handle = n.zeros(1,dtype=float)
 deltaR_boosted_daughters_handle = n.zeros(1,dtype=float)
+SumPt_handle = n.zeros(1,dtype=float)
+MHT_handle = n.zeros(1,dtype=float)
+SumJetMass_handle = n.zeros(1,dtype=float)
+SumNonTaggedJetMass_handle = n.zeros(1,dtype=float)
+SumJetPt_handle = n.zeros(1,dtype=float)
+AvgBtagDiscNonBtags_handle = n.zeros(1,dtype=float)
+AvgBtagDiscBtags_handle = n.zeros(1,dtype=float)
+MinDrJets_handle = n.zeros(1,dtype=float)
+NumHiggsLikeDijet15_handle = n.zeros(1,dtype=float)
+HiggsLikeDijetMass2_handle = n.zeros(1,dtype=float)
+HiggsLikeDijetMass_handle = n.zeros(1,dtype=float)
+GenHiggsDijetMass_handle = n.zeros(1,dtype=float)
+DeltaPhiMetLepLep_handle = n.zeros(1,dtype=float)
+DeltaRMetLepLep_handle = n.zeros(1,dtype=float)
+MTMetLepLep_handle = n.zeros(1,dtype=float)
+MassMetLepLep_handle = n.zeros(1,dtype=float)
+MaxDeltaPhiMetJet_fromHiggs_handle = n.zeros(1,dtype=float)
+MinDeltaPhiMetJet_fromHiggs_handle = n.zeros(1,dtype=float)
+MaxDeltaPhiMetJet_handle = n.zeros(1,dtype=float)
+MinDeltaPhiMetJet_handle = n.zeros(1,dtype=float)
+DeltaPhiMetLep2_handle = n.zeros(1,dtype=float)
+DeltaPhiMetLep1_handle = n.zeros(1,dtype=float)
+DeltaRJets_FromHiggs_handle = n.zeros(1,dtype=float)
+DeltaPhiJets_FromHiggs_handle = n.zeros(1,dtype=float)
+WLikeDijetMass81_handle = n.zeros(1,dtype=float)
+DeltaPhiLepLep_handle = n.zeros(1,dtype=float)
+DeltaRLepLep_handle = n.zeros(1,dtype=float)
+vetoZmass_handle = n.zeros(1,dtype=float)
+minMassLepLep_handle = n.zeros(1,dtype=float)
+metLD_handle = n.zeros(1,dtype=float)
 
+# newtree.SetBranchAddress("SumJetMass", SumJetMass_handle)
+# newtree.SetBranchAddress("SumNonTaggedJetMass", SumNonTaggedJetMass_handle)
+# newtree.SetBranchAddress("SumPt", SumPt_handle)
+# newtree.SetBranchAddress("SumJetPt", SumJetPt_handle)
+# newtree.SetBranchAddress("AvgBtagDiscNonBtags", AvgBtagDiscNonBtags_handle)
+# newtree.SetBranchAddress("AvgBtagDiscBtags", AvgBtagDiscBtags_handle)
+# newtree.SetBranchAddress("MinDrJets", MinDrJets_handle)
+# newtree.SetBranchAddress("NumHiggsLikeDijet15", NumHiggsLikeDijet15_handle)
+# newtree.SetBranchAddress("HiggsLikeDijetMass2", HiggsLikeDijetMass2_handle)
+# newtree.SetBranchAddress("HiggsLikeDijetMass", HiggsLikeDijetMass_handle)
+# newtree.SetBranchAddress("GenHiggsDijetMass", GenHiggsDijetMass_handle)
+# newtree.SetBranchAddress("DeltaPhiMetLepLep", DeltaPhiMetLepLep_handle)
+# newtree.SetBranchAddress("DeltaRMetLepLep", DeltaRMetLepLep_handle)
+# newtree.SetBranchAddress("MTMetLepLep", MTMetLepLep_handle)
+# newtree.SetBranchAddress("MassMetLepLep", MassMetLepLep_handle)
+# newtree.SetBranchAddress("MaxDeltaPhiMetJet", MaxDeltaPhiMetJet_handle)
+# newtree.SetBranchAddress("MinDeltaPhiMetJet", MinDeltaPhiMetJet_handle)
+# newtree.SetBranchAddress("DeltaPhiMetLep2", DeltaPhiMetLep2_handle)
+# newtree.SetBranchAddress("DeltaPhiMetLep1", DeltaPhiMetLep1_handle)
+# newtree.SetBranchAddress("DeltaRJets_FromHiggs", DeltaRJets_FromHiggs_handle)
+# newtree.SetBranchAddress("DeltaPhiJets_FromHiggs", DeltaPhiJets_FromHiggs_handle)
+# newtree.SetBranchAddress("WLikeDijetMass81", WLikeDijetMass81_handle)
+# newtree.SetBranchAddress("DeltaPhiLepLep", DeltaPhiLepLep_handle)
+# newtree.SetBranchAddress("DeltaRLepLep", DeltaRLepLep_handle)
+
+newtree.Branch("vetoZmass", vetoZmass_handle,"vetoZmass/D")
+newtree.Branch("MHT", MHT_handle,"MHT/D")
+newtree.Branch("metLD", metLD_handle,"metLD/D")
+newtree.Branch("minMassLepLep", minMassLepLep_handle,"minMassLepLep/D")
 newtree.Branch("numLooseBJets", numLooseBJets_handle, "numLooseBJets/D")
 newtree.Branch("numMediumBJets", numMediumBJets_handle, "numMediumBJets/D")
 newtree.Branch("deltaR_boostedDaughters",deltaR_boosted_daughters_handle,"deltaR_boostedDaughters/D")
@@ -148,176 +143,98 @@ newtree.Branch("deltaR_boostedDaughters",deltaR_boosted_daughters_handle,"deltaR
 count = 0
 		  
 for entry in tree:
-	higgs_daughters = []
-	top_daughters = []
+    higgs_daughters = []
+    top_daughters = []
 #for i in range(entries):
 #	entry.GetEntry(i)
-	count+=1
+    count+=1
+    
+    if ((count % 5000)==0):
+	print count
 	
-	if ((count % 5000)==0):
-		print count
-	
-	preselelectrons = entry.preselected_electrons
-	looseelectrons = entry.loose_electrons
-	tightelectrons = entry.tight_electrons
+    preselelectrons = entry.preselected_electrons
+    looseelectrons = entry.loose_electrons
+    tightelectrons = entry.tight_electrons
+    
+    preselmuons = entry.preselected_muons
+    loosemuons = entry.loose_muons
+    tightmuons = entry.tight_muons
 
-	preselmuons = entry.preselected_muons
-	loosemuons = entry.loose_muons
-	tightmuons = entry.tight_muons
+    preselleptons = entry.preselected_leptons
+    looseleptons = entry.loose_leptons
+    tightleptons = entry.tight_leptons
 
-	preselleptons = entry.preselected_leptons
-	looseleptons = entry.loose_leptons
-	tightleptons = entry.tight_leptons
-
-	preseljets = entry.preselected_jets
+    preseljets = entry.preselected_jets
 	#loosebtags = entry.loose_bJets
-	met = entry.met
+    met = entry.met
 	
-	genParticles = entry.pruned_genParticles
+    genParticles = entry.pruned_genParticles
 
 	######################
-	electrons = looseelectrons
-	muons = loosemuons
-	leptons = looseleptons
-	jets = preseljets	
+    electrons = looseelectrons
+    muons = loosemuons
+    leptons = looseleptons
+    jets = preseljets	
 
-	if (leptons.size()<2):
-		continue
+    if (leptons.size()<2):
+	continue
 	######################
 
 
 	# need the [0] for branch "pointers" !!!
-	SumJetPt_handle[0] = getsumpt(jets)	# A.K.A. 'HT'
-	AvgBtagDiscNonBtags_handle[0] = getAvgCSV(jets,'M',False)   			
-	AvgBtagDiscBtags_handle[0] = getAvgCSV(jets,'M',True)				
-	MinDrJets_handle[0] = getTwoObjKineExtreme(jets,jets,'min','dR')
-	SumPt_handle[0] = getsumpt(jets, electrons, muons)	
-	#mySumLep1Lep2MetPt
-	#SumPt_handle[0] = 127
+    SumJetPt_handle[0] = getsumpt(jets)	# A.K.A. 'HT'
+    AvgBtagDiscNonBtags_handle[0] = getAvgCSV(jets,'M',False)   			
+    AvgBtagDiscBtags_handle[0] = getAvgCSV(jets,'M',True)				
+    MinDrJets_handle[0] = getTwoObjKineExtreme(jets,jets,'min','dR')
+    SumPt_handle[0] = getsumpt(jets, electrons, muons)	
+        
+        ## calculate MHT
+    objs_for_mht = getsumTLV(leptons,jets)
+    MHT_handle[0] = objs_for_mht.Pt()
+    metLD_handle[0] = 0.00397*met[0].obj.Pt() + 0.00265*objs_for_mht.Pt()
+    
+#    vetoZmass_handle[0] = getInvMassClosestTo(leptons,91.7)
+        
+    taggedjets = keepTagged(jets,'M')
+    nontaggedjets = keepUnTagged(jets,'M')
+    numMediumBJets_handle[0] = len(taggedjets)
+    loosetaggedjets = keepTagged(jets,'L')
+    numLooseBJets_handle[0] = len(loosetaggedjets)
+
+    SumNonTaggedJetMass_handle[0] = getsumpt(taggedjets)
+    HiggsLikeDijetMass2_handle[0] = pickFromSortedTwoObjKine(jets,jets,'mass', 2, 125.)
+    HiggsLikeDijetMass_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass', 1, 125.)
+    NumHiggsLikeDijet15_handle[0] = getNumTwoObjKineInRange(jets,jets,'mass',125.,15.)
 	
-	objs_for_mht = getsumTLV(leptons,jets)
-	MHT_handle[0] = objs_for_mht.Pt()
 
-	taggedjets = keepTagged(jets,'M')
-	nontaggedjets = keepUnTagged(jets,'M')
-	numMediumBJets_handle[0] = len(taggedjets)
-	loosetaggedjets = keepTagged(jets,'L')
-	numLooseBJets_handle[0] = len(loosetaggedjets)
-
-	SumNonTaggedJetMass_handle[0] = getsumpt(taggedjets)
-	HiggsLikeDijetMass2_handle[0] = pickFromSortedTwoObjKine(jets,jets,'mass', 2, 125.)
-	HiggsLikeDijetMass_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass', 1, 125.)
-	NumHiggsLikeDijet15_handle[0] = getNumTwoObjKineInRange(jets,jets,'mass',125.,15.)
-
-
-	for genParticle in genParticles:
-		if abs(genParticle.grandmother_pdgID) ==6:
-			top_daughters.append(genParticle)
-		elif abs(genParticle.grandmother_pdgID) ==25:
-			higgs_daughters.append(genParticle)
+    for genParticle in genParticles:
+	if abs(genParticle.grandmother_pdgID) ==6:
+	    top_daughters.append(genParticle)
+	elif abs(genParticle.grandmother_pdgID) ==25:
+	    higgs_daughters.append(genParticle)
 			
 	if len(higgs_daughters) > 0 and len(top_daughters) >0:
-		higgs_gChild = higgs_daughters[0]
-		top_gChild = top_daughters[0]
-		deltaPhi = higgs_gChild.obj.Phi() - top_gChild.obj.Phi()
-		deltaEta = higgs_gChild.obj.Eta() - top_gChild.obj.Eta()
-#	print " phi = ",top_gChild.obj.Phi()
-#	deltaR = math.sqrt((deltaPhi,2)+(deltaEta,2))
-		deltaR_boosted_daughters_handle[0] = math.sqrt(math.pow(deltaPhi,2)+math.pow(deltaEta,2))
-#		deltaR_boosted_daughters_handle[0] = getTwoObjKineExtreme(higgs_daughters,top_daughters,'min','dR')
-#newtree.SetBranchAddress("GenHiggsDijetMass", GenHiggsDijetMass_handle)
-	#newtree.SetBranchAddress("GenHiggsDijetMass", GenHiggsDijetMass_handle)
+	    higgs_gChild = higgs_daughters[0]
+	    top_gChild = top_daughters[0]
+	    deltaPhi = higgs_gChild.obj.Phi() - top_gChild.obj.Phi()
+	    deltaEta = higgs_gChild.obj.Eta() - top_gChild.obj.Eta()
+	    deltaR_boosted_daughters_handle[0] = math.sqrt(math.pow(deltaPhi,2)+math.pow(deltaEta,2))
 
-	## three obj kine:
-
-	#newtree.SetBranchAddress("DeltaPhiMetLepLep", DeltaPhiMetLepLep_handle)
-	#newtree.SetBranchAddress("DeltaRMetLepLep", DeltaRMetLepLep_handle)
-	#newtree.SetBranchAddress("MTMetLepLep", MTMetLepLep_handle)
-	#newtree.SetBranchAddress("MassMetLepLep", MassMetLepLep_handle)	
-
-	MaxDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'max','dPhi')
-	MinDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'min','dPhi')
-	DeltaPhiMetLep2_handle[0] = 	pickFromSortedTwoObjKine(met,leptons, 'dPhi', 2, 0.0) ## probably wrong
-	DeltaPhiMetLep1_handle[0] = 	pickFromSortedTwoObjKine(met,leptons, 'dPhi', 1, 0.0) ## probably wrong
-
-	#mother_pdgID
-
-	#newtree.SetBranchAddress("DeltaRJets_FromHiggs", DeltaRJets_FromHiggs_handle)
-	#newtree.SetBranchAddress("DeltaPhiJets_FromHiggs", DeltaPhiJets_FromHiggs_handle)
+    MaxDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'max','dPhi')
+    MinDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'min','dPhi')
+    DeltaPhiMetLep2_handle[0] = 	pickFromSortedTwoObjKine(met,leptons, 'dPhi', 2, 0.0) ## probably wrong
+    DeltaPhiMetLep1_handle[0] = 	pickFromSortedTwoObjKine(met,leptons, 'dPhi', 1, 0.0) ## probably wrong
+    
+    WLikeDijetMass81_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass',1,81.)
+    DeltaPhiLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dPhi')
+    DeltaRLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dR')	
+    vetoZmass_handle[0] = 		pickFromSortedTwoObjKine(leptons,leptons,'mass',1,91.2)
+    minMassLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','mass')
+    
+    newtree.Fill()
 
 
-	WLikeDijetMass81_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass',1,81.)
-	DeltaPhiLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dPhi')
-	DeltaRLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dR')	
-	Zmass_handle[0] = 		pickFromSortedTwoObjKine(leptons,leptons,'mass',1,91.2)
-	MassLepLep_handle[0] = 		getTwoObjKineExtreme(leptons,leptons,'min','mass')
-
-
-	#MaxMassLepLep
-	#MinDeltaRLepLep
-	#SumWeightedAbsDeltaPhiBJetMet
-	#MinWeightedDeltaRLeadingLepBJet
-	#MinDeltaPhiLep1Jet
-	#MinDeltaPhiLep2Jet
-	#MtMetLep
-	#MinDeltaRLep1Jet
-	#MinDeltaRLep2Jet
-	#MinDeltaRLep3Jet
-	#allLeptonNumberOfValidTrackerHitsInnerTrack
-	#allLeptonInnerTkPt
-	#allLeptonInnerTkPtError
-	#allLeptonJetPtRatio
-	#allLeptonJetBTagCSV
-	#allLeptonNumberOfExpectedInnerHits
-	#mySumLep1Lep2MetPt
-	#
-	#myMinDeltaRTau1Jet # taus!
-	#myMassTau1Leptons
-
-	
-	
-	
-	
-	
-	newtree.SetBranchAddress("MHT", MHT_handle)
-	newtree.SetBranchAddress("SumJetMass", SumJetMass_handle)
-	newtree.SetBranchAddress("SumNonTaggedJetMass", SumNonTaggedJetMass_handle)
-	newtree.SetBranchAddress("SumPt", SumPt_handle)
-	newtree.SetBranchAddress("SumJetPt", SumJetPt_handle)
-	newtree.SetBranchAddress("AvgBtagDiscNonBtags", AvgBtagDiscNonBtags_handle)
-	newtree.SetBranchAddress("AvgBtagDiscBtags", AvgBtagDiscBtags_handle)
-	newtree.SetBranchAddress("MinDrJets", MinDrJets_handle)
-	newtree.SetBranchAddress("NumHiggsLikeDijet15", NumHiggsLikeDijet15_handle)
-	newtree.SetBranchAddress("HiggsLikeDijetMass2", HiggsLikeDijetMass2_handle)
-	newtree.SetBranchAddress("HiggsLikeDijetMass", HiggsLikeDijetMass_handle)
-	newtree.SetBranchAddress("GenHiggsDijetMass", GenHiggsDijetMass_handle)
-	newtree.SetBranchAddress("DeltaPhiMetLepLep", DeltaPhiMetLepLep_handle)
-	newtree.SetBranchAddress("DeltaRMetLepLep", DeltaRMetLepLep_handle)
-	newtree.SetBranchAddress("MTMetLepLep", MTMetLepLep_handle)
-	newtree.SetBranchAddress("MassMetLepLep", MassMetLepLep_handle)
-	#newtree.SetBranchAddress("MaxDeltaPhiMetJet", MaxDeltaPhiMetJet_handle)
-	#newtree.SetBranchAddress("MinDeltaPhiMetJet", MinDeltaPhiMetJet_handle)
-	newtree.SetBranchAddress("MaxDeltaPhiMetJet", MaxDeltaPhiMetJet_handle)
-	newtree.SetBranchAddress("MinDeltaPhiMetJet", MinDeltaPhiMetJet_handle)
-	newtree.SetBranchAddress("DeltaPhiMetLep2", DeltaPhiMetLep2_handle)
-	newtree.SetBranchAddress("DeltaPhiMetLep1", DeltaPhiMetLep1_handle)
-	newtree.SetBranchAddress("DeltaRJets_FromHiggs", DeltaRJets_FromHiggs_handle)
-	newtree.SetBranchAddress("DeltaPhiJets_FromHiggs", DeltaPhiJets_FromHiggs_handle)
-	newtree.SetBranchAddress("WLikeDijetMass81", WLikeDijetMass81_handle)
-	newtree.SetBranchAddress("DeltaPhiLepLep", DeltaPhiLepLep_handle)
-	newtree.SetBranchAddress("DeltaRLepLep", DeltaRLepLep_handle)
-	newtree.SetBranchAddress("Zmass", Zmass_handle)
-	newtree.SetBranchAddress("MassLepLep", MassLepLep_handle)
-
-	
-	
-	
-	
-	newtree.Fill()
-
-	#if (count>10000):
-	#	break
-
+############################################################
 ############################################################
 ## save new values to tree:
 

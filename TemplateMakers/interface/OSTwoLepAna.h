@@ -39,7 +39,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		TTree * summaryTree;
 		
 		// tree branches:
-				
 		double mcwgt_intree;
 		double wgt_intree;
 		double wallTimePerEvent_intree;
@@ -49,7 +48,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 
 		int lumiBlock_intree;
 		int runNumber_intree;
-		int numExtraPartons_intree;
 
                 vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> loose_leptons_intree;
@@ -89,7 +87,6 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("eventnum", &eventnum_intree, "eventnum/I");
 	summaryTree->Branch("lumiBlock", &lumiBlock_intree, "lumiBlock/I");
 	summaryTree->Branch("runNumber", &runNumber_intree, "runNumber/I");
-	summaryTree->Branch("numExtraPartons", &numExtraPartons_intree, "numExtraPartons/I");
 	summaryTree->Branch("higgs_decay", &higgs_decay_intree);
 
 	summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
