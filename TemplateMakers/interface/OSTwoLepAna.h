@@ -35,6 +35,10 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
 		vstring alltriggerstostudy;
 		
+                // declare any histos
+                // Charlie, don't worry we'll keep these to a minimum..
+                TH1D *numInitialWeightedMCevents; // <- easily keep track of num (weighted) mc events we started with
+                
 		// declare the tree
 		TTree * summaryTree;
 		

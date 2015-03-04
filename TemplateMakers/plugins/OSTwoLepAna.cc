@@ -44,7 +44,10 @@ void OSTwoLepAna::beginJob()
 	// needed in edanalyzer:
 	edm::Service<TFileService> newfs;
 	
-	// add the tree:
+        // book histos:
+        numInitialWeightedMCevents = newfs->make<TH1D>("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
+	
+        // add the tree:
 	summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
 	tree_add_branches();
 	
@@ -73,6 +76,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	clock_t startTime = clock();
 	eventcount++;
 	SetupOptions(event);
+        
+        // tree vars to default values:
+        initialize_variables();
   
 	trigRes triggerResults = 		GetTriggers(event);
 	patMuons muons = 			GetMuons(event);
@@ -102,12 +108,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///////////////////////////
 	double mcwgt_intree = GenInfo->weight();		// <- gen-level weight
 	double weight = 1.;					// <- analysis weight 
-	weight *= mcwgt_intree;					// MC-only (flag to be added)
+	weight *= mcwgt_intree;					// MC-only (flag to be added if nec)
 	///////////////////////////
 	
-	
-	initialize_variables();	
-			
+        // count number of weighted mc events we started with:
+        numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+					
 	/////////
 	///
 	/// Electrons

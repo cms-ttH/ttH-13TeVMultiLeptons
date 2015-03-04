@@ -96,15 +96,16 @@ def getdPhi( object1, object2 ):
 #############################################################################
 
 def convertWPtoCSVvalue( tagtype=None):
+    "twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagging#Preliminary_working_or_operating"
     tagcut=0.0
     if tagtype is None:
         return tagcut
     if tagtype is 'L':
-        tagcut = 0.5
+        tagcut = 0.423 # 10.1716% DUSG mistag efficiency
     if tagtype is 'M':
-        tagcut = 0.7
+        tagcut = 0.814 # 1.0623% DUSG mistag efficiency
     if tagtype is 'T':
-        tagcut = 0.85
+        tagcut = 0.941 # 0.1144% DUSG mistag efficiency
     return tagcut
 
 #############################################################################
