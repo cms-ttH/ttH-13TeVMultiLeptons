@@ -65,6 +65,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 
                 vector<ttH::Jet> preselected_jets_intree;
 		vector<ttH::Jet> loose_bJets_intree;
+		vector<ttH::Jet> tight_bJets_intree;
 		
 		vector<ttH::MET> met_intree;
 		
@@ -102,6 +103,7 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("raw_muons", &raw_muons_intree);
 	summaryTree->Branch("preselected_jets", &preselected_jets_intree);
 	summaryTree->Branch("loose_bJets", &loose_bJets_intree);
+	summaryTree->Branch("tight_bJets", &tight_bJets_intree);
 	summaryTree->Branch("met", &met_intree);
 	summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
 }
@@ -130,6 +132,7 @@ void OSTwoLepAna::initialize_variables()
 
 	preselected_jets_intree.clear();
 	loose_bJets_intree.clear();
+	tight_bJets_intree.clear();
 	
 	met_intree.clear();
 
