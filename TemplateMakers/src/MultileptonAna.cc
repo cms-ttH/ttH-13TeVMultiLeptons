@@ -1116,6 +1116,9 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   bool passesInnerTrackID    = false;
   bool passesTrackID         = false;
   bool passesCuts            = false;
+  bool mediumID              = false;
+  bool goodGlb               = false;
+
 
   double tightRelativeIso = muonparams.getParameter<double> ("tightRelativeIso");
   double looseRelativeIso = muonparams.getParameter<double> ("looseRelativeIso");
@@ -1138,20 +1141,16 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
     return true;
     break;
   case muonID::muonCutBased:
-  //  bool mediumID              = false;
-  //  bool goodGlb               = false;
-
-
-  //   passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
-  //   passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.1);
-  //   passesCuts = (fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D)) < 4.);
-  //   goodGlb = (iMuon.isGlobalMuon() &&  iMuon.globalTrack()->normalizedChi2() < 3
-  // 	       && iMuon.combinedQuality().chi2LocalPosition < 12 &&
-  // 	       iMuon.combinedQuality().trkKink < 20)
-  //   mediumID = (iMuon.innerTrack()->validFraction() >= 0.8 &&
-  // 		iMuon.segmentCompatibility() >= (goodGlb ? 0.303 : 0.451));
-  //   passesID = (passesCuts && mediumID);
-  //   break;
+    passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
+    passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.1);
+    passesCuts = (fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D)) < 4.);
+    goodGlb = (iMuon.isGlobalMuon() &&  iMuon.globalTrack()->normalizedChi2() < 3
+  	       && iMuon.combinedQuality().chi2LocalPosition < 12 &&
+  	       iMuon.combinedQuality().trkKink < 20);
+    mediumID = (iMuon.innerTrack()->validFraction() >= 0.8 &&
+		  iMuon.segmentCompatibility() >= (goodGlb ? 0.303 : 0.451));
+    passesID = (passesCuts && mediumID);
+    break;
   case muonID::muonLooseCutBased:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
     passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.5);
