@@ -194,19 +194,6 @@ for entry in tree:
     MHT_handle[0] = objs_for_mht.Pt()
     metLD_handle[0] = 0.00397*met[0].obj.Pt() + 0.00265*objs_for_mht.Pt()
     
-    ##calculate the inv mass closest to Z mass of all SFOS pairs
-    minMass = 999.
-    zmass = 999.
-    for idx1,obj1 in enumerate(preselleptons):
-        for idx2,obj2 in enumerate(preselleptons):
-            if idx2 > idx1 and obj1.pdgID/obj2.pdgID == -1: 
-                obj12 = obj1.obj+obj2.obj
-                if abs(obj12.M() - 91.2) < minMass:
-                    minMass = abs(obj12.M() - 91.2)
-                    zmass = obj12.M()
-    vetoZmassSFOS_handle[0] = zmass
-    ## done
-
     taggedjets = keepTagged(jets,'M')
     nontaggedjets = keepUnTagged(jets,'M')
     numMediumBJets_handle[0] = len(taggedjets)
