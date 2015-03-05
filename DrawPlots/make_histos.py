@@ -114,7 +114,13 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 
                     systematic_weight_string, systematic_label = plot_helper.get_systematic_info(systematic)
                     #source_file_name = '%s/%s_%s_all.root' % (config['input_trees_directory'], tree_sample, config['label'])
-                    source_file_name = '%s/%s/*.root' % (config['input_trees_directory'], tree_sample) ## will this work?
+                    
+                    ## working one:
+                    source_file_name = '%s/%s/*.root' % (config['input_trees_directory'], tree_sample) ## will this work? yes.
+                    
+                    ## temp:
+                    #source_file_name = '%s' % (config['input_trees_directory'])
+                    
                     if 'JES' in systematic:
                         source_file_name = '%s/%s_%s_%s_all.root' % (config['input_trees_directory'], tree_sample, config['label'], systematic)
 			
@@ -125,9 +131,17 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 		    		#tree = source_file.Get('summaryTree')
                     ## this is much better:
 #                    source_chain = ROOT.TChain('OSTwoLepAna/summaryTree')
-                    source_chain = ROOT.TChain('summaryTree')
-                    source_chain.Add(source_file_name)
-                    tree = source_chain.CloneTree()
+                    
+                    
+                    #source_chain = ROOT.TChain('summaryTree')
+                    #source_chain.Add(source_file_name)
+                    #tree = source_chain.CloneTree()
+                    
+                    tree = ROOT.TChain('summaryTree')
+                    tree.Add(source_file_name)
+                    
+                    
+                    
                     thechainentries = tree.GetEntries()
                     #thechainentries = source_chain.GetEntries()
                     print thechainentries
@@ -286,7 +300,8 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 		    output_file.Write()		    
 		    
                     #source_file.Close() #end systematic
-                    source_chain.Reset() #end systematic
+                    #source_chain.Reset() #end systematic
+                    tree.Reset()
                 config_file = ROOT.TObjString(args.config_file_name)
                 output_file.cd()
                 config_file.Write('config_file')
