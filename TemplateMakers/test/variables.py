@@ -230,40 +230,41 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
                     if quantity is 'dR':
                         value = getdR(obj1,obj2)
                         kineRawCollecion.append(value)
-                    if quantity is 'dEta':
+                    elif quantity is 'dEta':
                         value = obj2.obj.Eta()-obj1.obj.Eta()
                         kineRawCollecion.append(value)
-                    if quantity is 'dPhi':
+                    elif quantity is 'dPhi':
                         value = getdPhi(obj1,obj2)
                         kineRawCollecion.append(value)
-                    if quantity is 'mass':
+                    elif quantity is 'mass':
                         obj12 = obj1.obj + obj2.obj
                         kineRawCollecion.append(obj12.M())
+                    elif quantity is 'massSFOS' and obj1.pdgID/obj2.pdgID == -1:
+                        obj12 = obj1.obj + obj2.obj
+                        kineRawCollecion.append(obj12.M())
+
     else:
-        
         if (size1>=2):
-            
-            #print "here"
-            #            for i in xrange(0,size1-1): # 0 <= i < (size1-1)
             for idx1,obj1 in enumerate(collection1):
                 for idx2,obj2 in enumerate(collection2):
                     if idx2>idx1:
                         if quantity is 'dR':
                             value = getdR(obj1,obj2)
                             kineRawCollecion.append(value)
-                        if quantity is 'dEta':
+                        elif quantity is 'dEta':
                             value = obj2.obj.Eta()-obj1.obj.Eta()
                             kineRawCollecion.append(value)
-                        if quantity is 'dPhi':
+                        elif quantity is 'dPhi':
                             value = getdPhi(obj1,obj2)
                             kineRawCollecion.append(value)
-                        if quantity is 'mass':
+                        elif quantity is 'mass':
+                            obj12 = obj1.obj + obj2.obj
+                            kineRawCollecion.append(obj12.M())
+                        elif quantity is 'massSFOS' and obj1.pdgID/obj2.pdgID == -1:
                             obj12 = obj1.obj + obj2.obj
                             kineRawCollecion.append(obj12.M())
 
     return kineRawCollecion
-
-
 #############################################################################
 
 def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichInOrder=1, comparisonValue=None):

@@ -10,8 +10,8 @@ import glob
 gSystem.Load('libttH-13TeVMultiLeptonsTemplateMakers.so')
 gROOT.SetBatch(1)
 
-infilestring = sys.argv[2]
-outfilestring = sys.argv[3]
+infilestring = sys.argv[1]
+outfilestring = sys.argv[2]
 #infilestring += '*.root'    #<- uncomment for non-batch
 
 print infilestring
@@ -196,13 +196,15 @@ for entry in tree:
     
     ##calculate the inv mass closest to Z mass of all SFOS pairs
     minMass = 999.
-    for idx1,obj1 in enumerate(leptons):
-        for idx2,obj2 in enumerate(leptons):
+    zmass = 999.
+    for idx1,obj1 in enumerate(preselleptons):
+        for idx2,obj2 in enumerate(preselleptons):
             if idx2 > idx1 and obj1.pdgID/obj2.pdgID == -1: 
                 obj12 = obj1.obj+obj2.obj
                 if abs(obj12.M() - 91.2) < minMass:
-                    minMass = obj12.M()
-    vetoZmassSFOS_handle[0] = minMass
+                    minMass = abs(obj12.M() - 91.2)
+                    zmass = obj12.M()
+    vetoZmassSFOS_handle[0] = zmass
     ## done
 
     taggedjets = keepTagged(jets,'M')
@@ -238,7 +240,8 @@ for entry in tree:
     WLikeDijetMass81_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass',1,81.)
     DeltaPhiLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dPhi')
     DeltaRLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dR')	
-    vetoZmass_handle[0] = 	pickFromSortedTwoObjKine(leptons,leptons,'mass',1,91.2)
+    vetoZmass_handle[0] = 	pickFromSortedTwoObjKine(preselleptons,preselleptons,'mass',1,91.2)
+    vetoZmassSFOS_handle[0] =   pickFromSortedTwoObjKine(preselleptons,preselleptons,'massSFOS',1,91.2)
     minMassLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','mass')
     
     newtree.Fill()
