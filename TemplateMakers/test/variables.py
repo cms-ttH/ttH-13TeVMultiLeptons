@@ -109,16 +109,6 @@ def convertWPtoCSVvalue( tagtype=None):
     return tagcut
 
 #############################################################################
-def getInvMassClosestTo(collection,mass):
-    minMass = 9.e6
-    for idx1,obj1 in enumerate(collection):
-        for idx2,obj2 in enumerate(collection):
-            if idx2 > idx1:
-                obj12 = obj1.obj+obj2.obj
-                if abs(obj12.M() - mass) < minMass:
-                    minMass = obj12.M()
-    return minMass
-#############################################################################
 
 def getAvgCSV( collection1, tagtype=None, isTag=True ):
     "return avg. csv of collection: (the collection, CSV working point ('L','M','T', or None), whether you are looking for tags (True) or non-tags (False)). In the case of leptons, the avg. csv of matched jets is returned."

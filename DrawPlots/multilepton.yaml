@@ -14,70 +14,47 @@ skip systematics: true
 
 #cuts
 common cuts:
-
-    lt_three_tight_leptons: 'entry.tight_leptons.size()<3'
-    eq_two_good_leptons: 'entry.tight_leptons.size()==2 and entry.loose_leptons.size()==2' # and entry.preselected_leptons.size()==2' #<-check
-    
-    cleanup: 'entry.MassLepLep > 12'
-    pt_20_10: '(entry.tight_leptons[0].obj.Pt() > 20) and (entry.tight_leptons[1].obj.Pt() > 10)'
-    pt20_20_htllv100: '((entry.tight_leptons[0].obj.Pt() + entry.tight_leptons[1].obj.Pt() + entry.met[0].obj.Pt()) > 100)'
-    nJets25_ge_2: 'entry.preselected_jets.size()>=2' # these are gt 25
-#    2b_loose: ((entry.numLooseBJets >= 2) or (entry.numMediumBJets >= 1))
-    
-    #8TeV (none for 13 TeV yet)
-    #trigger: '((dataset == "MC" and (isDoubleMuTriggerPass or isDoubleElectronTriggerPass or isMuEGTriggerPass or isTripleElectronTriggerPass)) or
-    #          (dataset == "DoubleMu" and isDoubleMuTriggerPass) or
-    #          (dataset == "DoubleElectron" and (!isDoubleMuTriggerPass) and (isDoubleElectronTriggerPass or isTripleElectronTriggerPass)) or
-    #          (dataset == "MuEG" and (!isDoubleMuTriggerPass) and (!isDoubleElectronTriggerPass) and (!isTripleElectronTriggerPass) and isMuEGTriggerPass))'
-    #lep_mva: all_leptons_by_pt_1_lepMVA > 0.7 and all_leptons_by_pt_2_lepMVA > 0.7
-    
-    #8TeV
-    #same_sign: ((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)
-    
-    #13TeV
-    #same_sign: (( * ) > 0) # done below
-
+  
+  eq_two_good_leptons: '(entry.preselected_leptons.size()>=2)'
+  minDilepMass: '(entry.minMassLepLep > 12)'
+  pt_20_10: '((entry.preselected_leptons[0].obj.Pt() > 20) and (entry.preselected_leptons[1].obj.Pt() > 10))'
+  nJets25_ge_2: '(entry.preselected_jets.size()>=2)'
+  nBJets: '(entry.loose_bJets.size() >=2 or entry.tight_bJets.size() >=1)'
+  
 jet tag categories:
-    eq3j: ['entry.preselected_jets.size() == 3']
-    #eq3j_pos: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge>0']
-    #eq3j_neg: ['numJets == 3', 'all_leptons_by_pt_1_tkCharge<0']
-    ge4j: ['entry.preselected_jets.size() >= 4']
-    #ge4j_pos: ['numJets >= 4', 'all_leptons_by_pt_1_tkCharge>0']
-    #ge4j_neg: '[numJets >= 4', 'all_leptons_by_pt_1_tkCharge<0']
-
+  ge2j: ['(entry.preselected_jets.size() >= 2)']
+#    eq3j: ['entry.preselected_jets.size() == 3']
+#    ge4j: ['entry.preselected_jets.size() >= 4']
 lepton categories:
-    mu_mu:
-        data samples: [inclusive_data]
-        #data samples: [DoubleMu]
-        cuts:
-            mu_mu: 'entry.tight_muons.size()==2 and entry.loose_muons.size()==2 and entry.preselected_muons.size()==2'
-            #muon_tight_charge: all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5 and all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5
-            z_veto: abs(entry.Zmass-91.2) > 10
-            #isDoubleMuTriggerPass: isDoubleMuTriggerPass
-            opposite_sign: (entry.tight_muons[0].charge * entry.tight_muons[1].charge) < 0
-    mu_ele:
-        data samples: [inclusive_data]
-        #data samples: [MuEG]
-        cuts:
-            #mu_ele: 'entry.tight_muons.size()==1 and entry.loose_muons.size()==1 and entry.preselected_muons.size()==1 and entry.tight_electrons.size()==1 and entry.loose_electrons.size()==1 and entry.preselected_electrons.size()==1'
-            mu_ele: 'entry.tight_muons.size()==1 and entry.loose_muons.size()==1 and entry.tight_electrons.size()==1 and entry.loose_electrons.size()==1'
-            #conv_veto: all_electrons_by_pt_1_passConvVeto==1 and all_electrons_by_pt_1_numberOfExpectedInnerHits==0
-            #muon_tight_charge: ((all_leptons_by_pt_1_isMuon and all_leptons_by_pt_1_numberOfValidTrackerHitsInnerTrack > 5) or (all_leptons_by_pt_2_isMuon and all_leptons_by_pt_2_numberOfValidTrackerHitsInnerTrack > 5))
-            #electron_tight_charge: ((all_leptons_by_pt_1_isElectron and all_leptons_by_pt_1_CERN_tight_charge) or (all_leptons_by_pt_2_isElectron and all_leptons_by_pt_2_CERN_tight_charge))
-            #isMuEGTriggerPass: isMuEGTriggerPass
-            opposite_sign: (entry.tight_muons[0].charge * entry.tight_electrons[0].charge) < 0
-            
-    ele_ele:
-        data samples: [inclusive_data]
-        #data samples: [DoubleElectron]
-        cuts:
-            ele_ele: 'entry.tight_electrons.size()==2 and entry.loose_electrons.size()==2' # and entry.preselected_electrons.size()==2'
-            #conv_veto: all_electrons_by_pt_1_passConvVeto==1 and all_electrons_by_pt_2_passConvVeto==1 and all_electrons_by_pt_1_numberOfExpectedInnerHits==0 and all_electrons_by_pt_2_numberOfExpectedInnerHits==0
-            z_veto: abs(entry.Zmass-91.2) > 10
-            #met_ld: met_ld > 0.2
-            #electron_tight_charge: all_leptons_by_pt_1_CERN_tight_charge and all_leptons_by_pt_2_CERN_tight_charge
-            #isDoubleElectronTriggerPass: isDoubleElectronTriggerPass
-            opposite_sign: (entry.tight_electrons[0].charge * entry.tight_electrons[1].charge) < 0
+
+  2lss:
+    data samples: [inclusive_data]
+    cuts:
+      nLeptons: '((entry.preselected_leptons.size() == 2) and (entry.tight_leptons.size() == 2))'
+      same-sign: '(entry.tight_leptons[0].charge == entry.tight_leptons[1].charge)'
+      nJets: '(entry.preselected_jets.size() >= 4)'
+      metLD: '(entry.metLD > 0.2)'
+      pt_20_20: '(entry.tight_leptons[0].obj.Pt() > 20 and entry.tight_leptons[1].obj.Pt() > 20)'
+      htllv100: '((entry.tight_leptons[0].obj.Pt() + entry.tight_leptons[1].obj.Pt() + entry.met[0].obj.Pt()) > 100)'
+      ee_Zveto: '(entry.tight_electrons.size() != 2 or abs(entry.vetoZmass-91.2) > 10)'
+      
+      ee: '((abs(entry.tight_electrons.size()) !=2) or (entry.tight_electrons[0].isGsfCtfScPixChargeConsistent and entry.tight_electrons[1].isGsfCtfScPixChargeConsistent))'
+      mumu: '((abs(entry.tight_muons.size()) != 2) or (entry.tight_muons[0].chargeFlip < 0.2 and entry.tight_muons[1].chargeFlip < 0.2))'
+      emu: '((abs(entry.tight_electrons.size()) !=1) or (entry.tight_muons[0].chargeFlip < 0.2 and entry.tight_electrons[0].isGsfCtfScPixChargeConsistent))'
+
+  3l:
+    data samples: [inclusive_data]
+    cuts:
+      nLeptons: '(entry.preselected_leptons.size() == 3 and entry.tight_leptons.size() == 3)'
+      metLD: '((entry.preselected_jets.size() >= 4) or (entry.metLD > 0.2 + 0.1*(entry.vetoZmassSFOS != 999.)))'
+      zVeto: '((entry.vetoZmassSFOS == 999.) or (abs(entry.vetoZmassSFOS-91.2) > 10))'
+
+  4l:
+    data samples: [inclusive_data]
+    cuts:
+      nLeptons: '(entry.preselected_leptons.size() == 4)'
+      neutral: '(entry.preselected_leptons[0].charge + entry.preselected_leptons[1].charge + entry.preselected_leptons[2].charge + entry.preselected_leptons[3].charge == 0)'
+      zVeto: '((entry.vetoZmassSFOS == 999.) or (abs(entry.vetoZmassSFOS-91.2) > 10))'
 
 weights:
 #    - RecoIDIsoSIPSF_2lep #CERN lepton SF
@@ -110,21 +87,6 @@ systematics:
 # weights: [common, weight3]    --> weights = [weight1, weight2, weight3]
 # weights: [weight3]            --> weights = [weight3]
 samples:
-#    wz_lll:
-#    zz_llll:
-#    www:
-#    wwz:
-#    ttbarW:
-#    ttbarWW:
-#    ttbarZ:
-#    ttbarG:
-#    ttbarGStar_ee:
-#    ttbarGStar_mm:
-#    ttbarGStar_tt:
-#    tbZ_ll:
-#    WpWpqq:
-#    WmWmqq:
-#    WWDPI:
      WJets:
      ZJets:
      TTJets:
@@ -152,31 +114,6 @@ samples:
 #         systematics: nominal
 #     DoubleElectron:
 #         weights: none
-#         systematics: nominal
-#    inclusive_data_NP_sideband:
-#        additional cuts: ['(all_leptons_by_pt_1_lepMVA < 0.7 or all_leptons_by_pt_2_lepMVA < 0.7)']
-#        cuts to remove: ['all_leptons_by_pt_1_lepMVA > 0.7 and all_leptons_by_pt_2_lepMVA > 0.7']
-#        weights: DataDrivenFR_NP
-#        systematics: [40PercentRateUp, 40PercentRateDown]
-#     DoubleMu_NP_sideband:
-#         weights: DataDrivenFR_NP
-#         systematics: [40PercentRateUp, 40PercentRateDown]
-#     MuEG_NP_sideband:
-#         weights: DataDrivenFR_NP
-#         systematics: [40PercentRateUp, 40PercentRateDown]
-#     DoubleElectron_NP_sideband:
-#         weights: DataDrivenFR_NP
-#         systematics: [40PercentRateUp, 40PercentRateDown]
-#    inclusive_data_QF_sideband:
-#        additional cuts: ['((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) < 0)']
-#        cuts to remove: ['((all_leptons_by_pt_1_tkCharge * all_leptons_by_pt_2_tkCharge) > 0)']
-#        weights: DataDrivenFR_QF
-#        systematics: nominal
-#     MuEG_QF_sideband:
-#         weights: DataDrivenFR_QF
-#         systematics: nominal
-#     DoubleElectron_QF_sideband:
-#         weights: DataDrivenFR_QF
 #         systematics: nominal
 
 aliases:
@@ -420,14 +357,14 @@ distributions:
         axis labels: [DeltaRLepLep, Events]
         binning: [*default_num_bins, 0, 10]
     
-    Zmass:
-        expression: entry.Zmass
-        axis labels: [Zmass, Events]
-        binning: [*default_num_bins, 0, 500]
+    # Zmass:
+    #     expression: entry.Zmass
+    #     axis labels: [Zmass, Events]
+    #     binning: [*default_num_bins, 0, 500]
     
-    MassLepLep:
-        expression: entry.MassLepLep
-        axis labels: [MassLepLep, Events]
+    minMassLepLep:
+        expression: entry.minMassLepLep
+        axis labels: [minMassLepLep, Events]
         binning: [*default_num_bins, 0, 500]
 
 

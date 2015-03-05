@@ -124,7 +124,8 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 		    		#source_file = ROOT.TFile(source_file_name)
 		    		#tree = source_file.Get('summaryTree')
                     ## this is much better:
-                    source_chain = ROOT.TChain('OSTwoLepAna/summaryTree')
+#                    source_chain = ROOT.TChain('OSTwoLepAna/summaryTree')
+                    source_chain = ROOT.TChain('summaryTree')
                     source_chain.Add(source_file_name)
                     tree = source_chain.CloneTree()
                     thechainentries = tree.GetEntries()
@@ -250,14 +251,9 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
                 	draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
                         plot_name = '%s%s' % (distribution, systematic_label)
 			
-			#print "hey"
-			#print parameters
-			#print draw_string_maker.draw_string
 			##################################################################################################
                 	plot = plot_helper.GeoffPlot(sample, output_file, plot_name, parameters, draw_string_maker.draw_string)
 			##################################################################################################
-			
-			#print "hey2"
 			
 			plotdict[plot_name] = plotcount
 			theplots.append(plot)
@@ -265,15 +261,13 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 		    
 		    #print draw_string_maker.draw_string
 		    
-		    #print "blah"
-		    
 		    treecount = 0
 		    
 		    for entry in tree:
 		        #print "blah2"
 			treecount += 1
 			thecut = plot_helper.CheckCuts(draw_string_maker.draw_string, entry)
-			
+
 			if thecut is 0:
 			    continue;
 			
