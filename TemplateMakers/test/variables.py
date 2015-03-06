@@ -1,5 +1,6 @@
 import math
-from ROOT import TLorentzVector
+#from ROOT import TLorentzVector
+import ROOT
 
 #############################################################################
 ## test
@@ -50,25 +51,23 @@ def getsumEnergy( collection1, collection2=None, collection3=None ):
 
 def getsumTLV( collection1, collection2=None, collection3=None ):
     "vector sum of TLVs in up to 3 arbitrary collections of objects"
-    if len(collection1) is 0:
-        dummy = TLorentzVector(0.,0.,0.,0)
-        return dummy
-    thesum = collection1[0].obj
-    thesum.SetPxPyPzE(0.,0.,0.,0)
-   
+    
+    thesum = ROOT.ttH.Lepton() #<- doesn't matter that it's a lepton, we just want the obj
+    
+    thesum.obj.SetPxPyPzE(0.,0.,0.,0.)
+
     for theobj in collection1:
-      #print theobj
-        thesum += theobj.obj
+        thesum.obj += theobj.obj
    
     if collection2 is not None:
         for theobj in collection2:
-            thesum += theobj.obj
+            thesum.obj += theobj.obj
    
     if collection3 is not None:
         for theobj in collection3:
-            thesum += theobj.obj
+            thesum.obj += theobj.obj
   
-    return thesum
+    return thesum.obj
 
 #############################################################################
 def getdR( object1, object2 ):
@@ -270,6 +269,7 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
 def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichInOrder=1, comparisonValue=None):
     "if no comparison value, whichInOrder picks the ith quanity from the list (in decending order). If comparison value provided, whichInOrder picks the ith quanity closest to the value."
     thelist = getTwoObjKineRawCollection( collection1, collection2, quantity)
+    print thelist
     size = len(thelist)
 
     if size is 0: return -99999.
@@ -280,6 +280,8 @@ def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichIn
         return thelist[whichInOrder-1]
 
     thelist = sorted(thelist, key=lambda i: abs(i-comparisonValue))
+    print thelist
+    print " "
     return thelist[whichInOrder-1]
     
 #############################################################################

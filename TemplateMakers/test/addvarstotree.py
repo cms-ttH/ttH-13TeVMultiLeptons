@@ -1,4 +1,4 @@
-from ROOT import TFile, TChain, TTree, TH1, gSystem, TLorentzVector, gROOT
+import ROOT
 import numpy as n
 import math
 from variables import *
@@ -7,8 +7,8 @@ from time import sleep
 import os
 import glob
 
-gSystem.Load('libttH-13TeVMultiLeptonsTemplateMakers.so')
-gROOT.SetBatch(1)
+ROOT.gSystem.Load('libttH-13TeVMultiLeptonsTemplateMakers.so')
+ROOT.gROOT.SetBatch(1)
 
 infilestring = sys.argv[1]
 outfilestring = sys.argv[2]
@@ -30,7 +30,7 @@ filetest = False
 # 	else:
 # 		break
 
-tree = TChain('OSTwoLepAna/summaryTree')
+tree = ROOT.TChain('OSTwoLepAna/summaryTree')
 exitcount = 0
 
 # ## This helps to negotiate an NDT3/Condor-specific issue:
@@ -62,7 +62,7 @@ entries = tree.GetEntries()
 print " "
 print entries
 
-copiedfile = TFile.Open( outfilestring , 'RECREATE') #, 'test' )
+copiedfile = ROOT.TFile.Open( outfilestring , 'RECREATE') #, 'test' )
 newtree = tree.CloneTree(0)
 
 
@@ -129,6 +129,7 @@ newtree.Branch("MinDrJets", MinDrJets_handle,"MinDrJets/D")
 newtree.Branch("NumHiggsLikeDijet15", NumHiggsLikeDijet15_handle,"NumHiggsLikeDijet15/D")
 newtree.Branch("HiggsLikeDijetMass", HiggsLikeDijetMass_handle,"HiggsLikeDijetMass/D")
 newtree.Branch("HiggsLikeDijetMass2", HiggsLikeDijetMass2_handle,"HiggsLikeDijetMass2/D")
+
 newtree.Branch("vetoZmass", vetoZmass_handle,"vetoZmass/D")
 newtree.Branch("vetoZmassSFOS", vetoZmassSFOS_handle,"vetoZmassSFOS/D")
 newtree.Branch("MHT", MHT_handle,"MHT/D")
@@ -146,13 +147,17 @@ count = 0
 for entry in tree:
     higgs_daughters = []
     top_daughters = []
-#for i in range(entries):
-#	entry.GetEntry(i)
-    count+=1
     
-    if ((count % 5000)==0):
-	print count
-	
+    #for i in range(entries):
+    #	entry.GetEntry(i)
+    #count+=1
+    
+    #if ((count % 5000)==0):
+    #	print count
+    #if count > 10000:
+    #	break
+    
+    
     preselelectrons = entry.preselected_electrons
     looseelectrons = entry.loose_electrons
     tightelectrons = entry.tight_electrons
@@ -171,24 +176,24 @@ for entry in tree:
 	
     genParticles = entry.pruned_genParticles
 
-	######################
-    electrons = looseelectrons
-    muons = loosemuons
-    leptons = looseleptons
-    jets = preseljets	
+	######################    
+    
+    electrons = preselelectrons
+    muons = preselmuons
+    leptons = preselleptons 
+    jets = preseljets
 
     if (leptons.size()<2):
-	continue
+    	continue
 	######################
-
-
+    
 	# need the [0] for branch "pointers" !!!
     SumJetPt_handle[0] = getsumpt(jets)	# A.K.A. 'HT'
     AvgBtagDiscNonBtags_handle[0] = getAvgCSV(jets,'M',False)   			
     AvgBtagDiscBtags_handle[0] = getAvgCSV(jets,'M',True)				
     MinDrJets_handle[0] = getTwoObjKineExtreme(jets,jets,'min','dR')
     SumPt_handle[0] = getsumpt(jets, electrons, muons)	
-        
+       
         ## calculate MHT
     objs_for_mht = getsumTLV(leptons,jets)
     MHT_handle[0] = objs_for_mht.Pt()
@@ -204,7 +209,6 @@ for entry in tree:
     HiggsLikeDijetMass2_handle[0] = pickFromSortedTwoObjKine(jets,jets,'mass', 2, 125.)
     HiggsLikeDijetMass_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass', 1, 125.)
     NumHiggsLikeDijet15_handle[0] = getNumTwoObjKineInRange(jets,jets,'mass',125.,15.)
-	
 
     for genParticle in genParticles:
 	if abs(genParticle.grandmother_pdgID) ==6:
@@ -218,20 +222,21 @@ for entry in tree:
 	    deltaPhi = higgs_gChild.obj.Phi() - top_gChild.obj.Phi()
 	    deltaEta = higgs_gChild.obj.Eta() - top_gChild.obj.Eta()
 	    deltaR_boosted_daughters_handle[0] = math.sqrt(math.pow(deltaPhi,2)+math.pow(deltaEta,2))
-
+    
     MaxDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'max','dPhi')
     MinDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'min','dPhi')
     DeltaPhiMetLep2_handle[0] = 	pickFromSortedTwoObjKine(met,leptons, 'dPhi', 2, 0.0) ## probably wrong
     DeltaPhiMetLep1_handle[0] = 	pickFromSortedTwoObjKine(met,leptons, 'dPhi', 1, 0.0) ## probably wrong
-    
+        
     WLikeDijetMass81_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass',1,81.)
     DeltaPhiLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dPhi')
-    DeltaRLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dR')	
-    vetoZmass_handle[0] = 	pickFromSortedTwoObjKine(preselleptons,preselleptons,'mass',1,91.2)
-    vetoZmassSFOS_handle[0] =   pickFromSortedTwoObjKine(preselleptons,preselleptons,'massSFOS',1,91.2)
+    DeltaRLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','dR')
+        
+    vetoZmass_handle[0] = 	pickFromSortedTwoObjKine(leptons,leptons,'mass',1,91.2)
+    vetoZmassSFOS_handle[0] =   pickFromSortedTwoObjKine(leptons,leptons,'massSFOS',1,91.2)
     minMassLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','mass')
-    
-    newtree.Fill()
+
+   newtree.Fill()
 
 
 ############################################################
