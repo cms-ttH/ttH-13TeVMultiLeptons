@@ -296,14 +296,16 @@ class MultileptonAna: public MiniAODHelper
   // lepMVA TMVA readers
   TMVA::Reader* mu_reader_high_b;
   TMVA::Reader* mu_reader_high_e;
-  TMVA::Reader* mu_reader_low_b;
-  TMVA::Reader* mu_reader_low_e;
+  TMVA::Reader* mu_reader_medium_b;
+  TMVA::Reader* mu_reader_medium_e;
+  TMVA::Reader* mu_reader_low;
   TMVA::Reader* ele_reader_high_cb;
   TMVA::Reader* ele_reader_high_fb;
   TMVA::Reader* ele_reader_high_ec;
-  TMVA::Reader* ele_reader_low_cb;
-  TMVA::Reader* ele_reader_low_fb;
-  TMVA::Reader* ele_reader_low_ec;
+  TMVA::Reader* ele_reader_medium_cb;
+  TMVA::Reader* ele_reader_medium_fb;
+  TMVA::Reader* ele_reader_medium_ec;
+  TMVA::Reader* ele_reader_low;
   Float_t varneuRelIso;
   Float_t varchRelIso;
   Float_t varjetDR_in;
@@ -311,10 +313,9 @@ class MultileptonAna: public MiniAODHelper
   Float_t varjetBTagCSV_in;
   Float_t varsip3d;
   Float_t varmvaId;
-  Float_t varinnerHits;
   Float_t vardxy;
   Float_t vardz;
-  
+  Float_t varSegCompat;
   
   
 };

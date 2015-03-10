@@ -527,132 +527,152 @@ void MultileptonAna::setupMva(){
 
   mu_reader_high_b = new TMVA::Reader( "!Color:!Silent" );
   mu_reader_high_e = new TMVA::Reader( "!Color:!Silent" );
-  mu_reader_low_b = new TMVA::Reader( "!Color:!Silent" );
-  mu_reader_low_e = new TMVA::Reader( "!Color:!Silent" );
+  mu_reader_medium_b = new TMVA::Reader( "!Color:!Silent" );
+  mu_reader_medium_e = new TMVA::Reader( "!Color:!Silent" );
+  mu_reader_low = new TMVA::Reader( "!Color:!Silent" );
   ele_reader_high_cb = new TMVA::Reader( "!Color:!Silent" );
   ele_reader_high_fb = new TMVA::Reader( "!Color:!Silent" );
   ele_reader_high_ec = new TMVA::Reader( "!Color:!Silent" );
-  ele_reader_low_cb = new TMVA::Reader( "!Color:!Silent" );
-  ele_reader_low_fb = new TMVA::Reader( "!Color:!Silent" );
-  ele_reader_low_ec = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_medium_cb = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_medium_fb = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_medium_ec = new TMVA::Reader( "!Color:!Silent" );
+  ele_reader_low = new TMVA::Reader( "!Color:!Silent" );
 
-  ele_reader_high_cb->AddVariable( "neuRelIso", &varneuRelIso );
-  ele_reader_high_cb->AddVariable( "chRelIso", &varchRelIso );
-  ele_reader_high_cb->AddVariable( "jetDR_in", &varjetDR_in );
-  ele_reader_high_cb->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  ele_reader_high_cb->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  ele_reader_high_cb->AddVariable( "sip3d", &varsip3d );
-  ele_reader_high_cb->AddVariable( "mvaId", &varmvaId );
-  ele_reader_high_cb->AddVariable( "innerHits", &varinnerHits );
+  ele_reader_high_cb->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  ele_reader_high_cb->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  ele_reader_high_cb->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  ele_reader_high_cb->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  ele_reader_high_cb->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  ele_reader_high_cb->AddVariable( "LepGood_sip3d", &varsip3d );
+  ele_reader_high_cb->AddVariable( "LepGood_dxy", &vardxy );
+  ele_reader_high_cb->AddVariable( "LepGood_dz", &vardz );
+  ele_reader_high_cb->AddVariable( "LepGood_mvaIdPhys14", &varmvaId );
 
-  ele_reader_high_fb->AddVariable( "neuRelIso", &varneuRelIso );
-  ele_reader_high_fb->AddVariable( "chRelIso", &varchRelIso );
-  ele_reader_high_fb->AddVariable( "jetDR_in", &varjetDR_in );
-  ele_reader_high_fb->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  ele_reader_high_fb->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  ele_reader_high_fb->AddVariable( "sip3d", &varsip3d );
-  ele_reader_high_fb->AddVariable( "mvaId", &varmvaId );
-  ele_reader_high_fb->AddVariable( "innerHits", &varinnerHits );
+  ele_reader_high_fb->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  ele_reader_high_fb->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  ele_reader_high_fb->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  ele_reader_high_fb->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  ele_reader_high_fb->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  ele_reader_high_fb->AddVariable( "LepGood_sip3d", &varsip3d );
+  ele_reader_high_fb->AddVariable( "LepGood_dxy", &vardxy );
+  ele_reader_high_fb->AddVariable( "LepGood_dz", &vardz );
+  ele_reader_high_fb->AddVariable( "LepGood_mvaIdPhys14", &varmvaId );
 
-  ele_reader_high_ec->AddVariable( "neuRelIso", &varneuRelIso );
-  ele_reader_high_ec->AddVariable( "chRelIso", &varchRelIso );
-  ele_reader_high_ec->AddVariable( "jetDR_in", &varjetDR_in );
-  ele_reader_high_ec->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  ele_reader_high_ec->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  ele_reader_high_ec->AddVariable( "sip3d", &varsip3d );
-  ele_reader_high_ec->AddVariable( "mvaId", &varmvaId );
-  ele_reader_high_ec->AddVariable( "innerHits", &varinnerHits );
+  ele_reader_high_ec->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  ele_reader_high_ec->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  ele_reader_high_ec->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  ele_reader_high_ec->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  ele_reader_high_ec->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  ele_reader_high_ec->AddVariable( "LepGood_sip3d", &varsip3d );
+  ele_reader_high_ec->AddVariable( "LepGood_dxy", &vardxy );
+  ele_reader_high_ec->AddVariable( "LepGood_dz", &vardz );
+  ele_reader_high_ec->AddVariable( "LepGood_mvaIdPhys14", &varmvaId );
 
-  ele_reader_low_cb->AddVariable( "neuRelIso", &varneuRelIso );
-  ele_reader_low_cb->AddVariable( "chRelIso", &varchRelIso );
-  ele_reader_low_cb->AddVariable( "jetDR_in", &varjetDR_in );
-  ele_reader_low_cb->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  ele_reader_low_cb->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  ele_reader_low_cb->AddVariable( "sip3d", &varsip3d );
-  ele_reader_low_cb->AddVariable( "mvaId", &varmvaId );
-  ele_reader_low_cb->AddVariable( "innerHits", &varinnerHits );
+  ele_reader_medium_cb->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  ele_reader_medium_cb->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  ele_reader_medium_cb->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  ele_reader_medium_cb->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  ele_reader_medium_cb->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  ele_reader_medium_cb->AddVariable( "LepGood_sip3d", &varsip3d );
+  ele_reader_medium_cb->AddVariable( "LepGood_dxy", &vardxy );
+  ele_reader_medium_cb->AddVariable( "LepGood_dz", &vardz );
+  ele_reader_medium_cb->AddVariable( "LepGood_mvaIdPhys14", &varmvaId );
 
-  ele_reader_low_fb->AddVariable( "neuRelIso", &varneuRelIso );
-  ele_reader_low_fb->AddVariable( "chRelIso", &varchRelIso );
-  ele_reader_low_fb->AddVariable( "jetDR_in", &varjetDR_in );
-  ele_reader_low_fb->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  ele_reader_low_fb->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  ele_reader_low_fb->AddVariable( "sip3d", &varsip3d );
-  ele_reader_low_fb->AddVariable( "mvaId", &varmvaId );
-  ele_reader_low_fb->AddVariable( "innerHits", &varinnerHits );
+  ele_reader_medium_fb->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  ele_reader_medium_fb->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  ele_reader_medium_fb->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  ele_reader_medium_fb->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  ele_reader_medium_fb->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  ele_reader_medium_fb->AddVariable( "LepGood_sip3d", &varsip3d );
+  ele_reader_medium_fb->AddVariable( "LepGood_dxy", &vardxy );
+  ele_reader_medium_fb->AddVariable( "LepGood_dz", &vardz );
+  ele_reader_medium_fb->AddVariable( "LepGood_mvaIdPhys14", &varmvaId );
 
-  ele_reader_low_ec->AddVariable( "neuRelIso", &varneuRelIso );
-  ele_reader_low_ec->AddVariable( "chRelIso", &varchRelIso );
-  ele_reader_low_ec->AddVariable( "jetDR_in", &varjetDR_in );
-  ele_reader_low_ec->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  ele_reader_low_ec->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  ele_reader_low_ec->AddVariable( "sip3d", &varsip3d );
-  ele_reader_low_ec->AddVariable( "mvaId", &varmvaId );
-  ele_reader_low_ec->AddVariable( "innerHits", &varinnerHits );
+  ele_reader_medium_ec->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  ele_reader_medium_ec->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  ele_reader_medium_ec->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  ele_reader_medium_ec->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  ele_reader_medium_ec->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  ele_reader_medium_ec->AddVariable( "LepGood_sip3d", &varsip3d );
+  ele_reader_medium_ec->AddVariable( "LepGood_dxy", &vardxy );
+  ele_reader_medium_ec->AddVariable( "LepGood_dz", &vardz );
+  ele_reader_medium_ec->AddVariable( "LepGood_mvaIdPhys14", &varmvaId );
 
-  mu_reader_high_b->AddVariable( "neuRelIso", &varneuRelIso );
-  mu_reader_high_b->AddVariable( "chRelIso", &varchRelIso );
-  mu_reader_high_b->AddVariable( "jetDR_in", &varjetDR_in );
-  mu_reader_high_b->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  mu_reader_high_b->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  mu_reader_high_b->AddVariable( "sip3d", &varsip3d );
-  mu_reader_high_b->AddVariable( "dxy", &vardxy );
-  mu_reader_high_b->AddVariable( "dz", &vardz );
+  ele_reader_low->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  ele_reader_low->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  ele_reader_low->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  ele_reader_low->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  ele_reader_low->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  ele_reader_low->AddVariable( "LepGood_sip3d", &varsip3d );
+  ele_reader_low->AddVariable( "LepGood_dxy", &vardxy );
+  ele_reader_low->AddVariable( "LepGood_dz", &vardz );
+  ele_reader_low->AddVariable( "LepGood_mvaIdPhys14", &varmvaId );
 
-  mu_reader_high_e->AddVariable( "neuRelIso", &varneuRelIso );
-  mu_reader_high_e->AddVariable( "chRelIso", &varchRelIso );
-  mu_reader_high_e->AddVariable( "jetDR_in", &varjetDR_in );
-  mu_reader_high_e->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  mu_reader_high_e->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  mu_reader_high_e->AddVariable( "sip3d", &varsip3d );
-  mu_reader_high_e->AddVariable( "dxy", &vardxy );
-  mu_reader_high_e->AddVariable( "dz", &vardz );
+  mu_reader_low->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  mu_reader_low->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  mu_reader_low->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  mu_reader_low->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  mu_reader_low->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  mu_reader_low->AddVariable( "LepGood_sip3d", &varsip3d );
+  mu_reader_low->AddVariable( "LepGood_dxy", &vardxy );
+  mu_reader_low->AddVariable( "LepGood_dz", &vardz );
+  mu_reader_low->AddVariable( "LepGood_segmentCompatibility", &varSegCompat );
 
-  mu_reader_low_b->AddVariable( "neuRelIso", &varneuRelIso );
-  mu_reader_low_b->AddVariable( "chRelIso", &varchRelIso );
-  mu_reader_low_b->AddVariable( "jetDR_in", &varjetDR_in );
-  mu_reader_low_b->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  mu_reader_low_b->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  mu_reader_low_b->AddVariable( "sip3d", &varsip3d );
-  mu_reader_low_b->AddVariable( "dxy", &vardxy );
-  mu_reader_low_b->AddVariable( "dz", &vardz );
+  mu_reader_medium_b->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  mu_reader_medium_b->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  mu_reader_medium_b->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  mu_reader_medium_b->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  mu_reader_medium_b->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  mu_reader_medium_b->AddVariable( "LepGood_sip3d", &varsip3d );
+  mu_reader_medium_b->AddVariable( "LepGood_dxy", &vardxy );
+  mu_reader_medium_b->AddVariable( "LepGood_dz", &vardz );
+  mu_reader_medium_b->AddVariable( "LepGood_segmentCompatibility", &varSegCompat );
 
-  mu_reader_low_e->AddVariable( "neuRelIso", &varneuRelIso );
-  mu_reader_low_e->AddVariable( "chRelIso", &varchRelIso );
-  mu_reader_low_e->AddVariable( "jetDR_in", &varjetDR_in );
-  mu_reader_low_e->AddVariable( "jetPtRatio_in", &varjetPtRatio_in );
-  mu_reader_low_e->AddVariable( "jetBTagCSV_in", &varjetBTagCSV_in );
-  mu_reader_low_e->AddVariable( "sip3d", &varsip3d );
-  mu_reader_low_e->AddVariable( "dxy", &vardxy );
-  mu_reader_low_e->AddVariable( "dz", &vardz );
+  mu_reader_medium_e->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  mu_reader_medium_e->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  mu_reader_medium_e->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  mu_reader_medium_e->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  mu_reader_medium_e->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  mu_reader_medium_e->AddVariable( "LepGood_sip3d", &varsip3d );
+  mu_reader_medium_e->AddVariable( "LepGood_dxy", &vardxy );
+  mu_reader_medium_e->AddVariable( "LepGood_dz", &vardz );
+  mu_reader_medium_e->AddVariable( "LepGood_segmentCompatibility", &varSegCompat );
+
+  mu_reader_high_b->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  mu_reader_high_b->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  mu_reader_high_b->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  mu_reader_high_b->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  mu_reader_high_b->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  mu_reader_high_b->AddVariable( "LepGood_sip3d", &varsip3d );
+  mu_reader_high_b->AddVariable( "LepGood_dxy", &vardxy );
+  mu_reader_high_b->AddVariable( "LepGood_dz", &vardz );
+  mu_reader_high_b->AddVariable( "LepGood_segmentCompatibility", &varSegCompat );
+
+  mu_reader_high_e->AddVariable( "LepGood_neuRelIso03", &varneuRelIso );
+  mu_reader_high_e->AddVariable( "LepGood_chRelIso03", &varchRelIso );
+  mu_reader_high_e->AddVariable( "LepGood_jetDR", &varjetDR_in );
+  mu_reader_high_e->AddVariable( "LepGood_jetPtRatio", &varjetPtRatio_in );
+  mu_reader_high_e->AddVariable( "LepGood_jetBTagCSV", &varjetBTagCSV_in );
+  mu_reader_high_e->AddVariable( "LepGood_sip3d", &varsip3d );
+  mu_reader_high_e->AddVariable( "LepGood_dxy", &vardxy );
+  mu_reader_high_e->AddVariable( "LepGood_dz", &vardz );
+  mu_reader_high_e->AddVariable( "LepGood_segmentCompatibility", &varSegCompat );
 
   mu_reader_high_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_high_b_BDTG.weights.xml");
   mu_reader_high_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_high_e_BDTG.weights.xml");
-  mu_reader_low_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_low_b_BDTG.weights.xml");
-  mu_reader_low_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_low_e_BDTG.weights.xml");
+  mu_reader_medium_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_medium_b_BDTG.weights.xml");
+  mu_reader_medium_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_medium_e_BDTG.weights.xml");
+  mu_reader_low->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_low_BDTG.weights.xml");
 
   ele_reader_high_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_cb_BDTG.weights.xml");
   ele_reader_high_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_fb_BDTG.weights.xml");
   ele_reader_high_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_ec_BDTG.weights.xml");
-  ele_reader_low_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_low_cb_BDTG.weights.xml");
-  ele_reader_low_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_low_fb_BDTG.weights.xml");
-  ele_reader_low_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_low_ec_BDTG.weights.xml");
-
-
-  // mu_reader_high_b->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/mu_pteta_high_b_BDTG.weights.xml");
-  // mu_reader_high_e->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/mu_pteta_high_e_BDTG.weights.xml");
-  // mu_reader_low_b->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/mu_pteta_low_b_BDTG.weights.xml");
-  // mu_reader_low_e->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/mu_pteta_low_e_BDTG.weights.xml");
-
-  // ele_reader_high_cb->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/el_pteta_high_cb_BDTG.weights.xml");
-  // ele_reader_high_fb->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/el_pteta_high_fb_BDTG.weights.xml");
-  // ele_reader_high_ec->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/el_pteta_high_ec_BDTG.weights.xml");
-  // ele_reader_low_cb->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/el_pteta_low_cb_BDTG.weights.xml");
-  // ele_reader_low_fb->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/el_pteta_low_fb_BDTG.weights.xml");
-  // ele_reader_low_ec->BookMVA( "BDTG method", "/afs/cern.ch/user/m/muell149/CMSSW_5_3_18/src/BEAN/BEANmaker/data/lepMVA/el_pteta_low_ec_BDTG.weights.xml");
-
-
-
+  ele_reader_medium_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_medium_cb_BDTG.weights.xml");
+  ele_reader_medium_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_medium_fb_BDTG.weights.xml");
+  ele_reader_medium_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_medium_ec_BDTG.weights.xml");
+  ele_reader_low->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_low_BDTG.weights.xml");
+  
+  
   
 }
 
@@ -1486,20 +1506,26 @@ float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pa
   //  vardz = log(fabs(iMuon.muonBestTrack()->dz(vertex.position())));
   vardxy = log(fabs(iMuon.innerTrack()->dxy(vertex.position())));
   vardz = log(fabs(iMuon.innerTrack()->dz(vertex.position())));
-
+  varSegCompat = iMuon.segmentCompatibility();
   
-  if (iMuon.pt() > 15 && fabs(iMuon.eta()) < 1.5) {
+  if (iMuon.pt() <= 10){
+    return mu_reader_low->EvaluateMVA( "BDTG method" );
+  }
+  else if (iMuon.pt() > 10 && iMuon.pt() <= 25 && fabs(iMuon.eta()) < 1.5) {
+    return mu_reader_medium_b->EvaluateMVA( "BDTG method" );
+  }
+  else if (iMuon.pt() > 10 && iMuon.pt() <= 25 && fabs(iMuon.eta()) >= 1.5) {
+    return mu_reader_medium_e->EvaluateMVA( "BDTG method" );
+  }
+  else if (iMuon.pt() > 25 && fabs(iMuon.eta()) < 1.5) {
     return mu_reader_high_b->EvaluateMVA( "BDTG method" );
   }
-  else if (iMuon.pt() > 15 && fabs(iMuon.eta()) >= 1.5) {
+  else if (iMuon.pt() > 25 && fabs(iMuon.eta()) >= 1.5) {
     return mu_reader_high_e->EvaluateMVA( "BDTG method" );
   }
-  else if (iMuon.pt() <= 15 && fabs(iMuon.eta()) < 1.5) {
-    return mu_reader_low_b->EvaluateMVA( "BDTG method" );
-  }
-  else {
-    return mu_reader_low_e->EvaluateMVA( "BDTG method" );
-  }
+  else return -99999.;
+  
+
  
 }
 
@@ -1509,7 +1535,6 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   
   varchRelIso = iElectron.chargedHadronIso()/iElectron.pt();
   //varchRelIso = iElectron.pfIsolationVariables().sumChargedHadronPt;
-  
   //varneuRelIso = GetElectronRelIso(iElectron) - varchRelIso;
   varneuRelIso = max(0.0,(iElectron.neutralHadronIso()+iElectron.photonIso())-0.5*iElectron.puChargedHadronIso())/iElectron.pt();
   
@@ -1520,32 +1545,33 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   
   varjetBTagCSV_in = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
   varsip3d = fabs(iElectron.dB(pat::Electron::PV3D)/iElectron.edB(pat::Electron::PV3D));
-  
+  vardxy = log(fabs(iElectron.gsfTrack()->dxy(vertex.position())));
+  vardz = log(fabs(iElectron.gsfTrack()->dz(vertex.position())));
   bool mvaDebug = false;
   varmvaId = mvaID_->mvaValue(iElectron,mvaDebug);  
-  
-  //varinnerHits = iElectron.gsfTrack()->trackerExpectedHitsInner().numberOfHits(); // 70X
-  varinnerHits = iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS); // 72X
 
-  if (iElectron.pt() >= 10 && fabs(iElectron.eta()) <= 0.8) {
+  if (iElectron.pt() <= 10){
+    return ele_reader_low->EvaluateMVA( "BDTG method" );
+  }
+  else if (iElectron.pt() > 10 && iElectron.pt() <= 25 && fabs(iElectron.eta()) < 0.8){
+    return ele_reader_medium_cb->EvaluateMVA( "BDTG method" );
+  }
+  else if (iElectron.pt() > 10 && iElectron.pt() <= 25 && fabs(iElectron.eta()) >= 0.8 && fabs(iElectron.eta()) < 1.479){
+    return ele_reader_medium_fb->EvaluateMVA( "BDTG method" );
+  }
+  else if (iElectron.pt() > 10 && iElectron.pt() <= 25 && fabs(iElectron.eta()) >= 1.479) {
+    return ele_reader_medium_ec->EvaluateMVA( "BDTG method" );
+  }
+  else if (iElectron.pt() > 25 && fabs(iElectron.eta()) < 0.8) {
     return ele_reader_high_cb->EvaluateMVA( "BDTG method" );
   }
-  else if (iElectron.pt() >= 10 && fabs(iElectron.eta()) > 0.8 && fabs(iElectron.eta()) <= 1.479) {
+  else if (iElectron.pt() > 25 && fabs(iElectron.eta()) >= 0.8 && fabs(iElectron.eta()) < 1.479) {
     return ele_reader_high_fb->EvaluateMVA( "BDTG method" );
   }
-  else if (iElectron.pt() >= 10 && fabs(iElectron.eta()) > 1.479) {
+  else if (iElectron.pt() > 25 && fabs(iElectron.eta()) >= 1.479) {
     return ele_reader_high_ec->EvaluateMVA( "BDTG method" );
   }
-  else if (iElectron.pt() < 10 && fabs(iElectron.eta()) <= 0.8) {
-    return ele_reader_low_cb->EvaluateMVA( "BDTG method" );
-  }
-  else if (iElectron.pt() < 10 && fabs(iElectron.eta()) > 0.8 && fabs(iElectron.eta()) <= 1.479) {
-    return ele_reader_low_fb->EvaluateMVA( "BDTG method" );
-  }
-  else {
-    return ele_reader_low_ec->EvaluateMVA( "BDTG method" );
-  }
-  
+  else return -99999.;
 }
 
 vecPatElectron MultileptonAna::Get_vecPatElectron_Passing_ElectronLepMVA(const vecPatElectron& electrons, const std::vector<pat::Jet>& iJets, double MVA_Cut)
