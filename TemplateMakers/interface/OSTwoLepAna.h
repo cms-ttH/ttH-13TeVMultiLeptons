@@ -38,6 +38,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
                 // declare any histos
                 // Charlie, don't worry we'll keep these to a minimum..
                 TH1D *numInitialWeightedMCevents; // <- easily keep track of num (weighted) mc events we started with
+		// Geoff, 2many histos^^ in tha tree maker tho...loljk
                 
 		// declare the tree
 		TTree * summaryTree;
@@ -52,20 +53,26 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 
 		int lumiBlock_intree;
 		int runNumber_intree;
-
+		
                 vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> loose_leptons_intree;
-		vector<ttH::Lepton> tight_leptons_intree;
+		vector<ttH::Lepton> cutBased_leptons_intree;
+		vector<ttH::Lepton> looseMvaBased_leptons_intree;
+		vector<ttH::Lepton> tightMvaBased_leptons_intree;
  
 		vector<ttH::Electron> raw_electrons_intree;               
 		vector<ttH::Electron> preselected_electrons_intree;
 		vector<ttH::Electron> loose_electrons_intree;
-		vector<ttH::Electron> tight_electrons_intree;
+		vector<ttH::Electron> cutBased_electrons_intree;
+		vector<ttH::Electron> looseMvaBased_electrons_intree;
+		vector<ttH::Electron> tightMvaBased_electrons_intree;
 
 		vector<ttH::Muon> raw_muons_intree;
                 vector<ttH::Muon> preselected_muons_intree;
                 vector<ttH::Muon> loose_muons_intree;
-                vector<ttH::Muon> tight_muons_intree;
+                vector<ttH::Muon> cutBased_muons_intree;
+                vector<ttH::Muon> looseMvaBased_muons_intree;
+                vector<ttH::Muon> tightMvaBased_muons_intree;
 
                 vector<ttH::Jet> preselected_jets_intree;
 		vector<ttH::Jet> loose_bJets_intree;
@@ -100,9 +107,19 @@ void OSTwoLepAna::tree_add_branches()
 	summaryTree->Branch("loose_leptons", &loose_leptons_intree);
 	summaryTree->Branch("loose_electrons", &loose_electrons_intree);
 	summaryTree->Branch("loose_muons", &loose_muons_intree);
-	summaryTree->Branch("tight_leptons", &tight_leptons_intree);
-	summaryTree->Branch("tight_electrons", &tight_electrons_intree);
-	summaryTree->Branch("tight_muons", &tight_muons_intree);
+
+	summaryTree->Branch("cutBased_leptons", &cutBased_leptons_intree);
+	summaryTree->Branch("cutBased_electrons", &cutBased_electrons_intree);
+	summaryTree->Branch("cutBased_muons", &cutBased_muons_intree);
+
+	summaryTree->Branch("looseMvaBased_leptons", &looseMvaBased_leptons_intree);
+	summaryTree->Branch("looseMvaBased_electrons", &looseMvaBased_electrons_intree);
+	summaryTree->Branch("looseMvaBased_muons", &looseMvaBased_muons_intree);
+
+	summaryTree->Branch("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
+	summaryTree->Branch("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
+	summaryTree->Branch("tightMvaBased_muons", &tightMvaBased_muons_intree);
+
 	summaryTree->Branch("raw_electrons", &raw_electrons_intree);
 	summaryTree->Branch("raw_muons", &raw_muons_intree);
 	summaryTree->Branch("preselected_jets", &preselected_jets_intree);
@@ -128,9 +145,20 @@ void OSTwoLepAna::initialize_variables()
 	loose_leptons_intree.clear();
 	loose_electrons_intree.clear();
 	loose_muons_intree.clear();
-	tight_leptons_intree.clear();
-	tight_electrons_intree.clear();
-	tight_muons_intree.clear();
+
+	cutBased_leptons_intree.clear();
+	cutBased_electrons_intree.clear();
+	cutBased_muons_intree.clear();
+
+	looseMvaBased_leptons_intree.clear();
+	looseMvaBased_electrons_intree.clear();
+	looseMvaBased_muons_intree.clear();
+
+	tightMvaBased_leptons_intree.clear();
+	tightMvaBased_electrons_intree.clear();
+	tightMvaBased_muons_intree.clear();
+
+
 	raw_electrons_intree.clear();
 	raw_muons_intree.clear();
 

@@ -705,7 +705,7 @@ patElectrons MultileptonAna::GetElectrons (const edm::Event& event)
 	return electronHandle;
 	
 }
-vecPatLepton MultileptonAna::fillLeptons(vecPatMuon& muons, vecPatElectron& electrons)
+vecPatLepton MultileptonAna::fillLeptons(const vecPatMuon& muons, const vecPatElectron& electrons)
 {
   vecPatLepton leptons;
   for (vecPatMuon::const_iterator iMu = muons.begin(); iMu != muons.end(); iMu++)
@@ -898,6 +898,9 @@ vector<double> MultileptonAna::ReturnPUJetID (vecPatJet theobjs)
 	
 	return thePUIDs;
 } 
+
+
+
 
 vector<ttH::Lepton> MultileptonAna::GetCollection (vector<ttH::Muon> muObjs, vector<ttH::Electron>eleObjs)
 {
@@ -1112,7 +1115,8 @@ vdouble MultileptonAna::Get_Isos(vecPatElectron theobjs)
 
 
 
-bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, const muonID::muonID iMuonID){
+
+bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, const muonID::muonID iMuonID, const std::vector<pat::Jet>& iJets){
   
   CheckVertexSetUp();
   
@@ -1159,6 +1163,26 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonPtEtaIsoTrackerOnly:
   case muonID::muonRaw:
     return true;
+    break;
+  case muonID::muonLooseMvaBased:
+    // passesKinematics = true;
+    // passesIso = true;
+    // goodGlb = (iMuon.isGlobalMuon() &&  iMuon.globalTrack()->normalizedChi2() < 3
+    // 	       && iMuon.combinedQuality().chi2LocalPosition < 12 &&
+    // 	       iMuon.combinedQuality().trkKink < 20);
+    // mediumID = (iMuon.innerTrack()->validFraction() >= 0.8 &&
+    // 		  iMuon.segmentCompatibility() >= (goodGlb ? 0.303 : 0.451));
+    // passesID = (GetMuonLepMVA(iMuon,jets) > 0.5 && mediumID );
+    // break;
+  case muonID::muonTightMvaBased:
+    passesKinematics = true;
+    passesIso = true;
+    goodGlb = (iMuon.isGlobalMuon() &&  iMuon.globalTrack()->normalizedChi2() < 3
+  	       && iMuon.combinedQuality().chi2LocalPosition < 12 &&
+  	       iMuon.combinedQuality().trkKink < 20);
+    mediumID = (iMuon.innerTrack()->validFraction() >= 0.8 &&
+		  iMuon.segmentCompatibility() >= (goodGlb ? 0.303 : 0.451));
+    passesID = (GetMuonLepMVA(iMuon,iJets) > 0.8 && mediumID );
     break;
   case muonID::muonCutBased:
     passesKinematics = ((iMuon.pt() >= minMuonPt) && (fabs(iMuon.eta()) < 2.4));
@@ -1260,7 +1284,7 @@ vint MultileptonAna::Get_JetPartonFlavor(vecPatJet theobjs)
 }
 
 
-bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float iMinPt, const electronID::electronID iElectronID){
+bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float iMinPt, const electronID::electronID iElectronID, const std::vector<pat::Jet>& iJets){
 
   CheckVertexSetUp();
   
@@ -1318,6 +1342,20 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   case electronID::electronLooseMinusTrigPresel:
   case electronID::electronRaw:
     return true;
+    break;
+  case electronID::electronLooseMvaBased:
+    passesKinematics = true;
+    passesIso = true;
+    passesID = (GetElectronLepMVA(iElectron,iJets) > 0.5 &&
+		iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS)==0 &&
+		iElectron.passConversionVeto());
+    break;
+  case electronID::electronTightMvaBased:
+    passesKinematics = true;
+    passesIso = true;
+    passesID = (GetElectronLepMVA(iElectron,iJets) > 0.8 &&
+		iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS)==0 &&
+		iElectron.passConversionVeto());
     break;
   case electronID::electronCutBased:
     //Phys14 MVA ID (only for pT > 10 GeV) for now
@@ -1488,6 +1526,67 @@ bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const f
   return (PassesCSV(iJet, iCSVworkingPoint) && passesPUJetID);
 }
 
+std::vector<pat::Muon>
+MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const float iMinPt, const muonID::muonID iMuonID, const std::vector<pat::Jet>& iJets){
+  CheckSetUp();
+  
+  std::vector<pat::Muon> selectedMuons;
+  
+  for( std::vector<pat::Muon>::const_iterator it = inputMuons.begin(), ed = inputMuons.end(); it != ed; ++it ){
+    if( isGoodMuon(*it,iMinPt,iMuonID,iJets) ) selectedMuons.push_back(*it);
+  }
+  
+  return selectedMuons;
+}
+
+std::vector<pat::Electron>
+MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElectrons, const float iMinPt, const electronID::electronID iElectronID, const std::vector<pat::Jet>& iJets){
+
+  CheckSetUp();
+
+  std::vector<pat::Electron> selectedElectrons;
+
+  for( std::vector<pat::Electron>::const_iterator it = inputElectrons.begin(), ed = inputElectrons.end(); it != ed; ++it ){
+    if( isGoodElectron(*it,iMinPt,iElectronID,iJets) ) selectedElectrons.push_back(*it);
+  }
+
+  return selectedElectrons;
+}
+
+std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>>
+						//MultileptonAna::pickTop2LeadingLeptons(const std::vector<pat::Muon>& iMuons, const std::vector<pat::Electron>& iElectrons){
+MultileptonAna::pickTop2LeadingLeptons(const vecPatMuon& iMuons, const vecPatElectron& iElectrons){
+
+  vecPatLepton iLeptons = fillLeptons(iMuons,iElectrons);
+  iLeptons = MiniAODHelper::GetSortedByPt(iLeptons);
+  auto t = std::make_tuple(iMuons,iElectrons);
+  if (iLeptons.size() >2)
+    {
+      vecPatElectron theElectrons;
+      vecPatMuon theMuons;      
+      if (abs(iLeptons[0].pdgId()) == 11){
+	theElectrons.push_back(iElectrons[0]);
+	if (abs(iLeptons[1].pdgId()) == 11){
+	  theElectrons.push_back(iElectrons[1]);
+	}
+	else if (abs(iLeptons[1].pdgId()) == 13){
+	  theMuons.push_back(iMuons[0]);
+	}
+      }
+      else if (abs(iLeptons[0].pdgId()) == 13){
+	theMuons.push_back(iMuons[0]);
+	if (abs(iLeptons[1].pdgId()) == 13){
+	  theMuons.push_back(iMuons[1]);
+	}
+	else if (abs(iLeptons[1].pdgId()) == 11){
+	  theElectrons.push_back(iElectrons[0]);
+	}
+      }
+      t = std::make_tuple(theMuons,theElectrons);
+    }
+
+  return t;
+}
 
 float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pat::Jet>& iJets){
   CheckSetUp();
