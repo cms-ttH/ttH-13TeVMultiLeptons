@@ -183,7 +183,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////
 
 	
-	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.02); 	//remove electrons that are close (dR <=0.02) to muons
+	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	//remove electrons that are close (dR <=0.05) to muons
 	//make sure the electrons used for jet cleaning are already cleaned of muons
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronPreselection);
 
@@ -195,24 +195,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	/// Leptons
 	///
 	////////	
-
-	//	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
-	//selectedLeptons_preselected = MiniAODHelper::GetSortedByPt(selectedLeptons_preselected);
-
-	// selectedElectrons_loose = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_loose,selectedMuons_loose,0.02);
-	// vecPatLepton selectedLeptons_loose = fillLeptons(selectedMuons_loose,selectedElectrons_loose);
-	// selectedLeptons_loose = MiniAODHelper::GetSortedByPt(selectedLeptons_loose);
-
-	// selectedElectrons_tight = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_tight,selectedMuons_tight,0.02);
-	// vecPatLepton selectedLeptons_tight = fillLeptons(selectedMuons_tight,selectedElectrons_tight);
-	// selectedLeptons_tight = MiniAODHelper::GetSortedByPt(selectedLeptons_tight);
 	
-	// vecPatLepton selectedLeptons_looseCutBased = fillLeptons(selectedMuons_looseCutBased,selectedElectrons_looseCutBased);
-	// selectedLeptons_looseCutBased = MiniAODHelper::GetSortedByPt(selectedLeptons_looseCutBased);
-
-	// vecPatLepton selectedLeptons_tightCutBased = fillLeptons(selectedMuons_tightCutBased,selectedElectrons_tightCutBased);
-	// selectedLeptons_tightCutBased = MiniAODHelper::GetSortedByPt(selectedLeptons_tightCutBased);
-
+	//saves time by skipping the rest of the loop if <= 2 preselected leptons
 	if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
 	  {
 
