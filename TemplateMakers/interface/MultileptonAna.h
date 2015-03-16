@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <tuple>
 
 #include <iostream>
 #include <algorithm>
@@ -246,7 +247,7 @@ class MultileptonAna: public MiniAODHelper
   TLorentzVectorCMS Get_TLorentzVectorCMS (pat::MET theMET);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS_sorted_leptons(vecTLorentzVectorCMS leps1, vecTLorentzVectorCMS leps2);
 
-  vecPatLepton fillLeptons(vecPatMuon& mus, vecPatElectron& eles);
+  vecPatLepton fillLeptons(const vecPatMuon& mus, const vecPatElectron& eles);
 
   void SetupOptions(const edm::Event& event);
   trigRes GetTriggers(const edm::Event& event);
@@ -275,11 +276,16 @@ class MultileptonAna: public MiniAODHelper
   
 
   // replace virtual members from inherited miniAODhelper:
-  bool isGoodMuon(const pat::Muon&, const float, const muonID::muonID);
-  bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID);
+  std::vector<pat::Muon> GetSelectedMuons(const std::vector<pat::Muon>&, const float, const muonID::muonID, const std::vector<pat::Jet>& = std::vector<pat::Jet>());
+  std::vector<pat::Electron> GetSelectedElectrons(const std::vector<pat::Electron>&, const float, const electronID::electronID, const std::vector<pat::Jet>& = std::vector<pat::Jet>());
+  bool isGoodMuon(const pat::Muon&, const float, const muonID::muonID, const std::vector<pat::Jet>&);
+  bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID, const std::vector<pat::Jet>&);
   bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
   bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
   int GetHiggsDaughterId(const std::vector<reco::GenParticle>&);
+
+  //  std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>> pickTop2LeadingLeptons(const std::vector<pat::Muon>&, const std::vector<pat::Electron>&);
+  std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>> pickTop2LeadingLeptons(const vecPatMuon&, const vecPatElectron&);
   
   template <typename obj1, typename obj2> std::vector<obj1> cleanObjects(const std::vector<obj1>&, const std::vector<obj2>&, const double);
   

@@ -183,7 +183,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////
 
 	
-	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.02); 	//remove electrons that are close (dR <=0.02) to muons
+	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	//remove electrons that are close (dR <=0.05) to muons
 	//make sure the electrons used for jet cleaning are already cleaned of muons
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronPreselection);
 
@@ -195,66 +195,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	/// Leptons
 	///
 	////////	
-
-	//	vecPatLepton selectedLeptons_preselected = fillLeptons(selectedMuons_preselected,selectedElectrons_preselected);
-	//selectedLeptons_preselected = MiniAODHelper::GetSortedByPt(selectedLeptons_preselected);
-
-	// selectedElectrons_loose = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_loose,selectedMuons_loose,0.02);
-	// vecPatLepton selectedLeptons_loose = fillLeptons(selectedMuons_loose,selectedElectrons_loose);
-	// selectedLeptons_loose = MiniAODHelper::GetSortedByPt(selectedLeptons_loose);
-
-	// selectedElectrons_tight = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_tight,selectedMuons_tight,0.02);
-	// vecPatLepton selectedLeptons_tight = fillLeptons(selectedMuons_tight,selectedElectrons_tight);
-	// selectedLeptons_tight = MiniAODHelper::GetSortedByPt(selectedLeptons_tight);
 	
-	// vecPatLepton selectedLeptons_looseCutBased = fillLeptons(selectedMuons_looseCutBased,selectedElectrons_looseCutBased);
-	// selectedLeptons_looseCutBased = MiniAODHelper::GetSortedByPt(selectedLeptons_looseCutBased);
-
-	// vecPatLepton selectedLeptons_tightCutBased = fillLeptons(selectedMuons_tightCutBased,selectedElectrons_tightCutBased);
-	// selectedLeptons_tightCutBased = MiniAODHelper::GetSortedByPt(selectedLeptons_tightCutBased);
-
+	//saves time by skipping the rest of the loop if <= 2 preselected leptons
 	if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
 	  {
 
-	    vecPatLepton selectedLeptons_cutBased = fillLeptons(selectedMuons_cutBased,selectedElectrons_cutBased);
-	    selectedLeptons_cutBased = MiniAODHelper::GetSortedByPt(selectedLeptons_cutBased);
+	    auto lepTuple = pickTop2LeadingLeptons(selectedMuons_cutBased,selectedElectrons_cutBased);
+	    selectedMuons_cutBased = std::get<0>(lepTuple);
+	    selectedElectrons_cutBased = std::get<1>(lepTuple);
 
-	
-	    /// Only SELECT TWO LEADING PRESELECTED LEPTONS FOR FINAL SELECTION
-	    if (selectedLeptons_cutBased.size() >2)
-	      {
-		vecPatLepton selectedLeptons_cutBased_temp;
-		vecPatElectron selectedElectrons_cutBased_temp;
-		vecPatMuon selectedMuons_cutBased_temp;
-		selectedLeptons_cutBased_temp.push_back(selectedLeptons_cutBased[0]);
-		selectedLeptons_cutBased_temp.push_back(selectedLeptons_cutBased[1]);
-		selectedLeptons_cutBased = selectedLeptons_cutBased_temp;
-		if (abs(selectedLeptons_cutBased[0].pdgId()) == 11){
-		  selectedElectrons_cutBased_temp.push_back(selectedElectrons_cutBased[0]);
-		  if (abs(selectedLeptons_cutBased[1].pdgId()) == 11){
-		    selectedElectrons_cutBased_temp.push_back(selectedElectrons_cutBased[1]);
-		  }
-		  else if (abs(selectedLeptons_cutBased[1].pdgId()) == 13){
-		    selectedMuons_cutBased_temp.push_back(selectedMuons_cutBased[0]);
-		    selectedMuons_cutBased = selectedMuons_cutBased_temp;
-		  }
-		  selectedElectrons_cutBased = selectedElectrons_cutBased_temp;
-		}
-		else if (abs(selectedLeptons_cutBased[0].pdgId()) == 13){
-		  selectedMuons_cutBased_temp.push_back(selectedMuons_cutBased[0]);
-		  if (abs(selectedLeptons_cutBased[1].pdgId()) == 13){
-		    selectedMuons_cutBased_temp.push_back(selectedMuons_cutBased[1]);
-		  }
-		  else if (abs(selectedLeptons_cutBased[1].pdgId()) == 11){
-		    selectedElectrons_cutBased_temp.push_back(selectedElectrons_cutBased[0]);
-		    selectedElectrons_cutBased = selectedElectrons_cutBased_temp;
-		  }
-		  selectedMuons_cutBased = selectedMuons_cutBased_temp;
-		}
-		selectedMuons_cutBased_temp.clear();
-		selectedElectrons_cutBased_temp.clear();
-	      } 
-	
 	    vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
 	    selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 	
@@ -285,6 +234,27 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatJet *testHiggsjets  = &selectedJets_noSys_unsorted;
 	    TwoObjectKinematic<vecPatJet,vecPatJet> myNumHiggsLikeDijet15("mass", "num_within", "numHiggsLike_dijet_15_float", &(testHiggsjets), "jets_by_pt", 1, 99, &(testHiggsjets), "jets_by_pt", 1, 99, 115.0, "", "", 15.0);
 
+
+	    /////////
+	    ///
+	    /// Filling promptMVA-based collections
+	    ///
+	    ////////
+
+	    vecPatElectron selectedElectrons_looseMvaBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronLooseMvaBased, selectedJets_forLepMVA);
+	    vecPatElectron selectedElectrons_tightMvaBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronTightMvaBased, selectedJets_forLepMVA);
+
+	    vecPatMuon selectedMuons_looseMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonLooseMvaBased, selectedJets_forLepMVA);
+	    vecPatMuon selectedMuons_tightMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonTightMvaBased, selectedJets_forLepMVA);
+
+	    lepTuple = pickTop2LeadingLeptons(selectedMuons_looseMvaBased,selectedElectrons_looseMvaBased);
+	    selectedMuons_looseMvaBased = std::get<0>(lepTuple);
+	    selectedElectrons_looseMvaBased = std::get<1>(lepTuple);
+
+	    lepTuple = pickTop2LeadingLeptons(selectedMuons_tightMvaBased,selectedElectrons_tightMvaBased);
+	    selectedMuons_tightMvaBased = std::get<0>(lepTuple);
+	    selectedElectrons_tightMvaBased = std::get<1>(lepTuple);
+
 	    /////////
 	    ///
 	    /// MET
@@ -301,20 +271,26 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw,selectedJets_forLepMVA);
 	    vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
-	    vector<ttH::Electron> looseCutBased_electrons = GetCollection(selectedElectrons_looseCutBased,selectedJets_forLepMVA);
-	    vector<ttH::Electron> tightCutBased_electrons = GetCollection(selectedElectrons_tightCutBased,selectedJets_forLepMVA);
+	    //	    vector<ttH::Electron> looseCutBased_electrons = GetCollection(selectedElectrons_looseCutBased,selectedJets_forLepMVA);
+	    //	    vector<ttH::Electron> tightCutBased_electrons = GetCollection(selectedElectrons_tightCutBased,selectedJets_forLepMVA);
 	    vector<ttH::Electron> cutBased_electrons = GetCollection(selectedElectrons_cutBased,selectedJets_forLepMVA);
+	    vector<ttH::Electron> looseMvaBased_electrons = GetCollection(selectedElectrons_looseMvaBased,selectedJets_forLepMVA);
+	    vector<ttH::Electron> tightMvaBased_electrons = GetCollection(selectedElectrons_tightMvaBased,selectedJets_forLepMVA);
 
 	    vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw,selectedJets_forLepMVA);
 	    vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
-	    vector<ttH::Muon> looseCutBased_muons = GetCollection(selectedMuons_looseCutBased,selectedJets_forLepMVA);
-	    vector<ttH::Muon> tightCutBased_muons = GetCollection(selectedMuons_tightCutBased,selectedJets_forLepMVA);
+	    // vector<ttH::Muon> looseCutBased_muons = GetCollection(selectedMuons_looseCutBased,selectedJets_forLepMVA);
+	    // vector<ttH::Muon> tightCutBased_muons = GetCollection(selectedMuons_tightCutBased,selectedJets_forLepMVA);
 	    vector<ttH::Muon> cutBased_muons = GetCollection(selectedMuons_cutBased,selectedJets_forLepMVA);
+	    vector<ttH::Muon> looseMvaBased_muons = GetCollection(selectedMuons_looseMvaBased,selectedJets_forLepMVA);
+	    vector<ttH::Muon> tightMvaBased_muons = GetCollection(selectedMuons_tightMvaBased,selectedJets_forLepMVA);
 
 	    vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
-	    vector<ttH::Lepton> looseCutBased_leptons = GetCollection(looseCutBased_muons,looseCutBased_electrons);
-	    vector<ttH::Lepton> tightCutBased_leptons = GetCollection(tightCutBased_muons,tightCutBased_electrons);
+	    // vector<ttH::Lepton> looseCutBased_leptons = GetCollection(looseCutBased_muons,looseCutBased_electrons);
+	    // vector<ttH::Lepton> tightCutBased_leptons = GetCollection(tightCutBased_muons,tightCutBased_electrons);
 	    vector<ttH::Lepton> cutBased_leptons = GetCollection(cutBased_muons,cutBased_electrons);
+	    vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);
+	    vector<ttH::Lepton> tightMvaBased_leptons = GetCollection(tightMvaBased_muons,tightMvaBased_electrons);
 
 	    vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_forSync);
 	    vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
@@ -414,13 +390,20 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    preselected_electrons_intree = preselected_electrons;
 	    preselected_muons_intree = preselected_muons;
 
-	    loose_leptons_intree = looseCutBased_leptons;
-	    loose_electrons_intree = looseCutBased_electrons;
-	    loose_muons_intree = looseCutBased_muons;
+	    // loose_leptons_intree = looseCutBased_leptons;
+	    // loose_electrons_intree = looseCutBased_electrons;
+	    // loose_muons_intree = looseCutBased_muons;
 
-	    tight_leptons_intree = cutBased_leptons;
-	    tight_electrons_intree = cutBased_electrons;
-	    tight_muons_intree = cutBased_muons;
+	    cutBased_leptons_intree = cutBased_leptons;
+	    cutBased_electrons_intree = cutBased_electrons;
+	    cutBased_muons_intree = cutBased_muons;
+
+	    looseMvaBased_muons_intree = looseMvaBased_muons;
+	    tightMvaBased_muons_intree = tightMvaBased_muons;
+	    looseMvaBased_electrons_intree = looseMvaBased_electrons;
+	    tightMvaBased_electrons_intree = tightMvaBased_electrons;
+	    looseMvaBased_leptons_intree = looseMvaBased_leptons;
+	    tightMvaBased_leptons_intree = tightMvaBased_leptons;
 
 	    raw_electrons_intree = raw_electrons;
 	    raw_muons_intree = raw_muons;
