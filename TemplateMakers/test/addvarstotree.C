@@ -265,7 +265,7 @@ void addvarstotree(TString infiles, TString outfile)
         SumJetPt_handle = getsumpt(*preselected_jets_intree);	// A.K.A. 'HT'
         AvgBtagDiscNonBtags_handle = getAvgCSV(*preselected_jets_intree,"M",false);   			
         AvgBtagDiscBtags_handle = getAvgCSV(*preselected_jets_intree,"M",true);				
-        MinDrJets_handle = getTwoObjKineExtreme(*preselected_jets_intree,*preselected_jets_intree,"min","dR");
+        MinDrJets_handle = getTwoObjKineExtreme(*preselected_jets_intree,"min","dR");
         SumPt_handle = getsumpt(*preselected_jets_intree, *preselected_electrons_intree, *preselected_muons_intree);	
 
         // calculate MHT
@@ -280,22 +280,22 @@ void addvarstotree(TString infiles, TString outfile)
         numLooseBJets_handle = loosetaggedjets.size();
 
         SumNonTaggedJetMass_handle = (getsumTLV(nontaggedjets)).M(); // is this what this was at 8 TeV?
-        HiggsLikeDijetMass2_handle = pickFromSortedTwoObjKine(*preselected_jets_intree,*preselected_jets_intree,"mass", 2, 125.);
-        HiggsLikeDijetMass_handle = pickFromSortedTwoObjKine(*preselected_jets_intree,*preselected_jets_intree,"mass", 1, 125.);
-        NumHiggsLikeDijet15_handle = getNumTwoObjKineInRange(*preselected_jets_intree,*preselected_jets_intree,"mass",125.,15.);
+        HiggsLikeDijetMass2_handle = pickFromSortedTwoObjKine(*preselected_jets_intree,"mass", 2, 125.);
+        HiggsLikeDijetMass_handle = pickFromSortedTwoObjKine(*preselected_jets_intree,"mass", 1, 125.);
+        NumHiggsLikeDijet15_handle = getNumTwoObjKineInRange(*preselected_jets_intree,"mass",125.,15.);
 
         MaxDeltaPhiMetJet_handle = 	getTwoObjKineExtreme(*met_intree,*preselected_jets_intree,"max","dPhi");
         MinDeltaPhiMetJet_handle = 	getTwoObjKineExtreme(*met_intree,*preselected_jets_intree,"min","dPhi");
         //DeltaPhiMetLep2_handle = 	pickFromSortedTwoObjKine(*met_intree,*preselected_leptons_intree, "dPhi", 2, 0.0); // probably wrong
         //DeltaPhiMetLep1_handle = 	pickFromSortedTwoObjKine(*met_intree,*preselected_leptons_intree, "dPhi", 1, 0.0); // probably wrong
 
-        WLikeDijetMass81_handle = 	pickFromSortedTwoObjKine(*preselected_jets_intree,*preselected_jets_intree,"mass",1,81.);
-        DeltaPhiLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,*preselected_leptons_intree,"min","dPhi");
-        DeltaRLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,*preselected_leptons_intree,"min","dR");
+        WLikeDijetMass81_handle = 	pickFromSortedTwoObjKine(*preselected_jets_intree,"mass",1,81.);
+        DeltaPhiLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,"min","dPhi");
+        DeltaRLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,"min","dR");
 
-        vetoZmass_handle = 	pickFromSortedTwoObjKine(*preselected_leptons_intree,*preselected_leptons_intree,"mass",1,91.2);
-        vetoZmassSFOS_handle =   pickFromSortedTwoObjKine(*preselected_leptons_intree,*preselected_leptons_intree,"massSFOS",1,91.2);
-        minMassLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,*preselected_leptons_intree,"min","mass");
+        vetoZmass_handle = 	pickFromSortedTwoObjKine(*preselected_leptons_intree,"mass",1,91.2);
+        vetoZmassSFOS_handle =   pickFromSortedTwoObjKine(*preselected_leptons_intree,"massSFOS",1,91.2);
+        minMassLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,"min","mass");
 
         
         newtree->Fill();

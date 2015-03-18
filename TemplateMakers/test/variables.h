@@ -274,7 +274,7 @@ template <typename ob1type, typename ob2type> double getdR(ob1type object1, ob2t
 
 ////////////////////////////////////////////////////////////////////////////
 
-template <typename coll1type, typename coll2type> double getTwoObjKineExtreme( coll1type collection1, coll2type collection2, string extremetype="min", string quantity="dR" )
+template <typename coll1type, typename coll2type> double getTwoObjKineExtreme( coll1type collection1, coll2type collection2, string extremetype, string quantity )
 {
     double minvalue = 999999.;
     double maxvalue = 0.;
@@ -346,25 +346,31 @@ template <typename coll1type, typename coll2type> double getTwoObjKineExtreme( c
     if (extremetype=="min") return minvalue;
     else if (extremetype=="max") return maxvalue;
     return -9999.;
-}    
-
+}
+    
+template <typename coll1type> double getTwoObjKineExtreme( coll1type collection1, string extremetype, string quantity )
+{
+    double samecollectionitem = getTwoObjKineExtreme( collection1, collection1, extremetype, quantity );
+    return samecollectionitem;
+    
+}
 ////////////////////////////////////////////////////////////////////////////
 
 
-template <typename coll1type, typename coll2type> vector<double> getTwoObjKineRawCollection(coll1type collection1, coll2type collection2, string quantity="dR" )
+template <typename coll1type, typename coll2type> vector<double> getTwoObjKineRawCollection(coll1type collection1, coll2type collection2, string quantity="dR", bool thesamecols=false )
 {
     int size1 = collection1.size();
-    int size2 = collection2.size();
+    //int size2 = collection2.size();
 
     vector<double> kineRawCollecion;
     
-    bool sametypes = isSame(collection1,collection2);   
+    //bool sametypes = isSame(collection1,collection2);   
     
-    bool thesamecols = false;
+    //bool thesamecols = false;
     
     //if (sametypes) if (collection1==collection2) thesamecols = true;
     //Above doesn't compile. Line below is sort of a hack for now (should eventually fix this):
-    if (sametypes && size1 && size2) if (collection1[0].obj==collection2[0].obj) thesamecols = true; // <- really only a GUESS that they are same collections
+    //if (sametypes && size1 && size2) if (collection1[0].obj==collection2[0].obj) thesamecols = true; // <- really only a GUESS that they are same collections
     
     
     if (!thesamecols)
@@ -458,11 +464,12 @@ template <typename coll1type, typename coll2type> vector<double> getTwoObjKineRa
 }
 ////////////////////////////////////////////////////////////////////////////
 
-template <typename coll1type, typename coll2type> double pickFromSortedTwoObjKine( coll1type collection1, coll2type collection2, string quantity="mass", int whichInOrder=1, double comparisonValue=0.)
+// use this overloaded version when comparing objects from different collections:
+template <typename coll1type, typename coll2type> double pickFromSortedTwoObjKine( coll1type collection1, coll2type collection2, string quantity, int whichInOrder, double comparisonValue, bool thesamecols=false)
 {
-    //"if no comparison value, whichInOrder picks the ith quanity from the list (in decending order). If comparison value provided, whichInOrder picks the ith quanity closest to the value."
+    //"if no comparison value, whichInOrder picks the ith quanity from the list (in decending order). If comparison value provided, whichInOrder picks the ith quanity closest to the value."    
     
-    vector<double> thelist = getTwoObjKineRawCollection( collection1, collection2, quantity);
+    vector<double> thelist = getTwoObjKineRawCollection( collection1, collection2, quantity, thesamecols);
     int size = thelist.size();
 
     if (!size) return -99999.;
@@ -488,15 +495,34 @@ template <typename coll1type, typename coll2type> double pickFromSortedTwoObjKin
 
     return thelist[newlist[whichInOrder-1].second];
 }
+
+// use this overloaded version when comparing objects from the same collection:
+template <typename coll1type> double pickFromSortedTwoObjKine( coll1type collection1, string quantity, int whichInOrder, double comparisonValue)
+{   
+    double samecollectionitem = pickFromSortedTwoObjKine( collection1, collection1, quantity, whichInOrder, comparisonValue, true);
+    return samecollectionitem;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////
 
-template <typename coll1type, typename coll2type> int getNumTwoObjKineInRange( coll1type collection1, coll2type collection2, string quantity="mass", double comparisonValue=125., double withinrange=15.)
+// use this overloaded version when comparing objects from different collections:
+template <typename coll1type, typename coll2type> int getNumTwoObjKineInRange( coll1type collection1, coll2type collection2, string quantity, double comparisonValue, double withinrange, bool thesamecols=false)
 {
-    vector<double> thelist = getTwoObjKineRawCollection( collection1, collection2, quantity);
+    vector<double> thelist = getTwoObjKineRawCollection( collection1, collection2, quantity, thesamecols);
     int count = 0;
     for (auto elem = thelist.begin(); elem != thelist.end(); ++elem) if (dabs((*elem) - comparisonValue)<withinrange) count += 1;
     return count;
 }
+
+// use this overloaded version when comparing objects from the same collection:
+template <typename coll1type> int getNumTwoObjKineInRange( coll1type collection1, string quantity, double comparisonValue, double withinrange)
+{
+    int samecollectionitem = getNumTwoObjKineInRange( collection1, collection1, quantity, comparisonValue, withinrange, true);
+    return samecollectionitem;
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////
 
