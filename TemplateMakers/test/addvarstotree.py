@@ -145,33 +145,25 @@ newtree.Branch("deltaR_boostedDaughters",deltaR_boosted_daughters_handle,"deltaR
 count = 0
 		  
 for entry in tree:
+
     higgs_daughters = []
     top_daughters = []
-    
-    #for i in range(entries):
-    #	entry.GetEntry(i)
-    #count+=1
-    
-    #if ((count % 5000)==0):
-    #	print count
-    #if count > 10000:
-    #	break
-    
+    antitop_daughters = []
     
     preselelectrons = entry.preselected_electrons
-    looseelectrons = entry.loose_electrons
-    tightelectrons = entry.tight_electrons
+    looseelectrons = entry.looseMvaBased_electrons
+    tightelectrons = entry.tightMvaBased_electrons
     
     preselmuons = entry.preselected_muons
-    loosemuons = entry.loose_muons
-    tightmuons = entry.tight_muons
+    loosemuons = entry.looseMvaBased_muons
+    tightmuons = entry.tightMvaBased_muons
 
     preselleptons = entry.preselected_leptons
-    looseleptons = entry.loose_leptons
-    tightleptons = entry.tight_leptons
+    looseleptons = entry.looseMvaBased_leptons
+    tightleptons = entry.tightMvaBased_leptons
 
     preseljets = entry.preselected_jets
-	#loosebtags = entry.loose_bJets
+	#loosebtags = entry.looseMvaBased_bJets
     met = entry.met
 	
     genParticles = entry.pruned_genParticles
@@ -210,19 +202,32 @@ for entry in tree:
     HiggsLikeDijetMass_handle[0] = 	pickFromSortedTwoObjKine(jets,jets,'mass', 1, 125.)
     NumHiggsLikeDijet15_handle[0] = getNumTwoObjKineInRange(jets,jets,'mass',125.,15.)
 
+
+    #charlie's gen particle study
     for genParticle in genParticles:
-	if abs(genParticle.grandmother_pdgID) ==6:
-	    top_daughters.append(genParticle)
-	elif abs(genParticle.grandmother_pdgID) ==25:
-	    higgs_daughters.append(genParticle)
+        #particle must come from a hadronically decaying W from Top or Higgs
+        if (genParticle.status == 23 and abs(genParticle.mother_pdgID) == 24 and (abs(genParticle.pdgID) >= 11 and abs(genParticle.pdgID) <= 14)):
+            if genParticle.grandmother_pdgID == 6:
+                top_daughters.append(genParticle)
+            elif genParticle.grandmother_pdgID == -6:
+                antitop_daughters.append(genParticle)
+            elif genParticle.grandmother_pdgID == 25:
+                higgs_daughters.append(genParticle)
 			
-	if len(higgs_daughters) > 0 and len(top_daughters) >0:
-	    higgs_gChild = higgs_daughters[0]
-	    top_gChild = top_daughters[0]
-	    deltaPhi = higgs_gChild.obj.Phi() - top_gChild.obj.Phi()
-	    deltaEta = higgs_gChild.obj.Eta() - top_gChild.obj.Eta()
-	    deltaR_boosted_daughters_handle[0] = math.sqrt(math.pow(deltaPhi,2)+math.pow(deltaEta,2))
-    
+    myMaxdR = -1
+    if len(higgs_daughters) >= 2:
+        mydR = getTwoObjKineExtreme(higgs_daughters,higgs_daughters,'max','dR')
+        if myMaxdR < mydR: myMaxdR = mydR
+    if len(top_daughters) >= 2:
+        mydR = getTwoObjKineExtreme(top_daughters,top_daughters,'max','dR')
+        if myMaxdR < mydR: myMaxdR = mydR
+    if len(antitop_daughters) >= 2:
+        mydR = getTwoObjKineExtreme(antitop_daughters,antitop_daughters,'max','dR')
+        if myMaxdR < mydR: myMaxdR = mydR
+
+    deltaR_boosted_daughters_handle[0] = myMaxdR
+    #end gen particle study
+
     MaxDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'max','dPhi')
     MinDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'min','dPhi')
     DeltaPhiMetLep2_handle[0] = 	pickFromSortedTwoObjKine(met,leptons, 'dPhi', 2, 0.0) ## probably wrong
@@ -236,7 +241,7 @@ for entry in tree:
     vetoZmassSFOS_handle[0] =   pickFromSortedTwoObjKine(leptons,leptons,'massSFOS',1,91.2)
     minMassLepLep_handle[0] = 	getTwoObjKineExtreme(leptons,leptons,'min','mass')
 
-   newtree.Fill()
+    newtree.Fill()
 
 
 ############################################################

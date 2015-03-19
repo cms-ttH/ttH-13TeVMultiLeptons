@@ -13,6 +13,9 @@
 #include <vector>
 #include <string>
 #include <tuple>
+//test
+#include <map>
+#include <boost/any.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -273,6 +276,8 @@ class MultileptonAna: public MiniAODHelper
   vecPatElectron Get_vecPatElectron_Passing_ElectronLepMVA(const vecPatElectron& electrons, const std::vector<pat::Jet>& iJets, double MVA_Cut);
   vecPatMuon Get_vecPatMuon_Passing_MuonLepMVA(const vecPatMuon& muons, const std::vector<pat::Jet>& iJets, double MVA_Cut);
   const reco::Candidate* GetGenMotherNoFsr(const reco::Candidate* theobj);
+  std::pair<const reco::Candidate*, const reco::Candidate*> GetGenDaughterNoFsr(const reco::Candidate* theobj);
+
   
 
   // replace virtual members from inherited miniAODhelper:

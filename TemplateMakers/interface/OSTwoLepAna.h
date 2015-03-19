@@ -2,6 +2,7 @@
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MultileptonAna.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
+#include <boost/any.hpp>
 
 class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 {
@@ -79,10 +80,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::Jet> tight_bJets_intree;
 		
 		vector<ttH::MET> met_intree;
-		
 		vector<ttH::GenParticle> pruned_genParticles_intree;
-		
-		
 
        edm::EDGetTokenT<reco::BeamSpot> bsToken_;		
        edm::EDGetTokenT<reco::ConversionCollection> conversionToken_;
@@ -91,86 +89,85 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 
 void OSTwoLepAna::tree_add_branches()
 {
-	// add the branches to the tree:
-	summaryTree->Branch("mcwgt", &mcwgt_intree, "mcwgt/D");
-	summaryTree->Branch("wgt", &wgt_intree, "wgt/D");
-	summaryTree->Branch("wallTimePerEvent", &wallTimePerEvent_intree, "wallTimePerEvent/D");
-	
-	summaryTree->Branch("eventnum", &eventnum_intree, "eventnum/I");
-	summaryTree->Branch("lumiBlock", &lumiBlock_intree, "lumiBlock/I");
-	summaryTree->Branch("runNumber", &runNumber_intree, "runNumber/I");
-	summaryTree->Branch("higgs_decay", &higgs_decay_intree);
+  // add the branches to the tree:
+  summaryTree->Branch("mcwgt", &mcwgt_intree);
+  summaryTree->Branch("wgt", &wgt_intree);
+  summaryTree->Branch("wallTimePerEvent", &wallTimePerEvent_intree);
+  
+  summaryTree->Branch("eventnum", &eventnum_intree);
+  summaryTree->Branch("lumiBlock", &lumiBlock_intree);
+  summaryTree->Branch("runNumber", &runNumber_intree);
+  summaryTree->Branch("higgs_decay", &higgs_decay_intree);
+  
+  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
+  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
+  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
+  summaryTree->Branch("loose_leptons", &loose_leptons_intree);
+  summaryTree->Branch("loose_electrons", &loose_electrons_intree);
+  summaryTree->Branch("loose_muons", &loose_muons_intree);
+  
+  summaryTree->Branch("cutBased_leptons", &cutBased_leptons_intree);
+  summaryTree->Branch("cutBased_electrons", &cutBased_electrons_intree);
+  summaryTree->Branch("cutBased_muons", &cutBased_muons_intree);
+  
+  summaryTree->Branch("looseMvaBased_leptons", &looseMvaBased_leptons_intree);
+  summaryTree->Branch("looseMvaBased_electrons", &looseMvaBased_electrons_intree);
+  summaryTree->Branch("looseMvaBased_muons", &looseMvaBased_muons_intree);
+  
+  summaryTree->Branch("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
+  summaryTree->Branch("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
+  summaryTree->Branch("tightMvaBased_muons", &tightMvaBased_muons_intree);
+  
+  summaryTree->Branch("raw_electrons", &raw_electrons_intree);
+  summaryTree->Branch("raw_muons", &raw_muons_intree);
+  summaryTree->Branch("preselected_jets", &preselected_jets_intree);
+  summaryTree->Branch("loose_bJets", &loose_bJets_intree);
+  summaryTree->Branch("tight_bJets", &tight_bJets_intree);
+  summaryTree->Branch("met", &met_intree);
+  summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
 
-	summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
-	summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
-	summaryTree->Branch("preselected_muons", &preselected_muons_intree);
-	summaryTree->Branch("loose_leptons", &loose_leptons_intree);
-	summaryTree->Branch("loose_electrons", &loose_electrons_intree);
-	summaryTree->Branch("loose_muons", &loose_muons_intree);
-
-	summaryTree->Branch("cutBased_leptons", &cutBased_leptons_intree);
-	summaryTree->Branch("cutBased_electrons", &cutBased_electrons_intree);
-	summaryTree->Branch("cutBased_muons", &cutBased_muons_intree);
-
-	summaryTree->Branch("looseMvaBased_leptons", &looseMvaBased_leptons_intree);
-	summaryTree->Branch("looseMvaBased_electrons", &looseMvaBased_electrons_intree);
-	summaryTree->Branch("looseMvaBased_muons", &looseMvaBased_muons_intree);
-
-	summaryTree->Branch("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
-	summaryTree->Branch("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
-	summaryTree->Branch("tightMvaBased_muons", &tightMvaBased_muons_intree);
-
-	summaryTree->Branch("raw_electrons", &raw_electrons_intree);
-	summaryTree->Branch("raw_muons", &raw_muons_intree);
-	summaryTree->Branch("preselected_jets", &preselected_jets_intree);
-	summaryTree->Branch("loose_bJets", &loose_bJets_intree);
-	summaryTree->Branch("tight_bJets", &tight_bJets_intree);
-	summaryTree->Branch("met", &met_intree);
-	summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
 }
 
 void OSTwoLepAna::initialize_variables()
 {
-	mcwgt_intree = -9999.;
-	wgt_intree = -9999.;
-	wallTimePerEvent_intree = -9999.;
-
-	eventnum_intree = -99;
-	lumiBlock_intree = -99;
-	runNumber_intree = -99;
+  mcwgt_intree = -9999.;
+  wgt_intree = -9999.;
+  wallTimePerEvent_intree = -9999.;
+  
+  eventnum_intree = -99;
+  lumiBlock_intree = -99;
+  runNumber_intree = -99;
+  
+  preselected_leptons_intree.clear();
+  preselected_electrons_intree.clear();
+  preselected_muons_intree.clear();
+  loose_leptons_intree.clear();
+  loose_electrons_intree.clear();
+  loose_muons_intree.clear();
+  
+  cutBased_leptons_intree.clear();
+  cutBased_electrons_intree.clear();
+  cutBased_muons_intree.clear();
+  
+  looseMvaBased_leptons_intree.clear();
+  looseMvaBased_electrons_intree.clear();
+  looseMvaBased_muons_intree.clear();
+  
+  tightMvaBased_leptons_intree.clear();
+  tightMvaBased_electrons_intree.clear();
+  tightMvaBased_muons_intree.clear();
+  
+  raw_electrons_intree.clear();
+  raw_muons_intree.clear();
+  
+  preselected_jets_intree.clear();
+  loose_bJets_intree.clear();
+  tight_bJets_intree.clear();
 	
-	preselected_leptons_intree.clear();
-	preselected_electrons_intree.clear();
-	preselected_muons_intree.clear();
-	loose_leptons_intree.clear();
-	loose_electrons_intree.clear();
-	loose_muons_intree.clear();
-
-	cutBased_leptons_intree.clear();
-	cutBased_electrons_intree.clear();
-	cutBased_muons_intree.clear();
-
-	looseMvaBased_leptons_intree.clear();
-	looseMvaBased_electrons_intree.clear();
-	looseMvaBased_muons_intree.clear();
-
-	tightMvaBased_leptons_intree.clear();
-	tightMvaBased_electrons_intree.clear();
-	tightMvaBased_muons_intree.clear();
-
-
-	raw_electrons_intree.clear();
-	raw_muons_intree.clear();
-
-	preselected_jets_intree.clear();
-	loose_bJets_intree.clear();
-	tight_bJets_intree.clear();
-	
-	met_intree.clear();
-
-	pruned_genParticles_intree.clear();
-
-        higgs_decay_intree = -9e6;
+  met_intree.clear();
+  pruned_genParticles_intree.clear();
+  
+  higgs_decay_intree = -9e6;
 }
 
 /*  LocalWords:  lumi
