@@ -120,25 +120,30 @@ namespace ttH
     int pdgID;
     int status;
 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > child0_obj; 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > child0_tlv() const { return  child0_obj; };
-    int child0_pdgID;
-    int child0_status;
+    unsigned int child0;
+    unsigned int child1;
+    unsigned int mother;
+    unsigned int grandmother;
 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > child1_obj; 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > child1_tlv() const { return  child1_obj; };
-    int child1_pdgID;
-    int child1_status;
+    /* ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > child0_obj;  */
+    /* ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > child0_tlv() const { return  child0_obj; }; */
+    /* int child0_pdgID; */
+    /* int child0_status; */
 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > mother_obj; 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > mother_tlv() const { return  mother_obj; };
-    int mother_pdgID;
-    int mother_status;
+    /* ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > child1_obj;  */
+    /* ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > child1_tlv() const { return  child1_obj; }; */
+    /* int child1_pdgID; */
+    /* int child1_status; */
 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > grandmother_obj; 
-    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > grandmother_tlv() const { return  grandmother_obj; };
-    int grandmother_pdgID;
-    int grandmother_status;
+    /* ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > mother_obj;  */
+    /* ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > mother_tlv() const { return  mother_obj; }; */
+    /* int mother_pdgID; */
+    /* int mother_status; */
+
+    /* ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > grandmother_obj;  */
+    /* ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > grandmother_tlv() const { return  grandmother_obj; }; */
+    /* int grandmother_pdgID; */
+    /* int grandmother_status; */
 
     virtual ~GenParticle(){};
     ClassDef(GenParticle, 1); 

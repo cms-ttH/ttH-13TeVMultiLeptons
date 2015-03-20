@@ -26,7 +26,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
 
-        'file:/afs/cern.ch/user/m/muell149/work/data_samples/ttH_phys14_sync.root'
+        'file:/afs/cern.ch/user/m/muell149/public/ttH_phys14_sync.root'
 
 	# Phys14 ttH
 	# PU 40:

@@ -206,12 +206,12 @@ for entry in tree:
     #charlie's gen particle study
     for genParticle in genParticles:
         #particle must come from a hadronically decaying W from Top or Higgs
-        if (genParticle.status == 23 and abs(genParticle.mother_pdgID) == 24 and (abs(genParticle.pdgID) >= 11 and abs(genParticle.pdgID) <= 14)):
-            if genParticle.grandmother_pdgID == 6:
+        if (genParticle.status == 23 and genParticle.mother < 9999 and genParticle.grandmother < 9999 and abs(genParticles[genParticle.mother].pdgID) == 24 and (abs(genParticle.pdgID) < 11 or abs(genParticle.pdgID) > 14)):
+            if genParticles[genParticle.grandmother].pdgID == 6:
                 top_daughters.append(genParticle)
-            elif genParticle.grandmother_pdgID == -6:
+            elif genParticles[genParticle.grandmother].pdgID == -6:
                 antitop_daughters.append(genParticle)
-            elif genParticle.grandmother_pdgID == 25:
+            elif genParticles[genParticle.grandmother].pdgID == 25:
                 higgs_daughters.append(genParticle)
 			
     myMaxdR = -1

@@ -872,37 +872,43 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
   const reco::Candidate* grandMother;
   std::pair<const reco::Candidate*, const reco::Candidate*> childPair;
 
+  //  std::map<const double, std::vector<int>> family_tree;
+  std::map<const double, unsigned int> family_tree;
+
+  unsigned int i = 0;
   for (const auto & iGenParticle: theobjs)
     {
-      childPair = GetGenDaughterNoFsr(&iGenParticle);
-
-      child0 = childPair.first;
-      child1 = childPair.second;
-      mother = GetGenMotherNoFsr(&iGenParticle);
-      grandMother = GetGenMotherNoFsr(mother);
-
       genParticle.obj = iGenParticle.p4();
       genParticle.pdgID = iGenParticle.pdgId();
       genParticle.status = iGenParticle.status();
+      genParticle.child0 = 9999;
+      genParticle.child1 = 9999;
+      genParticle.mother = 9999;
+      genParticle.grandmother = 9999;
 
-      genParticle.child0_obj = child0->p4();
-      genParticle.child0_pdgID = child0->pdgId();
-      genParticle.child0_status = child0->status();
-
-      genParticle.child1_obj = child1->p4();
-      genParticle.child1_pdgID = child1->pdgId();
-      genParticle.child1_status = child1->status();
-
-      genParticle.mother_obj = mother->p4();
-      genParticle.mother_pdgID = mother->pdgId();
-      genParticle.mother_status = mother->status();
-      
-      genParticle.grandmother_obj = grandMother->p4();
-      genParticle.grandmother_pdgID = grandMother->pdgId();
-      genParticle.grandmother_status = grandMother->status();
-
+      family_tree[genParticle.obj.Pt()] = i;//need to decide if it's better to add the obj class pT of the pat obj pT
       theGenParticles.push_back(genParticle);
+      i+=1;
     }
+
+  i=0;
+  for (const auto & iGenParticle : theobjs)
+    {
+      childPair = GetGenDaughterNoFsr(&iGenParticle);
+      child0 = childPair.first;
+      child1 = childPair.second;
+      
+      mother = GetGenMotherNoFsr(&iGenParticle);
+      grandMother = GetGenMotherNoFsr(mother);
+      
+      if (child0->pdgId() != iGenParticle.pdgId() && family_tree.find(child0->pt()) != family_tree.end()) theGenParticles[i].child0 = family_tree[child0->pt()];
+      if (child1->pdgId() != iGenParticle.pdgId() && family_tree.find(child1->pt()) != family_tree.end()) theGenParticles[i].child1 = family_tree[child1->pt()];
+      if (family_tree.find(mother->pt()) != family_tree.end()) theGenParticles[i].mother = family_tree[mother->pt()];
+      if (family_tree.find(grandMother->pt()) != family_tree.end()) theGenParticles[i].grandmother = family_tree[grandMother->pt()];
+
+      i+=1;
+    }
+
   return theGenParticles;
 }
 
