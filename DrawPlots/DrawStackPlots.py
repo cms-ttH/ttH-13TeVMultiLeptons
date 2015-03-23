@@ -385,7 +385,7 @@ def get_histogram(distribution, systematic, sample, lepton_category, jet_tag_cat
     if systematic == 'nominal' or plot_helper.is_matching_data_sample(lepton_categories[lepton_category]['data samples'], sample_group):
         name = '%s' % distribution
 
-    file_name = os.path.join(config['input file location'], lepton_category, '%s_%s_%s_%s.root' % (lepton_category, jet_tag_category, sample, config['input file label']))
+    file_name = os.path.join(config['input file location'], lepton_category, '%s_%s_%s_%s_%s.root' % (lepton_category, jet_tag_category, sample, config['input file label'], sample)) #fix
     try:
         root_file = TFile(file_name)
     except ReferenceError:

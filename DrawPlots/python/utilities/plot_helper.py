@@ -362,9 +362,19 @@ class SampleInformation:
 			# 13 TeV
             'WZJets': {'sample_type': 'MC',
                    'is_signal': False,
-                   'x_section': 32.3, # wzjets to 3lnu ## not clear where this value is coming from ..
-                   'x_section_error': 54.8*0.035, 
+                   #'x_section': 32.3, # wzjets to 3lnu ## not clear where this value is coming from ..
+                   'x_section': 2.165, #Milos
+                   'x_section_error': 2.165*0.035, 
                    'num_generated': 237484}, # update(d)
+            
+            		# 13 TeV
+            'ZZJets': {'sample_type': 'MC',
+                   'is_signal': False,
+                   'x_section': 0.325, # from sm twiki, 31.8*(3*0.0337)*(3*0.0337)
+                   'x_section_error': 0.1, 
+                   'num_generated': 237484}, # update(d)
+            
+            
 
 
 
@@ -823,14 +833,14 @@ class SampleInformation:
 #                      'num_generated': 6912438+1362471},
 
 
-			# 13 TeV
-   	        'TTJets': {'sample_type': 'MC',
-                      'is_signal': False,
-                      'x_section': 815.96, # at 173.2 GeV (top group twiki)
-                      'x_section_error': 25., # +19.37,-28.61 <- change
-                      'x_section_error_ttV': 815.96*0.3,# ?
-                      #'num_generated': 4974383}, # update(d)
-		      'num_generated': 16777216}, #weighted amcatnlo events (raw is 25296990)
+		    # 13 TeV
+   	    'TTJets': {'sample_type': 'MC',
+                  'is_signal': False,
+                  'x_section': 815.96, # at 173.2 GeV (top group twiki)
+                  'x_section_error': 25., # +19.37,-28.61 <- change
+                  'x_section_error_ttV': 815.96*0.3,# ?
+                  #'num_generated': 4974383}, # update(d)
+		  'num_generated': 16777216}, #weighted amcatnlo events (raw is 25296990)
 		      
 
 
@@ -937,18 +947,24 @@ class SampleInformation:
 			# 13 TeV
             'TTWJets': {'sample_type': 'MC',
                        'is_signal': False,
-                       'x_section': 1.152, #from top slides jan 20 2015
-                       'x_section_error': 1.152*0.2, 
-                       'x_section_error_ttV': 2.232*0.123, 
+                       #'x_section': 1.152, #from top slides jan 20 2015
+                       'x_section': 0.6647, #Milos
+                       #'x_section_error': 1.152*0.2, 
+                       #'x_section_error_ttV': 2.232*0.123, 
+                       'x_section_error': 0.6647*0.2, 
+                       'x_section_error_ttV': 0.6647*0.123,
                        'num_generated': 246521}, #update(d)
-			# 13 TeV
+		        
+                        # 13 TeV
             'TTZJets': {'sample_type': 'MC',
                        'is_signal': False,
-                       'x_section': 2.232,  #from top slides jan 20 2015
-                       'x_section_error': 2.232*0.2, 
-                       'x_section_error_ttV': 2.232*0.137, 
+                       #'x_section': 2.232,  #from top slides jan 20 2015
+                       'x_section': 0.8565, #Milos
+                       #'x_section_error': 2.232*0.2, 
+                       #'x_section_error_ttV': 2.232*0.137, 
+                       'x_section_error': 0.8565*0.2, 
+                       'x_section_error_ttV': 0.8565*0.137,                       
                        'num_generated': 249275}, #update(d)
-
 
 
             'ttbarG': {'sample_type': 'MC',
@@ -1112,13 +1128,13 @@ class SampleInformation:
 #                       'num_generated': 992997},
             
             # 13 TeV
-	        'ttH125': {'sample_type': 'MC',
-                       'is_signal': True,
-                       'x_section': 0.5085,
-                       'x_section_error': 0.09,
-                       'x_section_error_ttV': 0.095,
-                       #'num_generated': 199700},		#update(d)
-		       'num_generated': 89900}, # weighted amcatnlo events (raw is 199700)
+	    'ttH125': {'sample_type': 'MC',
+                   'is_signal': True,
+                   'x_section': 0.5085,
+                   'x_section_error': 0.09,
+                   'x_section_error_ttV': 0.095,
+                   #'num_generated': 199700},		#update(d)
+		   'num_generated': 89900}, # weighted amcatnlo events (raw is 199700)
 
 
             'ttH125_NP': {'sample_type': 'MC',
