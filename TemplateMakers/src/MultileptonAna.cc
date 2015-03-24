@@ -1364,7 +1364,10 @@ MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const
   std::vector<pat::Muon> selectedMuons;
   
   for( std::vector<pat::Muon>::const_iterator it = inputMuons.begin(), ed = inputMuons.end(); it != ed; ++it ){
-    if( isGoodMuon(*it,iMinPt,iMuonID,iJets) ) selectedMuons.push_back(*it);
+    if( isGoodMuon(*it,iMinPt,iMuonID,iJets) ){
+      selectedMuons.push_back(*it);
+    }
+    else if (iMuonID == muonID::muonLooseMvaBased || iMuonID == muonID::muonTightMvaBased) break;
   }
   
   return selectedMuons;
@@ -1378,14 +1381,16 @@ MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElec
   std::vector<pat::Electron> selectedElectrons;
 
   for( std::vector<pat::Electron>::const_iterator it = inputElectrons.begin(), ed = inputElectrons.end(); it != ed; ++it ){
-    if( isGoodElectron(*it,iMinPt,iElectronID,iJets) ) selectedElectrons.push_back(*it);
+    if( isGoodElectron(*it,iMinPt,iElectronID,iJets) ){
+      selectedElectrons.push_back(*it);
+    }
+    else if (iElectronID == electronID::electronLooseMvaBased || iElectronID == electronID::electronTightMvaBased) break;
   }
 
   return selectedElectrons;
 }
 
 std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>>
-						//MultileptonAna::pickTop2LeadingLeptons(const std::vector<pat::Muon>& iMuons, const std::vector<pat::Electron>& iElectrons){
 MultileptonAna::pickTop2LeadingLeptons(const vecPatMuon& iMuons, const vecPatElectron& iElectrons){
 
   vecPatLepton iLeptons = fillLeptons(iMuons,iElectrons);
@@ -1395,6 +1400,7 @@ MultileptonAna::pickTop2LeadingLeptons(const vecPatMuon& iMuons, const vecPatEle
     {
       vecPatElectron theElectrons;
       vecPatMuon theMuons;      
+
       if (abs(iLeptons[0].pdgId()) == 11){
 	theElectrons.push_back(iElectrons[0]);
 	if (abs(iLeptons[1].pdgId()) == 11){
@@ -1404,6 +1410,7 @@ MultileptonAna::pickTop2LeadingLeptons(const vecPatMuon& iMuons, const vecPatEle
 	  theMuons.push_back(iMuons[0]);
 	}
       }
+
       else if (abs(iLeptons[0].pdgId()) == 13){
 	theMuons.push_back(iMuons[0]);
 	if (abs(iLeptons[1].pdgId()) == 13){
@@ -1413,6 +1420,7 @@ MultileptonAna::pickTop2LeadingLeptons(const vecPatMuon& iMuons, const vecPatEle
 	  theElectrons.push_back(iElectrons[0]);
 	}
       }
+
       t = std::make_tuple(theMuons,theElectrons);
     }
 
