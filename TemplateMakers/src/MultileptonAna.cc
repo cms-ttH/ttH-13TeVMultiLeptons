@@ -1390,43 +1390,6 @@ MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElec
   return selectedElectrons;
 }
 
-std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>>
-MultileptonAna::pickTop2LeadingLeptons(const vecPatMuon& iMuons, const vecPatElectron& iElectrons){
-
-  vecPatLepton iLeptons = fillLeptons(iMuons,iElectrons);
-  iLeptons = MiniAODHelper::GetSortedByPt(iLeptons);
-  auto t = std::make_tuple(iMuons,iElectrons);
-  if (iLeptons.size() >2)
-    {
-      vecPatElectron theElectrons;
-      vecPatMuon theMuons;      
-
-      if (abs(iLeptons[0].pdgId()) == 11){
-	theElectrons.push_back(iElectrons[0]);
-	if (abs(iLeptons[1].pdgId()) == 11){
-	  theElectrons.push_back(iElectrons[1]);
-	}
-	else if (abs(iLeptons[1].pdgId()) == 13){
-	  theMuons.push_back(iMuons[0]);
-	}
-      }
-
-      else if (abs(iLeptons[0].pdgId()) == 13){
-	theMuons.push_back(iMuons[0]);
-	if (abs(iLeptons[1].pdgId()) == 13){
-	  theMuons.push_back(iMuons[1]);
-	}
-	else if (abs(iLeptons[1].pdgId()) == 11){
-	  theElectrons.push_back(iElectrons[0]);
-	}
-      }
-
-      t = std::make_tuple(theMuons,theElectrons);
-    }
-
-  return t;
-}
-
 float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pat::Jet>& iJets){
   CheckSetUp();
   

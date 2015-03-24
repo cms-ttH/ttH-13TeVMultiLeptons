@@ -204,10 +204,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
 	  {
 
-	    auto lepTuple = pickTop2LeadingLeptons(selectedMuons_cutBased,selectedElectrons_cutBased);
-	    selectedMuons_cutBased = std::get<0>(lepTuple);
-	    selectedElectrons_cutBased = std::get<1>(lepTuple);
-
 	    vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
 	    selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 	
@@ -249,14 +245,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    vecPatMuon selectedMuons_looseMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonLooseMvaBased, selectedJets_forLepMVA);
 	    vecPatMuon selectedMuons_tightMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonTightMvaBased, selectedJets_forLepMVA);
-
-	    // lepTuple = pickTop2LeadingLeptons(selectedMuons_looseMvaBased,selectedElectrons_looseMvaBased);
-	    // selectedMuons_looseMvaBased = std::get<0>(lepTuple);
-	    // selectedElectrons_looseMvaBased = std::get<1>(lepTuple);
-
-	    // lepTuple = pickTop2LeadingLeptons(selectedMuons_tightMvaBased,selectedElectrons_tightMvaBased);
-	    // selectedMuons_tightMvaBased = std::get<0>(lepTuple);
-	    // selectedElectrons_tightMvaBased = std::get<1>(lepTuple);
 
 	    /////////
 	    ///
