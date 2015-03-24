@@ -73,7 +73,7 @@ void addvarstotree(TString infiles, TString outfile)
     int chainentries = chain->GetEntries();   
     cout << chainentries << endl;  
 
-    TFile *copiedfile = new TFile( outfile, "RECREATE"); //"UPDATE"); // #, 'test' )
+    TFile *copiedfile = new TFile( outfile, "UPDATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
     TTree *newtree = (TTree*)chain->CloneTree(0);
     
@@ -92,21 +92,27 @@ void addvarstotree(TString infiles, TString outfile)
 
     int lumiBlock_intree = -999;
     int runNumber_intree = -999;
-
-    vector<ttH::Lepton> *preselected_leptons_intree=0; // have initialize these like this
+    
+    vector<ttH::Lepton> *preselected_leptons_intree=0;
     vector<ttH::Lepton> *loose_leptons_intree=0;
-    vector<ttH::Lepton> *tight_leptons_intree=0;
+    vector<ttH::Lepton> *cutBased_leptons_intree=0;
+    vector<ttH::Lepton> *looseMvaBased_leptons_intree=0;
+    vector<ttH::Lepton> *tightMvaBased_leptons_intree=0;
 
     vector<ttH::Electron> *raw_electrons_intree=0;               
     vector<ttH::Electron> *preselected_electrons_intree=0;
     vector<ttH::Electron> *loose_electrons_intree=0;
-    vector<ttH::Electron> *tight_electrons_intree=0;
+    vector<ttH::Electron> *cutBased_electrons_intree=0;
+    vector<ttH::Electron> *looseMvaBased_electrons_intree=0;
+    vector<ttH::Electron> *tightMvaBased_electrons_intree=0;
 
     vector<ttH::Muon> *raw_muons_intree=0;
     vector<ttH::Muon> *preselected_muons_intree=0;
     vector<ttH::Muon> *loose_muons_intree=0;
-    vector<ttH::Muon> *tight_muons_intree=0;
-
+    vector<ttH::Muon> *cutBased_muons_intree=0;
+    vector<ttH::Muon> *looseMvaBased_muons_intree=0;
+    vector<ttH::Muon> *tightMvaBased_muons_intree=0;        
+    
     vector<ttH::Jet> *preselected_jets_intree=0;
     vector<ttH::Jet> *loose_bJets_intree=0;
     vector<ttH::Jet> *tight_bJets_intree=0;
@@ -115,8 +121,9 @@ void addvarstotree(TString infiles, TString outfile)
 
     vector<ttH::GenParticle> *pruned_genParticles_intree=0;
 
-    
-
+    vector<ttH::Lepton> *tight_leptons_intree=0;
+    vector<ttH::Electron> *tight_electrons_intree=0;
+    vector<ttH::Muon> *tight_muons_intree=0;
 
     double numLooseBJets_handle = -99.; //n.zeros(1,dtype=float)
     double numMediumBJets_handle = -99.; //n.zeros(1,dtype=float)
@@ -167,19 +174,30 @@ void addvarstotree(TString infiles, TString outfile)
     chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
     chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
     chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
-    chain->SetBranchAddress("loose_leptons", &loose_leptons_intree);
-    chain->SetBranchAddress("loose_electrons", &loose_electrons_intree);
-    chain->SetBranchAddress("loose_muons", &loose_muons_intree);
-    chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
-    chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
-    chain->SetBranchAddress("tight_muons", &tight_muons_intree);
-    chain->SetBranchAddress("raw_electrons", &raw_electrons_intree);
-    chain->SetBranchAddress("raw_muons", &raw_muons_intree);
+    
+    chain->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
+    chain->SetBranchAddress("looseMvaBased_electrons", &loose_electrons_intree);
+    chain->SetBranchAddress("looseMvaBased_muons", &loose_muons_intree);
+    
+    chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
+    chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
+    chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);
+    
+    //chain->SetBranchAddress("raw_electrons", &raw_electrons_intree);
+    //chain->SetBranchAddress("raw_muons", &raw_muons_intree);
+    
+    //vector<ttH::Lepton> *cutBased_leptons_intree=0;
+    //vector<ttH::Electron> *cutBased_electrons_intree=0;
+    //vector<ttH::Muon> *cutBased_muons_intree=0;
+    
     chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
     chain->SetBranchAddress("loose_bJets", &loose_bJets_intree);
     chain->SetBranchAddress("tight_bJets", &tight_bJets_intree);
     chain->SetBranchAddress("met", &met_intree);
-    chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
+    chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);   
+    
+    
+    
 
     newtree->Branch("SumJetMass", &SumJetMass_handle,"SumJetMass/D");
     newtree->Branch("SumPt", &SumPt_handle,"SumPt/D");

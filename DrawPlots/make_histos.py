@@ -123,30 +123,24 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
                     
                     if 'JES' in systematic:
                         source_file_name = '%s/%s_%s_%s_all.root' % (config['input_trees_directory'], tree_sample, config['label'], systematic)
-			
+		    
+                    genevents = 0
+                    
                     if args.file:
                         source_file_name = args.file
-                    
-		    		#source_file = ROOT.TFile(source_file_name)
-		    		#tree = source_file.Get('summaryTree')
-                    ## this is much better:
-#                    source_chain = ROOT.TChain('OSTwoLepAna/summaryTree')
-                    
-                    
-                    #source_chain = ROOT.TChain('summaryTree')
-                    #source_chain.Add(source_file_name)
-                    #tree = source_chain.CloneTree()
+                        openfile = ROOT.TFile(source_file_name)
+                        gencounthist = openfile.Get('OSTwoLepAna/numInitialWeightedMCevents')
+                        genevents = gencounthist.Integral()
+
                     
                     tree = ROOT.TChain('summaryTree')
                     tree.Add(source_file_name)
-                    
-                    
-                    
+                                                           
                     thechainentries = tree.GetEntries()
-                    #thechainentries = source_chain.GetEntries()
+
                     print thechainentries
                     draw_string_maker = plot_helper.DrawStringMaker()
-                    # uncomment this eventually:
+
                     draw_string_maker.append_selection_requirements(config['common cuts'].values(),
                                                 lepton_category_cut_strings,
                                                 jet_tag_category_cut_strings,
@@ -169,89 +163,13 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
                     distribution_items = config['distributions'].items()
                     if args.limits:
                         distribution_items = config['limits distributions'].items()
-		    
-#                    for distribution, parameters in distribution_items:
-#                        if sample not in parameters.get('samples', [sample]):
-#                            continue
-#                        draw_string_maker.remove_selection_requirements(parameters.get('cuts to remove', []))
-#                        draw_string_maker.append_selection_requirements(parameters.get('additional cuts', []))
-#                        plot_name = '%s%s' % (distribution, systematic_label)
-#                        print " " 
-#                        print draw_string_maker.draw_string
-#                        print " "
-#					    ##################################################################################################
-#                        plot = plot_helper.Plot(sample, output_file, tree, plot_name, parameters, draw_string_maker.draw_string) ## hack: replaced draw_string_maker.draw_string with ''
-#					    ##################################################################################################
-#					    
-#                        if sample_info.sample_type == 'MC':
-#                            plot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
-#                        output_file.Write()
-#                        if args.pdf:
-#					        plot.save_image('pdf')
-#                        if args.web:
-#                            plot.post_to_web(config, lepton_category)
-		    
+		    		    
 		    
 		    if (tree.GetEntries()<=0):
 		    	continue
 		    
 		    #failed experiment:
-		    
-#		    # set up pointers to branches:
-#		    branchlist = tree.GetListOfBranches()
-#		    branchstrlist = []
-#		    for ibranch in branchlist:
-#		    	branchstrlist.append(ibranch.GetName())
-#		    branch = {}
-#		    tree.GetEntry(0)
-#		    for branchstr in branchstrlist:
-#		        dummy = -9999.
-#			#adummy = []
-#			exec("dummy = tree.%s" % (branchstr))
-#			#adummy.append(dummy)
-#		    	adummy = n.array([dummy])
-#			branch[branchstr] = adummy
-#			print branchstr
-#			print branch[branchstr]
-#			tree.SetBranchAddress(branchstr, branch[branchstr])
-#		    		    
-#		    dummy = [0]
-#		    adummy = n.array([dummy])
-#		    branch["allLeptonGenGrandMotherId"] = adummy
-#		    tree.SetBranchAddress("allLeptonGenGrandMotherId", branch["allLeptonGenGrandMotherId"])
-#		    dummy = [0]
-#		    adummy = n.array([dummy])
-#		    branch["allLeptonGenMotherId"] = adummy
-#		    tree.SetBranchAddress("allLeptonGenMotherId", branch["allLeptonGenMotherId"])
-#		    dummy = [0]
-#		    adummy = n.array([dummy])
-#		    branch["allLeptonTkCharge"] = adummy
-#		    tree.SetBranchAddress("allLeptonTkCharge", branch["allLeptonTkCharge"])
-#		    dummy = tree.raw_electrons
-#		    adummy = n.array([dummy])
-#		    branch["preselected_electrons"] = adummy
-#		    tree.SetBranchAddress("preselected_electrons", branch["preselected_electrons"])
-#		    dummy = tree.raw_electrons
-#		    adummy = n.array([dummy])
-#		    branch["loose_electrons"] = adummy
-#		    tree.SetBranchAddress("loose_electrons", branch["loose_electrons"])
-#		    dummy = tree.loose_leptons
-#		    adummy = n.array([dummy])
-#		    branch["tight_leptons"] = adummy
-#		    tree.SetBranchAddress("tight_leptons", branch["tight_leptons"])
-#		    dummy = tree.raw_electrons
-#		    adummy = n.array([dummy])
-#		    branch["tight_electrons"] = adummy
-#		    tree.SetBranchAddress("tight_electrons", branch["tight_electrons"])
-#		    dummy = tree.raw_muons
-#		    adummy = n.array([dummy])
-#		    branch["tight_muons"] = adummy
-#		    tree.SetBranchAddress("tight_muons", branch["tight_muons"])
-#		    dummy = tree.preselected_jets
-#		    adummy = n.array([dummy])
-#		    branch["loose_bJets"] = adummy
-#		    tree.SetBranchAddress("loose_bJets", branch["loose_bJets"])
-		    
+		    		    
 		    
 		    # set up hists:
 		    theplots = []
@@ -277,25 +195,40 @@ def make_histos(args, config, samples, lepton_categories, jet_tag_categories, fi
 		    
 		    treecount = 0
 		    
+                    
 		    for entry in tree:
 		        #print "blah2"
 			treecount += 1
-			thecut = plot_helper.CheckCuts(draw_string_maker.draw_string, entry)
-
-			if thecut is 0:
-			    continue;
 			
+                        #usual:
+                        thecut = plot_helper.CheckCuts(draw_string_maker.draw_string, entry)
+
+                        #print " "
+                        #print thecut
+                        
+                        #inclusive:
+                        #thecut = plot_helper.CheckCuts('entry.wgt', entry)
+                        
+                        if ((treecount % 10000)==0):
+			    print treecount
+                        
+			if abs(thecut)==0.0:
+			    continue;
+			#print thecut
+                        #print " "
 			for distribution, parameters in distribution_items:
 			    plot_name = '%s%s' % (distribution, systematic_label)
 			    #print parameters
 			    #print draw_string_maker.draw_string
 			    theplots[plotdict[plot_name]].fill(parameters, draw_string_maker.draw_string, entry, thecut) #, branch)
-			if ((treecount % 10000)==0):
-			    print treecount
-			    
+		    
+                    
+                        
 		    for thisplot in theplots:
-		        if sample_info.sample_type == 'MC':
-                            thisplot.plot.Scale(sample_info.x_section * config['luminosity'] / sample_info.num_generated)
+		        if sample_info.sample_type == 'MC':                            
+                            if not (args.file):
+                                genevents = sample_info.num_generated                            
+                            thisplot.plot.Scale(sample_info.x_section * config['luminosity'] / genevents)
                     
 		    output_file.Write()		    
 		    

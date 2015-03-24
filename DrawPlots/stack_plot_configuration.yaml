@@ -1,7 +1,7 @@
 #input and output file names
-input file location: histos/os_v9
-input file label: os_v9
-output file location: os_v9_test1_plots_OScuts_weights_log
+input file location: histos/v4_inclus_2ormorelep
+input file label: v4
+output file location: v4_inclus_2ormorelep
 
 #drawing options
 skip systematics: false
@@ -24,27 +24,31 @@ trigger SF error: 0.02
 lumi era string: "                #sqrt{s} = 13 TeV, L = 10.0 fb^{-1}"
 
 lepton categories:
-    mu_mu:
+    2lss:
         #data sample: DoubleMu
         data samples: [inclusive_data]
         excluded samples: [inclusive_data_QF_sideband]
-        tex name: " #mu #mu "
-
-    mu_ele:
-        #data sample: MuEG
-        data samples: [inclusive_data]
-        excluded samples: []
-        tex name: " #mu e "
-    ele_ele:
-        #data sample: DoubleElectron
-        data samples: [inclusive_data]
-        excluded samples: []
-        tex name: " e e "
+        #tex name: " #mu #mu "
+        #tex name: " SS 2l "
+        tex name: "  "
+#    3l:
+#        #data sample: MuEG
+#        data samples: [inclusive_data]
+#        excluded samples: []
+#        #tex name: " #mu e "
+#        tex name: " 3l "
+#    4l:
+#        #data sample: DoubleElectron
+#        data samples: [inclusive_data]
+#        excluded samples: []
+#        #tex name: " e e "
+#        tex name: " 4l "
 
 #Jet-tag categories: "draw name"
 jet tag categories:
-    ge4j: " + #geq4 jets"
-    eq3j: " + 3 jets"
+    ge2j: " + #geq2 jets"
+    #ge4j: " + #geq4 jets"
+    #eq3j: " + 3 jets"
     #eq2jeq2t : " + 2 jets + 2 b-tags"
     #eq3jeq2t : " + 3 jets + 2 b-tags"
     #ge4jeq2t : " + #geq4 jets + 2 b-tags"
@@ -71,7 +75,7 @@ signal samples:
         #stack or line: stack
         stack or line: line
         line width: 2 # must be integer
-        scale: 1.0
+        scale: 50.0
 
 #Samples, ordered bottom-to-top
 background samples:
@@ -225,4 +229,23 @@ distributions:
     DeltaRLepLep: ["DeltaRLepLep", true, true]
     Zmass: ["Zmass", true, true]
     MassLepLep: ["MassLepLep", true, true]
+    
+    minMassLepLep: ["minMassLepLep", false, true]
+
+    tight_bJets: ["medium bJets", false, true]
+        
+    loose_bJets: ["loose bJets", false, true]
+
+    vetoZmassSFOS: ["vetoZmassSFOS", false, true]
+    
+    vetoZmass: ["vetoZmass", false, true]
+    
+    metLD: ["metLD", false, true]
+   
+    all_leptons_by_pt_1_pt: ["lep 1 pt", false, true] 
+        
+    all_leptons_by_pt_2_pt: ["lep 2 pt", false, true]
+
+        
+    MET: ["MET", false, true]
 

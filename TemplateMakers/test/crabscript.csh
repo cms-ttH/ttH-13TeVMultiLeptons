@@ -10,8 +10,8 @@ crab -create -cfg crab_ttzjets.cfg
 crab -submit
 crab -create -cfg crab_wzjets.cfg
 crab -submit
-
-
+crab -create -cfg crab_zzjets.cfg
+crab -submit
 crab -create -cfg crab_zjets.cfg
 crab -submit
 crab -create -cfg crab_wjets.cfg
