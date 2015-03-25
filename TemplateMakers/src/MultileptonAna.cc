@@ -1193,13 +1193,13 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) < 2.5));
     if (iElectron.pt() > 10) {    
       //loose WP
-      if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.35 );
-      else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.2 );
-      else passesMVA = ( eleMvaNonTrig > -0.52 );
+      // if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.35 );
+      // else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.2 );
+      // else passesMVA = ( eleMvaNonTrig > -0.52 );
       //tight WP
-      // if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.73 );
-      // else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.57 );
-      // else passesMVA = ( eleMvaNonTrig > 0.05 );
+      if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.73 );
+      else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.57 );
+      else passesMVA = ( eleMvaNonTrig > 0.05 );
     }
     passesIso = (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.1);
     passesID = (passesMVA && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS)==0 && iElectron.passConversionVeto());
