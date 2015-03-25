@@ -321,13 +321,12 @@ void MultileptonAna::setupMva(){
   EGammaMvaEleEstimatorFWLite::MVAType type_ = EGammaMvaEleEstimatorFWLite::kNonTrigPhys14;
   std::vector<std::string> mvaWeightFiles_;
 
-
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_10_oldscenario2phys14_BDT.weights.xml");
   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_5_oldscenario2phys14_BDT.weights.xml");
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_10_oldscenario2phys14_BDT.weights.xml");
-  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_10_oldscenario2phys14_BDT.weights.xml");
   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_5_oldscenario2phys14_BDT.weights.xml");
   mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_5_oldscenario2phys14_BDT.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB1_10_oldscenario2phys14_BDT.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EB2_10_oldscenario2phys14_BDT.weights.xml");
+  mvaWeightFiles_.push_back("EgammaAnalysis/ElectronTools/data/PHYS14/EIDmva_EE_10_oldscenario2phys14_BDT.weights.xml");
 
   mvaID_->initialize(method_, type_, useBinnedVersion_, mvaWeightFiles_);
 
@@ -760,7 +759,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.jetPtRatio = min(iEle.pt()/matchedJet.pt(), float(1.5));
       ele.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       ele.sip3D = fabs(iEle.dB(pat::Electron::PV3D)/iEle.edB(pat::Electron::PV3D));
-      ele.mvaID = mvaID_->mvaValue(iEle,true); //debug=false
+      ele.mvaID = mvaID_->mvaValue(iEle,false); //debug=false
 
       eleCollection.push_back(ele);
     }

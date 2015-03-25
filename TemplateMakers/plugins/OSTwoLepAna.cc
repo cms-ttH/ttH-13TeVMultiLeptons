@@ -104,7 +104,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	SetRho(rho);
 	
 	int numpvs =				GetVertices(event);
-	if (debug) cout << "numpvs: " << numpvs << endl;
+	
+	if (false) cout << "numpvs: " << numpvs << endl;
 		
 	edm::Handle<GenEventInfoProduct> GenInfo;
     	event.getByLabel("generator",GenInfo);
