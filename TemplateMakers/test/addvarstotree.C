@@ -22,43 +22,6 @@
 void addvarstotree(TString infiles, TString outfile)
 {
     
-    //gSystem->Load("libttH-13TeVMultiLeptonsTemplateMakers.so");
-    //gSystem->AddLinkedLibs("libttH-13TeVMultiLeptonsTemplateMakers.so");
-
-    double hey = 6.01;
-
-    double returnvalue;
-
-    returnvalue = atestfunction(hey);
-
-    cout << returnvalue << endl;
-
-    ttH::Lepton newlep;
-    ttH::Jet jet;
-
-    newlep.obj.SetPxPyPzE(1.,1.,1.,2.);
-
-    jet.obj.SetPxPyPzE(1.,1.,1.,2.);
-    jet.pdgID = 3;
-    jet.charge = 1;
-    jet.csv = 0.4;
-
-
-    vector<ttH::Jet> jetCollection;
-
-    vector<ttH::Lepton> newlepvec;
-
-    jetCollection.push_back(jet);
-    newlepvec.push_back(newlep);
-
-    double sumpt = getsumpt(newlepvec);
-
-    cout << newlepvec[0].obj.Pt() << endl;
-    cout << sumpt << endl;
-
-
-
-///////////////////////////////////////////////////////////////////////////
 
     //TFile *file = new TFile("ttH125.root");
     //TTree *newchain = (TTree*)file->Get("summaryTree");   
@@ -75,7 +38,10 @@ void addvarstotree(TString infiles, TString outfile)
 
     TFile *copiedfile = new TFile( outfile, "UPDATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
-    TTree *newtree = (TTree*)chain->CloneTree(0);
+    
+    // TTree *newtree = (TTree*)chain->CloneTree(0);
+    TTree *newtree = new TTree("summaryTree","summaryTree");
+    
     
     Int_t cachesize = 100000000;   //100 MBytes
     chain->SetCacheSize(cachesize);   //<<<
@@ -160,7 +126,28 @@ void addvarstotree(TString infiles, TString outfile)
     double minMassLepLep_handle = 0.; //n.zeros(1,dtype=float)
     double metLD_handle = 0.; //n.zeros(1,dtype=float)
 
-
+    int num_preselected_leptons_handle = -99;
+    double preselected_leptons_1_pt_handle = -99.;
+    double preselected_leptons_2_pt_handle = -99.;
+    int num_tightMvaBased_electrons_handle = -99;
+    int num_tightMvaBased_muons_handle = -99;
+    int num_tightMvaBased_leptons_handle = -99;
+    int tightMvaBased_leptons_1_charge_handle = -99;
+    int tightMvaBased_leptons_2_charge_handle = -99;    
+    int preselected_leptons_1_charge_handle = -99;
+    int preselected_leptons_2_charge_handle = -99;
+    int preselected_leptons_3_charge_handle = -99;
+    int preselected_leptons_4_charge_handle = -99;
+    double tightMvaBased_leptons_1_pt_handle = -99.;
+    double tightMvaBased_leptons_2_pt_handle = -99.;
+    bool tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent_handle = false;
+    bool tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent_handle = false;
+    double tightMvaBased_muons_1_chargeFlip_handle = 99.;
+    double tightMvaBased_muons_2_chargeFlip_handle = 99.;
+    double met_pt_handle = -99.;
+    int num_preselected_jets_handle = -99;
+    int num_loose_bjets_charlie_handle = -99;
+    int num_tight_bjets_charlie_handle = -99;
 
     chain->SetBranchAddress("mcwgt", &mcwgt_intree);
     chain->SetBranchAddress("wgt", &wgt_intree);
@@ -196,8 +183,31 @@ void addvarstotree(TString infiles, TString outfile)
     chain->SetBranchAddress("met", &met_intree);
     chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);   
     
-    
-    
+    newtree->Branch("mcwgt", &mcwgt_intree, "mcwgt/D");
+    newtree->Branch("wgt", &wgt_intree, "wgt/D");
+        
+    newtree->Branch("num_preselected_leptons", &num_preselected_leptons_handle,"num_preselected_leptons/I");
+    newtree->Branch("preselected_leptons_1_pt", &preselected_leptons_1_pt_handle,"preselected_leptons_1_pt/D");
+    newtree->Branch("preselected_leptons_2_pt", &preselected_leptons_2_pt_handle,"preselected_leptons_2_pt/D");
+    newtree->Branch("num_tightMvaBased_electrons", &num_tightMvaBased_electrons_handle,"num_tightMvaBased_electrons/I");
+    newtree->Branch("num_tightMvaBased_muons", &num_tightMvaBased_muons_handle,"num_tightMvaBased_muons/I");
+    newtree->Branch("num_tightMvaBased_leptons", &num_tightMvaBased_leptons_handle,"num_tightMvaBased_leptons/I");
+    newtree->Branch("tightMvaBased_leptons_1_charge", &tightMvaBased_leptons_1_charge_handle,"tightMvaBased_leptons_1_charge/I");
+    newtree->Branch("tightMvaBased_leptons_2_charge", &tightMvaBased_leptons_2_charge_handle,"tightMvaBased_leptons_2_charge/I");    
+    newtree->Branch("preselected_leptons_1_charge", &preselected_leptons_1_charge_handle,"preselected_leptons_1_charge/I");
+    newtree->Branch("preselected_leptons_2_charge", &preselected_leptons_2_charge_handle,"preselected_leptons_2_charge/I");
+    newtree->Branch("preselected_leptons_3_charge", &preselected_leptons_3_charge_handle,"preselected_leptons_3_charge/I");
+    newtree->Branch("preselected_leptons_4_charge", &preselected_leptons_4_charge_handle,"preselected_leptons_4_charge/I");
+    newtree->Branch("tightMvaBased_leptons_1_pt", &tightMvaBased_leptons_1_pt_handle,"tightMvaBased_leptons_1_pt/D");
+    newtree->Branch("tightMvaBased_leptons_2_pt", &tightMvaBased_leptons_2_pt_handle,"tightMvaBased_leptons_2_pt/D");
+    newtree->Branch("tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent", &tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent_handle,"tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent/B");
+    newtree->Branch("tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent", &tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent_handle,"tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent/B");
+    newtree->Branch("tightMvaBased_muons_1_chargeFlip", &tightMvaBased_muons_1_chargeFlip_handle,"tightMvaBased_muons_1_chargeFlip/D");
+    newtree->Branch("tightMvaBased_muons_2_chargeFlip", &tightMvaBased_muons_2_chargeFlip_handle,"tightMvaBased_muons_2_chargeFlip/D");
+    newtree->Branch("met_pt", &met_pt_handle,"met_pt/D");
+    newtree->Branch("num_preselected_jets", &num_preselected_jets_handle,"num_preselected_jets/I");    
+    newtree->Branch("num_loose_bjets_charlie", &num_loose_bjets_charlie_handle,"num_loose_bjets_charlie/I");
+    newtree->Branch("num_tight_bjets_charlie", &num_tight_bjets_charlie_handle,"num_tight_bjets_charlie/I");
 
     newtree->Branch("SumJetMass", &SumJetMass_handle,"SumJetMass/D");
     newtree->Branch("SumPt", &SumPt_handle,"SumPt/D");
@@ -314,7 +324,30 @@ void addvarstotree(TString infiles, TString outfile)
         vetoZmass_handle = 	pickFromSortedTwoObjKine(*preselected_leptons_intree,"mass",1,91.2);
         vetoZmassSFOS_handle =   pickFromSortedTwoObjKine(*preselected_leptons_intree,"massSFOS",1,91.2);
         minMassLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,"min","mass");
-
+              
+        
+        num_preselected_leptons_handle =                (*preselected_leptons_intree).size();
+        preselected_leptons_1_pt_handle =               (*preselected_leptons_intree)[0].obj.Pt();
+        preselected_leptons_2_pt_handle =               (*preselected_leptons_intree)[1].obj.Pt();
+        num_tightMvaBased_electrons_handle =            (*tight_electrons_intree).size();
+        num_tightMvaBased_muons_handle =                (*tight_muons_intree).size();
+        num_tightMvaBased_leptons_handle =              (*tight_leptons_intree).size();
+        if (num_tightMvaBased_leptons_handle>0) tightMvaBased_leptons_1_charge_handle = (*tight_leptons_intree)[0].charge;
+        if (num_tightMvaBased_leptons_handle>1) tightMvaBased_leptons_2_charge_handle = (*tight_leptons_intree)[1].charge;
+        if (num_preselected_leptons_handle>0) preselected_leptons_1_charge_handle = (*preselected_leptons_intree)[0].charge;
+        if (num_preselected_leptons_handle>1) preselected_leptons_2_charge_handle = (*preselected_leptons_intree)[1].charge;
+        if (num_preselected_leptons_handle>2) preselected_leptons_3_charge_handle = (*preselected_leptons_intree)[2].charge;
+        if (num_preselected_leptons_handle>3) preselected_leptons_4_charge_handle = (*preselected_leptons_intree)[3].charge;
+        if (num_tightMvaBased_leptons_handle>0) tightMvaBased_leptons_1_pt_handle = (*tight_leptons_intree)[0].obj.Pt();
+        if (num_tightMvaBased_leptons_handle>1) tightMvaBased_leptons_2_pt_handle = (*tight_leptons_intree)[1].obj.Pt();
+        if (num_tightMvaBased_electrons_handle>0) tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent_handle = (*tight_electrons_intree)[0].isGsfCtfScPixChargeConsistent;
+        if (num_tightMvaBased_electrons_handle>1) tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent_handle = (*tight_electrons_intree)[1].isGsfCtfScPixChargeConsistent;
+        if (num_tightMvaBased_muons_handle>0) tightMvaBased_muons_1_chargeFlip_handle = (*tight_muons_intree)[0].chargeFlip;
+        if (num_tightMvaBased_muons_handle>1) tightMvaBased_muons_2_chargeFlip_handle = (*tight_muons_intree)[1].chargeFlip;
+        met_pt_handle = (*met_intree)[0].obj.Pt();
+        num_preselected_jets_handle = (*preselected_jets_intree).size();
+        num_loose_bjets_charlie_handle = (*loose_bJets_intree).size();
+        num_tight_bjets_charlie_handle = (*tight_bJets_intree).size();
         
         newtree->Fill();
     }
@@ -330,5 +363,7 @@ void addvarstotree(TString infiles, TString outfile)
     
     newtree->Write();
     copiedfile->Close();
-    
+    //delete chain;
+    //delete newtree;
+    //delete copiedfile;
 }

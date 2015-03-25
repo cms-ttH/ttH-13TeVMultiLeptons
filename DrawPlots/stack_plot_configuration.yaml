@@ -1,7 +1,7 @@
 #input and output file names
-input file location: histos/v4_inclus_2ormorelep
-input file label: v4
-output file location: v4_inclus_2ormorelep
+input file location: histos/v5
+input file label: v5
+output file location: v5_add_zz_reweight_ttjets_by_fake
 
 #drawing options
 skip systematics: false
@@ -29,20 +29,20 @@ lepton categories:
         data samples: [inclusive_data]
         excluded samples: [inclusive_data_QF_sideband]
         #tex name: " #mu #mu "
-        #tex name: " SS 2l "
-        tex name: "  "
-#    3l:
-#        #data sample: MuEG
-#        data samples: [inclusive_data]
-#        excluded samples: []
-#        #tex name: " #mu e "
-#        tex name: " 3l "
-#    4l:
-#        #data sample: DoubleElectron
-#        data samples: [inclusive_data]
-#        excluded samples: []
-#        #tex name: " e e "
-#        tex name: " 4l "
+        tex name: " SS 2l "
+        #tex name: "  "
+    3l:
+        #data sample: MuEG
+        data samples: [inclusive_data]
+        excluded samples: []
+        #tex name: " #mu e "
+        tex name: " 3l "
+    4l:
+        #data sample: DoubleElectron
+        data samples: [inclusive_data]
+        excluded samples: []
+        #tex name: " e e "
+        tex name: " 4l "
 
 #Jet-tag categories: "draw name"
 jet tag categories:
@@ -145,6 +145,13 @@ background samples:
         draw name: "WZ"
         color: kViolet-4
         samples: [WZJets]
+    
+    ZZJets:
+        draw name: "ZZ"
+        color: kAzure-9
+        samples: [ZZJets]
+    
+      
 
 #    zz_llll:
 #        draw name: "ZZ"

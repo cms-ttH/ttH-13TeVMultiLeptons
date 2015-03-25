@@ -16,7 +16,8 @@ DefaultOrderedDict = getattr(DefaultOrderedDictmod, 'DefaultOrderedDict')
 def append_integral_histo(config):
     if not config['distributions'].has_key('integral_histo'):
         config['distributions']['integral_histo'] = {'axis labels': ['isCleanEvent', 'Events'],
-                                                     'expression': 'entry.eventnum>0',
+                                                     #'expression': 'entry.eventnum>0',
+                                                     'expression': '1.0',
                                                      'plot type': 'TH1D',
                                                      'binning': [2, 0, 2]}
 
@@ -374,8 +375,6 @@ class SampleInformation:
                    'x_section_error': 0.1, 
                    'num_generated': 237484}, # update(d)
             
-            
-
 
 
             #CERN uses WZJetsTo3LNu_TuneZ2
