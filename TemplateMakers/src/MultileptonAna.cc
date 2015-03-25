@@ -760,7 +760,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.jetPtRatio = min(iEle.pt()/matchedJet.pt(), float(1.5));
       ele.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       ele.sip3D = fabs(iEle.dB(pat::Electron::PV3D)/iEle.edB(pat::Electron::PV3D));
-      ele.mvaID = mvaID_->mvaValue(iEle,false); //debug=false
+      ele.mvaID = mvaID_->mvaValue(iEle,true); //debug=false
 
       eleCollection.push_back(ele);
     }
@@ -1191,10 +1191,15 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   case electronID::electronCutBased:
     //Phys14 MVA ID (only for pT > 10 GeV) for now
     passesKinematics = ((iElectron.pt() >= minElectronPt) && (fabs(iElectron.eta()) < 2.5));
-    if (iElectron.pt() > 10) {    //tight WP
-      if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.73 );
-      else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.57 );
-      else passesMVA = ( eleMvaNonTrig > 0.05 );
+    if (iElectron.pt() > 10) {    
+      //loose WP
+      if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.35 );
+      else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.2 );
+      else passesMVA = ( eleMvaNonTrig > -0.52 );
+      //tight WP
+      // if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.73 );
+      // else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.57 );
+      // else passesMVA = ( eleMvaNonTrig > 0.05 );
     }
     passesIso = (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.1);
     passesID = (passesMVA && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS)==0 && iElectron.passConversionVeto());
