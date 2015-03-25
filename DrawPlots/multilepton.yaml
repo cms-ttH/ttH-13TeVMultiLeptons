@@ -16,46 +16,47 @@ skip systematics: true
 #cuts
 common cuts:
   
-  eq_two_good_leptons: '(entry.preselected_leptons.size()>=2)'
+  eq_two_good_leptons: '(entry.num_preselected_leptons>=2)'
   minDilepMass: '(entry.minMassLepLep > 12)'
-  pt_20_10: '((entry.preselected_leptons[0].obj.Pt() > 20) and (entry.preselected_leptons[1].obj.Pt() > 10))'
-  nJets25_ge_2: '(entry.preselected_jets.size()>=2)'
-  nBJets: '(entry.loose_bJets.size() >=2 or entry.tight_bJets.size() >=1)'
+  pt_20_10: '((entry.preselected_leptons_1_pt > 20) and (entry.preselected_leptons_1_pt > 10))'
+  nJets25_ge_2: '(entry.num_preselected_jets>=2)'
+  nBJets: '(entry.num_loose_bjets_charlie >=2 or entry.num_tight_bjets_charlie >=1)'
   
 jet tag categories:
-  ge2j: ['(entry.preselected_jets.size() >= 2)']
-#    eq3j: ['entry.preselected_jets.size() == 3']
-#    ge4j: ['entry.preselected_jets.size() >= 4']
+  ge2j: ['(entry.num_preselected_jets >= 2)']
+#    eq3j: ['entry.num_preselected_jets == 3']
+#    ge4j: ['entry.num_preselected_jets >= 4']
 lepton categories:
 
   2lss:
     data samples: [inclusive_data]
     cuts:
-      nLeptons: '((entry.preselected_leptons.size() == 2) and (entry.tightMvaBased_leptons.size() == 2))'
-      same-sign: '(entry.tightMvaBased_leptons[0].charge == entry.tightMvaBased_leptons[1].charge)'
-      nJets: '(entry.preselected_jets.size() >= 4)'
+      nLeptons: '((entry.num_preselected_leptons == 2) and (entry.num_tightMvaBased_leptons == 2))'
+      same-sign: '(entry.tightMvaBased_leptons_1_charge == entry.tightMvaBased_leptons_2_charge)'
+      nJets: '(entry.num_preselected_jets >= 4)'
       metLD: '(entry.metLD > 0.2)'
-      pt_20_20: '(entry.tightMvaBased_leptons[0].obj.Pt() > 20 and entry.tightMvaBased_leptons[1].obj.Pt() > 20)'
-      htllv100: '((entry.tightMvaBased_leptons[0].obj.Pt() + entry.tightMvaBased_leptons[1].obj.Pt() + entry.met[0].obj.Pt()) > 100)'
-      ee_Zveto: '(entry.tightMvaBased_electrons.size() != 2 or abs(entry.vetoZmass-91.2) > 10)'
+      pt_20_20: '(entry.tightMvaBased_leptons_1_pt > 20 and entry.tightMvaBased_leptons_2_pt > 20)'
+      htllv100: '((entry.tightMvaBased_leptons_1_pt + entry.tightMvaBased_leptons_2_pt + entry.met_pt) > 100)'
+      ee_Zveto: '(entry.num_tightMvaBased_electrons != 2 or abs(entry.vetoZmass-91.2) > 10)'
       
-      ee: '((abs(entry.tightMvaBased_electrons.size()) !=2) or (entry.tightMvaBased_electrons[0].isGsfCtfScPixChargeConsistent and entry.tightMvaBased_electrons[1].isGsfCtfScPixChargeConsistent))'
-      mumu: '((abs(entry.tightMvaBased_muons.size()) != 2) or (entry.tightMvaBased_muons[0].chargeFlip < 0.2 and entry.tightMvaBased_muons[1].chargeFlip < 0.2))'
-      emu: '((abs(entry.tightMvaBased_electrons.size()) !=1) or (entry.tightMvaBased_muons[0].chargeFlip < 0.2 and entry.tightMvaBased_electrons[0].isGsfCtfScPixChargeConsistent))'
+      ee: '((abs(entry.num_tightMvaBased_electrons) !=2) or (entry.tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent and entry.tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent))'
+      mumu: '((abs(entry.num_tightMvaBased_muons) != 2) or (entry.tightMvaBased_muons_1_chargeFlip < 0.2 and entry.tightMvaBased_muons_2_chargeFlip < 0.2))'
+      emu: '((abs(entry.num_tightMvaBased_electrons) !=1) or (entry.tightMvaBased_muons_1_chargeFlip < 0.2 and entry.tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent))'
       
 
   3l:
     data samples: [inclusive_data]
     cuts:
-      nLeptons: '(entry.preselected_leptons.size() == 3 and entry.tightMvaBased_leptons.size() == 3)'
-      metLD: '((entry.preselected_jets.size() >= 4) or (entry.metLD > 0.2 + 0.1*(entry.vetoZmassSFOS != 999.)))'
+      #nLeptons: '((entry.num_preselected_leptons == 3) and (entry.tightMvaBased_leptons.size() == 3))'
+      nLeptons: '(entry.num_tightMvaBased_leptons == 3)'
+      metLD: '((entry.num_preselected_jets >= 4) or (entry.metLD > 0.2 + 0.1*(entry.vetoZmassSFOS != 999.)))'
       zVeto: '((entry.vetoZmassSFOS == 999.) or (abs(entry.vetoZmassSFOS-91.2) > 10))'
 
   4l:
     data samples: [inclusive_data]
     cuts:
-      nLeptons: '(entry.preselected_leptons.size() == 4)'
-      neutral: '(entry.preselected_leptons[0].charge + entry.preselected_leptons[1].charge + entry.preselected_leptons[2].charge + entry.preselected_leptons[3].charge == 0)'
+      nLeptons: '(entry.num_preselected_leptons == 4)'
+      neutral: '(entry.preselected_leptons_1_charge + entry.preselected_leptons_2_charge + entry.preselected_leptons_3_charge + entry.preselected_leptons_4_charge == 0)'
       zVeto: '((entry.vetoZmassSFOS == 999.) or (abs(entry.vetoZmassSFOS-91.2) > 10))'
 
 weights:
@@ -93,10 +94,11 @@ samples:
      WJets:
      ZJets:
      TTJets:
-        weights: [common, (((entry.tightMvaBased_leptons.size()==2) and entry.tightMvaBased_electrons.size()==2)*1.55 + ((entry.tightMvaBased_leptons.size()==2) and entry.tightMvaBased_muons.size()==2)*3.3 + ((entry.tightMvaBased_leptons.size()==2) and entry.tightMvaBased_muons.size()==1)*1.87 + (entry.tightMvaBased_leptons.size()==3)*2.85 + (entry.tightMvaBased_leptons.size()==4))]
+        weights: [common, (((entry.num_tightMvaBased_leptons==2) and entry.num_tightMvaBased_electrons==2)*1.55 + ((entry.num_tightMvaBased_leptons==2) and entry.num_tightMvaBased_muons==2)*3.3 + ((entry.num_tightMvaBased_leptons==2) and entry.num_tightMvaBased_muons==1)*1.87 + (entry.num_tightMvaBased_leptons==3)*2.85 + (entry.num_tightMvaBased_leptons==4))]
      TTZJets:
      TTWJets:
      WZJets:
+     ZZJets:
      ttH125:
 #    ttH125_tt:
 #        tree sample: ttH125
@@ -125,32 +127,32 @@ aliases:
 
 distributions:
     numAllLeptons:
-        #expression: '@preselected_leptons.size()'
-        expression: entry.preselected_leptons.size()
+        #expression: '@num_preselected_leptons'
+        expression: entry.num_preselected_leptons
         axis labels: [number of preselected leptons, Events]
         binning: [6, -0.5, 5.5]
         
-    numLooseLeptons:
-        #expression: '@loose_leptons.size()'
-        expression: entry.loose_leptons.size()
-        axis labels: [number of loose leptons, Events]
-        binning: [6, -0.5, 5.5]
+    #numLooseLeptons:
+#        #expression: '@loose_leptons.size()'
+#        expression: entry.loose_leptons.size()
+#        axis labels: [number of loose leptons, Events]
+#        binning: [6, -0.5, 5.5]
     
     numTightLeptons:
         #expression: '@tight_leptons.size()'
-        expression: entry.tightMvaBased_leptons.size()
+        expression: entry.num_tightMvaBased_leptons
         axis labels: [number of tight leptons, Events]
         binning: [6, -0.5, 5.5]
     
     MET:
-        expression: 'entry.met[0].obj.Pt()'
+        expression: 'entry.met_pt'
         axis labels: [MET, Events]
         binning: [*default_num_bins, 0, 400]
 
     numJets:
         #expression: numJets
-        #expression: '@preselected_jets.size()'
-        expression: entry.preselected_jets.size()
+        #expression: '@num_preselected_jets'
+        expression: entry.num_preselected_jets
         axis labels: [number of jets, Events]
         binning: [20, -0.5, 19.5]
 
@@ -167,7 +169,7 @@ distributions:
     #     binning: [5, -0.5, 4.5]
 
 #    sum_lep1pt_lep2pt_met:
-#        expression: preselected(@preselected_leptons.size()>0)
+#        expression: preselected(@num_preselected_leptons>0)
 #        axis labels: ['Sum pT (lepton 1, lepton 2, MET)', Events]
 #        binning: [*default_num_bins, 100, 600]
 
@@ -224,13 +226,13 @@ distributions:
 #         binning: [*default_num_bins, 0.7, 1.0]
 
     all_leptons_by_pt_1_pt:
-        expression: 'entry.preselected_leptons[0].obj.Pt()'
+        expression: 'entry.preselected_leptons_1_pt'
         #expression: entry.loose_leptons[0].obj.Pt()
         axis labels: [First lepton pT, Events]
         binning: [*default_num_bins, 0, 400]
 
     all_leptons_by_pt_2_pt:
-        expression: 'entry.preselected_leptons[1].obj.Pt()'
+        expression: 'entry.preselected_leptons_2_pt'
         axis labels: [Second lepton pT, Events]
         binning: [*default_num_bins, 0, 250]
 
@@ -376,12 +378,12 @@ distributions:
         binning: [*default_num_bins, 0, 500]
 
     tight_bJets:
-        expression: entry.tight_bJets.size()
+        expression: entry.num_tight_bjets_charlie
         axis labels: [tight bjets, Events]
         binning: [10, -0.5, 9.5]
         
     loose_bJets:
-        expression: entry.loose_bJets.size()
+        expression: entry.num_loose_bjets_charlie
         axis labels: [loose bjets, Events]
         binning: [10, -0.5, 9.5]
 
