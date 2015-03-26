@@ -2,6 +2,7 @@
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MultileptonAna.h"
 #include <algorithm>
+#include <array>
 
 //// #if !defined( MULTILEPTONANA_CC )
 
@@ -870,9 +871,8 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
   const reco::Candidate* mother;
   const reco::Candidate* grandMother;
   std::pair<const reco::Candidate*, const reco::Candidate*> childPair;
-
-  //  std::map<const double, std::vector<int>> family_tree;
-  std::map<const double, unsigned int> family_tree;
+  //  std::map<const float, unsigned int> family_tree; //very important to use float here
+  std::map<const float, array<unsigned int,2>> family_tree; //very important to use float here
 
   unsigned int i = 0;
   for (const auto & iGenParticle: theobjs)
@@ -885,7 +885,9 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
       genParticle.mother = 9999;
       genParticle.grandmother = 9999;
 
-      family_tree[genParticle.obj.Pt()] = i;//need to decide if it's better to add the obj class pT of the pat obj pT
+      family_tree[genParticle.obj.Pt()][0] = i;
+      family_tree[genParticle.obj.Pt()][1] = iGenParticle.status();//additional check to make sure we're getting the right object
+
       theGenParticles.push_back(genParticle);
       i+=1;
     }
@@ -900,18 +902,21 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
       mother = GetGenMotherNoFsr(&iGenParticle);
       grandMother = GetGenMotherNoFsr(mother);
       
-      if (child0->pdgId() != iGenParticle.pdgId() && family_tree.find(child0->pt()) != family_tree.end())
+      if (child0->pdgId() != iGenParticle.pdgId() && family_tree.find(child0->pt()) != family_tree.end() && (unsigned int)child0->status() == family_tree[child0->pt()][1])
 	{
-	  theGenParticles[i].child0 = family_tree[child0->pt()];
+	  theGenParticles[i].child0 = family_tree[child0->pt()][0];
 	}
-      if (child1->pdgId() != iGenParticle.pdgId() && family_tree.find(child1->pt()) != family_tree.end())
+      if (child1->pdgId() != iGenParticle.pdgId() && family_tree.find(child1->pt()) != family_tree.end() && (unsigned int)child1->status() == family_tree[child1->pt()][1])
 	{
-	  theGenParticles[i].child1 = family_tree[child1->pt()];
+	  theGenParticles[i].child1 = family_tree[child1->pt()][0];
 	}
-      if (mother->pdgId() != iGenParticle.pdgId() && family_tree.find(mother->pt()) != family_tree.end())
+      if (mother->pdgId() != iGenParticle.pdgId() && family_tree.find(mother->pt()) != family_tree.end() && (unsigned int)mother->status() == family_tree[mother->pt()][1])
 	{
-	  theGenParticles[i].mother = family_tree[mother->pt()];
-	  if (grandMother->pdgId() != iGenParticle.pdgId() && family_tree.find(grandMother->pt()) != family_tree.end()) theGenParticles[i].grandmother = family_tree[grandMother->pt()];
+	  theGenParticles[i].mother = family_tree[mother->pt()][0];
+	  if (grandMother->pdgId() != iGenParticle.pdgId() && family_tree.find(grandMother->pt()) != family_tree.end() && (unsigned int)grandMother->status() == family_tree[grandMother->pt()][1]) 
+	    {
+	      theGenParticles[i].grandmother = family_tree[grandMother->pt()][0];
+	    }
 	}
       
       i+=1;
