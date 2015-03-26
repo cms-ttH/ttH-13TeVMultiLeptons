@@ -900,14 +900,23 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
       mother = GetGenMotherNoFsr(&iGenParticle);
       grandMother = GetGenMotherNoFsr(mother);
       
-      if (child0->pdgId() != iGenParticle.pdgId() && family_tree.find(child0->pt()) != family_tree.end()) theGenParticles[i].child0 = family_tree[child0->pt()];
-      if (child1->pdgId() != iGenParticle.pdgId() && family_tree.find(child1->pt()) != family_tree.end()) theGenParticles[i].child1 = family_tree[child1->pt()];
-      if (family_tree.find(mother->pt()) != family_tree.end()) theGenParticles[i].mother = family_tree[mother->pt()];
-      if (family_tree.find(grandMother->pt()) != family_tree.end()) theGenParticles[i].grandmother = family_tree[grandMother->pt()];
-
+      if (child0->pdgId() != iGenParticle.pdgId() && family_tree.find(child0->pt()) != family_tree.end())
+	{
+	  theGenParticles[i].child0 = family_tree[child0->pt()];
+	}
+      if (child1->pdgId() != iGenParticle.pdgId() && family_tree.find(child1->pt()) != family_tree.end())
+	{
+	  theGenParticles[i].child1 = family_tree[child1->pt()];
+	}
+      if (mother->pdgId() != iGenParticle.pdgId() && family_tree.find(mother->pt()) != family_tree.end())
+	{
+	  theGenParticles[i].mother = family_tree[mother->pt()];
+	  if (grandMother->pdgId() != iGenParticle.pdgId() && family_tree.find(grandMother->pt()) != family_tree.end()) theGenParticles[i].grandmother = family_tree[grandMother->pt()];
+	}
+      
       i+=1;
     }
-
+  
   return theGenParticles;
 }
 
