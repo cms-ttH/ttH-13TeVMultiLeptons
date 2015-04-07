@@ -18,7 +18,6 @@ ROOT.gSystem.Load('libttH-13TeVMultiLeptonsTemplateMakers.so')
 
 # get input file(s):
 infilestring = sys.argv[1]
-#infilestring += '*.root'    #<- uncomment to tchain multiple input files
 
 tree = ROOT.TChain('OSTwoLepAna/summaryTree')
 tree.Add(infilestring)
