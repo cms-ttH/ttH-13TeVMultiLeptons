@@ -136,7 +136,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//double mintightelept = 10.;
 	//double minlooseelept = 5.;
 
-
 	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight);	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
@@ -178,8 +177,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
 	vecPatMuon selectedMuons_looseCutBased = GetSelectedMuons( *muons, 5., muonID::muonLooseCutBased );
 	vecPatMuon selectedMuons_tightCutBased = GetSelectedMuons( *muons, 5., muonID::muonTightCutBased );
-
-
 
 	/////////
 	///
@@ -237,7 +234,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    /////////
 	    ///
-	    /// Filling promptMVA-based collections
+	    /// Filling final selection collections
 	    ///
 	    ////////
 
@@ -247,6 +244,20 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatMuon selectedMuons_looseMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonLooseMvaBased, selectedJets_forLepMVA);
 	    vecPatMuon selectedMuons_tightMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonTightMvaBased, selectedJets_forLepMVA);
 
+	    //2lss final state cuts
+	    
+	    //cutBased
+	    if (selectedElectrons_cutBased.size() == 2 && selectedMuons_cutBased.size() == 0) selectedElectrons_cutBased = GetSelectedElectrons(selectedElectrons_cutBased, 10., electronID::electron2lss); 
+	    else if (selectedMuons_cutBased.size() == 2 && selectedElectrons_cutBased.size() == 0) selectedMuons_cutBased = GetSelectedMuons(selectedMuons_cutBased, 5., muonID::muon2lss);
+	    
+	    //looseMvaBased
+	    if (selectedElectrons_looseMvaBased.size() == 2 && selectedMuons_looseMvaBased.size() == 0) selectedElectrons_looseMvaBased = GetSelectedElectrons(selectedElectrons_looseMvaBased, 10., electronID::electron2lss); 
+	    else if (selectedMuons_looseMvaBased.size() == 2 && selectedElectrons_looseMvaBased.size() == 0) selectedMuons_looseMvaBased = GetSelectedMuons(selectedMuons_looseMvaBased, 5., muonID::muon2lss);
+
+	    //tightMvaBased
+	    if (selectedElectrons_tightMvaBased.size() == 2 && selectedMuons_tightMvaBased.size() == 0) selectedElectrons_tightMvaBased = GetSelectedElectrons(selectedElectrons_tightMvaBased, 10., electronID::electron2lss); 
+	    else if (selectedMuons_tightMvaBased.size() == 2 && selectedElectrons_tightMvaBased.size() == 0) selectedMuons_tightMvaBased = GetSelectedMuons(selectedMuons_tightMvaBased, 5., muonID::muon2lss);
+	    
 	    /////////
 	    ///
 	    /// MET

@@ -1005,6 +1005,11 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonPtEtaOnly:
   case muonID::muonPtEtaIsoOnly:
   case muonID::muonPtEtaIsoTrackerOnly:
+  case muonID::muon2lss:
+    passesKinematics = true;
+    passesIso = true;
+    passesID = (iMuon.innerTrack()->ptError()/iMuon.innerTrack()->pt() < 0.2);
+    break;
   case muonID::muonRaw:
     return true;
     break;
@@ -1267,6 +1272,11 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
   case electronID::electronLoose:
   case electronID::electronTightMinusTrigPresel:
   case electronID::electronTight:
+  case electronID::electron2lss:
+    passesKinematics = true;
+    passesIso = true;
+    passesID = iElectron.isGsfCtfScPixChargeConsistent();
+    break;
   case electronID::electronPreselection:
     //Phys14 MVA ID (only for pT > 10 GeV) for now
     if (iElectron.pt() > 10) {    //loose WP

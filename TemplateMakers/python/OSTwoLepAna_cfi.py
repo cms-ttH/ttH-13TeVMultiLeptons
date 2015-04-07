@@ -15,7 +15,7 @@ import FWCore.ParameterSet.Config as cms
 
 OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 
-	debug = cms.bool(False),
+	debug = cms.bool(True),
 		
 	## anything to do at the beginning of the job:
         setupoptions = cms.PSet(	
