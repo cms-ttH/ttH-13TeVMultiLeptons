@@ -184,13 +184,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////
 
-	
-	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	//remove electrons that are close (dR <=0.05) to muons
+	//remove electrons that are close (dR <=0.05) to muons
+	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	
+
 	//make sure the electrons used for jet cleaning are already cleaned of muons
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronPreselection);
-
-	vecPatElectron selectedElectrons_cutBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronCutBased);
-	vecPatMuon selectedMuons_cutBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonCutBased);
 
 	/////////
 	///
@@ -234,9 +232,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    /////////
 	    ///
-	    /// Filling final selection collections
+	    /// Filling final selection PAT collections
 	    ///
 	    ////////
+
+	    vecPatElectron selectedElectrons_cutBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronCutBased);
+	    vecPatMuon selectedMuons_cutBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonCutBased);
 
 	    vecPatElectron selectedElectrons_looseMvaBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronLooseMvaBased, selectedJets_forLepMVA);
 	    vecPatElectron selectedElectrons_tightMvaBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronTightMvaBased, selectedJets_forLepMVA);
@@ -244,19 +245,34 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatMuon selectedMuons_looseMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonLooseMvaBased, selectedJets_forLepMVA);
 	    vecPatMuon selectedMuons_tightMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonTightMvaBased, selectedJets_forLepMVA);
 
-	    //2lss final state cuts
-	    
-	    //cutBased
-	    if (selectedElectrons_cutBased.size() == 2 && selectedMuons_cutBased.size() == 0) selectedElectrons_cutBased = GetSelectedElectrons(selectedElectrons_cutBased, 10., electronID::electron2lss); 
-	    else if (selectedMuons_cutBased.size() == 2 && selectedElectrons_cutBased.size() == 0) selectedMuons_cutBased = GetSelectedMuons(selectedMuons_cutBased, 5., muonID::muon2lss);
-	    
-	    //looseMvaBased
-	    if (selectedElectrons_looseMvaBased.size() == 2 && selectedMuons_looseMvaBased.size() == 0) selectedElectrons_looseMvaBased = GetSelectedElectrons(selectedElectrons_looseMvaBased, 10., electronID::electron2lss); 
-	    else if (selectedMuons_looseMvaBased.size() == 2 && selectedElectrons_looseMvaBased.size() == 0) selectedMuons_looseMvaBased = GetSelectedMuons(selectedMuons_looseMvaBased, 5., muonID::muon2lss);
+	    // //2lss final state cuts FOR OBJ SYNCHRONIZATION ONLY
+	    // vecPatLepton selectedLeptons_cutBased = fillLeptons(selectedMuons_cutBased,selectedElectrons_cutBased);
+	    // vecPatLepton selectedLeptons_looseMvaBased = fillLeptons(selectedMuons_looseMvaBased,selectedElectrons_looseMvaBased);
+	    // vecPatLepton selectedLeptons_tightMvaBased = fillLeptons(selectedMuons_tightMvaBased,selectedElectrons_tightMvaBased);
 
-	    //tightMvaBased
-	    if (selectedElectrons_tightMvaBased.size() == 2 && selectedMuons_tightMvaBased.size() == 0) selectedElectrons_tightMvaBased = GetSelectedElectrons(selectedElectrons_tightMvaBased, 10., electronID::electron2lss); 
-	    else if (selectedMuons_tightMvaBased.size() == 2 && selectedElectrons_tightMvaBased.size() == 0) selectedMuons_tightMvaBased = GetSelectedMuons(selectedMuons_tightMvaBased, 5., muonID::muon2lss);
+	    // //cutBased
+	    // if (selectedLeptons_cutBased.size()==2 && selectedLeptons_cutBased[0].charge() == selectedLeptons_cutBased[1].charge())
+	    //   {
+	    // 	selectedElectrons_cutBased = GetSelectedElectrons(selectedElectrons_cutBased, 10., electronID::electron2lss);
+	    // 	selectedMuons_cutBased = GetSelectedMuons(selectedMuons_cutBased, 5., muonID::muon2lss);
+	    //   }
+	    // selectedLeptons_cutBased.clear();
+
+	    // //looseMvaBased
+	    // if (selectedLeptons_looseMvaBased.size()==2 && selectedLeptons_looseMvaBased[0].charge() == selectedLeptons_looseMvaBased[1].charge())
+	    //   {
+	    // 	selectedElectrons_looseMvaBased = GetSelectedElectrons(selectedElectrons_looseMvaBased, 10., electronID::electron2lss);
+	    // 	selectedMuons_looseMvaBased = GetSelectedMuons(selectedMuons_looseMvaBased, 5., muonID::muon2lss);
+	    //   }
+	    // selectedLeptons_looseMvaBased.clear();
+
+	    // //tightMvaBased
+	    // if (selectedLeptons_tightMvaBased.size()==2 && selectedLeptons_tightMvaBased[0].charge() == selectedLeptons_tightMvaBased[1].charge())
+	    //   {
+	    // 	selectedElectrons_tightMvaBased = GetSelectedElectrons(selectedElectrons_tightMvaBased, 10., electronID::electron2lss);
+	    // 	selectedMuons_tightMvaBased = GetSelectedMuons(selectedMuons_tightMvaBased, 5., muonID::muon2lss);
+	    //   }
+	    // selectedLeptons_tightMvaBased.clear();
 	    
 	    /////////
 	    ///
