@@ -60,12 +60,15 @@ class MakeGoodPlot
 {
 	private:
 		
-		TChain *ch[11];
+		TChain *ch[12];
 		TGraph *roc_curve[50];
 		
 		TH1F *sample_hist_shared[50][50];
 		
-		TString sample_names[11];
+		TString sample_names[12];
+                string sample_names_std[12];
+                double xsecs[12];
+                double numgen[12];
 		
 		int single_sample;
 		
@@ -326,6 +329,7 @@ class MakeGoodPlot
 		void make_eff_vs_var_separation_plot(std::vector<int> samps);
 		void draw_corr_rand_gauss_2D(std::vector<int> samps, bool use_samps=false);
 		void print_yields_given_syst(std::vector<int> samps);
+                void print_cutflow(std::vector<int> samps);
 		
 		MakeGoodPlot();
 		MakeGoodPlot(std::vector<int> samps);
@@ -802,6 +806,976 @@ void MakeGoodPlot::print_yields_given_syst(std::vector<int> samps)
 
 
 }
+void MakeGoodPlot::print_cutflow(std::vector<int> samps)
+{
+    int numsamples = samps.size();
+
+    load_samples(samps);
+
+    vstring commoncuts_str;
+    vstring ss_2e_cuts_str;
+    vstring ss_2mu_cuts_str;
+    vstring ss_emu_cuts_str;
+    vstring threel_cuts_str;
+    vstring fourl_cuts_str;
+    
+    // common cuts
+    commoncuts_str.push_back(">=2 T lep or >=4 PS lep");
+    commoncuts_str.push_back("minDilepMass>12");
+    commoncuts_str.push_back("PS lep pt >20, >10");
+    commoncuts_str.push_back("nJets>=2 (25GeV)");
+    commoncuts_str.push_back(">=2 L bjets or >=1 M bjet");
+    
+    // ss
+    ss_2e_cuts_str.push_back("2 tight eles");
+    ss_2e_cuts_str.push_back("ss");
+    ss_2e_cuts_str.push_back(">=4 jets");
+    ss_2e_cuts_str.push_back("metLD>0.2");
+    ss_2e_cuts_str.push_back("lep pt >20, >20");
+    ss_2e_cuts_str.push_back("leppt1+leppt2+met>100");
+    ss_2e_cuts_str.push_back("ee_Zveto");
+    ss_2e_cuts_str.push_back("isGsfCtfScPixChargeConsistent (x2)");
+        
+    ss_emu_cuts_str.push_back("1 tight ele, 1 tight mu");
+    ss_emu_cuts_str.push_back("ss");
+    ss_emu_cuts_str.push_back(">=4 jets");
+    ss_emu_cuts_str.push_back("metLD>0.2");
+    ss_emu_cuts_str.push_back("lep pt >20, >20");
+    ss_emu_cuts_str.push_back("leppt1+leppt2+met>100");
+    ss_emu_cuts_str.push_back("chargeFlip+isGsfCtfScPixChargeConsistent");
+        
+    ss_2mu_cuts_str.push_back("2 tight mu");
+    ss_2mu_cuts_str.push_back("ss");
+    ss_2mu_cuts_str.push_back(">=4 jets");
+    ss_2mu_cuts_str.push_back("metLD>0.2");
+    ss_2mu_cuts_str.push_back("lep pt >20, >20");
+    ss_2mu_cuts_str.push_back("leppt1+leppt2+met>100");
+    ss_2mu_cuts_str.push_back("chargeFlip (x2)");
+    
+    // 3l
+    threel_cuts_str.push_back("3 tight lep");
+    threel_cuts_str.push_back(">=4 jets, or metLD>0.2");
+    threel_cuts_str.push_back("SFOS Zveto");
+    threel_cuts_str.push_back("2 T leps ss");
+    
+    // 4l    
+    fourl_cuts_str.push_back("4 loose lep");
+    fourl_cuts_str.push_back("neutral");
+    fourl_cuts_str.push_back("SFOS Zveto");
+     
+//     double commoncuts[commoncuts_str.size()] = {};
+//     double ss_2e_cuts[ss_2e_cuts_str.size()] = {};
+//     double ss_2mu_cuts[ss_2mu_cuts_str.size()] = {};
+//     double ss_emu_cuts[ss_emu_cuts_str.size()] = {};
+//     double threel_cuts[threel_cuts_str.size()] = {};
+//     double fourl_cuts[fourl_cuts_str.size()] = {};
+//     annoying ...
+
+    double commoncuts[20][20][6] = {{{}}};
+    double ss_2e_cuts[20][20][6] = {{{}}};
+    double ss_2mu_cuts[20][20][6] = {{{}}};
+    double ss_emu_cuts[20][20][6] = {{{}}};
+    double threel_cuts[20][20][6] = {{{}}};
+    double fourl_cuts[20][20][6] = {{{}}};
+    
+    
+    vstring ttHdecaystudy_str;
+    ttHdecaystudy_str.push_back("H->bb");
+    ttHdecaystudy_str.push_back("H->WW");
+    ttHdecaystudy_str.push_back("H->tautau");
+    ttHdecaystudy_str.push_back("H->ZZ");
+    ttHdecaystudy_str.push_back("H->other");    
+    ttHdecaystudy_str.push_back("no gen info");
+    
+    
+    for (int i=0; i<numsamples; i++)
+    {	
+	int samp_int = samps[i];
+
+	cout << "doing " << sample_names[samp_int] << endl;
+        
+        int samp_num_entries = ch[samp_int]->GetEntries();
+        
+        ch[samp_int]->SetBranchAddress("mcwgt", &mcwgt_intree);
+        ch[samp_int]->SetBranchAddress("wgt", &wgt_intree);
+
+        ch[samp_int]->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
+        ch[samp_int]->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
+        ch[samp_int]->SetBranchAddress("preselected_muons", &preselected_muons_intree);
+
+        ch[samp_int]->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
+        ch[samp_int]->SetBranchAddress("looseMvaBased_electrons", &loose_electrons_intree);
+        ch[samp_int]->SetBranchAddress("looseMvaBased_muons", &loose_muons_intree);
+
+        ch[samp_int]->SetBranchAddress("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
+        ch[samp_int]->SetBranchAddress("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
+        ch[samp_int]->SetBranchAddress("tightMvaBased_muons", &tightMvaBased_muons_intree);
+
+        ch[samp_int]->SetBranchAddress("preselected_jets", &preselected_jets_intree);
+        ch[samp_int]->SetBranchAddress("loose_bJets", &loose_bJets_intree);
+        ch[samp_int]->SetBranchAddress("tight_bJets", &tight_bJets_intree);
+        ch[samp_int]->SetBranchAddress("met", &met_intree);
+        ch[samp_int]->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
+
+
+        for (Int_t j=0; j<samp_num_entries; j++)
+        {
+            ch[samp_int]->GetEntry(j);
+        
+            
+            // H decay studies
+                        
+            int gpsize = (*pruned_genParticles_intree).size();            
+            int thechildpdgid = 0;
+            
+            //int hdecayindex = 4;            
+            int hdecayindex = 0;
+            
+            
+            //if (wgt_intree<0.0) continue;
+            //if (wgt_intree>=0) continue;
+            
+            
+            
+//             for (int j=0; j<gpsize; j++)
+//             {
+//                 int chil0 = (int)(*pruned_genParticles_intree)[j].child0;
+//                 int chil1 = (int)(*pruned_genParticles_intree)[j].child1;
+//                 if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize) && (*pruned_genParticles_intree)[j].status==22) thechildpdgid = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0].pdgID;
+//                 else if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil1<gpsize) && (*pruned_genParticles_intree)[j].status==22) thechildpdgid = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child1].pdgID;
+//                 else if (thechildpdgid==0) hdecayindex = 5;
+//                 else hdecayindex = 4;
+//             }
+//                        
+//             
+//             if (abs(thechildpdgid)==5) hdecayindex = 0;
+//             if (abs(thechildpdgid)==24) hdecayindex = 1;
+//             if (abs(thechildpdgid)==15) hdecayindex = 2;
+//             if (abs(thechildpdgid)==23) hdecayindex = 3;
+        
+            // common
+
+            if (!(((*preselected_leptons_intree).size()>3) || ((*tightMvaBased_leptons_intree).size()>1))) continue;                
+            commoncuts[0][samp_int][hdecayindex] += wgt_intree;        
+
+            double mindilepmass = getTwoObjKineExtreme(*preselected_leptons_intree,"min","mass");        
+            if (!(mindilepmass>12)) continue;                
+            commoncuts[1][samp_int][hdecayindex] += wgt_intree;       
+
+            if (!((*preselected_leptons_intree)[0].obj.Pt()>20 && (*preselected_leptons_intree)[1].obj.Pt()>10)) continue;        
+            commoncuts[2][samp_int][hdecayindex] += wgt_intree;
+
+            if (!((*preselected_jets_intree).size()>1)) continue;
+            commoncuts[3][samp_int][hdecayindex] += wgt_intree;
+
+            if (!(((*loose_bJets_intree).size()>1) || ((*tight_bJets_intree).size()>0))) continue;
+            commoncuts[4][samp_int][hdecayindex] += wgt_intree;
+
+            // 2e
+
+            if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*loose_leptons_intree).size()<4) ) 
+            {
+                if (samp_int==5) wgt_intree *= 1.55; //ttjets
+                ss_2e_cuts[0][samp_int][hdecayindex] += wgt_intree;
+
+                if ((*tightMvaBased_electrons_intree)[0].charge==(*tightMvaBased_electrons_intree)[1].charge)
+                {
+                    ss_2e_cuts[1][samp_int][hdecayindex] += wgt_intree;
+
+                    if ((*preselected_jets_intree).size()>3)
+                    {
+                        ss_2e_cuts[2][samp_int][hdecayindex] += wgt_intree;
+
+                        auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
+                        double MHT_handle = objs_for_mht.Pt();
+                        double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
+
+                        if (metLD_handle> 0.2)
+                        {
+                            ss_2e_cuts[3][samp_int][hdecayindex] += wgt_intree;
+
+                            if ((*tightMvaBased_electrons_intree)[0].obj.Pt()>20 && (*tightMvaBased_electrons_intree)[1].obj.Pt()>20)
+                            {
+                                ss_2e_cuts[4][samp_int][hdecayindex] += wgt_intree;
+
+                                if (((*tightMvaBased_electrons_intree)[0].obj.Pt() + (*tightMvaBased_electrons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
+                                {
+                                    ss_2e_cuts[5][samp_int][hdecayindex] += wgt_intree;
+
+                                    double vetoZmass = pickFromSortedTwoObjKine(*preselected_electrons_intree,"mass",1,91.2);
+
+                                    if (fabs(vetoZmass-91.2)>10)                     
+                                    {
+                                        ss_2e_cuts[6][samp_int][hdecayindex] += wgt_intree;
+
+                                        if ((*tightMvaBased_electrons_intree)[0].isGsfCtfScPixChargeConsistent && (*tightMvaBased_electrons_intree)[1].isGsfCtfScPixChargeConsistent)
+                                        {
+                                            ss_2e_cuts[7][samp_int][hdecayindex] += wgt_intree;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2 mu
+
+            if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*loose_leptons_intree).size()<4) ) 
+            {
+                if (samp_int==5) wgt_intree *= 3.3; //ttjets
+                ss_2mu_cuts[0][samp_int][hdecayindex] += wgt_intree;
+
+                if ((*tightMvaBased_muons_intree)[0].charge==(*tightMvaBased_muons_intree)[1].charge)
+                {
+                    ss_2mu_cuts[1][samp_int][hdecayindex] += wgt_intree;
+
+                    if ((*preselected_jets_intree).size()>3)
+                    {
+                        ss_2mu_cuts[2][samp_int][hdecayindex] += wgt_intree;
+
+                        auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
+                        double MHT_handle = objs_for_mht.Pt();
+                        double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
+
+                        if (metLD_handle> 0.2)
+                        {
+                            ss_2mu_cuts[3][samp_int][hdecayindex] += wgt_intree;
+
+                            if ((*tightMvaBased_muons_intree)[0].obj.Pt()>20 && (*tightMvaBased_muons_intree)[1].obj.Pt()>20)
+                            {
+                                ss_2mu_cuts[4][samp_int][hdecayindex] += wgt_intree;
+
+                                if (((*tightMvaBased_muons_intree)[0].obj.Pt() + (*tightMvaBased_muons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
+                                {
+                                    ss_2mu_cuts[5][samp_int][hdecayindex] += wgt_intree;
+
+                                    if ((*tightMvaBased_muons_intree)[0].chargeFlip<0.2 && (*tightMvaBased_muons_intree)[1].chargeFlip<0.2)
+                                    {                                    
+                                        ss_2mu_cuts[6][samp_int][hdecayindex] += wgt_intree;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        
+            // 1 mu, 1 ele
+            
+            if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*loose_leptons_intree).size()<4) ) 
+            {
+                if (samp_int==5) wgt_intree *= 1.87; //ttjets
+                ss_emu_cuts[0][samp_int][hdecayindex] += wgt_intree;
+
+                if ((*tightMvaBased_electrons_intree)[0].charge==(*tightMvaBased_muons_intree)[0].charge)
+                {
+                    ss_emu_cuts[1][samp_int][hdecayindex] += wgt_intree;
+
+                    if ((*preselected_jets_intree).size()>3)
+                    {
+                        ss_emu_cuts[2][samp_int][hdecayindex] += wgt_intree;
+
+                        auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
+                        double MHT_handle = objs_for_mht.Pt();
+                        double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
+
+                        if (metLD_handle> 0.2)
+                        {
+                            ss_emu_cuts[3][samp_int][hdecayindex] += wgt_intree;
+
+                            if ((*tightMvaBased_muons_intree)[0].obj.Pt()>20 && (*tightMvaBased_electrons_intree)[0].obj.Pt()>20)
+                            {
+                                ss_emu_cuts[4][samp_int][hdecayindex] += wgt_intree;
+
+                                if (((*tightMvaBased_muons_intree)[0].obj.Pt() + (*tightMvaBased_electrons_intree)[0].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
+                                {
+                                    ss_emu_cuts[5][samp_int][hdecayindex] += wgt_intree;
+
+                                    if ((*tightMvaBased_muons_intree)[0].chargeFlip<0.2 && (*tightMvaBased_electrons_intree)[0].isGsfCtfScPixChargeConsistent)
+                                    {                                    
+                                        ss_emu_cuts[6][samp_int][hdecayindex] += wgt_intree;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // 3l
+            
+            if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*loose_leptons_intree).size()<4) ) 
+            {
+                if (samp_int==5) wgt_intree *= 2.85; //ttjets
+                threel_cuts[0][samp_int][hdecayindex] += wgt_intree;
+
+                auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
+                double MHT_handle = objs_for_mht.Pt();
+                double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
+
+                if ((metLD_handle>0.2) || ((*preselected_jets_intree).size()>3))
+                {
+                    threel_cuts[1][samp_int][hdecayindex] += wgt_intree;
+
+                    double vetoZmassSFOS = pickFromSortedTwoObjKine(*tightMvaBased_leptons_intree,"massSFOS",1,91.2);
+
+                    if (fabs(vetoZmassSFOS-91.2)>10.)                     
+                    {        
+                          threel_cuts[2][samp_int][hdecayindex] += wgt_intree;  
+                            
+                    }
+                }
+            }
+            
+            // 4l
+            
+            if ((*loose_leptons_intree).size()==4)
+            {
+                fourl_cuts[0][samp_int][hdecayindex] += wgt_intree;
+
+                if ( ((*loose_leptons_intree)[0].charge + (*loose_leptons_intree)[1].charge + (*loose_leptons_intree)[2].charge + (*loose_leptons_intree)[3].charge)==0 )
+                {
+                    fourl_cuts[1][samp_int][hdecayindex] += wgt_intree;
+
+                    double vetoZmassSFOS = pickFromSortedTwoObjKine(*loose_leptons_intree,"massSFOS",1,91.2);
+
+                    if (fabs(vetoZmassSFOS-91.2)>10.)                     
+                    {        
+                          fourl_cuts[2][samp_int][hdecayindex] += wgt_intree;  
+                            
+                    }
+                }
+            }
+            
+            
+//             // 3l test
+//             
+//             if ( ((*tightMvaBased_leptons_intree).size()>=2) && ((*preselected_leptons_intree).size()==3) ) 
+//             {
+//                 if (samp_int==5) wgt_intree *= 2.85; //ttjets
+//                 threel_cuts[0][samp_int][hdecayindex] += wgt_intree;
+// 
+//                 auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
+//                 double MHT_handle = objs_for_mht.Pt();
+//                 double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
+// 
+//                 if ((metLD_handle>0.2) || ((*preselected_jets_intree).size()>3))
+//                 {
+//                     threel_cuts[1][samp_int][hdecayindex] += wgt_intree;
+// 
+//                     double vetoZmassSFOS = pickFromSortedTwoObjKine(*preselected_leptons_intree,"massSFOS",1,91.2);
+// 
+//                     if (fabs(vetoZmassSFOS-91.2)>10.)                     
+//                     {        
+//                           threel_cuts[2][samp_int][hdecayindex] += wgt_intree;
+//                           
+//                           if ( (*tightMvaBased_leptons_intree)[0].charge==(*tightMvaBased_leptons_intree)[1].charge )
+//                           {
+//                                 
+//                             threel_cuts[3][samp_int][hdecayindex] += wgt_intree;
+//                           }
+//                           
+//                     }
+//                 }
+//             }
+//             
+//            
+//             
+//             
+//             // 4l test
+//             
+//             if ((*tightMvaBased_leptons_intree).size()>=2 && (*preselected_leptons_intree).size()==4)
+//             {
+//                 fourl_cuts[0][samp_int][hdecayindex] += wgt_intree;
+// 
+//                 if ( ((*preselected_leptons_intree)[0].charge + (*preselected_leptons_intree)[1].charge + (*preselected_leptons_intree)[2].charge + (*preselected_leptons_intree)[3].charge)==0 && ((*tightMvaBased_leptons_intree)[0].charge==(*tightMvaBased_leptons_intree)[1].charge) )
+//                 {
+//                     fourl_cuts[1][samp_int][hdecayindex] += wgt_intree;
+// 
+//                     double vetoZmassSFOS = pickFromSortedTwoObjKine(*preselected_leptons_intree,"massSFOS",1,91.2);
+// 
+//                     if (fabs(vetoZmassSFOS-91.2)>10.)                     
+//                     {        
+//                           fourl_cuts[2][samp_int][hdecayindex] += wgt_intree;  
+//                             
+//                     }
+//                 }
+//             }
+//             
+            
+            
+            
+            
+            
+            
+            
+       
+                                  
+        } // end event loop
+    } // end sample loop 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+        
+        // cut flow with h decay study:    
+        
+        
+//     cout << " " << endl;
+//     cout << " " << endl;
+//     cout << "raw mc" << endl;
+//     cout << " " << endl;
+//     
+// 
+//     cout << "common" << endl;
+//     cout << " " << endl;        
+//     printf ("%40s","cut");
+//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//     printf ("\n");        
+//     cout << " " << endl;
+// 
+//     for (int i=0; i<commoncuts_str.size(); i++)
+//     {
+//         printf ("%40s", commoncuts_str[i].c_str());
+// 
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//         {    
+//             int samp_int = samps[0];      
+//             printf ("%15.2f", commoncuts[i][samp_int][j]);
+//         }
+// 
+//         printf ("\n");
+// 
+//     }
+// 
+// 
+// 
+//     cout << "ss 2 ele" << endl;
+//     cout << " " << endl;
+//     printf ("%40s","cut");
+//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//     printf ("\n");
+//     cout << " " << endl;
+// 
+//     for (int i=0; i<ss_2e_cuts_str.size(); i++)
+//     {
+//         printf ("%40s", ss_2e_cuts_str[i].c_str());
+// 
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//         {    
+//             int samp_int = samps[0];            
+//             printf ("%15.2f", ss_2e_cuts[i][samp_int][j]);
+//         }
+// 
+//         printf ("\n");
+//     }
+// 
+//     cout << "ss 2 mu" << endl;
+//     cout << " " << endl;
+//     printf ("%40s","cut");
+//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//     printf ("\n");
+//     cout << " " << endl;        
+// 
+//     for (int i=0; i<ss_2mu_cuts_str.size(); i++)
+//     {
+//         printf ("%40s", ss_2mu_cuts_str[i].c_str());
+// 
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//         {    
+//             int samp_int = samps[0];            
+//             printf ("%15.2f", ss_2mu_cuts[i][samp_int][j]);
+//         }
+// 
+//         printf ("\n");
+//     }
+// 
+//     cout << "ss e mu" << endl;
+//     cout << " " << endl;
+//     printf ("%40s","cut");
+//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//     printf ("\n");
+//     cout << " " << endl;        
+// 
+//     for (int i=0; i<ss_emu_cuts_str.size(); i++)
+//     {
+//         printf ("%40s", ss_emu_cuts_str[i].c_str());
+// 
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//         {    
+//             int samp_int = samps[0];            
+//             printf ("%15.2f", ss_emu_cuts[i][samp_int][j]);
+//         }
+// 
+//         printf ("\n");
+//     }
+// 
+// 
+// 
+//     cout << "3 lep" << endl;
+//     cout << " " << endl;
+//     printf ("%40s","cut");
+//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//     printf ("\n");
+//     cout << " " << endl;        
+// 
+//     for (int i=0; i<threel_cuts_str.size(); i++)
+//     {
+//         printf ("%40s", threel_cuts_str[i].c_str());
+// 
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//         {    
+//             int samp_int = samps[0];            
+//             printf ("%15.2f", threel_cuts[i][samp_int][j]);
+//         }
+// 
+//         printf ("\n");
+//     }
+// 
+// 
+//     cout << "4 lep" << endl;
+//     cout << " " << endl;
+//     printf ("%40s","cut");
+//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//     printf ("\n");
+//     cout << " " << endl;        
+// 
+//     for (int i=0; i<fourl_cuts_str.size(); i++)
+//     {
+//         printf ("%40s", fourl_cuts_str[i].c_str());
+// 
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//         {    
+//             int samp_int = samps[0];            
+//             printf ("%15.2f", fourl_cuts[i][samp_int][j]);
+//         }
+// 
+//         printf ("\n");
+//     }
+// 
+// 
+// 
+//     
+//     
+//     cout << " " << endl;
+//     cout << " " << endl;
+//     cout << "predicted events" << endl;
+//     cout << " " << endl;
+//         
+// //    for (int j=0; j<ttHdecaystudy_str.size(); j++)
+// //    {
+// //        int samp_int = samps[0];
+//         
+//         cout << "common" << endl;
+//         cout << " " << endl;
+//         printf ("%40s","cut");
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//         printf ("\n");
+//         cout << " " << endl;
+//         
+//         for (int i=0; i<commoncuts_str.size(); i++)
+//         {
+//             printf ("%40s", commoncuts_str[i].c_str());
+//             
+//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//             {    
+//                 int samp_int = samps[0];        
+//                 printf ("%15.2f", (10000.*commoncuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "ss 2 ele" << endl;
+//         cout << " " << endl;
+//         printf ("%40s","cut");
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<ss_2e_cuts_str.size(); i++)
+//         {               
+//             printf ("%40s", ss_2e_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//             {    
+//                 int samp_int = samps[0];            
+//                 printf ("%15.2f", (10000.*ss_2e_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "ss 2 mu" << endl;
+//         cout << " " << endl;
+//         printf ("%40s","cut");
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<ss_2mu_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", ss_2mu_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//             {    
+//                 int samp_int = samps[0];            
+//                 printf ("%15.2f", (10000.*ss_2mu_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//                 
+//         cout << "ss e mu" << endl;
+//         cout << " " << endl;
+//         printf ("%40s","cut");
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<ss_emu_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", ss_emu_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//             {    
+//                 int samp_int = samps[0];            
+//                 printf ("%15.2f", (10000.*ss_emu_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "3l" << endl;
+//         cout << " " << endl;
+//         printf ("%40s","cut");
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<threel_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", threel_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//             {    
+//                 int samp_int = samps[0];            
+//                 printf ("%15.2f", (10000.*threel_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "4l" << endl;
+//         cout << " " << endl;
+//         printf ("%40s","cut");
+//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<fourl_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", fourl_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//             {    
+//                 int samp_int = samps[0];            
+//                 printf ("%15.2f", (10000.*fourl_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+        
+        
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        
+        // cut flow with mult. samples:
+
+
+   cout << " " << endl;
+   cout << " " << endl;
+   cout << "raw mc" << endl;
+   cout << " " << endl;  
+       
+        cout << "common" << endl;
+        cout << " " << endl;        
+        printf ("%40s","cut");        
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");        
+        cout << " " << endl;
+        
+        for (int i=0; i<commoncuts_str.size(); i++)
+        {
+            printf ("%40s", commoncuts_str[i].c_str());
+                        
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];      
+                printf ("%15.2f", commoncuts[i][samp_int][0]);
+            }
+            
+            printf ("\n");
+        
+        }
+        
+        
+        
+        cout << "ss 2 ele" << endl;
+        cout << " " << endl;
+        //printf ("%40s%15s%15s%15s\n", "cut", "ttH", );
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;
+        
+        for (int i=0; i<ss_2e_cuts_str.size(); i++)
+        {
+            printf ("%40s", ss_2e_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", ss_2e_cuts[i][samp_int][0]);
+            }
+            
+            printf ("\n");
+        }
+        
+        cout << "ss 2 mu" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<ss_2mu_cuts_str.size(); i++)
+        {
+            printf ("%40s", ss_2mu_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", ss_2mu_cuts[i][samp_int][0]);
+            }
+            
+            printf ("\n");
+        }
+        
+        cout << "ss e mu" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<ss_emu_cuts_str.size(); i++)
+        {
+            printf ("%40s", ss_emu_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", ss_emu_cuts[i][samp_int][0]);
+            }
+            
+            printf ("\n");
+        }
+
+        
+        
+        cout << "3 lep" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<threel_cuts_str.size(); i++)
+        {
+            printf ("%40s", threel_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", threel_cuts[i][samp_int][0]);
+            }
+            
+            printf ("\n");
+        }
+        
+        
+        cout << "4 lep" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<fourl_cuts_str.size(); i++)
+        {
+            printf ("%40s", fourl_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", fourl_cuts[i][samp_int][0]);
+            }
+            
+            printf ("\n");
+        }
+        
+        
+       
+        
+
+
+    
+    
+    cout << " " << endl;
+    cout << " " << endl;
+    cout << "predicted events" << endl;
+    cout << " " << endl;
+        
+        
+        cout << "common" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;
+        
+        for (int i=0; i<commoncuts_str.size(); i++)
+        {
+            printf ("%40s", commoncuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];        
+                printf ("%15.2f", (10000.*commoncuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+            }
+            
+            printf ("\n");
+        }
+        
+        cout << "ss 2 ele" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<ss_2e_cuts_str.size(); i++)
+        {               
+            printf ("%40s", ss_2e_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", (10000.*ss_2e_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+            }
+            
+            printf ("\n");
+        }
+        
+        cout << "ss 2 mu" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<ss_2mu_cuts_str.size(); i++)
+        {
+            printf ("%40s", ss_2mu_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", (10000.*ss_2mu_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+            }
+            
+            printf ("\n");
+        }
+                
+        cout << "ss e mu" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<ss_emu_cuts_str.size(); i++)
+        {
+            printf ("%40s", ss_emu_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", (10000.*ss_emu_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+            }
+            
+            printf ("\n");
+        }
+        
+        cout << "3l" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<threel_cuts_str.size(); i++)
+        {
+            printf ("%40s", threel_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", (10000.*threel_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+            }
+            
+            printf ("\n");
+        }
+        
+        cout << "4l" << endl;
+        cout << " " << endl;
+        //printf ("%40s %15s \n", "cut", "ttH");
+        printf ("%40s","cut");
+        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        printf ("\n");
+        cout << " " << endl;        
+        
+        for (int i=0; i<fourl_cuts_str.size(); i++)
+        {
+            printf ("%40s", fourl_cuts_str[i].c_str());
+            
+            for (int j=0; j<numsamples; j++)
+            {    
+                int samp_int = samps[j];            
+                printf ("%15.2f", (10000.*fourl_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+            }
+            
+            printf ("\n");
+        }
+        
+        
+        
+
+    
+    
+}
 void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 {
 	
@@ -850,7 +1824,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";best #DeltaR(b,b)",10,0,5);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";sum p_{T}(lepton,jets,MET)",25,0,1500);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";second highest CSV output (b-tags)",10,0.6,1);
-		sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";awert",50,0,500);
+		sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";awert",150,-50,100);
 		
 		//get_hist_of_tiered_MVA_response_for_one_sample_5j4t(sample_hist[i],samp_int);
 		//get_hist_MVA_response_for_one_sample_643203(sample_hist[i],samp_int);
@@ -891,12 +1865,12 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
                 
                 
 				
-		sample_hist[i]->GetXaxis()->SetTitle("leading lep pt");		
+		sample_hist[i]->GetXaxis()->SetTitle("3rd-highest lep MVA output");		
 		sample_hist[i]->SetLineWidth(2);
 		leg->AddEntry(sample_hist[i],sample_names[samp_int] + " (" + sample_evts_string + ")","l");  /// have ability to add # of evts per sample to legend... 
 		//leg->AddEntry(sample_hist[i],sample_names[samp_int],"l");
 
-		sample_hist[i]->SetStats(0);
+		//sample_hist[i]->SetStats(0);
 		//sample_hist[i]->SetTitleSize(0);		// <- works?
 		
 		
@@ -922,7 +1896,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 	//std::string selectioninfo = "#geq 6 jets + #geq 4 b-tags";
 	//std::string selectioninfo = "5 jets + 3 b-tags";
 	//std::string selectioninfo = "5 jets + #geq 4 b-tags";
-	std::string selectioninfo = "#geq 2 presel leps";
+	std::string selectioninfo = "#geq 2 tight leps";
 	
 	TLatex *SELECTIONInfoLatex = new TLatex(0.62, 0.84, selectioninfo.c_str());  		// right
 	//TLatex *SELECTIONInfoLatex = new TLatex(0.15, 0.84, selectioninfo.c_str());  		// left
@@ -1618,8 +2592,9 @@ void MakeGoodPlot::get_roc_curve(TH1F *sig, TH1F *bkgd, int roc_curve_index) //i
 void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1 *plot2, TH1 *plot3)
 {
 	
-	ch[sample_number]->SetBranchAddress( "preselected_leptons", &preselected_leptons_intree );
-	ch[sample_number]->SetBranchAddress( "wgt", &wgt_intree );
+	//ch[sample_number]->SetBranchAddress( "preselected_leptons", &preselected_leptons_intree );
+	ch[sample_number]->SetBranchAddress( "pruned_genParticles", &pruned_genParticles_intree );
+        ch[sample_number]->SetBranchAddress( "wgt", &wgt_intree );
         
 	cout << sample_number << endl;
 	cout << ch[sample_number]->GetEntries() << endl;
@@ -1636,10 +2611,41 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
 		//pt_all_jets_over_E_all_jets = pt_E_ratio_jets(eve1->jet_vect_TLV_[syst]);
 		////plot->Fill(pt_all_jets_over_E_all_jets,weight);
 		
+                int gpsize = (*pruned_genParticles_intree).size();
                 
-                if ((*preselected_leptons_intree).size()) plot->Fill((*preselected_leptons_intree)[0].obj.Pt(),weight);
-		
-		
+                for (int j=0; j<gpsize; j++)
+                {
+                    int chil0 = (int)(*pruned_genParticles_intree)[j].child0;
+                    //if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize)) plot->Fill( (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0].pdgID, weight);
+                    if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize)) plot->Fill( (*pruned_genParticles_intree)[j].status, weight);
+                    
+                    
+                    //chil0 = gpsize - chil0;
+                    //if ((*pruned_genParticles_intree)[j].pdgID==25) plot->Fill( chil0, weight );
+                }
+                
+                
+                
+                
+                
+                ////////////////////////
+                // vdouble lepmvas;
+//                 int lepsize = (*preselected_leptons_intree).size();
+//                 
+//                 for (int j=0; j<lepsize; j++)
+//                 {
+//                     lepmvas.push_back((*preselected_leptons_intree)[j].lepMVA);
+//                 }
+//                 
+//                 //sort(lepmvas.begin(), lepmvas.end());
+//                 //if (lepsize>2 && lepmvas[lepsize-1]>0.8 && lepmvas[lepsize-2]>0.8) plot->Fill(lepmvas[lepsize-3],weight);
+//                 //if (lepsize>2 && lepmvas[0]>0.8 && lepmvas[1]>0.8) plot->Fill(lepmvas[2],weight);
+//                 if (lepsize>0) plot->Fill(lepmvas[0],weight);
+                ////////////////////////
+                
+                
+                //if ((*preselected_leptons_intree).size()) plot->Fill((*preselected_leptons_intree)[0].obj.Pt(),weight);
+                
 		
 		//plot->Fill(eve1->higgsDecayType_);
 		
@@ -2300,14 +3306,16 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 {
 	
 	TString eosprfx = "root://eoscms.cern.ch/";
-        TString basedir = "/eos/cms/store/user/gesmith/crabdir/v3/";
+        TString basedir = "/eos/cms/store/user/gesmith/crabdir/v5/";
 	TString thesample = "";
 	TString basedir_plus = "";
 	
         basedir = eosprfx + basedir;
 	
 	int numsamples = samps.size();
-	
+	 
+        
+        
 	for (int i=0; i<numsamples; i++)
 	{
 //		sample_raw_evts[10];
@@ -2319,12 +3327,15 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 // 			thesample = basedir + basedir_plus + "yggdrasil_treeMaker_data_SingleMu_2012ABCD_BEAN_53xOn53x_beanVer2*.root";
 // 			ch[0]->Add(thesample);
 // 			//cout << thesample << endl;
+                                   
 		}
 		if (samps[i]==1)
 		{
 			basedir_plus = "ttH125/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[1]->Add(thesample);
+                        xsecs[1]=0.5085;                // you can't use "i" here, idiot ...
+                        numgen[1]=89671.4186331;
 			
 			
 		}
@@ -2354,14 +3365,13 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		}
 		if (samps[i]==4)
 		{
-// 			//thesample = basedir + "v19_newBEANs/yggdrasil_treeMaker_mc_TTJetsCC_SemiLeptMGDecays*.root";
-// 			thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_TTJetsCC_SemiLeptMGDecays*.root";
-// 			ch[4]->Add(thesample);
-// 			thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_TTJetsCC_FullLeptMGDecays*.root";
-// 			ch[4]->Add(thesample);
-// 			thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_TTJetsCC_HadronicMGDecays*.root";
-// 			ch[4]->Add(thesample);
-			
+
+			basedir_plus = "ZZJets/";
+                        thesample = basedir + basedir_plus + "*.root";
+			ch[4]->Add(thesample);
+                        xsecs[4]=0.325;
+			numgen[4]=2514024.1998;
+
 		}
 		if (samps[i]==5)
 		{
@@ -2369,8 +3379,8 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
                         basedir_plus = "TTJets/";
 			thesample = basedir + basedir_plus + "*.root";
 			ch[5]->Add(thesample);
-			
-			
+			xsecs[5]=815.96; // at 173.2 GeV (top group twiki)
+			numgen[5]=25446993.0;
 		}
 		if (samps[i]==6)
 		{
@@ -2378,27 +3388,32 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
                         basedir_plus = "ZJets/";
 			thesample = basedir + basedir_plus + "*.root";
 			ch[6]->Add(thesample);    
-
+                        xsecs[6]=2008.4;
+                        numgen[6]=2829164.0;
 		}
 		if (samps[i]==7)
 		{
 			basedir_plus = "WJets/";
 			thesample = basedir + basedir_plus + "*.root";
-			ch[7]->Add(thesample);			
-			
+			ch[7]->Add(thesample);
+                        xsecs[7]=20508.9;		
+			numgen[7]=10017462.0;
 		}
 		if (samps[i]==8)
 		{
 			basedir_plus = "TTWJets/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[8]->Add(thesample);
-			
+			xsecs[8]=0.6647;
+                        numgen[8]=246521.0;
 		}
 		if (samps[i]==9)
 		{
 			basedir_plus = "TTZJets/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[9]->Add(thesample);
+                        xsecs[9]=0.8565;
+                        numgen[9]=249275.0;
 		}
 		if (samps[i]==10)
 		{
@@ -2410,9 +3425,26 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 			ch[10]->Add(thesample);
 			//thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_WW_*.root";
 			//ch[10]->Add(thesample);
-                        
-			
+                        xsecs[10]=2.165;
+			numgen[10]=237484.0;
 		}
+                
+                if (samps[i]==11)
+		{
+			// all diboson...
+                        //thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_ZZ_*.root";
+			//ch[10]->Add(thesample);
+			basedir_plus = "ZZJets/";
+                        thesample = basedir + basedir_plus + "*.root";
+			ch[11]->Add(thesample);
+			//thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_WW_*.root";
+			//ch[10]->Add(thesample);
+                        xsecs[11]=0.325;
+			numgen[11]=2514024.;
+		}
+                
+                
+                
 	}
 }
 
@@ -2432,19 +3464,35 @@ void MakeGoodPlot::initialize()
 	ch[8] = new TChain(treename);
 	ch[9] = new TChain(treename);
 	ch[10] = new TChain(treename);
+        ch[11] = new TChain(treename);
 	
 	sample_names[0] = "data"; //"data (mu)";
-	sample_names[1] = "t#bar{t}H (125)";
+	sample_names[1] = "t#bar{t}H"; //"t#bar{t}H(125)";
 	sample_names[2] = "(none)"; //"t#bar{t} + b#bar{b}";
 	sample_names[3] = "(none)"; //"t#bar{t} + b";
 	sample_names[4] = "(none)"; //"t#bar{t} + c#bar{c}";
-	sample_names[5] = "t#bar{t} + Jets"; //"t#bar{t} + lf";
-	sample_names[6] = "Z + Jets"; //"single t";
-	sample_names[7] = "W + Jets"; // "V + Jets"
-	sample_names[8] = "t#bar{t} + W"; // "t#bar{t} + W,Z";
-	sample_names[9] = "t#bar{t} + Z"; // "WW, WZ, ZZ";
+	sample_names[5] = "t#bar{t}+Jets"; //"t#bar{t} + lf";
+	sample_names[6] = "Z+Jets"; //"single t";
+	sample_names[7] = "W+Jets"; // "V + Jets"
+	sample_names[8] = "t#bar{t}+W"; // "t#bar{t} + W,Z";
+	sample_names[9] = "t#bar{t}+Z"; // "WW, WZ, ZZ";
 	sample_names[10] = "WZ"; // "data (ele)";
-	
+	sample_names[11] = "ZZ"; // "data (ele)";
+        
+        sample_names_std[0]  = sample_names[0]; 
+        sample_names_std[1]  = sample_names[1]; 
+        sample_names_std[2]  = sample_names[2]; 
+        sample_names_std[3]  = sample_names[3]; 
+        sample_names_std[4]  = sample_names[4]; 
+        sample_names_std[5]  = sample_names[5]; 
+        sample_names_std[6]  = sample_names[6];
+        sample_names_std[7]  = sample_names[7];
+        sample_names_std[8]  = sample_names[8]; 
+        sample_names_std[9]  = sample_names[9]; 
+        sample_names_std[10] = sample_names[10];
+        sample_names_std[11] = sample_names[11];
+        
+        
         Int_t cachesize = 100000000;   //100 MBytes
         
         ch[0]->SetCacheSize(cachesize);
@@ -2458,6 +3506,7 @@ void MakeGoodPlot::initialize()
         ch[8]->SetCacheSize(cachesize);
         ch[9]->SetCacheSize(cachesize);
         ch[10]->SetCacheSize(cachesize);
+        ch[11]->SetCacheSize(cachesize);
         
         ch[0]->SetCacheLearnEntries(20);
         ch[1]->SetCacheLearnEntries(20);
@@ -2470,7 +3519,33 @@ void MakeGoodPlot::initialize()
         ch[8]->SetCacheLearnEntries(20);
         ch[9]->SetCacheLearnEntries(20);
         ch[10]->SetCacheLearnEntries(20);
+        ch[11]->SetCacheLearnEntries(20);
         
+        xsecs[0]=-999.;
+        xsecs[1]=-999.;
+        xsecs[2]=-999.;
+        xsecs[3]=-999.;
+        xsecs[4]=-999.;
+        xsecs[5]=-999.;
+        xsecs[6]=-999.;
+        xsecs[7]=-999.;
+        xsecs[8]=-999.;
+        xsecs[9]=-999.;
+        xsecs[10]=-999.;
+        xsecs[11]=-999.;
+              
+        numgen[0]=-999.;
+        numgen[1]=-999.;
+        numgen[2]=-999.;
+        numgen[3]=-999.;
+        numgen[4]=-999.;
+        numgen[5]=-999.;
+        numgen[6]=-999.;
+        numgen[7]=-999.;
+        numgen[8]=-999.;
+        numgen[9]=-999.;
+        numgen[10]=-999.;
+        numgen[11]=-999.;
         
         
         mcwgt_intree = -9999.;

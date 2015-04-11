@@ -10,7 +10,7 @@
 void makegoodplot()
 {
 	// declare new instance:
-	MakeGoodPlot *newplot = new MakeGoodPlot();  // could be array of these if needed ...
+	MakeGoodPlot *newplot = new MakeGoodPlot();
 	
         // vector of samples to include in the plot:
 	std::vector<int> samples;
@@ -22,15 +22,15 @@ void makegoodplot()
 //	samples.push_back(2); // ttbar_bbbar;
 //	samples.push_back(3); // ttbar_b
 //	samples.push_back(4); // ttbar_ccbar
-//	samples.push_back(5); // TTJets
+	samples.push_back(5); // TTJets
 //	samples.push_back(1); // ttH (125)
-//	samples.push_back(6); // ZJets
-//	samples.push_back(7); // WJets
+	samples.push_back(6); // ZJets
+	samples.push_back(7); // WJets
 	samples.push_back(8); // TTWJets
 	samples.push_back(9); // TTZJets
 
-//	samples.push_back(10); // diboson (WZ so far)
-
+	samples.push_back(10); // diboson (WZ)
+        samples.push_back(11); // diboson (ZZ)
         
         // done with setup..
         
@@ -38,7 +38,7 @@ void makegoodplot()
 
 /////// Do whatever you want here (just modify or make new member function MakeGoodPlot.cc as appropriate). /////////
 		
-	newplot->draw_simple_curves_normalized(samples);	// <- draws all samples in vector
+//	newplot->draw_simple_curves_normalized(samples);	// <- draws all samples in vector
 
 //	newplot->draw_nice_stack(samples);			// <- draws all samples in vector
 	
@@ -59,7 +59,7 @@ void makegoodplot()
 //	newplot->make_simple_plot_mytrees("1pt0shift",0);
 //	newplot->make_simple_plot_mytrees("2pt0shift",0);
 
-
+        newplot->print_cutflow(samples);
 
 
 //	-------------------------------------
