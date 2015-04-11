@@ -236,16 +236,19 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ///
 	    ////////
 
-	    vecPatElectron selectedElectrons_cutBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronCutBased);
-	    vecPatMuon selectedMuons_cutBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonCutBased);
+	    auto lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonCutBased, 5., selectedElectrons_preselected, electronID::electronCutBased, 10.);
+	    vecPatMuon selectedMuons_cutBased = std::get<0>(lepTuple);
+	    vecPatElectron selectedElectrons_cutBased = std::get<1>(lepTuple);
 
-	    vecPatElectron selectedElectrons_looseMvaBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronLooseMvaBased, selectedJets_forLepMVA);
-	    vecPatElectron selectedElectrons_tightMvaBased = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronTightMvaBased, selectedJets_forLepMVA);
+	    lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonLooseMvaBased, 5., selectedElectrons_preselected, electronID::electronLooseMvaBased, 10., selectedJets_forLepMVA);
+	    vecPatMuon selectedMuons_looseMvaBased = std::get<0>(lepTuple);
+	    vecPatElectron selectedElectrons_looseMvaBased = std::get<1>(lepTuple);
 
-	    vecPatMuon selectedMuons_looseMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonLooseMvaBased, selectedJets_forLepMVA);
-	    vecPatMuon selectedMuons_tightMvaBased = GetSelectedMuons(selectedMuons_preselected, 5., muonID::muonTightMvaBased, selectedJets_forLepMVA);
+	    lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonTightMvaBased, 5., selectedElectrons_preselected, electronID::electronTightMvaBased, 10., selectedJets_forLepMVA);
+	    vecPatMuon selectedMuons_tightMvaBased = std::get<0>(lepTuple);
+	    vecPatElectron selectedElectrons_tightMvaBased = std::get<1>(lepTuple);
 
-	    // //2lss final state cuts FOR OBJ SYNCHRONIZATION ONLY
+	    //2lss final state cuts FOR OBJ SYNCHRONIZATION ONLY
 	    // vecPatLepton selectedLeptons_cutBased = fillLeptons(selectedMuons_cutBased,selectedElectrons_cutBased);
 	    // vecPatLepton selectedLeptons_looseMvaBased = fillLeptons(selectedMuons_looseMvaBased,selectedElectrons_looseMvaBased);
 	    // vecPatLepton selectedLeptons_tightMvaBased = fillLeptons(selectedMuons_tightMvaBased,selectedElectrons_tightMvaBased);
@@ -305,6 +308,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);
 	    vector<ttH::Lepton> tightMvaBased_leptons = GetCollection(tightMvaBased_muons,tightMvaBased_electrons);
 
+	    vector<ttH::Jet> raw_jets = GetCollection(rawJets);
 	    vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_forSync);
 	    vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
 	    vector<ttH::Jet> tight_bJets = GetCollection(selectedJets_bJetsTight);
@@ -351,53 +355,74 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 			  preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
 			  preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
 			theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-		  if ( preselected_leptons[0].pdgID == preselected_leptons[1].pdgID && abs(preselected_leptons[0].pdgID) == 11)
+
+		  if ( tightMvaBased_leptons.size()==2 && tightMvaBased_leptons[0].charge == tightMvaBased_leptons[1].charge )
 		    {
-		      fprintf(el2,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-			      runNumber_intree, lumiBlock_intree, eventnum_intree,
-			      preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
-			      preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
-			      theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		      if (abs(tightMvaBased_leptons[0].pdgID) == 11 && abs(tightMvaBased_leptons[1].pdgID) == 11)
+			{
+			  fprintf(el4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+				  runNumber_intree, lumiBlock_intree, eventnum_intree,
+				  tightMvaBased_leptons[0].pdgID, tightMvaBased_leptons[0].obj.Pt(), tightMvaBased_leptons[0].obj.Eta(), tightMvaBased_leptons[0].obj.Phi(),
+				  tightMvaBased_leptons[1].pdgID, tightMvaBased_leptons[1].obj.Pt(), tightMvaBased_leptons[1].obj.Eta(), tightMvaBased_leptons[1].obj.Phi(),
+				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+			}
+		      else if (abs(tightMvaBased_leptons[0].pdgID) == 13 && abs(tightMvaBased_leptons[1].pdgID) == 13)
+			{
+			  fprintf(ml4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+				  runNumber_intree, lumiBlock_intree, eventnum_intree,
+				  tightMvaBased_leptons[0].pdgID, tightMvaBased_leptons[0].obj.Pt(), tightMvaBased_leptons[0].obj.Eta(), tightMvaBased_leptons[0].obj.Phi(),
+				  tightMvaBased_leptons[1].pdgID, tightMvaBased_leptons[1].obj.Pt(), tightMvaBased_leptons[1].obj.Eta(), tightMvaBased_leptons[1].obj.Phi(),
+				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+			}
+		    }
+
+		  // if ( preselected_leptons[0].pdgID == preselected_leptons[1].pdgID && abs(preselected_leptons[0].pdgID) == 11)
+		  //   {
+		  //     fprintf(el2,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+		  // 	      runNumber_intree, lumiBlock_intree, eventnum_intree,
+		  // 	      preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+		  // 	      preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
+		  // 	      theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
 		
-		      if ( preselected_leptons[0].obj.Pt() > 20 && preselected_leptons[1].obj.Pt() > 20)
-			{
-			  fprintf(el3,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-				  runNumber_intree, lumiBlock_intree, eventnum_intree,
-				  preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
-				  preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
-				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-			  if (cutBased_leptons.size() ==2 && cutBased_electrons[0].isGsfCtfScPixChargeConsistent && cutBased_electrons[1].isGsfCtfScPixChargeConsistent){
-			    fprintf(el4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-				    runNumber_intree, lumiBlock_intree, eventnum_intree,
-				    cutBased_leptons[0].pdgID, cutBased_leptons[0].obj.Pt(), cutBased_leptons[0].obj.Eta(), cutBased_leptons[0].obj.Phi(),
-				    cutBased_leptons[1].pdgID, cutBased_leptons[1].obj.Pt(), cutBased_leptons[1].obj.Eta(), cutBased_leptons[1].obj.Phi(),
-				    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-			  }
-			}
-		    }
-		  else if (preselected_leptons[0].pdgID == preselected_leptons[1].pdgID && abs(preselected_leptons[0].pdgID) == 13)
-		    {
-		      fprintf(ml2,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-			      runNumber_intree, lumiBlock_intree, eventnum_intree,
-			      preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
-			      preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
-			      theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-		      if (preselected_leptons[0].obj.Pt() > 20 && preselected_leptons[1].obj.Pt() > 20 )
-			{
-			  fprintf(ml3,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-				  runNumber_intree, lumiBlock_intree, eventnum_intree,
-				  preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
-				  preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
-				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-			  if (cutBased_leptons.size() ==2 && cutBased_muons[0].chargeFlip < 0.2 && cutBased_muons[1].chargeFlip < 0.2){
-			    fprintf(ml4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-				    runNumber_intree, lumiBlock_intree, eventnum_intree,
-				    cutBased_leptons[0].pdgID, cutBased_leptons[0].obj.Pt(), cutBased_leptons[0].obj.Eta(), cutBased_leptons[0].obj.Phi(),
-				    cutBased_leptons[1].pdgID, cutBased_leptons[1].obj.Pt(), cutBased_leptons[1].obj.Eta(), cutBased_leptons[1].obj.Phi(),
-				    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-			  }
-			}
-		    }
+		  //     if ( preselected_leptons[0].obj.Pt() > 20 && preselected_leptons[1].obj.Pt() > 20)
+		  // 	{
+		  // 	  fprintf(el3,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+		  // 		  runNumber_intree, lumiBlock_intree, eventnum_intree,
+		  // 		  preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+		  // 		  preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
+		  // 		  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		  // 	  if (cutBased_leptons.size() ==2 && cutBased_electrons[0].isGsfCtfScPixChargeConsistent && cutBased_electrons[1].isGsfCtfScPixChargeConsistent){
+		  // 	    fprintf(el4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+		  // 		    runNumber_intree, lumiBlock_intree, eventnum_intree,
+		  // 		    cutBased_leptons[0].pdgID, cutBased_leptons[0].obj.Pt(), cutBased_leptons[0].obj.Eta(), cutBased_leptons[0].obj.Phi(),
+		  // 		    cutBased_leptons[1].pdgID, cutBased_leptons[1].obj.Pt(), cutBased_leptons[1].obj.Eta(), cutBased_leptons[1].obj.Phi(),
+		  // 		    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		  // 	  }
+		  // 	}
+		  //   }
+		  // else if (preselected_leptons[0].pdgID == preselected_leptons[1].pdgID && abs(preselected_leptons[0].pdgID) == 13)
+		  //   {
+		  //     fprintf(ml2,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+		  // 	      runNumber_intree, lumiBlock_intree, eventnum_intree,
+		  // 	      preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+		  // 	      preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
+		  // 	      theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		  //     if (preselected_leptons[0].obj.Pt() > 20 && preselected_leptons[1].obj.Pt() > 20 )
+		  // 	{
+		  // 	  fprintf(ml3,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+		  // 		  runNumber_intree, lumiBlock_intree, eventnum_intree,
+		  // 		  preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+		  // 		  preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
+		  // 		  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		  // 	  if (cutBased_leptons.size() ==2 && cutBased_muons[0].chargeFlip < 0.2 && cutBased_muons[1].chargeFlip < 0.2){
+		  // 	    fprintf(ml4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+		  // 		    runNumber_intree, lumiBlock_intree, eventnum_intree,
+		  // 		    cutBased_leptons[0].pdgID, cutBased_leptons[0].obj.Pt(), cutBased_leptons[0].obj.Eta(), cutBased_leptons[0].obj.Phi(),
+		  // 		    cutBased_leptons[1].pdgID, cutBased_leptons[1].obj.Pt(), cutBased_leptons[1].obj.Eta(), cutBased_leptons[1].obj.Phi(),
+		  // 		    theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+		  // 	  }
+		  // 	}
+		  //   }
 		}
 	    }
 	    
@@ -419,6 +444,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    raw_electrons_intree = raw_electrons;
 	    raw_muons_intree = raw_muons;
 
+	    raw_jets_intree = raw_jets;
 	    preselected_jets_intree = preselected_jets;
 	    loose_bJets_intree = loose_bJets;
 	    tight_bJets_intree = tight_bJets;

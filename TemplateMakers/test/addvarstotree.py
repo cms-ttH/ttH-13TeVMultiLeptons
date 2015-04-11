@@ -204,28 +204,26 @@ for entry in tree:
 
 
     #charlie's gen particle study
-    for genParticle in genParticles:
-        #particle must come from a hadronically decaying W from Top or Higgs
-        if (genParticle.status == 23 and genParticle.mother < 9999 and genParticle.grandmother < 9999 and abs(genParticles[genParticle.mother].pdgID) == 24 and (abs(genParticle.pdgID) < 11 or abs(genParticle.pdgID) > 14)):
-            if genParticles[genParticle.grandmother].pdgID == 6:
-                top_daughters.append(genParticle)
-            elif genParticles[genParticle.grandmother].pdgID == -6:
-                antitop_daughters.append(genParticle)
-            elif genParticles[genParticle.grandmother].pdgID == 25:
-                higgs_daughters.append(genParticle)
-			
-    myMaxdR = -1
-    if len(higgs_daughters) >= 2:
-        mydR = getTwoObjKineExtreme(higgs_daughters,higgs_daughters,'max','dR')
-        if myMaxdR < mydR: myMaxdR = mydR
-    if len(top_daughters) >= 2:
-        mydR = getTwoObjKineExtreme(top_daughters,top_daughters,'max','dR')
-        if myMaxdR < mydR: myMaxdR = mydR
-    if len(antitop_daughters) >= 2:
-        mydR = getTwoObjKineExtreme(antitop_daughters,antitop_daughters,'max','dR')
-        if myMaxdR < mydR: myMaxdR = mydR
+    # for genParticle in genParticles:
+    #     if (abs(genParticle.pdgID) == 24 and genParticle.status <= 23 and genParticles[genParticle.grandmother].status == 62 and (abs(genParticles[genParticle.grandmother].pdgID) == 6 || abs(genParticles[genParticle.grandmother].pdgID) == 25) and 
+    #         abs(genParticles[genParticle.child0].pdgID) <= 4 and abs(genParticles[genParticle.child1].pdgID) <= 4):
+            
+    #         child0 = genParticles[genParticle.child0]
+    #         child1 = genParticles[genParticle.child1]
 
-    deltaR_boosted_daughters_handle[0] = myMaxdR
+			
+    # myMaxdR = -1
+    # if len(higgs_daughters) >= 2:
+    #     mydR = getTwoObjKineExtreme(higgs_daughters,higgs_daughters,'max','dR')
+    #     if myMaxdR < mydR: myMaxdR = mydR
+    # if len(top_daughters) >= 2:
+    #     mydR = getTwoObjKineExtreme(top_daughters,top_daughters,'max','dR')
+    #     if myMaxdR < mydR: myMaxdR = mydR
+    # if len(antitop_daughters) >= 2:
+    #     mydR = getTwoObjKineExtreme(antitop_daughters,antitop_daughters,'max','dR')
+    #     if myMaxdR < mydR: myMaxdR = mydR
+
+    # deltaR_boosted_daughters_handle[0] = myMaxdR
     #end gen particle study
 
     MaxDeltaPhiMetJet_handle[0] = 	getTwoObjKineExtreme(met,jets,'max','dPhi')

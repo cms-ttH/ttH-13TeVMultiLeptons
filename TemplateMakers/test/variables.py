@@ -269,7 +269,7 @@ def getTwoObjKineRawCollection( collection1, collection2, quantity='dR'):
 def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichInOrder=1, comparisonValue=None):
     "if no comparison value, whichInOrder picks the ith quanity from the list (in decending order). If comparison value provided, whichInOrder picks the ith quanity closest to the value."
     thelist = getTwoObjKineRawCollection( collection1, collection2, quantity)
-    print thelist
+    #print thelist
     size = len(thelist)
 
     if size is 0: return -99999.
@@ -280,8 +280,8 @@ def pickFromSortedTwoObjKine( collection1, collection2, quantity='mass', whichIn
         return thelist[whichInOrder-1]
 
     thelist = sorted(thelist, key=lambda i: abs(i-comparisonValue))
-    print thelist
-    print " "
+    #print thelist
+    #print " "
     return thelist[whichInOrder-1]
     
 #############################################################################

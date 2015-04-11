@@ -754,8 +754,11 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.hadronicOverEm = iEle.hadronicOverEm();
       
       ele.lepMVA = GetElectronLepMVA(iEle, jets);
-      ele.chreliso = iEle.chargedHadronIso()/iEle.pt();
-      ele.nureliso = max(0.0,(iEle.neutralHadronIso()+iEle.photonIso())-0.5*iEle.puChargedHadronIso())/iEle.pt();
+      //      ele.chreliso = iEle.chargedHadronIso()/iEle.pt();
+      ele.chreliso = iEle.pfIsolationVariables().sumChargedHadronPt/iEle.pt(); //R03
+      //      ele.nureliso = max(0.0,(iEle.neutralHadronIso()+iEle.photonIso())-0.5*iEle.puChargedHadronIso())/iEle.pt();
+      ele.nureliso = GetElectronRelIso(iEle,coneSize::R03,corrType::rhoEA) - iEle.pfIsolationVariables().sumChargedHadronPt/iEle.pt();
+
       ele.matchedJetdR = min(dR,0.5);
       ele.jetPtRatio = min(iEle.pt()/matchedJet.pt(), float(1.5));
       ele.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
@@ -819,9 +822,13 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       }
       
       mu.numberOfMatchedStations = iMu.numberOfMatchedStations();
-      
-      mu.chreliso = iMu.chargedHadronIso()/iMu.pt();
-      mu.nureliso = max(0.0,(iMu.neutralHadronIso()+iMu.photonIso())-0.5*iMu.puChargedHadronIso())/iMu.pt();
+      //R = 0.3
+      mu.chreliso = iMu.pfIsolationR03().sumChargedHadronPt/iMu.pt();
+      mu.nureliso = GetMuonRelIso(iMu,coneSize::R03,corrType::rhoEA) - iMu.pfIsolationR03().sumChargedHadronPt/iMu.pt();
+      //R = 0.4
+      // mu.chreliso = iMu.pfIsolationR04().sumChargedHadronPt/iMu.pt();
+      //mu.nureliso = GetMuonRelIso(iMu,coneSize::R04,corrType::rhoEA) - iMu.pfIsolationR04().sumChargedHadronPt/iMu.pt();
+
       mu.matchedJetdR = min(dR,0.5);
       mu.jetPtRatio = min(iMu.pt()/matchedJet.pt(), float(1.5));
       mu.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
@@ -1421,9 +1428,13 @@ MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElec
 float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pat::Jet>& iJets){
   CheckSetUp();
   
-  varchRelIso = iMuon.chargedHadronIso()/iMuon.pt();
-  varneuRelIso = max(0.0,(iMuon.neutralHadronIso()+iMuon.photonIso())-0.5*iMuon.puChargedHadronIso())/iMuon.pt();
-  
+  //R = 0.3
+  varchRelIso = iMuon.pfIsolationR03().sumChargedHadronPt/iMuon.pt();
+  varneuRelIso = GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) - iMuon.pfIsolationR03().sumChargedHadronPt/iMuon.pt();
+  //R = 0.4
+  // varchRelIso = iMuon.pfIsolationR04().sumChargedHadronPt/iMuon.pt();
+  // varneuRelIso = GetMuonRelIso(iMuon,coneSize::R04,corrType::rhoEA) - iMuon.pfIsolationR04().sumChargedHadronPt/iMuon.pt();
+
   pat::Jet matchedJet = getClosestJet(iJets,iMuon);
   double dR = MiniAODHelper::DeltaR(&matchedJet,&iMuon);
   varjetDR_in = min(dR,0.5);
@@ -1462,11 +1473,13 @@ float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pa
 float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const std::vector<pat::Jet>& iJets){
   CheckSetUp();
   
-  varchRelIso = iElectron.chargedHadronIso()/iElectron.pt();
-  //varchRelIso = iElectron.pfIsolationVariables().sumChargedHadronPt;
-  //varneuRelIso = GetElectronRelIso(iElectron) - varchRelIso;
-  varneuRelIso = max(0.0,(iElectron.neutralHadronIso()+iElectron.photonIso())-0.5*iElectron.puChargedHadronIso())/iElectron.pt();
-  
+  //R04
+  //varchRelIso = iElectron.chargedHadronIso()/iElectron.pt(); //R04
+  //  varneuRelIso = GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA)
+  //R03
+  varchRelIso = iElectron.pfIsolationVariables().sumChargedHadronPt/iElectron.pt();
+  varneuRelIso = GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) - iElectron.pfIsolationVariables().sumChargedHadronPt/iElectron.pt();
+
   pat::Jet matchedJet = getClosestJet(iJets,iElectron);
   double dR = MiniAODHelper::DeltaR(&matchedJet,&iElectron);
   varjetDR_in = min(dR,0.5);
@@ -1501,6 +1514,44 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
     return ele_reader_high_ec->EvaluateMVA( "BDTG method" );
   }
   else return -99999.;
+}
+
+std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>>
+MultileptonAna::pickLeptons(const vecPatMuon& iMuons, const muonID::muonID iMuonID, const float iMinMuPt, const vecPatElectron& iElectrons, const electronID::electronID iElectronID, const float iMinElePt, const std::vector<pat::Jet>& iJets)
+{
+  
+  vecPatLepton iLeptons = fillLeptons(iMuons,iElectrons);
+  iLeptons = MiniAODHelper::GetSortedByPt(iLeptons);
+  
+  unsigned int eleIdx = 0;
+  unsigned int muIdx = 0;
+  vecPatElectron theElectrons;
+  vecPatMuon theMuons; 
+
+  for (const auto & iLep : iLeptons)
+    {
+      if ( abs(iLep.pdgId()) == 11)
+	{
+	  if ( isGoodElectron(iElectrons[eleIdx],iMinElePt,iElectronID,iJets) )
+	    {
+	      theElectrons.push_back(iElectrons[eleIdx]);
+	      eleIdx+=1;
+	    }
+	  else break;
+	}
+      else if ( abs(iLep.pdgId()) == 13)
+	{
+	  if ( isGoodMuon(iMuons[muIdx],iMinMuPt,iMuonID,iJets) )
+	    {
+	      theMuons.push_back(iMuons[muIdx]);
+	      muIdx+=1;
+	    }
+	  else break;
+	}
+    }
+  auto t = std::make_tuple(theMuons,theElectrons);
+  return t;
+
 }
 
 vecPatElectron MultileptonAna::Get_vecPatElectron_Passing_ElectronLepMVA(const vecPatElectron& electrons, const std::vector<pat::Jet>& iJets, double MVA_Cut)
