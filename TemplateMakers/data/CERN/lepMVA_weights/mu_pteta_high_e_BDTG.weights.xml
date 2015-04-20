@@ -55,14 +55,14 @@
     <Option name="NNodesMax" modified="Yes">9</Option>
   </Options>
   <Variables NVar="9">
-    <Variable VarIndex="0" Expression="LepGood_relIso03-LepGood_chargedHadRelIso03" Label="LepGood_neuRelIso03" Title="LepGood_neuRelIso03" Unit="" Internal="LepGood_neuRelIso03" Type="D" Min="0.00000000e+00" Max="4.99486506e-01"/>
-    <Variable VarIndex="1" Expression="LepGood_chargedHadRelIso03" Label="LepGood_chRelIso03" Title="LepGood_chRelIso03" Unit="" Internal="LepGood_chRelIso03" Type="D" Min="0.00000000e+00" Max="4.99215662e-01"/>
-    <Variable VarIndex="2" Expression="min(LepGood_jetDR,0.5)" Label="LepGood_jetDR" Title="LepGood_jetDR" Unit="" Internal="LepGood_jetDR" Type="D" Min="0.00000000e+00" Max="3.68375778e-01"/>
-    <Variable VarIndex="3" Expression="min(LepGood_jetPtRatio,1.5)" Label="LepGood_jetPtRatio" Title="LepGood_jetPtRatio" Unit="" Internal="LepGood_jetPtRatio" Type="D" Min="1.06092557e-01" Max="1.05887532e+00"/>
-    <Variable VarIndex="4" Expression="max(LepGood_jetBTagCSV,0)" Label="LepGood_jetBTagCSV" Title="LepGood_jetBTagCSV" Unit="" Internal="LepGood_jetBTagCSV" Type="D" Min="0.00000000e+00" Max="1.00000000e+00"/>
+    <Variable VarIndex="0" Expression="LepGood_neuRelIso03" Label="LepGood_neuRelIso03" Title="LepGood_neuRelIso03" Unit="" Internal="LepGood_neuRelIso03" Type="D" Min="0.00000000e+00" Max="4.99486506e-01"/>
+    <Variable VarIndex="1" Expression="LepGood_chRelIso03" Label="LepGood_chRelIso03" Title="LepGood_chRelIso03" Unit="" Internal="LepGood_chRelIso03" Type="D" Min="0.00000000e+00" Max="4.99215662e-01"/>
+    <Variable VarIndex="2" Expression="LepGood_jetDR" Label="LepGood_jetDR" Title="LepGood_jetDR" Unit="" Internal="LepGood_jetDR" Type="D" Min="0.00000000e+00" Max="3.68375778e-01"/>
+    <Variable VarIndex="3" Expression="LepGood_jetPtRatio" Label="LepGood_jetPtRatio" Title="LepGood_jetPtRatio" Unit="" Internal="LepGood_jetPtRatio" Type="D" Min="1.06092557e-01" Max="1.05887532e+00"/>
+    <Variable VarIndex="4" Expression="LepGood_jetBTagCSV" Label="LepGood_jetBTagCSV" Title="LepGood_jetBTagCSV" Unit="" Internal="LepGood_jetBTagCSV" Type="D" Min="0.00000000e+00" Max="1.00000000e+00"/>
     <Variable VarIndex="5" Expression="LepGood_sip3d" Label="LepGood_sip3d" Title="LepGood_sip3d" Unit="" Internal="LepGood_sip3d" Type="D" Min="6.30871765e-03" Max="5.07211761e+01"/>
-    <Variable VarIndex="6" Expression="log(abs(LepGood_dxy))" Label="LepGood_dxy" Title="LepGood_dxy" Unit="" Internal="LepGood_dxy" Type="D" Min="-1.77775612e+01" Max="-2.99927902e+00"/>
-    <Variable VarIndex="7" Expression="log(abs(LepGood_dz))" Label="LepGood_dz" Title="LepGood_dz" Unit="" Internal="LepGood_dz" Type="D" Min="-1.71867428e+01" Max="-2.30275106e+00"/>
+    <Variable VarIndex="6" Expression="LepGood_dxy" Label="LepGood_dxy" Title="LepGood_dxy" Unit="" Internal="LepGood_dxy" Type="D" Min="-1.77775612e+01" Max="-2.99927902e+00"/>
+    <Variable VarIndex="7" Expression="LepGood_dz" Label="LepGood_dz" Title="LepGood_dz" Unit="" Internal="LepGood_dz" Type="D" Min="-1.71867428e+01" Max="-2.30275106e+00"/>
     <Variable VarIndex="8" Expression="LepGood_segmentCompatibility" Label="LepGood_segmentCompatibility" Title="LepGood_segmentCompatibility" Unit="" Internal="LepGood_segmentCompatibility" Type="D" Min="4.00061339e-01" Max="1.00000000e+00"/>
   </Variables>
   <Spectators NSpec="0"/>
