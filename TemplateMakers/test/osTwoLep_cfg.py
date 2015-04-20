@@ -5,7 +5,7 @@ process = cms.Process("Demo")
 
 
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
-process.GlobalTag.globaltag = 'MCRUN2_72_V3A' #'PLS170_V7AN1::All'  #'MCRUN2_72_V3A' #'MC_72_v1' ##'PHYS14_25_V1' ###'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
+process.GlobalTag.globaltag = 'PHYS14_25_V2' #'PLS170_V7AN1::All'  #'MCRUN2_72_V3A' #'MC_72_v1' ##'PHYS14_25_V1' ###'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
 process.prefer("GlobalTag")
 
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -25,7 +25,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
-
+        
         'file:/afs/cern.ch/user/m/muell149/public/ttH_phys14_sync.root'
 
 	# Phys14 ttH
@@ -54,6 +54,39 @@ process.source = cms.Source("PoolSource",
 #process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(
 #    '199812:70-199812:80'
 #)
+
+######################################
+#JEC
+
+from RecoJets.Configuration.RecoJets_cff import *
+from RecoJets.Configuration.RecoPFJets_cff import *
+from JetMETCorrections.Configuration.JetCorrectionProducersAllAlgos_cff import *
+from JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff import *
+
+from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+
+process.ak4PFCHSL1Fastjet = cms.ESProducer(
+    'L1FastjetCorrectionESProducer',
+    level       = cms.string('L1FastJet'),
+    algorithm   = cms.string('AK4PFchs'),
+    srcRho      = cms.InputTag( 'fixedGridRhoFastjetAll' ),
+    useCondDB = cms.untracked.bool(True)
+    )
+
+#process.ak4PFchsL2Relative = ak4CaloL2Relative.clone( algorithm = 'AK4PFchs' )
+#process.ak4PFchsL3Absolute = ak4CaloL3Absolute.clone( algorithm = 'AK4PFchs' )
+
+process.ak4PFchsL2Relative   =  ak5PFL2Relative.clone( algorithm = 'AK4PFchs' )
+process.ak4PFchsL3Absolute   =  ak5PFL3Absolute.clone( algorithm = 'AK4PFchs' )
+
+process.ak4PFchsL1L2L3 = cms.ESProducer("JetCorrectionESChain",
+     correctors = cms.vstring(
+        'ak4PFCHSL1Fastjet', 
+        'ak4PFchsL2Relative', 
+        'ak4PFchsL3Absolute'),
+     useCondDB = cms.untracked.bool(True)
+                                        
+)
 
 ######################################
 
@@ -89,7 +122,7 @@ process.OSTwoLepAna.triggers.trigger_vstring = ( "HLT_Mu17_Mu8_v1",
 ## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
                                    #fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + ".root") # name of output file
-                                   fileName = cms.string("multileptree.root") # name of output file
+                                   fileName = cms.string("multileptree_JEC_L0.root") # name of output file
 				   )
 
 
@@ -102,6 +135,6 @@ process.options = cms.untracked.PSet(
 	)
 
 ## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
-#outfile = open('config.py','w')
-#print >> outfile,process.dumpPython()
-#outfile.close()
+outfile = open('dumped_config.py','w')
+print >> outfile,process.dumpPython()
+outfile.close()

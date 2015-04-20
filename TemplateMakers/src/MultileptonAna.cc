@@ -1477,8 +1477,8 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   //varchRelIso = iElectron.chargedHadronIso()/iElectron.pt(); //R04
   //  varneuRelIso = GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA)
   //R03
-  varchRelIso = iElectron.pfIsolationVariables().sumChargedHadronPt/iElectron.pt();
   varneuRelIso = GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) - iElectron.pfIsolationVariables().sumChargedHadronPt/iElectron.pt();
+  varchRelIso = iElectron.pfIsolationVariables().sumChargedHadronPt/iElectron.pt();
 
   pat::Jet matchedJet = getClosestJet(iJets,iElectron);
   double dR = MiniAODHelper::DeltaR(&matchedJet,&iElectron);
@@ -1491,7 +1491,28 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   vardz = log(fabs(iElectron.gsfTrack()->dz(vertex.position())));
   bool mvaDebug = false;
   varmvaId = mvaID_->mvaValue(iElectron,mvaDebug);  
+  
+  //debug statements
+  // cout <<"Ele pT: "<< iElectron.pt() << endl; 
+  // cout <<"nuRelIso: "<< varneuRelIso << endl;
+  // cout <<"chRelIso: "<< varchRelIso << endl;
+  // cout <<"jet dR: "<< varjetDR_in << endl;
+  // cout <<"jet pT ratio: "<< varjetPtRatio_in << endl;
+  // cout <<"jet csv: "<< varjetBTagCSV_in << endl;
+  // cout <<"sip 3D: "<< varsip3d << endl;
+  // cout <<"dxy: "<< vardxy << endl;
+  // cout <<"dz: "<< vardz << endl;
+  // cout <<"ele MVA ID: "<< varmvaId << endl;
+  // float lepMVA;
 
+  // cout <<"1: "<< ele_reader_low->EvaluateMVA( "BDTG method" ) << endl;
+  // cout <<"2: "<< ele_reader_medium_cb->EvaluateMVA( "BDTG method" ) << endl;
+  // cout <<"3: "<< ele_reader_medium_fb->EvaluateMVA( "BDTG method" ) << endl;
+  // cout <<"4: "<< ele_reader_medium_ec->EvaluateMVA( "BDTG method" ) << endl;
+  // cout <<"5: "<< ele_reader_high_cb->EvaluateMVA( "BDTG method" ) << endl;
+  // cout <<"6: "<< ele_reader_high_fb->EvaluateMVA( "BDTG method" ) << endl;
+  // cout <<"7: "<< ele_reader_high_ec->EvaluateMVA( "BDTG method" ) << endl;
+  
   if (iElectron.pt() <= 10){
     return ele_reader_low->EvaluateMVA( "BDTG method" );
   }
@@ -1514,6 +1535,7 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
     return ele_reader_high_ec->EvaluateMVA( "BDTG method" );
   }
   else return -99999.;
+
 }
 
 std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>>
