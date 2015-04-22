@@ -213,8 +213,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ////////
  	
 	    //set up JEC
-	    const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFchsL1L2L3", evsetup );  
-	    MiniAODHelper::SetJetCorrector(corrector);
+	    // const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFchsL1L2L3", evsetup );  
+	    // MiniAODHelper::SetJetCorrector(corrector);
 
 	    vecPatJet rawJets				= GetUncorrectedJets(*pfjets);  					  //miniAODhelper.
 	    vecPatJet cleaned_rawJets           = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
