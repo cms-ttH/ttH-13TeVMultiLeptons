@@ -17,16 +17,18 @@ you can edit the various crab configs to point to your favorite stage-out area, 
 
 Several pieces of code exist or are in development for doing studies with our ntuples:
 
-makesimpleplot.py --    See [this older version](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/ccb950fa684e6ce62224080508a36b0ba2ff7abe/TemplateMakers/test/makesimpleplot.py) 
-                        for a simple example of how to make a plot using the nutuples. The current version is a slightly more complex example.
+makesimpleplot.py -- See [this older version](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/ccb950fa684e6ce62224080508a36b0ba2ff7abe/TemplateMakers/test/makesimpleplot.py) 
+for a simple example of how to make a plot using the nutuples. The current version is a slightly more complex example.
 
-makegoodplot.C --       A c++ - based tool for doing quick studies. Integers which represent the samples are added to a vector, which is passed to a helper class that runs a given study. 
-MakeGoodPlot.cc --      Class used by makegoodplot.C. Provides some modularity for common tasks (loading samples, initialization of tree variables, etc.) 
-                        Note that some parts of this class are left over from another analysis, and have not yet been updated. To start a new study, just add a new public 
-                        member function and call it from makegoodplot.C. For example, see the "print_cutflow" function. Specify the location of your ntuples in 
-                        
-variables.h --          Function templates that can be used to calculate analysis variables (c++) 
-variables.py --         Functions that can be used to calculate analysis variables (python)
+makegoodplot.C -- A c++ - based tool for doing quick studies. Integers which represent the samples are added to a vector, which is passed to a helper class that runs a given study.
+ 
+MakeGoodPlot.cc -- Class used by makegoodplot.C. Provides some modularity for common tasks (loading samples, initialization of tree variables, etc.) 
+Note that some parts of this class are left over from another analysis, and have not yet been updated. To start a new study, just add a new public 
+member function and call it from makegoodplot.C. For example, see the "print_cutflow" function. Specify the location of your ntuples in "load_samples."
+         
+variables.h -- Function templates that can be used to calculate analysis variables (c++)
+
+variables.py -- Functions that can be used to calculate analysis variables (python)
 
 
 ## 3. Make flat trees
