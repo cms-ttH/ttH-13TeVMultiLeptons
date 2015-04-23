@@ -132,6 +132,9 @@ void addvarstotree(TString infiles, TString outfile)
     int num_tightMvaBased_electrons_handle = -99;
     int num_tightMvaBased_muons_handle = -99;
     int num_tightMvaBased_leptons_handle = -99;
+    int num_looseMvaBased_electrons_handle = -99;
+    int num_looseMvaBased_muons_handle = -99;
+    int num_looseMvaBased_leptons_handle = -99;
     int tightMvaBased_leptons_1_charge_handle = -99;
     int tightMvaBased_leptons_2_charge_handle = -99;    
     int preselected_leptons_1_charge_handle = -99;
@@ -192,6 +195,11 @@ void addvarstotree(TString infiles, TString outfile)
     newtree->Branch("num_tightMvaBased_electrons", &num_tightMvaBased_electrons_handle,"num_tightMvaBased_electrons/I");
     newtree->Branch("num_tightMvaBased_muons", &num_tightMvaBased_muons_handle,"num_tightMvaBased_muons/I");
     newtree->Branch("num_tightMvaBased_leptons", &num_tightMvaBased_leptons_handle,"num_tightMvaBased_leptons/I");
+    
+    newtree->Branch("num_looseMvaBased_electrons", &num_looseMvaBased_electrons_handle,"num_looseMvaBased_electrons/I");
+    newtree->Branch("num_looseMvaBased_muons", &num_looseMvaBased_muons_handle,"num_looseMvaBased_muons/I");
+    newtree->Branch("num_looseMvaBased_leptons", &num_looseMvaBased_leptons_handle,"num_looseMvaBased_leptons/I");
+    
     newtree->Branch("tightMvaBased_leptons_1_charge", &tightMvaBased_leptons_1_charge_handle,"tightMvaBased_leptons_1_charge/I");
     newtree->Branch("tightMvaBased_leptons_2_charge", &tightMvaBased_leptons_2_charge_handle,"tightMvaBased_leptons_2_charge/I");    
     newtree->Branch("preselected_leptons_1_charge", &preselected_leptons_1_charge_handle,"preselected_leptons_1_charge/I");
@@ -332,6 +340,9 @@ void addvarstotree(TString infiles, TString outfile)
         num_tightMvaBased_electrons_handle =            (*tight_electrons_intree).size();
         num_tightMvaBased_muons_handle =                (*tight_muons_intree).size();
         num_tightMvaBased_leptons_handle =              (*tight_leptons_intree).size();
+        num_looseMvaBased_electrons_handle =            (*loose_electrons_intree).size();
+        num_looseMvaBased_muons_handle =                (*loose_muons_intree).size();
+        num_looseMvaBased_leptons_handle =              (*loose_leptons_intree).size();        
         if (num_tightMvaBased_leptons_handle>0) tightMvaBased_leptons_1_charge_handle = (*tight_leptons_intree)[0].charge;
         if (num_tightMvaBased_leptons_handle>1) tightMvaBased_leptons_2_charge_handle = (*tight_leptons_intree)[1].charge;
         if (num_preselected_leptons_handle>0) preselected_leptons_1_charge_handle = (*preselected_leptons_intree)[0].charge;
