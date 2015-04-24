@@ -14,7 +14,7 @@ process.prefer("GlobalTag")
 #process.GlobalTag.connect = 'frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'
 
 # PU 40:
-miniaodfiledirPU40 = str("root://xrootd.ba.infn.it//store/mc/Phys14DR/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU40bx25_PHYS14_25_V1-v1/00000/")
+#miniaodfiledirPU40 = str("root://xrootd.ba.infn.it//store/mc/Phys14DR/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU40bx25_PHYS14_25_V1-v1/00000/")
 # PU 20:
 #miniaodfiledirPU20 = str("root://xrootd.ba.infn.it//store/mc/Phys14DR/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v2/")
 
@@ -121,7 +121,7 @@ process.OSTwoLepAna.triggers.trigger_vstring = ( "HLT_Mu17_Mu8_v1",
 ## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
                                    #fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + ".root") # name of output file
-                                   fileName = cms.string("multileptree_TEST.root") # name of output file
+                                   fileName = cms.string("multileptree.root") # name of output file
 				   )
 
 
@@ -129,9 +129,9 @@ process.p = cms.Path(process.OSTwoLepAna)
 
 # summary
 process.options = cms.untracked.PSet(
-	wantSummary = cms.untracked.bool(False),
-	SkipEvent = cms.untracked.vstring('ProductNotFound')
-	)
+    wantSummary = cms.untracked.bool(False),
+    SkipEvent = cms.untracked.vstring('ProductNotFound')
+    )
 
 ## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
 outfile = open('dumped_config.py','w')

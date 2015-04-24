@@ -57,21 +57,18 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
                 vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> loose_leptons_intree;
-		vector<ttH::Lepton> cutBased_leptons_intree;
 		vector<ttH::Lepton> looseMvaBased_leptons_intree;
 		vector<ttH::Lepton> tightMvaBased_leptons_intree;
  
 		vector<ttH::Electron> raw_electrons_intree;               
 		vector<ttH::Electron> preselected_electrons_intree;
 		vector<ttH::Electron> loose_electrons_intree;
-		vector<ttH::Electron> cutBased_electrons_intree;
 		vector<ttH::Electron> looseMvaBased_electrons_intree;
 		vector<ttH::Electron> tightMvaBased_electrons_intree;
 
 		vector<ttH::Muon> raw_muons_intree;
                 vector<ttH::Muon> preselected_muons_intree;
                 vector<ttH::Muon> loose_muons_intree;
-                vector<ttH::Muon> cutBased_muons_intree;
                 vector<ttH::Muon> looseMvaBased_muons_intree;
                 vector<ttH::Muon> tightMvaBased_muons_intree;
 
@@ -82,9 +79,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
 		vector<ttH::MET> met_intree;
 		vector<ttH::GenParticle> pruned_genParticles_intree;
-
-       edm::EDGetTokenT<reco::BeamSpot> bsToken_;		
-       edm::EDGetTokenT<reco::ConversionCollection> conversionToken_;
 
 };
 
@@ -106,10 +100,6 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("loose_leptons", &loose_leptons_intree);
   summaryTree->Branch("loose_electrons", &loose_electrons_intree);
   summaryTree->Branch("loose_muons", &loose_muons_intree);
-  
-  summaryTree->Branch("cutBased_leptons", &cutBased_leptons_intree);
-  summaryTree->Branch("cutBased_electrons", &cutBased_electrons_intree);
-  summaryTree->Branch("cutBased_muons", &cutBased_muons_intree);
   
   summaryTree->Branch("looseMvaBased_leptons", &looseMvaBased_leptons_intree);
   summaryTree->Branch("looseMvaBased_electrons", &looseMvaBased_electrons_intree);
@@ -146,10 +136,6 @@ void OSTwoLepAna::initialize_variables()
   loose_leptons_intree.clear();
   loose_electrons_intree.clear();
   loose_muons_intree.clear();
-  
-  cutBased_leptons_intree.clear();
-  cutBased_electrons_intree.clear();
-  cutBased_muons_intree.clear();
   
   looseMvaBased_leptons_intree.clear();
   looseMvaBased_electrons_intree.clear();
