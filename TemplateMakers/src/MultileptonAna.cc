@@ -1682,7 +1682,53 @@ TLorentzVectorCMS MultileptonAna::Get_TLorentzVectorCMS (pat::MET theMET)
   //pat::MET theMET = theobj;
   TLorentzVectorCMS metTLV(theMET.px(),theMET.py(),0.0,theMET.pt());
   return metTLV;
+}  
+
+vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vector<ttH::Jet> theobjs)
+{
+  vecTLorentzVectorCMS theobjs_vecTLV;
+  for (auto iobj= theobjs.begin(); iobj != theobjs.end(); ++iobj)
+  {
+      TLorentzVectorCMS tempTLV;
+      tempTLV.SetPxPyPzE(iobj->obj.px(),iobj->obj.py(),iobj->obj.pz(),iobj->obj.energy());
+      theobjs_vecTLV.push_back(tempTLV);
+  }
+  return theobjs_vecTLV;
 }
+vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vector<ttH::Muon> theobjs)
+{
+  vecTLorentzVectorCMS theobjs_vecTLV;
+  for (auto iobj= theobjs.begin(); iobj != theobjs.end(); ++iobj)
+  {
+      TLorentzVectorCMS tempTLV;
+      tempTLV.SetPxPyPzE(iobj->obj.px(),iobj->obj.py(),iobj->obj.pz(),iobj->obj.energy());
+      theobjs_vecTLV.push_back(tempTLV);
+  }
+  return theobjs_vecTLV;
+}
+vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vector<ttH::Electron> theobjs)
+{
+  vecTLorentzVectorCMS theobjs_vecTLV;
+  for (auto iobj= theobjs.begin(); iobj != theobjs.end(); ++iobj)
+  {
+      TLorentzVectorCMS tempTLV;
+      tempTLV.SetPxPyPzE(iobj->obj.px(),iobj->obj.py(),iobj->obj.pz(),iobj->obj.energy());
+      theobjs_vecTLV.push_back(tempTLV);
+  }
+  return theobjs_vecTLV;
+}
+vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS (vector<ttH::Lepton> theobjs)
+{
+  vecTLorentzVectorCMS theobjs_vecTLV;
+  for (auto iobj= theobjs.begin(); iobj != theobjs.end(); ++iobj)
+  {
+      TLorentzVectorCMS tempTLV;
+      tempTLV.SetPxPyPzE(iobj->obj.px(),iobj->obj.py(),iobj->obj.pz(),iobj->obj.energy());
+      theobjs_vecTLV.push_back(tempTLV);
+  }
+  return theobjs_vecTLV;
+}
+
 vecTLorentzVectorCMS MultileptonAna::Get_vecTLorentzVectorCMS_sorted_leptons (vecTLorentzVectorCMS leps1, vecTLorentzVectorCMS leps2)
 {
   vecTLorentzVectorCMS newvecTLV;

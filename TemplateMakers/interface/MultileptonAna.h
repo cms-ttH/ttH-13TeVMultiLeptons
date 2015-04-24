@@ -244,6 +244,11 @@ class MultileptonAna: public MiniAODHelper
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatMuon theobjs);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatElectron theobjs);
+  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vector<ttH::Jet> theobjs);
+  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vector<ttH::Muon> theobjs);
+  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vector<ttH::Electron> theobjs);
+  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vector<ttH::Lepton> theobjs);
+  
   TLorentzVectorCMS Get_TLorentzVectorCMS (patMETs theobjs);
   TLorentzVectorCMS Get_TLorentzVectorCMS (pat::MET theMET);
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS_sorted_leptons(vecTLorentzVectorCMS leps1, vecTLorentzVectorCMS leps2);

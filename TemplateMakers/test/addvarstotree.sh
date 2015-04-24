@@ -7,8 +7,9 @@ sourcebasedir="/eos/cms/store/user/$myusername/crabdir"					# input trees base d
 destbasedir="."					
 									                       
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets') 	        # list of samples
-declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets' 'ZZJets')
+#declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets' 'ZZJets')
 #declare -a samples=('ttH125')
+declare -a samples=('TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets' 'ZZJets')
 pfx='root://eoscms.cern.ch/'								        # prefix (can be xrootd, if you save certificate in afs area, see runonesshbatch.sh)
 
 source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
@@ -22,7 +23,7 @@ do
 	echo " "	
 	
 	sourcedir=$sourcebasedir/$joblabel/$sample	
-        sourcedir=$pfx$sourcedir/
+        sourcedir=$pfx$sourcedir
         
 	echo "sourcedir: $sourcedir"	
 	

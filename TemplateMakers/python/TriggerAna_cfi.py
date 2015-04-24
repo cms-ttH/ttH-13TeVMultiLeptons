@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 ####-----------------------------------------------
 
 
-TriggerAna = cms.EDAnalyzer("TriggerAna",
+TriggerAna = cms.EDAnalyzer("TriggerAnaV2",
 	debug = cms.bool(False),
 	
 	
