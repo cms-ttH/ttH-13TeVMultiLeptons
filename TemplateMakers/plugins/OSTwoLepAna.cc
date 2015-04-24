@@ -8,9 +8,6 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything t
 	entire_pset = constructparams;
 	parse_params();
 
-	bsToken_ = consumes <reco::BeamSpot> (edm::InputTag(std::string("offlineBeamSpot")));
-	conversionToken_ = consumes <reco::ConversionCollection> (edm::InputTag(std::string("reducedEgamma"),std::string("reducedConversions")));
-
 }
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
 
@@ -93,14 +90,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
 	packedGenParticles packedParticles =    GetPackedGenParticles(event);
 	
-	//this needs to be cleaned up eventually
-	recoBeamSpot bsHandle;
-	event.getByToken(bsToken_,bsHandle);
-	const reco::BeamSpot &beamspot = *bsHandle.product();
-
-	edm::Handle<reco::ConversionCollection> hConversions;
-	event.getByToken(conversionToken_,hConversions);
-	
 	SetRho(rho);
 	
 	int numpvs =				GetVertices(event);
@@ -142,24 +131,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, 7., electronID::electronRaw );	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
 	vecPatElectron selectedElectrons_looseCutBased = GetSelectedElectrons( *electrons, 7., electronID::electronLooseCutBased);	//miniAODhelper.
-
-	//special stuff for sync, need to add fancy converstion veto
-	//with vtx fit probability which uses beamspot and conversion collections
-	//and i'm too lazy to add them to isGoodElectron in MiniAODhelper (temporary)
-	vecPatElectron selectedElectrons_tightcb = GetSelectedElectrons( *electrons, 7, electronID::electronTightCutBased);	//miniAODhelper.
-	vecPatElectron selectedElectrons_tightCutBased;
-
-	bool allowCkfMatch = true;
-	float lxyMin = 2.0;
-	float probMin = 1e-6;
-	uint nHitsBeforeVtxMax = 0;
-	for(const auto & ele: selectedElectrons_tightcb)
-	  {
-	    if (!ConversionTools::hasMatchedConversion(ele,hConversions,beamspot.position(),allowCkfMatch,lxyMin,probMin,nHitsBeforeVtxMax))
-	      {
-		selectedElectrons_tightCutBased.push_back(ele);
-	      }
-	  }
 
 	/////////
 	///
@@ -215,22 +186,25 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFchsL1L2L3", evsetup );  
 	    MiniAODHelper::SetJetCorrector(corrector);
 
-	    vecPatJet rawJets				= GetUncorrectedJets(*pfjets);  					  //miniAODhelper.
-	    vecPatJet cleaned_rawJets           = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
-	    //vecPatJet cleaned_rawJets =    GetCorrectedJets(pre_cleaned_rawJets,event,evsetup);
-	    vecPatJet jetsNoMu			       	= RemoveOverlaps(selectedMuons_loose, rawJets); 			    //miniAODhelper.
-	    vecPatJet jetsNoEle			       	= RemoveOverlaps(selectedElectrons_loose, rawJets);			    //miniAODhelper.
-	    vecPatJet jetsNoLep			       	= RemoveOverlaps(selectedElectrons_loose, jetsNoMu);			    //miniAODhelper.
-	    vecPatJet correctedJets_noSys		       	= GetCorrectedJets(jetsNoLep);  					    //miniAODhelper.
-	    vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
-	    vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
-	    vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
-	    vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
-	    vecPatJet selectedJets_forSync          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
-	    vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );   //miniAODhelper.
-	    vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );   //miniAODhelper.
-	    vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );   //miniAODhelper.
-	    //vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(cleaned_rawJets, 10., 2.4, jetID::none, '-' );   //miniAODhelper.
+	    vecPatJet rawJets = GetUncorrectedJets(*pfjets);
+
+	    //no JEC
+	    vecPatJet selectedJets_forLepMVA  = GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );
+	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
+	    
+	    //with JEC
+	    // vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
+	    // vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);
+	    // vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 10., 2.4, jetID::none, '-' );
+
+	    vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  					 
+	    vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' ); 
+	    vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );
+	    vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );
+	    vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );
+	    vecPatJet selectedJets_preselected          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
+	    vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );
+	    vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );
 	
 	    // test
 	    vecPatJet *testHiggsjets  = &selectedJets_noSys_unsorted;
@@ -315,7 +289,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vector<ttH::Lepton> tightMvaBased_leptons = GetCollection(tightMvaBased_muons,tightMvaBased_electrons);
 
 	    vector<ttH::Jet> raw_jets = GetCollection(rawJets);
-	    vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_forSync);
+	    vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
 	    vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
 	    vector<ttH::Jet> tight_bJets = GetCollection(selectedJets_bJetsTight);
 	
