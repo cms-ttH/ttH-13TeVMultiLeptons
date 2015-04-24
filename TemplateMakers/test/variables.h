@@ -45,10 +45,10 @@ template<typename T, typename U> bool isSame(T type1, U type2)
 /////////////////// examples of what works, what doesn't: ///////////////////
 
 // works without incident:
-template <typename doubletype> auto atestfunction (doubletype input) -> decltype( input )
+template <typename doubletype> doubletype atestfunction(doubletype input)
 {
     //multiply by 2:
-    auto val = 2.5*input;
+    doubletype val = 2.5*input;
     
     return val;
 }
@@ -62,11 +62,11 @@ template <typename doubletype> auto atestfunction (doubletype input) -> decltype
 //     return val;
 // }
 
-// works! but, warning: 'atestfunction3' function uses 'auto' type specifier without trailing return type
-template <typename doubletype> auto atestfunction3 (doubletype input)
+// works!
+template <typename doubletype> doubletype atestfunction3(doubletype input)
 {
     //multiply by 2:
-    auto val = 2*input;
+    doubletype val = 2*input;
     
     return val;
 }
@@ -141,29 +141,23 @@ template <typename coll1type, typename coll2type, typename coll3type> double get
 ////////////////////////////////////////////////////////////////////////////
 /////////////get sum TLorentzVector of arbitrary collections////////////////
 
-template <typename coll1type> auto getsumTLV( coll1type collection1 )
-{
-    typename coll1type::value_type collection1el;
-    decltype(collection1el.obj) newobj;
-    
-    for (auto it = collection1.begin(); it != collection1.end(); ++it)
-    {
-        newobj += (*it).obj;
-    }
-        
-    return newobj;
+template <typename coll1type> ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>> getsumTLV( coll1type collection1 )
+{ 
+  ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>> newobj;
+  for (const auto it : collection1) newobj += it.obj;
+  return newobj;
 }
 
-template <typename coll1type, typename coll2type> auto getsumTLV( coll1type collection1, coll2type collection2 )
+template <typename coll1type, typename coll2type> ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>> getsumTLV( coll1type collection1, coll2type collection2 )
 {
-    auto newobj = getsumTLV(collection1);
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>> newobj = getsumTLV(collection1);
     newobj += getsumTLV(collection2);
     return newobj;
 }
 
-template <typename coll1type, typename coll2type, typename coll3type> auto getsumTLV( coll1type collection1, coll2type collection2, coll3type collection3)
+template <typename coll1type, typename coll2type, typename coll3type> ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>> getsumTLV( coll1type collection1, coll2type collection2, coll3type collection3)
 {
-    auto newobj = getsumTLV(collection1);
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double>> newobj = getsumTLV(collection1);
     newobj += getsumTLV(collection2);
     newobj += getsumTLV(collection3);
     return newobj;
@@ -220,14 +214,14 @@ template <typename coll1type> double getAvgCSV(coll1type collection1, string tag
 }
 ////////////////////////////////////////////////////////////////////////////
 
-template <typename coll1type> auto keepTagged(coll1type collection1, string tagtype="None")
+template <typename coll1type> coll1type keepTagged(coll1type collection1, string tagtype="None")
 {
-    if (tagtype=="None") return collection1;
+  if (tagtype=="None") return collection1;
     double tagcut = convertWPtoCSVvalue(tagtype);
-    decltype(collection1) keptobjs;
-    for (auto it = collection1.begin(); it != collection1.end(); ++it)
+    coll1type keptobjs;
+    for (const coll1type & it : collection1)
     {
-        if (tagcut<(*it).csv) keptobjs.push_back((*it));
+      if (tagcut < it.csv) keptobjs.push_back(it);
     }
     
     return keptobjs;
@@ -235,16 +229,15 @@ template <typename coll1type> auto keepTagged(coll1type collection1, string tagt
     
 ////////////////////////////////////////////////////////////////////////////
 
-template <typename coll1type> auto keepUnTagged(coll1type collection1, string tagtype="None")
+template <typename coll1type> coll1type keepUnTagged(coll1type collection1, string tagtype="None")
 {
     if (tagtype=="None") return collection1;
     double tagcut = convertWPtoCSVvalue(tagtype);
-    decltype(collection1) keptobjs;
-    for (auto it = collection1.begin(); it != collection1.end(); ++it)
+    coll1type keptobjs;
+    for (const coll1type & it : collection1)
     {    
-        if (tagcut>=(*it).csv) keptobjs.push_back((*it));
+        if (tagcut >= it.csv) keptobjs.push_back(it);
     }
-  
     return keptobjs;
 }            
 
