@@ -1503,7 +1503,7 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   // cout <<"dxy: "<< vardxy << endl;
   // cout <<"dz: "<< vardz << endl;
   // cout <<"ele MVA ID: "<< varmvaId << endl;
-  // float lepMVA;
+  float lepMVA;
 
   // cout <<"1: "<< ele_reader_low->EvaluateMVA( "BDTG method" ) << endl;
   // cout <<"2: "<< ele_reader_medium_cb->EvaluateMVA( "BDTG method" ) << endl;
@@ -1514,27 +1514,30 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   // cout <<"7: "<< ele_reader_high_ec->EvaluateMVA( "BDTG method" ) << endl;
   
   if (iElectron.pt() <= 10){
-    return ele_reader_low->EvaluateMVA( "BDTG method" );
+    lepMVA = ele_reader_low->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() > 10 && iElectron.pt() <= 25 && fabs(iElectron.eta()) < 0.8){
-    return ele_reader_medium_cb->EvaluateMVA( "BDTG method" );
+    lepMVA = ele_reader_medium_cb->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() > 10 && iElectron.pt() <= 25 && fabs(iElectron.eta()) >= 0.8 && fabs(iElectron.eta()) < 1.479){
-    return ele_reader_medium_fb->EvaluateMVA( "BDTG method" );
+    lepMVA = ele_reader_medium_fb->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() > 10 && iElectron.pt() <= 25 && fabs(iElectron.eta()) >= 1.479) {
-    return ele_reader_medium_ec->EvaluateMVA( "BDTG method" );
+    lepMVA = ele_reader_medium_ec->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() > 25 && fabs(iElectron.eta()) < 0.8) {
-    return ele_reader_high_cb->EvaluateMVA( "BDTG method" );
+    lepMVA = ele_reader_high_cb->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() > 25 && fabs(iElectron.eta()) >= 0.8 && fabs(iElectron.eta()) < 1.479) {
-    return ele_reader_high_fb->EvaluateMVA( "BDTG method" );
+    lepMVA = ele_reader_high_fb->EvaluateMVA( "BDTG method" );
   }
   else if (iElectron.pt() > 25 && fabs(iElectron.eta()) >= 1.479) {
-    return ele_reader_high_ec->EvaluateMVA( "BDTG method" );
+    lepMVA = ele_reader_high_ec->EvaluateMVA( "BDTG method" );
   }
-  else return -99999.;
+  else lepMVA = -99999.;
+
+  //  cout <<"lepMVA: "<< lepMVA << endl;
+  return lepMVA;
 
 }
 

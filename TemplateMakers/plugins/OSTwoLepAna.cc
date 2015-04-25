@@ -26,10 +26,12 @@ void OSTwoLepAna::beginJob()
       ml4 = fopen ("mu_4.txt", "w+");
 
       fout.open("preselEventDump.csv");
-      string header[19] = {"event","pdgId","pT","Eta","Phi","dxy","dz","relIso","sip3D","prompt MVA",
+      string header[35] = {"event","pdgId","pT","Eta","Phi","dxy","dz","relIso","sip3D","prompt MVA",
 			   "ele MVA ID / isPFMuon","lost hits / isGlobalMuon","isGsfCtfScPixChargeConsistent / chargeFlip",
 			   "passConversionVeto / isTrackerMuon","global normalized chi2","chi2 local","track kink","valid Frac",
-			   "segment compatibility"};
+			   "segment compatibility"," ","neuRelIso03","chRelIso03","jetDR,lep.pt()","lep.jet.pt()","jetPtRatio","jetBTagCSV",
+			   "sip3d","dxy","dz","mvaIdPhys14 / segmentCompatibility",">= 2 preselected leptons","el el SS/mu mu SS","pt2020",
+			   "2 cut-selection leptons","== 2 ss tight eles"};
       for (const auto & title : header) fout << title << ',';
       fout << "\n";
     }
@@ -185,13 +187,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatJet rawJets = GetUncorrectedJets(*pfjets);
 
 	    //no JEC
-	    vecPatJet selectedJets_forLepMVA  = GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );
-	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
+	    //	    vecPatJet selectedJets_forLepMVA  = GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );
+	    //	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	    
 	    //with JEC
-	    // vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
-	    // vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);
-	    // vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 10., 2.4, jetID::none, '-' );
+	    vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
+	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);
+	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 10., 2.4, jetID::none, '-' );
 
 	    vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  					 
 	    vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' ); 
@@ -292,19 +294,41 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    runNumber_intree = event.id().run();
 	    
 	    if (debug){
+	      bool 2lss = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
+	      bool pt2020 = (preselected_leptons[0].obj.Pt() == preselected_leptons[0].obj.Pt());
+	      
+
 	      for (const auto & ele : preselected_electrons)
 		{
 		  fout << eventnum_intree << ','<< ele.pdgID << ','<< ele.obj.Pt() <<','
 		       << ele.obj.Eta() <<','<< ele.obj.Phi() <<','<< ele.dxy<<','<<ele.dz<<','
 		       <<ele.relIso<<','<<ele.sip3D<<','<<ele.lepMVA<<','<<ele.mvaID<<','
-		       <<ele.numMissingInnerHits<<','<<ele.isGsfCtfScPixChargeConsistent<<','<<ele.passConversioVeto<<'\n';
+		       <<ele.numMissingInnerHits<<','<<ele.isGsfCtfScPixChargeConsistent<<','<<ele.passConversioVeto<<','
+		       <<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<','
+		       <<ele.nureliso<<','<<ele.chreliso<<','<<ele.matchedJetdR<<','<<ele.obj.Pt()<<','
+		       <<ele.obj.Pt()/ele.jetPtRatio<<','<<ele.jetPtRatio<<','<<ele.csv<<','<<ele.sip3D<<','
+		       <<ele.dxy<<','<<ele.dz<<','<<ele.mvaID<<','<< (2 >= preselected_leptons.size()) <<','
+		       <<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<'\n';
+		  //		       <<'SS ee/mm'<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
+		  //		       <<'\n';
+
+
+
 		}
 	      for (const auto & mu : preselected_muons)
 		{
 		  fout << eventnum_intree << ','<<mu.pdgID<<','<<mu.obj.Pt()<<','<<mu.obj.Eta()<<','<<mu.obj.Phi()<<','
 		       <<mu.dxy<<','<<mu.dz<<','<<mu.relIso<<','<<mu.sip3D<<','<<mu.lepMVA<<','<<mu.isPFMuon<<','
-		       <<mu.isGlobalMuon<<','<<mu.chargeFlip<<','<<mu.isTrackerMuon<<','<<mu.normalizedChi2<<','
-		       <<mu.localChi2<<','<<mu.trKink<<','<<mu.validFrac<<','<<mu.segCompatibility<<'\n';
+		       <<mu.isGlobalMuon<<','<<mu.chargeFlip<<','<<mu.isTrackerMuon<<','
+		       <<mu.normalizedChi2<<','
+		       <<mu.localChi2<<','<<mu.trKink<<','<<mu.validFrac<<','<<mu.segCompatibility<<','<<' '<<','
+		       <<mu.nureliso<<','<<mu.chreliso<<','<<mu.matchedJetdR<<','<<mu.obj.Pt()<<','
+		       <<mu.obj.Pt()/mu.jetPtRatio<<','<<mu.jetPtRatio<<','<<mu.csv<<','<<mu.sip3D<<','
+		       <<mu.dxy<<','<<mu.dz<<','<<mu.segCompatibility<<','<< (2 >= preselected_leptons.size()) <<','
+		       <<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<'\n';
+		       // <<'SS ee/mm '<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
+		       // <<'\n';		    
+
 		}
 
 
