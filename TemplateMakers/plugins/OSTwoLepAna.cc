@@ -294,8 +294,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    runNumber_intree = event.id().run();
 	    
 	    if (debug){
-	      bool 2lss = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
-	      bool pt2020 = (preselected_leptons[0].obj.Pt() == preselected_leptons[0].obj.Pt());
+	      //bool 2lss = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
+	      //bool pt2020 = (preselected_leptons[0].obj.Pt() == preselected_leptons[0].obj.Pt());
 	      
 
 	      for (const auto & ele : preselected_electrons)
