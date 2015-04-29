@@ -7,7 +7,8 @@
 	
 TriggerAnaV2::TriggerAnaV2(const edm::ParameterSet& constructparams){ //Anything that needs to be done at creation time
 	debug = constructparams.getParameter<bool> ("debug");
-	entire_pset = constructparams;
+	//debug = true;
+        entire_pset = constructparams;
 	parse_params();
 }
 TriggerAnaV2::~TriggerAnaV2(){} //Anything that needs to be done at destruction time
@@ -280,7 +281,6 @@ void TriggerAnaV2::endJob() {
 
 void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
-
 	// analysis goes here
 	//if (debug) cout << "event: " << event.id().event() << endl;
 	clock_t startTime = clock();
@@ -300,14 +300,8 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 	prunedGenParticles genparticles =       prunedParticles;
         int genpartsize = genparticles->size();
         
-	//this needs to be cleaned up eventually
-	recoBeamSpot bsHandle;
-	event.getByToken(bsToken_,bsHandle);
-	const reco::BeamSpot &beamspot = *bsHandle.product();
-
-	edm::Handle<reco::ConversionCollection> hConversions;
-	event.getByToken(conversionToken_,hConversions);
-	
+        if (debug) cout << "hey01" << endl;
+        
 	SetRho(rho);
 	
 	int numpvs =				GetVertices(event);
@@ -317,15 +311,18 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 	edm::Handle<GenEventInfoProduct> GenInfo;
     	event.getByLabel("generator",GenInfo);
     	
-	///////////////////////////
+
+        ///////////////////////////
 	double wgt = GenInfo->weight();		// <- gen-level weight
 	double weight = 1.;					// <- analysis weight 
 	weight *= mcwgt_intree;					// MC-only (flag to be added if nec)
-        double mcwgt_intree = wgt;
+        //double mcwgt_intree = wgt;
 	///////////////////////////
-	
+        
+        if (debug) cout << "hey02" << endl;        
+        
         // count number of weighted mc events we started with:
-        numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+        //numInitialWeightedMCevents->Fill(1,mcwgt_intree);
 					
 	/////////
 	///
@@ -348,27 +345,7 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight);	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
 	vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, 7., electronID::electronRaw );	//miniAODhelper.
-	vecPatElectron selectedElectrons_loose_notight = RemoveOverlaps( selectedElectrons_tight, selectedElectrons_loose);	//miniAODhelper.
-	vecPatElectron selectedElectrons_looseCutBased = GetSelectedElectrons( *electrons, 7., electronID::electronLooseCutBased);	//miniAODhelper.
-
-	//special stuff for sync, need to add fancy converstion veto
-	//with vtx fit probability which uses beamspot and conversion collections
-	//and i'm too lazy to add them to isGoodElectron in MiniAODhelper (temporary)
-	vecPatElectron selectedElectrons_tightcb = GetSelectedElectrons( *electrons, 7, electronID::electronTightCutBased);	//miniAODhelper.
-	vecPatElectron selectedElectrons_tightCutBased;
-
-	bool allowCkfMatch = true;
-	float lxyMin = 2.0;
-	float probMin = 1e-6;
-	uint nHitsBeforeVtxMax = 0;
-	for(const auto & ele: selectedElectrons_tightcb)
-	  {
-	    if (!ConversionTools::hasMatchedConversion(ele,hConversions,beamspot.position(),allowCkfMatch,lxyMin,probMin,nHitsBeforeVtxMax))
-	      {
-		selectedElectrons_tightCutBased.push_back(ele);
-	      }
-	  }
-
+        if (debug) cout << "hey03" << endl;
 	/////////
 	///
 	/// Muons
@@ -382,16 +359,14 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );
 	vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, 5., muonID::muonRaw );
 	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );
-	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
-	vecPatMuon selectedMuons_looseCutBased = GetSelectedMuons( *muons, 5., muonID::muonLooseCutBased );
-	vecPatMuon selectedMuons_tightCutBased = GetSelectedMuons( *muons, 5., muonID::muonTightCutBased );
+	//	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
 
 	/////////
 	///
 	/// Cleaning 
 	///
 	////////
-
+        if (debug) cout << "hey04" << endl;
 	//remove electrons that are close (dR <=0.05) to muons
 	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	
 
@@ -404,100 +379,99 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 	///
 	////////	
 	
+        if (debug) cout << "hey05" << endl;
 
-        vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
-        selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
+	vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
+	selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 
-        vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
+	vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
 
-        /////////
-        ///
-        /// Jets
-        ///
-        ////////
+	/////////
+	///
+	/// Jets
+	///
+	////////
+        if (debug) cout << "hey06" << endl;
+	//set up JEC
+	const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFchsL1L2L3", evsetup );  
+	MiniAODHelper::SetJetCorrector(corrector);
 
-        //set up JEC
-        const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFchsL1L2L3", evsetup );  
-        MiniAODHelper::SetJetCorrector(corrector);
+	vecPatJet rawJets = GetUncorrectedJets(*pfjets);
 
-        vecPatJet rawJets				= GetUncorrectedJets(*pfjets);  					  //miniAODhelper.
-        vecPatJet cleaned_rawJets           = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
-        //vecPatJet cleaned_rawJets =    GetCorrectedJets(pre_cleaned_rawJets,event,evsetup);
-        vecPatJet jetsNoMu			       	= RemoveOverlaps(selectedMuons_loose, rawJets); 			    //miniAODhelper.
-        vecPatJet jetsNoEle			       	= RemoveOverlaps(selectedElectrons_loose, rawJets);			    //miniAODhelper.
-        vecPatJet jetsNoLep			       	= RemoveOverlaps(selectedElectrons_loose, jetsNoMu);			    //miniAODhelper.
-        vecPatJet correctedJets_noSys		       	= GetCorrectedJets(jetsNoLep);  					    //miniAODhelper.
-        vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
-        vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
-        vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );    //miniAODhelper.
-        vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );   //miniAODhelper.
-        vecPatJet selectedJets_forSync          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );   //miniAODhelper.
-        vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );   //miniAODhelper.
-        vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );   //miniAODhelper.
-        vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );   //miniAODhelper.
-        //vecPatJet selectedJets_forLepMVA          	= GetSelectedJets(cleaned_rawJets, 10., 2.4, jetID::none, '-' );   //miniAODhelper.
+	//no JEC
+	//	    vecPatJet selectedJets_forLepMVA  = GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );
+	//	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 
-        // test
-        vecPatJet *testHiggsjets  = &selectedJets_noSys_unsorted;
-        TwoObjectKinematic<vecPatJet,vecPatJet> myNumHiggsLikeDijet15("mass", "num_within", "numHiggsLike_dijet_15_float", &(testHiggsjets), "jets_by_pt", 1, 99, &(testHiggsjets), "jets_by_pt", 1, 99, 115.0, "", "", 15.0);
+	//with JEC
+	vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
+	vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);
+	vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 10., 2.4, jetID::none, '-' );
 
-        /////////
-        ///
-        /// Filling final selection PAT collections
-        ///
-        ////////
+	vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  					 
+	vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' ); 
+	vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );
+	vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );
+	vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );
+	vecPatJet selectedJets_preselected          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
+	vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );
+	vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );
 
-        auto lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonCutBased, 5., selectedElectrons_preselected, electronID::electronCutBased, 10.);
-        vecPatMuon selectedMuons_cutBased = std::get<0>(lepTuple);
-        vecPatElectron selectedElectrons_cutBased = std::get<1>(lepTuple);
+	// test
+	vecPatJet *testHiggsjets  = &selectedJets_noSys_unsorted;
+	TwoObjectKinematic<vecPatJet,vecPatJet> myNumHiggsLikeDijet15("mass", "num_within", "numHiggsLike_dijet_15_float", &(testHiggsjets), "jets_by_pt", 1, 99, &(testHiggsjets), "jets_by_pt", 1, 99, 115.0, "", "", 15.0);
 
-        lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonLooseMvaBased, 5., selectedElectrons_preselected, electronID::electronLooseMvaBased, 10., selectedJets_forLepMVA);
-        vecPatMuon selectedMuons_looseMvaBased = std::get<0>(lepTuple);
-        vecPatElectron selectedElectrons_looseMvaBased = std::get<1>(lepTuple);
+	/////////
+	///
+	/// Filling final selection PAT collections
+	///
+	////////
 
-        lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonTightMvaBased, 5., selectedElectrons_preselected, electronID::electronTightMvaBased, 10., selectedJets_forLepMVA);
-        vecPatMuon selectedMuons_tightMvaBased = std::get<0>(lepTuple);
-        vecPatElectron selectedElectrons_tightMvaBased = std::get<1>(lepTuple);
+	auto lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonLooseMvaBased, 5., selectedElectrons_preselected, electronID::electronLooseMvaBased, 10., selectedJets_forLepMVA);
+	vecPatMuon selectedMuons_looseMvaBased = std::get<0>(lepTuple);
+	vecPatElectron selectedElectrons_looseMvaBased = std::get<1>(lepTuple);
 
-        /////////
-        ///
-        /// MET
-        ///
-        ////////
+	lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonTightMvaBased, 5., selectedElectrons_preselected, electronID::electronTightMvaBased, 10., selectedJets_forLepMVA);
+	vecPatMuon selectedMuons_tightMvaBased = std::get<0>(lepTuple);
+	vecPatElectron selectedElectrons_tightMvaBased = std::get<1>(lepTuple);
 
-        //do anything to pat met here
+        if (debug) cout << "hey07" << endl;
+	/////////
+	///
+	/// MET
+	///
+	////////
 
-        /////////////////////////
-        //////
-        ////// fill the collections
-        //////
-        /////////////////////////
+	//do anything to pat met here
 
-        vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw,selectedJets_forLepMVA);
-        vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
-        vector<ttH::Electron> cutBased_electrons = GetCollection(selectedElectrons_cutBased,selectedJets_forLepMVA);
-        vector<ttH::Electron> looseMvaBased_electrons = GetCollection(selectedElectrons_looseMvaBased,selectedJets_forLepMVA);
-        vector<ttH::Electron> tightMvaBased_electrons = GetCollection(selectedElectrons_tightMvaBased,selectedJets_forLepMVA);
+	/////////////////////////
+	//////
+	////// fill the collections
+	//////
+	/////////////////////////
 
-        vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw,selectedJets_forLepMVA);
-        vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
-        vector<ttH::Muon> cutBased_muons = GetCollection(selectedMuons_cutBased,selectedJets_forLepMVA);
-        vector<ttH::Muon> looseMvaBased_muons = GetCollection(selectedMuons_looseMvaBased,selectedJets_forLepMVA);
-        vector<ttH::Muon> tightMvaBased_muons = GetCollection(selectedMuons_tightMvaBased,selectedJets_forLepMVA);
+	vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw,selectedJets_forLepMVA);
+	vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
+	vector<ttH::Electron> looseMvaBased_electrons = GetCollection(selectedElectrons_looseMvaBased,selectedJets_forLepMVA);
+	vector<ttH::Electron> tightMvaBased_electrons = GetCollection(selectedElectrons_tightMvaBased,selectedJets_forLepMVA);
 
-        vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
-        vector<ttH::Lepton> cutBased_leptons = GetCollection(cutBased_muons,cutBased_electrons);
-        vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);
-        vector<ttH::Lepton> tightMvaBased_leptons = GetCollection(tightMvaBased_muons,tightMvaBased_electrons);
+	vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw,selectedJets_forLepMVA);
+	vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
+	vector<ttH::Muon> looseMvaBased_muons = GetCollection(selectedMuons_looseMvaBased,selectedJets_forLepMVA);
+	vector<ttH::Muon> tightMvaBased_muons = GetCollection(selectedMuons_tightMvaBased,selectedJets_forLepMVA);
 
-        vector<ttH::Jet> raw_jets = GetCollection(rawJets);
-        vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_forSync);
-        vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
-        vector<ttH::Jet> tight_bJets = GetCollection(selectedJets_bJetsTight);
+	vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
+	vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);
+	vector<ttH::Lepton> tightMvaBased_leptons = GetCollection(tightMvaBased_muons,tightMvaBased_electrons);
 
-        vector<ttH::MET> theMET = GetCollection(mets);
-        vector<ttH::GenParticle> pruned_genParticles = GetCollection(*prunedParticles);
+	vector<ttH::Jet> raw_jets = GetCollection(rawJets);
+	vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
+	vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
+	vector<ttH::Jet> tight_bJets = GetCollection(selectedJets_bJetsTight);
 
+	vector<ttH::MET> theMET = GetCollection(mets);
+	vector<ttH::GenParticle> pruned_genParticles = GetCollection(*prunedParticles);
+
+        if (debug) cout << "hey08" << endl;
 
         int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles);
         //	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
@@ -511,10 +485,6 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
         preselected_leptons_intree = preselected_leptons;
         preselected_electrons_intree = preselected_electrons;
         preselected_muons_intree = preselected_muons;
-
-        cutBased_leptons_intree = cutBased_leptons;
-        cutBased_electrons_intree = cutBased_electrons;
-        cutBased_muons_intree = cutBased_muons;
 
         looseMvaBased_muons_intree = looseMvaBased_muons;
         tightMvaBased_muons_intree = tightMvaBased_muons;
@@ -544,7 +514,7 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
         summaryTree->Fill(); // fill tree;
         ////////////////////
 
-
+        if (debug) cout << "hey09" << endl;
                        
         vecTLorentzVectorCMS leptonsTLVtight = Get_vecTLorentzVectorCMS(tightMvaBased_leptons);
         vecTLorentzVectorCMS muonsTLVtight = Get_vecTLorentzVectorCMS(tightMvaBased_muons);
@@ -639,9 +609,9 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 	if (debug) cout << "hey8" << endl;
 
 	
-	edm::Handle<trigger::TriggerEvent> aodTriggerEvent;   
-	event.getByLabel(edm::InputTag("hltTriggerSummaryAOD", "", hltTag), aodTriggerEvent); // this won't be in a regular miniAOD sample!
-	const trigger::TriggerObjectCollection objects = aodTriggerEvent->getObjects();
+	// edm::Handle<trigger::TriggerEvent> aodTriggerEvent;   
+// 	event.getByLabel(edm::InputTag("hltTriggerSummaryAOD", "", hltTag), aodTriggerEvent); // this won't be in a regular miniAOD sample!
+// 	const trigger::TriggerObjectCollection objects = aodTriggerEvent->getObjects();
 	
 	if (numLooseMuons>1)
 	{
@@ -701,86 +671,86 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 
 ////////////////////// getting hlt objects from aodTriggerEvent:///////////////////////////////////////////
 	
-	strcpy (last_module_with_saved_tags_label,"none");
-	
-	int last_module_run_index = triggerResults->index(hltConfig_.triggerIndex(eleltriggerstostudy[0])); // NOT nec. same as last saved tags module
-	
-	vstring the_saved_tag_modules = hltConfig_.saveTagsModules(hltConfig_.triggerIndex(eleltriggerstostudy[0]));
-	
-	string mod_label = hltConfig_.moduleLabel(hltConfig_.triggerIndex(eleltriggerstostudy[0]),last_module_run_index);
-	
- 	vint last_module_with_saved_tags_obj_ID;
- 	vdouble last_module_with_saved_tags_obj_pt;
- 	vdouble last_module_with_saved_tags_obj_eta;
- 	vdouble last_module_with_saved_tags_obj_phi;
- 	int objs_found = 0;
-	//char dummy = "";
-	//char last_module_with_saved_tags_label[] = "";
-	//int last_module_with_saved_tags_index;
-	
-	if (the_saved_tag_modules.size()>0)
-	{
-		for (int mods = (the_saved_tag_modules.size() - 1); mods>=0; mods--) // loop backwards through the modules
-		{
-			edm::InputTag moduleWhoseResultsWeWant(the_saved_tag_modules[mods], "", hltTag); // get the input tag of this module
-						
-			strcpy (last_module_with_saved_tags_label,the_saved_tag_modules[mods].c_str()); // get the name (char array) of this module				
-			
-			last_module_with_saved_tags_index = hltConfig_.moduleIndex(hltConfig_.triggerIndex(eleltriggerstostudy[0]),the_saved_tag_modules[mods]); // get this index of this module
-
-			unsigned int indexOfModuleInAodTriggerEvent = aodTriggerEvent->filterIndex(moduleWhoseResultsWeWant); // get the index as saved in aodtriggerevent
-			
-			if (indexOfModuleInAodTriggerEvent < aodTriggerEvent->sizeFilters())
-			{
-				const trigger::Keys &keys = aodTriggerEvent->filterKeys( indexOfModuleInAodTriggerEvent ); // get the keys to the objects
-				
-				if (objs_found<(int)keys.size()) objs_found = keys.size(); // the number of saved objects in this module is == the size of the keys
-				
-				//if (objs_found>1)
-				//{	
-				
-					for ( size_t iKey = 0; iKey < keys.size(); iKey++ )
-					{
-						trigger::TriggerObject foundObject = objects[keys[iKey]];					
-
-						//int object_number = iKey;
-
-						last_module_with_saved_tags_obj_ID.push_back(foundObject.id()); // save the object(s) info
-						last_module_with_saved_tags_obj_pt.push_back(foundObject.pt());
-						last_module_with_saved_tags_obj_eta.push_back(foundObject.eta());
-						last_module_with_saved_tags_obj_phi.push_back(foundObject.phi());
-
-					}
-
-					if (last_module_with_saved_tags_obj_ID.size())
-					{
-						cout << last_module_with_saved_tags_label << endl;
-						break;
-					} // once ANY objects are found, break the loop (we want the objects of the last filter module that had saved object info, and then stop once we get them)
-			
-				//}
-			}
-		}
-	}
-
-// 	if (objs_found)
+// 	strcpy (last_module_with_saved_tags_label,"none");
+// 	
+// 	int last_module_run_index = triggerResults->index(hltConfig_.triggerIndex(eleltriggerstostudy[0])); // NOT nec. same as last saved tags module
+// 	
+// 	vstring the_saved_tag_modules = hltConfig_.saveTagsModules(hltConfig_.triggerIndex(eleltriggerstostudy[0]));
+// 	
+// 	string mod_label = hltConfig_.moduleLabel(hltConfig_.triggerIndex(eleltriggerstostudy[0]),last_module_run_index);
+// 	
+//  	vint last_module_with_saved_tags_obj_ID;
+//  	vdouble last_module_with_saved_tags_obj_pt;
+//  	vdouble last_module_with_saved_tags_obj_eta;
+//  	vdouble last_module_with_saved_tags_obj_phi;
+//  	int objs_found = 0;
+// 	//char dummy = "";
+// 	//char last_module_with_saved_tags_label[] = "";
+// 	//int last_module_with_saved_tags_index;
+// 	
+// 	if (the_saved_tag_modules.size()>0)
 // 	{
-// 		cout << " " << endl;
-// 		cout << "the found objects: " << endl;
-// 		
-// 		for (int obit=0; obit<(int)last_module_with_saved_tags_obj_ID.size(); obit++)
+// 		for (int mods = (the_saved_tag_modules.size() - 1); mods>=0; mods--) // loop backwards through the modules
 // 		{
-// 			cout << "  " << endl;
-// 			cout << last_module_with_saved_tags_obj_ID[obit] << endl;
-// 			cout << last_module_with_saved_tags_obj_pt[obit] << endl;
-// 			cout << last_module_with_saved_tags_obj_eta[obit] << endl;
-// 			cout << last_module_with_saved_tags_obj_phi[obit] << endl;
-// 			cout << "  " << endl;
-// 			cout << "  " << endl;
+// 			edm::InputTag moduleWhoseResultsWeWant(the_saved_tag_modules[mods], "", hltTag); // get the input tag of this module
 // 						
+// 			strcpy (last_module_with_saved_tags_label,the_saved_tag_modules[mods].c_str()); // get the name (char array) of this module				
 // 			
+// 			last_module_with_saved_tags_index = hltConfig_.moduleIndex(hltConfig_.triggerIndex(eleltriggerstostudy[0]),the_saved_tag_modules[mods]); // get this index of this module
+// 
+// 			unsigned int indexOfModuleInAodTriggerEvent = aodTriggerEvent->filterIndex(moduleWhoseResultsWeWant); // get the index as saved in aodtriggerevent
+// 			
+// 			if (indexOfModuleInAodTriggerEvent < aodTriggerEvent->sizeFilters())
+// 			{
+// 				const trigger::Keys &keys = aodTriggerEvent->filterKeys( indexOfModuleInAodTriggerEvent ); // get the keys to the objects
+// 				
+// 				if (objs_found<(int)keys.size()) objs_found = keys.size(); // the number of saved objects in this module is == the size of the keys
+// 				
+// 				//if (objs_found>1)
+// 				//{	
+// 				
+// 					for ( size_t iKey = 0; iKey < keys.size(); iKey++ )
+// 					{
+// 						trigger::TriggerObject foundObject = objects[keys[iKey]];					
+// 
+// 						//int object_number = iKey;
+// 
+// 						last_module_with_saved_tags_obj_ID.push_back(foundObject.id()); // save the object(s) info
+// 						last_module_with_saved_tags_obj_pt.push_back(foundObject.pt());
+// 						last_module_with_saved_tags_obj_eta.push_back(foundObject.eta());
+// 						last_module_with_saved_tags_obj_phi.push_back(foundObject.phi());
+// 
+// 					}
+// 
+// 					if (last_module_with_saved_tags_obj_ID.size())
+// 					{
+// 						cout << last_module_with_saved_tags_label << endl;
+// 						break;
+// 					} // once ANY objects are found, break the loop (we want the objects of the last filter module that had saved object info, and then stop once we get them)
+// 			
+// 				//}
+// 			}
 // 		}
 // 	}
+// 
+// // 	if (objs_found)
+// // 	{
+// // 		cout << " " << endl;
+// // 		cout << "the found objects: " << endl;
+// // 		
+// // 		for (int obit=0; obit<(int)last_module_with_saved_tags_obj_ID.size(); obit++)
+// // 		{
+// // 			cout << "  " << endl;
+// // 			cout << last_module_with_saved_tags_obj_ID[obit] << endl;
+// // 			cout << last_module_with_saved_tags_obj_pt[obit] << endl;
+// // 			cout << last_module_with_saved_tags_obj_eta[obit] << endl;
+// // 			cout << last_module_with_saved_tags_obj_phi[obit] << endl;
+// // 			cout << "  " << endl;
+// // 			cout << "  " << endl;
+// // 						
+// // 			
+// // 		}
+// // 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	
@@ -1308,25 +1278,25 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 		                                    }
 
 
-		                                    double leadingpt = -99.;
-		                                    double subleadingpt = -99.;
-		                                    double leadingeta = -99.;
-		                                    double subleadingeta = -99.;
-
-		                                    if (elesTLVtight[0].Pt() > loosedubel2pt)
-		                                    {
-			                                    leadingpt = elesTLVtight[0].Pt(); 
-			                                    subleadingpt = loosedubel2pt;
-			                                    leadingeta = elesTLVtight[0].Eta(); 
-			                                    subleadingeta = loosedubel2eta;
-		                                    }
-		                                    if (elesTLVtight[0].Pt() <= loosedubel2pt)
-		                                    {
-			                                    leadingpt = loosedubel2pt;
-			                                    subleadingpt = elesTLVtight[0].Pt(); 
-			                                    leadingeta = loosedubel2eta;
-			                                    subleadingeta = elesTLVtight[0].Eta();
-		                                    }
+// 		                                    double leadingpt = -99.;
+// 		                                    double subleadingpt = -99.;
+// 		                                    double leadingeta = -99.;
+// 		                                    double subleadingeta = -99.;
+// 
+// 		                                    if (elesTLVtight[0].Pt() > loosedubel2pt)
+// 		                                    {
+// 			                                    leadingpt = elesTLVtight[0].Pt(); 
+// 			                                    subleadingpt = loosedubel2pt;
+// 			                                    leadingeta = elesTLVtight[0].Eta(); 
+// 			                                    subleadingeta = loosedubel2eta;
+// 		                                    }
+// 		                                    if (elesTLVtight[0].Pt() <= loosedubel2pt)
+// 		                                    {
+// 			                                    leadingpt = loosedubel2pt;
+// 			                                    subleadingpt = elesTLVtight[0].Pt(); 
+// 			                                    leadingeta = loosedubel2eta;
+// 			                                    subleadingeta = elesTLVtight[0].Eta();
+// 		                                    }
 
 		                                    if (triggerResults->accept(hltConfig_.triggerIndex(eleltriggerstostudy[0]))) 
 		                                    { 
@@ -1339,10 +1309,10 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 			                                    lep1_iso_didpass_double_lep[4]->Fill(electronIsosTight[0]); 
 			                                    lep2_iso_didpass_double_lep[4]->Fill(loosedubel2iso);	
 
-			                                    if (objs_found) lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(leadingpt,last_module_with_saved_tags_obj_pt[0]);
-			                                    if (objs_found>1) lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingpt,last_module_with_saved_tags_obj_pt[1]);
-			                                    if (objs_found) lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(leadingeta,last_module_with_saved_tags_obj_eta[0]);
-			                                    if (objs_found>1) lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingeta,last_module_with_saved_tags_obj_eta[1]);
+			                //                     if (objs_found) lep1_pt_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(leadingpt,last_module_with_saved_tags_obj_pt[0]);
+// 			                                    if (objs_found>1) lep2_pt_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingpt,last_module_with_saved_tags_obj_pt[1]);
+// 			                                    if (objs_found) lep1_eta_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(leadingeta,last_module_with_saved_tags_obj_eta[0]);
+// 			                                    if (objs_found>1) lep2_eta_didpass_double_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingeta,last_module_with_saved_tags_obj_eta[1]);
 
 		                                    }
 
@@ -1358,10 +1328,10 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 			                                    lep2_iso_didntpass_double_lep_but_passed_single_lep[4]->Fill(loosedubel2iso);  		// 107
 
 
-			                                    if (objs_found) lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(leadingpt,last_module_with_saved_tags_obj_pt[0]);
-			                                    if (objs_found>1) lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingpt,last_module_with_saved_tags_obj_pt[1]);
-			                                    if (objs_found) lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(leadingeta,last_module_with_saved_tags_obj_eta[0]);	// 93
-			                                    if (objs_found>1) lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingeta,last_module_with_saved_tags_obj_eta[1]);	// 93		
+// 			                                    if (objs_found) lep1_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(leadingpt,last_module_with_saved_tags_obj_pt[0]);
+// 			                                    if (objs_found>1) lep2_pt_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingpt,last_module_with_saved_tags_obj_pt[1]);
+// 			                                    if (objs_found) lep1_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(leadingeta,last_module_with_saved_tags_obj_eta[0]);	// 93
+// 			                                    if (objs_found>1) lep2_eta_didntpass_double_lep_but_passed_single_lep_PATobj_x_HLTobj_y[4]->Fill(subleadingeta,last_module_with_saved_tags_obj_eta[1]);	// 93		
 
 			                                    //if (objs_found) summaryTree->Fill();	// 
 
