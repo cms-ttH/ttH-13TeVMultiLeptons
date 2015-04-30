@@ -14,50 +14,50 @@ process.prefer("GlobalTag")
 #miniaodfiledirPU40 = str("root://xrootd.ba.infn.it//store/mc/Phys14DR/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU40bx25_PHYS14_25_V1-v1/00000/")
 # PU 20:
 miniaodfiledirPU20 = str("root://xrootd.ba.infn.it//store/mc/Phys14DR/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/MINIAODSIM/PU20bx25_tsg_PHYS14_25_V1-v2/")
-aodfiledir = str("root://xrootd.ba.infn.it//store/mc/Phys14DR/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v2/00000/")
+aodfiledir = str("root://xrootd.ba.infn.it//store/mc/Phys14DR/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/AODSIM/PU20bx25_tsg_PHYS14_25_V1-v2/")
 
 process.maxEvents = cms.untracked.PSet(
     	input = cms.untracked.int32(500) # number of events
 )
 
 process.source = cms.Source("PoolSource",
-    	fileNames = cms.untracked.vstring(
-	#aod:
-	aodfiledir + '00000/1488A7F0-427F-E411-A025-001E67398408.root',
-	aodfiledir + '00000/18FF72AD-4E7F-E411-840E-001E67398156.root',
-	aodfiledir + '00000/20329E54-327F-E411-B47B-001E673972E7.root',
-	aodfiledir + '00000/38124FEF-347F-E411-ADC8-001E67398110.root',
-	aodfiledir + '00000/827B7EFC-3F7F-E411-97E2-002590200B3C.root',
-	aodfiledir + '00000/90086DA5-4E7F-E411-B3F3-001E67397698.root',
-	aodfiledir + '00000/AAF80C0C-397F-E411-BBA1-001E67397698.root',
-	aodfiledir + '00000/BE4AC439-437F-E411-8974-001E67397698.root',
-	aodfiledir + '00000/E6F49F81-2F7F-E411-8399-001E67397B11.root',
-	aodfiledir + '00000/F4D6C649-3C7F-E411-A8EF-001E67397698.root',
-	aodfiledir + '00000/FA27D654-2F7F-E411-8A3B-001E67397B11.root',
-	aodfiledir + '10000/2ADE1A36-5F7F-E411-954F-0025905C38AA.root',
-	aodfiledir + '10000/72E0F679-367F-E411-B42F-002590A8881E.root',
-	aodfiledir + '10000/9E124FCD-457F-E411-8FC8-001E673969FA.root',
-	aodfiledir + '10000/A869AFD0-587F-E411-89DC-002590A8881E.root',
-	aodfiledir + '10000/B83B0538-287F-E411-BFAC-001E67397391.root',
-	aodfiledir + '10000/FA6336EB-247F-E411-800C-001E673969FA.root',
-	aodfiledir + '20000/A8CA477D-C77E-E411-ABD7-001E67396A22.root',
-	aodfiledir + '30000/40E821B0-F57E-E411-858B-001E67397B11.root',
-	aodfiledir + '30000/6E0C1CF6-EA7E-E411-9825-001E67397698.root',
-	aodfiledir + '30000/C2362E1D-F77E-E411-A157-001E67397B11.root',
-	aodfiledir + '40000/021E63B2-D87E-E411-8178-002590A370DC.root',
-	aodfiledir + '40000/0E0C297C-BD7E-E411-98A4-002590A37106.root',
-	aodfiledir + '40000/60F99499-D67E-E411-9727-002590A370DC.root',
-	aodfiledir + '40000/7A22587F-D17E-E411-9B01-002590A4FFB8.root',
-	aodfiledir + '40000/86DC2114-C67E-E411-A46A-002590A4FFB8.root',
-	aodfiledir + '40000/9CDF211D-AE7E-E411-9D8B-001E6739722E.root',
-	aodfiledir + '40000/AA80FDED-B67E-E411-B82C-002590A37106.root',
-	aodfiledir + '40000/AC0AAB62-B37E-E411-892B-002590A370DC.root',
-	aodfiledir + '40000/AE2100E8-C97E-E411-863A-002590A4FFB8.root',
-	aodfiledir + '40000/EE456A27-C17E-E411-AB72-001E6739722E.root',
-	aodfiledir + '40000/F69B157A-CE7E-E411-ABB5-002590A4FFB8.root',
-	),
-        secondaryFileNames = cms.untracked.vstring(
-
+#    	fileNames = cms.untracked.vstring(
+#	#aod:
+#	aodfiledir + '00000/1488A7F0-427F-E411-A025-001E67398408.root',
+#	aodfiledir + '00000/18FF72AD-4E7F-E411-840E-001E67398156.root',
+#	aodfiledir + '00000/20329E54-327F-E411-B47B-001E673972E7.root',
+#	aodfiledir + '00000/38124FEF-347F-E411-ADC8-001E67398110.root',
+#	aodfiledir + '00000/827B7EFC-3F7F-E411-97E2-002590200B3C.root',
+#	aodfiledir + '00000/90086DA5-4E7F-E411-B3F3-001E67397698.root',
+#	aodfiledir + '00000/AAF80C0C-397F-E411-BBA1-001E67397698.root',
+#	aodfiledir + '00000/BE4AC439-437F-E411-8974-001E67397698.root',
+#	aodfiledir + '00000/E6F49F81-2F7F-E411-8399-001E67397B11.root',
+#	aodfiledir + '00000/F4D6C649-3C7F-E411-A8EF-001E67397698.root',
+#	aodfiledir + '00000/FA27D654-2F7F-E411-8A3B-001E67397B11.root',
+#	aodfiledir + '10000/2ADE1A36-5F7F-E411-954F-0025905C38AA.root',
+#	aodfiledir + '10000/72E0F679-367F-E411-B42F-002590A8881E.root',
+#	aodfiledir + '10000/9E124FCD-457F-E411-8FC8-001E673969FA.root',
+#	aodfiledir + '10000/A869AFD0-587F-E411-89DC-002590A8881E.root',
+#	aodfiledir + '10000/B83B0538-287F-E411-BFAC-001E67397391.root',
+#	aodfiledir + '10000/FA6336EB-247F-E411-800C-001E673969FA.root',
+#	aodfiledir + '20000/A8CA477D-C77E-E411-ABD7-001E67396A22.root',
+#	aodfiledir + '30000/40E821B0-F57E-E411-858B-001E67397B11.root',
+#	aodfiledir + '30000/6E0C1CF6-EA7E-E411-9825-001E67397698.root',
+#	aodfiledir + '30000/C2362E1D-F77E-E411-A157-001E67397B11.root',
+#	aodfiledir + '40000/021E63B2-D87E-E411-8178-002590A370DC.root',
+#	aodfiledir + '40000/0E0C297C-BD7E-E411-98A4-002590A37106.root',
+#	aodfiledir + '40000/60F99499-D67E-E411-9727-002590A370DC.root',
+#	aodfiledir + '40000/7A22587F-D17E-E411-9B01-002590A4FFB8.root',
+#	aodfiledir + '40000/86DC2114-C67E-E411-A46A-002590A4FFB8.root',
+#	aodfiledir + '40000/9CDF211D-AE7E-E411-9D8B-001E6739722E.root',
+#	aodfiledir + '40000/AA80FDED-B67E-E411-B82C-002590A37106.root',
+#	aodfiledir + '40000/AC0AAB62-B37E-E411-892B-002590A370DC.root',
+#	aodfiledir + '40000/AE2100E8-C97E-E411-863A-002590A4FFB8.root',
+#	aodfiledir + '40000/EE456A27-C17E-E411-AB72-001E6739722E.root',
+#	aodfiledir + '40000/F69B157A-CE7E-E411-ABB5-002590A4FFB8.root',
+#	),
+#        secondaryFileNames = cms.untracked.vstring(
+        fileNames = cms.untracked.vstring(
         #################################
         # -- Use these for phys14 studies --
 	# Phys14 ttH
@@ -87,35 +87,34 @@ process.source = cms.Source("PoolSource",
 ######################################
 #JEC
 
-# from RecoJets.Configuration.RecoJets_cff import *
-# from RecoJets.Configuration.RecoPFJets_cff import *
-# from JetMETCorrections.Configuration.JetCorrectionProducersAllAlgos_cff import *
-# from JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff import *
+from RecoJets.Configuration.RecoJets_cff import *
+from RecoJets.Configuration.RecoPFJets_cff import *
+from JetMETCorrections.Configuration.JetCorrectionProducersAllAlgos_cff import *
+from JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff import *
 
-# from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
 
-# process.ak4PFCHSL1Fastjet = cms.ESProducer(
-#     'L1FastjetCorrectionESProducer',
-#     level       = cms.string('L1FastJet'),
-#     algorithm   = cms.string('AK4PFchs'),
-#     srcRho      = cms.InputTag( 'fixedGridRhoFastjetAll' ),
-#     useCondDB = cms.untracked.bool(True)
-#     )
+process.ak4PFCHSL1Fastjet = cms.ESProducer(
+    'L1FastjetCorrectionESProducer',
+    level       = cms.string('L1FastJet'),
+    algorithm   = cms.string('AK4PFchs'),
+    srcRho      = cms.InputTag( 'fixedGridRhoFastjetAll' ),
+    useCondDB = cms.untracked.bool(True)
+ )
 
-# #process.ak4PFchsL2Relative = ak4CaloL2Relative.clone( algorithm = 'AK4PFchs' )
-# #process.ak4PFchsL3Absolute = ak4CaloL3Absolute.clone( algorithm = 'AK4PFchs' )
+#process.ak4PFchsL2Relative = ak4CaloL2Relative.clone( algorithm = 'AK4PFchs' )
+#process.ak4PFchsL3Absolute = ak4CaloL3Absolute.clone( algorithm = 'AK4PFchs' )
 
-# process.ak4PFchsL2Relative   =  ak5PFL2Relative.clone( algorithm = 'AK4PFchs' )
-# process.ak4PFchsL3Absolute   =  ak5PFL3Absolute.clone( algorithm = 'AK4PFchs' )
+process.ak4PFchsL2Relative   =  ak5PFL2Relative.clone( algorithm = 'AK4PFchs' )
+process.ak4PFchsL3Absolute   =  ak5PFL3Absolute.clone( algorithm = 'AK4PFchs' )
 
-# process.ak4PFchsL1L2L3 = cms.ESProducer("JetCorrectionESChain",
-#      correctors = cms.vstring(
-#         'ak4PFCHSL1Fastjet', 
-#         'ak4PFchsL2Relative', 
-#         'ak4PFchsL3Absolute'),
-#      useCondDB = cms.untracked.bool(True)
-                                        
-# )
+process.ak4PFchsL1L2L3 = cms.ESProducer("JetCorrectionESChain",
+    correctors = cms.vstring(
+        'ak4PFCHSL1Fastjet', 
+        'ak4PFchsL2Relative', 
+        'ak4PFchsL3Absolute'),
+    useCondDB = cms.untracked.bool(True)                             
+)
 
 ######################################
 

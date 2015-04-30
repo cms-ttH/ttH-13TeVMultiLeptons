@@ -13,8 +13,9 @@ TriggerAna = cms.EDAnalyzer("TriggerAnaV2",
 	
 	## anything to do at the beginning of the job:
         setupoptions = cms.PSet(	
-		rhoHandle = cms.string("fixedGridRhoFastjetAll") # choices are: fixedGridRhoAll, fixedGridRhoFastjetAll, fixedGridRhoFastjetAllCalo, fixedGridRhoFastjetCentralCalo, fixedGridRhoFastjetCentralChargedPileUp, fixedGridRhoFastjetCentralNeutral
-	),
+		rhoHandle = cms.string("fixedGridRhoFastjetAll"), # choices are: fixedGridRhoAll, fixedGridRhoFastjetAll, fixedGridRhoFastjetAllCalo, fixedGridRhoFastjetCentralCalo, fixedGridRhoFastjetCentralChargedPileUp, fixedGridRhoFastjetCentralNeutral
+	        sample = cms.string("ttH_125")
+        ),
 		
 	## list of triggers in the analysis:
 	triggers = cms.PSet(
