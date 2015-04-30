@@ -2,6 +2,8 @@
 
 Analysis code for ttH H-->WW,ZZ,tautau-->2 or more leptons
 
+The locations of the latest trees are [[here][https://twiki.cern.ch/twiki/bin/view/CMS/NotreDameTrees]].
+
 ## Installation
 
 See the 8 TeV-based [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NovaDilWorkflow) for more information.
