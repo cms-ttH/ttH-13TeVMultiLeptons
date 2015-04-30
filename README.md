@@ -2,7 +2,7 @@
 
 Analysis code for ttH H-->WW,ZZ,tautau-->2 or more leptons
 
-The locations of the latest trees are [[here][https://twiki.cern.ch/twiki/bin/view/CMS/NotreDameTrees]].
+The locations of the latest trees are [here](https://twiki.cern.ch/twiki/bin/view/CMS/NotreDameTrees).
 
 ## Installation
 
