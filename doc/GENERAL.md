@@ -3,7 +3,7 @@
 
 ## 1. Make the ntuples
 
-The cmsRun executable is osTwoLep_cfg.py and is located in Templatemakers/test. This uses the edm plugin OSTwoLepAna. 
+The cmsRun config is osTwoLep_cfg.py and is located in Templatemakers/test. This uses the edm plugin OSTwoLepAna. 
 Despite the "OSTwoLep" moniker, there is no event selection applied at this stage, except for a loose skim of 2 or more
 preselected leptons, which can be disabled by commenting out appropriate lines in Templatemakers/plugins/OSTwoLepAna.cc.
 
