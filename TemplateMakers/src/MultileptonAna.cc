@@ -873,6 +873,7 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
 {
   ttH::GenParticle genParticle;
   std::vector<ttH::GenParticle> theGenParticles;
+  std::vector<reco::GenParticle> theFinalGenParticles;
   const reco::Candidate* child0;
   const reco::Candidate* child1;
   const reco::Candidate* mother;
@@ -892,15 +893,32 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
       genParticle.mother = 9999;
       genParticle.grandmother = 9999;
 
-      family_tree[genParticle.obj.Pt()][0] = i;
-      family_tree[genParticle.obj.Pt()][1] = iGenParticle.status();//additional check to make sure we're getting the right object
-
-      theGenParticles.push_back(genParticle);
-      i+=1;
+      if (abs(iGenParticle.pdgId()) == 6 || abs(iGenParticle.pdgId()) == 23 || abs(iGenParticle.pdgId()) == 24 || abs(iGenParticle.pdgId()) == 25 || abs(iGenParticle.pdgId()) == 15 || abs(iGenParticle.pdgId()) == 5 )
+	{
+          childPair = GetGenDaughterNoFsr(&iGenParticle);
+          child0 = childPair.first;
+          child1 = childPair.second;
+          if (child0->pdgId() != iGenParticle.pdgId() && child1->pdgId() != iGenParticle.pdgId() && family_tree.find(genParticle.obj.Pt()) == family_tree.end() )
+	    {
+	      theFinalGenParticles.push_back(iGenParticle);
+	      family_tree[genParticle.obj.Pt()][0] = i;
+	      family_tree[genParticle.obj.Pt()][1] = iGenParticle.status();//additional check to make sure we're getting the right object
+	      theGenParticles.push_back(genParticle);
+	      i+=1;
+	    }
+	}
+      else if (family_tree.find(genParticle.obj.Pt()) == family_tree.end())
+	{
+	  theFinalGenParticles.push_back(iGenParticle);
+	  family_tree[genParticle.obj.Pt()][0] = i;
+	  family_tree[genParticle.obj.Pt()][1] = iGenParticle.status();
+	  theGenParticles.push_back(genParticle);
+          i+=1;
+	}
     }
-
+  
   i=0;
-  for (const auto & iGenParticle : theobjs)
+  for (const auto & iGenParticle : theFinalGenParticles)
     {
       childPair = GetGenDaughterNoFsr(&iGenParticle);
       child0 = childPair.first;
@@ -929,9 +947,12 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
       i+=1;
     }
   
+  //free up some memory
+  theFinalGenParticles.clear();
+  
   return theGenParticles;
-}
-
+ }
+  
 vdouble MultileptonAna::Get_Isos(vecPatMuon theobjs)
 {
 	vdouble isovec;

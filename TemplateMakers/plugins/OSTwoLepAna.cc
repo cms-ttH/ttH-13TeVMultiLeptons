@@ -294,9 +294,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    runNumber_intree = event.id().run();
 	    
 	    if (debug){
-	      //bool 2lss = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
-	      //bool pt2020 = (preselected_leptons[0].obj.Pt() == preselected_leptons[0].obj.Pt());
-	      
+	      bool ss2l = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
+	      bool pt2020 = (preselected_leptons[0].obj.Pt() >= 20 && preselected_leptons[0].obj.Pt() >=20);
+	      bool lepMva = (tightMvaBased_leptons.size()>=2);
+	      bool TwoCutSelection = true;
+	      bool ss2tightEles = (tightMvaBased_electrons.size() ==2 && tightMvaBased_electrons[0].pdgID == tightMvaBased_electrons[1].pdgID);
 
 	      for (const auto & ele : preselected_electrons)
 		{
@@ -308,7 +310,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		       <<ele.nureliso<<','<<ele.chreliso<<','<<ele.matchedJetdR<<','<<ele.obj.Pt()<<','
 		       <<ele.obj.Pt()/ele.jetPtRatio<<','<<ele.jetPtRatio<<','<<ele.csv<<','<<ele.sip3D<<','
 		       <<ele.dxy<<','<<ele.dz<<','<<ele.mvaID<<','<< (2 >= preselected_leptons.size()) <<','
-		       <<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<'\n';
+		       <<ss2l<<','<<pt2020<<','<<lepMva<<','<<TwoCutSelection<<','<<ss2tightEles<<'\n';
 		  //		       <<'SS ee/mm'<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
 		  //		       <<'\n';
 
@@ -325,7 +327,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		       <<mu.nureliso<<','<<mu.chreliso<<','<<mu.matchedJetdR<<','<<mu.obj.Pt()<<','
 		       <<mu.obj.Pt()/mu.jetPtRatio<<','<<mu.jetPtRatio<<','<<mu.csv<<','<<mu.sip3D<<','
 		       <<mu.dxy<<','<<mu.dz<<','<<mu.segCompatibility<<','<< (2 >= preselected_leptons.size()) <<','
-		       <<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<'\n';
+		       <<ss2l<<','<<pt2020<<','<<lepMva<<','<<TwoCutSelection<<','<<ss2tightEles<<'\n';
 		       // <<'SS ee/mm '<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
 		       // <<'\n';		    
 
