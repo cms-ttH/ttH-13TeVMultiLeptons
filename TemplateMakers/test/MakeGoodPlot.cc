@@ -915,20 +915,18 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         ch[samp_int]->SetBranchAddress("loose_bJets", &loose_bJets_intree);
         ch[samp_int]->SetBranchAddress("tight_bJets", &tight_bJets_intree);
         ch[samp_int]->SetBranchAddress("met", &met_intree);
-        ch[samp_int]->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
+        //ch[samp_int]->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree); //<-
 
 
         for (Int_t j=0; j<samp_num_entries; j++)
         {
             ch[samp_int]->GetEntry(j);
         
-            
+            if (!(j % 100000)) cout << j << endl;
             // H decay studies
                         
-            int gpsize = (*pruned_genParticles_intree).size();            
-            int thechildpdgid = 0;
-            
-            //int hdecayindex = 4;            
+            //int gpsize = (*pruned_genParticles_intree).size();            
+            int thechildpdgid = 0;         
             int hdecayindex = 0;
             
             
@@ -937,7 +935,7 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             
             
             
-//             for (int j=0; j<gpsize; j++)
+            // for (int j=0; j<gpsize; j++)
 //             {
 //                 int chil0 = (int)(*pruned_genParticles_intree)[j].child0;
 //                 int chil1 = (int)(*pruned_genParticles_intree)[j].child1;
@@ -952,7 +950,7 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
 //             if (abs(thechildpdgid)==24) hdecayindex = 1;
 //             if (abs(thechildpdgid)==15) hdecayindex = 2;
 //             if (abs(thechildpdgid)==23) hdecayindex = 3;
-        
+//         
             // common
 
             if (!(((*preselected_leptons_intree).size()>3) || ((*tightMvaBased_leptons_intree).size()>1))) continue;                
@@ -1485,8 +1483,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
 //             }
 //             
 //             printf ("\n");
-//         }
-        
+//          }
+//         
         
         
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -3306,7 +3304,12 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 {
 	
 	TString eosprfx = "root://eoscms.cern.ch/";
-        TString basedir = "/eos/cms/store/user/gesmith/crabdir/v5/";
+        //TString basedir = "/eos/cms/store/user/gesmith/crabdir/v5/";
+        TString basedir = "/eos/cms/store/user/muell149/ttH-leptons_Skims/v2/";
+        //TString eosprfx = "";        
+        //TString basedir = "/tmp/gesmith/ttjetstemp/";
+        
+        
 	TString thesample = "";
 	TString basedir_plus = "";
 	
@@ -3335,9 +3338,9 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
                         thesample = basedir + basedir_plus + "*.root";
 			ch[1]->Add(thesample);
                         xsecs[1]=0.5085;                // you can't use "i" here, idiot ...
-                        numgen[1]=89671.4186331;
-			
-			
+                        //numgen[1]=89671.4186331;
+			//numgen[1]=80535.2587694;
+			numgen[1]=89671.4186331; //charlie
 		}
 		if (samps[i]==2)
 		{
@@ -3366,26 +3369,31 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		if (samps[i]==4)
 		{
 
-			basedir_plus = "ZZJets/";
+			//basedir_plus = "ZZJets/";
+                        basedir_plus = "zzJets/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[4]->Add(thesample);
                         xsecs[4]=0.325;
-			numgen[4]=2514024.1998;
-
+			//numgen[4]=2514024.1998;
+                        numgen[4]=2514003.0102;
 		}
 		if (samps[i]==5)
 		{
                         // was ttlf
-                        basedir_plus = "TTJets/";
+                        //basedir_plus = "TTJets/";
+                        basedir_plus = "ttJets/";
+                        //basedir_plus = "";
 			thesample = basedir + basedir_plus + "*.root";
 			ch[5]->Add(thesample);
 			xsecs[5]=815.96; // at 173.2 GeV (top group twiki)
 			numgen[5]=25446993.0;
+                        
+
 		}
 		if (samps[i]==6)
 		{
                         // was single top                                
-                        basedir_plus = "ZJets/";
+                        basedir_plus = "zJets/";
 			thesample = basedir + basedir_plus + "*.root";
 			ch[6]->Add(thesample);    
                         xsecs[6]=2008.4;
@@ -3393,7 +3401,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		}
 		if (samps[i]==7)
 		{
-			basedir_plus = "WJets/";
+			basedir_plus = "wJets/";
 			thesample = basedir + basedir_plus + "*.root";
 			ch[7]->Add(thesample);
                         xsecs[7]=20508.9;		
@@ -3401,7 +3409,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		}
 		if (samps[i]==8)
 		{
-			basedir_plus = "TTWJets/";
+			basedir_plus = "ttwJets/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[8]->Add(thesample);
 			xsecs[8]=0.6647;
@@ -3409,7 +3417,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		}
 		if (samps[i]==9)
 		{
-			basedir_plus = "TTZJets/";
+			basedir_plus = "ttzJets/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[9]->Add(thesample);
                         xsecs[9]=0.8565;
@@ -3420,7 +3428,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 			// all diboson...
                         //thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_ZZ_*.root";
 			//ch[10]->Add(thesample);
-			basedir_plus = "WZJets/";
+			basedir_plus = "wzJets/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[10]->Add(thesample);
 			//thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_WW_*.root";
@@ -3434,13 +3442,14 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 			// all diboson...
                         //thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_ZZ_*.root";
 			//ch[10]->Add(thesample);
-			basedir_plus = "ZZJets/";
+			basedir_plus = "zzJets/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[11]->Add(thesample);
 			//thesample = basedir + basedir_plus + "yggdrasil_treeMaker_mc_WW_*.root";
 			//ch[10]->Add(thesample);
                         xsecs[11]=0.325;
-			numgen[11]=2514024.;
+			//numgen[11]=2514024.;
+                        numgen[11]=2514003.0102;
 		}
                 
                 

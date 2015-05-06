@@ -28,12 +28,12 @@
 #include <sstream>
 
 
-void collect_disc_results_53x_v27( int lepSelection=0, int ANNtype_=0 ) {
+void collect_results( int lepSelection=0, int ANNtype_=0 ) {
 
 
   ///////////////////////////////////////////////////////
 
-  TString label = "v2";
+  TString label = "eventselsyncV1";
 
   int Nsample = 38;
   int Nsignal = 9+72;
@@ -52,7 +52,10 @@ void collect_disc_results_53x_v27( int lepSelection=0, int ANNtype_=0 ) {
   //TString baseDir = "/brew/users/gsmith/tree_reader_test_out/changing_corrs_sep_1pt0/corr_1pt0/";
   //TString baseDir = "/brew/users/gsmith/tree_reader_test_out/ttjets_corrd_ttH_corrd/changing_corrs_sep_2pt0/corr_1pt0/";
   
-  TString baseDir = "/afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/charlie_new_recipe/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/DrawPlots/histos/";
+  TString baseDir = "/afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/lepid_updates/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/DrawPlots/histos/";
+  
+  TString histofilename = "/afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/lepid_updates/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/DrawPlots/collect_results2.root";
+  
   
   
   //TString basePrefix = "yggdrasil_treeReader";
@@ -61,7 +64,10 @@ void collect_disc_results_53x_v27( int lepSelection=0, int ANNtype_=0 ) {
   TString baseSuffix = ".root";
   
   std::vector<std::string> old_catNames;
-  old_catNames.push_back("2lss");
+  //old_catNames.push_back("2lss");
+  old_catNames.push_back("mumu2lss");
+  old_catNames.push_back("ee2lss");
+  old_catNames.push_back("emu2lss");
   old_catNames.push_back("3l");
   old_catNames.push_back("4l");
   
@@ -103,7 +109,8 @@ void collect_disc_results_53x_v27( int lepSelection=0, int ANNtype_=0 ) {
 
    datasets[13] = "WZJets";
 
-//   datasets[14] = "ZZ_TuneZ2Star_8TeV_pythia6Tauola_Summer12_53xOn53x";
+   datasets[14] = "ZZJets";
+
 //   datasets[15] = "T_s_channel_TuneZ2star_8TeV_powheg_Summer12_53xOn53x";
 //   datasets[16] = "T_tW_channel_TuneZ2star_8TeV_powheg_Summer12_53xOn53x";
 //   datasets[17] = "T_t_channel_TuneZ2star_8TeV_powheg_Summer12_53xOn53x";
@@ -381,8 +388,9 @@ void collect_disc_results_53x_v27( int lepSelection=0, int ANNtype_=0 ) {
 
 //  TString histofilename = "/home/gsmith/cms_work/CMSSW_5_2_6/src/AnalysisCode/LeptonPlusJets/macros/make_var_plots_darren/tree_reader_test_out/collect_results/collect_disc_results_53x_histo_3rd40_2014_01_09__LJ_2pt0_corr1pt0__notanti_"+lepType+file_suffix;
 
-  TString histofilename = "/afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/charlie_new_recipe/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/DrawPlots/collect_results.root";
+  //TString histofilename = "/afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/charlie_new_recipe/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/DrawPlots/collect_results.root";
 
+//////TString histofilename = "/afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/charlie_new_recipe/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/DrawPlots/collect_results.root";
 
   TFile histofile(histofilename,"recreate");
 
@@ -700,7 +708,7 @@ void collect_disc_results_53x_v27( int lepSelection=0, int ANNtype_=0 ) {
   std::vector<int> bkg_diboson;
 //  bkg_diboson.push_back(bin_ww); // to do
   bkg_diboson.push_back(bin_wz);
-//  bkg_diboson.push_back(bin_zz); // to do
+  bkg_diboson.push_back(bin_zz);
 
   std::vector<int> bkg_wjets;
   bkg_wjets.push_back(bin_wjets);

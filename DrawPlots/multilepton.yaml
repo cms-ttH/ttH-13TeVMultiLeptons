@@ -1,10 +1,10 @@
-label: v5
-output label: v5
+label: eventselsyncV1
+output label: eventselsyncV1
 luminosity: 10000.0 
 #input_trees_directory: /store/smallfiles/gsmith15/trees/test5
 #input_trees_directory: root://eoscms.cern.ch//eos/cms/store/user/gesmith/treedir/test1
 input_trees_directory: /afs/cern.ch/work/g/gesmith/ttH_multilepton_ana/newrepo/charlie_new_recipe/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/timetestregloopCharlie.root
-output directory: histos/v5
+output directory: histos/eventselsyncV1
 #output direcotry: root://eoscms.cern.ch//eos/cms/store/user/gesmith/histdir/os_v2
 
 # tree format is input_trees_directory/sample_lable_all.root ("all" comes from hadd-ing them)
@@ -18,7 +18,7 @@ common cuts:
   
   eq_two_good_leptons: '(entry.num_preselected_leptons>=2)'
   minDilepMass: '(entry.minMassLepLep > 12)'
-  pt_20_10: '((entry.preselected_leptons_1_pt > 20) and (entry.preselected_leptons_1_pt > 10))'
+  pt_20_10: '((entry.preselected_leptons_1_pt > 20) and (entry.preselected_leptons_2_pt > 10))'
   nJets25_ge_2: '(entry.num_preselected_jets>=2)'
   nBJets: '(entry.num_loose_bjets_charlie >=2 or entry.num_tight_bjets_charlie >=1)'
   
@@ -28,36 +28,74 @@ jet tag categories:
 #    ge4j: ['entry.num_preselected_jets >= 4']
 lepton categories:
 
-  2lss:
+#  2lss:
+#    data samples: [inclusive_data]
+#    cuts:
+#      #nLeptons: '((entry.num_preselected_leptons == 2) and (entry.num_tightMvaBased_leptons == 2))'
+#      nLeptons: '(entry.num_tightMvaBased_leptons == 2)'
+#      same-sign: '(entry.tightMvaBased_leptons_1_charge == entry.tightMvaBased_leptons_2_charge)'
+#      #nJets: '(entry.num_preselected_jets >= 4)'
+#      #metLD: '(entry.metLD > 0.2)'
+#      #pt_20_20: '(entry.tightMvaBased_leptons_1_pt > 20 and entry.tightMvaBased_leptons_2_pt > 20)'
+#      #htllv100: '((entry.tightMvaBased_leptons_1_pt + entry.tightMvaBased_leptons_2_pt + entry.met_pt) > 100)'
+#      #ee_Zveto: '(entry.num_tightMvaBased_electrons != 2 or abs(entry.vetoZmass-91.2) > 10)'
+#      
+#      #ee: '((abs(entry.num_tightMvaBased_electrons) !=2) or (entry.tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent and entry.tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent))'
+#      #mumu: '((abs(entry.num_tightMvaBased_muons) != 2) or (entry.tightMvaBased_muons_1_chargeFlip < 0.2 and entry.tightMvaBased_muons_2_chargeFlip < 0.2))'
+#      #emu: '((abs(entry.num_tightMvaBased_electrons) !=1) or (entry.tightMvaBased_muons_1_chargeFlip < 0.2 and entry.tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent))'
+      
+  ee2lss:
     data samples: [inclusive_data]
     cuts:
-      nLeptons: '((entry.num_preselected_leptons == 2) and (entry.num_tightMvaBased_leptons == 2))'
+      #nLeptons: '((entry.num_preselected_leptons == 2) and (entry.num_tightMvaBased_leptons == 2))'
+      nLeptons: '(entry.num_tightMvaBased_electrons == 2) and (entry.num_tightMvaBased_leptons == 2) and (entry.num_looseMvaBased_leptons < 4)'
+      same-sign: '(entry.tightMvaBased_leptons_1_charge == entry.tightMvaBased_leptons_2_charge)'
+      nJets: '(entry.num_preselected_jets >= 4)'
+      metLD: '(entry.metLD > 0.2)'
+      pt_20_20: '(entry.tightMvaBased_leptons_1_pt > 20 and entry.tightMvaBased_leptons_2_pt > 20)'
+      htllv100: '((entry.tightMvaBased_leptons_1_pt + entry.tightMvaBased_leptons_2_pt + entry.met_pt) > 100)'      
+      ee_Zveto: '(abs(entry.vetoZmass-91.2) > 10)'
+      ee: '((ord(entry.tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent)==1) and (ord(entry.tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent)==1))'
+
+  mumu2lss:
+    data samples: [inclusive_data]
+    cuts:
+      #nLeptons: '((entry.num_preselected_leptons == 2) and (entry.num_tightMvaBased_leptons == 2))'
+      nLeptons: '(entry.num_tightMvaBased_muons == 2) and (entry.num_tightMvaBased_leptons == 2) and (entry.num_looseMvaBased_leptons < 4)'
       same-sign: '(entry.tightMvaBased_leptons_1_charge == entry.tightMvaBased_leptons_2_charge)'
       nJets: '(entry.num_preselected_jets >= 4)'
       metLD: '(entry.metLD > 0.2)'
       pt_20_20: '(entry.tightMvaBased_leptons_1_pt > 20 and entry.tightMvaBased_leptons_2_pt > 20)'
       htllv100: '((entry.tightMvaBased_leptons_1_pt + entry.tightMvaBased_leptons_2_pt + entry.met_pt) > 100)'
-      ee_Zveto: '(entry.num_tightMvaBased_electrons != 2 or abs(entry.vetoZmass-91.2) > 10)'
-      
-      ee: '((abs(entry.num_tightMvaBased_electrons) !=2) or (entry.tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent and entry.tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent))'
-      mumu: '((abs(entry.num_tightMvaBased_muons) != 2) or (entry.tightMvaBased_muons_1_chargeFlip < 0.2 and entry.tightMvaBased_muons_2_chargeFlip < 0.2))'
-      emu: '((abs(entry.num_tightMvaBased_electrons) !=1) or (entry.tightMvaBased_muons_1_chargeFlip < 0.2 and entry.tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent))'
-      
+      mumu: '((entry.tightMvaBased_muons_1_chargeFlip<0.2) and (entry.tightMvaBased_muons_2_chargeFlip<0.2))'
 
+  emu2lss:
+    data samples: [inclusive_data]
+    cuts:
+      #nLeptons: '((entry.num_preselected_leptons == 2) and (entry.num_tightMvaBased_leptons == 2))'
+      nLeptons: '(entry.num_tightMvaBased_muons == 1) and (entry.num_tightMvaBased_electrons == 1) and (entry.num_looseMvaBased_leptons < 4)'
+      same-sign: '(entry.tightMvaBased_leptons_1_charge == entry.tightMvaBased_leptons_2_charge)'
+      nJets: '(entry.num_preselected_jets >= 4)'
+      metLD: '(entry.metLD > 0.2)'
+      pt_20_20: '(entry.tightMvaBased_leptons_1_pt > 20 and entry.tightMvaBased_leptons_2_pt > 20)'
+      htllv100: '((entry.tightMvaBased_leptons_1_pt + entry.tightMvaBased_leptons_2_pt + entry.met_pt) > 100)'      
+      emu: '((entry.tightMvaBased_muons_1_chargeFlip<0.2) and (ord(entry.tightMvaBased_electrons_1_isGsfCtfScPixChargeConsistent)==1))'
+                  
   3l:
     data samples: [inclusive_data]
     cuts:
       #nLeptons: '((entry.num_preselected_leptons == 3) and (entry.tightMvaBased_leptons.size() == 3))'
-      nLeptons: '(entry.num_tightMvaBased_leptons == 3)'
-      metLD: '((entry.num_preselected_jets >= 4) or (entry.metLD > 0.2 + 0.1*(entry.vetoZmassSFOS != 999.)))'
-      zVeto: '((entry.vetoZmassSFOS == 999.) or (abs(entry.vetoZmassSFOS-91.2) > 10))'
+      nLeptons: '(entry.num_tightMvaBased_leptons == 3) and (entry.num_looseMvaBased_leptons==3)'
+      metLD: '((entry.num_preselected_jets >= 4) or (entry.metLD > 0.2))' # + 0.1*(entry.vetoZmassSFOS != 999.)))'
+      zVeto: '(abs(entry.vetoZmassSFOS-91.2) > 10)'
 
   4l:
     data samples: [inclusive_data]
     cuts:
-      nLeptons: '(entry.num_preselected_leptons == 4)'
-      neutral: '(entry.preselected_leptons_1_charge + entry.preselected_leptons_2_charge + entry.preselected_leptons_3_charge + entry.preselected_leptons_4_charge == 0)'
-      zVeto: '((entry.vetoZmassSFOS == 999.) or (abs(entry.vetoZmassSFOS-91.2) > 10))'
+      #nLeptons: '(entry.num_preselected_leptons == 4)'
+      nLeptons: '(entry.num_looseMvaBased_leptons == 4)'
+      neutral: '(abs(entry.preselected_leptons_1_charge + entry.preselected_leptons_2_charge + entry.preselected_leptons_3_charge + entry.preselected_leptons_4_charge) == 0)'
+      zVeto: '(abs(entry.vetoZmassSFOS-91.2) > 10)'
 
 weights:
 #    - RecoIDIsoSIPSF_2lep #CERN lepton SF
@@ -94,7 +132,8 @@ samples:
      WJets:
      ZJets:
      TTJets:
-        weights: [common, (((entry.num_tightMvaBased_leptons==2) and entry.num_tightMvaBased_electrons==2)*1.55 + ((entry.num_tightMvaBased_leptons==2) and entry.num_tightMvaBased_muons==2)*3.3 + ((entry.num_tightMvaBased_leptons==2) and entry.num_tightMvaBased_muons==1)*1.87 + (entry.num_tightMvaBased_leptons==3)*2.85 + (entry.num_tightMvaBased_leptons==4))]
+        weights: [common, ((((entry.num_tightMvaBased_leptons==2) and (entry.num_looseMvaBased_leptons<4)) and ((entry.num_tightMvaBased_electrons==2)*1.55 + (entry.num_tightMvaBased_muons==2)*3.3 + (entry.num_tightMvaBased_muons==1)*1.87)) + ((entry.num_tightMvaBased_leptons==3 and entry.num_looseMvaBased_leptons==3)*2.85) + (entry.num_looseMvaBased_leptons==4) )]        
+        
      TTZJets:
      TTWJets:
      WZJets:

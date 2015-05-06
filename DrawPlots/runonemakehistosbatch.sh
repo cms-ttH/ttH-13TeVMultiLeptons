@@ -22,8 +22,8 @@ cd $thisdir
 # where you have replaced x509up_u11231 with the name of your cert file (it will start with x509)
 
 #actually run the job:
-#python make_histos.py -f $infile -s $sample -l $leptoncat -j $jettagcat multilepton.yaml >& $logfile
-python make_histos.py -f $infile -s $sample multilepton.yaml >& $logfile
+python make_histos.py -f $infile -s $sample -l $leptoncat -j $jettagcat multilepton.yaml >& $logfile
+#python make_histos.py -f $infile -s $sample multilepton.yaml >& $logfile
 
 
 

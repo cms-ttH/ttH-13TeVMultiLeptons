@@ -1,7 +1,7 @@
 #input and output file names
-input file location: histos/v5
-input file label: v5
-output file location: v5_add_zz_reweight_ttjets_by_fake
+input file location: histos/eventselsyncV1
+input file label: eventselsyncV1
+output file location: eventselsyncV1_dummyout
 
 #drawing options
 skip systematics: false
@@ -24,13 +24,42 @@ trigger SF error: 0.02
 lumi era string: "                #sqrt{s} = 13 TeV, L = 10.0 fb^{-1}"
 
 lepton categories:
-    2lss:
+    #2lss:
+#        #data sample: DoubleMu
+#        data samples: [inclusive_data]
+#        excluded samples: [inclusive_data_QF_sideband]
+#        #tex name: " #mu #mu "
+#        tex name: " SS 2l "
+#        #tex name: "  "
+    
+    mumu2lss:
         #data sample: DoubleMu
         data samples: [inclusive_data]
         excluded samples: [inclusive_data_QF_sideband]
         #tex name: " #mu #mu "
-        tex name: " SS 2l "
+        tex name: " SS 2l (mu, mu) "
         #tex name: "  "
+    
+    
+    ee2lss:
+        #data sample: DoubleMu
+        data samples: [inclusive_data]
+        excluded samples: [inclusive_data_QF_sideband]
+        #tex name: " #mu #mu "
+        tex name: " SS 2l (e, e) "
+        #tex name: "  "
+        
+        
+    
+    emu2lss:
+        #data sample: DoubleMu
+        data samples: [inclusive_data]
+        excluded samples: [inclusive_data_QF_sideband]
+        #tex name: " #mu #mu "
+        tex name: " SS 2l (e, mu) "
+        #tex name: "  "
+        
+    
     3l:
         #data sample: MuEG
         data samples: [inclusive_data]

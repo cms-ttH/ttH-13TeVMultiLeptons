@@ -1,13 +1,16 @@
 #!/bin/sh
 
 
-myusername='gesmith'
-joblabel='v4'									                # label for these batch jobs			
-sourcebasedir="/eos/cms/store/user/$myusername/crabdir"					# input trees base dir
+#myusername='gesmith'
+joblabel='v2'									                # label for these batch jobs			
+#sourcebasedir="/eos/cms/store/user/$myusername/crabdir"					# input trees base dir
+sourcebasedir="/eos/cms/store/user/muell149/ttH-leptons_Skims"
 destbasedir="."					
-									                       
+
+
+declare -a samples=('ttH125' 'ttJets' 'ttwJets' 'ttzJets' 'wJets' 'wzJets' 'zJets' 'zzJets') # charlie								                       
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets') 	        # list of samples
-declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets' 'ZZJets')
+#declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets' 'ZZJets')
 pfx='root://eoscms.cern.ch/'								        # prefix (can be xrootd, if you save certificate in afs area, see runonesshbatch.sh)
 
 source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
@@ -42,19 +45,39 @@ do
         
   	#fin=$sourcedir/$fin
 	count=$(expr $count + 1)
-  	fout="$destdir/$sample.root"
+  	fout="$destdir/${sample}_temp.root"
 
 	echo "-- submitting job $count --"
 	echo "input file: ${infilearray[@]}"
 	echo "output file: $fout"
 
-        hadd -T $fout ${infilearray[@]}
+        hadd -f -T $fout ${infilearray[@]}
 done 
 
 for sample in "${samples[@]}"
 do
 
-    python printInitialWgtdMCEvents.py $sample.root
+    python printInitialWgtdMCEvents.py ${sample}_temp.root
     
 done
-    
+
+
+########
+
+
+#for sample in "${samples[@]}"
+#do
+#
+#    mv ${sample}_temp.root ${sample}.root
+#    
+#done
+
+
+
+#mv ttJets.root TTJets.root
+#mv ttwJets.root TTWJets.root
+#mv ttzJets.root TTZJets.root
+#mv wJets.root WJets.root
+#mv wzJets.root WZJets.root
+#mv zJets.root ZJets.root
+#mv zzJets.root ZZJets.root
