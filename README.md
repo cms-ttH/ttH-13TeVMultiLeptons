@@ -33,7 +33,7 @@ Then try running over some miniAOD:
 	cd ttH-13TeVMultiLeptons/TemplateMakers/test/
 	cmsRun osTwoLep_cfg.py
 
-To view the tth-specific classes' TLorentzVectors in the TBrowser, add the following to your rootlogon.C file (assuming you've setup cmssw):
+To view the tth-specific classes' TLorentzVectors in the TBrowser, add the following to your [rootlogon.C](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/doc/rootlogon.C) file (assuming you've setup cmssw):
    	
 	gSystem->Load("libttH-13TeVMultiLeptonsTemplateMakers.so");
 
