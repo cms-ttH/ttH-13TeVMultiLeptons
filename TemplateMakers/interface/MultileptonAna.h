@@ -140,6 +140,7 @@ typedef edm::Handle<pat::JetCollection>		patJets;
 typedef edm::Handle<pat::METCollection>		patMETs;
 typedef edm::Handle<reco::GenParticleCollection> prunedGenParticles;
 typedef edm::Handle<pat::PackedGenParticleCollection> packedGenParticles;
+typedef edm::Handle<pat::PackedCandidateCollection> patPackedCands;
 
 typedef edm::Handle<std::vector< PileupSummaryInfo > > 	pileupInfo;
 typedef edm::Handle<edm::TriggerResults>	trigRes;
@@ -149,7 +150,7 @@ typedef edm::Handle<pat::Electron>	patElectron;
 typedef edm::Handle<pat::Jet>		patJet;
 typedef edm::Handle<pat::MET>		patMET;
 typedef edm::Handle<reco::GenParticle>  prunedGenParticle;
-typedef edm::Handle<pat::PackedGenParticle>  packedGenParticle;
+typedef edm::Handle<pat::PackedCandidate> patPackedCand;
 typedef edm::Handle<reco::BeamSpot>     recoBeamSpot;
 
 
@@ -263,7 +264,7 @@ class MultileptonAna: public MiniAODHelper
   patJets GetSubJets(const edm::Event& event); 
   patMETs GetMet(const edm::Event& event);
   prunedGenParticles GetPrunedGenParticles(const edm::Event& event);
-  packedGenParticles GetPackedGenParticles(const edm::Event& event);
+  patPackedCands GetPackedPFCandidates(const edm::Event& event);
   int GetVertices (const edm::Event& event);
   void GetLeptons(const edm::Event& event);
   void GetBtags(const edm::Event& event);

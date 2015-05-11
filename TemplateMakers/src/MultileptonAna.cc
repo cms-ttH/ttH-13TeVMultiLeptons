@@ -561,9 +561,9 @@ prunedGenParticles MultileptonAna::GetPrunedGenParticles (const edm::Event& even
   
 }
 
-packedGenParticles MultileptonAna::GetPackedGenParticles (const edm::Event& event)
+patPackedCands MultileptonAna::GetPackedPFCandidates (const edm::Event& event)
 {
-  packedGenParticles packedHandle; 
+  patPackedCands packedHandle; 
   event.getByLabel("packedPFCandidates",packedHandle);
   return packedHandle;  
 }

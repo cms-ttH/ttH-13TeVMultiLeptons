@@ -1,4 +1,4 @@
-// created by Geoff Smith
+// Created by Geoff Smith
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/OSTwoLepAna.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
@@ -90,8 +90,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	patElectrons electrons = 		GetElectrons(event);
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
-	packedGenParticles packedParticles =    GetPackedGenParticles(event);
-	
+	patPackedCands packedCands         =    GetPackedPFCandidates(event);
+
+	SetPackedCandidates(*packedCands);
+
 	SetRho(rho);
 	
 	int numpvs =				GetVertices(event);

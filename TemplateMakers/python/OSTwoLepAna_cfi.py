@@ -106,6 +106,11 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
         
                 prunedCollection = cms.string("prunedGenParticles") 
         ),
+
+        packedcandidates = cms.PSet(
+        
+                packedCandCollection = cms.string("packedPFCandidates") 
+        ),
                              
 
 	## variables to save in the tree (variable defs are elsewhere, sorry)

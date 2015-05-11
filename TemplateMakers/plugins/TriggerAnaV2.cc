@@ -296,7 +296,6 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 	patElectrons electrons = 		GetElectrons(event);
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
-	packedGenParticles packedParticles =    GetPackedGenParticles(event);
 	prunedGenParticles genparticles =       prunedParticles;
         int genpartsize = genparticles->size();
         
