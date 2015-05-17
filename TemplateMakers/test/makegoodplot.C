@@ -14,11 +14,13 @@ void makegoodplot()
 	
         // vector of samples to include in the plot:
 	std::vector<int> samples;
+	std::vector<int> signal;
 	
         // uncomment these to add sample to plot:
 //	samples.push_back(0); // mu data
 
 	samples.push_back(1); // ttH (125)
+	signal.push_back(1); // ttH (125)
 //	samples.push_back(2); // ttbar_bbbar;
 //	samples.push_back(3); // ttbar_b
 //	samples.push_back(4); // ttbar_ccbar
@@ -59,8 +61,8 @@ void makegoodplot()
 //	newplot->make_simple_plot_mytrees("1pt0shift",0);
 //	newplot->make_simple_plot_mytrees("2pt0shift",0);
 
-        newplot->print_cutflow(samples);
-
+//        newplot->print_cutflow(samples);
+	newplot->draw_ROC_iso(signal);
 
 //	-------------------------------------
 
