@@ -17,6 +17,8 @@ namespace ttH
     double dz;
     int charge;
     double relIso;
+    double miniIso;
+    int genMotherPdgID;
 
     //lepMVA variables
     double lepMVA;

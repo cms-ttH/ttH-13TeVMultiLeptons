@@ -748,15 +748,14 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.isGsfCtfScPixChargeConsistent = iEle.isGsfCtfScPixChargeConsistent();
       ele.passConversioVeto = iEle.passConversionVeto();
       ele.relIso = GetElectronRelIso(iEle,coneSize::R03,corrType::rhoEA);
+      ele.miniIso = GetElectronRelIso(iEle,coneSize::miniIso,corrType::rhoEA);
       ele.dEtaIn = iEle.deltaEtaSuperClusterTrackAtVtx();
       ele.dPhiIn = iEle.deltaPhiSuperClusterTrackAtVtx();
       ele.full5x5_sigmaIetaIeta = iEle.full5x5_sigmaIetaIeta();
       ele.hadronicOverEm = iEle.hadronicOverEm();
       
       ele.lepMVA = GetElectronLepMVA(iEle, jets);
-      //      ele.chreliso = iEle.chargedHadronIso()/iEle.pt();
       ele.chreliso = iEle.pfIsolationVariables().sumChargedHadronPt/iEle.pt(); //R03
-      //      ele.nureliso = max(0.0,(iEle.neutralHadronIso()+iEle.photonIso())-0.5*iEle.puChargedHadronIso())/iEle.pt();
       ele.nureliso = GetElectronRelIso(iEle,coneSize::R03,corrType::rhoEA) - iEle.pfIsolationVariables().sumChargedHadronPt/iEle.pt();
 
       ele.matchedJetdR = min(dR,0.5);
@@ -764,7 +763,13 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       ele.sip3D = fabs(iEle.dB(pat::Electron::PV3D)/iEle.edB(pat::Electron::PV3D));
       ele.mvaID = mvaID_->mvaValue(iEle,false); //debug=false
-
+      
+      if (iEle.genLepton())
+	{
+	const reco::Candidate* genMother = GetGenMotherNoFsr(iEle.genLepton());
+	ele.genMotherPdgID = genMother->pdgId();
+	}
+      else ele.genMotherPdgID = 9999;
       eleCollection.push_back(ele);
     }
   return eleCollection;
@@ -790,6 +795,7 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.isTrackerMuon = iMu.isTrackerMuon();
       mu.isGlobalMuon = iMu.isGlobalMuon();
       mu.relIso = GetMuonRelIso(iMu,coneSize::R03,corrType::rhoEA);
+      mu.miniIso = GetMuonRelIso(iMu,coneSize::miniIso,corrType::rhoEA);
       mu.localChi2 = iMu.combinedQuality().chi2LocalPosition;
       mu.trKink = iMu.combinedQuality().trkKink;
       mu.segCompatibility = iMu.segmentCompatibility();
@@ -833,7 +839,12 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.jetPtRatio = min(iMu.pt()/matchedJet.pt(), float(1.5));
       mu.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       mu.sip3D = fabs(iMu.dB(pat::Muon::PV3D)/iMu.edB(pat::Muon::PV3D));
-
+      if (iMu.genLepton())
+	{
+	const reco::Candidate* genMother = GetGenMotherNoFsr(iMu.genLepton());
+	mu.genMotherPdgID = genMother->pdgId();
+	}
+      else mu.genMotherPdgID = 9999;
       muCollection.push_back(mu);
     }
   return muCollection;
@@ -1131,7 +1142,8 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
     break;
   case muonID::muonPreselection:
     passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
-    passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.5);
+    //    passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.5);
+    passesIso = true;
     if( iMuon.innerTrack().isAvailable() ){
       passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
                                 && (fabs(iMuon.innerTrack()->dz(vertex.position())) < 0.1)
@@ -1316,7 +1328,8 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
       passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.1) && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) <= 1 );
     }
     passesKinematics = ((iElectron.pt() > 10) && (fabs(iElectron.eta()) < 2.5));
-    passesIso        =  (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.5);
+    //    passesIso        =  (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.5);
+    passesIso        =  true;
     passesID         = ( passGsfTrackID && passesMVA);    
     break;
   }

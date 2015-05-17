@@ -92,6 +92,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
 	patPackedCands packedCands         =    GetPackedPFCandidates(event);
 
+	//set candidates for mini Iso
+	for (const auto & mu : *muons) addVetos(mu);
+	for (const auto & ele : *electrons) addVetos(ele);
 	SetPackedCandidates(*packedCands);
 
 	SetRho(rho);
