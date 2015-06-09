@@ -298,7 +298,7 @@ int main ( int argc, char ** argv )
   const unsigned int NumSys = sysList.size();
 
   ////////// prepare the weight
-  vector<std::string> weight(NumSys, std::string(""));
+  std::vector<std::string> weight(NumSys, std::string(""));
   weight[0] = "weight*"  ;
   weight[1] = "weight*"  ;
   weight[2] = "weight*"  ;

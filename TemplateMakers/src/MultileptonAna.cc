@@ -759,7 +759,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.nureliso = GetElectronRelIso(iEle,coneSize::R03,corrType::rhoEA) - iEle.pfIsolationVariables().sumChargedHadronPt/iEle.pt();
 
       ele.matchedJetdR = min(dR,0.5);
-      ele.jetPtRatio = min(iEle.pt()/matchedJet.pt(), float(1.5));
+      ele.jetPtRatio = min(iEle.pt()/matchedJet.pt(), 1.5);
       ele.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       ele.sip3D = fabs(iEle.dB(pat::Electron::PV3D)/iEle.edB(pat::Electron::PV3D));
       ele.mvaID = mvaID_->mvaValue(iEle,false); //debug=false
@@ -836,7 +836,7 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       //mu.nureliso = GetMuonRelIso(iMu,coneSize::R04,corrType::rhoEA) - iMu.pfIsolationR04().sumChargedHadronPt/iMu.pt();
 
       mu.matchedJetdR = min(dR,0.5);
-      mu.jetPtRatio = min(iMu.pt()/matchedJet.pt(), float(1.5));
+      mu.jetPtRatio = min(iMu.pt()/matchedJet.pt(), 1.5);
       mu.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       mu.sip3D = fabs(iMu.dB(pat::Muon::PV3D)/iMu.edB(pat::Muon::PV3D));
       if (iMu.genLepton())
@@ -1472,7 +1472,7 @@ float MultileptonAna::GetMuonLepMVA(const pat::Muon& iMuon, const std::vector<pa
   pat::Jet matchedJet = getClosestJet(iJets,iMuon);
   double dR = MiniAODHelper::DeltaR(&matchedJet,&iMuon);
   varjetDR_in = min(dR,0.5);
-  varjetPtRatio_in = min(iMuon.pt()/matchedJet.pt(), float(1.5));
+  varjetPtRatio_in = min(iMuon.pt()/matchedJet.pt(), 1.5);
   
   varjetBTagCSV_in = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
   varsip3d = fabs(iMuon.dB(pat::Muon::PV3D)/iMuon.edB(pat::Muon::PV3D));
@@ -1517,7 +1517,7 @@ float MultileptonAna::GetElectronLepMVA(const pat::Electron& iElectron, const st
   pat::Jet matchedJet = getClosestJet(iJets,iElectron);
   double dR = MiniAODHelper::DeltaR(&matchedJet,&iElectron);
   varjetDR_in = min(dR,0.5);
-  varjetPtRatio_in = min(iElectron.pt()/matchedJet.pt(), float(1.5));
+  varjetPtRatio_in = min(iElectron.pt()/matchedJet.pt(), 1.5);
   
   varjetBTagCSV_in = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
   varsip3d = fabs(iElectron.dB(pat::Electron::PV3D)/iElectron.edB(pat::Electron::PV3D));
