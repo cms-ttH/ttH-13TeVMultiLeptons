@@ -464,19 +464,19 @@ void MultileptonAna::setupMva(){
   mu_reader_high_e->AddVariable( "LepGood_dz", &vardz );
   mu_reader_high_e->AddVariable( "LepGood_segmentCompatibility", &varSegCompat );
 
-  mu_reader_high_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_high_b_BDTG.weights.xml");
-  mu_reader_high_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_high_e_BDTG.weights.xml");
-  mu_reader_medium_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_medium_b_BDTG.weights.xml");
-  mu_reader_medium_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_medium_e_BDTG.weights.xml");
-  mu_reader_low->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/mu_pteta_low_BDTG.weights.xml");
+  mu_reader_high_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/mu_pteta_high_b_BDTG.weights.xml");
+  mu_reader_high_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/mu_pteta_high_e_BDTG.weights.xml");
+  mu_reader_medium_b->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/mu_pteta_medium_b_BDTG.weights.xml");
+  mu_reader_medium_e->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/mu_pteta_medium_e_BDTG.weights.xml");
+  mu_reader_low->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/mu_pteta_low_BDTG.weights.xml");
 
-  ele_reader_high_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_cb_BDTG.weights.xml");
-  ele_reader_high_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_fb_BDTG.weights.xml");
-  ele_reader_high_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_high_ec_BDTG.weights.xml");
-  ele_reader_medium_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_medium_cb_BDTG.weights.xml");
-  ele_reader_medium_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_medium_fb_BDTG.weights.xml");
-  ele_reader_medium_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_medium_ec_BDTG.weights.xml");
-  ele_reader_low->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/el_pteta_low_BDTG.weights.xml");
+  ele_reader_high_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_pteta_high_cb_BDTG.weights.xml");
+  ele_reader_high_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_pteta_high_fb_BDTG.weights.xml");
+  ele_reader_high_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_pteta_high_ec_BDTG.weights.xml");
+  ele_reader_medium_cb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_pteta_medium_cb_BDTG.weights.xml");
+  ele_reader_medium_fb->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_pteta_medium_fb_BDTG.weights.xml");
+  ele_reader_medium_ec->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_pteta_medium_ec_BDTG.weights.xml");
+  ele_reader_low->BookMVA( "BDTG method", string(getenv("CMSSW_BASE")) + "/src/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_pteta_low_BDTG.weights.xml");
   
   
   
