@@ -2,13 +2,18 @@
 
 
 #myusername='gesmith'
-joblabel='v2'									                # label for these batch jobs			
+joblabel='ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/crab_ttH125/150612_095852/0000'									                # label for these batch jobs			
 #sourcebasedir="/eos/cms/store/user/$myusername/crabdir"					# input trees base dir
-sourcebasedir="/eos/cms/store/user/muell149/ttH-leptons_Skims"
+#sourcebasedir="/eos/cms/store/user/muell149/ttH-leptons_Skims"
+sourcebasedir="/eos/cms/store/user/gesmith/crab3dir"
 destbasedir="."					
 
 
-declare -a samples=('ttH125' 'ttJets' 'ttwJets' 'ttzJets' 'wJets' 'wzJets' 'zJets' 'zzJets') # charlie								                       
+#declare -a samples=('ttH125' 'ttJets' 'ttwJets' 'ttzJets' 'wJets' 'wzJets' 'zJets' 'zzJets') # charlie
+#declare -a samples=('ttH125')
+declare -a samples=('test2ttH')
+
+							                       
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets') 	        # list of samples
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets' 'ZZJets')
 pfx='root://eoscms.cern.ch/'								        # prefix (can be xrootd, if you save certificate in afs area, see runonesshbatch.sh)
@@ -27,8 +32,9 @@ do
 	echo " " 	
 	count=0	
 	
-	sourcedir=$sourcebasedir/$joblabel/$sample
-	infilearray=($(eos ls $sourcedir))
+	#sourcedir=$sourcebasedir/$joblabel/$sample
+	sourcedir=$sourcebasedir/$sample/$joblabel
+        infilearray=($(eos ls $sourcedir/\*.root))
 	sourcedir=$pfx$sourcedir/
         
 	echo "sourcedir: $sourcedir"

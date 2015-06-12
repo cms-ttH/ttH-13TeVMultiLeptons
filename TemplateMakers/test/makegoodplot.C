@@ -4,7 +4,7 @@
 // root makegoodplot.C+
 //
 
-#include "MakeGoodPlot.cc"
+#include "MakeGoodPlot_src/MakeGoodPlot.cc"
 
 
 void makegoodplot()
@@ -29,13 +29,13 @@ void makegoodplot()
 //	samples.push_back(1); // ttH (125)
 //	samples.push_back(6); // ZJets
 //	samples.push_back(7); // WJets
-//	samples.push_back(8); // TTWJets
-//	samples.push_back(9); // TTZJets
+	samples.push_back(8); // TTWJets
+	samples.push_back(9); // TTZJets
 
 //	samples.push_back(10); // diboson (WZ)
 //        samples.push_back(11); // diboson (ZZ)
         
-        samples.push_back(12); // old ttH
+//        samples.push_back(12); // old ttH
         
         // done with setup..
         
@@ -71,11 +71,14 @@ void makegoodplot()
 
         //newplot->draw_several_comparisons(samples);
         
-        std::vector<TString> somefiles;
-        somefiles.push_back("temp_0.root");
-        somefiles.push_back("temp_1.root");
-        newplot->compareplots(samples,somefiles);
+        //std::vector<TString> somefiles;
+        //somefiles.push_back("temp_0.root");
+        //somefiles.push_back("temp_1.root");
+        //newplot->compareplots(samples,somefiles);
 
+        
+        newplot->draw_2D_plot(samples);
+        
 
 
 //--------------------------------------------------------------------------

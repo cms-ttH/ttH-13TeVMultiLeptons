@@ -108,10 +108,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     	
 	///////////////////////////
 	double mcwgt_intree = GenInfo->weight();		// <- gen-level weight
+        
+        // make it +/-1!
+        mcwgt_intree = wgt_intree<0. ? -1. : 1.;        
+        
 	double weight = 1.;					// <- analysis weight 
 	weight *= mcwgt_intree;					// MC-only (flag to be added if nec)
 	///////////////////////////
 	
+        
         // count number of weighted mc events we started with:
         numInitialWeightedMCevents->Fill(1,mcwgt_intree);
 					
