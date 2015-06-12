@@ -212,11 +212,11 @@ void addvarstotree(TString infiles, TString outfile)
     newtree->Branch("tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent", &tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent_handle,"tightMvaBased_electrons_2_isGsfCtfScPixChargeConsistent/B");
     newtree->Branch("tightMvaBased_muons_1_chargeFlip", &tightMvaBased_muons_1_chargeFlip_handle,"tightMvaBased_muons_1_chargeFlip/D");
     newtree->Branch("tightMvaBased_muons_2_chargeFlip", &tightMvaBased_muons_2_chargeFlip_handle,"tightMvaBased_muons_2_chargeFlip/D");
-    newtree->Branch("met_pt", &met_pt_handle,"met_pt/D");
     newtree->Branch("num_preselected_jets", &num_preselected_jets_handle,"num_preselected_jets/I");    
     newtree->Branch("num_loose_bjets_charlie", &num_loose_bjets_charlie_handle,"num_loose_bjets_charlie/I");
     newtree->Branch("num_tight_bjets_charlie", &num_tight_bjets_charlie_handle,"num_tight_bjets_charlie/I");
-
+    
+    
     newtree->Branch("SumJetMass", &SumJetMass_handle,"SumJetMass/D");
     newtree->Branch("SumPt", &SumPt_handle,"SumPt/D");
     newtree->Branch("SumJetPt", &SumJetPt_handle,"SumJetPt/D");
@@ -251,6 +251,9 @@ void addvarstotree(TString infiles, TString outfile)
     newtree->Branch("numMediumBJets", &numMediumBJets_handle, "numMediumBJets/D");
     newtree->Branch("deltaR_boostedDaughters",&deltaR_boosted_daughters_handle,"deltaR_boostedDaughters/D");  
 
+    // basic kinematics
+    newtree->Branch("met_pt", &met_pt_handle,"met_pt/D");
+
     
     
     TH1D *leppt = new TH1D("leppt","leppt",100,0,400);
@@ -271,7 +274,7 @@ void addvarstotree(TString infiles, TString outfile)
       
         //continue;
         
-        if ( ((*tight_leptons_intree).size()<2) && ((*preselected_leptons_intree).size()<4) ) continue;
+        //if ( ((*tight_leptons_intree).size()<2) && ((*preselected_leptons_intree).size()<4) ) continue;
 
 /// need to fix this part:
 //         vector<ttH::GenParticle> top_daughters;

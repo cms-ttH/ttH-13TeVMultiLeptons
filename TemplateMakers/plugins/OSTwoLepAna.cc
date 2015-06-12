@@ -198,6 +198,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    //with JEC
 	    vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
 	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);
+            vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 10., 2.4, jetID::none, '-' );
 
 	    vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  					 
@@ -206,6 +207,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );
 	    vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );
 	    vecPatJet selectedJets_preselected          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
+            vecPatJet selectedJets_preselected_uncor          	= GetSelectedJets(cleaned_rawJets_uncor, 25., 2.4, jetID::jetPU, '-' );
 	    vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );
 	    vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );
 	
@@ -277,6 +279,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    vector<ttH::Jet> raw_jets = GetCollection(rawJets);
 	    vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
+            vector<ttH::Jet> preselected_jets_uncor = GetCollection(selectedJets_preselected_uncor);
 	    vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
 	    vector<ttH::Jet> tight_bJets = GetCollection(selectedJets_bJetsTight);
 	
@@ -380,13 +383,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    looseMvaBased_leptons_intree = looseMvaBased_leptons;
 	    tightMvaBased_leptons_intree = tightMvaBased_leptons;
 
-	    raw_electrons_intree = raw_electrons;
-	    raw_muons_intree = raw_muons;
-
-	    raw_jets_intree = raw_jets;
+	    //raw_electrons_intree = raw_electrons;
+	    //raw_muons_intree = raw_muons;
+	    //raw_jets_intree = raw_jets;
+            
 	    preselected_jets_intree = preselected_jets;
-	    loose_bJets_intree = loose_bJets;
-	    tight_bJets_intree = tight_bJets;
+	    preselected_jets_uncor_intree = preselected_jets_uncor;
+            
+            //loose_bJets_intree = loose_bJets;
+	    //tight_bJets_intree = tight_bJets;
 
 	    met_intree = theMET;
 

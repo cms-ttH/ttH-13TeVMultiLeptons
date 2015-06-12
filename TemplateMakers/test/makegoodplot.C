@@ -16,29 +16,32 @@ void makegoodplot()
 	std::vector<int> samples;
 	std::vector<int> signal;
 	
+        signal.push_back(1); // ttH (125)
+        
         // uncomment these to add sample to plot:
 //	samples.push_back(0); // mu data
 
-	samples.push_back(1); // ttH (125)
-	signal.push_back(1); // ttH (125)
+	samples.push_back(1); // new ttH (125)	
 //	samples.push_back(2); // ttbar_bbbar;
 //	samples.push_back(3); // ttbar_b
 //	samples.push_back(4); // ttbar_ccbar
-	samples.push_back(5); // TTJets
+//	samples.push_back(5); // TTJets
 //	samples.push_back(1); // ttH (125)
-	samples.push_back(6); // ZJets
-	samples.push_back(7); // WJets
-	samples.push_back(8); // TTWJets
-	samples.push_back(9); // TTZJets
+//	samples.push_back(6); // ZJets
+//	samples.push_back(7); // WJets
+//	samples.push_back(8); // TTWJets
+//	samples.push_back(9); // TTZJets
 
-	samples.push_back(10); // diboson (WZ)
-        samples.push_back(11); // diboson (ZZ)
+//	samples.push_back(10); // diboson (WZ)
+//        samples.push_back(11); // diboson (ZZ)
+        
+        samples.push_back(12); // old ttH
         
         // done with setup..
         
 /////////////////////////////////////////////////////////////////////////////////////////
 
-/////// Do whatever you want here (just modify or make new member function MakeGoodPlot.cc as appropriate). /////////
+/////// Do whatever you want here (just modify or make new member function in MakeGoodPlot.cc as appropriate). /////////
 		
 //	newplot->draw_simple_curves_normalized(samples);	// <- draws all samples in vector
 
@@ -62,9 +65,21 @@ void makegoodplot()
 //	newplot->make_simple_plot_mytrees("2pt0shift",0);
 
 //        newplot->print_cutflow(samples);
-	newplot->draw_ROC_iso(signal);
 
-//	-------------------------------------
+	//newplot->draw_ROC_iso(signal);
+
+
+        //newplot->draw_several_comparisons(samples);
+        
+        std::vector<TString> somefiles;
+        somefiles.push_back("temp_0.root");
+        somefiles.push_back("temp_1.root");
+        newplot->compareplots(samples,somefiles);
+
+
+
+//--------------------------------------------------------------------------
+
 
 //// leftover from 8 TeV (maybe not useful?)
 

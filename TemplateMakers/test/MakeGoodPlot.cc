@@ -1,5 +1,6 @@
 #include "TSystem.h"
 #include "TFile.h"
+#include "TFileCollection.h"
 #include "TTree.h"
 #include "TChain.h"
 #include "TH1.h"
@@ -13,10 +14,12 @@
 #include "THStack.h"
 #include "TStyle.h"
 #include "TLatex.h"
+#include "TText.h"
 #include "TPaveStats.h"
 #include "TAxis.h"
 #include "TMath.h"
 #include "TRandom3.h"
+#include "TKey.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -60,15 +63,15 @@ class MakeGoodPlot
 {
 	private:
 		
-		TChain *ch[12];
+		TChain *ch[20];
 		TGraph *roc_curve[50];
 		
 		TH1F *sample_hist_shared[50][50];
 		
-		TString sample_names[12];
-                string sample_names_std[12];
-                double xsecs[12];
-                double numgen[12];
+		TString sample_names[20];
+                string sample_names_std[20];
+                double xsecs[20];
+                double numgen[20];
 		
 		int single_sample;
 		
@@ -314,12 +317,14 @@ class MakeGoodPlot
 		
 		TString int2ss(int theint);
 		std::string TString2string(TString the_abomination);
+                
+                
 
 	public:	
-	
+	        void compareplots(std::vector<int> samps, std::vector<TString> tempfiles);
 		void draw_simple_curves_normalized(std::vector<int> samps);
 		void make_simple_plot_mytrees(TString theshift="",int drawaxes=0);
-		void draw_nice_stack_with_ratio(std::vector<int> samps);		
+		void draw_nice_stack_with_ratio(std::vector<int> samps, std::string mytitle="", std::string mylabel="");		
 		void draw_nice_stack(std::vector<int> samps);
 		void draw_ROC_curves(std::vector<int> samps, int which_one_is_the_signal_sample);
 		void visualize_yggdrasil(int sample_number=1);
@@ -330,8 +335,9 @@ class MakeGoodPlot
 		void draw_corr_rand_gauss_2D(std::vector<int> samps, bool use_samps=false);
 		void print_yields_given_syst(std::vector<int> samps);
                 void print_cutflow(std::vector<int> samps);
-                void draw_ROC_iso(std::vector<int> samps);
-		
+                //void draw_ROC_iso(std::vector<int> samps);
+		void draw_several_comparisons(std::vector<int> samps);
+                
 		MakeGoodPlot();
 		MakeGoodPlot(std::vector<int> samps);
 		~MakeGoodPlot();
@@ -808,174 +814,174 @@ void MakeGoodPlot::print_yields_given_syst(std::vector<int> samps)
 
 }
 
-void MakeGoodPlot::draw_ROC_iso(std::vector<int> samps)
-{
-  int numsamples = samps.size();
-  //  load_samples(samps);
-  
-  ch[1]->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/multileptree.root");
-
-  int NbinsX = 1600;
-  int Xmin = 0;
-  int Xmax = 13;
-
-  TH1F *promptEle_relIso_hist = new TH1F("promptEle_relIso","",NbinsX,Xmin,Xmax);
-  TH1F *nonPromptEle_relIso_hist = new TH1F("nonPromptEle_relIso","",NbinsX,Xmin,Xmax);
-  TH1F *promptEle_miniIso_hist = new TH1F("promptEle_miniIso","",NbinsX,Xmin,Xmax);
-  TH1F *nonPromptEle_miniIso_hist = new TH1F("nonPromptEle_miniIso","",NbinsX,Xmin,Xmax);
-  
-  TH1F *promptMu_relIso_hist = new TH1F("promptMu_relIso","",NbinsX,Xmin,Xmax);
-  TH1F *nonPromptMu_relIso_hist = new TH1F("nonPromptMu_relIso","",NbinsX,Xmin,Xmax);
-  TH1F *promptMu_miniIso_hist = new TH1F("promptMu_miniIso","",NbinsX,Xmin,Xmax);
-  TH1F *nonPromptMu_miniIso_hist = new TH1F("nonPromptMu_miniIso","",NbinsX,Xmin,Xmax);
-  
-  for (int i=0; i<numsamples; i++)
-    {  
-      int samp_int = samps[i];
-      ch[samp_int]->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
-      ch[samp_int]->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
-      ch[samp_int]->SetBranchAddress("preselected_muons", &preselected_muons_intree);
-
-      int samp_num_entries = ch[samp_int]->GetEntries();
-      
-      for (Int_t j=0; j<samp_num_entries; j++)
-	{
-	  ch[samp_int]->GetEntry(j);
-	  
-	  for (const auto & lepton : *preselected_leptons_intree)
-	    {
-	      if (lepton.genMotherPdgID != 9999)
-		{
-		  if (abs(lepton.genMotherPdgID) == 24 || abs(lepton.genMotherPdgID) == 23)
-		    {
-		      if (abs(lepton.pdgID) == 11)
-			{ 
-			  promptEle_relIso_hist->Fill(lepton.relIso);
-			  promptEle_miniIso_hist->Fill(lepton.miniIso);
-			  // promptEle_relIso_hist->Fill(log(lepton.relIso));
-			  // promptEle_miniIso_hist->Fill(log(lepton.miniIso));
-			}
-		      else 
-			{
-			  promptMu_relIso_hist->Fill(lepton.relIso);
-			  promptMu_miniIso_hist->Fill(lepton.miniIso);
-			  // // promptMu_relIso_hist->Fill(log(lepton.relIso));
-			  // promptMu_miniIso_hist->Fill(log(lepton.miniIso));
-			}
-		    }
-		  else
-		    {
-		      if (abs(lepton.pdgID) == 11)
-			{
-			  nonPromptEle_relIso_hist->Fill(lepton.relIso);
-			  nonPromptEle_miniIso_hist->Fill(lepton.miniIso);
-			  //nonPromptEle_relIso_hist->Fill(log(lepton.relIso));
-			  //nonPromptEle_miniIso_hist->Fill(log(lepton.miniIso));
-			}
-		      else
-			{
-			  nonPromptMu_relIso_hist->Fill(lepton.relIso);
-			  nonPromptMu_miniIso_hist->Fill(lepton.miniIso);
-			  //nonPromptMu_relIso_hist->Fill(log(lepton.relIso));
-			  //nonPromptMu_miniIso_hist->Fill(log(lepton.miniIso));
-			}
-		    }
-		}
-	    }
-	}
-      //time to draw ROC curves...
-    }
-  
-  //  TLegend* leg = new TLegend(0.11,0.91,0.89,0.99);
-  TLegend* leg = new TLegend(0.55,0.7,0.9,0.9);
-  leg->SetFillColor(kWhite);
-  //leg->SetLineColor(kWhite);
-  leg->SetShadowColor(kWhite);
-  leg->SetTextFont(42);
-  leg->SetTextSize(0.035);
-  //  leg->SetNColumns(5);
-
-  // TLegend* legg = new TLegend(0.11,0.91,0.89,0.99);
-  // legg->SetFillColor(kWhite);
-  // legg->SetLineColor(kWhite);
-  // legg->SetShadowColor(kWhite);
-  // legg->SetTextFont(42);
-  // legg->SetTextSize(0.035);
-  // legg->SetNColumns(5);
-  // TCanvas *can0 = new TCanvas("can0","canvas0",150,10,990,660);
-  // nonPromptEle_relIso_hist->SetLineColor(1);
-  // promptEle_relIso_hist->SetLineColor(2);
-  // legg->AddEntry(promptEle_relIso_hist,"prompt electrons");
-  // legg->AddEntry(nonPromptEle_relIso_hist,"non-prompt electrons");
-  // nonPromptEle_relIso_hist->Draw();
-  // promptEle_relIso_hist->Draw("SAME");
-  // legg->SetFillColor(0);
-  // legg->Draw();
-
-  TCanvas *can1 = new TCanvas("can1","canvas1",150,10,990,660);
-  can1->SetGridx();
-  can1->SetGridy();
-
-  get_roc_curve(promptEle_relIso_hist,nonPromptEle_relIso_hist,0);
-  get_roc_curve(promptEle_miniIso_hist,nonPromptEle_miniIso_hist,1);
-  get_roc_curve(promptMu_relIso_hist,nonPromptMu_relIso_hist,2);
-  get_roc_curve(promptMu_miniIso_hist,nonPromptMu_miniIso_hist,3);
-
-  // get_roc_curve(nonPromptEle_relIso_hist,promptEle_relIso_hist,0);
-  // get_roc_curve(nonPromptEle_miniIso_hist,promptEle_miniIso_hist,1);
-  // get_roc_curve(nonPromptMu_relIso_hist,promptMu_relIso_hist,2);
-  // get_roc_curve(nonPromptMu_miniIso_hist,promptMu_miniIso_hist,3);
-
-  roc_curve[0]->GetXaxis()->SetTitle("prompt Lepton efficiency");
-  roc_curve[0]->GetXaxis()->SetTitleColor(kBlack);
-  roc_curve[0]->GetYaxis()->SetTitle("non-prompt bkg rejection");
-  roc_curve[0]->GetYaxis()->SetTitleColor(kBlack);
-
-  roc_curve[1]->GetXaxis()->SetTitle("prompt Lepton efficiency");
-  roc_curve[1]->GetXaxis()->SetTitleColor(kBlack);
-  roc_curve[1]->GetYaxis()->SetTitle("non-prompt bkg rejection");
-  roc_curve[1]->GetYaxis()->SetTitleColor(kBlack);
-
-  roc_curve[2]->GetXaxis()->SetTitle("prompt Lepton efficiency");
-  roc_curve[2]->GetXaxis()->SetTitleColor(kBlack);
-  roc_curve[2]->GetYaxis()->SetTitle("non-prompt bkg rejection");
-  roc_curve[2]->GetYaxis()->SetTitleColor(kBlack);
-
-  roc_curve[3]->GetXaxis()->SetTitle("prompt Lepton efficiency");
-  roc_curve[3]->GetXaxis()->SetTitleColor(kBlack);
-  roc_curve[3]->GetYaxis()->SetTitle("non-prompt bkg rejection");
-  roc_curve[3]->GetYaxis()->SetTitleColor(kBlack);
-  
-  roc_curve[0]->SetLineColor(1);
-  roc_curve[1]->SetLineColor(2);
-  roc_curve[2]->SetLineColor(3);
-  roc_curve[3]->SetLineColor(4);
-
-  roc_curve[0]->SetTitle("");
-  roc_curve[1]->SetTitle("");
-  roc_curve[2]->SetTitle("");
-  roc_curve[3]->SetTitle("");
-
-  roc_curve[0]->SetLineWidth(2);
-  roc_curve[1]->SetLineWidth(2);
-  roc_curve[2]->SetLineWidth(2);
-  roc_curve[3]->SetLineWidth(2);
-
-  leg->AddEntry(roc_curve[0],"ele relIso","l");
-  leg->AddEntry(roc_curve[1],"ele miniIso","l");
-  leg->AddEntry(roc_curve[2],"mu relIso","l");
-  leg->AddEntry(roc_curve[3],"mu miniIso","l");
-
-  roc_curve[0]->Draw("AL");
-  roc_curve[1]->Draw("L");
-  roc_curve[2]->Draw("L");
-  roc_curve[3]->Draw("L");
-  
-  leg->SetFillColor(0);
-  leg->Draw();
-
-
-}
+// void MakeGoodPlot::draw_ROC_iso(std::vector<int> samps)
+// {
+//   int numsamples = samps.size();
+//   //  load_samples(samps);
+//   
+//   ch[1]->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/multileptree.root");
+// 
+//   int NbinsX = 1600;
+//   int Xmin = 0;
+//   int Xmax = 13;
+// 
+//   TH1F *promptEle_relIso_hist = new TH1F("promptEle_relIso","",NbinsX,Xmin,Xmax);
+//   TH1F *nonPromptEle_relIso_hist = new TH1F("nonPromptEle_relIso","",NbinsX,Xmin,Xmax);
+//   TH1F *promptEle_miniIso_hist = new TH1F("promptEle_miniIso","",NbinsX,Xmin,Xmax);
+//   TH1F *nonPromptEle_miniIso_hist = new TH1F("nonPromptEle_miniIso","",NbinsX,Xmin,Xmax);
+//   
+//   TH1F *promptMu_relIso_hist = new TH1F("promptMu_relIso","",NbinsX,Xmin,Xmax);
+//   TH1F *nonPromptMu_relIso_hist = new TH1F("nonPromptMu_relIso","",NbinsX,Xmin,Xmax);
+//   TH1F *promptMu_miniIso_hist = new TH1F("promptMu_miniIso","",NbinsX,Xmin,Xmax);
+//   TH1F *nonPromptMu_miniIso_hist = new TH1F("nonPromptMu_miniIso","",NbinsX,Xmin,Xmax);
+//   
+//   for (int i=0; i<numsamples; i++)
+//     {  
+//       int samp_int = samps[i];
+//       ch[samp_int]->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
+//       ch[samp_int]->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
+//       ch[samp_int]->SetBranchAddress("preselected_muons", &preselected_muons_intree);
+// 
+//       int samp_num_entries = ch[samp_int]->GetEntries();
+//       
+//       for (Int_t j=0; j<samp_num_entries; j++)
+// 	{
+// 	  ch[samp_int]->GetEntry(j);
+// 	  
+// 	  for (const auto & lepton : *preselected_leptons_intree)
+// 	    {
+// 	      if (lepton.genMotherPdgID != 9999)
+// 		{
+// 		  if (abs(lepton.genMotherPdgID) == 24 || abs(lepton.genMotherPdgID) == 23)
+// 		    {
+// 		      if (abs(lepton.pdgID) == 11)
+// 			{ 
+// 			  promptEle_relIso_hist->Fill(lepton.relIso);
+// 			  promptEle_miniIso_hist->Fill(lepton.miniIso);
+// 			  // promptEle_relIso_hist->Fill(log(lepton.relIso));
+// 			  // promptEle_miniIso_hist->Fill(log(lepton.miniIso));
+// 			}
+// 		      else 
+// 			{
+// 			  promptMu_relIso_hist->Fill(lepton.relIso);
+// 			  promptMu_miniIso_hist->Fill(lepton.miniIso);
+// 			  // // promptMu_relIso_hist->Fill(log(lepton.relIso));
+// 			  // promptMu_miniIso_hist->Fill(log(lepton.miniIso));
+// 			}
+// 		    }
+// 		  else
+// 		    {
+// 		      if (abs(lepton.pdgID) == 11)
+// 			{
+// 			  nonPromptEle_relIso_hist->Fill(lepton.relIso);
+// 			  nonPromptEle_miniIso_hist->Fill(lepton.miniIso);
+// 			  //nonPromptEle_relIso_hist->Fill(log(lepton.relIso));
+// 			  //nonPromptEle_miniIso_hist->Fill(log(lepton.miniIso));
+// 			}
+// 		      else
+// 			{
+// 			  nonPromptMu_relIso_hist->Fill(lepton.relIso);
+// 			  nonPromptMu_miniIso_hist->Fill(lepton.miniIso);
+// 			  //nonPromptMu_relIso_hist->Fill(log(lepton.relIso));
+// 			  //nonPromptMu_miniIso_hist->Fill(log(lepton.miniIso));
+// 			}
+// 		    }
+// 		}
+// 	    }
+// 	}
+//       //time to draw ROC curves...
+//     }
+//   
+//   //  TLegend* leg = new TLegend(0.11,0.91,0.89,0.99);
+//   TLegend* leg = new TLegend(0.55,0.7,0.9,0.9);
+//   leg->SetFillColor(kWhite);
+//   //leg->SetLineColor(kWhite);
+//   leg->SetShadowColor(kWhite);
+//   leg->SetTextFont(42);
+//   leg->SetTextSize(0.035);
+//   //  leg->SetNColumns(5);
+// 
+//   // TLegend* legg = new TLegend(0.11,0.91,0.89,0.99);
+//   // legg->SetFillColor(kWhite);
+//   // legg->SetLineColor(kWhite);
+//   // legg->SetShadowColor(kWhite);
+//   // legg->SetTextFont(42);
+//   // legg->SetTextSize(0.035);
+//   // legg->SetNColumns(5);
+//   // TCanvas *can0 = new TCanvas("can0","canvas0",150,10,990,660);
+//   // nonPromptEle_relIso_hist->SetLineColor(1);
+//   // promptEle_relIso_hist->SetLineColor(2);
+//   // legg->AddEntry(promptEle_relIso_hist,"prompt electrons");
+//   // legg->AddEntry(nonPromptEle_relIso_hist,"non-prompt electrons");
+//   // nonPromptEle_relIso_hist->Draw();
+//   // promptEle_relIso_hist->Draw("SAME");
+//   // legg->SetFillColor(0);
+//   // legg->Draw();
+// 
+//   TCanvas *can1 = new TCanvas("can1","canvas1",150,10,990,660);
+//   can1->SetGridx();
+//   can1->SetGridy();
+// 
+//   get_roc_curve(promptEle_relIso_hist,nonPromptEle_relIso_hist,0);
+//   get_roc_curve(promptEle_miniIso_hist,nonPromptEle_miniIso_hist,1);
+//   get_roc_curve(promptMu_relIso_hist,nonPromptMu_relIso_hist,2);
+//   get_roc_curve(promptMu_miniIso_hist,nonPromptMu_miniIso_hist,3);
+// 
+//   // get_roc_curve(nonPromptEle_relIso_hist,promptEle_relIso_hist,0);
+//   // get_roc_curve(nonPromptEle_miniIso_hist,promptEle_miniIso_hist,1);
+//   // get_roc_curve(nonPromptMu_relIso_hist,promptMu_relIso_hist,2);
+//   // get_roc_curve(nonPromptMu_miniIso_hist,promptMu_miniIso_hist,3);
+// 
+//   roc_curve[0]->GetXaxis()->SetTitle("prompt Lepton efficiency");
+//   roc_curve[0]->GetXaxis()->SetTitleColor(kBlack);
+//   roc_curve[0]->GetYaxis()->SetTitle("non-prompt bkg rejection");
+//   roc_curve[0]->GetYaxis()->SetTitleColor(kBlack);
+// 
+//   roc_curve[1]->GetXaxis()->SetTitle("prompt Lepton efficiency");
+//   roc_curve[1]->GetXaxis()->SetTitleColor(kBlack);
+//   roc_curve[1]->GetYaxis()->SetTitle("non-prompt bkg rejection");
+//   roc_curve[1]->GetYaxis()->SetTitleColor(kBlack);
+// 
+//   roc_curve[2]->GetXaxis()->SetTitle("prompt Lepton efficiency");
+//   roc_curve[2]->GetXaxis()->SetTitleColor(kBlack);
+//   roc_curve[2]->GetYaxis()->SetTitle("non-prompt bkg rejection");
+//   roc_curve[2]->GetYaxis()->SetTitleColor(kBlack);
+// 
+//   roc_curve[3]->GetXaxis()->SetTitle("prompt Lepton efficiency");
+//   roc_curve[3]->GetXaxis()->SetTitleColor(kBlack);
+//   roc_curve[3]->GetYaxis()->SetTitle("non-prompt bkg rejection");
+//   roc_curve[3]->GetYaxis()->SetTitleColor(kBlack);
+//   
+//   roc_curve[0]->SetLineColor(1);
+//   roc_curve[1]->SetLineColor(2);
+//   roc_curve[2]->SetLineColor(3);
+//   roc_curve[3]->SetLineColor(4);
+// 
+//   roc_curve[0]->SetTitle("");
+//   roc_curve[1]->SetTitle("");
+//   roc_curve[2]->SetTitle("");
+//   roc_curve[3]->SetTitle("");
+// 
+//   roc_curve[0]->SetLineWidth(2);
+//   roc_curve[1]->SetLineWidth(2);
+//   roc_curve[2]->SetLineWidth(2);
+//   roc_curve[3]->SetLineWidth(2);
+// 
+//   leg->AddEntry(roc_curve[0],"ele relIso","l");
+//   leg->AddEntry(roc_curve[1],"ele miniIso","l");
+//   leg->AddEntry(roc_curve[2],"mu relIso","l");
+//   leg->AddEntry(roc_curve[3],"mu miniIso","l");
+// 
+//   roc_curve[0]->Draw("AL");
+//   roc_curve[1]->Draw("L");
+//   roc_curve[2]->Draw("L");
+//   roc_curve[3]->Draw("L");
+//   
+//   leg->SetFillColor(0);
+//   leg->Draw();
+// 
+// 
+// }
 
 void MakeGoodPlot::print_cutflow(std::vector<int> samps)
 {
@@ -1945,6 +1951,386 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
     
     
 }
+
+void MakeGoodPlot::draw_several_comparisons(std::vector<int> samps)
+{
+        bool debug = false;
+        
+        std::vector<TString> tempfilenames;
+        int numsamples = samps.size();		
+	load_samples(samps);	
+        const int numplots = 13;
+        
+        TH1D *sample_hist[numplots][numsamples];
+        TString xaxis_title[numplots];
+        
+        double first_bin_low_edge[numplots];
+	double last_bin_up_edge[numplots];
+	int bins[numplots];
+        
+        //// define some parameters for the plots:
+        
+	// title of plot (displayed below ratio plot)
+	xaxis_title[0] = "preselected lepton pt";		
+	first_bin_low_edge[0] = 0.;
+	last_bin_up_edge[0] = 400.;
+	bins[0] = 100;       
+        
+        
+        xaxis_title[1] = "leading lep pt";		
+	first_bin_low_edge[1] = 0.;
+	last_bin_up_edge[1] = 400.;
+	bins[1] = 100;
+        
+        
+        xaxis_title[2] = "2nd lep pt";		
+	first_bin_low_edge[2] = 0.;
+	last_bin_up_edge[2] = 300.;
+	bins[2] = 75;
+        
+        
+        xaxis_title[3] = "MET";		
+	first_bin_low_edge[3] = 0.;
+	last_bin_up_edge[3] = 400.;
+	bins[3] = 100;
+        
+        
+        xaxis_title[4] = "MET phi";		
+	first_bin_low_edge[4] = -4.;
+	last_bin_up_edge[4] = 4.;
+	bins[4] = 100;
+        
+        
+        xaxis_title[5] = "num Jets";		
+	first_bin_low_edge[5] = 0.;
+	last_bin_up_edge[5] = 20.;
+	bins[5] = 20;
+                
+        
+        xaxis_title[6] = "Jet Energy";		
+	first_bin_low_edge[6] = 0.;
+	last_bin_up_edge[6] = 1000.;
+	bins[6] = 100;
+        
+        
+        xaxis_title[7] = "Leading Jet Energy";		
+	first_bin_low_edge[7] = 0.;
+	last_bin_up_edge[7] = 1000.;
+	bins[7] = 100;
+        
+        xaxis_title[8] = "2nd Jet Energy";		
+	first_bin_low_edge[8] = 0.;
+	last_bin_up_edge[8] = 1000.;
+	bins[8] = 100;
+        
+        xaxis_title[9] = "Lepton phi";		
+	first_bin_low_edge[9] = -4.;
+	last_bin_up_edge[9] = 4.;
+	bins[9] = 100;
+                
+        xaxis_title[10] = "Lepton eta";		
+	first_bin_low_edge[10] = -3.;
+	last_bin_up_edge[10] = 3.;
+	bins[10] = 100;
+        
+        xaxis_title[11] = "Jet phi";		
+	first_bin_low_edge[11] = -4.;
+	last_bin_up_edge[11] = 4.;
+	bins[11] = 100;
+        
+        
+        xaxis_title[12] = "Jet eta";		
+	first_bin_low_edge[12] = -3.;
+	last_bin_up_edge[12] = 3.;
+	bins[12] = 100;
+        
+        
+        
+
+       
+//         TCanvas *myC[numplots];
+//         THStack *nice_stack[numplots];
+// 	TH1F *sum[numplots];
+// 	TLegend *leg[numplots];
+//         
+//         for (int i=0; i<numplots; i++)	
+//         {
+// 
+// 	    myC[i] = new TCanvas("myC_"+mylabel, "myC_"+mylabel, 600,700);
+// 	    gStyle->SetPadBorderMode(0);
+// 	    gStyle->SetFrameBorderMode(0);
+// 	    Float_t small = 1.e-5;
+// 	    myC[i]->Divide(1,2,small,small);
+// 	    const float padding=1e-5; const float ydivide=0.3;
+// 	    myC[i]->GetPad(1)->SetPad( padding, ydivide + padding , 1-padding, 1-padding);
+// 	    myC[i]->GetPad(2)->SetPad( padding, padding, 1-padding, ydivide-padding);
+// 	    myC[i]->GetPad(1)->SetLeftMargin(.11);
+// 	    myC[i]->GetPad(2)->SetLeftMargin(.11);
+// 	    myC[i]->GetPad(1)->SetRightMargin(.05);
+// 	    myC[i]->GetPad(2)->SetRightMargin(.05);
+// 	    myC[i]->GetPad(1)->SetBottomMargin(.3);
+// 	    myC[i]->GetPad(2)->SetBottomMargin(.3);
+// 	    myC[i]->GetPad(1)->Modified();
+// 	    myC[i]->GetPad(2)->Modified();
+// 	    myC[i]->cd(1);
+// 	    gPad->SetBottomMargin(small);
+// 	    gPad->Modified();	
+//             leg[i] = new TLegend(0.11,0.91,0.89,0.99);
+// 	    leg[i]->SetFillColor(kWhite);
+// 	    leg[i]->SetLineColor(kWhite);
+// 	    leg[i]->SetShadowColor(kWhite);
+// 	    leg[i]->SetTextFont(42);
+// 	    leg[i]->SetTextSize(0.028);
+// 	    leg[i]->SetNColumns(3);
+// 
+//             nice_stack[i] = new THStack("stack_"+int2ss(i),";" + xaxis_title);
+//             sum[i]; = new TH1F("sum bkgd "+int2ss(i),"",bins[i],first_bin_low_edge[i],last_bin_up_edge[i]);
+//         }
+        
+        
+        
+// 	int where_is_sig = -1;
+// 	int where_is_data_mu = -1;
+// 	int where_is_data_ele = -1;
+	
+	
+        for (int i=0; i<numsamples; i++)
+	{	
+		int samp_int = samps[i];
+		
+		cout << "doing " << sample_names[samp_int] << endl;
+	
+		// --------------
+                
+                if (debug) cout << "hey1" << endl;
+                
+                int theentries = ch[samp_int]->GetEntries();
+                cout << ch[samp_int]->GetEntries() << endl;
+                
+                tempfilenames.push_back("temp_"+int2ss(i)+".root");
+	        TFile newtempfile("temp_"+int2ss(i)+".root","RECREATE");
+                
+                if (debug) cout << "hey2" << endl;
+                
+	        ch[samp_int]->SetBranchAddress("mcwgt", &mcwgt_intree);
+                ch[samp_int]->SetBranchAddress("wgt", &wgt_intree);
+
+                ch[samp_int]->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
+                ch[samp_int]->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
+                ch[samp_int]->SetBranchAddress("preselected_muons", &preselected_muons_intree);
+
+                ch[samp_int]->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
+                ch[samp_int]->SetBranchAddress("looseMvaBased_electrons", &loose_electrons_intree);
+                ch[samp_int]->SetBranchAddress("looseMvaBased_muons", &loose_muons_intree);
+
+                ch[samp_int]->SetBranchAddress("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
+                ch[samp_int]->SetBranchAddress("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
+                ch[samp_int]->SetBranchAddress("tightMvaBased_muons", &tightMvaBased_muons_intree);
+
+                ch[samp_int]->SetBranchAddress("preselected_jets", &preselected_jets_intree);
+                ch[samp_int]->SetBranchAddress("met", &met_intree);
+                
+                ch[samp_int]->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
+                
+                for (int j=0;j<numplots;j++)
+                {
+                    sample_hist[j][i] = new TH1D("hist_"+int2ss(j),";"+xaxis_title[j],bins[j],first_bin_low_edge[j],last_bin_up_edge[j]);
+                    sample_hist[j][i]->Sumw2();
+                }
+                
+                int countbefore = 0;
+                int countafter = 0;
+                
+                if (debug) cout << "hey3" << endl;
+                
+                for (int j=0;j<theentries;j++)
+	        {
+		
+                    ch[samp_int]->GetEntry(j);
+								
+		    weight = wgt_intree;
+                    
+                    bool keepthisevent = true;
+                    countbefore++;
+                    
+                    if (debug) cout << "hey4" << endl;
+                    
+                    // picks only H->non-bb for consistancy between samples:
+                    if (debug) cout << (*pruned_genParticles_intree).size() << endl;
+                    
+                    for (unsigned int k=0;k<(*pruned_genParticles_intree).size();k++)
+                    {
+                        if (debug) cout << "hey41" << endl;
+                        if ((*pruned_genParticles_intree)[k].pdgID==25)
+                        {
+                            if (debug) cout << "hey411" << endl;
+                            if (debug) cout << (*pruned_genParticles_intree)[k].child0 << endl;
+                            if (debug) cout << (*pruned_genParticles_intree)[k].child1 << endl;
+                            
+                            if ((*pruned_genParticles_intree)[k].child0<(*pruned_genParticles_intree).size())
+                            {    
+                                if (abs((*pruned_genParticles_intree)[(*pruned_genParticles_intree)[k].child0].pdgID)==5)
+                                {
+                                    keepthisevent = false;
+                                    if (debug) cout << "hey4111" << endl;
+                                }
+                            }
+                            
+                            if ((*pruned_genParticles_intree)[k].child1<(*pruned_genParticles_intree).size())
+                            {    
+                                if (abs((*pruned_genParticles_intree)[(*pruned_genParticles_intree)[k].child1].pdgID)==5)
+                                {
+                                    keepthisevent = false;
+                                    if (debug) cout << "hey4111" << endl;
+                                }
+                            }
+                                                                                   
+                        
+                        }
+                    }
+                    if (debug) cout << "hey41111" << endl;
+                    if (!keepthisevent) continue;
+                    if (debug) cout << "hey411111" << endl;
+                    if ((*preselected_leptons_intree).size()==0) continue;
+                    if (debug) cout << "hey4111111" << endl;
+                    countafter++;
+                    if (debug) cout << "hey5" << endl;
+                    if (debug) cout << "hey41111111" << endl;
+                    
+                    
+                    for (unsigned int k=0;k<(*preselected_leptons_intree).size();k++)
+                    {
+                        sample_hist[0][i]->Fill( (*preselected_leptons_intree)[k].obj.Pt(), weight );
+                        sample_hist[9][i]->Fill( (*preselected_leptons_intree)[k].obj.Phi(), weight );
+                        sample_hist[10][i]->Fill( (*preselected_leptons_intree)[k].obj.Eta(), weight );                        
+                    }
+                    if (debug) cout << "hey6" << endl;
+                    if ((*preselected_leptons_intree).size()>0) sample_hist[1][i]->Fill( (*preselected_leptons_intree)[0].obj.Pt(), weight );
+                    if ((*preselected_leptons_intree).size()>1) sample_hist[2][i]->Fill( (*preselected_leptons_intree)[1].obj.Pt(), weight );
+                    
+                    for (unsigned int k=0;k<(*preselected_jets_intree).size();k++)
+                    {
+                        sample_hist[6][i]->Fill( (*preselected_jets_intree)[k].obj.E(), weight );
+                        sample_hist[11][i]->Fill( (*preselected_jets_intree)[k].obj.Phi(), weight );
+                        sample_hist[12][i]->Fill( (*preselected_jets_intree)[k].obj.Eta(), weight );
+                    }
+                    if (debug) cout << "hey7" << endl;
+                    sample_hist[5][i]->Fill( (*preselected_jets_intree).size(), weight );                    
+                    
+                    if ((*preselected_jets_intree).size()>0) sample_hist[7][i]->Fill( (*preselected_jets_intree)[0].obj.E(), weight );
+                    if ((*preselected_jets_intree).size()>1) sample_hist[8][i]->Fill( (*preselected_jets_intree)[1].obj.E(), weight );
+                    
+                    
+                    sample_hist[3][i]->Fill( (*met_intree)[0].obj.Pt(), weight );
+                    sample_hist[4][i]->Fill( (*met_intree)[0].obj.Phi(), weight );
+                    
+                    
+                    
+                    if (debug) cout << "hey8" << endl;
+                   
+                    
+                }
+                        
+                cout << " " << endl;
+		cout << "all events: " << countbefore << endl;
+                cout << "all events passing sel: " << countafter << endl;
+                cout << " " << endl;
+                
+                newtempfile.Write();
+                newtempfile.Close();
+                
+                
+                // for (int j=0; j<numplots; j++)
+//                 {
+// 	
+// 		    float sample_evts = sample_hist[i]->Integral();
+// 		    std::ostringstream sample_evts_ss;
+// 		    sample_evts_ss << sample_evts;
+// 		    std::string sample_evts_string = sample_evts_ss.str();
+// 
+// 
+// 		    if (samp_int==0||samp_int==10)
+// 		    {
+// 			    sample_hist[j][i]->SetLineColor(1);
+// 			    sample_hist[j][i]->SetLineWidth(2);
+// 			    sample_hist[j][i]->GetXaxis()->SetTitle(xaxis_title[j]);
+// 			    //if(samp_int==0) leg->AddEntry(sample_hist[i],sample_names[0] + " (" + sample_evts_string + ")","L");  /// have ability to add # of evts per sample to legend... 
+// 			    sample_hist[j][i]->SetStats(0);
+// 			    sample_hist[j][i]->SetTitleSize(0);
+// 			    //sample_hist[j][i]->Sumw2();
+// 			    if(samp_int==0) where_is_data_mu = i;
+// 			    if(samp_int==10) where_is_data_ele = i;
+// 		    }
+// 		    else
+// 		    {
+// 			    if (samp_int==1)
+// 			    {
+// 				    sample_hist[j][i]->SetLineColor(1+samp_int);
+// 				    sample_hist[j][i]->SetLineWidth(2);
+// 				    sample_hist[j][i]->GetXaxis()->SetTitle(xaxis_title[j]);
+// 				    leg[j]->AddEntry(sample_hist[j][i],sample_names[samp_int] + " (15x" + sample_evts_string + ")","L");  /// have ability to add # of evts per sample to legend... 
+// 				    sample_hist[j][i]->SetStats(0);
+// 				    sample_hist[j][i]->SetTitleSize(0);
+// 				    sample_hist[j][i]->Scale(15);
+// 				    where_is_sig = i;
+// 			    }
+// 			    else
+// 			    {
+// 				    if (samp_int<4) sample_hist[j][i]->SetFillColor(1+samp_int);		
+// 				    if (samp_int>=4) sample_hist[j][i]->SetFillColor(2+samp_int);
+// 
+// 				    sample_hist[j][i]->GetXaxis()->SetTitle(xaxis_title);
+// 				    //sample_hist[i]->SetLineWidth(2);
+// 				    leg[j]->AddEntry(sample_hist[j][i],sample_names[samp_int] + " (" + sample_evts_string + ")","F");  /// have ability to add # of evts per sample to legend... 
+// 				    //leg->AddEntry(sample_hist[i],sample_names[samp_int],"l");
+// 
+// 				    sample_hist[j][i]->SetStats(0);
+// 				    sample_hist[j][i]->SetTitleSize(0);
+// 
+// 				    nice_stack[j]->Add(sample_hist[j][i]);
+// 				    sum[j]->Add((TH1F*)sample_hist[j][i]);
+// 			    }
+// 		    }
+// 	
+//                 }
+        
+        
+	
+        
+        
+        }
+	
+        
+	
+// 	double maxstack = nice_stack->GetMaximum();
+// 	nice_stack->SetMaximum(1.25*maxstack);
+// 	nice_stack->Draw();		
+// 	
+// 	if (where_is_sig>=0) sample_hist[where_is_sig]->Draw("same");
+// 	if (where_is_data_mu>=0&&where_is_data_ele>=0)
+// 	{
+// 		sample_hist[where_is_data_mu]->Add(sample_hist[where_is_data_ele],1.0);
+// 		float sample_evts = sample_hist[where_is_data_mu]->Integral();
+// 		std::ostringstream sample_evts_ss;
+// 		sample_evts_ss << sample_evts;
+// 		std::string sample_evts_string = sample_evts_ss.str();
+// 		leg->AddEntry(sample_hist[where_is_data_mu],("data (" + sample_evts_string + ")").c_str(),"LPE");
+// 		sample_hist[where_is_data_mu]->Draw("esame");
+// 	}
+// 
+// 	leg->SetFillColor(0);
+// 	leg->Draw("same");
+    
+    
+    
+    
+    compareplots(samps, tempfilenames);
+    
+    
+    
+    
+    
+}
 void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 {
 	
@@ -2096,7 +2482,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 	leg->Draw("same");
 }
 
-void MakeGoodPlot::draw_nice_stack_with_ratio(std::vector<int> samps)
+void MakeGoodPlot::draw_nice_stack_with_ratio(std::vector<int> samps, std::string mytitle, std::string mylabel)
 {
 	int numsamples = samps.size();
 	TH1D *sample_hist[numsamples];	
@@ -2105,6 +2491,8 @@ void MakeGoodPlot::draw_nice_stack_with_ratio(std::vector<int> samps)
 	// title of plot (displayed below ratio plot)
 	TString xaxis_title = "Gaussian Variable (4#sigma Separation), 6j4t";
 	
+        //TString xaxis_title = mytitle;
+        
 	// y-axis label (stack):
 	
 	// y-axis label (ratio):
@@ -2113,14 +2501,14 @@ void MakeGoodPlot::draw_nice_stack_with_ratio(std::vector<int> samps)
 	double first_bin_low_edge = 0.;
 	double last_bin_up_edge = 400.;
 	int bins = 200;
-	
-	
+		
 
 
 	
 	//Hack to get it plotted with ratio plot
-	TCanvas* myC = new TCanvas("myC", "myC", 600,700);
-	gStyle->SetPadBorderMode(0);
+	//TCanvas* myC = new TCanvas("myC_"+mylabel, "myC_"+mylabel, 600,700);
+	TCanvas* myC = new TCanvas("myC_", "myC_", 600,700);
+        gStyle->SetPadBorderMode(0);
 	gStyle->SetFrameBorderMode(0);
 	Float_t small = 1.e-5;
 	myC->Divide(1,2,small,small);
@@ -2915,7 +3303,248 @@ void MakeGoodPlot::make_eff_vs_var_separation_plot(std::vector<int> samps)
 	
 }
 
+void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tempfiles)
+{
+  
+  // compares multiple hists that should already be saved to some temp files //
+  
+  vector<TFile*> files;
+  
+  for (int itempfile=0; itempfile<tempfiles.size(); itempfile++)
+  {
+    files.push_back(new TFile(tempfiles[itempfile]));   
+  }
 
+
+  vector<TString> names;
+  
+  for (int iName=0; iName<samps.size(); iName++)
+  {
+    TString iNametemp = sample_names[samps[iName]];
+    names.push_back(iNametemp);
+  }
+
+  TFile *vergleich = new TFile("comparison_output.root","RECREATE");
+
+
+  // Show no statistics box
+  gStyle->SetOptStat(0);
+
+  //TH1::SetDefaultSumw2();
+
+  // Main program part
+  TIter nextkey(files.at(0)->GetListOfKeys());
+  TKey *key;
+  bool first=true;
+  TCanvas* c = new TCanvas();
+  c->Print("comparisonPlots.pdf[");
+
+  // Save also as pictures
+  int pictureNumber = 0;
+
+  int run = 0;
+  
+  while ( (key = (TKey*)nextkey()) )
+  {
+    pictureNumber++;
+    TString pictureName = TString::Format("%d.png",pictureNumber);
+
+    vector<TH1F*> histos;
+    histos.push_back((TH1F*)key->ReadObj());
+    histos[0]->SetName(key->GetName());
+    
+    for(size_t i=1;i<files.size();i++)
+    {
+      histos.push_back((TH1F*)files.at(i)->Get(histos.at(0)->GetName()));
+	histos[i]->SetName(key->GetName());
+    }
+    
+    c->SetName(key->GetName());
+		       
+    for(size_t i=0;i<histos.size();i++)
+    {
+      if(i == 0){
+	histos.at(i)->SetLineColor(kBlack);
+      }
+      if(i == 1){
+	histos.at(i)->SetLineColor(kRed);
+      }
+      if(i == 2){
+	histos.at(i)->SetLineColor(kBlue);
+      }
+      if(i == 3){
+	histos.at(i)->SetLineColor(kGreen+2);
+      }
+      if(i == 4){
+	histos.at(i)->SetLineColor(kMagenta-7);
+      }
+      if(i == 5){
+	histos.at(i)->SetLineColor(kOrange+7);
+      }
+    }
+    
+    for(size_t i=0;i<histos.size();i++)
+    {
+      //histos.at(i)->Sumw2();
+      histos.at(i)->Scale(1./histos.at(i)->Integral(),"width");
+    }
+
+    // Set axis title
+    histos.at(0)->GetYaxis()->SetTitle("Normalized units"); 
+    std::string const histogramName = histos.at(0)->GetName();
+    histos.at(0)->GetXaxis()->SetLabelSize(0.06);
+    histos.at(0)->GetXaxis()->SetLabelOffset(0.006);
+    histos.at(0)->GetYaxis()->SetLabelSize(0.06);
+    histos.at(0)->GetYaxis()->SetLabelOffset(0.006);
+    histos.at(0)->GetXaxis()->SetTitleSize(0.06);
+    histos.at(0)->GetXaxis()->SetTitleOffset(1.1);
+    histos.at(0)->GetYaxis()->SetTitleSize(0.06);
+    histos.at(0)->GetYaxis()->SetTitleOffset(1.08);
+
+
+    // c->SetName(histos.at(0)->GetName())
+    //histos.at(0)->GetXaxis()->SetTitle(histos.at(0)->GetName());
+    //histos.at(0)->GetXaxis()->SetTitle(histos.at(0)->GetXaxis()->GetTitle());
+
+    run = run+1;
+    if(run == (3*8))
+    {
+        run = 0;
+    }
+    // If only two histograms per plot make a ratio plot
+    if(histos.size() == 2)
+    {
+
+        //create main pad  
+
+        TPad *mainPad = new TPad("","",0.0,0.3,1.0,1.0);
+        mainPad->SetNumber(1);
+        mainPad->SetBottomMargin(0.0);
+        mainPad->SetRightMargin(0.04);
+        mainPad->SetLeftMargin(0.13);
+        mainPad->SetGridx(1);
+        mainPad->SetGridy(1);
+        mainPad->SetLogy(1);
+        mainPad->Draw();
+
+        //create ratio pad                                                                                                                                                           
+        TPad *ratioPad = new TPad("","",0.0,0.0,1.0,0.3);
+        ratioPad->SetTopMargin(0.0);
+        ratioPad->SetBottomMargin(0.4);
+        ratioPad->SetLeftMargin(0.13);                                                                                                                                             
+        ratioPad->SetRightMargin(0.04);
+        gStyle->SetOptTitle(0);
+        ratioPad->SetFillColor(0);
+        ratioPad->SetNumber(2);
+        ratioPad->SetGridy();                                                                                                                                                      
+        ratioPad->Draw();
+
+        // Draw both histograms first
+        c->cd(1);
+        //c->mainPad()->SetLogy(1);  // <<<<------- set log scale
+        histos.at(0)->Draw("histo E");
+        histos.at(1)->Draw("histo same E");
+
+        // Show legend and statistical tests in first pad
+        for(size_t i=0;i<histos.size()-1;i=i+2)
+        {
+
+          double ksresult = histos.at(i)->KolmogorovTest(histos.at(i+1));
+          ksresult=floor(ksresult*1000+0.5)/1000;
+          double chi2result =histos.at(i)->Chi2Test(histos.at(i+1),"WW");
+          chi2result=floor(chi2result*1000+0.5)/1000;
+
+          stringstream ss;
+          ss << "     KS: " <<std::setprecision(3) << ksresult << " chi2: " <<std::setprecision(3) << chi2result; // << " Private Work"; 
+          //const char * notmych = & ss.str().c_str();
+          TLatex * ks = new TLatex(0.1, 0.9-0.03*i, ss.str().c_str());
+          ks->SetTextColor(histos.at(i)->GetLineColor());
+          ks->SetNDC();
+          ks->Draw("");      
+
+        }
+
+        TLegend* l = new TLegend(0.55,0.9,0.69,0.99);
+        // Options for legend
+        l->SetBorderSize(0);
+        l->SetLineStyle(0);
+        l->SetTextSize(0.049);
+        l->SetFillStyle(0);
+        for(size_t i=0;i<names.size();i++)
+        {
+          l->AddEntry(histos.at(i),names.at(i),"L");
+        }
+        l->Draw("same");
+
+        // Clone histograms and draw ratio plot
+        c->cd(2);
+         TH1F* ratioHisto = (TH1F*)histos.at(0)->Clone();
+        ratioHisto->Add(histos.at(1),-1);
+        ratioHisto->Divide(histos.at(1));
+        ratioHisto->SetLineColor(kBlue);
+        ratioHisto->SetStats(false);
+        ratioHisto->GetYaxis()->SetTitle("Ratio #frac{new-old}{old}");
+        // Same Size like in histogram
+        ratioHisto->SetLabelSize(histos.at(0)->GetLabelSize() * 0.7 / 0.3);
+        ratioHisto->SetTitleOffset((histos.at(0)->GetTitleOffset("Y") * 0.3 / 0.7), "Y");
+        ratioHisto->SetTitleSize((histos.at(0)->GetTitleSize("Y") * 0.7 / 0.3), "Y");
+        ratioHisto->SetTitleOffset((histos.at(0)->GetTitleOffset("X")), "X");
+        ratioHisto->SetTitleSize((histos.at(0)->GetTitleSize("X") * 0.7 / 0.3), "X");
+        // Use nicer range
+        ratioHisto->GetYaxis()->SetRangeUser(-1.5, 1.5);
+        ratioHisto->GetYaxis()->SetNdivisions(503);
+        ratioHisto->GetYaxis()->SetLabelSize(0.06 * 0.7 / 0.3);
+        ratioHisto->Draw();
+    }
+    else
+    {
+
+        histos.at(0)->Draw("histo E");
+        for(size_t i=0;i<histos.size();i++)
+        {
+          histos.at(i)->Draw("histo same E");
+        }
+
+
+        for(size_t i=0;i<histos.size()-1;i=i+2)
+        {
+
+          double ksresult = histos.at(i)->KolmogorovTest(histos.at(i+1));
+          ksresult=floor(ksresult*1000+0.5)/1000;
+          double chi2result =histos.at(i)->Chi2Test(histos.at(i+1),"WW");
+          chi2result=floor(chi2result*1000+0.5)/1000;
+
+          stringstream ss;
+          ss << "KS: " <<std::setprecision(3) << ksresult << " chi2: " <<std::setprecision(3) << chi2result; 
+          //const char notmych = ss.str().c_str();
+          TText * ks = new TText(0.1, 0.9-0.03*i, ss.str().c_str());
+          ks->SetTextColor(histos.at(i)->GetLineColor());
+          ks->SetNDC();
+          ks->Draw("");      
+
+        }
+
+        TLegend* l = new TLegend(0.65,0.5,0.9,0.7);
+        l->SetBorderSize(0);
+        l->SetLineStyle(0);
+        //    l->SetTextSize(0.039);
+        l->SetFillStyle(0);
+        for(size_t i=0;i<names.size();i++)
+        {
+          l->AddEntry(histos.at(i),names.at(i),"L");
+        }
+        l->Draw("same");
+    }
+
+    c->Print("comparisonPlots.pdf");
+    c->SaveAs(pictureName);
+    vergleich->WriteTObject(c);
+
+  }
+  
+  c->Print("comparisonPlots.pdf]");
+
+}
 
 void MakeGoodPlot::print_geninfo_table(std::vector<int> samps)
 {
@@ -3479,7 +4108,8 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 	
 	TString eosprfx = "root://eoscms.cern.ch/";
         //TString basedir = "/eos/cms/store/user/gesmith/crabdir/v5/";
-        TString basedir = "/eos/cms/store/user/muell149/ttH-leptons_Skims/v2/";
+        TString oldbasedir = "/eos/cms/store/user/muell149/ttH-leptons_Skims/v3p1/";
+        TString basedir = "/eos/cms/store/user/gesmith/crab3dir/";
         //TString eosprfx = "";        
         //TString basedir = "/tmp/gesmith/ttjetstemp/";
         
@@ -3488,6 +4118,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 	TString basedir_plus = "";
 	
         basedir = eosprfx + basedir;
+        oldbasedir = eosprfx + oldbasedir;
 	
 	int numsamples = samps.size();
 	 
@@ -3508,13 +4139,13 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		}
 		if (samps[i]==1)
 		{
-			basedir_plus = "ttH125/";
-                        thesample = basedir + basedir_plus + "*.root";
-			ch[1]->Add(thesample);
-                        xsecs[1]=0.5085;                // you can't use "i" here, idiot ...
-                        //numgen[1]=89671.4186331;
-			//numgen[1]=80535.2587694;
-			numgen[1]=89671.4186331; //charlie
+			basedir_plus = "test1ttH/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/crab_ttH125/150610_082426/0000/";
+                        //thesample = basedir + basedir_plus + "multileptree_2_1_yTv.root";
+                        //thesample = thesample + " " + basedir + basedir_plus + "multileptree_7_1_AwJ.root";
+			thesample = basedir + basedir_plus + "*.root";
+                        ch[1]->Add(thesample);
+                        xsecs[1]=0.5085;
+			numgen[1]=999.; // not actual number
 		}
 		if (samps[i]==2)
 		{
@@ -3626,7 +4257,18 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
                         numgen[11]=2514003.0102;
 		}
                 
-                
+                if (samps[i]==12)
+		{
+			basedir_plus = "TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/crab_ttH125/150519_150413/0000/";
+                        //thesample = basedir + basedir_plus + "multileptree_2_1_yTv.root";
+                        //thesample = thesample + " " + basedir + basedir_plus + "multileptree_7_1_AwJ.root";
+			thesample = oldbasedir + basedir_plus + "*.root";
+                        ch[12]->Add(thesample);
+                        xsecs[12]=0.5085;                // you can't use "i" here, idiot ...
+                        //numgen[1]=89671.4186331;
+			//numgen[1]=80535.2587694;
+			numgen[12]=89671.4186331; //charlie
+		}
                 
 	}
 }
@@ -3648,9 +4290,10 @@ void MakeGoodPlot::initialize()
 	ch[9] = new TChain(treename);
 	ch[10] = new TChain(treename);
         ch[11] = new TChain(treename);
+        ch[12] = new TChain(treename);
 	
 	sample_names[0] = "data"; //"data (mu)";
-	sample_names[1] = "t#bar{t}H"; //"t#bar{t}H(125)";
+	sample_names[1] = "t#bar{t}H (H->non-bb) Summer15"; //"t#bar{t}H(125)";
 	sample_names[2] = "(none)"; //"t#bar{t} + b#bar{b}";
 	sample_names[3] = "(none)"; //"t#bar{t} + b";
 	sample_names[4] = "(none)"; //"t#bar{t} + c#bar{c}";
@@ -3661,6 +4304,7 @@ void MakeGoodPlot::initialize()
 	sample_names[9] = "t#bar{t}+Z"; // "WW, WZ, ZZ";
 	sample_names[10] = "WZ"; // "data (ele)";
 	sample_names[11] = "ZZ"; // "data (ele)";
+        sample_names[12] = "t#bar{t}H PHYS14";
         
         sample_names_std[0]  = sample_names[0]; 
         sample_names_std[1]  = sample_names[1]; 
@@ -3674,7 +4318,7 @@ void MakeGoodPlot::initialize()
         sample_names_std[9]  = sample_names[9]; 
         sample_names_std[10] = sample_names[10];
         sample_names_std[11] = sample_names[11];
-        
+        sample_names_std[12] = sample_names[12];
         
         Int_t cachesize = 100000000;   //100 MBytes
         
@@ -3690,6 +4334,7 @@ void MakeGoodPlot::initialize()
         ch[9]->SetCacheSize(cachesize);
         ch[10]->SetCacheSize(cachesize);
         ch[11]->SetCacheSize(cachesize);
+        ch[12]->SetCacheSize(cachesize);
         
         ch[0]->SetCacheLearnEntries(20);
         ch[1]->SetCacheLearnEntries(20);
@@ -3703,6 +4348,7 @@ void MakeGoodPlot::initialize()
         ch[9]->SetCacheLearnEntries(20);
         ch[10]->SetCacheLearnEntries(20);
         ch[11]->SetCacheLearnEntries(20);
+        ch[12]->SetCacheLearnEntries(20);
         
         xsecs[0]=-999.;
         xsecs[1]=-999.;
@@ -3716,6 +4362,7 @@ void MakeGoodPlot::initialize()
         xsecs[9]=-999.;
         xsecs[10]=-999.;
         xsecs[11]=-999.;
+        xsecs[12]=-999.;
               
         numgen[0]=-999.;
         numgen[1]=-999.;
@@ -3729,6 +4376,7 @@ void MakeGoodPlot::initialize()
         numgen[9]=-999.;
         numgen[10]=-999.;
         numgen[11]=-999.;
+        numgen[12]=-999.;
         
         
         mcwgt_intree = -9999.;

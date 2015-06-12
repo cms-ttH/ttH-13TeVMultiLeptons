@@ -12,7 +12,7 @@ if __name__ == '__main__':
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = 'osTwoLep_cfg.py'
     config.Data.splitting = 'LumiBased'
-    config.Data.outLFNDirBase = '/store/user/muell149/ttH-leptons_Skims/v3p1'
+    config.Data.outLFNDirBase = '/store/user/gesmith/crab3dir/test1ttH'
     config.Data.publication = False
     config.Site.storageSite = 'T2_CH_CERN'
 
@@ -26,10 +26,25 @@ if __name__ == '__main__':
     ## From now on that's what users should modify: this is the a-la-CRAB2 configuration part. ##
     #############################################################################################
 
+
+    ## main NLO sample (125 ext1):
     config.General.requestName = 'ttH125'
-    config.Data.inputDataset = '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v2/MINIAODSIM'
-    config.Data.unitsPerJob = 500
+    config.Data.inputDataset = '/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9_ext1-v3/MINIAODSIM'
+    config.Data.unitsPerJob = 1000
     submit(config)
+    
+    ## POWHEG sample:
+    #config.General.requestName = 'ttH125ForTraining'
+    #config.Data.inputDataset = ''
+    #config.Data.unitsPerJob = 5000
+    #submit(config)
+       
+
+    # PHYS14 (old)
+    #config.General.requestName = 'ttH125'
+#    config.Data.inputDataset = '/TTbarH_M-125_13TeV_amcatnlo-pythia8-tauola/Phys14DR-PU20bx25_tsg_PHYS14_25_V1-v2/MINIAODSIM'
+#    config.Data.unitsPerJob = 500
+#    submit(config)
 
     config.General.requestName = 'ttJets'
     config.Data.inputDataset = '/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM'

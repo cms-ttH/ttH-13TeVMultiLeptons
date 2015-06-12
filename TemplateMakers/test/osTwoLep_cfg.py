@@ -5,7 +5,7 @@ process = cms.Process("Demo")
 
 
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
-process.GlobalTag.globaltag = 'PHYS14_25_V2' #'PLS170_V7AN1::All'  #'MCRUN2_72_V3A' #'MC_72_v1' ##'PHYS14_25_V1' ###'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
+process.GlobalTag.globaltag = 'MCRUN2_74_V9' #'PHYS14_25_V2' #'PLS170_V7AN1::All'  #'MCRUN2_72_V3A' #'MC_72_v1' ##'PHYS14_25_V1' ###'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
 process.prefer("GlobalTag")
 
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -26,7 +26,9 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
         
-        'file:/afs/cern.ch/user/m/muell149/public/ttH_phys14_sync.root'
+        '/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9_ext1-v3/10000/06249DB6-C309-E511-957A-782BCB6A4BB8.root'
+        
+        #'file:/afs/cern.ch/user/m/muell149/public/ttH_phys14_sync.root'
 
 	# Phys14 ttH
 	# PU 40:
