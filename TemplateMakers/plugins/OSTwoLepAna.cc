@@ -107,10 +107,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     	event.getByLabel("generator",GenInfo);
     	
 	///////////////////////////
-	double mcwgt_intree = GenInfo->weight();		// <- gen-level weight
+	mcwgt_intree = GenInfo->weight();		// <- gen-level weight
         
         // make it +/-1!
-        mcwgt_intree = wgt_intree<0. ? -1. : 1.;        
+        mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
         
 	double weight = 1.;					// <- analysis weight 
 	weight *= mcwgt_intree;					// MC-only (flag to be added if nec)
@@ -128,14 +128,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	//double minTightLeptonPt = 20.;
 	//double minLooseLeptonPt = 10.;
-	double minTightLeptonPt = 10.;
-	double minLooseLeptonPt = 5.;
+	
+        //double minTightLeptonPt = 10.;
+	//double minLooseLeptonPt = 5.;
+                
+	//double mintightelept = minTightLeptonPt;
+	//double minlooseelept = minLooseLeptonPt;
 
-	double mintightelept = minTightLeptonPt;
-	double minlooseelept = minLooseLeptonPt;
-
-	//double mintightelept = 10.;
-	//double minlooseelept = 5.;
+	double mintightelept = 7.; // lowered for studies
+	double minlooseelept = 7.; // lowered for studies
 
 	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
 	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight);	//miniAODhelper.
@@ -147,8 +148,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	/// Muons
 	///
 	////////
-	double mintightmupt = minTightLeptonPt;
-	double minloosemupt = minLooseLeptonPt;
+	//double mintightmupt = minTightLeptonPt;
+	//double minloosemupt = minLooseLeptonPt;
+        
+        double mintightmupt = 5.; // lowered for studies
+	double minloosemupt = 5.; // lowered for studies
+        
 
 	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );
@@ -176,8 +181,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////	
 	
 	//saves time by skipping the rest of the loop if <= 2 preselected leptons
-	//	if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 0)
-	//	  {
+        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
+        {
 
 	    vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
 	    selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
@@ -226,13 +231,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ///
 	    ////////
 
-	    auto lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonLooseMvaBased, 5., selectedElectrons_preselected, electronID::electronLooseMvaBased, 10., selectedJets_forLepMVA);
+	    auto lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonLooseMvaBased, minloosemupt, selectedElectrons_preselected, electronID::electronLooseMvaBased, minlooseelept, selectedJets_forLepMVA);
 	    vecPatMuon selectedMuons_looseMvaBased = std::get<0>(lepTuple);
 	    vecPatElectron selectedElectrons_looseMvaBased = std::get<1>(lepTuple);
 
-	    lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonTightMvaBased, 5., selectedElectrons_preselected, electronID::electronTightMvaBased, 10., selectedJets_forLepMVA);
+	    lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonTightMvaBased, mintightmupt, selectedElectrons_preselected, electronID::electronTightMvaBased, mintightelept, selectedJets_forLepMVA);
 	    vecPatMuon selectedMuons_tightMvaBased = std::get<0>(lepTuple);
 	    vecPatElectron selectedElectrons_tightMvaBased = std::get<1>(lepTuple);
+
+
 
 	    //2lss final state cuts FOR OBJ SYNCHRONIZATION ONLY
 	    // vecPatLepton selectedLeptons_looseMvaBased = fillLeptons(selectedMuons_looseMvaBased,selectedElectrons_looseMvaBased);
@@ -408,7 +415,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    summaryTree->Fill();// fill tree;
 	    
-	    //	  } //end skim if statement
+        } //end skim if statement
 
 } // end event loop
 

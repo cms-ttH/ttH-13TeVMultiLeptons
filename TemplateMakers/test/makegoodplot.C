@@ -5,13 +5,14 @@
 //
 
 #include "MakeGoodPlot_src/MakeGoodPlot.cc"
-
+#include "/afs/cern.ch/user/g/gesmith/nicepalette.h"
 
 void makegoodplot()
 {
 	// declare new instance:
 	MakeGoodPlot *newplot = new MakeGoodPlot();
-	
+	set_plot_style();
+        
         // vector of samples to include in the plot:
 	std::vector<int> samples;
 	std::vector<int> signal;
@@ -25,15 +26,15 @@ void makegoodplot()
 //	samples.push_back(2); // ttbar_bbbar;
 //	samples.push_back(3); // ttbar_b
 //	samples.push_back(4); // ttbar_ccbar
-//	samples.push_back(5); // TTJets
+	samples.push_back(5); // TTJets
 //	samples.push_back(1); // ttH (125)
-//	samples.push_back(6); // ZJets
-//	samples.push_back(7); // WJets
+	samples.push_back(6); // ZJets
+	samples.push_back(7); // WJets
 	samples.push_back(8); // TTWJets
 	samples.push_back(9); // TTZJets
 
-//	samples.push_back(10); // diboson (WZ)
-//        samples.push_back(11); // diboson (ZZ)
+	samples.push_back(10); // diboson (WZ)
+        samples.push_back(11); // diboson (ZZ)
         
 //        samples.push_back(12); // old ttH
         

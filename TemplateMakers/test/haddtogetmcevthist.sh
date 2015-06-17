@@ -11,12 +11,45 @@ destbasedir="."
 
 #declare -a samples=('ttH125' 'ttJets' 'ttwJets' 'ttzJets' 'wJets' 'wzJets' 'zJets' 'zzJets') # charlie
 #declare -a samples=('ttH125')
-declare -a samples=('test2ttH')
-
+#declare -a samples=('test2ttH')
 							                       
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets') 	        # list of samples
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets' 'ZZJets')
-pfx='root://eoscms.cern.ch/'								        # prefix (can be xrootd, if you save certificate in afs area, see runonesshbatch.sh)
+
+
+
+###################################################################
+
+## base eos directory containing the samples:
+#sourcebasedir="/eos/cms/store/user/gesmith/crab3dir/"
+sourcebasedir="/eos/cms/store/user/muell149/ttH-leptons_Skims"
+
+## the crab 3 job that created these samples (directories start diverging from here):
+#joblabel="test2ttH/"
+joblabel="v3p1"
+
+## the samples to look for (the order will probably eventually matter, but not now):
+declare -a samples=(
+    'ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8'
+    'TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola'
+    'DYJetsToLL_M-50_13TeV-madgraph-pythia8'
+    'WJetsToLNu_13TeV-madgraph-pythia8-tauola'
+    'TTWJets_Tune4C_13TeV-madgraph-tauola'
+    'TTZJets_Tune4C_13TeV-madgraph-tauola'
+    'WZJetsTo3LNu_Tune4C_13TeV-madgraph-tauola'
+    'ZZTo4L_Tune4C_13TeV-powheg-pythia8'  
+)
+
+
+
+
+###################################################################
+
+
+
+
+
+pfx='root://eoscms.cern.ch/'
 
 source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
 
@@ -32,10 +65,11 @@ do
 	echo " " 	
 	count=0	
 	
-	#sourcedir=$sourcebasedir/$joblabel/$sample
-	sourcedir=$sourcebasedir/$sample/$joblabel
-        infilearray=($(eos ls $sourcedir/\*.root))
-	sourcedir=$pfx$sourcedir/
+	sourcedir=$sourcebasedir/$joblabel/$sample
+	#sourcedir=$sourcebasedir/$sample/$joblabel
+        #infilearray=($(eos ls $sourcedir/\*.root))
+	infilearray=($(eos find -f $sourcedir | grep -ie ".root"))
+        sourcedir=$pfx$sourcedir/
         
 	echo "sourcedir: $sourcedir"
 		
@@ -47,7 +81,8 @@ do
         echo "destdir: $destdir"
 	echo " "
 	
-        infilearray=(${infilearray[@]/#/$sourcedir})
+        #infilearray=(${infilearray[@]/#/$sourcedir})
+        infilearray=(${infilearray[@]/#/$pfx})
         
   	#fin=$sourcedir/$fin
 	count=$(expr $count + 1)

@@ -1143,7 +1143,7 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonPreselection:
     passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
     //    passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.5);
-    passesIso = true;
+    passesIso = (GetMuonRelIso(iMuon,coneSize::miniIso,corrType::rhoEA) < 0.4);
     if( iMuon.innerTrack().isAvailable() ){
       passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
                                 && (fabs(iMuon.innerTrack()->dz(vertex.position())) < 0.1)
@@ -1319,7 +1319,7 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     break;
   case electronID::electronPreselection:
     //Phys14 MVA ID (only for pT > 10 GeV) for now
-    if (iElectron.pt() > 10) {    //loose WP
+    if (iElectron.pt() > minElectronPt) {
       if ( scEta < 0.8) passesMVA = ( eleMvaNonTrig > 0.35 );
       else if ( scEta < 1.479) passesMVA = ( eleMvaNonTrig > 0.2 );
       else passesMVA = ( eleMvaNonTrig > -0.52 );
@@ -1327,9 +1327,9 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     if( iElectron.gsfTrack().isAvailable() ){
       passGsfTrackID = ( (fabs(iElectron.gsfTrack()->dxy(vertex.position())) < 0.05) && (fabs(iElectron.gsfTrack()->dz(vertex.position())) < 0.1) && iElectron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) <= 1 );
     }
-    passesKinematics = ((iElectron.pt() > 10) && (fabs(iElectron.eta()) < 2.5));
+    passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < 2.5));
     //    passesIso        =  (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.5);
-    passesIso        =  true;
+    passesIso        = (GetElectronRelIso(iElectron,coneSize::miniIso,corrType::rhoEA) < 0.4);
     passesID         = ( passGsfTrackID && passesMVA);    
     break;
   }

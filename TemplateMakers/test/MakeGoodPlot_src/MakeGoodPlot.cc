@@ -2,6 +2,7 @@
 
 #include "TSystem.h"
 #include "TFile.h"
+#include "TColor.h"
 #include "TFileCollection.h"
 #include "TTree.h"
 #include "TChain.h"
@@ -34,8 +35,9 @@
 #include "TVector.h"
 #include "TLorentzVector.h"
 #include "TGraph.h"
-// list of available variables:
-#include "variables.h"
+
+#include "../variables.h"
+#include "../sample_lists.h"
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
 
@@ -320,7 +322,12 @@ class MakeGoodPlot
 		TString int2ss(int theint);
 		std::string TString2string(TString the_abomination);
                 
-                
+                bool passes_common(int sample_number);
+                bool passes_SSee(int sample_number);
+                bool passes_SSemu(int sample_number);
+                bool passes_SSmumu(int sample_number);
+                bool passes_3l(int sample_number);
+                bool passes_4l(int sample_number);
 
 	public:	
 	        void compareplots(std::vector<int> samps, std::vector<TString> tempfiles);
@@ -376,7 +383,7 @@ MakeGoodPlot::~MakeGoodPlot() {}
 //#include "drawROCiso.h"
 //#include "printcutflow.h"
 #include "someutils.h"
-
+#include "categories.h"
 
 
 //_______________________________________________________________
@@ -825,7 +832,7 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
     
             cout << "doing " << sample_names[samp_int] << endl;
 		
-	    sample_hist[i] = new TH2D("blah " + sample_names[samp_int],";awert",20,0,100,20,0,100);
+	    sample_hist[i] = new TH2D("blah " + sample_names[samp_int],";awert",20,0,200,20,0,200);
             sample_hist[i]->Sumw2();
             
 	    get_hist_of_simple_variable_2D(sample_hist[i],samp_int);
@@ -840,10 +847,9 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
             
         }
     
+                
         
-        
-        
-        // do sqrt(s)/b study (where you know which one is the signal):
+        // do s/sqrt(b) study (where you know which one is the signal):
         
         TH2D *sumbkgd;
         TH2D *signal = (TH2D*)sample_hist[0]->Clone("signal");
@@ -859,14 +865,17 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
         {
             for (int j=1; j<=100; j++)
             {
-                double bincont = signal->GetBinContent(i,j);
-                signal->SetBinContent(i,j,bincont);
+                double bincont = sumbkgd->GetBinContent(i,j);
+                sumbkgd->SetBinContent(i,j,sqrt(bincont));
             }
         }
         
         signal->Divide(sumbkgd);
         
-        signal->Draw("COLZ");   
+        signal->SetStats(0);
+        signal->GetXaxis()->SetTitle("lep 1 pt");
+        signal->GetYaxis()->SetTitle("lep 2 pt");
+        signal->Draw("COLZ,TEXT");   
     
     
 }
@@ -914,39 +923,59 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
 
 void MakeGoodPlot::get_hist_of_simple_variable_2D(TH2 *plot, int sample_number)
 {
-	
-	ch[sample_number]->SetBranchAddress( "preselected_leptons", &preselected_leptons_intree );
-	//ch[sample_number]->SetBranchAddress( "pruned_genParticles", &pruned_genParticles_intree );
+	ch[sample_number]->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
+        ch[sample_number]->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
+        ch[sample_number]->SetBranchAddress("preselected_muons", &preselected_muons_intree);
+
+        ch[sample_number]->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
+        ch[sample_number]->SetBranchAddress("looseMvaBased_electrons", &loose_electrons_intree);
+        ch[sample_number]->SetBranchAddress("looseMvaBased_muons", &loose_muons_intree);
+
+        ch[sample_number]->SetBranchAddress("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
+        ch[sample_number]->SetBranchAddress("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
+        ch[sample_number]->SetBranchAddress("tightMvaBased_muons", &tightMvaBased_muons_intree);
+        
+        ch[sample_number]->SetBranchAddress("met", &met_intree);
+        
+        ch[sample_number]->SetBranchAddress("preselected_jets", &preselected_jets_intree);
         ch[sample_number]->SetBranchAddress( "wgt", &wgt_intree );
         
 	cout << sample_number << endl;
 	cout << ch[sample_number]->GetEntries() << endl;
 	
-	for (Int_t i=0;i<ch[sample_number]->GetEntries();i++)
+        int theEntries = ch[sample_number]->GetEntries();
+        
+	for (Int_t i=0;i<theEntries;i++)
 	{
 		ch[sample_number]->GetEntry(i);
-					
+	        
+                //if (!(i%10000)) cout << i << endl;
+                		
 		weight = wgt_intree;
                 
-                double step = 5.;                
+                double step = 10.;                
                 double lowpt = 0.;
-                double highpt = 100.;
+                double highpt = 200.;
                 
                 int numits = (highpt - lowpt) / step;
                 
                 double ptcutx = 0.;
                                 
+                //if (!(passes_common(sample_number) && passes_SSee(sample_number))) continue;                
+                //if (sample_number==5) weight *= 1.55;
+                
+                if (!(passes_common(sample_number) && passes_4l(sample_number))) continue;                
+                
                 for (int i=0; i<=numits; i++)
                 {
                     double ptcuty = 0.;
                     
                     for (int j=0; j<=numits; j++)
-                    {
-                
+                    {                
                         if ((*preselected_leptons_intree).size()>1)
                         {                        
                             if ( ((*preselected_leptons_intree)[0].obj.Pt()>ptcutx) && ((*preselected_leptons_intree)[1].obj.Pt()>ptcuty) )
-                            {
+                            {                                
                                 plot->Fill(ptcutx,ptcuty,weight);
                             }
                         }
