@@ -17,19 +17,19 @@ class TriggerAnaV2: public MultileptonAna, public edm::EDAnalyzer
 		
 		
 		// OSTwoLep-specific vars (here, a bunch of trigger studies/counting stuff)
-		double doublemucount;
-		double doublemucount2;
-		double doublemucount3;
-		double doublemucount4;
-		double doublemucount5;
+		double doublemucount[5];
+		double doublemucount2[5];
+		double doublemucount3[5];
+		double doublemucount4[5];
+		double doublemucount5[5];
 		
-		double doubleelecount;
-		double doubleelecount2;
+		double doubleelecount[5];
+		double doubleelecount2[5];
 		
-		double muelecount;
-		double elemucount; 
+		double muelecount[5];
+		double elemucount[5]; 
 		
-		double tripelcount;
+		double tripelcount[5];
 		
 		double allcount_mumu[1000];
 		double allcount_elel[1000];
@@ -37,12 +37,25 @@ class TriggerAnaV2: public MultileptonAna, public edm::EDAnalyzer
 		double allcount_elmu[1000];		
 		
 		int numpassedcuts;
-		double numpassedmumucuts;
-		double numpassedelelcuts;
-		double numpassedmuelcuts;
-		double numpassedelmucuts;
-		
-		vstring alltriggerstostudy;
+		double numpassedmumucuts[5];
+		double numpassedelelcuts[5];
+		double numpassedmuelcuts[5];
+		double numpassedelmucuts[5];
+                
+                double doublemucount_ext[5];
+                double doubleelecount_ext[5];
+                double muelecount_ext[5];
+                double elemucount_ext[5];	
+                double tripelcount_ext[5];
+
+                double numpassedmumucuts_ext[5];
+                double numpassedelelcuts_ext[5];
+                double numpassedmuelcuts_ext[5];
+                double numpassedelmucuts_ext[5];
+
+                                
+                               
+                vstring alltriggerstostudy;
 		vstring mumutriggerstostudy;
 		vstring eleltriggerstostudy;
 		vstring mueltriggerstostudy;
@@ -50,7 +63,8 @@ class TriggerAnaV2: public MultileptonAna, public edm::EDAnalyzer
 		vstring tripeltriggerstostudy;	
 		
 		string extra_trig;	
-		
+		string extra_trig_mu;
+                
 		//Variables variables;
 		//TTree *summaryTree; //("summaryTree", "Summary Event Values");
 		
@@ -189,6 +203,54 @@ class TriggerAnaV2: public MultileptonAna, public edm::EDAnalyzer
 		
                 TH1D *numInitialWeightedMCevents;
 		
+                //////
+                TH1F *SS2mu_mumu0;
+                TH1F *SS2mu_mumu1;
+                TH1F *SS2mu_mumu2;
+                TH1F *SS2mu_mumu3;
+                
+                TH1F *SS2mu_mumu0_OR;
+                TH1F *SS2mu_mumu1_OR;
+                TH1F *SS2mu_mumu2_OR;
+                TH1F *SS2mu_mumu3_OR;
+                
+                TH1F *SS2mu_mumu_total;
+                
+                TH1F *SS2mu_mu;
+                TH1F *SS2mu_mu_total;
+                
+                //////
+                TH1F *SS2el_elel0;                
+                TH1F *SS2el_elel0_OR;                
+                TH1F *SS2el_elel_total;
+                
+                TH1F *SS2el_el;
+                TH1F *SS2el_el_total;
+                
+                //////
+                TH1F *SSmuel_muel0;                
+                TH1F *SSmuel_muel0_OR;                
+                TH1F *SSmuel_muel_total;
+                
+                TH1F *SSmuel_mu;
+                TH1F *SSmuel_mu_total;
+                
+                //////
+                TH1F *SSelmu_elmu0;                
+                TH1F *SSelmu_elmu0_OR;                
+                TH1F *SSelmu_elmu_total;
+                
+                TH1F *SSelmu_el;
+                TH1F *SSelmu_el_total;
+                
+                
+                
+                
+                
+                
+                
+                
+                
 		// tree branches:
 		double mcwgt_intree;
 		double wgt_intree;
