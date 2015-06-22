@@ -1053,15 +1053,15 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
     return true;
     break;
   case muonID::muonLooseMvaBased:
-    // passesKinematics = true;
-    // passesIso = true;
-    // goodGlb = (iMuon.isGlobalMuon() &&  iMuon.globalTrack()->normalizedChi2() < 3
-    // 	       && iMuon.combinedQuality().chi2LocalPosition < 12 &&
-    // 	       iMuon.combinedQuality().trkKink < 20);
-    // mediumID = (iMuon.innerTrack()->validFraction() >= 0.8 &&
-    // 		  iMuon.segmentCompatibility() >= (goodGlb ? 0.303 : 0.451));
-    // passesID = (GetMuonLepMVA(iMuon,jets) > 0.5 && mediumID );
-    // break;
+    passesKinematics = true;
+    passesIso = true;
+    goodGlb = (iMuon.isGlobalMuon() &&  iMuon.globalTrack()->normalizedChi2() < 3
+	       && iMuon.combinedQuality().chi2LocalPosition < 12 &&
+	       iMuon.combinedQuality().trkKink < 20);
+    mediumID = (iMuon.innerTrack()->validFraction() >= 0.8 &&
+	          iMuon.segmentCompatibility() >= (goodGlb ? 0.303 : 0.451));
+    passesID = (GetMuonLepMVA(iMuon,iJets) > 0.5 && mediumID );
+    break;
   case muonID::muonTightMvaBased:
     passesKinematics = true;
     passesIso = true;
