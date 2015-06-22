@@ -71,6 +71,7 @@ class MakeGoodPlot
 		TGraph *roc_curve[50];
 		
 		TH1F *sample_hist_shared[50][50];
+                TH2D *mgp_sample_hist_2D[50][10];
 		
 		TString sample_names[20];
                 string sample_names_std[20];
@@ -286,7 +287,7 @@ class MakeGoodPlot
 		double get_gaus_shift(int cat_num=0, int sample_number=1);
 		void get_roc_curve(TH1F *sig, TH1F *bkgd, int roc_curve_index); //int &npts, double (&effS)[500], double (&bckR)[500]);
 		void get_hist_of_simple_variable(TH1 *plot, int sample_number=1, TH1 *plot2 = 0, TH1 *plot3 = 0);
-                void get_hist_of_simple_variable_2D(TH2 *plot, int sample_number);
+                void get_hist_of_simple_variable_2D(int sample_number, int sample_index);
 		void get_even_simpler_plot_my_trees(TH1 *plot, int sample_number=1);		
 
 		
@@ -379,9 +380,9 @@ MakeGoodPlot::~MakeGoodPlot() {}
 
 
 #include "initialize.h"  // <- required
-#include "loadsamples.h"  // <- required
+#include "loadsamples2.h"  // <- required
 //#include "drawROCiso.h"
-//#include "printcutflow.h"
+#include "printcutflow.h"
 #include "someutils.h"
 #include "categories.h"
 
@@ -811,7 +812,7 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
     
     	int numsamples = samps.size();
 	
-	TH2D *sample_hist[numsamples];
+	//TH2D *sample_hist[numsamples][5];
 	load_samples(samps);
 	
 	//TLegend* leg = new TLegend(0.55,0.7,0.9,0.9);  /// (0.3,0.77,0.7,0.88)
@@ -831,19 +832,33 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
             int samp_int = samps[i];
     
             cout << "doing " << sample_names[samp_int] << endl;
-		
-	    sample_hist[i] = new TH2D("blah " + sample_names[samp_int],";awert",20,0,200,20,0,200);
-            sample_hist[i]->Sumw2();
+            for (int blah=0; blah<5; blah++) 
+	    {
+                mgp_sample_hist_2D[i][blah] = new TH2D("blah " + sample_names[samp_int] + int2ss(blah),";awert",20,0,100,20,0,100);
+                mgp_sample_hist_2D[i][blah]->Sumw2();
+            }
             
-	    get_hist_of_simple_variable_2D(sample_hist[i],samp_int);
-
+            get_hist_of_simple_variable_2D(samp_int,i);
+            
 	    // float sample_evts = sample_hist[i]->Integral();
 // 	    std::ostringstream sample_evts_ss;
 // 	    sample_evts_ss << sample_evts;
 // 	    std::string sample_evts_string = sample_evts_ss.str();
+            for (int blah=0; blah<5; blah++) 
+	    {
+                //mgp_sample_hist_2D[i][blah]->Scale(10000. * xsecs[samp_int] / (400.*numgen[samp_int]) ); // scaling is AVGD over 400 bins
+                for (int k=1; k<=20; k++)
+                {
+                    for (int j=1; j<=20; j++)
+                    {
+                        double bincont = mgp_sample_hist_2D[i][blah]->GetBinContent(k,j);
+                        mgp_sample_hist_2D[i][blah]->SetBinContent(k,j, (bincont * 10000. * xsecs[samp_int] / numgen[samp_int]) ); // each individual bin is scaled
+                    }
+                }
+                
+            }
             
             
-            sample_hist[i]->Scale(13000 * xsecs[samp_int] / numgen[samp_int]);
             
         }
     
@@ -851,32 +866,42 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
         
         // do s/sqrt(b) study (where you know which one is the signal):
         
-        TH2D *sumbkgd;
-        TH2D *signal = (TH2D*)sample_hist[0]->Clone("signal");
+        TH2D *sumbkgd[5];
+        TH2D *signal[5];
         
-        for (int i=1; i<numsamples; i++)
+        for (int blah=0; blah<5; blah++) 
 	{
-            if (i==1) sumbkgd = (TH2D*)sample_hist[i]->Clone("sumbkgd");
-            else sumbkgd->Add(sample_hist[i]);
-        }
-            
-            
-        for (int i=1; i<=100; i++)
-        {
-            for (int j=1; j<=100; j++)
-            {
-                double bincont = sumbkgd->GetBinContent(i,j);
-                sumbkgd->SetBinContent(i,j,sqrt(bincont));
+        
+
+            signal[blah] = (TH2D*)mgp_sample_hist_2D[0][blah]->Clone("signal"+int2ss(blah));
+
+            for (int i=1; i<numsamples; i++)
+	    {
+                if (i==1) sumbkgd[blah] = (TH2D*)mgp_sample_hist_2D[i][blah]->Clone("sumbkgd"+int2ss(blah));
+                else sumbkgd[blah]->Add(mgp_sample_hist_2D[i][blah]);
             }
-        }
-        
-        signal->Divide(sumbkgd);
-        
-        signal->SetStats(0);
-        signal->GetXaxis()->SetTitle("lep 1 pt");
-        signal->GetYaxis()->SetTitle("lep 2 pt");
-        signal->Draw("COLZ,TEXT");   
+
+
+            for (int i=1; i<=20; i++)
+            {
+                for (int j=1; j<=20; j++)
+                {
+                    double bincont = sumbkgd[blah]->GetBinContent(i,j);
+                    sumbkgd[blah]->SetBinContent(i,j,sqrt(bincont));
+                }
+            }
+
+            signal[blah]->Divide(sumbkgd[blah]);
+
+            signal[blah]->SetStats(0);
+            signal[blah]->GetXaxis()->SetTitle("lep 1 pt");
+            signal[blah]->GetYaxis()->SetTitle("lep 2 pt");
+            
+            TCanvas *heybuddy = new TCanvas("hey"+int2ss(blah),"hey"+int2ss(blah),150,10,990,660);
+            
+            signal[blah]->Draw("COLZ,TEXT");   
     
+        }
     
 }
 //_______________________________________________________________
@@ -921,15 +946,17 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
 }
 
 
-void MakeGoodPlot::get_hist_of_simple_variable_2D(TH2 *plot, int sample_number)
+void MakeGoodPlot::get_hist_of_simple_variable_2D(int sample_number, int sample_index)
 {
-	ch[sample_number]->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
+	int catswitch=-1;
+        
+        ch[sample_number]->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
         ch[sample_number]->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
         ch[sample_number]->SetBranchAddress("preselected_muons", &preselected_muons_intree);
 
-        ch[sample_number]->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
-        ch[sample_number]->SetBranchAddress("looseMvaBased_electrons", &loose_electrons_intree);
-        ch[sample_number]->SetBranchAddress("looseMvaBased_muons", &loose_muons_intree);
+        ch[sample_number]->SetBranchAddress("looseMvaBased_leptons", &looseMvaBased_leptons_intree);
+        ch[sample_number]->SetBranchAddress("looseMvaBased_electrons", &looseMvaBased_electrons_intree);
+        ch[sample_number]->SetBranchAddress("looseMvaBased_muons", &looseMvaBased_muons_intree);
 
         ch[sample_number]->SetBranchAddress("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
         ch[sample_number]->SetBranchAddress("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
@@ -953,39 +980,98 @@ void MakeGoodPlot::get_hist_of_simple_variable_2D(TH2 *plot, int sample_number)
                 		
 		weight = wgt_intree;
                 
-                double step = 10.;                
+                double step = 5.;                
                 double lowpt = 0.;
-                double highpt = 200.;
+                double highpt = 100.;
                 
                 int numits = (highpt - lowpt) / step;
-                
-                double ptcutx = 0.;
-                                
+                                                                
                 //if (!(passes_common(sample_number) && passes_SSee(sample_number))) continue;                
                 //if (sample_number==5) weight *= 1.55;
                 
-                if (!(passes_common(sample_number) && passes_4l(sample_number))) continue;                
+//                 switch (catswitch)
+//                 {                
+//                     case 1: if (!(passes_common(sample_number) && passes_SSee(sample_number))) {continue;} break;   
+//                     case 2: if (!(passes_common(sample_number) && passes_SSmumu(sample_number))) {continue;} break;
+//                     case 3: if (!(passes_common(sample_number) && passes_SSemu(sample_number))) {continue;} break;
+//                     case 4: if (!(passes_common(sample_number) && passes_3l(sample_number))) {continue;} break;
+//                     case 5: if (!(passes_common(sample_number) && passes_4l(sample_number))) {continue;} break;
+//                 }
                 
-                for (int i=0; i<=numits; i++)
+                if (passes_common(sample_number))
                 {
-                    double ptcuty = 0.;
+                    if (passes_SSee(sample_number)) catswitch=0;
+                    else if (passes_SSmumu(sample_number)) catswitch=1;
+                    else if (passes_SSemu(sample_number)) catswitch=2;
+                    else if (passes_3l(sample_number)) catswitch=3;
+                    else if (passes_4l(sample_number)) catswitch=4;
+                }
+                
+                
+                if (catswitch>-1)
+                {
                     
-                    for (int j=0; j<=numits; j++)
-                    {                
-                        if ((*preselected_leptons_intree).size()>1)
-                        {                        
-                            if ( ((*preselected_leptons_intree)[0].obj.Pt()>ptcutx) && ((*preselected_leptons_intree)[1].obj.Pt()>ptcuty) )
-                            {                                
-                                plot->Fill(ptcutx,ptcuty,weight);
-                            }
+                    if (sample_number==5) // ttjets
+                    {
+                        switch (catswitch)
+                        {
+                            case 0: weight *= 1.55; break;
+                            case 1: weight *= 3.3; break;
+                            case 2: weight *= 1.87; break;
+                            case 3: weight *= 2.85; break;
+                            case 4: break;
                         }
-                        
-                        ptcuty += step;
-                        
                     }
                     
-                    ptcutx += step;
+                    
+                    double ptcutx = 0.;
+
+                    for (int i=0; i<=numits; i++)
+                    {
+                        double ptcuty = 0.;
+
+                        for (int j=0; j<=numits; j++)
+                        {                
+                            if ((*preselected_leptons_intree).size()>1)
+                            {                        
+                                
+                                if (catswitch<3 && (*tightMvaBased_leptons_intree).size()==2 && (*looseMvaBased_leptons_intree).size()<4)
+                                {                                                                
+                                    if ( ((*tightMvaBased_leptons_intree)[0].obj.Pt()>ptcutx) && ((*tightMvaBased_leptons_intree)[1].obj.Pt()>ptcuty) )
+                                    {                                
+                                        mgp_sample_hist_2D[sample_index][catswitch]->Fill(ptcutx,ptcuty,weight);
+                                    }
+                                }
+                                
+                                if (catswitch==3 && (*tightMvaBased_leptons_intree).size()==3 && (*looseMvaBased_leptons_intree).size()<4)
+                                {
+                                    if ( ((*tightMvaBased_leptons_intree)[0].obj.Pt()>ptcutx) && ((*tightMvaBased_leptons_intree)[1].obj.Pt()>ptcuty) )
+                                    {                                
+                                        mgp_sample_hist_2D[sample_index][catswitch]->Fill(ptcutx,ptcuty,weight);
+                                    }
+                                
+                                }
+                                
+                                if (catswitch==4 && (*looseMvaBased_leptons_intree).size()==4)
+                                {
+                                    if ( ((*looseMvaBased_leptons_intree)[0].obj.Pt()>ptcutx) && ((*looseMvaBased_leptons_intree)[1].obj.Pt()>ptcuty) )
+                                    {                                
+                                        mgp_sample_hist_2D[sample_index][catswitch]->Fill(ptcutx,ptcuty,weight);
+                                    }
+                                
+                                
+                                }
+                            }
+
+                            ptcuty += step;
+
+                        }
+
+                        ptcutx += step;
+                    }
                 }
+                
+                
 
 	}
 

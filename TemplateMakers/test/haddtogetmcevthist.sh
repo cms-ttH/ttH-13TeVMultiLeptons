@@ -21,12 +21,13 @@ destbasedir="."
 ###################################################################
 
 ## base eos directory containing the samples:
-#sourcebasedir="/eos/cms/store/user/gesmith/crab3dir/"
-sourcebasedir="/eos/cms/store/user/muell149/ttH-leptons_Skims"
+sourcebasedir="/eos/cms/store/user/gesmith/crab3dir/"
+#sourcebasedir="/eos/cms/store/user/muell149/ttH-leptons_Skims"
 
 ## the crab 3 job that created these samples (directories start diverging from here):
 #joblabel="test2ttH/"
-joblabel="v3p1"
+joblabel="v4p2"
+#joblabel="trigtest3"
 
 ## the samples to look for (the order will probably eventually matter, but not now):
 declare -a samples=(
@@ -37,7 +38,7 @@ declare -a samples=(
     'TTWJets_Tune4C_13TeV-madgraph-tauola'
     'TTZJets_Tune4C_13TeV-madgraph-tauola'
     'WZJetsTo3LNu_Tune4C_13TeV-madgraph-tauola'
-    'ZZTo4L_Tune4C_13TeV-powheg-pythia8'  
+    'ZZTo4L_Tune4C_13TeV-powheg-pythia8'
 )
 
 

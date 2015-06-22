@@ -104,8 +104,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         ch[samp_int]->SetBranchAddress("tightMvaBased_muons", &tightMvaBased_muons_intree);
 
         ch[samp_int]->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-        ch[samp_int]->SetBranchAddress("loose_bJets", &loose_bJets_intree);
-        ch[samp_int]->SetBranchAddress("tight_bJets", &tight_bJets_intree);
+        //ch[samp_int]->SetBranchAddress("loose_bJets", &loose_bJets_intree);
+        //ch[samp_int]->SetBranchAddress("tight_bJets", &tight_bJets_intree);
         ch[samp_int]->SetBranchAddress("met", &met_intree);
         //ch[samp_int]->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree); //<-
 
@@ -144,7 +144,9 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
 //             if (abs(thechildpdgid)==23) hdecayindex = 3;
 //         
             // common
-
+            auto tight_bJets_intree2 = keepTagged(*preselected_jets_intree,"M");
+            auto loose_bJets_intree2 = keepUnTagged(*preselected_jets_intree,"L");
+            
             if (!(((*preselected_leptons_intree).size()>3) || ((*tightMvaBased_leptons_intree).size()>1))) continue;                
             commoncuts[0][samp_int][hdecayindex] += wgt_intree;        
 
@@ -158,14 +160,15 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             if (!((*preselected_jets_intree).size()>1)) continue;
             commoncuts[3][samp_int][hdecayindex] += wgt_intree;
 
-            if (!(((*loose_bJets_intree).size()>1) || ((*tight_bJets_intree).size()>0))) continue;
+            if (!((loose_bJets_intree2.size()>1) || (tight_bJets_intree2.size()>0))) continue;
             commoncuts[4][samp_int][hdecayindex] += wgt_intree;
 
             // 2e
 
-            if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*loose_leptons_intree).size()<4) ) 
+            //if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*loose_leptons_intree).size()<4) ) 
+            if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*loose_leptons_intree).size()==2) && ((*preselected_leptons_intree).size()==2) )
             {
-                if (samp_int==5) wgt_intree *= 1.55; //ttjets
+                //if (samp_int==5) wgt_intree *= 1.55; //ttjets
                 ss_2e_cuts[0][samp_int][hdecayindex] += wgt_intree;
 
                 if ((*tightMvaBased_electrons_intree)[0].charge==(*tightMvaBased_electrons_intree)[1].charge)
@@ -212,9 +215,10 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
 
             // 2 mu
 
-            if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*loose_leptons_intree).size()<4) ) 
+            //if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*loose_leptons_intree).size()<4) ) 
+            if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*loose_leptons_intree).size()==2) && ((*preselected_leptons_intree).size()==2) )
             {
-                if (samp_int==5) wgt_intree *= 3.3; //ttjets
+                //if (samp_int==5) wgt_intree *= 3.3; //ttjets
                 ss_2mu_cuts[0][samp_int][hdecayindex] += wgt_intree;
 
                 if ((*tightMvaBased_muons_intree)[0].charge==(*tightMvaBased_muons_intree)[1].charge)
@@ -254,9 +258,10 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         
             // 1 mu, 1 ele
             
-            if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*loose_leptons_intree).size()<4) ) 
+            //if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*loose_leptons_intree).size()<4) ) 
+            if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*loose_leptons_intree).size()==2) && ((*preselected_leptons_intree).size()==2) )
             {
-                if (samp_int==5) wgt_intree *= 1.87; //ttjets
+                //if (samp_int==5) wgt_intree *= 1.87; //ttjets
                 ss_emu_cuts[0][samp_int][hdecayindex] += wgt_intree;
 
                 if ((*tightMvaBased_electrons_intree)[0].charge==(*tightMvaBased_muons_intree)[0].charge)
@@ -296,9 +301,10 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             
             // 3l
             
-            if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*loose_leptons_intree).size()<4) ) 
+            //if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*loose_leptons_intree).size()<4) ) 
+            if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*loose_leptons_intree).size()==3) && ((*preselected_leptons_intree).size()==3) )
             {
-                if (samp_int==5) wgt_intree *= 2.85; //ttjets
+                //if (samp_int==5) wgt_intree *= 2.85; //ttjets
                 threel_cuts[0][samp_int][hdecayindex] += wgt_intree;
 
                 auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
@@ -321,7 +327,7 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             
             // 4l
             
-            if ((*loose_leptons_intree).size()==4)
+            if ((*loose_leptons_intree).size()==4 && ((*preselected_leptons_intree).size()==4) )
             {
                 fourl_cuts[0][samp_int][hdecayindex] += wgt_intree;
 
@@ -695,6 +701,9 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
         printf ("\n");        
         cout << " " << endl;
+        printf ("%40s", "no cuts");        
+        for (int j=0; j<numsamples; j++) printf ("%15.2f", numgen[samps[j]]);
+        printf ("\n");
         
         for (int i=0; i<commoncuts_str.size(); i++)
         {
@@ -727,7 +736,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             
             for (int j=0; j<numsamples; j++)
             {    
-                int samp_int = samps[j];            
+                int samp_int = samps[j];
+                if (samp_int==5) ss_2e_cuts[i][samp_int][0] *= 1.55;
                 printf ("%15.2f", ss_2e_cuts[i][samp_int][0]);
             }
             
@@ -748,7 +758,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             
             for (int j=0; j<numsamples; j++)
             {    
-                int samp_int = samps[j];            
+                int samp_int = samps[j];  
+                if (samp_int==5) ss_2mu_cuts[i][samp_int][0] *= 3.3;         
                 printf ("%15.2f", ss_2mu_cuts[i][samp_int][0]);
             }
             
@@ -769,7 +780,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             
             for (int j=0; j<numsamples; j++)
             {    
-                int samp_int = samps[j];            
+                int samp_int = samps[j]; 
+                if (samp_int==5) ss_emu_cuts[i][samp_int][0] *= 1.87;           
                 printf ("%15.2f", ss_emu_cuts[i][samp_int][0]);
             }
             
@@ -792,7 +804,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             
             for (int j=0; j<numsamples; j++)
             {    
-                int samp_int = samps[j];            
+                int samp_int = samps[j];  
+                if (samp_int==5) threel_cuts[i][samp_int][0] *= 2.85;          
                 printf ("%15.2f", threel_cuts[i][samp_int][0]);
             }
             
@@ -841,6 +854,9 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
         printf ("\n");
         cout << " " << endl;
+        printf ("%40s", "no cuts");        
+        for (int j=0; j<numsamples; j++) printf ("%15.2f", 10000.*xsecs[samps[j]]);
+        printf ("\n");
         
         for (int i=0; i<commoncuts_str.size(); i++)
         {

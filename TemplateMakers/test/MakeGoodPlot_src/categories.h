@@ -22,7 +22,7 @@ bool MakeGoodPlot::passes_SSee(int sample_number)
 {
     bool passes = false;
     
-    if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*loose_leptons_intree).size()<4) ) 
+    if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*looseMvaBased_leptons_intree).size()<4) ) 
     {
         if ((*tightMvaBased_electrons_intree)[0].charge==(*tightMvaBased_electrons_intree)[1].charge)
         {
@@ -60,7 +60,7 @@ bool MakeGoodPlot::passes_SSmumu(int sample_number)
 {
     bool passes = false;
     
-    if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*loose_leptons_intree).size()<4) ) 
+    if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*looseMvaBased_leptons_intree).size()<4) ) 
     {
         if ((*tightMvaBased_muons_intree)[0].charge==(*tightMvaBased_muons_intree)[1].charge)
         {            
@@ -93,7 +93,7 @@ bool MakeGoodPlot::passes_SSemu(int sample_number)
 {
     bool passes = false;
     
-    if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*loose_leptons_intree).size()<4) ) 
+    if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*looseMvaBased_leptons_intree).size()<4) ) 
     {
         if ((*tightMvaBased_electrons_intree)[0].charge==(*tightMvaBased_muons_intree)[0].charge)
         {
@@ -126,7 +126,7 @@ bool MakeGoodPlot::passes_3l(int sample_number)
 {
     bool passes = false;
     
-    if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*loose_leptons_intree).size()<4) ) 
+    if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*looseMvaBased_leptons_intree).size()<4) ) 
     {
         auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
         double MHT_handle = objs_for_mht.Pt();
@@ -149,11 +149,11 @@ bool MakeGoodPlot::passes_4l(int sample_number)
 {
     bool passes = false;
     
-    if ((*loose_leptons_intree).size()==4)
+    if ((*looseMvaBased_leptons_intree).size()==4)
     {
-        if ( ((*loose_leptons_intree)[0].charge + (*loose_leptons_intree)[1].charge + (*loose_leptons_intree)[2].charge + (*loose_leptons_intree)[3].charge)==0 )
+        if ( ((*looseMvaBased_leptons_intree)[0].charge + (*looseMvaBased_leptons_intree)[1].charge + (*looseMvaBased_leptons_intree)[2].charge + (*looseMvaBased_leptons_intree)[3].charge)==0 )
         {
-            double vetoZmassSFOS = pickFromSortedTwoObjKine(*loose_leptons_intree,"massSFOS",1,91.2);
+            double vetoZmassSFOS = pickFromSortedTwoObjKine(*looseMvaBased_leptons_intree,"massSFOS",1,91.2);
 
             if (fabs(vetoZmassSFOS-91.2)>10.)                     
             {        
