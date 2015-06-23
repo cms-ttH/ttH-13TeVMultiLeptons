@@ -932,7 +932,8 @@ void TriggerAnaV2::analyze(const edm::Event& event, const edm::EventSetup& evset
 	extra_trig = alltriggerstostudy[9];
 	
         //extra_trig_mu = "HLT_IsoMu24_IterTrk02_v1";
-        extra_trig_mu = "HLT_IsoMu24_eta2p1_v1"; // HLT_IsoMu27_v2 also unpscd
+        //extra_trig_mu = "HLT_IsoMu24_eta2p1_v1"; // HLT_IsoMu27_v2 also unpscd
+        extra_trig_mu = "HLT_IsoMu27_v1";
         
         //int extratrigindex = hltConfig_.triggerIndex(extra_trig);
 

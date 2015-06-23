@@ -49,7 +49,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		double wgt_intree;
 		double wallTimePerEvent_intree;
                 
-                bool passTrigger_intree;
+        vstring passTrigger_intree;
 
 		int eventnum_intree;
 		int higgs_decay_intree;
@@ -57,7 +57,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int lumiBlock_intree;
 		int runNumber_intree;
 		
-                vector<ttH::Lepton> preselected_leptons_intree;
+        vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> loose_leptons_intree;
 		vector<ttH::Lepton> looseMvaBased_leptons_intree;
 		vector<ttH::Lepton> tightMvaBased_leptons_intree;
@@ -69,14 +69,14 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::Electron> tightMvaBased_electrons_intree;
 
 		vector<ttH::Muon> raw_muons_intree;
-                vector<ttH::Muon> preselected_muons_intree;
-                vector<ttH::Muon> loose_muons_intree;
-                vector<ttH::Muon> looseMvaBased_muons_intree;
-                vector<ttH::Muon> tightMvaBased_muons_intree;
+		vector<ttH::Muon> preselected_muons_intree;
+		vector<ttH::Muon> loose_muons_intree;
+		vector<ttH::Muon> looseMvaBased_muons_intree;
+		vector<ttH::Muon> tightMvaBased_muons_intree;
 
-                vector<ttH::Jet> raw_jets_intree;
-                vector<ttH::Jet> preselected_jets_intree;
-                vector<ttH::Jet> preselected_jets_uncor_intree;
+		vector<ttH::Jet> raw_jets_intree;
+		vector<ttH::Jet> preselected_jets_intree;
+		vector<ttH::Jet> preselected_jets_uncor_intree;
                 
 		vector<ttH::Jet> loose_bJets_intree;
 		vector<ttH::Jet> tight_bJets_intree;
@@ -99,6 +99,7 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("higgs_decay", &higgs_decay_intree);
   
   summaryTree->Branch("passTrigger", &passTrigger_intree);
+  //summaryTree->Branch("passTrigger", passTrigger_intree, "passTrigger/C");
   
   summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
   summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
@@ -138,7 +139,8 @@ void OSTwoLepAna::initialize_variables()
   eventnum_intree = -99;
   lumiBlock_intree = -99;
   runNumber_intree = -99;
-  passTrigger_intree = false;
+  //passTrigger_intree = false;
+  passTrigger_intree.clear();
   preselected_leptons_intree.clear();
   preselected_electrons_intree.clear();
   preselected_muons_intree.clear();

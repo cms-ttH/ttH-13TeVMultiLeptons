@@ -22,7 +22,8 @@ bool MakeGoodPlot::passes_SSee(int sample_number)
 {
     bool passes = false;
     
-    if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*looseMvaBased_leptons_intree).size()<4) ) 
+    //if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*looseMvaBased_leptons_intree).size()<4) ) 
+    if ( ((*tightMvaBased_electrons_intree).size()==2) && ((*tightMvaBased_muons_intree).size()==0) && ((*looseMvaBased_leptons_intree).size()==2) && ((*preselected_leptons_intree).size()==2) )
     {
         if ((*tightMvaBased_electrons_intree)[0].charge==(*tightMvaBased_electrons_intree)[1].charge)
         {
@@ -32,12 +33,12 @@ bool MakeGoodPlot::passes_SSee(int sample_number)
                 double MHT_handle = objs_for_mht.Pt();
                 double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
 
-                if (metLD_handle> 0.2)
-                {
+                //if (metLD_handle> 0.2)
+                //{
 //                    if ((*tightMvaBased_electrons_intree)[0].obj.Pt()>20 && (*tightMvaBased_electrons_intree)[1].obj.Pt()>20)
 //                    {
-                        if (((*tightMvaBased_electrons_intree)[0].obj.Pt() + (*tightMvaBased_electrons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
-                        {
+                        //if (((*tightMvaBased_electrons_intree)[0].obj.Pt() + (*tightMvaBased_electrons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
+                        //{
                             double vetoZmass = pickFromSortedTwoObjKine(*preselected_electrons_intree,"mass",1,91.2);
 
                             if (fabs(vetoZmass-91.2)>10)                     
@@ -47,9 +48,9 @@ bool MakeGoodPlot::passes_SSee(int sample_number)
                                     passes = true;
                                 }
                             }
-                        }
+                        //}
 //                    }
-                }
+                //}
             }
         }
     }
@@ -60,7 +61,8 @@ bool MakeGoodPlot::passes_SSmumu(int sample_number)
 {
     bool passes = false;
     
-    if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*looseMvaBased_leptons_intree).size()<4) ) 
+    //if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*looseMvaBased_leptons_intree).size()<4) ) 
+    if ( ((*tightMvaBased_electrons_intree).size()==0) && ((*tightMvaBased_muons_intree).size()==2) && ((*looseMvaBased_leptons_intree).size()==2) && ((*preselected_leptons_intree).size()==2) )
     {
         if ((*tightMvaBased_muons_intree)[0].charge==(*tightMvaBased_muons_intree)[1].charge)
         {            
@@ -70,19 +72,19 @@ bool MakeGoodPlot::passes_SSmumu(int sample_number)
                 double MHT_handle = objs_for_mht.Pt();
                 double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
 
-                if (metLD_handle> 0.2)
-                {                    
+                //if (metLD_handle> 0.2)
+                //{                    
 //                    if ((*tightMvaBased_muons_intree)[0].obj.Pt()>20 && (*tightMvaBased_muons_intree)[1].obj.Pt()>20)
 //                    {                        
-                        if (((*tightMvaBased_muons_intree)[0].obj.Pt() + (*tightMvaBased_muons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
-                        {                            
+                        //if (((*tightMvaBased_muons_intree)[0].obj.Pt() + (*tightMvaBased_muons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
+                        //{                            
                             if ((*tightMvaBased_muons_intree)[0].chargeFlip<0.2 && (*tightMvaBased_muons_intree)[1].chargeFlip<0.2)
                             {                                    
                                 passes = true;
                             }
-                        }
+                        //}
 //                    }
-                }
+                //}
             }
         }
     }
@@ -93,7 +95,8 @@ bool MakeGoodPlot::passes_SSemu(int sample_number)
 {
     bool passes = false;
     
-    if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*looseMvaBased_leptons_intree).size()<4) ) 
+    //if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*looseMvaBased_leptons_intree).size()<4) ) 
+    if ( ((*tightMvaBased_electrons_intree).size()==1) && ((*tightMvaBased_muons_intree).size()==1) && ((*looseMvaBased_leptons_intree).size()==2) && ((*preselected_leptons_intree).size()==2) )
     {
         if ((*tightMvaBased_electrons_intree)[0].charge==(*tightMvaBased_muons_intree)[0].charge)
         {
@@ -103,19 +106,19 @@ bool MakeGoodPlot::passes_SSemu(int sample_number)
                 double MHT_handle = objs_for_mht.Pt();
                 double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
 
-                if (metLD_handle> 0.2)
-                {
+                //if (metLD_handle> 0.2)
+                //{
 //                    if ((*tightMvaBased_muons_intree)[0].obj.Pt()>20 && (*tightMvaBased_electrons_intree)[0].obj.Pt()>20)
 //                    {
-                        if (((*tightMvaBased_muons_intree)[0].obj.Pt() + (*tightMvaBased_electrons_intree)[0].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
-                        {
+                        //if (((*tightMvaBased_muons_intree)[0].obj.Pt() + (*tightMvaBased_electrons_intree)[0].obj.Pt() + (*met_intree)[0].obj.Pt())>100.)
+                        //{
                             if ((*tightMvaBased_muons_intree)[0].chargeFlip<0.2 && (*tightMvaBased_electrons_intree)[0].isGsfCtfScPixChargeConsistent)
                             {                                    
                                 passes = true;
                             }
-                        }
+                        //}
 //                    }
-                }
+                //}
             }
         }
     }
@@ -126,7 +129,8 @@ bool MakeGoodPlot::passes_3l(int sample_number)
 {
     bool passes = false;
     
-    if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*looseMvaBased_leptons_intree).size()<4) ) 
+    //if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*looseMvaBased_leptons_intree).size()<4) ) 
+    if ( ((*tightMvaBased_leptons_intree).size()==3) && ((*looseMvaBased_leptons_intree).size()==3) && ((*preselected_leptons_intree).size()==3) )
     {
         auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
         double MHT_handle = objs_for_mht.Pt();
@@ -149,7 +153,8 @@ bool MakeGoodPlot::passes_4l(int sample_number)
 {
     bool passes = false;
     
-    if ((*looseMvaBased_leptons_intree).size()==4)
+    //if ((*looseMvaBased_leptons_intree).size()==4)
+    if ((*looseMvaBased_leptons_intree).size()==4 && ((*preselected_leptons_intree).size()==4) )
     {
         if ( ((*looseMvaBased_leptons_intree)[0].charge + (*looseMvaBased_leptons_intree)[1].charge + (*looseMvaBased_leptons_intree)[2].charge + (*looseMvaBased_leptons_intree)[3].charge)==0 )
         {

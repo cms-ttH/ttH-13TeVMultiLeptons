@@ -834,7 +834,7 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
             cout << "doing " << sample_names[samp_int] << endl;
             for (int blah=0; blah<5; blah++) 
 	    {
-                mgp_sample_hist_2D[i][blah] = new TH2D("blah " + sample_names[samp_int] + int2ss(blah),";awert",20,0,100,20,0,100);
+                mgp_sample_hist_2D[i][blah] = new TH2D("blah " + sample_names[samp_int] + int2ss(blah),";awert",20,0,25,20,0,25);
                 mgp_sample_hist_2D[i][blah]->Sumw2();
             }
             
@@ -891,7 +891,7 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
                 }
             }
 
-            signal[blah]->Divide(sumbkgd[blah]);
+            //signal[blah]->Divide(sumbkgd[blah]);
 
             signal[blah]->SetStats(0);
             signal[blah]->GetXaxis()->SetTitle("lep 1 pt");
@@ -948,8 +948,7 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
 
 void MakeGoodPlot::get_hist_of_simple_variable_2D(int sample_number, int sample_index)
 {
-	int catswitch=-1;
-        
+	        
         ch[sample_number]->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
         ch[sample_number]->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
         ch[sample_number]->SetBranchAddress("preselected_muons", &preselected_muons_intree);
@@ -974,15 +973,17 @@ void MakeGoodPlot::get_hist_of_simple_variable_2D(int sample_number, int sample_
         
 	for (Int_t i=0;i<theEntries;i++)
 	{
-		ch[sample_number]->GetEntry(i);
+		int catswitch=-1;
+                
+                ch[sample_number]->GetEntry(i);
 	        
                 //if (!(i%10000)) cout << i << endl;
                 		
 		weight = wgt_intree;
                 
-                double step = 5.;                
+                double step = 1.25;                
                 double lowpt = 0.;
-                double highpt = 100.;
+                double highpt = 25.;
                 
                 int numits = (highpt - lowpt) / step;
                                                                 

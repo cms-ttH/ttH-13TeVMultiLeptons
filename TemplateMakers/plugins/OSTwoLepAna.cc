@@ -269,6 +269,83 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    //do anything to pat met here
 
+
+		/////////
+	    ///
+	    /// Trigger
+	    ///
+	    ////////
+
+		vstring hlt_alltrigs;
+
+		// single lep
+		
+		string hlt_singlemu0 = "HLT_IsoMu24_eta2p1_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ?
+		hlt_alltrigs.push_back(hlt_singlemu0);
+		string hlt_singlemu1 = "HLT_IsoMu27_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ?
+		hlt_alltrigs.push_back(hlt_singlemu1);		
+		string hlt_singlemu2 = "HLT_IsoTkMu27_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ?
+		hlt_alltrigs.push_back(hlt_singlemu2);
+		
+		
+		string hlt_singleel0 = "HLT_Ele32_eta2p1_WP75_Gsf_v1";
+		hlt_alltrigs.push_back(hlt_singleel0);
+		
+		// double lep
+		
+		string hlt_doublemu0 = "HLT_Mu17_Mu8_DZ_v1";
+		hlt_alltrigs.push_back(hlt_doublemu0);
+		string hlt_doublemu1 = "HLT_Mu17_TkMu8_DZ_v1";
+		hlt_alltrigs.push_back(hlt_doublemu1);
+		string hlt_doublemu2 = "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1";
+		hlt_alltrigs.push_back(hlt_doublemu2);
+		string hlt_doublemu3 = "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1";
+		hlt_alltrigs.push_back(hlt_doublemu3);
+		
+		string hlt_doubleel0 = "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1";
+		hlt_alltrigs.push_back(hlt_doubleel0);
+		
+		string hlt_muel0 = "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1";
+		hlt_alltrigs.push_back(hlt_muel0);
+		
+		string hlt_elmu0 = "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1";
+		hlt_alltrigs.push_back(hlt_elmu0);
+		
+		// triple lep
+		
+		string hlt_elelel0 = "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1";
+		hlt_alltrigs.push_back(hlt_elelel0);
+		
+		string hlt_mumumu0 = "HLT_TripleMu_12_10_5_v1";
+		hlt_alltrigs.push_back(hlt_mumumu0);
+		
+		string hlt_muelel0 = "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1";
+		hlt_alltrigs.push_back(hlt_muelel0);
+		
+		string hlt_mumuel0 = "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1";
+		hlt_alltrigs.push_back(hlt_mumuel0);		
+		
+		// .. quad lep?
+
+		
+		// if event passes an HLT path add it to the tree:
+		for (unsigned int trigit=0; trigit<hlt_alltrigs.size(); trigit++)
+		{
+			//try
+			//{
+				if (triggerResults->accept(hltConfig_.triggerIndex(hlt_alltrigs[trigit])))
+				{
+					passTrigger_intree.push_back(hlt_alltrigs[trigit]);
+				}
+			//}
+			//catch(...)
+			//{
+			//	continue;
+			//}
+			
+		}
+
+
 	    /////////////////////////
 	    //////
 	    ////// fill the collections

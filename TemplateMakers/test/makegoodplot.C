@@ -28,13 +28,13 @@ void makegoodplot()
 //	samples.push_back(3); // ttbar_b
 //	samples.push_back(4); // ttbar_ccbar
 
-	samples.push_back(5); // TTJets
-	samples.push_back(6); // ZJets
-	samples.push_back(7); // WJets
+//	samples.push_back(5); // TTJets
+//	samples.push_back(6); // ZJets
+//	samples.push_back(7); // WJets
 	samples.push_back(8); // TTWJets
-	samples.push_back(9); // TTZJets
-	samples.push_back(10); // diboson (WZ)
-        samples.push_back(11); // diboson (ZZ)
+//	samples.push_back(9); // TTZJets
+//	samples.push_back(10); // diboson (WZ)
+//        samples.push_back(11); // diboson (ZZ)
         
 //        samples.push_back(12); // old ttH
         
@@ -65,7 +65,7 @@ void makegoodplot()
 //	newplot->make_simple_plot_mytrees("1pt0shift",0);
 //	newplot->make_simple_plot_mytrees("2pt0shift",0);
 
-        newplot->print_cutflow(samples);
+        //newplot->print_cutflow(samples);
 
 	//newplot->draw_ROC_iso(signal);
 
@@ -78,7 +78,7 @@ void makegoodplot()
         //newplot->compareplots(samples,somefiles);
 
         
-        //newplot->draw_2D_plot(samples);
+        newplot->draw_2D_plot(samples);
         
 
 
