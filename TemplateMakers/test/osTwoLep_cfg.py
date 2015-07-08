@@ -20,7 +20,7 @@ process.prefer("GlobalTag")
 
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(500) # number of events
+    	input = cms.untracked.int32(1000) # number of events
 )
 
 process.source = cms.Source("PoolSource",
@@ -199,8 +199,9 @@ process.OSTwoLepAna.triggers.trigger_vstring = ( "HLT_Mu17_Mu8_v1",
 ## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
                                    #fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + ".root") # name of output file
-                                   fileName = cms.string("multileptree.root") # name of output file
-				   )
+                                   #fileName = cms.string("multilep_1000evtsCollstest2.root") # name of output file
+				   fileName = cms.string("multilep.root")
+                                   )
 
 
 process.p = cms.Path(process.OSTwoLepAna)

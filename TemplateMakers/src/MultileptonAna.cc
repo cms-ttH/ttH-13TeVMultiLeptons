@@ -765,11 +765,17 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.mvaID = mvaID_->mvaValue(iEle,false); //debug=false
       
       if (iEle.genLepton())
-	{
+        {
 	const reco::Candidate* genMother = GetGenMotherNoFsr(iEle.genLepton());
-	ele.genMotherPdgID = genMother->pdgId();
+	ele.genMotherPdgID = genMother->pdgId();        
+        const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
+        ele.genGrandMotherPdgID = genGrandMother->pdgId();
 	}
-      else ele.genMotherPdgID = 9999;
+      else 
+      {
+        ele.genMotherPdgID = 9999;
+        ele.genGrandMotherPdgID = 9999;
+      }
       eleCollection.push_back(ele);
     }
   return eleCollection;
@@ -843,8 +849,14 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
 	{
 	const reco::Candidate* genMother = GetGenMotherNoFsr(iMu.genLepton());
 	mu.genMotherPdgID = genMother->pdgId();
+        const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
+        mu.genGrandMotherPdgID = genGrandMother->pdgId();
 	}
-      else mu.genMotherPdgID = 9999;
+      else
+      {
+        mu.genMotherPdgID = 9999;
+        mu.genGrandMotherPdgID = 9999;
+      }
       muCollection.push_back(mu);
     }
   return muCollection;
@@ -1143,7 +1155,8 @@ bool MultileptonAna::isGoodMuon(const pat::Muon& iMuon, const float iMinPt, cons
   case muonID::muonPreselection:
     passesKinematics = ((iMuon.pt() > minMuonPt) && (fabs(iMuon.eta()) < 2.4));
     //    passesIso = (GetMuonRelIso(iMuon,coneSize::R03,corrType::rhoEA) < 0.5);
-    passesIso = (GetMuonRelIso(iMuon,coneSize::miniIso,corrType::rhoEA) < 0.4);
+    //passesIso = (GetMuonRelIso(iMuon,coneSize::miniIso,corrType::rhoEA) < 0.4);
+    passesIso = true;
     if( iMuon.innerTrack().isAvailable() ){
       passesMuonBestTrackID = ( (fabs(iMuon.innerTrack()->dxy(vertex.position())) < 0.05)
                                 && (fabs(iMuon.innerTrack()->dz(vertex.position())) < 0.1)
@@ -1329,7 +1342,8 @@ bool MultileptonAna::isGoodElectron(const pat::Electron& iElectron, const float 
     }
     passesKinematics = ((iElectron.pt() > minElectronPt) && (fabs(iElectron.eta()) < 2.5));
     //    passesIso        =  (GetElectronRelIso(iElectron,coneSize::R03,corrType::rhoEA) < 0.5);
-    passesIso        = (GetElectronRelIso(iElectron,coneSize::miniIso,corrType::rhoEA) < 0.4);
+    //passesIso        = (GetElectronRelIso(iElectron,coneSize::miniIso,corrType::rhoEA) < 0.4);
+    passesIso = true;
     passesID         = ( passGsfTrackID && passesMVA);    
     break;
   }

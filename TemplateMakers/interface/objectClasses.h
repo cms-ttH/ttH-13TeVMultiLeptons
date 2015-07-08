@@ -19,6 +19,7 @@ namespace ttH
     double relIso;
     double miniIso;
     int genMotherPdgID;
+    int genGrandMotherPdgID;
 
     //lepMVA variables
     double lepMVA;

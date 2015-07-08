@@ -11,7 +11,7 @@ sourcebasedir="/eos/cms/store/user/gesmith/crab3dir/"
 
 ## the crab 3 job that created these samples (directories start diverging from here):
 #joblabel="test2ttH/"
-joblabel="v4p2/"
+joblabel="v4p2p1/"
 
 ## the samples to look for (the order will probably eventually matter, but not now):
 declare -a samples=(

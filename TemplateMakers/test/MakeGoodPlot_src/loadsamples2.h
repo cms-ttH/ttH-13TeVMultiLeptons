@@ -33,7 +33,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
                         for (int sampvectit=0; sampvectit<dummy.size(); sampvectit++) ch[1]->Add(dummy[sampvectit].c_str());
                         xsecs[1]=0.5085*0.423; // non-bb
 			//numgen[1]=2600389.15887; // 2576712 unweighted events, 765270.5 weighted (+/-1) events
-                        numgen[1]=765356.0;
+                        numgen[1]=765356.0; // <- no jobs failing
 		}
 		if (samps[i]==2)
 		{

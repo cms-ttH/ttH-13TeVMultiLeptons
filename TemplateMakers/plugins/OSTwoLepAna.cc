@@ -159,7 +159,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );
 	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );
 	vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, 5., muonID::muonRaw );
-	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 10., muonID::muonPreselection );
+	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 5., muonID::muonPreselection ); // was *muons, 10., muonID::muonPreselection
 	//	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
 
 	/////////
@@ -172,7 +172,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	
 
 	//make sure the electrons used for jet cleaning are already cleaned of muons
-	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons(selectedElectrons_preselected, 10., electronID::electronPreselection);
+	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons(selectedElectrons_preselected, 7., electronID::electronPreselection); // was selectedElectrons_preselected, 10., electronID::electronPreselection
 
 	/////////
 	///
@@ -209,7 +209,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
 	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);
             vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
-	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 10., 2.4, jetID::none, '-' );
+	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                                  // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
 
 	    vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  					 
 	    vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' ); 
@@ -280,11 +280,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 		// single lep
 		
-		string hlt_singlemu0 = "HLT_IsoMu24_eta2p1_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ?
+		string hlt_singlemu0 = "HLT_IsoMu24_eta2p1_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? //// "to be kept ps'd" ?! not according to google doc...
 		hlt_alltrigs.push_back(hlt_singlemu0);
-		string hlt_singlemu1 = "HLT_IsoMu27_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ?
+		string hlt_singlemu1 = "HLT_IsoMu27_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? // unps'd
 		hlt_alltrigs.push_back(hlt_singlemu1);		
-		string hlt_singlemu2 = "HLT_IsoTkMu27_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ?
+		string hlt_singlemu2 = "HLT_IsoTkMu27_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? // unps'd
 		hlt_alltrigs.push_back(hlt_singlemu2);
 		
 		
@@ -293,9 +293,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		
 		// double lep
 		
-		string hlt_doublemu0 = "HLT_Mu17_Mu8_DZ_v1";
+		string hlt_doublemu0 = "HLT_Mu17_Mu8_DZ_v1"; // ps'd
 		hlt_alltrigs.push_back(hlt_doublemu0);
-		string hlt_doublemu1 = "HLT_Mu17_TkMu8_DZ_v1";
+		string hlt_doublemu1 = "HLT_Mu17_TkMu8_DZ_v1"; // ps'd
 		hlt_alltrigs.push_back(hlt_doublemu1);
 		string hlt_doublemu2 = "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1";
 		hlt_alltrigs.push_back(hlt_doublemu2);

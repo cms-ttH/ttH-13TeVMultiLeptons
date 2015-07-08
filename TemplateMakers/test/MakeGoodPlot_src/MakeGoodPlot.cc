@@ -37,7 +37,8 @@
 #include "TGraph.h"
 
 #include "../variables.h"
-#include "../sample_lists.h"
+//#include "../sample_lists.h"
+#include "justtthhnonbb_with_triggervect.h"
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
 
@@ -242,6 +243,8 @@ class MakeGoodPlot
 		int lumiBlock_intree;
 		int runNumber_intree;
 		
+                vector<std::string> *passTrigger_intree=0; // manually initialize this (ttH::* objects are intialized automatically)
+                
                 vector<ttH::Lepton> *preselected_leptons_intree;
 		vector<ttH::Lepton> *loose_leptons_intree;
 		vector<ttH::Lepton> *cutBased_leptons_intree;
@@ -331,7 +334,9 @@ class MakeGoodPlot
                 bool passes_4l(int sample_number);
 
 	public:	
-	        void compareplots(std::vector<int> samps, std::vector<TString> tempfiles);
+                void lepstudies(std::vector<int> samps);
+	        void trigger_studies(std::vector<int> samps);
+                void compareplots(std::vector<int> samps, std::vector<TString> tempfiles);
 		void draw_simple_curves_normalized(std::vector<int> samps);
 		void make_simple_plot_mytrees(TString theshift="",int drawaxes=0);
 		void draw_nice_stack_with_ratio(std::vector<int> samps, std::string mytitle="", std::string mylabel="");		
@@ -385,7 +390,8 @@ MakeGoodPlot::~MakeGoodPlot() {}
 #include "printcutflow.h"
 #include "someutils.h"
 #include "categories.h"
-
+#include "trigger_studies.h"
+#include "lepstudies.h"
 
 //_______________________________________________________________
 
@@ -432,6 +438,7 @@ void MakeGoodPlot::draw_several_comparisons(std::vector<int> samps)
 	first_bin_low_edge[2] = 0.;
 	last_bin_up_edge[2] = 300.;
 	bins[2] = 75;
+
         
         
         xaxis_title[3] = "MET";		
