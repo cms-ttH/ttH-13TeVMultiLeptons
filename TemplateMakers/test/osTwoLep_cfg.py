@@ -199,8 +199,8 @@ process.OSTwoLepAna.triggers.trigger_vstring = ( "HLT_Mu17_Mu8_v1",
 ## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
                                    #fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + ".root") # name of output file
-                                   #fileName = cms.string("multilep_1000evtsCollstest2.root") # name of output file
-				   fileName = cms.string("multilep.root")
+                                   fileName = cms.string("multilep_michaeltest_deleteme.root") # name of output file
+				   #fileName = cms.string("multilep.root")
                                    )
 
 

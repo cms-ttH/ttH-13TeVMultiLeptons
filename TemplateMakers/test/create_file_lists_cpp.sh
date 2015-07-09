@@ -6,12 +6,14 @@
 ###################################################################
 
 ## base eos directory containing the samples:
-sourcebasedir="/eos/cms/store/user/gesmith/crab3dir/"
+#sourcebasedir="/eos/cms/store/user/gesmith/crab3dir/"
 #sourcebasedir="/eos/cms/store/user/muell149/ttH-leptons_Skims/"
+sourcebasedir="/eos/cms/store/user/muell149/ttH-leptons_Skims/"
 
 ## the crab 3 job that created these samples (directories start diverging from here):
 #joblabel="test2ttH/"
-joblabel="v4p2p1/"
+#joblabel="v4p2p7/"
+joblabel="acceptance_study"
 
 ## the samples to look for (the order will probably eventually matter, but not now):
 declare -a samples=(

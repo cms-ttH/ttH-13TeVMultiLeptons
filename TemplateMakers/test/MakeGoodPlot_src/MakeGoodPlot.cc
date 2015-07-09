@@ -38,7 +38,10 @@
 
 #include "../variables.h"
 //#include "../sample_lists.h"
-#include "justtthhnonbb_with_triggervect.h"
+//#include "justtthhnonbb_with_triggervect.h"
+//#include "justtthhnonbb_without_miniso.h"
+#include "justtthhnonbb_charlie_acceptance.h"
+
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
 

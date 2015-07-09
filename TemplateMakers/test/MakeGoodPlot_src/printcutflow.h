@@ -107,7 +107,7 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         //ch[samp_int]->SetBranchAddress("loose_bJets", &loose_bJets_intree);
         //ch[samp_int]->SetBranchAddress("tight_bJets", &tight_bJets_intree);
         ch[samp_int]->SetBranchAddress("met", &met_intree);
-        //ch[samp_int]->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree); //<-
+        ch[samp_int]->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree); //<-
 
 
         for (Int_t j=0; j<samp_num_entries; j++)
@@ -117,32 +117,36 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
             if (!(j % 100000)) cout << j << endl;
             // H decay studies
                         
-            //int gpsize = (*pruned_genParticles_intree).size();            
+            int gpsize = (*pruned_genParticles_intree).size();            
             int thechildpdgid = 0;         
             int hdecayindex = 0;
             
             
             //if (wgt_intree<0.0) continue;
             //if (wgt_intree>=0) continue;
+                        
+            
+            for (int j=0; j<gpsize; j++)
+            {
+                int chil0 = (int)(*pruned_genParticles_intree)[j].child0;
+                int chil1 = (int)(*pruned_genParticles_intree)[j].child1;
+                // note: I don't think these are supposed to be status=62, but that is the only thing saved in the trees...
+                if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize) && (*pruned_genParticles_intree)[j].status==62) thechildpdgid = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0].pdgID;
+                else if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil1<gpsize) && (*pruned_genParticles_intree)[j].status==62) thechildpdgid = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child1].pdgID;
+            }
+            
+            if (abs(thechildpdgid)==0) hdecayindex = 5;
+                       
+            if (abs(thechildpdgid)!=0)
+            {
+                if (abs(thechildpdgid)==5) hdecayindex = 0;
+                else if (abs(thechildpdgid)==24) hdecayindex = 1;
+                else if (abs(thechildpdgid)==15) hdecayindex = 2;
+                else if (abs(thechildpdgid)==23) hdecayindex = 3;
+                else hdecayindex = 4;
+            }
             
             
-            
-            // for (int j=0; j<gpsize; j++)
-//             {
-//                 int chil0 = (int)(*pruned_genParticles_intree)[j].child0;
-//                 int chil1 = (int)(*pruned_genParticles_intree)[j].child1;
-//                 if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize) && (*pruned_genParticles_intree)[j].status==22) thechildpdgid = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0].pdgID;
-//                 else if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil1<gpsize) && (*pruned_genParticles_intree)[j].status==22) thechildpdgid = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child1].pdgID;
-//                 else if (thechildpdgid==0) hdecayindex = 5;
-//                 else hdecayindex = 4;
-//             }
-//                        
-//             
-//             if (abs(thechildpdgid)==5) hdecayindex = 0;
-//             if (abs(thechildpdgid)==24) hdecayindex = 1;
-//             if (abs(thechildpdgid)==15) hdecayindex = 2;
-//             if (abs(thechildpdgid)==23) hdecayindex = 3;
-//         
             // common
             auto tight_bJets_intree2 = keepTagged(*preselected_jets_intree,"M");
             auto loose_bJets_intree2 = keepUnTagged(*preselected_jets_intree,"L");
@@ -418,425 +422,138 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         // cut flow with h decay study:    
         
         
-//     cout << " " << endl;
-//     cout << " " << endl;
-//     cout << "raw mc" << endl;
-//     cout << " " << endl;
-//     
-// 
-//     cout << "common" << endl;
-//     cout << " " << endl;        
-//     printf ("%40s","cut");
-//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//     printf ("\n");        
-//     cout << " " << endl;
-// 
-//     for (int i=0; i<commoncuts_str.size(); i++)
-//     {
-//         printf ("%40s", commoncuts_str[i].c_str());
-// 
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//         {    
-//             int samp_int = samps[0];      
-//             printf ("%15.2f", commoncuts[i][samp_int][j]);
-//         }
-// 
-//         printf ("\n");
-// 
-//     }
-// 
-// 
-// 
-//     cout << "ss 2 ele" << endl;
-//     cout << " " << endl;
-//     printf ("%40s","cut");
-//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//     printf ("\n");
-//     cout << " " << endl;
-// 
-//     for (int i=0; i<ss_2e_cuts_str.size(); i++)
-//     {
-//         printf ("%40s", ss_2e_cuts_str[i].c_str());
-// 
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//         {    
-//             int samp_int = samps[0];            
-//             printf ("%15.2f", ss_2e_cuts[i][samp_int][j]);
-//         }
-// 
-//         printf ("\n");
-//     }
-// 
-//     cout << "ss 2 mu" << endl;
-//     cout << " " << endl;
-//     printf ("%40s","cut");
-//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//     printf ("\n");
-//     cout << " " << endl;        
-// 
-//     for (int i=0; i<ss_2mu_cuts_str.size(); i++)
-//     {
-//         printf ("%40s", ss_2mu_cuts_str[i].c_str());
-// 
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//         {    
-//             int samp_int = samps[0];            
-//             printf ("%15.2f", ss_2mu_cuts[i][samp_int][j]);
-//         }
-// 
-//         printf ("\n");
-//     }
-// 
-//     cout << "ss e mu" << endl;
-//     cout << " " << endl;
-//     printf ("%40s","cut");
-//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//     printf ("\n");
-//     cout << " " << endl;        
-// 
-//     for (int i=0; i<ss_emu_cuts_str.size(); i++)
-//     {
-//         printf ("%40s", ss_emu_cuts_str[i].c_str());
-// 
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//         {    
-//             int samp_int = samps[0];            
-//             printf ("%15.2f", ss_emu_cuts[i][samp_int][j]);
-//         }
-// 
-//         printf ("\n");
-//     }
-// 
-// 
-// 
-//     cout << "3 lep" << endl;
-//     cout << " " << endl;
-//     printf ("%40s","cut");
-//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//     printf ("\n");
-//     cout << " " << endl;        
-// 
-//     for (int i=0; i<threel_cuts_str.size(); i++)
-//     {
-//         printf ("%40s", threel_cuts_str[i].c_str());
-// 
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//         {    
-//             int samp_int = samps[0];            
-//             printf ("%15.2f", threel_cuts[i][samp_int][j]);
-//         }
-// 
-//         printf ("\n");
-//     }
-// 
-// 
-//     cout << "4 lep" << endl;
-//     cout << " " << endl;
-//     printf ("%40s","cut");
-//     for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//     printf ("\n");
-//     cout << " " << endl;        
-// 
-//     for (int i=0; i<fourl_cuts_str.size(); i++)
-//     {
-//         printf ("%40s", fourl_cuts_str[i].c_str());
-// 
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//         {    
-//             int samp_int = samps[0];            
-//             printf ("%15.2f", fourl_cuts[i][samp_int][j]);
-//         }
-// 
-//         printf ("\n");
-//     }
-// 
-// 
-// 
-//     
-//     
-//     cout << " " << endl;
-//     cout << " " << endl;
-//     cout << "predicted events" << endl;
-//     cout << " " << endl;
-//         
-// //    for (int j=0; j<ttHdecaystudy_str.size(); j++)
-// //    {
-// //        int samp_int = samps[0];
-//         
-//         cout << "common" << endl;
-//         cout << " " << endl;
-//         printf ("%40s","cut");
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//         printf ("\n");
-//         cout << " " << endl;
-//         
-//         for (int i=0; i<commoncuts_str.size(); i++)
-//         {
-//             printf ("%40s", commoncuts_str[i].c_str());
-//             
-//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//             {    
-//                 int samp_int = samps[0];        
-//                 printf ("%15.2f", (10000.*commoncuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
-//             }
-//             
-//             printf ("\n");
-//         }
-//         
-//         cout << "ss 2 ele" << endl;
-//         cout << " " << endl;
-//         printf ("%40s","cut");
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//         printf ("\n");
-//         cout << " " << endl;        
-//         
-//         for (int i=0; i<ss_2e_cuts_str.size(); i++)
-//         {               
-//             printf ("%40s", ss_2e_cuts_str[i].c_str());
-//             
-//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//             {    
-//                 int samp_int = samps[0];            
-//                 printf ("%15.2f", (10000.*ss_2e_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
-//             }
-//             
-//             printf ("\n");
-//         }
-//         
-//         cout << "ss 2 mu" << endl;
-//         cout << " " << endl;
-//         printf ("%40s","cut");
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//         printf ("\n");
-//         cout << " " << endl;        
-//         
-//         for (int i=0; i<ss_2mu_cuts_str.size(); i++)
-//         {
-//             printf ("%40s", ss_2mu_cuts_str[i].c_str());
-//             
-//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//             {    
-//                 int samp_int = samps[0];            
-//                 printf ("%15.2f", (10000.*ss_2mu_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
-//             }
-//             
-//             printf ("\n");
-//         }
-//                 
-//         cout << "ss e mu" << endl;
-//         cout << " " << endl;
-//         printf ("%40s","cut");
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//         printf ("\n");
-//         cout << " " << endl;        
-//         
-//         for (int i=0; i<ss_emu_cuts_str.size(); i++)
-//         {
-//             printf ("%40s", ss_emu_cuts_str[i].c_str());
-//             
-//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//             {    
-//                 int samp_int = samps[0];            
-//                 printf ("%15.2f", (10000.*ss_emu_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
-//             }
-//             
-//             printf ("\n");
-//         }
-//         
-//         cout << "3l" << endl;
-//         cout << " " << endl;
-//         printf ("%40s","cut");
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//         printf ("\n");
-//         cout << " " << endl;        
-//         
-//         for (int i=0; i<threel_cuts_str.size(); i++)
-//         {
-//             printf ("%40s", threel_cuts_str[i].c_str());
-//             
-//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//             {    
-//                 int samp_int = samps[0];            
-//                 printf ("%15.2f", (10000.*threel_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
-//             }
-//             
-//             printf ("\n");
-//         }
-//         
-//         cout << "4l" << endl;
-//         cout << " " << endl;
-//         printf ("%40s","cut");
-//         for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
-//         printf ("\n");
-//         cout << " " << endl;        
-//         
-//         for (int i=0; i<fourl_cuts_str.size(); i++)
-//         {
-//             printf ("%40s", fourl_cuts_str[i].c_str());
-//             
-//             for (int j=0; j<ttHdecaystudy_str.size(); j++)
-//             {    
-//                 int samp_int = samps[0];            
-//                 printf ("%15.2f", (10000.*fourl_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
-//             }
-//             
-//             printf ("\n");
-//          }
-//         
-        
-        
-        ///////////////////////////////////////////////////////////////////////////////////////////////
-        
-        // cut flow with mult. samples:
+    cout << " " << endl;
+    cout << " " << endl;
+    cout << "raw mc" << endl;
+    cout << " " << endl;
+    
 
+    cout << "common" << endl;
+    cout << " " << endl;        
+    printf ("%40s","cut");
+    for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+    printf ("\n");        
+    cout << " " << endl;
 
-   cout << " " << endl;
-   cout << " " << endl;
-   cout << "raw mc" << endl;
-   cout << " " << endl;  
-       
-        cout << "common" << endl;
-        cout << " " << endl;        
-        printf ("%40s","cut");        
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
-        printf ("\n");        
-        cout << " " << endl;
-        printf ("%40s", "no cuts");        
-        for (int j=0; j<numsamples; j++) printf ("%15.2f", numgen[samps[j]]);
-        printf ("\n");
-        
-        for (int i=0; i<commoncuts_str.size(); i++)
-        {
-            printf ("%40s", commoncuts_str[i].c_str());
-                        
-            for (int j=0; j<numsamples; j++)
-            {    
-                int samp_int = samps[j];      
-                printf ("%15.2f", commoncuts[i][samp_int][0]);
-            }
-            
-            printf ("\n");
-        
-        }
-        
-        
-        
-        cout << "ss 2 ele" << endl;
-        cout << " " << endl;
-        //printf ("%40s%15s%15s%15s\n", "cut", "ttH", );
-        //printf ("%40s %15s \n", "cut", "ttH");
-        printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
-        printf ("\n");
-        cout << " " << endl;
-        
-        for (int i=0; i<ss_2e_cuts_str.size(); i++)
-        {
-            printf ("%40s", ss_2e_cuts_str[i].c_str());
-            
-            for (int j=0; j<numsamples; j++)
-            {    
-                int samp_int = samps[j];
-                if (samp_int==5) ss_2e_cuts[i][samp_int][0] *= 1.55;
-                printf ("%15.2f", ss_2e_cuts[i][samp_int][0]);
-            }
-            
-            printf ("\n");
-        }
-        
-        cout << "ss 2 mu" << endl;
-        cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
-        printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
-        printf ("\n");
-        cout << " " << endl;        
-        
-        for (int i=0; i<ss_2mu_cuts_str.size(); i++)
-        {
-            printf ("%40s", ss_2mu_cuts_str[i].c_str());
-            
-            for (int j=0; j<numsamples; j++)
-            {    
-                int samp_int = samps[j];  
-                if (samp_int==5) ss_2mu_cuts[i][samp_int][0] *= 3.3;         
-                printf ("%15.2f", ss_2mu_cuts[i][samp_int][0]);
-            }
-            
-            printf ("\n");
-        }
-        
-        cout << "ss e mu" << endl;
-        cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
-        printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
-        printf ("\n");
-        cout << " " << endl;        
-        
-        for (int i=0; i<ss_emu_cuts_str.size(); i++)
-        {
-            printf ("%40s", ss_emu_cuts_str[i].c_str());
-            
-            for (int j=0; j<numsamples; j++)
-            {    
-                int samp_int = samps[j]; 
-                if (samp_int==5) ss_emu_cuts[i][samp_int][0] *= 1.87;           
-                printf ("%15.2f", ss_emu_cuts[i][samp_int][0]);
-            }
-            
-            printf ("\n");
+    for (int i=0; i<commoncuts_str.size(); i++)
+    {
+        printf ("%40s", commoncuts_str[i].c_str());
+
+        for (int j=0; j<ttHdecaystudy_str.size(); j++)
+        {    
+            int samp_int = samps[0];      
+            printf ("%15.2f", commoncuts[i][samp_int][j]);
         }
 
-        
-        
-        cout << "3 lep" << endl;
-        cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
-        printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
         printf ("\n");
-        cout << " " << endl;        
-        
-        for (int i=0; i<threel_cuts_str.size(); i++)
-        {
-            printf ("%40s", threel_cuts_str[i].c_str());
-            
-            for (int j=0; j<numsamples; j++)
-            {    
-                int samp_int = samps[j];  
-                if (samp_int==5) threel_cuts[i][samp_int][0] *= 2.85;          
-                printf ("%15.2f", threel_cuts[i][samp_int][0]);
-            }
-            
-            printf ("\n");
+
+    }
+
+
+
+    cout << "ss 2 ele" << endl;
+    cout << " " << endl;
+    printf ("%40s","cut");
+    for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+    printf ("\n");
+    cout << " " << endl;
+
+    for (int i=0; i<ss_2e_cuts_str.size(); i++)
+    {
+        printf ("%40s", ss_2e_cuts_str[i].c_str());
+
+        for (int j=0; j<ttHdecaystudy_str.size(); j++)
+        {    
+            int samp_int = samps[0];            
+            printf ("%15.2f", ss_2e_cuts[i][samp_int][j]);
         }
-        
-        
-        cout << "4 lep" << endl;
-        cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
-        printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+
         printf ("\n");
-        cout << " " << endl;        
-        
-        for (int i=0; i<fourl_cuts_str.size(); i++)
-        {
-            printf ("%40s", fourl_cuts_str[i].c_str());
-            
-            for (int j=0; j<numsamples; j++)
-            {    
-                int samp_int = samps[j];            
-                printf ("%15.2f", fourl_cuts[i][samp_int][0]);
-            }
-            
-            printf ("\n");
+    }
+
+    cout << "ss 2 mu" << endl;
+    cout << " " << endl;
+    printf ("%40s","cut");
+    for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+    printf ("\n");
+    cout << " " << endl;        
+
+    for (int i=0; i<ss_2mu_cuts_str.size(); i++)
+    {
+        printf ("%40s", ss_2mu_cuts_str[i].c_str());
+
+        for (int j=0; j<ttHdecaystudy_str.size(); j++)
+        {    
+            int samp_int = samps[0];            
+            printf ("%15.2f", ss_2mu_cuts[i][samp_int][j]);
         }
-        
-        
-       
-        
+
+        printf ("\n");
+    }
+
+    cout << "ss e mu" << endl;
+    cout << " " << endl;
+    printf ("%40s","cut");
+    for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+    printf ("\n");
+    cout << " " << endl;        
+
+    for (int i=0; i<ss_emu_cuts_str.size(); i++)
+    {
+        printf ("%40s", ss_emu_cuts_str[i].c_str());
+
+        for (int j=0; j<ttHdecaystudy_str.size(); j++)
+        {    
+            int samp_int = samps[0];            
+            printf ("%15.2f", ss_emu_cuts[i][samp_int][j]);
+        }
+
+        printf ("\n");
+    }
+
+
+
+    cout << "3 lep" << endl;
+    cout << " " << endl;
+    printf ("%40s","cut");
+    for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+    printf ("\n");
+    cout << " " << endl;        
+
+    for (int i=0; i<threel_cuts_str.size(); i++)
+    {
+        printf ("%40s", threel_cuts_str[i].c_str());
+
+        for (int j=0; j<ttHdecaystudy_str.size(); j++)
+        {    
+            int samp_int = samps[0];            
+            printf ("%15.2f", threel_cuts[i][samp_int][j]);
+        }
+
+        printf ("\n");
+    }
+
+
+    cout << "4 lep" << endl;
+    cout << " " << endl;
+    printf ("%40s","cut");
+    for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
+    printf ("\n");
+    cout << " " << endl;        
+
+    for (int i=0; i<fourl_cuts_str.size(); i++)
+    {
+        printf ("%40s", fourl_cuts_str[i].c_str());
+
+        for (int j=0; j<ttHdecaystudy_str.size(); j++)
+        {    
+            int samp_int = samps[0];            
+            printf ("%15.2f", fourl_cuts[i][samp_int][j]);
+        }
+
+        printf ("\n");
+    }
+
 
 
     
@@ -846,26 +563,25 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
     cout << "predicted events" << endl;
     cout << " " << endl;
         
+//    for (int j=0; j<ttHdecaystudy_str.size(); j++)
+//    {
+//        int samp_int = samps[0];
         
         cout << "common" << endl;
         cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
         printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
         printf ("\n");
         cout << " " << endl;
-        printf ("%40s", "no cuts");        
-        for (int j=0; j<numsamples; j++) printf ("%15.2f", 10000.*xsecs[samps[j]]);
-        printf ("\n");
         
         for (int i=0; i<commoncuts_str.size(); i++)
         {
             printf ("%40s", commoncuts_str[i].c_str());
             
-            for (int j=0; j<numsamples; j++)
+            for (int j=0; j<ttHdecaystudy_str.size(); j++)
             {    
-                int samp_int = samps[j];        
-                printf ("%15.2f", (10000.*commoncuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+                int samp_int = samps[0];        
+                printf ("%15.2f", (10000.*commoncuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
             }
             
             printf ("\n");
@@ -873,9 +589,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         
         cout << "ss 2 ele" << endl;
         cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
         printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
         printf ("\n");
         cout << " " << endl;        
         
@@ -883,10 +598,10 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         {               
             printf ("%40s", ss_2e_cuts_str[i].c_str());
             
-            for (int j=0; j<numsamples; j++)
+            for (int j=0; j<ttHdecaystudy_str.size(); j++)
             {    
-                int samp_int = samps[j];            
-                printf ("%15.2f", (10000.*ss_2e_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+                int samp_int = samps[0];            
+                printf ("%15.2f", (10000.*ss_2e_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
             }
             
             printf ("\n");
@@ -894,9 +609,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         
         cout << "ss 2 mu" << endl;
         cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
         printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
         printf ("\n");
         cout << " " << endl;        
         
@@ -904,10 +618,10 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         {
             printf ("%40s", ss_2mu_cuts_str[i].c_str());
             
-            for (int j=0; j<numsamples; j++)
+            for (int j=0; j<ttHdecaystudy_str.size(); j++)
             {    
-                int samp_int = samps[j];            
-                printf ("%15.2f", (10000.*ss_2mu_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+                int samp_int = samps[0];            
+                printf ("%15.2f", (10000.*ss_2mu_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
             }
             
             printf ("\n");
@@ -915,9 +629,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
                 
         cout << "ss e mu" << endl;
         cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
         printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
         printf ("\n");
         cout << " " << endl;        
         
@@ -925,10 +638,10 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         {
             printf ("%40s", ss_emu_cuts_str[i].c_str());
             
-            for (int j=0; j<numsamples; j++)
+            for (int j=0; j<ttHdecaystudy_str.size(); j++)
             {    
-                int samp_int = samps[j];            
-                printf ("%15.2f", (10000.*ss_emu_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+                int samp_int = samps[0];            
+                printf ("%15.2f", (10000.*ss_emu_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
             }
             
             printf ("\n");
@@ -936,9 +649,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         
         cout << "3l" << endl;
         cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
         printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
         printf ("\n");
         cout << " " << endl;        
         
@@ -946,10 +658,10 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         {
             printf ("%40s", threel_cuts_str[i].c_str());
             
-            for (int j=0; j<numsamples; j++)
+            for (int j=0; j<ttHdecaystudy_str.size(); j++)
             {    
-                int samp_int = samps[j];            
-                printf ("%15.2f", (10000.*threel_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+                int samp_int = samps[0];            
+                printf ("%15.2f", (10000.*threel_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
             }
             
             printf ("\n");
@@ -957,9 +669,8 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         
         cout << "4l" << endl;
         cout << " " << endl;
-        //printf ("%40s %15s \n", "cut", "ttH");
         printf ("%40s","cut");
-        for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+        for (int j=0; j<ttHdecaystudy_str.size(); j++) printf ("%15s", ttHdecaystudy_str[j].c_str());
         printf ("\n");
         cout << " " << endl;        
         
@@ -967,14 +678,307 @@ void MakeGoodPlot::print_cutflow(std::vector<int> samps)
         {
             printf ("%40s", fourl_cuts_str[i].c_str());
             
-            for (int j=0; j<numsamples; j++)
+            for (int j=0; j<ttHdecaystudy_str.size(); j++)
             {    
-                int samp_int = samps[j];            
-                printf ("%15.2f", (10000.*fourl_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+                int samp_int = samps[0];            
+                printf ("%15.2f", (10000.*fourl_cuts[i][samp_int][j]*xsecs[samp_int])/numgen[samp_int]);
             }
             
             printf ("\n");
-        }
+         }
+        
+        
+        
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        
+        // cut flow with mult. samples:
+
+
+//    cout << " " << endl;
+//    cout << " " << endl;
+//    cout << "raw mc" << endl;
+//    cout << " " << endl;  
+//        
+//         cout << "common" << endl;
+//         cout << " " << endl;        
+//         printf ("%40s","cut");        
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");        
+//         cout << " " << endl;
+//         printf ("%40s", "no cuts");        
+//         for (int j=0; j<numsamples; j++) printf ("%15.2f", numgen[samps[j]]);
+//         printf ("\n");
+//         
+//         for (int i=0; i<commoncuts_str.size(); i++)
+//         {
+//             printf ("%40s", commoncuts_str[i].c_str());
+//                         
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];      
+//                 printf ("%15.2f", commoncuts[i][samp_int][0]);
+//             }
+//             
+//             printf ("\n");
+//         
+//         }
+//         
+//         
+//         
+//         cout << "ss 2 ele" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s%15s%15s%15s\n", "cut", "ttH", );
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;
+//         
+//         for (int i=0; i<ss_2e_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", ss_2e_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];
+//                 if (samp_int==5) ss_2e_cuts[i][samp_int][0] *= 1.55;
+//                 printf ("%15.2f", ss_2e_cuts[i][samp_int][0]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "ss 2 mu" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<ss_2mu_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", ss_2mu_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];  
+//                 if (samp_int==5) ss_2mu_cuts[i][samp_int][0] *= 3.3;         
+//                 printf ("%15.2f", ss_2mu_cuts[i][samp_int][0]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "ss e mu" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<ss_emu_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", ss_emu_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j]; 
+//                 if (samp_int==5) ss_emu_cuts[i][samp_int][0] *= 1.87;           
+//                 printf ("%15.2f", ss_emu_cuts[i][samp_int][0]);
+//             }
+//             
+//             printf ("\n");
+//         }
+// 
+//         
+//         
+//         cout << "3 lep" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<threel_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", threel_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];  
+//                 if (samp_int==5) threel_cuts[i][samp_int][0] *= 2.85;          
+//                 printf ("%15.2f", threel_cuts[i][samp_int][0]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         
+//         cout << "4 lep" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<fourl_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", fourl_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];            
+//                 printf ("%15.2f", fourl_cuts[i][samp_int][0]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         
+//        
+//         
+// 
+// 
+//     
+//     
+//     cout << " " << endl;
+//     cout << " " << endl;
+//     cout << "predicted events" << endl;
+//     cout << " " << endl;
+//         
+//         
+//         cout << "common" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;
+//         printf ("%40s", "no cuts");        
+//         for (int j=0; j<numsamples; j++) printf ("%15.2f", 10000.*xsecs[samps[j]]);
+//         printf ("\n");
+//         
+//         for (int i=0; i<commoncuts_str.size(); i++)
+//         {
+//             printf ("%40s", commoncuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];        
+//                 printf ("%15.2f", (10000.*commoncuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "ss 2 ele" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<ss_2e_cuts_str.size(); i++)
+//         {               
+//             printf ("%40s", ss_2e_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];            
+//                 printf ("%15.2f", (10000.*ss_2e_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "ss 2 mu" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<ss_2mu_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", ss_2mu_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];            
+//                 printf ("%15.2f", (10000.*ss_2mu_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//                 
+//         cout << "ss e mu" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<ss_emu_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", ss_emu_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];            
+//                 printf ("%15.2f", (10000.*ss_emu_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "3l" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<threel_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", threel_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];            
+//                 printf ("%15.2f", (10000.*threel_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
+//         
+//         cout << "4l" << endl;
+//         cout << " " << endl;
+//         //printf ("%40s %15s \n", "cut", "ttH");
+//         printf ("%40s","cut");
+//         for (int j=0; j<numsamples; j++) printf ("%15s", sample_names_std[samps[j]].c_str());
+//         printf ("\n");
+//         cout << " " << endl;        
+//         
+//         for (int i=0; i<fourl_cuts_str.size(); i++)
+//         {
+//             printf ("%40s", fourl_cuts_str[i].c_str());
+//             
+//             for (int j=0; j<numsamples; j++)
+//             {    
+//                 int samp_int = samps[j];            
+//                 printf ("%15.2f", (10000.*fourl_cuts[i][samp_int][0]*xsecs[samp_int])/numgen[samp_int]);
+//             }
+//             
+//             printf ("\n");
+//         }
         
         
         
