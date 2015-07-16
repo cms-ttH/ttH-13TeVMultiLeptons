@@ -397,7 +397,7 @@ template <typename coll1type, typename coll2type> vector<double> getTwoObjKineRa
                 }    
                 else if (quantity=="massSFOS")
                 {
-                    if ( ((*obj1).pdgID/(*obj2).pdgID) == -1 ) // this doesn't work for ttH::MET (should fix)
+                    if ( ((float)(*obj1).pdgID/(float)(*obj2).pdgID) == -1.0 ) // this doesn't work for ttH::MET (should fix)
                     {
                         auto obj12 = (*obj1).obj + (*obj2).obj;
                         kineRawCollecion.push_back(obj12.M());
@@ -441,7 +441,7 @@ template <typename coll1type, typename coll2type> vector<double> getTwoObjKineRa
                             auto obj12 = (*obj1).obj + (*obj2).obj;
                             kineRawCollecion.push_back(obj12.M());  
                         }    
-                        else if (quantity=="massSFOS" && ((*obj1).pdgID/(*obj2).pdgID == -1))
+                        else if (quantity=="massSFOS" && ((float)(*obj1).pdgID/(float)(*obj2).pdgID == -1.0))
                         {
                             auto obj12 = (*obj1).obj + (*obj2).obj;
                             kineRawCollecion.push_back(obj12.M());

@@ -171,9 +171,22 @@ process.ak4PFchsL1L2L3 = cms.ESProducer("JetCorrectionESChain",
 
 process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
-### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile):
+### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile)
 
-process.OSTwoLepAna.btags.btagdisc = "combinedInclusiveSecondaryVertexV2BJetTags" #"combinedMVABJetTags" ##"combinedSecondaryVertexMVABJetTags"
+### new choices for btagging: ###
+# combinedSecondaryVertexBJetTags
+# pfJetBProbabilityBJetTags
+# pfJetProbabilityBJetTags  
+# pfTrackCountingHighPurBJetTags 
+# pfTrackCountingHighEffBJetTags 
+# pfSimpleSecondaryVertexHighEffBJetTags  
+# pfSimpleSecondaryVertexHighPurBJetTags  
+# pfCombinedSecondaryVertexV2BJetTags 
+# pfCombinedInclusiveSecondaryVertexV2BJetTags 
+# pfCombinedSecondaryVertexSoftLeptonBJetTags
+# pfCombinedMVABJetTags
+
+process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags"  # "combinedInclusiveSecondaryVertexV2BJetTags" #"combinedMVABJetTags" ##"combinedSecondaryVertexMVABJetTags"
 process.OSTwoLepAna.triggers.hltlabel = "HLT" #"reHLT" #"HLT" # HLT = centrally produced samples
 process.OSTwoLepAna.triggers.trigger_vstring = ( "HLT_Mu17_Mu8_v1",
 			"HLT_Mu30_TkMu11_v1", #"HLT_Mu17_TkMu8_v1",

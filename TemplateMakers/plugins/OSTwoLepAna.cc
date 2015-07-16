@@ -460,7 +460,21 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		    }
 		}
 	    }
-	    
+            
+
+            
+            // dumps available tagging algos:
+            // for (jetit iJet = selectedJets_preselected.begin(); iJet != selectedJets_preselected.end(); ++iJet)
+// 	    {                
+//                 // this just dumps all the available taggers.. should be commented out in normal operation!
+//                 std::vector<std::pair<std::string, float> > dislist = iJet->getPairDiscri();
+//                 for (auto pairit = dislist.begin(); pairit != dislist.end(); ++pairit)
+//                 {
+//                     cout << pairit->first << "  " << pairit->second << endl;
+//                 }
+// 	    }
+            
+            
 	    preselected_leptons_intree = preselected_leptons;
 	    preselected_electrons_intree = preselected_electrons;
 	    preselected_muons_intree = preselected_muons;

@@ -7,12 +7,12 @@ if __name__ == '__main__':
     # We want to put all the CRAB project directories from the tasks we submit here into one common directory.
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
 
-    config.General.workArea = 'crab_v4p2p7'
+    config.General.workArea = 'crab_v4p2p8'
     config.General.transferLogs=True
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = 'osTwoLep_cfg.py'
     config.Data.splitting = 'EventAwareLumiBased' #LumiBased
-    config.Data.outLFNDirBase = '/store/user/gesmith/crab3dir/v4p2p7'
+    config.Data.outLFNDirBase = '/store/user/gesmith/crab3dir/v4p2p8'
     config.Data.publication = False
     config.Site.storageSite = 'T2_CH_CERN'
     #config.Site.whitelist = ['T1_DE_KIT', 'T2_FR_CCIN2P3']
@@ -31,11 +31,18 @@ if __name__ == '__main__':
     print "hey2"
 
     ## main NLO sample (125 ext1):
-    config.General.requestName = 'ttH125'
+    config.General.requestName = 'ttH125_ext'
     config.Data.inputDataset = '/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9_ext1-v3/MINIAODSIM'
     config.Data.unitsPerJob = 50000
     print "hey3"
     submit(config)
+    
+    config.General.requestName = 'ttH125'
+    config.Data.inputDataset = '/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/MINIAODSIM'
+    config.Data.unitsPerJob = 50000
+    submit(config)
+    
+    
     
     ## POWHEG sample:
     #config.General.requestName = 'ttH125ForTraining'

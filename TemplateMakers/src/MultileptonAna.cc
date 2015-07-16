@@ -686,6 +686,13 @@ vector<double> MultileptonAna::ReturnBTagDisc (vecPatJet theobjs)
 	{
 		double discOutput = iJet->bDiscriminator(thedisc);
 		thediscs.push_back(discOutput);
+                
+                // this just dumps all the available taggers.. should be commented out in normal operation!
+//                 std::vector<std::pair<std::string, float> > dislist = iJet->getPairDiscri();
+//                 for (auto pairit = dislist.begin(); pairit != dislist.end(); ++pairit)
+//                 {
+//                     cout << pairit->first << "  " << pairit->second << endl;
+//                 }
 	}
 	
 	return thediscs;
@@ -871,7 +878,8 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       jet.obj = iJet.p4();
       jet.pdgID = iJet.pdgId();
       jet.charge = iJet.jetCharge();
-      jet.csv = iJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags");
+      string thedisc = btagparams.getParameter<string> ("btagdisc");
+      jet.csv = iJet.bDiscriminator(thedisc);
       jetCollection.push_back(jet);
 
     }

@@ -65,9 +65,9 @@ void makegoodplot()
 //	newplot->make_simple_plot_mytrees("1pt0shift",0);
 //	newplot->make_simple_plot_mytrees("2pt0shift",0);
 
-        newplot->print_cutflow(samples);
+        //newplot->print_cutflow(samples);
 
-	//newplot->draw_ROC_iso(signal);
+	    //newplot->draw_ROC_iso(signal);
 
 
         //newplot->draw_several_comparisons(samples);
@@ -84,7 +84,8 @@ void makegoodplot()
         //newplot->trigger_studies(samples);
         
         //newplot->lepstudies(samples);
-        
+        //newplot->fourlstudies(samples);
+        newplot->threelstudies(samples);
 
 
 //--------------------------------------------------------------------------

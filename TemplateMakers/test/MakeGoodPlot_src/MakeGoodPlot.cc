@@ -39,8 +39,9 @@
 #include "../variables.h"
 //#include "../sample_lists.h"
 //#include "justtthhnonbb_with_triggervect.h"
-//#include "justtthhnonbb_without_miniso.h"
-#include "justtthhnonbb_charlie_acceptance.h"
+//
+#include "justtthhnonbb_without_miniso.h"
+//#include "justtthhnonbb_charlie_acceptance.h"
 
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
@@ -337,6 +338,8 @@ class MakeGoodPlot
                 bool passes_4l(int sample_number);
 
 	public:	
+                void fourlstudies(std::vector<int> samps);
+                void threelstudies(std::vector<int> samps);
                 void lepstudies(std::vector<int> samps);
 	        void trigger_studies(std::vector<int> samps);
                 void compareplots(std::vector<int> samps, std::vector<TString> tempfiles);
@@ -393,8 +396,10 @@ MakeGoodPlot::~MakeGoodPlot() {}
 #include "printcutflow.h"
 #include "someutils.h"
 #include "categories.h"
-#include "trigger_studies.h"
-#include "lepstudies.h"
+//#include "trigger_studies.h"
+//#include "lepstudies.h"
+//#include "4lstudies.h"
+#include "3lstudies.h"
 
 //_______________________________________________________________
 
