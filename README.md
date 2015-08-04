@@ -10,15 +10,15 @@ See the 8 TeV-based [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/N
 
 To get started tree-making from miniAOD (on an SL6 machine) do:        
         
-        cmsrel CMSSW_7_4_3
-        cd CMSSW_7_4_3/src
+        cmsrel CMSSW_7_4_7
+        cd CMSSW_7_4_7/src
         cmsenv
         
         git cms-init
         git remote add cmg-central https://github.com/CERN-PH-CMG/cmg-cmssw.git
         git fetch cmg-central
-        cp ~gesmith/public/sparse-checkout-cmg .git/info/sparse-checkout
-        git checkout -b CMGTools-from-CMSSW_7_4_3 cmg-central/CMGTools-from-CMSSW_7_4_3
+        cp /afs/cern.ch/user/g/gesmith/public/sparse-checkout-cmg .git/info/sparse-checkout
+        git checkout -b CMGTools-from-CMSSW_7_4_7 cmg-central/CMGTools-from-CMSSW_7_4_7
         git clone git@github.com:cms-ttH/MiniAOD.git
         cd MiniAOD
         git checkout CMSSW_7_4_0
