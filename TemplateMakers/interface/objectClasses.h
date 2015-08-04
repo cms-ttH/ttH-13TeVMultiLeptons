@@ -12,12 +12,13 @@ namespace ttH
     
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
-    int pdgID;
+    int pdgID; // this is the reco pdgID
     double dxy;
     double dz;
     int charge;
     double relIso;
     double miniIso;
+    int genPdgID; // pdgID of PAT matched gen particle
     int genMotherPdgID;
     int genGrandMotherPdgID;
 
@@ -89,7 +90,9 @@ namespace ttH
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     int charge;
-    int pdgID;
+    int genPdgID; // this is the matched genParton (not genJet)
+    int genMotherPdgID;
+    int genGrandMotherPdgID;
     double csv;
 
     virtual ~Jet(){};

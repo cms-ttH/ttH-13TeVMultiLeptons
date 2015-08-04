@@ -739,7 +739,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.obj = iEle.p4();
       ele.SCeta = abs(iEle.superCluster()->position().eta());
       ele.pdgID = iEle.pdgId();
-
+      
       if (iEle.gsfTrack().isAvailable()){
 	ele.dxy = fabs(iEle.gsfTrack()->dxy(vertex.position()));
 	ele.dz = fabs(iEle.gsfTrack()->dz(vertex.position()));
@@ -772,14 +772,16 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.mvaID = mvaID_->mvaValue(iEle,false); //debug=false
       
       if (iEle.genLepton())
-        {
+      {
+        ele.genPdgID = iEle.genLepton()->pdgId();
 	const reco::Candidate* genMother = GetGenMotherNoFsr(iEle.genLepton());
 	ele.genMotherPdgID = genMother->pdgId();        
         const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
         ele.genGrandMotherPdgID = genGrandMother->pdgId();
-	}
+      }
       else 
       {
+        ele.genPdgID = 9999;
         ele.genMotherPdgID = 9999;
         ele.genGrandMotherPdgID = 9999;
       }
@@ -853,14 +855,16 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       mu.sip3D = fabs(iMu.dB(pat::Muon::PV3D)/iMu.edB(pat::Muon::PV3D));
       if (iMu.genLepton())
-	{
+      {
+        mu.genPdgID = iMu.genLepton()->pdgId();
 	const reco::Candidate* genMother = GetGenMotherNoFsr(iMu.genLepton());
 	mu.genMotherPdgID = genMother->pdgId();
         const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
         mu.genGrandMotherPdgID = genGrandMother->pdgId();
-	}
+      }
       else
       {
+        mu.genPdgID = 9999;
         mu.genMotherPdgID = 9999;
         mu.genGrandMotherPdgID = 9999;
       }
@@ -874,15 +878,28 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
   ttH::Jet jet;
   vector<ttH::Jet> jetCollection;
   for(const auto & iJet: theobjs)
-    {
+  {
       jet.obj = iJet.p4();
-      jet.pdgID = iJet.pdgId();
+      if (iJet.genParton())
+      {
+        jet.genPdgID = iJet.genParton()->pdgId();
+        const reco::Candidate* genMother = GetGenMotherNoFsr(iJet.genParton());
+	jet.genMotherPdgID = genMother->pdgId();
+        const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
+        jet.genGrandMotherPdgID = genGrandMother->pdgId();
+      }
+      else
+      {
+        jet.genPdgID = 9999;
+        jet.genMotherPdgID = 9999;
+        jet.genGrandMotherPdgID = 9999;
+      }
       jet.charge = iJet.jetCharge();
       string thedisc = btagparams.getParameter<string> ("btagdisc");
       jet.csv = iJet.bDiscriminator(thedisc);
       jetCollection.push_back(jet);
 
-    }
+  }
   return jetCollection;
 }
 
