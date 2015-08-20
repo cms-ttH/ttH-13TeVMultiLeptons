@@ -18,7 +18,10 @@ namespace ttH
     int charge;
     double relIso;
     double miniIso;
-    int genPdgID; // pdgID of PAT matched gen particle
+    //gen info
+    int genPdgID;
+    bool isPromptFinalState;
+    bool isDirectPromptTauDecayProductFinalState;
     int genMotherPdgID;
     int genGrandMotherPdgID;
 
@@ -125,6 +128,11 @@ namespace ttH
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     int pdgID;
     int status;
+
+    //gen information
+    bool isPromptFinalState;
+    bool isPromptDecayed;
+    bool isDirectPromptTauDecayProductFinalState;
 
     unsigned int child0;
     unsigned int child1;

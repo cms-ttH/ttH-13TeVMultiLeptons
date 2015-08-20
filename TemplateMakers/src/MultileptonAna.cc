@@ -774,6 +774,8 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       if (iEle.genLepton())
       {
         ele.genPdgID = iEle.genLepton()->pdgId();
+	ele.isPromptFinalState = iEle.genLepton()->isPromptFinalState();
+	ele.isDirectPromptTauDecayProductFinalState = iEle.genLepton()->isDirectPromptTauDecayProductFinalState();
 	const reco::Candidate* genMother = GetGenMotherNoFsr(iEle.genLepton());
 	ele.genMotherPdgID = genMother->pdgId();        
         const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
@@ -782,6 +784,8 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       else 
       {
         ele.genPdgID = 9999;
+	ele.isPromptFinalState = false;
+	ele.isDirectPromptTauDecayProductFinalState = false;
         ele.genMotherPdgID = 9999;
         ele.genGrandMotherPdgID = 9999;
       }
@@ -857,6 +861,8 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       if (iMu.genLepton())
       {
         mu.genPdgID = iMu.genLepton()->pdgId();
+	mu.isPromptFinalState = iMu.genLepton()->isPromptFinalState();
+	mu.isDirectPromptTauDecayProductFinalState = iMu.genLepton()->isDirectPromptTauDecayProductFinalState();
 	const reco::Candidate* genMother = GetGenMotherNoFsr(iMu.genLepton());
 	mu.genMotherPdgID = genMother->pdgId();
         const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
@@ -865,6 +871,8 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       else
       {
         mu.genPdgID = 9999;
+	mu.isPromptFinalState = false;
+	mu.isDirectPromptTauDecayProductFinalState = false;
         mu.genMotherPdgID = 9999;
         mu.genGrandMotherPdgID = 9999;
       }
@@ -936,6 +944,12 @@ std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::G
       genParticle.obj = iGenParticle.p4();
       genParticle.pdgID = iGenParticle.pdgId();
       genParticle.status = iGenParticle.status();
+      
+      //only works for MC produced with 74X or later
+      genParticle.isPromptFinalState = iGenParticle.isPromptFinalState();
+      genParticle.isPromptDecayed = iGenParticle.isPromptDecayed();
+      genParticle.isDirectPromptTauDecayProductFinalState = iGenParticle.isDirectPromptTauDecayProductFinalState();
+
       genParticle.child0 = 9999;
       genParticle.child1 = 9999;
       genParticle.mother = 9999;
