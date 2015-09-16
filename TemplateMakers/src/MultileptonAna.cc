@@ -289,6 +289,7 @@ void MultileptonAna::parse_params()
       	btagparams = 		entire_pset.getParameter<edm::ParameterSet> ("btags");
       	metparams = 		entire_pset.getParameter<edm::ParameterSet> ("met");
 	prunedparams =          entire_pset.getParameter<edm::ParameterSet> ("prunedgenparticles");
+	packedparams =          entire_pset.getParameter<edm::ParameterSet> ("packedgenparticles");
       	variableparams = 	entire_pset.getParameter<edm::ParameterSet> ("variables");
       	systparams = 		entire_pset.getParameter<edm::ParameterSet> ("systematics");
       	selectionparams = 	entire_pset.getParameter<edm::ParameterSet> ("eventselection");
@@ -561,6 +562,15 @@ prunedGenParticles MultileptonAna::GetPrunedGenParticles (const edm::Event& even
   
 }
 
+packedGenParticles MultileptonAna::GetPackedGenParticles (const edm::Event& event)
+{
+  string packedCollection = packedparams.getParameter<string> ("packedCollection");
+  packedGenParticles packedHandle; 
+  event.getByLabel(packedCollection,packedHandle);
+  return packedHandle;
+  
+}
+
 patPackedCands MultileptonAna::GetPackedPFCandidates (const edm::Event& event)
 {
   patPackedCands packedHandle; 
@@ -771,12 +781,12 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs, vec
       ele.sip3D = fabs(iEle.dB(pat::Electron::PV3D)/iEle.edB(pat::Electron::PV3D));
       ele.mvaID = mvaID_->mvaValue(iEle,false); //debug=false
       
-      if (iEle.genLepton())
+      if (iEle.genParticle())
       {
-        ele.genPdgID = iEle.genLepton()->pdgId();
-	ele.isPromptFinalState = iEle.genLepton()->isPromptFinalState();
-	ele.isDirectPromptTauDecayProductFinalState = iEle.genLepton()->isDirectPromptTauDecayProductFinalState();
-	const reco::Candidate* genMother = GetGenMotherNoFsr(iEle.genLepton());
+        ele.genPdgID = iEle.genParticle()->pdgId();
+	ele.isPromptFinalState = iEle.genParticle()->isPromptFinalState();
+	ele.isDirectPromptTauDecayProductFinalState = iEle.genParticle()->isDirectPromptTauDecayProductFinalState();
+	const reco::Candidate* genMother = GetGenMotherNoFsr(iEle.genParticle());
 	ele.genMotherPdgID = genMother->pdgId();        
         const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
         ele.genGrandMotherPdgID = genGrandMother->pdgId();
@@ -858,12 +868,12 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs, vecPatJet j
       mu.jetPtRatio = min(iMu.pt()/matchedJet.pt(), 1.5);
       mu.csv = max(matchedJet.bDiscriminator("combinedInclusiveSecondaryVertexV2BJetTags"), float(0.0));
       mu.sip3D = fabs(iMu.dB(pat::Muon::PV3D)/iMu.edB(pat::Muon::PV3D));
-      if (iMu.genLepton())
+      if (iMu.genParticle())
       {
-        mu.genPdgID = iMu.genLepton()->pdgId();
-	mu.isPromptFinalState = iMu.genLepton()->isPromptFinalState();
-	mu.isDirectPromptTauDecayProductFinalState = iMu.genLepton()->isDirectPromptTauDecayProductFinalState();
-	const reco::Candidate* genMother = GetGenMotherNoFsr(iMu.genLepton());
+        mu.genPdgID = iMu.genParticle()->pdgId();
+	mu.isPromptFinalState = iMu.genParticle()->isPromptFinalState();
+	mu.isDirectPromptTauDecayProductFinalState = iMu.genParticle()->isDirectPromptTauDecayProductFinalState();
+	const reco::Candidate* genMother = GetGenMotherNoFsr(iMu.genParticle());
 	mu.genMotherPdgID = genMother->pdgId();
         const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
         mu.genGrandMotherPdgID = genGrandMother->pdgId();
@@ -924,96 +934,97 @@ vector<ttH::MET> MultileptonAna::GetCollection (patMETs theobjs)
   theMETs.push_back(theMET);
   return theMETs;
 }
+//std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::GenParticle> theobjs)
+// template <typename templateGenParticle> std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<templateGenParticle> theobjs)
+// {
+//   ttH::GenParticle genParticle;
+//   std::vector<ttH::GenParticle> theGenParticles;
+//   //  std::vector<reco::GenParticle> theFinalGenParticles;
+//   std::vector<templateGenParticle> theFinalGenParticles;
+//   const reco::Candidate* child0;
+//   const reco::Candidate* child1;
+//   const reco::Candidate* mother;
+//   const reco::Candidate* grandMother;
+//   std::pair<const reco::Candidate*, const reco::Candidate*> childPair;
+//   //  std::map<const float, unsigned int> family_tree; //very important to use float here
+//   std::map<const float, array<unsigned int,2>> family_tree; //very important to use float here
 
-std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<reco::GenParticle> theobjs)
-{
-  ttH::GenParticle genParticle;
-  std::vector<ttH::GenParticle> theGenParticles;
-  std::vector<reco::GenParticle> theFinalGenParticles;
-  const reco::Candidate* child0;
-  const reco::Candidate* child1;
-  const reco::Candidate* mother;
-  const reco::Candidate* grandMother;
-  std::pair<const reco::Candidate*, const reco::Candidate*> childPair;
-  //  std::map<const float, unsigned int> family_tree; //very important to use float here
-  std::map<const float, array<unsigned int,2>> family_tree; //very important to use float here
-
-  unsigned int i = 0;
-  for (const auto & iGenParticle: theobjs)
-    {
-      genParticle.obj = iGenParticle.p4();
-      genParticle.pdgID = iGenParticle.pdgId();
-      genParticle.status = iGenParticle.status();
+//   unsigned int i = 0;
+//   for (const auto & iGenParticle: theobjs)
+//     {
+//       genParticle.obj = iGenParticle.p4();
+//       genParticle.pdgID = iGenParticle.pdgId();
+//       genParticle.status = iGenParticle.status();
       
-      //only works for MC produced with 74X or later
-      genParticle.isPromptFinalState = iGenParticle.isPromptFinalState();
-      genParticle.isPromptDecayed = iGenParticle.isPromptDecayed();
-      genParticle.isDirectPromptTauDecayProductFinalState = iGenParticle.isDirectPromptTauDecayProductFinalState();
+//       //only works for MC produced with 74X or later
+//       genParticle.isPromptFinalState = iGenParticle.isPromptFinalState();
+//       genParticle.isPromptDecayed = iGenParticle.isPromptDecayed();
+//       genParticle.isDirectPromptTauDecayProductFinalState = iGenParticle.isDirectPromptTauDecayProductFinalState();
 
-      genParticle.child0 = 9999;
-      genParticle.child1 = 9999;
-      genParticle.mother = 9999;
-      genParticle.grandmother = 9999;
+//       genParticle.child0 = 9999;
+//       genParticle.child1 = 9999;
+//       genParticle.mother = 9999;
+//       genParticle.grandmother = 9999;
 
-      if (abs(iGenParticle.pdgId()) == 6 || abs(iGenParticle.pdgId()) == 23 || abs(iGenParticle.pdgId()) == 24 || abs(iGenParticle.pdgId()) == 25 || abs(iGenParticle.pdgId()) == 15 || abs(iGenParticle.pdgId()) == 5 )
-	{
-          childPair = GetGenDaughterNoFsr(&iGenParticle);
-          child0 = childPair.first;
-          child1 = childPair.second;
-          if (child0->pdgId() != iGenParticle.pdgId() && child1->pdgId() != iGenParticle.pdgId() && family_tree.find(genParticle.obj.Pt()) == family_tree.end() )
-	    {
-	      theFinalGenParticles.push_back(iGenParticle);
-	      family_tree[genParticle.obj.Pt()][0] = i;
-	      family_tree[genParticle.obj.Pt()][1] = iGenParticle.status();//additional check to make sure we're getting the right object
-	      theGenParticles.push_back(genParticle);
-	      i+=1;
-	    }
-	}
-      else if (family_tree.find(genParticle.obj.Pt()) == family_tree.end())
-	{
-	  theFinalGenParticles.push_back(iGenParticle);
-	  family_tree[genParticle.obj.Pt()][0] = i;
-	  family_tree[genParticle.obj.Pt()][1] = iGenParticle.status();
-	  theGenParticles.push_back(genParticle);
-          i+=1;
-	}
-    }
+//       if (abs(iGenParticle.pdgId()) == 6 || abs(iGenParticle.pdgId()) == 23 || abs(iGenParticle.pdgId()) == 24 || abs(iGenParticle.pdgId()) == 25 || abs(iGenParticle.pdgId()) == 15 || abs(iGenParticle.pdgId()) == 5 )
+// 	{
+//           childPair = GetGenDaughterNoFsr(&iGenParticle);
+//           child0 = childPair.first;
+//           child1 = childPair.second;
+//           if (child0->pdgId() != iGenParticle.pdgId() && child1->pdgId() != iGenParticle.pdgId() && family_tree.find(genParticle.obj.Pt()) == family_tree.end() )
+// 	    {
+// 	      theFinalGenParticles.push_back(iGenParticle);
+// 	      family_tree[genParticle.obj.Pt()][0] = i;
+// 	      family_tree[genParticle.obj.Pt()][1] = iGenParticle.status();//additional check to make sure we're getting the right object
+// 	      theGenParticles.push_back(genParticle);
+// 	      i+=1;
+// 	    }
+// 	}
+//       else if (family_tree.find(genParticle.obj.Pt()) == family_tree.end())
+// 	{
+// 	  theFinalGenParticles.push_back(iGenParticle);
+// 	  family_tree[genParticle.obj.Pt()][0] = i;
+// 	  family_tree[genParticle.obj.Pt()][1] = iGenParticle.status();
+// 	  theGenParticles.push_back(genParticle);
+//           i+=1;
+// 	}
+//     }
   
-  i=0;
-  for (const auto & iGenParticle : theFinalGenParticles)
-    {
-      childPair = GetGenDaughterNoFsr(&iGenParticle);
-      child0 = childPair.first;
-      child1 = childPair.second;
+//   i=0;
+//   for (const auto & iGenParticle : theFinalGenParticles)
+//     {
+//       childPair = GetGenDaughterNoFsr(&iGenParticle);
+//       child0 = childPair.first;
+//       child1 = childPair.second;
       
-      mother = GetGenMotherNoFsr(&iGenParticle);
-      grandMother = GetGenMotherNoFsr(mother);
+//       mother = GetGenMotherNoFsr(&iGenParticle);
+//       grandMother = GetGenMotherNoFsr(mother);
       
-      if (child0->pdgId() != iGenParticle.pdgId() && family_tree.find(child0->pt()) != family_tree.end() && (unsigned int)child0->status() == family_tree[child0->pt()][1])
-	{
-	  theGenParticles[i].child0 = family_tree[child0->pt()][0];
-	}
-      if (child1->pdgId() != iGenParticle.pdgId() && family_tree.find(child1->pt()) != family_tree.end() && (unsigned int)child1->status() == family_tree[child1->pt()][1])
-	{
-	  theGenParticles[i].child1 = family_tree[child1->pt()][0];
-	}
-      if (mother->pdgId() != iGenParticle.pdgId() && family_tree.find(mother->pt()) != family_tree.end() && (unsigned int)mother->status() == family_tree[mother->pt()][1])
-	{
-	  theGenParticles[i].mother = family_tree[mother->pt()][0];
-	  if (grandMother->pdgId() != iGenParticle.pdgId() && family_tree.find(grandMother->pt()) != family_tree.end() && (unsigned int)grandMother->status() == family_tree[grandMother->pt()][1]) 
-	    {
-	      theGenParticles[i].grandmother = family_tree[grandMother->pt()][0];
-	    }
-	}
+//       if (child0->pdgId() != iGenParticle.pdgId() && family_tree.find(child0->pt()) != family_tree.end() && (unsigned int)child0->status() == family_tree[child0->pt()][1])
+// 	{
+// 	  theGenParticles[i].child0 = family_tree[child0->pt()][0];
+// 	}
+//       if (child1->pdgId() != iGenParticle.pdgId() && family_tree.find(child1->pt()) != family_tree.end() && (unsigned int)child1->status() == family_tree[child1->pt()][1])
+// 	{
+// 	  theGenParticles[i].child1 = family_tree[child1->pt()][0];
+// 	}
+//       if (mother->pdgId() != iGenParticle.pdgId() && family_tree.find(mother->pt()) != family_tree.end() && (unsigned int)mother->status() == family_tree[mother->pt()][1])
+// 	{
+// 	  theGenParticles[i].mother = family_tree[mother->pt()][0];
+// 	  if (grandMother->pdgId() != iGenParticle.pdgId() && family_tree.find(grandMother->pt()) != family_tree.end() && (unsigned int)grandMother->status() == family_tree[grandMother->pt()][1]) 
+// 	    {
+// 	      theGenParticles[i].grandmother = family_tree[grandMother->pt()][0];
+// 	    }
+// 	}
       
-      i+=1;
-    }
+//       i+=1;
+//     }
   
-  //free up some memory
-  theFinalGenParticles.clear();
+//   //free up some memory
+//   theFinalGenParticles.clear();
   
-  return theGenParticles;
- }
+//   return theGenParticles;
+//  }
   
 vdouble MultileptonAna::Get_Isos(vecPatMuon theobjs)
 {

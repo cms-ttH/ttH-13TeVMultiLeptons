@@ -150,6 +150,7 @@ typedef edm::Handle<pat::Electron>	patElectron;
 typedef edm::Handle<pat::Jet>		patJet;
 typedef edm::Handle<pat::MET>		patMET;
 typedef edm::Handle<reco::GenParticle>  prunedGenParticle;
+typedef edm::Handle<pat::PackedGenParticle>  packedGenParticle;
 typedef edm::Handle<pat::PackedCandidate> patPackedCand;
 typedef edm::Handle<reco::BeamSpot>     recoBeamSpot;
 
@@ -194,6 +195,7 @@ class MultileptonAna: public MiniAODHelper
   edm::ParameterSet subjetparams;
   edm::ParameterSet btagparams;
   edm::ParameterSet prunedparams;
+  edm::ParameterSet packedparams;
   edm::ParameterSet metparams;
   edm::ParameterSet variableparams;
   edm::ParameterSet systparams;
@@ -239,7 +241,8 @@ class MultileptonAna: public MiniAODHelper
   vector<ttH::Muon> GetCollection(vecPatMuon theobjs, vecPatJet jets);
   vector<ttH::Jet> GetCollection(vecPatJet theobjs);
   vector<ttH::MET> GetCollection(patMETs theobjs);
-  vector<ttH::GenParticle> GetCollection(std::vector<reco::GenParticle> theobjs);
+  //  vector<ttH::GenParticle> GetCollection(std::vector<reco::GenParticle> theobjs);
+  template <typename templateGenParticle> vector<ttH::GenParticle> GetCollection(std::vector<templateGenParticle> theobjs);
 
   //only used for triggerana
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
@@ -264,6 +267,7 @@ class MultileptonAna: public MiniAODHelper
   patJets GetSubJets(const edm::Event& event); 
   patMETs GetMet(const edm::Event& event);
   prunedGenParticles GetPrunedGenParticles(const edm::Event& event);
+  packedGenParticles GetPackedGenParticles(const edm::Event& event);
   patPackedCands GetPackedPFCandidates(const edm::Event& event);
   int GetVertices (const edm::Event& event);
   void GetLeptons(const edm::Event& event);
@@ -374,3 +378,73 @@ pat::Jet MultileptonAna::getClosestJet(const std::vector<pat::Jet>& jets, const 
     }
   return result;
 }
+
+template <typename templateGenParticle> std::vector<ttH::GenParticle> MultileptonAna::GetCollection (std::vector<templateGenParticle> theobjs)
+{
+  ttH::GenParticle genParticle;
+  std::vector<ttH::GenParticle> theGenParticles;
+  std::vector<templateGenParticle> theFinalGenParticles;
+  const reco::Candidate* child0;
+  const reco::Candidate* child1;
+  const reco::Candidate* mother;
+  const reco::Candidate* grandMother;
+  std::pair<const reco::Candidate*, const reco::Candidate*> childPair;
+
+  unsigned int i = 0;
+  for (const auto & iGenParticle: theobjs)
+    {
+      genParticle.obj = iGenParticle.p4();
+      genParticle.pdgID = iGenParticle.pdgId();
+      genParticle.status = iGenParticle.status();
+      
+      genParticle.isPromptFinalState = iGenParticle.isPromptFinalState();
+      //      genParticle.isPromptDecayed = iGenParticle.isPromptDecayed();
+      genParticle.isPromptDecayed = false;
+      genParticle.isDirectPromptTauDecayProductFinalState = iGenParticle.isDirectPromptTauDecayProductFinalState();
+
+      genParticle.child0 = 9999;
+      genParticle.child1 = 9999;
+      genParticle.mother = 9999;
+      genParticle.grandmother = 9999;
+      theGenParticles.push_back(genParticle);
+      i+=1;
+
+    }
+  
+  i=0;
+  for (const auto & iGenParticle : theobjs)
+    {
+      childPair = GetGenDaughterNoFsr(&iGenParticle);
+      child0 = childPair.first;
+      child1 = childPair.second;
+      
+      mother = GetGenMotherNoFsr(&iGenParticle);
+      grandMother = GetGenMotherNoFsr(mother);
+
+      unsigned int j =0;
+      for (const auto & customGenParticle : theGenParticles)
+	{
+	  if (child0->pdgId() != iGenParticle.pdgId() && child0->pt() == (float)customGenParticle.obj.Pt())
+	    {	 
+	      if (child0->status() == customGenParticle.status) theGenParticles[i].child0 = j;
+	    } 
+	  else if (child1->pdgId() != iGenParticle.pdgId() && child1->pt() == (float)customGenParticle.obj.Pt())
+	    {
+	      if (child1->status() == customGenParticle.status) theGenParticles[i].child1 = j;
+	    }
+	  else if (mother->pdgId() != iGenParticle.pdgId() && mother->pt() == (float)customGenParticle.obj.Pt())
+	    {
+	      if (mother->status() == customGenParticle.status) theGenParticles[i].mother = j;
+	    }
+	  else if (grandMother->pdgId() != iGenParticle.pdgId() && grandMother->pt() == (float)customGenParticle.obj.Pt())
+	    {
+	      if (grandMother->status() == customGenParticle.status) theGenParticles[i].grandmother = j;
+	    }
+
+	  if (theGenParticles[i].child0 != 9999 && theGenParticles[i].child1 != 9999 && theGenParticles[i].mother != 9999 && theGenParticles[i].grandmother != 9999) break;
+	  j+=1;
+	}
+      i+=1;
+    }
+  return theGenParticles;
+ }

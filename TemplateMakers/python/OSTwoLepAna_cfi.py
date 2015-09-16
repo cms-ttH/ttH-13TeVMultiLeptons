@@ -107,6 +107,13 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
                 prunedCollection = cms.string("prunedGenParticles") 
         ),
 
+        packedgenparticles = cms.PSet(
+        
+                packedCollection = cms.string("packedGenParticles") 
+        ),
+
+
+
         packedcandidates = cms.PSet(
         
                 packedCandCollection = cms.string("packedPFCandidates") 

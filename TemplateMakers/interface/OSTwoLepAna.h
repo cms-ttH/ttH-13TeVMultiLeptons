@@ -39,7 +39,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
                 // declare any histos
                 // Charlie, don't worry we'll keep these to a minimum..
                 TH1D *numInitialWeightedMCevents; // <- easily keep track of num (weighted) mc events we started with
-		// Geoff, 2many histos^^ in tha tree maker tho...loljk
                 
 		// declare the tree
 		TTree * summaryTree;
@@ -49,7 +48,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		double wgt_intree;
 		double wallTimePerEvent_intree;
                 
-        vstring passTrigger_intree;
+		vstring passTrigger_intree;
 
 		int eventnum_intree;
 		int higgs_decay_intree;
@@ -57,7 +56,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int lumiBlock_intree;
 		int runNumber_intree;
 		
-        vector<ttH::Lepton> preselected_leptons_intree;
+		vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> loose_leptons_intree;
 		vector<ttH::Lepton> looseMvaBased_leptons_intree;
 		vector<ttH::Lepton> tightMvaBased_leptons_intree;
@@ -83,6 +82,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
 		vector<ttH::MET> met_intree;
 		vector<ttH::GenParticle> pruned_genParticles_intree;
+		vector<ttH::GenParticle> packed_genParticles_intree;
 
 };
 
@@ -116,8 +116,8 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
   summaryTree->Branch("tightMvaBased_muons", &tightMvaBased_muons_intree);
   
-  //summaryTree->Branch("raw_electrons", &raw_electrons_intree);
-  //summaryTree->Branch("raw_muons", &raw_muons_intree);
+  summaryTree->Branch("raw_electrons", &raw_electrons_intree);
+  summaryTree->Branch("raw_muons", &raw_muons_intree);
   //summaryTree->Branch("raw_jets", &raw_jets_intree);
   
   summaryTree->Branch("preselected_jets", &preselected_jets_intree);
@@ -127,6 +127,7 @@ void OSTwoLepAna::tree_add_branches()
   //summaryTree->Branch("tight_bJets", &tight_bJets_intree);
   summaryTree->Branch("met", &met_intree);
   summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
+  summaryTree->Branch("packed_genParticles", &packed_genParticles_intree);
 
 }
 
@@ -156,8 +157,8 @@ void OSTwoLepAna::initialize_variables()
   tightMvaBased_electrons_intree.clear();
   tightMvaBased_muons_intree.clear();
   
-  //raw_electrons_intree.clear();
-  //raw_muons_intree.clear();
+  raw_electrons_intree.clear();
+  raw_muons_intree.clear();
   //raw_jets_intree.clear();
   
   preselected_jets_intree.clear();
@@ -167,6 +168,7 @@ void OSTwoLepAna::initialize_variables()
 	
   met_intree.clear();
   pruned_genParticles_intree.clear();
+  packed_genParticles_intree.clear();
   
   higgs_decay_intree = -9e6;
 }
