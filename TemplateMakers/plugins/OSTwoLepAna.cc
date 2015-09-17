@@ -7,6 +7,9 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything t
 	debug = constructparams.getParameter<bool> ("debug");
 	entire_pset = constructparams;
 	parse_params();
+	
+	muons_token_ = consumes<pat::MuonCollection>(constructparams.getParameter<edm::InputTag>("muons"));
+	electrons_token_ = consumes<pat::ElectronCollection>(constructparams.getParameter<edm::InputTag>("electrons"));
 
 }
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
@@ -85,9 +88,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         initialize_variables();
   
 	trigRes triggerResults = 		GetTriggers(event);
-	patMuons muons = 			GetMuons(event);
+	//	patMuons muons = 			GetMuons(event);
+	auto muons = get_collection(event, muons_token_);
 	patJets pfjets = 			GetJets(event);
-	patElectrons electrons = 		GetElectrons(event);
+	//	patElectrons electrons = 		GetElectrons(event);
+	auto electrons = get_collection(event, electrons_token_);
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
 	patPackedCands packedCands         =    GetPackedPFCandidates(event);

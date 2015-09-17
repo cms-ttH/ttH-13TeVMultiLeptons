@@ -41,7 +41,7 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 
 
 	## muon collection to use, and defining loose, tight muons:
-	muons = cms.PSet( 
+	muonsOld = cms.PSet( 
 		muonCollection = cms.string("slimmedMuons"),
 		maxTightMuonAbsEta = cms.double(2.1), 			# there is no cms.float!
 		maxLooseMuonAbsEta = cms.double(2.5),
@@ -57,8 +57,8 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 	),
 
 
-	## electron collection to use, and defining loose, tight electrons:
-	electrons = cms.PSet( 
+	## Electron collection to use, and defining loose, tight electrons:
+	electronsOld = cms.PSet( 
 		electronCollection = cms.string("slimmedElectrons"),
 		maxLooseElectronAbsEta = cms.double(2.5),
 		maxTightElectronAbsEta = cms.double(2.5),

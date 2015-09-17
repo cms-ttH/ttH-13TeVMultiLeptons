@@ -243,6 +243,7 @@ class MultileptonAna: public MiniAODHelper
   vector<ttH::MET> GetCollection(patMETs theobjs);
   //  vector<ttH::GenParticle> GetCollection(std::vector<reco::GenParticle> theobjs);
   template <typename templateGenParticle> vector<ttH::GenParticle> GetCollection(std::vector<templateGenParticle> theobjs);
+  template <typename T> edm::Handle<T> get_collection(const edm::Event& event, const edm::EDGetTokenT<T>& token);
 
   //only used for triggerana
   vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
@@ -448,3 +449,14 @@ template <typename templateGenParticle> std::vector<ttH::GenParticle> Multilepto
     }
   return theGenParticles;
  }
+
+template<typename T>
+edm::Handle<T>
+MultileptonAna::get_collection(const edm::Event& event, const edm::EDGetTokenT<T>& token)
+{
+  edm::Handle<T> handle;
+  event.getByToken(token, handle);
+  if (!handle.isValid())
+    throw edm::Exception(edm::errors::InvalidReference, "Can't find a collection.");
+  return handle;
+}

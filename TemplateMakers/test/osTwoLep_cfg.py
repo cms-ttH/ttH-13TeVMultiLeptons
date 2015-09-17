@@ -140,7 +140,6 @@ from RecoJets.Configuration.RecoJets_cff import *
 from RecoJets.Configuration.RecoPFJets_cff import *
 from JetMETCorrections.Configuration.JetCorrectionProducersAllAlgos_cff import *
 from JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff import *
-
 from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
 
 process.ak4PFCHSL1Fastjet = cms.ESProducer(
@@ -150,9 +149,6 @@ process.ak4PFCHSL1Fastjet = cms.ESProducer(
     srcRho      = cms.InputTag( 'fixedGridRhoFastjetAll' ),
     useCondDB = cms.untracked.bool(True)
     )
-
-#process.ak4PFchsL2Relative = ak4CaloL2Relative.clone( algorithm = 'AK4PFchs' )
-#process.ak4PFchsL3Absolute = ak4CaloL3Absolute.clone( algorithm = 'AK4PFchs' )
 
 process.ak4PFchsL2Relative   =  ak5PFL2Relative.clone( algorithm = 'AK4PFchs' )
 process.ak4PFchsL3Absolute   =  ak5PFL3Absolute.clone( algorithm = 'AK4PFchs' )
@@ -164,14 +160,16 @@ process.ak4PFchsL1L2L3 = cms.ESProducer("JetCorrectionESChain",
         'ak4PFchsL3Absolute'),
      useCondDB = cms.untracked.bool(True)                                        
 )
-
 ######################################
 
 ## Here, load the analysis:
-
+process.load("ttH.LeptonID.ttHLeptons_cfi")
 process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
 ### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile)
+
+process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
+process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 
 ### new choices for btagging: ###
 # combinedSecondaryVertexBJetTags
@@ -211,13 +209,11 @@ process.OSTwoLepAna.triggers.trigger_vstring = ( "HLT_Mu17_Mu8_v1",
 	
 ## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
-                                   #fileName = cms.string("test_100evts_muon_iso_study_" + str(looseMuonRelIso) + ".root") # name of output file
-                                   fileName = cms.string("multilep_michaeltest_deleteme.root") # name of output file
-				   #fileName = cms.string("multilep.root")
+				   fileName = cms.string("multilep_tree.root")
                                    )
 
 
-process.p = cms.Path(process.OSTwoLepAna)
+process.p = cms.Path(process.ttHLeptons * process.OSTwoLepAna)
 
 # summary
 process.options = cms.untracked.PSet(

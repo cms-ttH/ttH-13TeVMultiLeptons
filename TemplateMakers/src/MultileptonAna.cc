@@ -281,8 +281,8 @@ void MultileptonAna::parse_params()
 {
 	setupoptionsparams = 	entire_pset.getParameter<edm::ParameterSet> ("setupoptions");
 	triggerparams = 	entire_pset.getParameter<edm::ParameterSet> ("triggers");
-	muonparams = 		entire_pset.getParameter<edm::ParameterSet> ("muons");
-      	electronparams = 	entire_pset.getParameter<edm::ParameterSet> ("electrons");
+	muonparams = 		entire_pset.getParameter<edm::ParameterSet> ("muonsOld");
+      	electronparams = 	entire_pset.getParameter<edm::ParameterSet> ("electronsOld");
       	leptonparams = 		entire_pset.getParameter<edm::ParameterSet> ("leptons");
       	jetparams = 		entire_pset.getParameter<edm::ParameterSet> ("jets");
       	subjetparams = 		entire_pset.getParameter<edm::ParameterSet> ("fatjets");
@@ -498,11 +498,11 @@ trigRes MultileptonAna::GetTriggers (const edm::Event& event)
 
 patMuons MultileptonAna::GetMuons (const edm::Event& event)
 {
-	string muCollection = muonparams.getParameter<string> ("muonCollection");
-	patMuons muonHandle; 
-	event.getByLabel(muCollection,muonHandle);
-	return muonHandle;
-	
+  string muCollection = muonparams.getParameter<string> ("muonCollection");
+  patMuons muonHandle; 
+  event.getByLabel(muCollection,muonHandle);
+  return muonHandle;
+  
 }
 patElectrons MultileptonAna::GetElectrons (const edm::Event& event)
 {
