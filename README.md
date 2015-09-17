@@ -21,7 +21,7 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
         /.gitignore/
         /CMGTools/TTHAnalysis/data/
         /EgammaAnalysis/ElectronTools/
-	EOF
+        EOF
         git checkout -b CMGTools-from-CMSSW_7_4_7 cmg-central/CMGTools-from-CMSSW_7_4_7
         git clone git@github.com:cms-ttH/MiniAOD.git
         cd MiniAOD
