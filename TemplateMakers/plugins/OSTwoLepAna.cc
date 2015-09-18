@@ -1,7 +1,6 @@
 // Created by Geoff Smith
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/OSTwoLepAna.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
 
 OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything that needs to be done at creation time
 	debug = constructparams.getParameter<bool> ("debug");
@@ -42,7 +41,6 @@ void OSTwoLepAna::beginJob()
   sampleNumber = convertSampleNameToNumber(sampleName);
   SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
   SetFactorizedJetCorrector();
-  setupMva();
   alltriggerstostudy = HLTInfo();
   
   // needed in edanalyzer:
@@ -88,11 +86,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         initialize_variables();
   
 	trigRes triggerResults = 		GetTriggers(event);
-	//	patMuons muons = 			GetMuons(event);
 	auto muons = get_collection(event, muons_token_);
-	patJets pfjets = 			GetJets(event);
-	//	patElectrons electrons = 		GetElectrons(event);
 	auto electrons = get_collection(event, electrons_token_);
+	patJets pfjets = 			GetJets(event);
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
 	patPackedCands packedCands         =    GetPackedPFCandidates(event);
@@ -233,11 +229,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ///
 	    ////////
 
-	    auto lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonLooseMvaBased, minloosemupt, selectedElectrons_preselected, electronID::electronLooseMvaBased, minlooseelept, selectedJets_forLepMVA);
+	    auto lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonLooseMvaBased, minloosemupt, selectedElectrons_preselected, electronID::electronLooseMvaBased, minlooseelept);
 	    vecPatMuon selectedMuons_looseMvaBased = std::get<0>(lepTuple);
 	    vecPatElectron selectedElectrons_looseMvaBased = std::get<1>(lepTuple);
 
-	    lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonTightMvaBased, mintightmupt, selectedElectrons_preselected, electronID::electronTightMvaBased, mintightelept, selectedJets_forLepMVA);
+	    lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonTightMvaBased, mintightmupt, selectedElectrons_preselected, electronID::electronTightMvaBased, mintightelept);
 	    vecPatMuon selectedMuons_tightMvaBased = std::get<0>(lepTuple);
 	    vecPatElectron selectedElectrons_tightMvaBased = std::get<1>(lepTuple);
 
@@ -354,15 +350,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    //////
 	    /////////////////////////
 
-	    vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw,selectedJets_forLepMVA);
-	    vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected,selectedJets_forLepMVA);
-	    vector<ttH::Electron> looseMvaBased_electrons = GetCollection(selectedElectrons_looseMvaBased,selectedJets_forLepMVA);
-	    vector<ttH::Electron> tightMvaBased_electrons = GetCollection(selectedElectrons_tightMvaBased,selectedJets_forLepMVA);
+	    vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw);
+	    vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected);
+	    vector<ttH::Electron> looseMvaBased_electrons = GetCollection(selectedElectrons_looseMvaBased);
+	    vector<ttH::Electron> tightMvaBased_electrons = GetCollection(selectedElectrons_tightMvaBased);
 
-	    vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw,selectedJets_forLepMVA);
-	    vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected,selectedJets_forLepMVA);
-	    vector<ttH::Muon> looseMvaBased_muons = GetCollection(selectedMuons_looseMvaBased,selectedJets_forLepMVA);
-	    vector<ttH::Muon> tightMvaBased_muons = GetCollection(selectedMuons_tightMvaBased,selectedJets_forLepMVA);
+	    vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw);
+	    vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected);
+	    vector<ttH::Muon> looseMvaBased_muons = GetCollection(selectedMuons_looseMvaBased);
+	    vector<ttH::Muon> tightMvaBased_muons = GetCollection(selectedMuons_tightMvaBased);
 
 	    vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
 	    vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);

@@ -113,9 +113,6 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/JobParameters.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
-// hack for ele mva id
-#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/EGammaMvaEleEstimatorFWLite.h"
-
 // end includes
 // -----------------------------------------------
 
@@ -180,9 +177,6 @@ class MultileptonAna: public MiniAODHelper
   
   void detectData(string sampleName);
   
-  EGammaMvaEleEstimatorFWLite* mvaID_;
-  void setupMva();
-  
   int convertSampleNameToNumber(string sampleName);
   
   edm::ParameterSet entire_pset;
@@ -235,28 +229,14 @@ class MultileptonAna: public MiniAODHelper
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
   
-  //  vector<ttH::Lepton> GetCollection(vecPatLepton theobjs);
   vector<ttH::Lepton> GetCollection(vector<ttH::Muon> muObjs, vector<ttH::Electron> eleObjs);
-  vector<ttH::Electron> GetCollection(vecPatElectron theobjs, vecPatJet jets);
-  vector<ttH::Muon> GetCollection(vecPatMuon theobjs, vecPatJet jets);
+  vector<ttH::Electron> GetCollection(vecPatElectron theobjs);
+  vector<ttH::Muon> GetCollection(vecPatMuon theobjs);
   vector<ttH::Jet> GetCollection(vecPatJet theobjs);
   vector<ttH::MET> GetCollection(patMETs theobjs);
   //  vector<ttH::GenParticle> GetCollection(std::vector<reco::GenParticle> theobjs);
   template <typename templateGenParticle> vector<ttH::GenParticle> GetCollection(std::vector<templateGenParticle> theobjs);
   template <typename T> edm::Handle<T> get_collection(const edm::Event& event, const edm::EDGetTokenT<T>& token);
-
-  //only used for triggerana
-  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatJet theobjs);
-  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatMuon theobjs);
-  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vecPatElectron theobjs);
-  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vector<ttH::Jet> theobjs);
-  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vector<ttH::Muon> theobjs);
-  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vector<ttH::Electron> theobjs);
-  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS (vector<ttH::Lepton> theobjs);
-  
-  TLorentzVectorCMS Get_TLorentzVectorCMS (patMETs theobjs);
-  TLorentzVectorCMS Get_TLorentzVectorCMS (pat::MET theMET);
-  vecTLorentzVectorCMS Get_vecTLorentzVectorCMS_sorted_leptons(vecTLorentzVectorCMS leps1, vecTLorentzVectorCMS leps2);
 
   vecPatLepton fillLeptons(const vecPatMuon& mus, const vecPatElectron& eles);
 
@@ -282,59 +262,22 @@ class MultileptonAna: public MiniAODHelper
   vdouble Get_Isos(vecPatMuon theobjs);
   vdouble Get_Isos(vecPatElectron theobjs);
   vint Get_JetPartonFlavor(vecPatJet theobjs);
-  vecPatElectron Get_vecPatElectron_Passing_ElectronLepMVA(const vecPatElectron& electrons, const std::vector<pat::Jet>& iJets, double MVA_Cut);
-  vecPatMuon Get_vecPatMuon_Passing_MuonLepMVA(const vecPatMuon& muons, const std::vector<pat::Jet>& iJets, double MVA_Cut);
   const reco::Candidate* GetGenMotherNoFsr(const reco::Candidate* theobj);
   std::pair<const reco::Candidate*, const reco::Candidate*> GetGenDaughterNoFsr(const reco::Candidate* theobj);
 
-  
-
   // replace virtual members from inherited miniAODhelper:
-  std::vector<pat::Muon> GetSelectedMuons(const std::vector<pat::Muon>&, const float, const muonID::muonID, const std::vector<pat::Jet>& = std::vector<pat::Jet>());
-  std::vector<pat::Electron> GetSelectedElectrons(const std::vector<pat::Electron>&, const float, const electronID::electronID, const std::vector<pat::Jet>& = std::vector<pat::Jet>());
+  std::vector<pat::Muon> GetSelectedMuons(const std::vector<pat::Muon>&, const float, const muonID::muonID);
+  std::vector<pat::Electron> GetSelectedElectrons(const std::vector<pat::Electron>&, const float, const electronID::electronID);
   bool isGoodMuon(const pat::Muon&, const float, const muonID::muonID, const std::vector<pat::Jet>&);
   bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID, const std::vector<pat::Jet>&);
   bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);
   bool isGoodJet(const pat::Jet&, const float, const float, const jetID::jetID, const char);
   int GetHiggsDaughterId(const std::vector<reco::GenParticle>&);
-  std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>> pickLeptons(const vecPatMuon&, const muonID::muonID, const float, const vecPatElectron&, const electronID::electronID, const float, const std::vector<pat::Jet>& = std::vector<pat::Jet>());
-
+  std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>> pickLeptons(const vecPatMuon&, const muonID::muonID, const float, const vecPatElectron&, const electronID::electronID, const float);
   template <typename obj1, typename obj2> std::vector<obj1> cleanObjects(const std::vector<obj1>&, const std::vector<obj2>&, const double);
-  
   template <typename particleType> pat::Jet getClosestJet(const std::vector<pat::Jet>&, const particleType&);
 
-  //lepMVA
-  float GetMuonLepMVA( const pat::Muon&, const std::vector<pat::Jet>&);
-  float GetElectronLepMVA(const pat::Electron&, const std::vector<pat::Jet>&);
-
-
-
  private:
-  
-  // lepMVA TMVA readers
-  TMVA::Reader* mu_reader_high_b;
-  TMVA::Reader* mu_reader_high_e;
-  TMVA::Reader* mu_reader_medium_b;
-  TMVA::Reader* mu_reader_medium_e;
-  TMVA::Reader* mu_reader_low;
-  TMVA::Reader* ele_reader_high_cb;
-  TMVA::Reader* ele_reader_high_fb;
-  TMVA::Reader* ele_reader_high_ec;
-  TMVA::Reader* ele_reader_medium_cb;
-  TMVA::Reader* ele_reader_medium_fb;
-  TMVA::Reader* ele_reader_medium_ec;
-  TMVA::Reader* ele_reader_low;
-  Float_t varneuRelIso;
-  Float_t varchRelIso;
-  Float_t varjetDR_in;
-  Float_t varjetPtRatio_in;
-  Float_t varjetBTagCSV_in;
-  Float_t varsip3d;
-  Float_t varmvaId;
-  Float_t vardxy;
-  Float_t vardz;
-  Float_t varSegCompat;
-  
   
 };
 
