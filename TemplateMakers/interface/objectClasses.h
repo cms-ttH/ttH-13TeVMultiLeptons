@@ -85,6 +85,30 @@ namespace ttH
 
   };
   
+  class Tau // different enough to NOT make this public Lepton
+  {
+  public:
+    Tau(){} // default constructor
+    
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
+    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };    
+    
+    int charge;
+    int genPdgID;
+    int genMotherPdgID;
+    int genGrandMotherPdgID;
+    
+    double dxy;
+    double dz;
+    //double miniIso; // to be added..
+    
+    virtual ~Tau(){};
+    ClassDef(Tau, 1); 
+
+  };
+   
+  
+  
   class Jet
   {
   public:

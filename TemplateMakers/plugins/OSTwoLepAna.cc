@@ -171,7 +171,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////	
 	
 	//saves time by skipping the rest of the loop if <= 2 preselected leptons
-        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
+        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 1)
         {
 
 	    vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);

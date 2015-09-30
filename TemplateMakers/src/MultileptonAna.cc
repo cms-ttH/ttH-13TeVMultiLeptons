@@ -672,6 +672,38 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs)
   return muCollection;
 }
 
+vector<ttH::Tau> MultileptonAna::GetCollection (vecPatTau theobjs)
+{
+  ttH::Tau tau;
+  vector<ttH::Tau> tauCollection;
+  for(const auto & iTau: theobjs)
+  {
+      tau.obj = iTau.p4();
+      
+      if (iTau.genParticle())
+      {
+        tau.genPdgID = iTau.genParticle()->pdgId();
+        const reco::Candidate* genMother = GetGenMotherNoFsr(iTau.genParticle());
+	tau.genMotherPdgID = genMother->pdgId();
+        const reco::Candidate* genGrandMother = GetGenMotherNoFsr(genMother);        
+        tau.genGrandMotherPdgID = genGrandMother->pdgId();
+      }
+      else
+      {
+        tau.genPdgID = 9999;
+        tau.genMotherPdgID = 9999;
+        tau.genGrandMotherPdgID = 9999;
+      }
+      tau.charge = iTau.charge();
+      tau.dxy = iTau.userFloat("dxy");
+      tau.dz = iTau.userFloat("dz");
+      
+      tauCollection.push_back(tau);
+
+  }
+  return tauCollection;
+}
+
 vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
 {
   ttH::Jet jet;

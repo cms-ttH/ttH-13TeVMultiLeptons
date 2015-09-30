@@ -8,6 +8,7 @@
 ClassImp(ttH::Lepton);
 ClassImp(ttH::Electron);
 ClassImp(ttH::Muon);
+ClassImp(ttH::Tau);
 ClassImp(ttH::Jet);
 ClassImp(ttH::MET);
 ClassImp(ttH::GenParticle);
@@ -20,6 +21,7 @@ using namespace ttH;
 ClassImp(Lepton);
 ClassImp(Electron);
 ClassImp(Muon);
+ClassImp(Tau);
 ClassImp(Jet);
 ClassImp(MET);
 ClassImp(GenParticle);

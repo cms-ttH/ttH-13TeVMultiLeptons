@@ -28,6 +28,10 @@
 #pragma link C++ class std::vector< ttH::Muon >+;
 #pragma link C++ class std::vector< std::vector< ttH::Muon > >+;
 
+#pragma link C++ class ttH::Tau+;
+#pragma link C++ class std::vector< ttH::Tau >+;
+#pragma link C++ class std::vector< std::vector< ttH::Tau > >+;
+
 #pragma link C++ class ttH::Jet+;
 #pragma link C++ class std::vector< ttH::Jet >+;
 #pragma link C++ class std::vector< std::vector< ttH::Jet > >+;

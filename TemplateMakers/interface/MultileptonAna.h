@@ -144,6 +144,7 @@ typedef edm::Handle<edm::TriggerResults>	trigRes;
 
 typedef edm::Handle<pat::Muon>		patMuon;
 typedef edm::Handle<pat::Electron>	patElectron;
+typedef edm::Handle<pat::Tau>	        patTau;
 typedef edm::Handle<pat::Jet>		patJet;
 typedef edm::Handle<pat::MET>		patMET;
 typedef edm::Handle<reco::GenParticle>  prunedGenParticle;
@@ -155,6 +156,7 @@ typedef edm::Handle<reco::BeamSpot>     recoBeamSpot;
 typedef std::vector<pat::Muon>	     vecPatMuon;
 typedef std::vector<pat::Electron>   vecPatElectron;
 typedef std::vector<reco::LeafCandidate> vecPatLepton;
+typedef std::vector<pat::Tau>        vecPatTau;
 typedef std::vector<pat::Jet>	     vecPatJet;
 typedef std::vector<pat::MET>	     vecPatMET;
 
@@ -162,6 +164,7 @@ typedef std::vector<pat::MET>	     vecPatMET;
 typedef std::vector<pat::Jet>::const_iterator 		jetit;
 typedef std::vector<pat::Muon>::const_iterator		muit;
 typedef std::vector<pat::Electron>::const_iterator	eleit;
+typedef std::vector<pat::Tau>::const_iterator	        tauit;
 typedef std::vector<pat::MET>::const_iterator		metit;
 
 
@@ -232,6 +235,7 @@ class MultileptonAna: public MiniAODHelper
   vector<ttH::Lepton> GetCollection(vector<ttH::Muon> muObjs, vector<ttH::Electron> eleObjs);
   vector<ttH::Electron> GetCollection(vecPatElectron theobjs);
   vector<ttH::Muon> GetCollection(vecPatMuon theobjs);
+  vector<ttH::Tau> GetCollection(vecPatTau theobjs);
   vector<ttH::Jet> GetCollection(vecPatJet theobjs);
   vector<ttH::MET> GetCollection(patMETs theobjs);
   //  vector<ttH::GenParticle> GetCollection(std::vector<reco::GenParticle> theobjs);
