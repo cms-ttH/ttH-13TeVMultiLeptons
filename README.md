@@ -17,11 +17,9 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
         git cms-init
         git remote add cmg-central https://github.com/CERN-PH-CMG/cmg-cmssw.git
         git fetch cmg-central
-        cat <<EOF >.git/info/sparse-checkout
-        /.gitignore/
-        /CMGTools/TTHAnalysis/data/
-        /EgammaAnalysis/ElectronTools/
-        EOF
+        echo "/.gitignore/" >> .git/info/sparse-checkout
+        echo "/CMGTools/TTHAnalysis/data/" >> .git/info/sparse-checkout
+        echo "/EgammaAnalysis/ElectronTools/" >> .git/info/sparse-checkout
         git checkout -b CMGTools-from-CMSSW_7_4_7 cmg-central/CMGTools-from-CMSSW_7_4_7
         git clone git@github.com:cms-ttH/MiniAOD.git
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
