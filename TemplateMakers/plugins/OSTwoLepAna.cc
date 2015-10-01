@@ -9,6 +9,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything t
 	
 	muons_token_ = consumes<pat::MuonCollection>(constructparams.getParameter<edm::InputTag>("muons"));
 	electrons_token_ = consumes<pat::ElectronCollection>(constructparams.getParameter<edm::InputTag>("electrons"));
+        taus_token_ = consumes<pat::TauCollection>(constructparams.getParameter<edm::InputTag>("taus"));
 
 }
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
@@ -86,8 +87,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         initialize_variables();
   
 	trigRes triggerResults = 		GetTriggers(event);
-	auto muons = get_collection(event, muons_token_);
-	auto electrons = get_collection(event, electrons_token_);
+	auto muons =                            get_collection(event, muons_token_);
+	auto electrons =                        get_collection(event, electrons_token_);
+        auto taus =                             get_collection(event, taus_token_);
 	patJets pfjets = 			GetJets(event);
 	patMETs mets = 				GetMet(event);
 	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
@@ -151,6 +153,19 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, 5., muonID::muonRaw );
 	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 5., muonID::muonPreselection ); // was *muons, 10., muonID::muonPreselection
 	//	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
+        
+        
+	/////////
+	///
+	/// taus
+	///
+	////////        
+        
+        
+	vecPatTau selectedTaus_preselected = GetSelectedTaus( *taus, 20., tauID::tauLoose ); // the pt cut here must be >= the pt cut in the LeptonIdentifier in order to have any effect.
+
+                
+        
 
 	/////////
 	///
@@ -162,7 +177,17 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	
 
 	//make sure the electrons used for jet cleaning are already cleaned of muons
+        // why are we using this to clean jets? isn't it the same as selectedElectrons_preselected???
 	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons(selectedElectrons_preselected, 7., electronID::electronPreselection); // was selectedElectrons_preselected, 10., electronID::electronPreselection
+
+        //remove taus that are close (dR <=0.4) to muons
+	selectedTaus_preselected = cleanObjects<pat::Tau,pat::Muon>(selectedTaus_preselected,selectedMuons_preselected,0.4);
+        
+        //remove taus that are close (dR <=0.4) to electrons
+	selectedTaus_preselected = cleanObjects<pat::Tau,pat::Electron>(selectedTaus_preselected,selectedElectrons_preselected,0.4);
+        
+        // doing the same for taus for consitancy (should check why we're doing it this way...)
+        vecPatTau selectedTaus_forcleaning = GetSelectedTaus(selectedTaus_preselected, 20., tauID::tauLoose );
 
 	/////////
 	///
@@ -171,7 +196,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////	
 	
 	//saves time by skipping the rest of the loop if <= 2 preselected leptons
-        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 1)
+        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
         {
 
 	    vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
@@ -197,7 +222,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    
 	    //with JEC
 	    vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
-	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);
+	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
+            cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(cleaned_rawJets,selectedTaus_forcleaning,0.4);                // <------
             vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                                  // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
 
@@ -206,7 +232,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );
 	    vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );
 	    vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );
-	    vecPatJet selectedJets_preselected          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
+	    vecPatJet selectedJets_preselected          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );           // <------
             vecPatJet selectedJets_preselected_uncor          	= GetSelectedJets(cleaned_rawJets_uncor, 25., 2.4, jetID::jetPU, '-' );
 	    vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );
 	    vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );
@@ -313,7 +339,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    /////////////////////////
 	    //////
-	    ////// fill the collections
+	    ////// fill the ttH namespace collections
 	    //////
 	    /////////////////////////
 
@@ -326,6 +352,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected);
 	    vector<ttH::Muon> looseMvaBased_muons = GetCollection(selectedMuons_looseMvaBased);
 	    vector<ttH::Muon> tightMvaBased_muons = GetCollection(selectedMuons_tightMvaBased);
+            
+            vector<ttH::Tau> preselected_taus = GetCollection(selectedTaus_preselected);
 
 	    vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
 	    vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);
@@ -439,10 +467,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 //                 }
 // 	    }
             
+            /////////////////////////
+	    //////
+	    ////// finally, associate the ttH collections
+	    ////// with the ones stored in the tree
+            //////
+	    /////////////////////////
+            
             
 	    preselected_leptons_intree = preselected_leptons;
 	    preselected_electrons_intree = preselected_electrons;
 	    preselected_muons_intree = preselected_muons;
+            preselected_taus_intree = preselected_taus;
 
 	    looseMvaBased_muons_intree = looseMvaBased_muons;
 	    tightMvaBased_muons_intree = tightMvaBased_muons;
@@ -469,7 +505,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	    wallTimePerEvent_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
 
+            /////////////////////////////////
 	    summaryTree->Fill();// fill tree;
+            /////////////////////////////////
 	    
         } //end skim if statement
 

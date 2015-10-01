@@ -942,6 +942,30 @@ MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElec
   return selectedElectrons;
 }
 
+
+std::vector<pat::Tau>
+MultileptonAna::GetSelectedTaus(const std::vector<pat::Tau>& inputTaus, const float iMinPt, const tauID::tauID iTauID){
+
+  CheckSetUp();
+
+  std::vector<pat::Tau> selectedTaus;
+
+  for(const auto& tau: inputTaus){
+      bool passSelection = false;
+      bool passPt = (tau.pt() >= iMinPt);
+      switch(iTauID)
+      {
+	default:
+        case tauID::tauLoose: passSelection = ((tau.userFloat("idPreselection")>0.5) && passPt);
+        //case tauID::tauTight: passSelection = true;
+      }
+    
+      if( passSelection ) selectedTaus.push_back(tau);
+  }
+
+  return selectedTaus;
+}
+
 std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>>
 MultileptonAna::pickLeptons(const vecPatMuon& iMuons, const muonID::muonID iMuonID, const float iMinMuPt, const vecPatElectron& iElectrons, const electronID::electronID iElectronID, const float iMinElePt)
 {

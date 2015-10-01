@@ -27,6 +27,7 @@ process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
         
         #'/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/20000/04A14FA4-2523-E511-9860-0025905C96A6.root'
+        ## Spring15 sync sample:
         '/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/30000/088378DB-3D24-E511-8B0E-20CF3027A589.root'
         #'/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9_ext1-v3/10000/06249DB6-C309-E511-957A-782BCB6A4BB8.root'
         
@@ -100,10 +101,6 @@ process.source = cms.Source("PoolSource",
 #                                                                                                                                                                                     
                                                                                                                                                                                      
                                                                                                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                     
-                                                                                                                                                                                     
-        
-        
         
         
         #'file:/afs/cern.ch/user/m/muell149/public/ttH_phys14_sync.root'
@@ -172,6 +169,7 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
+process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
 
 ### new choices for btagging: ###
 # combinedSecondaryVertexBJetTags

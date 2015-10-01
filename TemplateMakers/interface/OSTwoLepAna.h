@@ -71,6 +71,8 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::Muon> loose_muons_intree;
 		vector<ttH::Muon> looseMvaBased_muons_intree;
 		vector<ttH::Muon> tightMvaBased_muons_intree;
+                
+                vector<ttH::Tau> preselected_taus_intree;
 
 		vector<ttH::Jet> raw_jets_intree;
 		vector<ttH::Jet> preselected_jets_intree;
@@ -83,8 +85,9 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::GenParticle> pruned_genParticles_intree;
 		vector<ttH::GenParticle> packed_genParticles_intree;
 		
-	edm::EDGetTokenT<pat::MuonCollection> muons_token_;
-	edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
+	        edm::EDGetTokenT<pat::MuonCollection> muons_token_;
+	        edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
+                edm::EDGetTokenT<pat::TauCollection> taus_token_;
 
 };
 
@@ -106,6 +109,8 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
   summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
   summaryTree->Branch("preselected_muons", &preselected_muons_intree);
+  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
+  
   summaryTree->Branch("loose_leptons", &loose_leptons_intree);
   summaryTree->Branch("loose_electrons", &loose_electrons_intree);
   summaryTree->Branch("loose_muons", &loose_muons_intree);
@@ -147,6 +152,7 @@ void OSTwoLepAna::initialize_variables()
   preselected_leptons_intree.clear();
   preselected_electrons_intree.clear();
   preselected_muons_intree.clear();
+  preselected_taus_intree.clear();
   loose_leptons_intree.clear();
   loose_electrons_intree.clear();
   loose_muons_intree.clear();

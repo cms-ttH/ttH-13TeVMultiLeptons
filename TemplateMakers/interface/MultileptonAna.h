@@ -226,9 +226,10 @@ class MultileptonAna: public MiniAODHelper
   muonID::muonID muonLooseID;
   muonID::muonID muonPreselectedID;
 
-  tauID::tauID tauTightID;
+  // tauID::tauID tauTightID;
   // tauID::tauID tauLooseID = tauID::tauVLoose;
   tauID::tauID tauPreselectedID;
+  
   vector<ArbitraryVariable*> kinVars;
   vector<ArbitraryVariable*> cutVars;
   
@@ -272,6 +273,7 @@ class MultileptonAna: public MiniAODHelper
   // replace virtual members from inherited miniAODhelper:
   std::vector<pat::Muon> GetSelectedMuons(const std::vector<pat::Muon>&, const float, const muonID::muonID);
   std::vector<pat::Electron> GetSelectedElectrons(const std::vector<pat::Electron>&, const float, const electronID::electronID);
+  std::vector<pat::Tau> GetSelectedTaus(const std::vector<pat::Tau>&, const float, const tauID::tauID);
   bool isGoodMuon(const pat::Muon&, const float, const muonID::muonID, const std::vector<pat::Jet>&);
   bool isGoodElectron(const pat::Electron&, const float, const electronID::electronID, const std::vector<pat::Jet>&);
   bool isGoodTau(const pat::Tau&, const float, const tauID::tauID);

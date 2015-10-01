@@ -25,7 +25,9 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 		
 	## list of triggers in the analysis:
 	triggers = cms.PSet(
+                #### only this does something:
 		hltlabel = cms.string("reHLT"),		#trig studies = reHLT; real analysis = HLT
+                ###### this no longer does anything!!!
 		trigger_vstring = cms.vstring(		# this will eventually only be osTwoLep triggers
 			"HLT_Mu17_Mu8_v1",
 			"HLT_Mu17_TkMu8_v1",
@@ -39,7 +41,7 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 		)
 	),
 
-
+        ###### this no longer does anything!!!
 	## muon collection to use, and defining loose, tight muons:
 	muonsOld = cms.PSet( 
 		muonCollection = cms.string("slimmedMuons"),
@@ -56,7 +58,7 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 		
 	),
 
-
+        ###### this no longer does anything!!!
 	## Electron collection to use, and defining loose, tight electrons:
 	electronsOld = cms.PSet( 
 		electronCollection = cms.string("slimmedElectrons"),
@@ -71,7 +73,7 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 		dZ = cms.double(1.0),	 
 		
 	),
-
+                
 
 	## what goes into lepton collection:
 	leptons = cms.PSet(
