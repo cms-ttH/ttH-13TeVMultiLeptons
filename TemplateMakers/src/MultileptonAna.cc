@@ -584,10 +584,10 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.full5x5_sigmaIetaIeta = iEle.full5x5_sigmaIetaIeta();
       ele.hadronicOverEm = iEle.hadronicOverEm();
       ele.lepMVA = iEle.userFloat("leptonMVA");
-      ele.chreliso = iEle.userFloat("chargedRelIso");
-      ele.nureliso = iEle.userFloat("neutralRelIso");
-      ele.matchedJetdR = iEle.userFloat("nearestJetDr");
+      ele.miniIsoCharged = iEle.userFloat("chargedRelIso");
+      ele.miniIsoNeutral = iEle.userFloat("neutralRelIso");
       ele.jetPtRatio = iEle.userFloat("nearestJetPtRatio");
+      ele.jetPtRel = iEle.userFloat("nearestJetPtRel");
       ele.csv = iEle.userFloat("nearestJetCsv");
       ele.sip3D = iEle.userFloat("sip3D");
       ele.mvaID = iEle.userFloat("eleMvaId");
@@ -642,10 +642,10 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs)
       mu.normalizedChi2 = iMu.userFloat("normalizedChiSq");
       mu.numberOfValidMuonHits = iMu.userFloat("numValidMuonHits");
       mu.numberOfMatchedStations = iMu.numberOfMatchedStations();
-      mu.chreliso = iMu.userFloat("chargedRelIso");
-      mu.nureliso = iMu.userFloat("neutralRelIso");
-      mu.matchedJetdR = iMu.userFloat("nearestJetDr");
+      mu.miniIsoCharged = iMu.userFloat("chargedRelIso");
+      mu.miniIsoNeutral = iMu.userFloat("neutralRelIso");
       mu.jetPtRatio = iMu.userFloat("nearestJetPtRatio");
+      mu.jetPtRel = iMu.userFloat("nearestJetPtRel");
       mu.csv = iMu.userFloat("nearestJetCsv");
       mu.sip3D = iMu.userFloat("sip3D");
 

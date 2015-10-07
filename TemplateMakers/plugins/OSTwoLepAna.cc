@@ -29,12 +29,10 @@ void OSTwoLepAna::beginJob()
       ml4 = fopen ("mu_4.txt", "w+");
 
       fout.open("preselEventDump.csv");
-      string header[35] = {"event","pdgId","pT","Eta","Phi","dxy","dz","relIso","sip3D","prompt MVA",
-			   "ele MVA ID / isPFMuon","lost hits / isGlobalMuon","isGsfCtfScPixChargeConsistent / chargeFlip",
-			   "passConversionVeto / isTrackerMuon","global normalized chi2","chi2 local","track kink","valid Frac",
-			   "segment compatibility"," ","neuRelIso03","chRelIso03","jetDR,lep.pt()","lep.jet.pt()","jetPtRatio","jetBTagCSV",
-			   "sip3d","dxy","dz","mvaIdPhys14 / segmentCompatibility",">= 2 preselected leptons","el el SS/mu mu SS","pt2020",
-			   "2 cut-selection leptons","== 2 ss tight eles"};
+      //muons
+      string header[17] = {"event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
+			   "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","segmentCompatibility"};
+      
       for (const auto & title : header) fout << title << ',';
       fout << "\n";
     }
@@ -53,7 +51,14 @@ void OSTwoLepAna::beginJob()
   // add the tree:
   summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
   tree_add_branches();
-	
+
+    
+  singleEleCount=0;
+  singleMuCount=0;
+  singleTauCount=0;
+  singleJetCount=0;
+    
+    	
 }
 void OSTwoLepAna::endJob() {
 
@@ -71,6 +76,13 @@ void OSTwoLepAna::endJob() {
   //  cout << "Num Events processed " << numEvents << endl;
   //       << "Passed cuts " << numEventsPassCuts << endl;
   //       << "Failed cuts " << numEventsFailCuts << endl;
+  
+  
+  cout << "singleMuCount: " << singleMuCount << endl;
+  cout << "singleEleCount: " << singleEleCount << endl;
+  cout << "singleTauCount: " << singleTauCount << endl;
+  cout << "singleJetCount: " << singleJetCount << endl;
+  
   
 } // job completion (cutflow table, etc.)
 
@@ -196,8 +208,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////	
 	
 	//saves time by skipping the rest of the loop if <= 2 preselected leptons
-        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
-        {
+        //if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
+        //{
 
 	    vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
 	    selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
@@ -384,74 +396,108 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    runNumber_intree = event.id().run();
 	    
 	    if (debug){
-	      bool ss2l = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
-	      bool pt2020 = (preselected_leptons[0].obj.Pt() >= 20 && preselected_leptons[0].obj.Pt() >=20);
-	      bool lepMva = (tightMvaBased_leptons.size()>=2);
-	      bool TwoCutSelection = true;
-	      bool ss2tightEles = (tightMvaBased_electrons.size() ==2 && tightMvaBased_electrons[0].pdgID == tightMvaBased_electrons[1].pdgID);
+	      //bool ss2l = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
+	      //bool pt2020 = (preselected_leptons[0].obj.Pt() >= 20 && preselected_leptons[0].obj.Pt() >=20);
+	      //bool lepMva = (tightMvaBased_leptons.size()>=2);
+	      //bool TwoCutSelection = true;
+	      //bool ss2tightEles = (tightMvaBased_electrons.size() ==2 && tightMvaBased_electrons[0].pdgID == tightMvaBased_electrons[1].pdgID);
 
-	      for (const auto & ele : preselected_electrons)
-		{
-		  fout << eventnum_intree << ','<< ele.pdgID << ','<< ele.obj.Pt() <<','
-		       << ele.obj.Eta() <<','<< ele.obj.Phi() <<','<< ele.dxy<<','<<ele.dz<<','
-		       <<ele.relIso<<','<<ele.sip3D<<','<<ele.lepMVA<<','<<ele.mvaID<<','
-		       <<ele.numMissingInnerHits<<','<<ele.isGsfCtfScPixChargeConsistent<<','<<ele.passConversioVeto<<','
-		       <<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<','
-		       <<ele.nureliso<<','<<ele.chreliso<<','<<ele.matchedJetdR<<','<<ele.obj.Pt()<<','
-		       <<ele.obj.Pt()/ele.jetPtRatio<<','<<ele.jetPtRatio<<','<<ele.csv<<','<<ele.sip3D<<','
-		       <<ele.dxy<<','<<ele.dz<<','<<ele.mvaID<<','<< (2 >= preselected_leptons.size()) <<','
-		       <<ss2l<<','<<pt2020<<','<<lepMva<<','<<TwoCutSelection<<','<<ss2tightEles<<'\n';
-		  //		       <<'SS ee/mm'<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
-		  //		       <<'\n';
+	      // for (const auto & ele : preselected_electrons)
+// 		{
+// 		  fout << eventnum_intree << ','<< ele.pdgID << ','<< ele.obj.Pt() <<','
+// 		       << ele.obj.Eta() <<','<< ele.obj.Phi() <<','<< ele.dxy<<','<<ele.dz<<','
+// 		       <<ele.relIso<<','<<ele.sip3D<<','<<ele.lepMVA<<','<<ele.mvaID<<','
+// 		       <<ele.numMissingInnerHits<<','<<ele.isGsfCtfScPixChargeConsistent<<','<<ele.passConversioVeto<<','
+// 		       <<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<','
+// 		       <<ele.nureliso<<','<<ele.chreliso<<','<<ele.matchedJetdR<<','<<ele.obj.Pt()<<','
+// 		       <<ele.obj.Pt()/ele.jetPtRatio<<','<<ele.jetPtRatio<<','<<ele.csv<<','<<ele.sip3D<<','
+// 		       <<ele.dxy<<','<<ele.dz<<','<<ele.mvaID<<','<< (2 >= preselected_leptons.size()) <<','
+// 		       <<ss2l<<','<<pt2020<<','<<lepMva<<','<<TwoCutSelection<<','<<ss2tightEles<<'\n';
+// 		  //		       <<'SS ee/mm'<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
+// 		  //		       <<'\n';
+// 
+// 
+// 
+// 		}
+// 	      for (const auto & mu : preselected_muons)
+// 		{
+// 		  fout << eventnum_intree << ','<<mu.pdgID<<','<<mu.obj.Pt()<<','<<mu.obj.Eta()<<','<<mu.obj.Phi()<<','
+// 		       <<mu.dxy<<','<<mu.dz<<','<<mu.relIso<<','<<mu.sip3D<<','<<mu.lepMVA<<','<<mu.isPFMuon<<','
+// 		       <<mu.isGlobalMuon<<','<<mu.chargeFlip<<','<<mu.isTrackerMuon<<','
+// 		       <<mu.normalizedChi2<<','
+// 		       <<mu.localChi2<<','<<mu.trKink<<','<<mu.validFrac<<','<<mu.segCompatibility<<','<<' '<<','
+// 		       <<mu.nureliso<<','<<mu.chreliso<<','<<mu.matchedJetdR<<','<<mu.obj.Pt()<<','
+// 		       <<mu.obj.Pt()/mu.jetPtRatio<<','<<mu.jetPtRatio<<','<<mu.csv<<','<<mu.sip3D<<','
+// 		       <<mu.dxy<<','<<mu.dz<<','<<mu.segCompatibility<<','<< (2 >= preselected_leptons.size()) <<','
+// 		       <<ss2l<<','<<pt2020<<','<<lepMva<<','<<TwoCutSelection<<','<<ss2tightEles<<'\n';
+// 		       // <<'SS ee/mm '<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
+// 		       // <<'\n';		    
+// 
+// 		}
+// 
+// 
+// 	      if (preselected_leptons.size() >= 2 && higgs_decay_intree == 1)
+// 		{
+// 		  fprintf(lep1,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+// 			  runNumber_intree, lumiBlock_intree, eventnum_intree,
+// 			  preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
+// 			  preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
+// 			theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+// 
+// 		  if ( tightMvaBased_leptons.size()==2 && tightMvaBased_leptons[0].charge == tightMvaBased_leptons[1].charge )
+// 		    {
+// 		      if (abs(tightMvaBased_leptons[0].pdgID) == 11 && abs(tightMvaBased_leptons[1].pdgID) == 11)
+// 			{
+// 			  fprintf(el4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+// 				  runNumber_intree, lumiBlock_intree, eventnum_intree,
+// 				  tightMvaBased_leptons[0].pdgID, tightMvaBased_leptons[0].obj.Pt(), tightMvaBased_leptons[0].obj.Eta(), tightMvaBased_leptons[0].obj.Phi(),
+// 				  tightMvaBased_leptons[1].pdgID, tightMvaBased_leptons[1].obj.Pt(), tightMvaBased_leptons[1].obj.Eta(), tightMvaBased_leptons[1].obj.Phi(),
+// 				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+// 			}
+// 		      else if (abs(tightMvaBased_leptons[0].pdgID) == 13 && abs(tightMvaBased_leptons[1].pdgID) == 13)
+// 			{
+// 			  fprintf(ml4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
+// 				  runNumber_intree, lumiBlock_intree, eventnum_intree,
+// 				  tightMvaBased_leptons[0].pdgID, tightMvaBased_leptons[0].obj.Pt(), tightMvaBased_leptons[0].obj.Eta(), tightMvaBased_leptons[0].obj.Phi(),
+// 				  tightMvaBased_leptons[1].pdgID, tightMvaBased_leptons[1].obj.Pt(), tightMvaBased_leptons[1].obj.Eta(), tightMvaBased_leptons[1].obj.Phi(),
+// 				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
+// 			}
+// 		    }
+// 		}
 
 
+                
+                
+                
+                if (preselected_muons.size()>=1) 
+                {
+                           
+                    auto mu = preselected_muons[0];
+                    
+                    fout << eventnum_intree << ',' << mu.obj.Pt() << ',' << mu.obj.Eta() << ',' << mu.obj.Phi() << ',' << mu.obj.E() << ',' << 		    
+                    mu.pdgID << ',' << mu.charge << ',' << mu.miniIso << ',' << mu.miniIsoCharged << ',' << mu.miniIsoNeutral << ',' << 
+                    mu.jetPtRel << ',' << mu.csv << ',' << mu.jetPtRatio << ',' << mu.sip3D << ',' << mu.dxy << ',' << mu.dz << ',' << mu.segCompatibility << '\n';
 
-		}
-	      for (const auto & mu : preselected_muons)
-		{
-		  fout << eventnum_intree << ','<<mu.pdgID<<','<<mu.obj.Pt()<<','<<mu.obj.Eta()<<','<<mu.obj.Phi()<<','
-		       <<mu.dxy<<','<<mu.dz<<','<<mu.relIso<<','<<mu.sip3D<<','<<mu.lepMVA<<','<<mu.isPFMuon<<','
-		       <<mu.isGlobalMuon<<','<<mu.chargeFlip<<','<<mu.isTrackerMuon<<','
-		       <<mu.normalizedChi2<<','
-		       <<mu.localChi2<<','<<mu.trKink<<','<<mu.validFrac<<','<<mu.segCompatibility<<','<<' '<<','
-		       <<mu.nureliso<<','<<mu.chreliso<<','<<mu.matchedJetdR<<','<<mu.obj.Pt()<<','
-		       <<mu.obj.Pt()/mu.jetPtRatio<<','<<mu.jetPtRatio<<','<<mu.csv<<','<<mu.sip3D<<','
-		       <<mu.dxy<<','<<mu.dz<<','<<mu.segCompatibility<<','<< (2 >= preselected_leptons.size()) <<','
-		       <<ss2l<<','<<pt2020<<','<<lepMva<<','<<TwoCutSelection<<','<<ss2tightEles<<'\n';
-		       // <<'SS ee/mm '<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
-		       // <<'\n';		    
-
-		}
-
-
-	      if (preselected_leptons.size() >= 2 && higgs_decay_intree == 1)
-		{
-		  fprintf(lep1,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-			  runNumber_intree, lumiBlock_intree, eventnum_intree,
-			  preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
-			  preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
-			theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-
-		  if ( tightMvaBased_leptons.size()==2 && tightMvaBased_leptons[0].charge == tightMvaBased_leptons[1].charge )
-		    {
-		      if (abs(tightMvaBased_leptons[0].pdgID) == 11 && abs(tightMvaBased_leptons[1].pdgID) == 11)
-			{
-			  fprintf(el4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-				  runNumber_intree, lumiBlock_intree, eventnum_intree,
-				  tightMvaBased_leptons[0].pdgID, tightMvaBased_leptons[0].obj.Pt(), tightMvaBased_leptons[0].obj.Eta(), tightMvaBased_leptons[0].obj.Phi(),
-				  tightMvaBased_leptons[1].pdgID, tightMvaBased_leptons[1].obj.Pt(), tightMvaBased_leptons[1].obj.Eta(), tightMvaBased_leptons[1].obj.Phi(),
-				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-			}
-		      else if (abs(tightMvaBased_leptons[0].pdgID) == 13 && abs(tightMvaBased_leptons[1].pdgID) == 13)
-			{
-			  fprintf(ml4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-				  runNumber_intree, lumiBlock_intree, eventnum_intree,
-				  tightMvaBased_leptons[0].pdgID, tightMvaBased_leptons[0].obj.Pt(), tightMvaBased_leptons[0].obj.Eta(), tightMvaBased_leptons[0].obj.Phi(),
-				  tightMvaBased_leptons[1].pdgID, tightMvaBased_leptons[1].obj.Pt(), tightMvaBased_leptons[1].obj.Eta(), tightMvaBased_leptons[1].obj.Phi(),
-				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-			}
-		    }
-		}
+                    
+                }
+                
+                //if (preselected_electrons.size()>=1) 
+                
+                
+                
+                
+                
+                //if (preselected_taus.size()>=1)
+                
+                
+                
+                
+                
+                //if (preselected_jets.size()>=1)
+                
+                
+                
+                
 	    }
             
 
@@ -473,6 +519,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ////// with the ones stored in the tree
             //////
 	    /////////////////////////
+            
+            
+            if (preselected_muons.size()>=1) singleMuCount++;
+            if (preselected_electrons.size()>=1) singleEleCount++;
+            if (preselected_taus.size()>=1) singleTauCount++;
+            if (preselected_jets.size()>=1) singleJetCount++;
             
             
 	    preselected_leptons_intree = preselected_leptons;
@@ -509,7 +561,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    summaryTree->Fill();// fill tree;
             /////////////////////////////////
 	    
-        } //end skim if statement
+        //} //end skim if statement
 
 } // end event loop
 

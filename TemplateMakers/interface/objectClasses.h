@@ -27,10 +27,11 @@ namespace ttH
 
     //lepMVA variables
     double lepMVA;
-    double chreliso;
-    double nureliso;
-    double matchedJetdR;
+    double miniIsoCharged;
+    double miniIsoNeutral;
+    //double matchedJetdR;
     double jetPtRatio;
+    double jetPtRel;
     double csv;
     double sip3D;
     

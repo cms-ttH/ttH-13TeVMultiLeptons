@@ -88,7 +88,12 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 	        edm::EDGetTokenT<pat::MuonCollection> muons_token_;
 	        edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
                 edm::EDGetTokenT<pat::TauCollection> taus_token_;
-
+                
+                int singleEleCount;
+                int singleMuCount;
+                int singleTauCount;
+                int singleJetCount;
+                
 };
 
 void OSTwoLepAna::tree_add_branches()
