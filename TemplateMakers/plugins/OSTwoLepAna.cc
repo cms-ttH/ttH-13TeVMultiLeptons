@@ -31,7 +31,10 @@ void OSTwoLepAna::beginJob()
       fout.open("preselEventDump.csv");
       //muons
       string header[17] = {"event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
-			   "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","segmentCompatibility"};
+        		   "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","segmentCompatibility"};
+      
+
+      //string header[8] = {"event", "miniIsoR", "miniAbsIsoCharged", "miniAbsIsoNeutral", "rho", "effArea", "miniAbsIsoNeutralcorr", "miniIso"};
       
       for (const auto & title : header) fout << title << ',';
       fout << "\n";
@@ -223,7 +226,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ////////
  	
 	    //set up JEC
-	    const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFchsL1L2L3", evsetup );  
+	    const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFCHSL1L2L3Residual", evsetup );  
 	    MiniAODHelper::SetJetCorrector(corrector);
 
 	    vecPatJet rawJets = GetUncorrectedJets(*pfjets);
@@ -394,7 +397,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    eventnum_intree = event.id().event();
 	    lumiBlock_intree = event.id().luminosityBlock();
 	    runNumber_intree = event.id().run();
-	    
+	    bool foundcolloverlap = false;
 	    if (debug){
 	      //bool ss2l = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
 	      //bool pt2020 = (preselected_leptons[0].obj.Pt() >= 20 && preselected_leptons[0].obj.Pt() >=20);
@@ -468,17 +471,26 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
                 
                 
+                for (int muiter=0; muiter<(int)(preselected_muons.size()-1); muiter++)
+                {
+                    for (int muiter2=muiter+1; muiter2<(int)preselected_muons.size(); muiter2++)
+                    {
+                        double dRtest = reco::deltaR( preselected_muons[muiter].obj.Eta(), preselected_muons[muiter].obj.Phi(), preselected_muons[muiter2].obj.Eta(), preselected_muons[muiter2].obj.Phi() );
+                        if (dRtest<0.02) foundcolloverlap = true;
+                    }
+                }
                 
-                if (preselected_muons.size()>=1) 
+                if ((preselected_muons.size()>=1) && (!foundcolloverlap))
                 {
                            
                     auto mu = preselected_muons[0];
                     
                     fout << eventnum_intree << ',' << mu.obj.Pt() << ',' << mu.obj.Eta() << ',' << mu.obj.Phi() << ',' << mu.obj.E() << ',' << 		    
-                    mu.pdgID << ',' << mu.charge << ',' << mu.miniIso << ',' << mu.miniIsoCharged << ',' << mu.miniIsoNeutral << ',' << 
+                    mu.pdgID << ',' << mu.charge << ',' << mu.miniIso << ',' << mu.miniAbsIsoCharged << ',' << mu.miniAbsIsoNeutralcorr << ',' << 
                     mu.jetPtRel << ',' << mu.csv << ',' << mu.jetPtRatio << ',' << mu.sip3D << ',' << mu.dxy << ',' << mu.dz << ',' << mu.segCompatibility << '\n';
 
-                    
+                    //fout << eventnum_intree << ',' << mu.miniIsoR << ',' << mu.miniAbsIsoCharged << ',' << mu.miniAbsIsoNeutral << ',' << mu.rho << ',' << 		    
+                    //mu.effArea << ',' << mu.miniAbsIsoNeutralcorr << ',' << mu.miniIso << '\n';
                 }
                 
                 //if (preselected_electrons.size()>=1) 
@@ -521,7 +533,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    /////////////////////////
             
             
-            if (preselected_muons.size()>=1) singleMuCount++;
+            if ((preselected_muons.size()>=1) && (!foundcolloverlap)) singleMuCount++;
             if (preselected_electrons.size()>=1) singleEleCount++;
             if (preselected_taus.size()>=1) singleTauCount++;
             if (preselected_jets.size()>=1) singleJetCount++;

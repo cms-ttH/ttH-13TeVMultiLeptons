@@ -5,7 +5,7 @@ process = cms.Process("Demo")
 
 
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
-process.GlobalTag.globaltag = 'MCRUN2_74_V9' #'74X_mcRun2_asymptotic_v2' #MCRUN2_74_V9 #'PHYS14_25_V2' #'PLS170_V7AN1::All'  #'MCRUN2_72_V3A' #'MC_72_v1' ##'PHYS14_25_V1' ###'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
+process.GlobalTag.globaltag = '74X_mcRun2_asymptotic_v2' #MCRUN2_74_V9 #'PHYS14_25_V2' #'PLS170_V7AN1::All'  #'MCRUN2_72_V3A' #'MC_72_v1' ##'PHYS14_25_V1' ###'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
 process.prefer("GlobalTag")
 
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
@@ -20,7 +20,7 @@ process.prefer("GlobalTag")
 
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(1000) # number of events
+    	input = cms.untracked.int32(100) # number of events
 )
 
 process.source = cms.Source("PoolSource",
@@ -152,12 +152,14 @@ process.ak4PFCHSL1Fastjet = cms.ESProducer(
 
 process.ak4PFchsL2Relative   =  ak5PFL2Relative.clone( algorithm = 'AK4PFchs' )
 process.ak4PFchsL3Absolute   =  ak5PFL3Absolute.clone( algorithm = 'AK4PFchs' )
+process.ak4PFchsResidual   =  ak5PFResidual.clone( algorithm = 'AK4PFchs' )
 
-process.ak4PFchsL1L2L3 = cms.ESProducer("JetCorrectionESChain",
+process.ak4PFCHSL1L2L3Residual = cms.ESProducer("JetCorrectionESChain",
      correctors = cms.vstring(
         'ak4PFCHSL1Fastjet', 
         'ak4PFchsL2Relative', 
-        'ak4PFchsL3Absolute'),
+        'ak4PFchsL3Absolute',
+        'ak4PFchsResidual'),
      useCondDB = cms.untracked.bool(True)                                        
 )
 ######################################
@@ -212,7 +214,7 @@ process.OSTwoLepAna.debug = True
 	
 ## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
-				   fileName = cms.string("multilep_treeJECold.root")
+				   fileName = cms.string("multilep_tree_test3.root")
                                    )
 
 
