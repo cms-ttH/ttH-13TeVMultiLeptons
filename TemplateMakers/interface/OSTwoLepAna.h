@@ -25,6 +25,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		~OSTwoLepAna();
 		
 		ofstream fout;
+                FILE * ffout;
 		FILE * lep1;
 		FILE * el2;
 		FILE * el3;

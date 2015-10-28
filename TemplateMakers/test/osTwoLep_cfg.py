@@ -20,15 +20,22 @@ process.prefer("GlobalTag")
 
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(100) # number of events
+    	input = cms.untracked.int32(-1) # number of events
 )
 
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
         
         #'/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/20000/04A14FA4-2523-E511-9860-0025905C96A6.root'
+        
+        ## new Spring15 sync sample:
+        '/store/mc/RunIISpring15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/02FE2DB6-D06D-E511-8BC7-0025905C431C.root'),
         ## Spring15 sync sample:
-        '/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/30000/088378DB-3D24-E511-8B0E-20CF3027A589.root'
+        #'/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/30000/088378DB-3D24-E511-8B0E-20CF3027A589.root'),
+        
+        
+        
+        
         #'/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9_ext1-v3/10000/06249DB6-C309-E511-957A-782BCB6A4BB8.root'
         ## check something..
         #'/store/mc/RunIISpring15DR74/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v2/40000/06A32947-2F2A-E511-854C-0025904C6416.root'
@@ -101,7 +108,7 @@ process.source = cms.Source("PoolSource",
 #        '/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9_ext1-v3/70000/F88FB131-E108-E511-A69C-000F532734AC.root'
 #                                                                                                                                                                                     
                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                                                                                                   
+        #skipEvents = cms.untracked.uint32(1)                                                                                                                                                                                                                                                                                                                                  
         
         
         #'file:/afs/cern.ch/user/m/muell149/public/ttH_phys14_sync.root'
@@ -126,7 +133,7 @@ process.source = cms.Source("PoolSource",
 #	miniaodfiledirPU20 + '40000/F87FB415-E57E-E411-B7CF-002590A4FFB8.root',
 	
 
-	)
+	
                             )
 
 #process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(
@@ -136,32 +143,51 @@ process.source = cms.Source("PoolSource",
 ######################################
 #JEC
 
-from RecoJets.Configuration.RecoJets_cff import *
-from RecoJets.Configuration.RecoPFJets_cff import *
-from JetMETCorrections.Configuration.JetCorrectionProducersAllAlgos_cff import *
-from JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff import *
-from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+#from RecoJets.Configuration.RecoJets_cff import *
+#from RecoJets.Configuration.RecoPFJets_cff import *
+#from JetMETCorrections.Configuration.JetCorrectionProducersAllAlgos_cff import *
+#from JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff import *
+#from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+#
+#process.ak4PFCHSL1Fastjet = cms.ESProducer(
+#    'L1FastjetCorrectionESProducer',
+#    level       = cms.string('L1FastJet'),
+#    algorithm   = cms.string('AK4PFchs'),
+#    srcRho      = cms.InputTag( 'fixedGridRhoFastjetCentralNeutral' ), #fixedGridRhoFastjetAll
+#    useCondDB = cms.untracked.bool(True)
+#    )
+#
+#process.ak4PFchsL2Relative   =  ak5PFL2Relative.clone( algorithm = 'AK4PFchs' )
+#process.ak4PFchsL3Absolute   =  ak5PFL3Absolute.clone( algorithm = 'AK4PFchs' )
+#process.ak4PFchsResidual   =  ak5PFResidual.clone( algorithm = 'AK4PFchs' )
+#
+#process.ak4PFCHSL1L2L3Residual = cms.ESProducer("JetCorrectionESChain",
+#     correctors = cms.vstring(
+#        'ak4PFCHSL1Fastjet', 
+#        'ak4PFchsL2Relative', 
+#        'ak4PFchsL3Absolute',
+#        'ak4PFchsResidual'),
+#     useCondDB = cms.untracked.bool(True)                                        
+#)
+######################################
+### trying something else:
 
-process.ak4PFCHSL1Fastjet = cms.ESProducer(
-    'L1FastjetCorrectionESProducer',
-    level       = cms.string('L1FastJet'),
-    algorithm   = cms.string('AK4PFchs'),
-    srcRho      = cms.InputTag( 'fixedGridRhoFastjetAll' ),
-    useCondDB = cms.untracked.bool(True)
-    )
+#from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+#process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+#  src = cms.InputTag("slimmedJets"),
+#  levels = ['L1FastJet', 
+#        'L2Relative', 
+#        'L3Absolute',
+#        'L2L3Residual'],
+#  payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
+#
+#from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+#process.patJetsReapplyJEC = patJetsUpdated.clone(
+#  jetSource = cms.InputTag("slimmedJets"),
+#  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+#  )
+#
 
-process.ak4PFchsL2Relative   =  ak5PFL2Relative.clone( algorithm = 'AK4PFchs' )
-process.ak4PFchsL3Absolute   =  ak5PFL3Absolute.clone( algorithm = 'AK4PFchs' )
-process.ak4PFchsResidual   =  ak5PFResidual.clone( algorithm = 'AK4PFchs' )
-
-process.ak4PFCHSL1L2L3Residual = cms.ESProducer("JetCorrectionESChain",
-     correctors = cms.vstring(
-        'ak4PFCHSL1Fastjet', 
-        'ak4PFchsL2Relative', 
-        'ak4PFchsL3Absolute',
-        'ak4PFchsResidual'),
-     useCondDB = cms.untracked.bool(True)                                        
-)
 ######################################
 
 ## Here, load the analysis:
@@ -170,6 +196,7 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
 ### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile)
 
+process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
@@ -187,26 +214,9 @@ process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
 # pfCombinedSecondaryVertexSoftLeptonBJetTags
 # pfCombinedMVABJetTags
 
+process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral"
 process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags"  # "combinedInclusiveSecondaryVertexV2BJetTags" #"combinedMVABJetTags" ##"combinedSecondaryVertexMVABJetTags"
 process.OSTwoLepAna.triggers.hltlabel = "HLT" #"reHLT" #"HLT" # HLT = centrally produced samples
-process.OSTwoLepAna.triggers.trigger_vstring = ( "HLT_Mu17_Mu8_v1",
-			"HLT_Mu30_TkMu11_v1", #"HLT_Mu17_TkMu8_v1",
-			"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v1",
-			"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v1",
-			"HLT_Ele23_Ele12_CaloId_TrackId_Iso_v1", #now is HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1
-			"HLT_Ele23_Ele12_CaloId_TrackId_Iso_v1",
-			"HLT_Mu23_TrkIsoVVL_Ele12_Gsf_CaloId_TrackId_Iso_MediumWP_v1",
-			"HLT_Mu8_TrkIsoVVL_Ele23_Gsf_CaloId_TrackId_Iso_MediumWP_v1",
-			"HLT_Ele17_Ele12_Ele10_CaloId_TrackId_v1",
-			#"HLT_Ele27_eta2p1_WP85_Gsf_v1" #not in 1.4 menu
-			"HLT_Ele32_eta2p1_WP85_Gsf_v1" #single ele test
-			#"HLT_IsoMu24_IterTrk02_v1" #single mu test
-			)
-
-### example of trivially changing muon isolation:
-#looseMuonRelIso = 0.3
-##looseMuonRelIso = sys.argv[2] #or take command line argument -> just run however many cmsRun jobs for isolation study!
-#process.OSTwoLepAna.muons.looseRelativeIso = looseMuonRelIso
 
 process.OSTwoLepAna.debug = True
 
@@ -214,11 +224,13 @@ process.OSTwoLepAna.debug = True
 	
 ## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
-				   fileName = cms.string("multilep_tree_test3.root")
+				   fileName = cms.string("multilep_tree_test4.root")
                                    )
 
 
+#process.p = cms.Path(process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.ttHLeptons * process.OSTwoLepAna)
 process.p = cms.Path(process.ttHLeptons * process.OSTwoLepAna)
+
 
 # summary
 process.options = cms.untracked.PSet(

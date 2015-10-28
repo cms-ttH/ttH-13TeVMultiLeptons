@@ -5,12 +5,15 @@ void MakeGoodPlot::threelstudies(std::vector<int> samps) // really only one samp
     load_samples(samps);
     
     TH1D *higgsmass = new TH1D("higgsmass","higgsmass",100,0,400);
-    TH1D *njets = new TH1D("njets","njets",50,0,50);
+    TH1D *njets[5];
+    for (int aaaaaa=0; aaaaaa<5; aaaaaa++) njets[aaaaaa] = new TH1D("njets"+int2ss(aaaaaa),";njets",50,0,50);
     TH1D *MET = new TH1D("MET","MET",100,0,400);
     TH1D *findtheZ = new TH1D("findtheZ","findtheZ",200,0,200);
     TH1D *nbjets = new TH1D("nbjets","nbjets",50,0,50);
     TH1D *jetcsv = new TH1D("jetcsv","jetcsv",50,-1,1);
-        
+    
+    TH1D *asdf = new TH1D("asdf","asdf",100,0,200);
+    
     TLegend* leg1 = new TLegend(0.11,0.91,0.89,0.99); // above the plot
 
     leg1->SetFillColor(kWhite);
@@ -82,10 +85,10 @@ void MakeGoodPlot::threelstudies(std::vector<int> samps) // really only one samp
             
             bool breakitoff = true;
             
-            //for (int k=0; k<numleps; k++)
-            //{
-            //	if ( abs((*preselected_leptons_intree)[k].genMotherPdgID)==23 && abs((*preselected_leptons_intree)[k].genGrandMotherPdgID)==25 ) breakitoff=false;
-            //}          
+            for (int k=0; k<numleps; k++)
+            {
+            	if ( abs((*preselected_leptons_intree)[k].genMotherPdgID)==15 && abs((*preselected_leptons_intree)[k].genGrandMotherPdgID)==25 ) breakitoff=false;
+            }          
             
             //if (breakitoff) continue;
             
@@ -116,20 +119,48 @@ void MakeGoodPlot::threelstudies(std::vector<int> samps) // really only one samp
 
                 if (!gotZ) continue;
                 
+                if ( !((*preselected_leptons_intree)[0].miniIso<0.4 && (*preselected_leptons_intree)[1].miniIso<0.4 && (*preselected_leptons_intree)[2].miniIso<0.4) ) continue;
+                
+                if ( !((*preselected_leptons_intree)[0].lepMVA>0.7 && (*preselected_leptons_intree)[1].lepMVA>0.7 && (*preselected_leptons_intree)[2].lepMVA>0.7) ) continue;
+                
+                //double vetoZmassSFOS = pickFromSortedTwoObjKine(*tightMvaBased_leptons_intree,"massSFOS",1,91.2);
+
+                //if (fabs(vetoZmassSFOS-91.2)<=10.) continue;                     
+
+                
                 
                 double chosenmass = 0.;
                 int rec_k = -1;
                 int rec_kk= -1;
                 
-                auto jetobj = lfjets[0].obj;
-                jetobj += lfjets[1].obj;
-                findtheZ->Fill(jetobj.M());
+                //auto jetobj = lfjets[0].obj;
+                //jetobj += lfjets[1].obj;
+                //findtheZ->Fill(jetobj.M());
                 
-                njets->Fill(numlfjets);
+                njets[i]->Fill(numlfjets+numhfjets);
                 nbjets->Fill(numhfjets);    
                 
+
                 
-                
+                if ( (*preselected_leptons_intree)[0].charge != (*preselected_leptons_intree)[1].charge)             
+                {
+                    auto oslepobj = (*preselected_leptons_intree)[0].obj;
+                    oslepobj += (*preselected_leptons_intree)[1].obj;                    
+                    asdf->Fill(oslepobj.M(),weight);
+                }
+                if ( (*preselected_leptons_intree)[0].charge != (*preselected_leptons_intree)[2].charge)
+                {
+                    auto oslepobj = (*preselected_leptons_intree)[0].obj;
+                    oslepobj += (*preselected_leptons_intree)[2].obj;                    
+                    asdf->Fill(oslepobj.M(),weight);
+                }
+                if ( (*preselected_leptons_intree)[1].charge != (*preselected_leptons_intree)[2].charge)
+                {
+                    auto oslepobj = (*preselected_leptons_intree)[1].obj;
+                    oslepobj += (*preselected_leptons_intree)[2].obj;                    
+                    asdf->Fill(oslepobj.M(),weight); 
+                    
+                }
                 for (int k=0; k<(numlfjets-1); k++)
                 {
                     for (int kk=k+1; kk<numlfjets; kk++)
@@ -178,9 +209,16 @@ void MakeGoodPlot::threelstudies(std::vector<int> samps) // really only one samp
     }	
     
     //jetcsv->Draw();	
-    //njets->Draw();
+    njets[0]->DrawNormalized();
+    njets[1]->DrawNormalized("same");
+    njets[2]->DrawNormalized("same");
+    njets[3]->DrawNormalized("same");
+    
+    
+    
     //nbjets->Draw("same");
-    findtheZ->Draw();
+    //findtheZ->Draw();
+    //asdf->Draw();
 
 }
                             

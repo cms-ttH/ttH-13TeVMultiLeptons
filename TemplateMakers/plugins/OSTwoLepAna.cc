@@ -29,18 +29,56 @@ void OSTwoLepAna::beginJob()
       ml4 = fopen ("mu_4.txt", "w+");
 
       fout.open("preselEventDump.csv");
-      //muons
-      string header[17] = {"event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
-        		   "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","segmentCompatibility"};
       
-
+      //ffout = fopen("preselEventDump.csv", "w+");
+      
+      //muons
+      //string header[17] = {"event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
+      //  		   "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","segmentCompatibility"};
+      
+      fout<<setiosflags(ios::fixed)<<setprecision(5);
+      fout<<setw(10)<<"event"<<
+      setw(10)<<"pT"<<
+      setw(10)<<"Eta"<<
+      setw(10)<<"Phi"<<
+      setw(10)<<"E"<<
+      setw(5)<<"pdgID"<<
+      setw(5)<<"charge"<<
+      setw(15)<<"miniIso"<<
+      setw(15)<<"miniIsoCharged"<<
+      setw(15)<<"miniIsoNeutral"<<
+      setw(10)<<"jetPtRel"<<
+      setw(10)<<"jetCSV"<<
+      setw(10)<<"jetPtRatio"<<
+      setw(10)<<"sip3D"<<
+      setw(10)<<"dxy"<<
+      setw(10)<<"dz"<<
+      //setw(21)<<"segmentCompatibility"<<endl;
+      setw(21)<<"eleMVA"<<endl;
+      
+      
+      
       //string header[8] = {"event", "miniIsoR", "miniAbsIsoCharged", "miniAbsIsoNeutral", "rho", "effArea", "miniAbsIsoNeutralcorr", "miniIso"};
       
-      for (const auto & title : header) fout << title << ',';
-      fout << "\n";
+      //for (const auto & title : header) fout << title << ',';
+      //fout << "\n";
+      
+      // muons
+      //fprintf(ffout,"%10s  %6s %4s %4s %6s %2s %2s    %6s %6s %6s   %6s %6s %6s %6s %6s %6s  %6s  \n",
+      //      "event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
+      //      "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","segmentCompatibility");
+      
+      // electrons
+      //fprintf(ffout,"%10s  %6s %4s %4s %6s %2s %2s    %6s %6s %6s   %6s %6s %6s %6s %6s %6s  %6s  \n",
+      //      "event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
+      //      "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","eleMVA");
+      
+      
+      
+      
+      
     }
   // job setup	
-  sampleNumber = convertSampleNameToNumber(sampleName);
   SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
   SetFactorizedJetCorrector();
   alltriggerstostudy = HLTInfo();
@@ -68,6 +106,7 @@ void OSTwoLepAna::endJob() {
   if (debug)
     {
       fout.close();
+      //fclose(ffout);
       fclose(lep1);
       fclose(el2);
       fclose(el3);
@@ -226,29 +265,33 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ////////
  	
 	    //set up JEC
-	    const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFCHSL1L2L3Residual", evsetup );  
-	    MiniAODHelper::SetJetCorrector(corrector);
+	    //const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFCHSL1L2L3Residual", evsetup );  
+	    //MiniAODHelper::SetJetCorrector(corrector);
 
-	    vecPatJet rawJets = GetUncorrectedJets(*pfjets);
+	    //vecPatJet rawJets = GetUncorrectedJets(*pfjets);
 
-	    //no JEC
+	    //no JEC (?)
 	    //	    vecPatJet selectedJets_forLepMVA  = GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );
 	    //	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	    
 	    //with JEC
-	    vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
-	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
+	    //vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
+            //no jec
+	    vecPatJet correctedRawJets = (*pfjets);
+            
+            vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
             cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(cleaned_rawJets,selectedTaus_forcleaning,0.4);                // <------
-            vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
-	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                                  // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
+            //vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
+	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
 
-	    vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  					 
+	    vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  
+            //vecPatJet correctedJets_noSys		       	= cleaned_rawJets;
 	    vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' ); 
 	    vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );
 	    vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );
 	    vecPatJet selectedJets_loose_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, 'M' );
 	    vecPatJet selectedJets_preselected          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );           // <------
-            vecPatJet selectedJets_preselected_uncor          	= GetSelectedJets(cleaned_rawJets_uncor, 25., 2.4, jetID::jetPU, '-' );
+            //vecPatJet selectedJets_preselected_uncor          	= GetSelectedJets(cleaned_rawJets_uncor, 25., 2.4, jetID::jetPU, '-' );
 	    vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );
 	    vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );
 	
@@ -374,10 +417,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);
 	    vector<ttH::Lepton> tightMvaBased_leptons = GetCollection(tightMvaBased_muons,tightMvaBased_electrons);
 
-	    vector<ttH::Jet> raw_jets = GetCollection(rawJets);
+	    //vector<ttH::Jet> raw_jets = GetCollection(rawJets);
 	    vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
-            vector<ttH::Jet> preselected_jets_uncor = GetCollection(selectedJets_preselected_uncor);
-	    vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
+            //vector<ttH::Jet> preselected_jets_uncor = GetCollection(selectedJets_preselected_uncor); // temporary
+	    vector<ttH::Jet> preselected_jets_uncor = preselected_jets; // temporary
+            vector<ttH::Jet> loose_bJets = GetCollection(selectedJets_bJetsLoose);
 	    vector<ttH::Jet> tight_bJets = GetCollection(selectedJets_bJetsTight);
 	
 	    vector<ttH::MET> theMET = GetCollection(mets);
@@ -485,19 +529,106 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
                            
                     auto mu = preselected_muons[0];
                     
-                    fout << eventnum_intree << ',' << mu.obj.Pt() << ',' << mu.obj.Eta() << ',' << mu.obj.Phi() << ',' << mu.obj.E() << ',' << 		    
-                    mu.pdgID << ',' << mu.charge << ',' << mu.miniIso << ',' << mu.miniAbsIsoCharged << ',' << mu.miniAbsIsoNeutralcorr << ',' << 
-                    mu.jetPtRel << ',' << mu.csv << ',' << mu.jetPtRatio << ',' << mu.sip3D << ',' << mu.dxy << ',' << mu.dz << ',' << mu.segCompatibility << '\n';
+                    
+//                     fprintf(ffout,"%10d  %6.2f %+4.2f %+4.2f %6.2f %+2d %+2d    %6.1f %6.1f %6.1f   %6.1f %6.1f %6.1f %6.1f %6.1f %6.1f  %6.1f  \n",
+//                         eventnum_intree,
+//                         mu.obj.Pt(),
+//                         mu.obj.Eta(),
+//                         mu.obj.Phi(),
+//                         mu.obj.E(),
+//                         mu.pdgID,
+//                         mu.charge,
+//                         mu.miniIso,
+//                         mu.miniAbsIsoCharged,
+//                         mu.miniAbsIsoNeutralcorr,
+//                         mu.jetPtRel,
+//                         mu.csv,
+//                         mu.jetPtRatio,
+//                         mu.sip3D,
+//                         mu.dxy,
+//                         mu.dz,
+//                         mu.segCompatibility);
+                    
+                    
+                    fout<<setiosflags(ios::fixed)<<setprecision(5);
+                    fout<<setw(10)<<eventnum_intree<<
+                    setw(10)<<mu.obj.Pt()<<
+                    setw(10)<<mu.obj.Eta()<<
+                    setw(10)<<mu.obj.Phi()<<
+                    setw(10)<<mu.obj.E()<<
+                    setw(5)<<mu.pdgID<<
+                    setw(5)<<mu.charge<<
+                    setw(15)<<mu.miniIso<<
+                    setw(15)<<mu.miniAbsIsoCharged<<
+                    //setw(15)<<mu.miniAbsIsoNeutralcorr<< // Xavier
+                    setw(15)<<mu.miniAbsIsoNeutral<<
+                    setw(10)<<mu.jetPtRel<<
+                    setw(10)<<mu.csv<<
+                    setw(10)<<mu.jetPtRatio<<
+                    setw(10)<<mu.sip3D<<
+                    setw(10)<<mu.dxy<<
+                    setw(10)<<mu.dz<<
+                    setw(21)<<mu.segCompatibility<<endl;
+                                   
+                    
+                    
+                    
+                    //fout << eventnum_intree << ',' << mu.obj.Pt() << ',' << mu.obj.Eta() << ',' << mu.obj.Phi() << ',' << mu.obj.E() << ',' << 		    
+                    //mu.pdgID << ',' << mu.charge << ',' << mu.miniIso << ',' << mu.miniAbsIsoCharged << ',' << mu.miniAbsIsoNeutralcorr << ',' << 
+                    //mu.jetPtRel << ',' << mu.csv << ',' << mu.jetPtRatio << ',' << mu.sip3D << ',' << mu.dxy << ',' << mu.dz << ',' << mu.segCompatibility << '\n';
 
                     //fout << eventnum_intree << ',' << mu.miniIsoR << ',' << mu.miniAbsIsoCharged << ',' << mu.miniAbsIsoNeutral << ',' << mu.rho << ',' << 		    
                     //mu.effArea << ',' << mu.miniAbsIsoNeutralcorr << ',' << mu.miniIso << '\n';
                 }
                 
-                //if (preselected_electrons.size()>=1) 
-                
-                
-                
-                
+//                 if ((preselected_electrons.size()>=1) && (!foundcolloverlap))
+//                 {
+//                            
+//                      auto mu = preselected_electrons[0];
+//                      
+//                      
+// //                     fprintf(ffout,"%10d  %6.2f %+4.2f %+4.2f %6.2f %+2d %+2d    %6.1f %6.1f %6.1f   %6.1f %6.1f %6.1f %6.1f %6.1f %6.1f  %6.1f  \n",
+// //                         eventnum_intree,
+// //                         mu.obj.Pt(),
+// //                         mu.obj.Eta(),
+// //                         mu.obj.Phi(),
+// //                         mu.obj.E(),
+// //                         mu.pdgID,
+// //                         mu.charge,
+// //                         mu.miniIso,
+// //                         mu.miniAbsIsoCharged,
+// //                         mu.miniAbsIsoNeutralcorr,
+// //                         mu.jetPtRel,
+// //                         mu.csv,
+// //                         mu.jetPtRatio,
+// //                         mu.sip3D,
+// //                         mu.dxy,
+// //                         mu.dz,
+// //                         mu.mvaID);                    
+// //                 }
+//                 
+//                     fout<<setiosflags(ios::fixed)<<setprecision(5);
+//                     fout<<setw(10)<<eventnum_intree<<
+//                     setw(10)<<mu.obj.Pt()<<
+//                     setw(10)<<mu.obj.Eta()<<
+//                     setw(10)<<mu.obj.Phi()<<
+//                     setw(10)<<mu.obj.E()<<
+//                     setw(5)<<mu.pdgID<<
+//                     setw(5)<<mu.charge<<
+//                     setw(15)<<mu.miniIso<<
+//                     setw(15)<<mu.miniAbsIsoCharged<<
+//                     //setw(15)<<mu.miniAbsIsoNeutralcorr<<
+//                     setw(15)<<mu.miniAbsIsoNeutral<< //Xavier
+//                     setw(10)<<mu.jetPtRel<<
+//                     setw(10)<<mu.csv<<
+//                     setw(10)<<mu.jetPtRatio<<
+//                     setw(10)<<mu.sip3D<<
+//                     setw(10)<<mu.dxy<<
+//                     setw(10)<<mu.dz<<
+//                     setw(21)<<mu.mvaID<<endl;
+//                
+//                
+//                }
                 
                 //if (preselected_taus.size()>=1)
                 
@@ -510,7 +641,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
                 
                 
                 
-	    }
+	    } // end if debug
             
 
             

@@ -28,11 +28,11 @@ void makegoodplot()
 //	samples.push_back(3); // ttbar_b
 //	samples.push_back(4); // ttbar_ccbar
 
-//	samples.push_back(5); // TTJets
+	samples.push_back(5); // TTJets
 //	samples.push_back(6); // ZJets
 //	samples.push_back(7); // WJets
-//	samples.push_back(8); // TTWJets
-//	samples.push_back(9); // TTZJets
+	samples.push_back(8); // TTWJets
+	samples.push_back(9); // TTZJets
 //	samples.push_back(10); // diboson (WZ)
 //        samples.push_back(11); // diboson (ZZ)
         

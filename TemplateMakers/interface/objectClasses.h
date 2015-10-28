@@ -35,6 +35,16 @@ namespace ttH
     double csv;
     double sip3D;
     
+    // extra for sync
+    double miniAbsIsoCharged;
+    double miniAbsIsoNeutral;
+    double rho;
+    double effArea;
+    double miniIsoR;
+    double miniAbsIsoNeutralcorr;    
+    
+    
+    
     virtual ~Lepton(){};
     ClassDef(Lepton, 1);
     
@@ -80,13 +90,7 @@ namespace ttH
     double validFrac;
     double segCompatibility;
 
-    // extra for sync
-    double miniAbsIsoCharged;
-    double miniAbsIsoNeutral;
-    double rho;
-    double effArea;
-    double miniIsoR;
-    double miniAbsIsoNeutralcorr;
+
 
     virtual ~Muon(){};
     ClassDef(Muon, 1); 
