@@ -20,21 +20,7 @@ void OSTwoLepAna::beginJob()
   
   if (debug)
     {
-      lep1 = fopen ("lep1.txt", "w+");
-      el2 = fopen ("ele_2.txt", "w+");
-      el3 = fopen ("ele_3.txt", "w+");
-      el4 = fopen ("ele_4.txt", "w+");
-      ml2 = fopen ("mu_2.txt", "w+");
-      ml3 = fopen ("mu_3.txt", "w+");
-      ml4 = fopen ("mu_4.txt", "w+");
-
-      fout.open("preselEventDump.csv");
-      
-      //ffout = fopen("preselEventDump.csv", "w+");
-      
-      //muons
-      //string header[17] = {"event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
-      //  		   "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","segmentCompatibility"};
+      fout.open("preselEventDump_muons.csv");
       
       fout<<setiosflags(ios::fixed)<<setprecision(5);
       fout<<setw(10)<<"event"<<
@@ -53,34 +39,14 @@ void OSTwoLepAna::beginJob()
       setw(10)<<"sip3D"<<
       setw(10)<<"dxy"<<
       setw(10)<<"dz"<<
-      //setw(21)<<"segmentCompatibility"<<endl;
+	//      setw(21)<<"segmentCompatibility"<<endl;
       setw(21)<<"eleMVA"<<endl;
-      
-      
-      
-      //string header[8] = {"event", "miniIsoR", "miniAbsIsoCharged", "miniAbsIsoNeutral", "rho", "effArea", "miniAbsIsoNeutralcorr", "miniIso"};
-      
-      //for (const auto & title : header) fout << title << ',';
-      //fout << "\n";
-      
-      // muons
-      //fprintf(ffout,"%10s  %6s %4s %4s %6s %2s %2s    %6s %6s %6s   %6s %6s %6s %6s %6s %6s  %6s  \n",
-      //      "event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
-      //      "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","segmentCompatibility");
-      
-      // electrons
-      //fprintf(ffout,"%10s  %6s %4s %4s %6s %2s %2s    %6s %6s %6s   %6s %6s %6s %6s %6s %6s  %6s  \n",
-      //      "event","pT","Eta","Phi","E","pdgID","charge","miniIso","miniIsoCharged","miniIsoNeutral",
-      //      "jetPtRel","jetCSV","jetPtRatio","sip3D","dxy","dz","eleMVA");
-      
-      
-      
-      
       
     }
   // job setup	
   SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
   SetFactorizedJetCorrector();
+
   alltriggerstostudy = HLTInfo();
   
   // needed in edanalyzer:
@@ -93,7 +59,6 @@ void OSTwoLepAna::beginJob()
   summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
   tree_add_branches();
 
-    
   singleEleCount=0;
   singleMuCount=0;
   singleTauCount=0;
@@ -106,14 +71,6 @@ void OSTwoLepAna::endJob() {
   if (debug)
     {
       fout.close();
-      //fclose(ffout);
-      fclose(lep1);
-      fclose(el2);
-      fclose(el3);
-      fclose(el4);
-      fclose(ml2);
-      fclose(ml3);
-      fclose(ml4);
     }
   //  cout << "Num Events processed " << numEvents << endl;
   //       << "Passed cuts " << numEventsPassCuts << endl;
@@ -131,8 +88,15 @@ void OSTwoLepAna::endJob() {
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
   
+  
+  // if ( event.id().event() != 1692766 ) 
+  //   {
+  //     if (debug) cout << "eventA: " << event.id().event() << endl;
+  //     return;
+  //   }
+  
 	// analysis goes here
-	//if (debug) cout << "event: " << event.id().event() << endl;
+  //  if (debug) cout << "eventB: " << event.id().event() << endl;
 	clock_t startTime = clock();
 	eventcount++;
 	SetupOptions(event);
@@ -443,113 +407,14 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    runNumber_intree = event.id().run();
 	    bool foundcolloverlap = false;
 	    if (debug){
-	      //bool ss2l = (preselected_leptons[0].pdgID == preselected_leptons[0].pdgID);
-	      //bool pt2020 = (preselected_leptons[0].obj.Pt() >= 20 && preselected_leptons[0].obj.Pt() >=20);
-	      //bool lepMva = (tightMvaBased_leptons.size()>=2);
-	      //bool TwoCutSelection = true;
-	      //bool ss2tightEles = (tightMvaBased_electrons.size() ==2 && tightMvaBased_electrons[0].pdgID == tightMvaBased_electrons[1].pdgID);
-
-	      // for (const auto & ele : preselected_electrons)
-// 		{
-// 		  fout << eventnum_intree << ','<< ele.pdgID << ','<< ele.obj.Pt() <<','
-// 		       << ele.obj.Eta() <<','<< ele.obj.Phi() <<','<< ele.dxy<<','<<ele.dz<<','
-// 		       <<ele.relIso<<','<<ele.sip3D<<','<<ele.lepMVA<<','<<ele.mvaID<<','
-// 		       <<ele.numMissingInnerHits<<','<<ele.isGsfCtfScPixChargeConsistent<<','<<ele.passConversioVeto<<','
-// 		       <<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<','<<' '<<','
-// 		       <<ele.nureliso<<','<<ele.chreliso<<','<<ele.matchedJetdR<<','<<ele.obj.Pt()<<','
-// 		       <<ele.obj.Pt()/ele.jetPtRatio<<','<<ele.jetPtRatio<<','<<ele.csv<<','<<ele.sip3D<<','
-// 		       <<ele.dxy<<','<<ele.dz<<','<<ele.mvaID<<','<< (2 >= preselected_leptons.size()) <<','
-// 		       <<ss2l<<','<<pt2020<<','<<lepMva<<','<<TwoCutSelection<<','<<ss2tightEles<<'\n';
-// 		  //		       <<'SS ee/mm'<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
-// 		  //		       <<'\n';
-// 
-// 
-// 
-// 		}
-// 	      for (const auto & mu : preselected_muons)
-// 		{
-// 		  fout << eventnum_intree << ','<<mu.pdgID<<','<<mu.obj.Pt()<<','<<mu.obj.Eta()<<','<<mu.obj.Phi()<<','
-// 		       <<mu.dxy<<','<<mu.dz<<','<<mu.relIso<<','<<mu.sip3D<<','<<mu.lepMVA<<','<<mu.isPFMuon<<','
-// 		       <<mu.isGlobalMuon<<','<<mu.chargeFlip<<','<<mu.isTrackerMuon<<','
-// 		       <<mu.normalizedChi2<<','
-// 		       <<mu.localChi2<<','<<mu.trKink<<','<<mu.validFrac<<','<<mu.segCompatibility<<','<<' '<<','
-// 		       <<mu.nureliso<<','<<mu.chreliso<<','<<mu.matchedJetdR<<','<<mu.obj.Pt()<<','
-// 		       <<mu.obj.Pt()/mu.jetPtRatio<<','<<mu.jetPtRatio<<','<<mu.csv<<','<<mu.sip3D<<','
-// 		       <<mu.dxy<<','<<mu.dz<<','<<mu.segCompatibility<<','<< (2 >= preselected_leptons.size()) <<','
-// 		       <<ss2l<<','<<pt2020<<','<<lepMva<<','<<TwoCutSelection<<','<<ss2tightEles<<'\n';
-// 		       // <<'SS ee/mm '<<','<<'pt2020'<<','<<'lepMVA'<<','<<'2 cut -slection'<<','<<'==2 tight eles'<<
-// 		       // <<'\n';		    
-// 
-// 		}
-// 
-// 
-// 	      if (preselected_leptons.size() >= 2 && higgs_decay_intree == 1)
-// 		{
-// 		  fprintf(lep1,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-// 			  runNumber_intree, lumiBlock_intree, eventnum_intree,
-// 			  preselected_leptons[0].pdgID, preselected_leptons[0].obj.Pt(), preselected_leptons[0].obj.Eta(), preselected_leptons[0].obj.Phi(),
-// 			  preselected_leptons[1].pdgID, preselected_leptons[1].obj.Pt(), preselected_leptons[1].obj.Eta(), preselected_leptons[1].obj.Phi(),
-// 			theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-// 
-// 		  if ( tightMvaBased_leptons.size()==2 && tightMvaBased_leptons[0].charge == tightMvaBased_leptons[1].charge )
-// 		    {
-// 		      if (abs(tightMvaBased_leptons[0].pdgID) == 11 && abs(tightMvaBased_leptons[1].pdgID) == 11)
-// 			{
-// 			  fprintf(el4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-// 				  runNumber_intree, lumiBlock_intree, eventnum_intree,
-// 				  tightMvaBased_leptons[0].pdgID, tightMvaBased_leptons[0].obj.Pt(), tightMvaBased_leptons[0].obj.Eta(), tightMvaBased_leptons[0].obj.Phi(),
-// 				  tightMvaBased_leptons[1].pdgID, tightMvaBased_leptons[1].obj.Pt(), tightMvaBased_leptons[1].obj.Eta(), tightMvaBased_leptons[1].obj.Phi(),
-// 				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-// 			}
-// 		      else if (abs(tightMvaBased_leptons[0].pdgID) == 13 && abs(tightMvaBased_leptons[1].pdgID) == 13)
-// 			{
-// 			  fprintf(ml4,"%6d %6d %10d  %+2d  %6.2f %+4.2f %+4.2f   %+2d  %6.2f %+4.2f %+4.2f    %6.1f  %+4.2f    %d \n",
-// 				  runNumber_intree, lumiBlock_intree, eventnum_intree,
-// 				  tightMvaBased_leptons[0].pdgID, tightMvaBased_leptons[0].obj.Pt(), tightMvaBased_leptons[0].obj.Eta(), tightMvaBased_leptons[0].obj.Phi(),
-// 				  tightMvaBased_leptons[1].pdgID, tightMvaBased_leptons[1].obj.Pt(), tightMvaBased_leptons[1].obj.Eta(), tightMvaBased_leptons[1].obj.Phi(),
-// 				  theMET[0].pt_forSync, theMET[0].phi_forSync, int(preselected_jets.size()));
-// 			}
-// 		    }
-// 		}
-
-
                 
-                
-                for (int muiter=0; muiter<(int)(preselected_muons.size()-1); muiter++)
-                {
-                    for (int muiter2=muiter+1; muiter2<(int)preselected_muons.size(); muiter2++)
-                    {
-                        double dRtest = reco::deltaR( preselected_muons[muiter].obj.Eta(), preselected_muons[muiter].obj.Phi(), preselected_muons[muiter2].obj.Eta(), preselected_muons[muiter2].obj.Phi() );
-                        if (dRtest<0.02) foundcolloverlap = true;
-                    }
-                }
-                
-                if ((preselected_muons.size()>=1) && (!foundcolloverlap))
+                if ((preselected_electrons.size()>=1) && (!foundcolloverlap))
                 {
                            
-                    auto mu = preselected_muons[0];
-                    
-                    
-//                     fprintf(ffout,"%10d  %6.2f %+4.2f %+4.2f %6.2f %+2d %+2d    %6.1f %6.1f %6.1f   %6.1f %6.1f %6.1f %6.1f %6.1f %6.1f  %6.1f  \n",
-//                         eventnum_intree,
-//                         mu.obj.Pt(),
-//                         mu.obj.Eta(),
-//                         mu.obj.Phi(),
-//                         mu.obj.E(),
-//                         mu.pdgID,
-//                         mu.charge,
-//                         mu.miniIso,
-//                         mu.miniAbsIsoCharged,
-//                         mu.miniAbsIsoNeutralcorr,
-//                         mu.jetPtRel,
-//                         mu.csv,
-//                         mu.jetPtRatio,
-//                         mu.sip3D,
-//                         mu.dxy,
-//                         mu.dz,
-//                         mu.segCompatibility);
-                    
-                    
+                     auto mu = preselected_electrons[0];
+                     
+                     
+                
                     fout<<setiosflags(ios::fixed)<<setprecision(5);
                     fout<<setw(10)<<eventnum_intree<<
                     setw(10)<<mu.obj.Pt()<<
@@ -560,75 +425,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
                     setw(5)<<mu.charge<<
                     setw(15)<<mu.miniIso<<
                     setw(15)<<mu.miniAbsIsoCharged<<
-                    //setw(15)<<mu.miniAbsIsoNeutralcorr<< // Xavier
-                    setw(15)<<mu.miniAbsIsoNeutral<<
+                    //setw(15)<<mu.miniAbsIsoNeutralcorr<<
+                    setw(15)<<mu.miniAbsIsoNeutral<< //Xavier
                     setw(10)<<mu.jetPtRel<<
                     setw(10)<<mu.csv<<
                     setw(10)<<mu.jetPtRatio<<
                     setw(10)<<mu.sip3D<<
                     setw(10)<<mu.dxy<<
                     setw(10)<<mu.dz<<
-                    setw(21)<<mu.segCompatibility<<endl;
-                                   
-                    
-                    
-                    
-                    //fout << eventnum_intree << ',' << mu.obj.Pt() << ',' << mu.obj.Eta() << ',' << mu.obj.Phi() << ',' << mu.obj.E() << ',' << 		    
-                    //mu.pdgID << ',' << mu.charge << ',' << mu.miniIso << ',' << mu.miniAbsIsoCharged << ',' << mu.miniAbsIsoNeutralcorr << ',' << 
-                    //mu.jetPtRel << ',' << mu.csv << ',' << mu.jetPtRatio << ',' << mu.sip3D << ',' << mu.dxy << ',' << mu.dz << ',' << mu.segCompatibility << '\n';
-
-                    //fout << eventnum_intree << ',' << mu.miniIsoR << ',' << mu.miniAbsIsoCharged << ',' << mu.miniAbsIsoNeutral << ',' << mu.rho << ',' << 		    
-                    //mu.effArea << ',' << mu.miniAbsIsoNeutralcorr << ',' << mu.miniIso << '\n';
-                }
-                
-//                 if ((preselected_electrons.size()>=1) && (!foundcolloverlap))
-//                 {
-//                            
-//                      auto mu = preselected_electrons[0];
-//                      
-//                      
-// //                     fprintf(ffout,"%10d  %6.2f %+4.2f %+4.2f %6.2f %+2d %+2d    %6.1f %6.1f %6.1f   %6.1f %6.1f %6.1f %6.1f %6.1f %6.1f  %6.1f  \n",
-// //                         eventnum_intree,
-// //                         mu.obj.Pt(),
-// //                         mu.obj.Eta(),
-// //                         mu.obj.Phi(),
-// //                         mu.obj.E(),
-// //                         mu.pdgID,
-// //                         mu.charge,
-// //                         mu.miniIso,
-// //                         mu.miniAbsIsoCharged,
-// //                         mu.miniAbsIsoNeutralcorr,
-// //                         mu.jetPtRel,
-// //                         mu.csv,
-// //                         mu.jetPtRatio,
-// //                         mu.sip3D,
-// //                         mu.dxy,
-// //                         mu.dz,
-// //                         mu.mvaID);                    
-// //                 }
-//                 
-//                     fout<<setiosflags(ios::fixed)<<setprecision(5);
-//                     fout<<setw(10)<<eventnum_intree<<
-//                     setw(10)<<mu.obj.Pt()<<
-//                     setw(10)<<mu.obj.Eta()<<
-//                     setw(10)<<mu.obj.Phi()<<
-//                     setw(10)<<mu.obj.E()<<
-//                     setw(5)<<mu.pdgID<<
-//                     setw(5)<<mu.charge<<
-//                     setw(15)<<mu.miniIso<<
-//                     setw(15)<<mu.miniAbsIsoCharged<<
-//                     //setw(15)<<mu.miniAbsIsoNeutralcorr<<
-//                     setw(15)<<mu.miniAbsIsoNeutral<< //Xavier
-//                     setw(10)<<mu.jetPtRel<<
-//                     setw(10)<<mu.csv<<
-//                     setw(10)<<mu.jetPtRatio<<
-//                     setw(10)<<mu.sip3D<<
-//                     setw(10)<<mu.dxy<<
-//                     setw(10)<<mu.dz<<
-//                     setw(21)<<mu.mvaID<<endl;
-//                
-//                
-//                }
+                    setw(21)<<mu.mvaID<<endl;
+               
+               
+               }
                 
                 //if (preselected_taus.size()>=1)
                 
@@ -682,9 +490,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    looseMvaBased_leptons_intree = looseMvaBased_leptons;
 	    tightMvaBased_leptons_intree = tightMvaBased_leptons;
 
-	    //raw_electrons_intree = raw_electrons;
-	    //raw_muons_intree = raw_muons;
-	    //raw_jets_intree = raw_jets;
+	    raw_electrons_intree = raw_electrons;
+	    raw_muons_intree = raw_muons;
+	    //    raw_jets_intree = raw_jets;
             
 	    preselected_jets_intree = preselected_jets;
 	    preselected_jets_uncor_intree = preselected_jets_uncor;
