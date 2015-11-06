@@ -20,13 +20,11 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
         echo "/.gitignore/" >> .git/info/sparse-checkout
         echo "/CMGTools/RootTools/data/jec/" >> .git/info/sparse-checkout
         echo "/CMGTools/TTHAnalysis/data/" >> .git/info/sparse-checkout
-        echo "/EgammaAnalysis/ElectronTools/" >> .git/info/sparse-checkout
         git checkout -b CMGTools-from-CMSSW_7_4_12 cmg-central/CMGTools-from-CMSSW_7_4_12
         git cms-merge-topic ikrav:egm_id_7.4.12_v1
         git clone git@github.com:cms-ttH/MiniAOD.git -b geoff_test
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
         git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
-        gzip -d EgammaAnalysis/ElectronTools/data/PHYS14/*.gz
         
         scram b -j 8
 
