@@ -338,6 +338,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       }
       eleCollection.push_back(ele);
     }
+  std::sort(eleCollection.begin(), eleCollection.end(), [] (ttH::Electron a, ttH::Electron b) { return a.obj.Pt() > b.obj.Pt();});
   return eleCollection;
 }
 
@@ -405,6 +406,7 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs)
 	}
       muCollection.push_back(mu);
     }
+  std::sort(muCollection.begin(), muCollection.end(), [] (ttH::Muon a, ttH::Muon b) { return a.obj.Pt() > b.obj.Pt();});
   return muCollection;
 }
 
@@ -437,6 +439,7 @@ vector<ttH::Tau> MultileptonAna::GetCollection (vecPatTau theobjs)
       tauCollection.push_back(tau);
 
   }
+  std::sort(tauCollection.begin(), tauCollection.end(), [] (ttH::Tau a, ttH::Tau b) { return a.obj.Pt() > b.obj.Pt();});
   return tauCollection;
 }
 
@@ -467,6 +470,7 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       jetCollection.push_back(jet);
 
   }
+  std::sort(jetCollection.begin(), jetCollection.end(), [] (ttH::Jet a, ttH::Jet b) { return a.obj.Pt() > b.obj.Pt();});
   return jetCollection;
 }
 
