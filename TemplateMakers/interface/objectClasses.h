@@ -128,7 +128,7 @@ namespace ttH
     
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
-    int charge;
+    double charge;
     int genPdgID; // this is the matched genParton (not genJet)
     int genMotherPdgID;
     int genGrandMotherPdgID;
