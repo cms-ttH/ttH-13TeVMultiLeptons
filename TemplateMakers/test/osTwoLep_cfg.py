@@ -22,7 +22,7 @@ process.source = cms.Source("PoolSource",
         
         ## new Spring15 sync sample:
         #'/store/mc/RunIISpring15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/02FE2DB6-D06D-E511-8BC7-0025905C431C.root'),
-        'file:sync_file.root'),
+        'file:/afs/cern.ch/user/m/muell149/work/tthSync/test/CMSSW_7_4_12_patch4/src/ttH-13TeVMultiLeptons/TemplateMakers/test/sync_file.root'),
         #skipEvents = cms.untracked.uint32(1)
                             )
 
