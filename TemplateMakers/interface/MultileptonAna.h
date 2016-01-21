@@ -197,7 +197,16 @@ class MultileptonAna: public MiniAODHelper
   edm::ParameterSet variableparams;
   edm::ParameterSet systparams;
   edm::ParameterSet selectionparams;
-
+  
+  // bullshit:
+  edm::EDGetTokenT<edm::TriggerResults> triggerResults_token_;
+  edm::EDGetTokenT<pat::JetCollection> jets_token_;
+  edm::EDGetTokenT<pat::METCollection> mets_token_;
+  edm::EDGetTokenT<reco::GenParticleCollection> genParticles_token_;
+  edm::EDGetTokenT<reco::VertexCollection> vertex_token_;
+  edm::EDGetTokenT<double> rho_token_;
+  edm::EDGetTokenT<GenEventInfoProduct> genInfo_token_;
+  
   void parse_params();
   
   //MiniAODHelper miniAODhelper;

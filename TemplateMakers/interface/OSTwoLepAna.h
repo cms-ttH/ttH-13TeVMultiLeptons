@@ -19,6 +19,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		// OSTwoLep-specific
 		void tree_add_branches();
 		void initialize_variables();
+		vstring hlt_alltrigs;
 	public:
 		explicit OSTwoLepAna(const edm::ParameterSet&);
 		~OSTwoLepAna();
@@ -78,10 +79,13 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::GenParticle> pruned_genParticles_intree;
 		vector<ttH::GenParticle> packed_genParticles_intree;
 		
-	        edm::EDGetTokenT<pat::MuonCollection> muons_token_;
-	        edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
-                edm::EDGetTokenT<pat::TauCollection> taus_token_;
+	    edm::EDGetTokenT<pat::MuonCollection> muons_token_;
+	    edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
+        edm::EDGetTokenT<pat::TauCollection> taus_token_;
                 
+
+
+
                 int singleEleCount;
                 int singleMuCount;
                 int singleTauCount;

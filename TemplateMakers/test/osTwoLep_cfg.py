@@ -2,33 +2,57 @@ import FWCore.ParameterSet.Config as cms
 import sys
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
-
-
 process = cms.Process("Demo")
+
+####### IS THIS DATA YES OR NO ######
+isData = True
+#####################################
 
 
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
-process.GlobalTag.globaltag = '74X_mcRun2_asymptotic_v2' #MCRUN2_74_V9 #'PHYS14_25_V2' #'PLS170_V7AN1::All'  #'MCRUN2_72_V3A' #'MC_72_v1' ##'PHYS14_25_V1' ###'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
+if isData:
+    process.GlobalTag.globaltag = '76X_dataRun2_v15' #'74X_dataRun2_v5'
+else:
+    process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12' #'74X_mcRun2_asymptotic_v2' #MCRUN2_74_V9 #'PHYS14_25_V2' #'PLS170_V7AN1::All'  #'MCRUN2_72_V3A' #'MC_72_v1' ##'PHYS14_25_V1' ###'PLS170_V7AN1::All'  ###'PLS170_V7AN1::All' ##'START61_V11::All' #START61_V8::All #'GR_R_60_V7::All'   # 'GR_R_52_V9::All'
+
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(-1) # number of events
+    	input = cms.untracked.int32(10000) # number of events
 )
+
 
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
+        
+        
+        # data test
+        #763
+        '/store/data/Run2015D/MET/MINIAOD/16Dec2015-v1/50000/16111E08-B2AA-E511-AAC4-C4346BC80410.root'),
+        #'/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/1E5A2F7F-D16B-E511-9AC0-02163E0135AC.root'),
+        #'/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/175/00000/4A8229C0-276D-E511-931E-02163E013870.root'),
+        #'/store/data/Run2015D/SingleElectron/MINIAOD/04Dec2015-v2/10000/00F2E38F-E69E-E511-AC8D-0025905822B6.root'),
+        #763 MC
+        #'/store/mc/RunIIFall15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/14352F79-4DBB-E511-8A90-00259055CA34.root'),
+        
+        #74X
+        #'/store/mc/RunIISpring15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/3801CAC7-D06D-E511-B32C-0025905C4262.root'),        
         
         #'/store/mc/RunIISpring15DR74/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/20000/04A14FA4-2523-E511-9860-0025905C96A6.root'
         
         ## new Spring15 sync sample:
         #'/store/mc/RunIISpring15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/02FE2DB6-D06D-E511-8BC7-0025905C431C.root'),
-        'file:/afs/cern.ch/user/m/muell149/work/tthSync/test/CMSSW_7_4_12_patch4/src/ttH-13TeVMultiLeptons/TemplateMakers/test/sync_file.root'),
+        #'file:/afs/cern.ch/user/m/muell149/work/tthSync/test/CMSSW_7_4_12_patch4/src/ttH-13TeVMultiLeptons/TemplateMakers/test/sync_file.root'),
         #skipEvents = cms.untracked.uint32(1)
                             )
 
+### specifying run / lumi range:
 #process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(
 #    '199812:70-199812:80'
 #)
+### or, using json file:
+#import FWCore.PythonUtilities.LumiList as LumiList
+#process.source.lumisToProcess = LumiList.LumiList(filename = 'goodList.json').getVLuminosityBlockRange()
 
 ######################################
 #JEC
@@ -105,17 +129,22 @@ process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
 # pfCombinedSecondaryVertexSoftLeptonBJetTags
 # pfCombinedMVABJetTags
 
+if isData:
+    process.OSTwoLepAna.setupoptions.isdata = True
+else:
+    process.OSTwoLepAna.setupoptions.isdata = False
+    
 process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral"
 process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags"  # "combinedInclusiveSecondaryVertexV2BJetTags" #"combinedMVABJetTags" ##"combinedSecondaryVertexMVABJetTags"
-process.OSTwoLepAna.triggers.hltlabel = "HLT" #"reHLT" #"HLT" # HLT = centrally produced samples
+process.OSTwoLepAna.triggers.hltlabel = "HLT" #"HLT" #"reHLT" #"HLT" # HLT = centrally produced samples
 
-process.OSTwoLepAna.debug = True
+process.OSTwoLepAna.debug = False
 
 ######################################
 	
 ## uncomment this for use with crab script ###
 process.TFileService = cms.Service("TFileService",
-				   fileName = cms.string("multilep_tree_test4.root")
+				   fileName = cms.string("multilep_tree_test_.root")
                                    )
 
 
@@ -132,6 +161,7 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(False),
     SkipEvent = cms.untracked.vstring('ProductNotFound')
     )
+
 
 ## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
 outfile = open('dumped_config.py','w')

@@ -7,10 +7,19 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything t
 	entire_pset = constructparams;
 	parse_params();
 	
+	alltriggerstostudy = HLTInfo();
+	
 	muons_token_ = consumes<pat::MuonCollection>(constructparams.getParameter<edm::InputTag>("muons"));
 	electrons_token_ = consumes<pat::ElectronCollection>(constructparams.getParameter<edm::InputTag>("electrons"));
-        taus_token_ = consumes<pat::TauCollection>(constructparams.getParameter<edm::InputTag>("taus"));
-
+    taus_token_ = consumes<pat::TauCollection>(constructparams.getParameter<edm::InputTag>("taus"));
+    triggerResults_token_ = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","", hltTag));  
+    jets_token_ = consumes<pat::JetCollection>(jetparams.getParameter<string>("jetCollection"));
+    mets_token_ = consumes<pat::METCollection>(metparams.getParameter<string>("METCollection"));
+    genParticles_token_ = consumes<reco::GenParticleCollection>(prunedparams.getParameter<string>("prunedCollection"));
+    rho_token_ = consumes<double>(setupoptionsparams.getParameter<string>("rhoHandle"));
+    vertex_token_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices")); // ,"","RECO"));
+    genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+    
 }
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
 
@@ -45,9 +54,7 @@ void OSTwoLepAna::beginJob()
     }
   // job setup	
   SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
-  SetFactorizedJetCorrector();
-
-  alltriggerstostudy = HLTInfo();
+  SetFactorizedJetCorrector(); // remove ???
   
   // needed in edanalyzer:
   edm::Service<TFileService> newfs;
@@ -87,7 +94,7 @@ void OSTwoLepAna::endJob() {
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
-  
+  //cout << "hey1" << endl;
   
   // if ( event.id().event() != 1692766 ) 
   //   {
@@ -99,41 +106,46 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   //  if (debug) cout << "eventB: " << event.id().event() << endl;
 	clock_t startTime = clock();
 	eventcount++;
-	SetupOptions(event);
-        
+	SetupOptions(event); // chgd
+    
+    //cout << "hey2" << endl;
+    
         // tree vars to default values:
         initialize_variables();
   
 	trigRes triggerResults = 		GetTriggers(event);
-	auto muons =                            get_collection(event, muons_token_);
-	auto electrons =                        get_collection(event, electrons_token_);
-        auto taus =                             get_collection(event, taus_token_);
-	patJets pfjets = 			GetJets(event);
-	patMETs mets = 				GetMet(event);
-	prunedGenParticles prunedParticles = 	GetPrunedGenParticles(event);
+	//trigRes triggerResults = 		GetTriggers(event, );
+	auto muons =                    get_collection(event, muons_token_);
+	auto electrons =                get_collection(event, electrons_token_);
+    auto taus =                     get_collection(event, taus_token_);
+	patJets pfjets = 			    get_collection(event, jets_token_);
+	patMETs mets = 				    get_collection(event, mets_token_);
+	prunedGenParticles prunedParticles;
+	if (!isData) prunedParticles =  get_collection(event, genParticles_token_);
 
 	SetRho(rho);
 	
 	int numpvs =				GetVertices(event);
-	
-	if (false) cout << "numpvs: " << numpvs << endl;
+	if (debug) cout << "numpvs: " << numpvs << endl;
 	
 	edm::Handle<GenEventInfoProduct> GenInfo;
-    	event.getByLabel("generator",GenInfo);
+    if (!isData) event.getByToken(genInfo_token_,GenInfo);
     	
 	///////////////////////////
-	mcwgt_intree = GenInfo->weight();		// <- gen-level weight
+	if (!isData) mcwgt_intree = GenInfo->weight();		// <- gen-level weight
         
-        // make it +/-1!
-        mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
+    // make it +/-1!
+    mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
         
 	double weight = 1.;					// <- analysis weight 
 	weight *= mcwgt_intree;					// MC-only (flag to be added if nec)
 	///////////////////////////
 	
         
-        // count number of weighted mc events we started with:
-        numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+    // count number of weighted mc events we started with:
+    numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+	
+	//cout << "hey3" << endl;
 					
 	/////////
 	///
@@ -152,6 +164,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
 	vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, 7., electronID::electronRaw );	//miniAODhelper.
 
+    //cout << "hey3.1" << endl;
+
 	/////////
 	///
 	/// Muons
@@ -161,7 +175,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//double mintightmupt = minTightLeptonPt;
 	//double minloosemupt = minLooseLeptonPt;
         
-        double mintightmupt = 5.; // lowered for studies
+    double mintightmupt = 5.; // lowered for studies
 	double minloosemupt = 5.; // lowered for studies
         
 
@@ -172,6 +186,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatMuon selectedMuons_forcleaning = GetSelectedMuons( *muons, 5., muonID::muonPreselection ); // was *muons, 10., muonID::muonPreselection
 	//	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
         
+        
+    //cout << "hey3.2" << endl;
         
 	/////////
 	///
@@ -206,7 +222,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         
         // doing the same for taus for consitancy (should check why we're doing it this way...)
         vecPatTau selectedTaus_forcleaning = GetSelectedTaus(selectedTaus_preselected, 20., tauID::tauLoose );
-
+    
+    //cout << "hey3.3" << endl;
+    
 	/////////
 	///
 	/// Leptons
@@ -214,13 +232,19 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////	
 	
 	//saves time by skipping the rest of the loop if <= 2 preselected leptons
-        //if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
-        //{
-
+        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
+        {
+            
+        eventnum_intree = event.id().event();
+	    lumiBlock_intree = event.id().luminosityBlock();
+	    runNumber_intree = event.id().run();
+            
 	    vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
 	    selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 	
 	    vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
+	
+	    //cout << "hey3.4" << endl;
 	
 	    /////////
 	    ///
@@ -259,6 +283,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );
 	    vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );
 	
+	    //cout << "hey3.5" << endl;
 
 	    /////////
 	    ///
@@ -289,75 +314,28 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ///
 	    ////////
 
-		vstring hlt_alltrigs;
-
-		// single lep
-		
-		string hlt_singlemu0 = "HLT_IsoMu24_eta2p1_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? //// "to be kept ps'd" ?! not according to google doc...
-		hlt_alltrigs.push_back(hlt_singlemu0);
-		string hlt_singlemu1 = "HLT_IsoMu27_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? // unps'd
-		hlt_alltrigs.push_back(hlt_singlemu1);		
-		string hlt_singlemu2 = "HLT_IsoTkMu27_v1"; // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? // unps'd
-		hlt_alltrigs.push_back(hlt_singlemu2);
-		
-		
-		string hlt_singleel0 = "HLT_Ele32_eta2p1_WP75_Gsf_v1";
-		hlt_alltrigs.push_back(hlt_singleel0);
-		
-		// double lep
-		
-		string hlt_doublemu0 = "HLT_Mu17_Mu8_DZ_v1"; // ps'd
-		hlt_alltrigs.push_back(hlt_doublemu0);
-		string hlt_doublemu1 = "HLT_Mu17_TkMu8_DZ_v1"; // ps'd
-		hlt_alltrigs.push_back(hlt_doublemu1);
-		string hlt_doublemu2 = "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v1";
-		hlt_alltrigs.push_back(hlt_doublemu2);
-		string hlt_doublemu3 = "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v1";
-		hlt_alltrigs.push_back(hlt_doublemu3);
-		
-		string hlt_doubleel0 = "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v1";
-		hlt_alltrigs.push_back(hlt_doubleel0);
-		
-		string hlt_muel0 = "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v1";
-		hlt_alltrigs.push_back(hlt_muel0);
-		
-		string hlt_elmu0 = "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v1";
-		hlt_alltrigs.push_back(hlt_elmu0);
-		
-		// triple lep
-		
-		string hlt_elelel0 = "HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v1";
-		hlt_alltrigs.push_back(hlt_elelel0);
-		
-		string hlt_mumumu0 = "HLT_TripleMu_12_10_5_v1";
-		hlt_alltrigs.push_back(hlt_mumumu0);
-		
-		string hlt_muelel0 = "HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v1";
-		hlt_alltrigs.push_back(hlt_muelel0);
-		
-		string hlt_mumuel0 = "HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v1";
-		hlt_alltrigs.push_back(hlt_mumuel0);		
-		
-		// .. quad lep?
-
+        //cout << "hey3.6" << endl;
+		//cout << hlt_alltrigs.size() << endl;
 		
 		// if event passes an HLT path add it to the tree:
 		for (unsigned int trigit=0; trigit<hlt_alltrigs.size(); trigit++)
 		{
-			//try
-			//{
+			try
+			{
 				if (triggerResults->accept(hltConfig_.triggerIndex(hlt_alltrigs[trigit])))
 				{
 					passTrigger_intree.push_back(hlt_alltrigs[trigit]);
 				}
-			//}
-			//catch(...)
-			//{
-			//	continue;
-			//}
+			}
+			catch(...)
+			{
+				cout << "we are here" << endl;
+				continue;
+			}
 			
 		}
-
+        
+        //cout << "hey4" << endl;
 
 	    /////////////////////////
 	    //////
@@ -389,7 +367,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vector<ttH::Jet> tight_bJets = GetCollection(selectedJets_bJetsTight);
 	
 	    vector<ttH::MET> theMET = GetCollection(mets);
-	    vector<ttH::GenParticle> pruned_genParticles = GetCollection(*prunedParticles);
+	    vector<ttH::GenParticle> pruned_genParticles;
+	    if (!isData) pruned_genParticles = GetCollection(*prunedParticles);
 	
 	    /////////////////////////
 	    //////
@@ -397,15 +376,16 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    //////
 	    /////////////////////////
 	
-	    int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles);
-	    //	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);
-	
-	    higgs_decay_intree = (higgs_daughter1==24 || higgs_daughter1==23 || higgs_daughter1==15) ? 1 : 0;
-	
-	    eventnum_intree = event.id().event();
-	    lumiBlock_intree = event.id().luminosityBlock();
-	    runNumber_intree = event.id().run();
+	    
+	    if (!isData) 
+	    {
+	        int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles);
+	        //	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);	
+	        higgs_decay_intree = (higgs_daughter1==24 || higgs_daughter1==23 || higgs_daughter1==15) ? 1 : 0;
+	    }
+
 	    bool foundcolloverlap = false;
+	    
 	    if (debug){
                 
                 if ((preselected_electrons.size()>=1) && (!foundcolloverlap))
@@ -481,7 +461,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    preselected_leptons_intree = preselected_leptons;
 	    preselected_electrons_intree = preselected_electrons;
 	    preselected_muons_intree = preselected_muons;
-            preselected_taus_intree = preselected_taus;
+        preselected_taus_intree = preselected_taus;
 
 	    looseMvaBased_muons_intree = looseMvaBased_muons;
 	    tightMvaBased_muons_intree = tightMvaBased_muons;
@@ -502,7 +482,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    met_intree = theMET;
 
-	    pruned_genParticles_intree = pruned_genParticles;
+	    if (!isData) pruned_genParticles_intree = pruned_genParticles;
 
 	    wgt_intree = weight;
 	
@@ -512,7 +492,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    summaryTree->Fill();// fill tree;
             /////////////////////////////////
 	    
-        //} //end skim if statement
+        } //end skim if statement
 
 } // end event loop
 
@@ -527,6 +507,110 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
 	else std::cout << "Warning, didn't find process " << hltTag << std::endl;
 	
 	std::cout << " HLTConfig processName " << hltConfig_.processName() << " tableName " << hltConfig_.tableName() << " size " << hltConfig_.size() << std::endl; // " globalTag: " << hltConfig_.globalTag() << std::endl;
+		 
+	
+	std::vector<std::string> myTriggernames = hltConfig_.triggerNames();
+	int triggersize = myTriggernames.size();
+	vstring hlt_trigstofind;
+	hlt_alltrigs.clear();
+	
+	// Just MC
+	
+    // single lep
+    
+//     hlt_trigstofind.push_back("HLT_IsoMu24_eta2p1_v"); // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? //// "to be kept ps'd" ?! not according to google doc...
+//     hlt_trigstofind.push_back("HLT_IsoMu27_v"); // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? // unps'd
+//     hlt_trigstofind.push_back("HLT_IsoTkMu27_v"); // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? // unps'd
+//     hlt_trigstofind.push_back("HLT_Ele32_eta2p1_WP75_Gsf_v"); // <<---
+//     
+//     // double lep
+//     
+//     hlt_trigstofind.push_back("HLT_Mu17_Mu8_DZ_v"); // ps'd (here and data)
+//     hlt_trigstofind.push_back("HLT_Mu17_TkMu8_DZ_v"); // ps'd (here and data)
+//     hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
+//     hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");		
+//     hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");		
+//     hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+//     hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
+//             
+//     // triple lep
+//     
+//     hlt_trigstofind.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");		
+//     hlt_trigstofind.push_back("HLT_TripleMu_12_10_5_v");		
+//     hlt_trigstofind.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v");
+//     hlt_trigstofind.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v");
+    
+    
+    // Data + MC
+    
+    
+    //single lep    
+    hlt_trigstofind.push_back("HLT_Ele22_eta2p1_WPLoose_Gsf_v");    //Data
+    hlt_trigstofind.push_back("HLT_Ele23_WPLoose_Gsf_v");           //Data
+    hlt_trigstofind.push_back("HLT_Ele27_WPLoose_Gsf_v");           //Data
+    hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");    //Data
+    hlt_trigstofind.push_back("HLT_Ele32_eta2p1_WPLoose_Gsf_v");    //Data
+    hlt_trigstofind.push_back("HLT_Ele22_eta2p1_WP75_Gsf_v");       //MC
+    hlt_trigstofind.push_back("HLT_Ele27_WP85_Gsf_v");              //MC
+    hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WP75_Gsf_v");       //MC
+    hlt_trigstofind.push_back("HLT_Ele32_eta2p1_WP75_Gsf_v");       //MC
+    hlt_trigstofind.push_back("HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v");//MC
+    
+    
+    hlt_trigstofind.push_back("HLT_IsoMu18_v");
+    hlt_trigstofind.push_back("HLT_IsoMu20_v");
+    hlt_trigstofind.push_back("HLT_IsoMu22_v");
+    hlt_trigstofind.push_back("HLT_IsoMu20_eta2p1_v");
+    hlt_trigstofind.push_back("HLT_IsoMu24_eta2p1_v");
+    hlt_trigstofind.push_back("HLT_IsoMu27_v");
+    
+    hlt_trigstofind.push_back("HLT_IsoTkMu18_v");
+    hlt_trigstofind.push_back("HLT_IsoTkMu20_v");
+    hlt_trigstofind.push_back("HLT_IsoTkMu22_v");
+    hlt_trigstofind.push_back("HLT_IsoTkMu20_eta2p1_v");
+    hlt_trigstofind.push_back("HLT_IsoTkMu24_eta2p1_v");
+    hlt_trigstofind.push_back("HLT_IsoTkMu27_v");    
+    
+    // double lep
+    hlt_trigstofind.push_back("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");    // unpsd?    
+    hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    hlt_trigstofind.push_back("HLT_Mu17_Mu8_SameSign_DZ_v");                      // new
+    hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");
+    hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
+    hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v");
+    hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");
+    hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v");
+    hlt_trigstofind.push_back("HLT_Mu20_Mu10_SameSign_DZ_v");
+    hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");   
+    hlt_trigstofind.push_back("HLT_Mu27_TkMu8_v");
+    hlt_trigstofind.push_back("HLT_Mu30_TkMu11_v");
+    hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v");
+    hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
+        
+    // triple lep (same)
+    hlt_trigstofind.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v");
+    hlt_trigstofind.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v");
+    hlt_trigstofind.push_back("HLT_TripleMu_12_10_5_v");
+    hlt_trigstofind.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");
+    
+    
+    
+    
+    
+    for (int trigit=0; trigit<triggersize; trigit++)
+	{
+        if (debug) cout << myTriggernames[trigit] << endl;
+        
+        for (unsigned int trigit2=0; trigit2<hlt_trigstofind.size(); trigit2++)
+	    {
+            std::size_t found = myTriggernames[trigit].find(hlt_trigstofind[trigit2]);
+            if (found!=std::string::npos)
+            {
+                hlt_alltrigs.push_back(myTriggernames[trigit]);
+            }
+        }
+    }
+                
 	
 }
 void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup)

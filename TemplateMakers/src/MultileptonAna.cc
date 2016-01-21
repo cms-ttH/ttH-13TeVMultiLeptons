@@ -33,27 +33,30 @@ void MultileptonAna::parse_params()
 	setupoptionsparams = 	entire_pset.getParameter<edm::ParameterSet> ("setupoptions");
 	triggerparams = 	entire_pset.getParameter<edm::ParameterSet> ("triggers");
 	muonparams = 		entire_pset.getParameter<edm::ParameterSet> ("muonsOld");
-      	electronparams = 	entire_pset.getParameter<edm::ParameterSet> ("electronsOld");
-      	leptonparams = 		entire_pset.getParameter<edm::ParameterSet> ("leptons");
-      	jetparams = 		entire_pset.getParameter<edm::ParameterSet> ("jets");
-      	subjetparams = 		entire_pset.getParameter<edm::ParameterSet> ("fatjets");
-      	btagparams = 		entire_pset.getParameter<edm::ParameterSet> ("btags");
-      	metparams = 		entire_pset.getParameter<edm::ParameterSet> ("met");
-	prunedparams =          entire_pset.getParameter<edm::ParameterSet> ("prunedgenparticles");
-	packedparams =          entire_pset.getParameter<edm::ParameterSet> ("packedgenparticles");
-      	variableparams = 	entire_pset.getParameter<edm::ParameterSet> ("variables");
-      	systparams = 		entire_pset.getParameter<edm::ParameterSet> ("systematics");
-      	selectionparams = 	entire_pset.getParameter<edm::ParameterSet> ("eventselection");
+    electronparams = 	entire_pset.getParameter<edm::ParameterSet> ("electronsOld");
+    leptonparams = 		entire_pset.getParameter<edm::ParameterSet> ("leptons");
+    jetparams = 		entire_pset.getParameter<edm::ParameterSet> ("jets");
+    subjetparams = 		entire_pset.getParameter<edm::ParameterSet> ("fatjets");
+    btagparams = 		entire_pset.getParameter<edm::ParameterSet> ("btags");
+    metparams = 		entire_pset.getParameter<edm::ParameterSet> ("met");
+	prunedparams =      entire_pset.getParameter<edm::ParameterSet> ("prunedgenparticles");
+	packedparams =      entire_pset.getParameter<edm::ParameterSet> ("packedgenparticles");
+    variableparams = 	entire_pset.getParameter<edm::ParameterSet> ("variables");
+    systparams = 		entire_pset.getParameter<edm::ParameterSet> ("systematics");
+    selectionparams = 	entire_pset.getParameter<edm::ParameterSet> ("eventselection");
 	
 }
 
 void MultileptonAna::SetupOptions (const edm::Event& event)
 {
-	string rhostr = setupoptionsparams.getParameter<string> ("rhoHandle");
-	edm::Handle<double> rhoHandle;
-  	event.getByLabel(rhostr,rhoHandle);
-  	rho = *rhoHandle;
+ 	string rhostr = setupoptionsparams.getParameter<string> ("rhoHandle");
+ 	 	
+ 	edm::Handle<double> rhoHandle;
+   	event.getByToken(rho_token_, rhoHandle);
+ 	
+   	rho = *rhoHandle;
 	sampleName = setupoptionsparams.getParameter<string> ("sample");
+	isData = setupoptionsparams.getParameter<bool> ("isdata");
 
 }
 vstring MultileptonAna::HLTInfo ()
@@ -70,7 +73,7 @@ trigRes MultileptonAna::GetTriggers (const edm::Event& event)
 {
 	// hltTag already got by HLTInfo ...	
 	edm::Handle<edm::TriggerResults> triggerResults;
-	event.getByLabel(edm::InputTag("TriggerResults","", hltTag), triggerResults);
+	event.getByToken(triggerResults_token_, triggerResults);
 	return triggerResults;
 }
 
@@ -186,7 +189,7 @@ int MultileptonAna::GetVertices (const edm::Event& event)
 	int numpv = 0;
 
 	edm::Handle<reco::VertexCollection> vtxHandle;
-	event.getByLabel("offlineSlimmedPrimaryVertices",vtxHandle);
+	event.getByToken(vertex_token_,vtxHandle);
 	reco::VertexCollection primaryVertices = *vtxHandle;
 
 	numpv = 0;

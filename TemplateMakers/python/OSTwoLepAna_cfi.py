@@ -20,7 +20,8 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 	## anything to do at the beginning of the job:
         setupoptions = cms.PSet(	
 		rhoHandle = cms.string("fixedGridRhoFastjetAll"), # choices are: fixedGridRhoAll, fixedGridRhoFastjetAll, fixedGridRhoFastjetAllCalo, fixedGridRhoFastjetCentralCalo, fixedGridRhoFastjetCentralChargedPileUp, fixedGridRhoFastjetCentralNeutral
-		sample = cms.string("ttH_125")
+		sample = cms.string("ttH_125"),
+		isdata = cms.bool(False)
 	),
 		
 	## list of triggers in the analysis:
