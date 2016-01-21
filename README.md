@@ -10,8 +10,8 @@ See the 8 TeV-based [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/N
 
 To get started tree-making from miniAOD (on an SL6 machine) do:        
         
-        cmsrel CMSSW_7_4_12_patch4
-        cd CMSSW_7_4_12_patch4/src
+        cmsrel CMSSW_7_6_3
+        cd CMSSW_7_6_3/src
         cmsenv
         
         git cms-init
@@ -21,7 +21,6 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
         echo "/CMGTools/RootTools/data/jec/" >> .git/info/sparse-checkout
         echo "/CMGTools/TTHAnalysis/data/" >> .git/info/sparse-checkout
         git checkout -b CMGTools-from-CMSSW_7_4_12 cmg-central/CMGTools-from-CMSSW_7_4_12
-        git cms-merge-topic ikrav:egm_id_7.4.12_v1
         git clone git@github.com:cms-ttH/MiniAOD.git
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
         git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
