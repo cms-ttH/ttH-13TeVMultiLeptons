@@ -12,29 +12,17 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
         
         cmsrel CMSSW_7_6_3
         cd CMSSW_7_6_3/src
-        cmsenv
-        
+        cmsenv        
         git cms-init
-        git remote add cmg-central https://github.com/CERN-PH-CMG/cmg-cmssw.git
-        git fetch cmg-central
-        echo "/.gitignore/" >> .git/info/sparse-checkout
-        echo "/CMGTools/RootTools/data/jec/" >> .git/info/sparse-checkout
-        echo "/CMGTools/TTHAnalysis/data/" >> .git/info/sparse-checkout
-        git checkout -b CMGTools-from-CMSSW_7_4_12 cmg-central/CMGTools-from-CMSSW_7_4_12
         git clone git@github.com:cms-ttH/MiniAOD.git
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
         git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
-        
         scram b -j 8
 
-Install [PyYAML](http://pyyaml.org/wiki/PyYAML) if you don't have it already:
+Coming soon (with new lMVA vars):
 
-	cd /tmp
-	wget --no-check-certificate -O - http://pyyaml.org/download/pyyaml/PyYAML-3.10.tar.gz|tar xzf -
-	cd PyYAML-3.10/
-	python setup.py install --user
-	cd ..
-	rm -rf PyYAML-3.10/
+	wget -P ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/ https://github.com/CERN-PH-CMG/cmg-cmssw/blob/CMGTools-from-CMSSW_7_4_12/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_BDTG.weights.xml
+	wget -P ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/ https://github.com/CERN-PH-CMG/cmg-cmssw/blob/CMGTools-from-CMSSW_7_4_12/CMGTools/TTHAnalysis/data/leptonMVA/tth/mu_BDTG.weights.xml
 
 Then try running over some miniAOD:
 
