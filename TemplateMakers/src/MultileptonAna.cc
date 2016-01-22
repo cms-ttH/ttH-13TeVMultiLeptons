@@ -30,20 +30,18 @@ void MultileptonAna::detectData(string sampleName) {
 
 void MultileptonAna::parse_params()
 {
-	setupoptionsparams = 	entire_pset.getParameter<edm::ParameterSet> ("setupoptions");
-	triggerparams = 	entire_pset.getParameter<edm::ParameterSet> ("triggers");
-	muonparams = 		entire_pset.getParameter<edm::ParameterSet> ("muonsOld");
-    electronparams = 	entire_pset.getParameter<edm::ParameterSet> ("electronsOld");
-    leptonparams = 		entire_pset.getParameter<edm::ParameterSet> ("leptons");
-    jetparams = 		entire_pset.getParameter<edm::ParameterSet> ("jets");
-    subjetparams = 		entire_pset.getParameter<edm::ParameterSet> ("fatjets");
-    btagparams = 		entire_pset.getParameter<edm::ParameterSet> ("btags");
-    metparams = 		entire_pset.getParameter<edm::ParameterSet> ("met");
-	prunedparams =      entire_pset.getParameter<edm::ParameterSet> ("prunedgenparticles");
-	packedparams =      entire_pset.getParameter<edm::ParameterSet> ("packedgenparticles");
-    variableparams = 	entire_pset.getParameter<edm::ParameterSet> ("variables");
-    systparams = 		entire_pset.getParameter<edm::ParameterSet> ("systematics");
-    selectionparams = 	entire_pset.getParameter<edm::ParameterSet> ("eventselection");
+
+  setupoptionsparams = 	entire_pset.getParameter<edm::ParameterSet> ("setupoptions");
+  triggerparams = 	entire_pset.getParameter<edm::ParameterSet> ("triggers");
+  jetparams = 		entire_pset.getParameter<edm::ParameterSet> ("jets");
+  subjetparams = 		entire_pset.getParameter<edm::ParameterSet> ("fatjets");
+  btagparams = 		entire_pset.getParameter<edm::ParameterSet> ("btags");
+  metparams = 		entire_pset.getParameter<edm::ParameterSet> ("met");
+  prunedparams =      entire_pset.getParameter<edm::ParameterSet> ("prunedgenparticles");
+  packedparams =      entire_pset.getParameter<edm::ParameterSet> ("packedgenparticles");
+  variableparams = 	entire_pset.getParameter<edm::ParameterSet> ("variables");
+  systparams = 		entire_pset.getParameter<edm::ParameterSet> ("systematics");
+  selectionparams = 	entire_pset.getParameter<edm::ParameterSet> ("eventselection");
 	
 }
 
@@ -77,23 +75,6 @@ trigRes MultileptonAna::GetTriggers (const edm::Event& event)
 	return triggerResults;
 }
 
-
-patMuons MultileptonAna::GetMuons (const edm::Event& event)
-{
-  string muCollection = muonparams.getParameter<string> ("muonCollection");
-  patMuons muonHandle; 
-  event.getByLabel(muCollection,muonHandle);
-  return muonHandle;
-  
-}
-patElectrons MultileptonAna::GetElectrons (const edm::Event& event)
-{
-	string elCollection = electronparams.getParameter<string> ("electronCollection");
-	patElectrons electronHandle; 
-	event.getByLabel(elCollection,electronHandle);
-	return electronHandle;
-	
-}
 vecPatLepton MultileptonAna::fillLeptons(const vecPatMuon& muons, const vecPatElectron& electrons)
 {
   vecPatLepton leptons;
@@ -106,70 +87,6 @@ vecPatLepton MultileptonAna::fillLeptons(const vecPatMuon& muons, const vecPatEl
       leptons.push_back(*iEle);
     }
   return leptons;
-}
-
-void MultileptonAna::GetLeptons (const edm::Event& event)
-{
-	bool are_electrons_added_to_leptons = leptonparams.getParameter<bool> ("useElectrons");
-	bool are_muons_added_to_leptons = leptonparams.getParameter<bool> ("useMuons");
-	
-	if (debug) cout << are_electrons_added_to_leptons << " " << are_muons_added_to_leptons << endl;
-	
-	
-}
-patJets MultileptonAna::GetJets (const edm::Event& event)
-{
-	string mainjetCollection = jetparams.getParameter<string> ("jetCollection");
-	patJets jetsHandle; 
-	event.getByLabel(mainjetCollection,jetsHandle);
-	return jetsHandle;
-	
-	
-}
-patJets MultileptonAna::GetSubJets (const edm::Event& event)
-{
-	string subjetCollection = subjetparams.getParameter<string> ("fatjetCollection");
-	patJets subjetsHandle; 
-	event.getByLabel(subjetCollection,subjetsHandle);
-	return subjetsHandle;
-	
-}
-
-prunedGenParticles MultileptonAna::GetPrunedGenParticles (const edm::Event& event)
-{
-  string pruneCollection = prunedparams.getParameter<string> ("prunedCollection");
-  prunedGenParticles prunedHandle; 
-  event.getByLabel(pruneCollection,prunedHandle);
-  return prunedHandle;
-  
-}
-
-packedGenParticles MultileptonAna::GetPackedGenParticles (const edm::Event& event)
-{
-  string packedCollection = packedparams.getParameter<string> ("packedCollection");
-  packedGenParticles packedHandle; 
-  event.getByLabel(packedCollection,packedHandle);
-  return packedHandle;
-  
-}
-
-patPackedCands MultileptonAna::GetPackedPFCandidates (const edm::Event& event)
-{
-  patPackedCands packedHandle; 
-  event.getByLabel("packedPFCandidates",packedHandle);
-  return packedHandle;  
-}
-
-
-patMETs MultileptonAna::GetMet (const edm::Event& event)
-{
-	
-	string metCollection = metparams.getParameter<string> ("METCollection");
-	patMETs METsHandle; 
-	event.getByLabel(metCollection,METsHandle);
-	return METsHandle;
-	
-	
 }
 
 int MultileptonAna::GetVertices (const edm::Event& event)
@@ -234,45 +151,6 @@ int MultileptonAna::GetHiggsDaughterId(const std::vector<reco::GenParticle>& gen
     }
   return daughter_id;
 }
-
-vector<double> MultileptonAna::ReturnBTagDisc (vecPatJet theobjs)
-{
-	vector<double> thediscs;
-	
-	string thedisc = btagparams.getParameter<string> ("btagdisc");
-	
-	for (jetit iJet = theobjs.begin(); iJet != theobjs.end(); ++iJet)
-	{
-		double discOutput = iJet->bDiscriminator(thedisc);
-		thediscs.push_back(discOutput);
-                
-                // this just dumps all the available taggers.. should be commented out in normal operation!
-//                 std::vector<std::pair<std::string, float> > dislist = iJet->getPairDiscri();
-//                 for (auto pairit = dislist.begin(); pairit != dislist.end(); ++pairit)
-//                 {
-//                     cout << pairit->first << "  " << pairit->second << endl;
-//                 }
-	}
-	
-	return thediscs;
-	
-}
-
-vector<double> MultileptonAna::ReturnPUJetID (vecPatJet theobjs)
-{
-	vector<double> thePUIDs;
-	
-	for (jetit iJet = theobjs.begin(); iJet != theobjs.end(); ++iJet)
-	{
-		double output = iJet->userFloat("pileupJetId:fullDiscriminant");
-		thePUIDs.push_back(output);
-	}
-	
-	return thePUIDs;
-} 
-
-
-
 
 vector<ttH::Lepton> MultileptonAna::GetCollection (vector<ttH::Muon> muObjs, vector<ttH::Electron>eleObjs)
 {
@@ -491,113 +369,6 @@ vector<ttH::MET> MultileptonAna::GetCollection (patMETs theobjs)
   return theMETs;
 }
   
-
-
-vint MultileptonAna::Get_JetPartonFlavor(vecPatJet theobjs)
-{	
-	vint theflavors;
-	
-	int jetsize = theobjs.size();
-	
-	for (int i=0; i<jetsize; i++)
-	{
-		pat::Jet thejet = theobjs[i];
-		int theflavor = thejet.partonFlavour();
-		theflavors.push_back(theflavor);
-	}
-	
-	return theflavors;
-	
-}
-
-bool MultileptonAna::isGoodTau(const pat::Tau& iTau, const float iMinPt, const tauID::tauID iTauID){
-
-  CheckVertexSetUp();
- 
-  double minTauPt = iMinPt;
-  
-  //double tauMinPt
-  //double tauMaxAbsEta = 
-  
-  bool passesKinematics = false;
-  passesKinematics = (iTau.pt() >= 20) && (fabs(iTau.eta()) <= 2.1) && (iTau.pt() > minTauPt); //minTauPt vs. 20?
-  return passesKinematics;
-}
-
-bool MultileptonAna::isGoodJet(const pat::Jet& iJet, const float iMinPt, const float iMaxAbsEta, const jetID::jetID iJetID, const char iCSVworkingPoint){
-
-  CheckVertexSetUp();
-
-  
-//   neutralHadronEnergyFraction
-//   chargedEmEnergyFraction
-//   neutralEmEnergyFraction
-//   numberOfDaughters
-//   chargedHadronEnergyFraction
-//   chargedMultiplicity
-
-  // Transverse momentum requirement
-  if( iJet.pt() < iMinPt ) return false;
-
-  // Absolute eta requirement
-  if( fabs(iJet.eta()) > iMaxAbsEta ) return false;
-
-  bool loose = (
-
-		iJet.neutralHadronEnergyFraction() < 0.99 &&
-		iJet.chargedEmEnergyFraction() < 0.99 &&
-		iJet.neutralEmEnergyFraction() < 0.99 &&
-		iJet.numberOfDaughters() > 1
-
-		);
-
-  if( fabs(iJet.eta())<2.4 ){ // endcaps
-    loose = ( loose &&
-	      iJet.chargedHadronEnergyFraction() > 0.0 &&
-	      iJet.chargedMultiplicity() > 0
-	      );
-  }
-
-  bool passesPUJetID = true;
-  float puMvaId = iJet.userFloat("pileupJetId:fullDiscriminant");
-  // Jet ID
-  switch(iJetID){
-  case jetID::none:
-    break;
-  case jetID::jetPU:
-    if (fabs(iJet.eta()) > 0. && fabs(iJet.eta()) <2.5)
-      {
-        passesPUJetID = (puMvaId > -0.63);
-      }
-    else if (fabs(iJet.eta()) >= 2.5 && fabs(iJet.eta()) < 2.75)
-      {
-        passesPUJetID = (puMvaId > -0.60);
-      }
-    else if (fabs(iJet.eta()) >= 2.75 && fabs(iJet.eta()) < 3.0)
-      {
-	passesPUJetID = (puMvaId > -0.55);
-      }
-    else if (fabs(iJet.eta()) >= 3.0 && fabs(iJet.eta()) <= 5.2)
-      {
-        passesPUJetID = (puMvaId > -0.45);
-      }
-    //    return passesPUJetID;
-    break;
-  case jetID::jetMinimal:
-  case jetID::jetLooseAOD:
-  case jetID::jetLoose:
-  case jetID::jetTight:
-    if( !loose ) return false;
-    break;
-  default:
-    break;
-  }
-  
-  //  if( !PassesCSV(iJet, iCSVworkingPoint) ) return false;
-  //  return true;
-  
-  return (PassesCSV(iJet, iCSVworkingPoint) && passesPUJetID);
-}
 
 std::vector<pat::Muon>
 MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const float iMinPt, const muonID::muonID iMuonID){

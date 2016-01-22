@@ -42,47 +42,6 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 		)
 	),
 
-        ###### this no longer does anything!!!
-	## muon collection to use, and defining loose, tight muons:
-	muonsOld = cms.PSet( 
-		muonCollection = cms.string("slimmedMuons"),
-		maxTightMuonAbsEta = cms.double(2.1), 			# there is no cms.float!
-		maxLooseMuonAbsEta = cms.double(2.5),
-		looseRelativeIso = cms.double(0.200),
-  		tightRelativeIso = cms.double(0.120),
-  		tightTrackNormalizedChi2 = cms.double(10.),		
-  		tightTrackNumberOfValidMuonHits = cms.int32(0),		# greater than this
-  		tightTrackDxy = cms.double(0.2),
-  		tightTrackDz = cms.double(0.5),
-  		tightNumberOfValidPixelHits = cms.int32(0),		# greater than this
-  		tightTrackerLayersWithMeasurement = cms.int32(5)	# greater than this
-		
-	),
-
-        ###### this no longer does anything!!!
-	## Electron collection to use, and defining loose, tight electrons:
-	electronsOld = cms.PSet( 
-		electronCollection = cms.string("slimmedElectrons"),
-		maxLooseElectronAbsEta = cms.double(2.5),
-		maxTightElectronAbsEta = cms.double(2.5),
-		theElectronMVA = cms.string("eidTight"),	# which MVA to use
-		passMVAcut = cms.double(0.5),			# cut on the above MVA
-		tightElectronIso = cms.double(0.100),
-		looseElectronIso = cms.double(0.200),
-		tightDxy = cms.double(0.02),
-		looseDxy = cms.double(0.04),
-		dZ = cms.double(1.0),	 
-		
-	),
-                
-
-	## what goes into lepton collection:
-	leptons = cms.PSet(
-		useElectrons = cms.bool(True),
-		useMuons = cms.bool(True),
-	),
-
-                             
 	## met collection
 	met = cms.PSet(
 		METCollection = cms.string("slimmedMETs")

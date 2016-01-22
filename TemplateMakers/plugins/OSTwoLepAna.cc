@@ -3,26 +3,26 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/OSTwoLepAna.h"
 
 OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything that needs to be done at creation time
-	debug = constructparams.getParameter<bool> ("debug");
-	entire_pset = constructparams;
-	parse_params();
+  debug = constructparams.getParameter<bool> ("debug");
+  entire_pset = constructparams;
+  parse_params();
+  
+  alltriggerstostudy = HLTInfo();
 	
-	alltriggerstostudy = HLTInfo();
-	
-	muons_token_ = consumes<pat::MuonCollection>(constructparams.getParameter<edm::InputTag>("muons"));
-	electrons_token_ = consumes<pat::ElectronCollection>(constructparams.getParameter<edm::InputTag>("electrons"));
-    taus_token_ = consumes<pat::TauCollection>(constructparams.getParameter<edm::InputTag>("taus"));
-    triggerResults_token_ = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","", hltTag));  
-    jets_token_ = consumes<pat::JetCollection>(jetparams.getParameter<string>("jetCollection"));
-    mets_token_ = consumes<pat::METCollection>(metparams.getParameter<string>("METCollection"));
-    genParticles_token_ = consumes<reco::GenParticleCollection>(prunedparams.getParameter<string>("prunedCollection"));
-    rho_token_ = consumes<double>(setupoptionsparams.getParameter<string>("rhoHandle"));
-    vertex_token_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices")); // ,"","RECO"));
-    genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
-    
+  muons_token_ = consumes<pat::MuonCollection>(constructparams.getParameter<edm::InputTag>("muons"));
+  electrons_token_ = consumes<pat::ElectronCollection>(constructparams.getParameter<edm::InputTag>("electrons"));
+  taus_token_ = consumes<pat::TauCollection>(constructparams.getParameter<edm::InputTag>("taus"));
+  triggerResults_token_ = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","", hltTag));  
+  jets_token_ = consumes<pat::JetCollection>(jetparams.getParameter<string>("jetCollection"));
+  mets_token_ = consumes<pat::METCollection>(metparams.getParameter<string>("METCollection"));
+  genParticles_token_ = consumes<reco::GenParticleCollection>(prunedparams.getParameter<string>("prunedCollection"));
+  rho_token_ = consumes<double>(setupoptionsparams.getParameter<string>("rhoHandle"));
+  vertex_token_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices")); // ,"","RECO"));
+  genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+  
 }
-OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
 
+OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
 
 void OSTwoLepAna::beginJob()
 {
@@ -102,23 +102,21 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   //     return;
   //   }
   
-	// analysis goes here
+  // analysis goes here
   //  if (debug) cout << "eventB: " << event.id().event() << endl;
 	clock_t startTime = clock();
 	eventcount++;
 	SetupOptions(event); // chgd
     
-    //cout << "hey2" << endl;
     
         // tree vars to default values:
         initialize_variables();
   
 	trigRes triggerResults = 		GetTriggers(event);
-	//trigRes triggerResults = 		GetTriggers(event, );
 	auto muons =                    get_collection(event, muons_token_);
 	auto electrons =                get_collection(event, electrons_token_);
-    auto taus =                     get_collection(event, taus_token_);
-	patJets pfjets = 			    get_collection(event, jets_token_);
+	auto taus =                     get_collection(event, taus_token_);
+	edm::Handle<pat::JetCollection> pfjets = 			    get_collection(event, jets_token_);
 	patMETs mets = 				    get_collection(event, mets_token_);
 	prunedGenParticles prunedParticles;
 	if (!isData) prunedParticles =  get_collection(event, genParticles_token_);
@@ -164,7 +162,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
 	vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, 7., electronID::electronRaw );	//miniAODhelper.
 
-    //cout << "hey3.1" << endl;
 
 	/////////
 	///
@@ -187,7 +184,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//	vecPatMuon selectedMuons_loose_notight = RemoveOverlaps(selectedMuons_tight,selectedMuons_loose);
         
         
-    //cout << "hey3.2" << endl;
         
 	/////////
 	///
@@ -235,7 +231,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
         {
             
-        eventnum_intree = event.id().event();
+	  eventnum_intree = event.id().event();
 	    lumiBlock_intree = event.id().luminosityBlock();
 	    runNumber_intree = event.id().run();
             
