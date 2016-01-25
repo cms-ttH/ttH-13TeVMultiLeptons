@@ -18,17 +18,21 @@ else:
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(10000) # number of events
+    	input = cms.untracked.int32(-1) # number of events
 )
 
+## set up to take input file as command line argument.
+## convenient for interactive jobs; should be trasparent for crab (I think)
+infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
 
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
         
+        infile),
         
         # data test
         #763
-        '/store/data/Run2015D/MET/MINIAOD/16Dec2015-v1/50000/16111E08-B2AA-E511-AAC4-C4346BC80410.root'),
+        #'/store/data/Run2015D/MET/MINIAOD/16Dec2015-v1/50000/16111E08-B2AA-E511-AAC4-C4346BC80410.root'),
         #'/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/159/00000/1E5A2F7F-D16B-E511-9AC0-02163E0135AC.root'),
         #'/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/175/00000/4A8229C0-276D-E511-931E-02163E013870.root'),
         #'/store/data/Run2015D/SingleElectron/MINIAOD/04Dec2015-v2/10000/00F2E38F-E69E-E511-AC8D-0025905822B6.root'),
@@ -44,7 +48,7 @@ process.source = cms.Source("PoolSource",
         #'/store/mc/RunIISpring15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/02FE2DB6-D06D-E511-8BC7-0025905C431C.root'),
         #'file:/afs/cern.ch/user/m/muell149/work/tthSync/test/CMSSW_7_4_12_patch4/src/ttH-13TeVMultiLeptons/TemplateMakers/test/sync_file.root'),
         #skipEvents = cms.untracked.uint32(1)
-                            )
+)
 
 ### specifying run / lumi range:
 #process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(
@@ -141,11 +145,17 @@ process.OSTwoLepAna.triggers.hltlabel = "HLT" #"HLT" #"reHLT" #"HLT" # HLT = cen
 process.OSTwoLepAna.debug = False
 
 ######################################
-	
-## uncomment this for use with crab script ###
-process.TFileService = cms.Service("TFileService",
-				   fileName = cms.string("multilep_tree_test_.root")
-                                   )
+
+if len(sys.argv)>3:
+    outfile = sys.argv[3]
+    process.TFileService = cms.Service("TFileService",
+        fileName = cms.string(outfile)
+    )
+    	
+else:
+    process.TFileService = cms.Service("TFileService",
+        fileName = cms.string("multilep_tree_test.root")
+    )
 
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
@@ -164,6 +174,6 @@ process.options = cms.untracked.PSet(
 
 
 ## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
-outfile = open('dumped_config.py','w')
-print >> outfile,process.dumpPython()
-outfile.close()
+#outfile = open('dumped_config.py','w')
+#print >> outfile,process.dumpPython()
+#outfile.close()

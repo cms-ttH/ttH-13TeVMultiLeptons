@@ -7,16 +7,15 @@ if __name__ == '__main__':
     # We want to put all the CRAB project directories from the tasks we submit here into one common directory.
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
 
-    config.General.workArea = 'triggerSF'
+    config.General.workArea = 'triggerSF2'
     config.General.transferLogs=True
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = 'osTwoLep_cfg.py'
     config.Data.splitting = 'EventAwareLumiBased' #LumiBased
-    config.Data.outLFNDirBase = '/store/user/gesmith/crab3dir/triggerSF'
+    config.Data.outLFNDirBase = '/store/user/gesmith/crab3dir/triggerSF2'
     config.Data.publication = False
     config.Site.storageSite = 'T3_US_NotreDame'
-    #config.Site.storageSite = 'T2_CH_CERN'
-    #config.Site.whitelist = ['T1_DE_KIT', 'T2_FR_CCIN2P3']
+    config.Site.whitelist = ['T2_CH_CERN'] # ['T1_DE_KIT', 'T2_FR_CCIN2P3']
     
     print "hey1"
     
@@ -34,21 +33,38 @@ if __name__ == '__main__':
 
     # Data
     ### CMSSW_7_6_0 !
-    config.General.requestName = 'MET2015C'
-    config.Data.inputDataset = '/MET/Run2015C_25ns-16Dec2015-v1/MINIAOD'
-    config.Data.unitsPerJob = 50000
-    submit(config)
     
-    config.General.requestName = 'MET2015Da'
-    config.Data.inputDataset = '/MET/Run2015D-05Oct2015-v1/MINIAOD'
-    config.Data.unitsPerJob = 50000
-    submit(config)
+#    config.General.requestName = 'MET2015Dec'
+#    config.Data.inputDataset = '/MET/Run2015D-16Dec2015-v1/MINIAOD'
+#    config.Data.unitsPerJob = 50000
+#    submit(config)
     
-    config.General.requestName = 'MET2015Db'
-    config.Data.inputDataset = '/MET/Run2015D-PromptReco-v4/MINIAOD'
+#     config.General.requestName = 'MET2015C'
+#     config.Data.inputDataset = '/MET/Run2015C_25ns-16Dec2015-v1/MINIAOD'
+#     config.Data.unitsPerJob = 50000
+#     submit(config)
+#     
+#     config.General.requestName = 'MET2015Da'
+#     config.Data.inputDataset = '/MET/Run2015D-05Oct2015-v1/MINIAOD'
+#     config.Data.unitsPerJob = 50000
+#     submit(config)
+#     
+#     config.General.requestName = 'MET2015Db'
+#     config.Data.inputDataset = '/MET/Run2015D-PromptReco-v4/MINIAOD'
+#     config.Data.unitsPerJob = 50000
+#     submit(config)
+
+    
+    
+    config.General.requestName = 'ttH125'
+    config.Data.inputDataset = '/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM'
     config.Data.unitsPerJob = 50000
     submit(config)
 
+
+
+
+## old
 
      #Spring15 MC
 #     config.General.requestName = 'ttH125'
