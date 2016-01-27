@@ -1,11 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 import sys
+import os
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
 process = cms.Process("Demo")
 
 ####### IS THIS DATA YES OR NO ######
-isData = True
+isData = False
 #####################################
 
 
@@ -18,7 +19,7 @@ else:
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
-    	input = cms.untracked.int32(-1) # number of events
+    input = cms.untracked.int32(-1) # number of events
 )
 
 ## set up to take input file as command line argument.
@@ -55,8 +56,10 @@ process.source = cms.Source("PoolSource",
 #    '199812:70-199812:80'
 #)
 ### or, using json file:
-#import FWCore.PythonUtilities.LumiList as LumiList
-#process.source.lumisToProcess = LumiList.LumiList(filename = 'goodList.json').getVLuminosityBlockRange()
+if isData:
+    cmsswbase = os.environ['CMSSW_BASE']
+    import FWCore.PythonUtilities.LumiList as LumiList
+    process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/2015json/goldjsn.txt').getVLuminosityBlockRange()
 
 ######################################
 #JEC
@@ -170,7 +173,7 @@ process.p = cms.Path(process.electronMVAValueMapProducer * process.ttHLeptons * 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(False),
     SkipEvent = cms.untracked.vstring('ProductNotFound')
-    )
+)
 
 
 ## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):

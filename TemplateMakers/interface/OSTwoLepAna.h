@@ -6,6 +6,8 @@
 class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 {
 	private:
+	
+		HLTPrescaleProvider hltPrescaleProvider_;
 		
 		// EDAnalyzer-specific:
 		virtual void beginJob() ;

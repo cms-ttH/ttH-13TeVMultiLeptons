@@ -20,15 +20,15 @@
 
 # ****** user params ************
 myusername='gesmith'
-joblabel='test1'									# label for these batch jobs	
+joblabel='moreTrigs'									# label for these batch jobs	
 ndpc="ndpc5"                                                                            # ndpc to push output to
 ndpcDisk="/mnt/ndpc5disk1"		                                                # ndpc disk to push output to
 interjobspacing=5 									# seconds to wait before submitting next job
 intersamplespacing=120 									# seconds to wait before submitting jobs for next sample
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets') 	# samples to run over (has to match array names in sampleLists.sh)
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'ZJets' 'WJets' 'WZJets')
-#declare -a samples=('ttH125powheg')
-declare -a samples=('data2015DMET')
+declare -a samples=('ttH125powheg')
+#declare -a samples=('data2015DMET')
 # *******************************
 
 

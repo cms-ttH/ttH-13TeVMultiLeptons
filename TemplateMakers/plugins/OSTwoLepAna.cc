@@ -2,7 +2,9 @@
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/OSTwoLepAna.h"
 
-OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams){ //Anything that needs to be done at creation time
+OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
+  hltPrescaleProvider_(constructparams, consumesCollector(), *this){ //Anything that needs to be done at creation time
+  
   debug = constructparams.getParameter<bool> ("debug");
   entire_pset = constructparams;
   parse_params();
@@ -320,12 +322,29 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 			{
 				if (triggerResults->accept(hltConfig_.triggerIndex(hlt_alltrigs[trigit])))
 				{
-					passTrigger_intree.push_back(hlt_alltrigs[trigit]);
+					// pair: <L1 prescale, HLT prescale>
+					//std::pair<int,int> prescaleVals= hltPrescaleProvider_.prescaleValues(event, evsetup, hlt_alltrigs[trigit]);
+					
+					// pair: < vector of pairs of (L1 seed, L1 prescale), HLT prescale >
+					std::pair<std::vector<std::pair<std::string,int> >,int> prescaleVals = hltPrescaleProvider_.prescaleValuesInDetail(event, evsetup, hlt_alltrigs[trigit]);					
+					std::vector<std::pair<std::string,int> > prescaleValsL1 = prescaleVals.first;
+					
+					if (prescaleVals.second==1) // check if HLT prescale=1
+					{					
+    					for (unsigned int trigit2=0; trigit2<prescaleValsL1.size(); trigit2++)
+    					{    					        					        					
+    					    if (prescaleValsL1[trigit2].second==1) // check for at least 1 L1 seed that had prescale=1 (in the case of multiple seeds, we are assuming they are in OR!)
+    					    {
+					            passTrigger_intree.push_back(hlt_alltrigs[trigit]);
+					            break;
+					        }
+					    }
+				    }
 				}
 			}
 			catch(...)
 			{
-				cout << "we are here" << endl;
+				cout << "problem with trigger loop..." << endl;
 				continue;
 			}
 			
@@ -503,7 +522,9 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
 	else std::cout << "Warning, didn't find process " << hltTag << std::endl;
 	
 	std::cout << " HLTConfig processName " << hltConfig_.processName() << " tableName " << hltConfig_.tableName() << " size " << hltConfig_.size() << std::endl; // " globalTag: " << hltConfig_.globalTag() << std::endl;
-		 
+    
+    // also get the L1 + HLT prescales:    
+    if (hltPrescaleProvider_.init(run,evsetup,hltTag,changed)) std::cout << "Got L1 + HLT prescales .." << std::endl;
 	
 	std::vector<std::string> myTriggernames = hltConfig_.triggerNames();
 	int triggersize = myTriggernames.size();
@@ -589,6 +610,35 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     hlt_trigstofind.push_back("HLT_TripleMu_12_10_5_v");
     hlt_trigstofind.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");
     
+    // for the met dataset:
+    hlt_trigstofind.push_back("HLT_CaloMHTNoPU90_PFMET90_PFMHT90_IDTight_BTagCSV0p72_v");
+    hlt_trigstofind.push_back("HLT_CaloMHTNoPU90_PFMET90_PFMHT90_IDTight_v");
+    hlt_trigstofind.push_back("HLT_MET200_JetIdCleaned_v");
+    hlt_trigstofind.push_back("HLT_MET250_v");
+    hlt_trigstofind.push_back("HLT_MET300_v");
+    hlt_trigstofind.push_back("HLT_MET60_IsoTrk35_Loose_v");
+    hlt_trigstofind.push_back("HLT_MET75_IsoTrk50_v");
+    hlt_trigstofind.push_back("HLT_MET90_IsoTrk50_v");
+    hlt_trigstofind.push_back("HLT_MonoCentralPFJet80_PFMETNoMu120_JetIdCleaned_PFMHTNoMu120_IDTight_v");
+    hlt_trigstofind.push_back("HLT_MonoCentralPFJet80_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v");
+    hlt_trigstofind.push_back("HLT_Mu14er_PFMET100_JetIdCleaned_v");
+    hlt_trigstofind.push_back("HLT_Mu3er_PFHT140_PFMET125_JetIdCleaned_v");
+    hlt_trigstofind.push_back("HLT_Mu6_PFHT200_PFMET100_JetIdCleaned_v");
+    hlt_trigstofind.push_back("HLT_Mu6_PFHT200_PFMET80_JetIdCleaned_BTagCSV0p72_v");
+    hlt_trigstofind.push_back("HLT_PFMET100_PFMHT100_IDTight_v");
+    hlt_trigstofind.push_back("HLT_PFMET110_PFMHT110_IDTight_v");
+    hlt_trigstofind.push_back("HLT_PFMET120_JetIdCleaned_BTagCSV0p72_v");
+    hlt_trigstofind.push_back("HLT_PFMET120_JetIdCleaned_Mu5_v");
+    hlt_trigstofind.push_back("HLT_PFMET120_PFMHT120_IDTight_v");
+    hlt_trigstofind.push_back("HLT_PFMET170_HBHECleaned_v");
+    hlt_trigstofind.push_back("HLT_PFMET170_JetIdCleaned_v");
+    hlt_trigstofind.push_back("HLT_PFMET170_NoiseCleaned_v");
+    hlt_trigstofind.push_back("HLT_PFMET170_v");
+    hlt_trigstofind.push_back("HLT_PFMET300_JetIdCleaned_v");
+    hlt_trigstofind.push_back("HLT_PFMET400_JetIdCleaned_v");
+    hlt_trigstofind.push_back("HLT_PFMET90_PFMHT90_IDTight_v");
+    hlt_trigstofind.push_back("HLT_PFMETNoMu120_JetIdCleaned_PFMHTNoMu120_IDTight_v");
+    hlt_trigstofind.push_back("HLT_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v");
     
     
     
