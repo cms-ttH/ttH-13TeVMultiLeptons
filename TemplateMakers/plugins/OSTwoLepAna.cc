@@ -97,7 +97,6 @@ void OSTwoLepAna::endJob() {
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
-  //cout << "hey1" << endl;
   
   // if ( event.id().event() != 1692766 ) 
   //   {
@@ -146,7 +145,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     // count number of weighted mc events we started with:
     numInitialWeightedMCevents->Fill(1,mcwgt_intree);
 	
-	//cout << "hey3" << endl;
 					
 	/////////
 	///
@@ -222,8 +220,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         // doing the same for taus for consitancy (should check why we're doing it this way...)
         vecPatTau selectedTaus_forcleaning = GetSelectedTaus(selectedTaus_preselected, 20., tauID::tauLoose );
     
-    //cout << "hey3.3" << endl;
-    
 	/////////
 	///
 	/// Leptons
@@ -242,8 +238,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 	
 	    vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
-	
-	    //cout << "hey3.4" << endl;
 	
 	    /////////
 	    ///
@@ -273,7 +267,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
               {
 		edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection> (pfjets, jet - pfjets->begin()));
                 float qgLikelihood = (*qgHandle)[jetRef];
-		std::cout << "qg: " << qgLikelihood << std::endl;
 		correctedRawJets[jet_counter].addUserFloat("qgid",qgLikelihood);
                 jet_counter +=1;
               }
@@ -294,8 +287,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatJet selectedJets_bJetsLoose          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'L' );
 	    vecPatJet selectedJets_bJetsTight          	= GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, 'M' );
 	
-	    //cout << "hey3.5" << endl;
-
 	    /////////
 	    ///
 	    /// Filling final selection PAT collections
@@ -325,7 +316,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    ///
 	    ////////
 
-        //cout << "hey3.6" << endl;
 		//cout << hlt_alltrigs.size() << endl;
 		
 		// if event passes an HLT path add it to the tree:
@@ -363,8 +353,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 			
 		}
         
-        //cout << "hey4" << endl;
-
 	    /////////////////////////
 	    //////
 	    ////// fill the ttH namespace collections
