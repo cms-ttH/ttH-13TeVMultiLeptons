@@ -133,6 +133,7 @@ namespace ttH
     int genMotherPdgID;
     int genGrandMotherPdgID;
     double csv;
+    double qgid;
 
     virtual ~Jet(){};
     ClassDef(Jet, 1); 

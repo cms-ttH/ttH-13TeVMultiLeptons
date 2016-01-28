@@ -81,9 +81,9 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::GenParticle> pruned_genParticles_intree;
 		vector<ttH::GenParticle> packed_genParticles_intree;
 		
-	    edm::EDGetTokenT<pat::MuonCollection> muons_token_;
-	    edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
-        edm::EDGetTokenT<pat::TauCollection> taus_token_;
+		edm::EDGetTokenT<pat::MuonCollection> muons_token_;
+		edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
+		edm::EDGetTokenT<pat::TauCollection> taus_token_;
                 
 
 

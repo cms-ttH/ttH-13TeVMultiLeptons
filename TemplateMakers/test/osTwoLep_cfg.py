@@ -24,12 +24,12 @@ process.maxEvents = cms.untracked.PSet(
 
 ## set up to take input file as command line argument.
 ## convenient for interactive jobs; should be trasparent for crab (I think)
-infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
+#infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
 
 process.source = cms.Source("PoolSource",
     	fileNames = cms.untracked.vstring(
         
-        infile),
+#        infile),
         
         # data test
         #763
@@ -38,7 +38,7 @@ process.source = cms.Source("PoolSource",
         #'/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/175/00000/4A8229C0-276D-E511-931E-02163E013870.root'),
         #'/store/data/Run2015D/SingleElectron/MINIAOD/04Dec2015-v2/10000/00F2E38F-E69E-E511-AC8D-0025905822B6.root'),
         #763 MC
-        #'/store/mc/RunIIFall15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/14352F79-4DBB-E511-8A90-00259055CA34.root'),
+        '/store/mc/RunIIFall15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/14352F79-4DBB-E511-8A90-00259055CA34.root'),
         
         #74X
         #'/store/mc/RunIISpring15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/3801CAC7-D06D-E511-B32C-0025905C4262.root'),        
@@ -165,8 +165,13 @@ switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
 my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']
 for idmod in my_id_modules: setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
+
+process.load('RecoJets.JetProducers.QGTagger_cfi')
+process.QGTagger.srcJets          = cms.InputTag('slimmedJets')
+process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
+
 #process.p = cms.Path(process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
-process.p = cms.Path(process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
+process.p = cms.Path(process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna)
 
 
 # summary

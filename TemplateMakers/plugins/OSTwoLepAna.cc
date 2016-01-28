@@ -16,6 +16,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   taus_token_ = consumes<pat::TauCollection>(constructparams.getParameter<edm::InputTag>("taus"));
   triggerResults_token_ = consumes<edm::TriggerResults>(edm::InputTag("TriggerResults","", hltTag));  
   jets_token_ = consumes<pat::JetCollection>(jetparams.getParameter<string>("jetCollection"));
+  qg_token_ = consumes<edm::ValueMap<float>>(edm::InputTag("QGTagger", "qgLikelihood"));
   mets_token_ = consumes<pat::METCollection>(metparams.getParameter<string>("METCollection"));
   genParticles_token_ = consumes<reco::GenParticleCollection>(prunedparams.getParameter<string>("prunedCollection"));
   rho_token_ = consumes<double>(setupoptionsparams.getParameter<string>("rhoHandle"));
@@ -265,6 +266,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             //no jec
 	    vecPatJet correctedRawJets = (*pfjets);
             
+	    edm::Handle<edm::ValueMap<float>> qgHandle;
+	    event.getByToken(qg_token_, qgHandle);
+            int jet_counter = 0;
+            for(auto jet = pfjets->begin();  jet != pfjets->end(); ++jet)
+              {
+		edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection> (pfjets, jet - pfjets->begin()));
+                float qgLikelihood = (*qgHandle)[jetRef];
+		std::cout << "qg: " << qgLikelihood << std::endl;
+		correctedRawJets[jet_counter].addUserFloat("qgid",qgLikelihood);
+                jet_counter +=1;
+              }
+
             vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
             cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(cleaned_rawJets,selectedTaus_forcleaning,0.4);                // <------
             //vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
