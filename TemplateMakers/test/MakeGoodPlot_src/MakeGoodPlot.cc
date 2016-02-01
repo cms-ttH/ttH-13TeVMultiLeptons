@@ -42,6 +42,10 @@
 //
 //#include "justtthhnonbb_without_miniso.h"
 //#include "justtthhnonbb_charlie_acceptance.h"
+//#include "temp_from_test_dir_just_tthnonbb.h"
+//#include "temp_justtthnonbb_morestats.h"
+//#include "filelistsatNDnew.h"
+//#include "stupid_thing_for_trig_studies.h"
 
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
@@ -331,17 +335,22 @@ class MakeGoodPlot
 		std::string TString2string(TString the_abomination);
                 
                 bool passes_common(int sample_number);
+                bool passes_2lss(int sample_number);
                 bool passes_SSee(int sample_number);
                 bool passes_SSemu(int sample_number);
                 bool passes_SSmumu(int sample_number);
                 bool passes_3l(int sample_number);
                 bool passes_4l(int sample_number);
+                
+                template <typename almostTLVtype> TLorentzVector makeTLV( almostTLVtype thing );
 
 	public:	
+                void MatchTester_ttW_SS(std::vector<int> samps);
                 void fourlstudies(std::vector<int> samps);
                 void threelstudies(std::vector<int> samps);
                 void lepstudies(std::vector<int> samps);
-	        void trigger_studies(std::vector<int> samps);
+	        void lepptstudies(std::vector<int> samps);	        
+                void trigger_studies(std::vector<int> samps);
                 void compareplots(std::vector<int> samps, std::vector<TString> tempfiles);
 		void draw_simple_curves_normalized(std::vector<int> samps);
 		void make_simple_plot_mytrees(TString theshift="",int drawaxes=0);
@@ -391,16 +400,17 @@ MakeGoodPlot::~MakeGoodPlot() {}
 
 
 #include "initialize.h"  // <- required
-#include "loadsamples2.h"  // <- required
+#include "loadsamples3.h"  // <- required
 //#include "drawROCiso.h"
-#include "printcutflow.h"
+//#include "printcutflow.h"
 #include "someutils.h"
 #include "categories.h"
 //#include "trigger_studies.h"
 //#include "lepstudies.h"
 //#include "4lstudies.h"
-#include "3lstudies.h"
-
+//#include "3lstudies.h"
+//#include "lepptstudies.h"
+#include "matchtest.h"
 //_______________________________________________________________
 
 // what is left (mainly drawing-specific functions):
@@ -562,12 +572,12 @@ void MakeGoodPlot::draw_several_comparisons(std::vector<int> samps)
                 
                 if (debug) cout << "hey3" << endl;
                 
-                for (int j=0;j<theentries;j++)
+                for (int j=0;j<100000;j++)
 	        {
 		
                     ch[samp_int]->GetEntry(j);
 								
-		    weight = wgt_intree;
+		            weight = wgt_intree;
                     
                     bool keepthisevent = true;
                     countbefore++;
@@ -616,6 +626,9 @@ void MakeGoodPlot::draw_several_comparisons(std::vector<int> samps)
                     if (debug) cout << "hey5" << endl;
                     if (debug) cout << "hey41111111" << endl;
                     
+                    //furthermore, make a basic 2lss req:
+                    if ( (*preselected_leptons_intree).size()!=2 ) continue;
+                    if ( (*preselected_leptons_intree)[0].charge != (*preselected_leptons_intree)[1].charge ) continue;
                     
                     for (unsigned int k=0;k<(*preselected_leptons_intree).size();k++)
                     {
@@ -717,7 +730,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";best #DeltaR(b,b)",10,0,5);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";sum p_{T}(lepton,jets,MET)",25,0,1500);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";second highest CSV output (b-tags)",10,0.6,1);
-		sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";awert",150,-50,100);
+		sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";awert",1000,10000,10000);
 		
 		//get_hist_of_tiered_MVA_response_for_one_sample_5j4t(sample_hist[i],samp_int);
 		//get_hist_MVA_response_for_one_sample_643203(sample_hist[i],samp_int);
@@ -758,7 +771,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
                 
                 
 				
-		sample_hist[i]->GetXaxis()->SetTitle("3rd-highest lep MVA output");		
+		sample_hist[i]->GetXaxis()->SetTitle("pdgID");		
 		sample_hist[i]->SetLineWidth(2);
 		leg->AddEntry(sample_hist[i],sample_names[samp_int] + " (" + sample_evts_string + ")","l");  /// have ability to add # of evts per sample to legend... 
 		//leg->AddEntry(sample_hist[i],sample_names[samp_int],"l");
@@ -798,7 +811,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 	SELECTIONInfoLatex->SetNDC();
 	SELECTIONInfoLatex->SetTextFont(42);
 	SELECTIONInfoLatex->SetTextSize(0.05);
-	SELECTIONInfoLatex->Draw("same");
+	//SELECTIONInfoLatex->Draw("same");
 	
 	flavorhist[0]->SetLineWidth(2);
 	flavorhist[0]->SetLineColor(kRed);
@@ -931,7 +944,8 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
 void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1 *plot2, TH1 *plot3)
 {
 	
-	//ch[sample_number]->SetBranchAddress( "preselected_leptons", &preselected_leptons_intree );
+	ch[sample_number]->SetBranchAddress( "preselected_leptons", &preselected_leptons_intree );
+        ch[sample_number]->SetBranchAddress( "preselected_jets", &preselected_jets_intree );
 	ch[sample_number]->SetBranchAddress( "pruned_genParticles", &pruned_genParticles_intree );
         ch[sample_number]->SetBranchAddress( "wgt", &wgt_intree );
         
@@ -941,20 +955,28 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
 	for (Int_t i=0;i<ch[sample_number]->GetEntries();i++)
 	{
 		ch[sample_number]->GetEntry(i);
+                
+                if (i>10000) break;
 					
 		weight = wgt_intree;
 		
                 int gpsize = (*pruned_genParticles_intree).size();
                 
-                for (int j=0; j<gpsize; j++)
-                {
-                    int chil0 = (int)(*pruned_genParticles_intree)[j].child0;
-                    //if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize)) plot->Fill( (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0].pdgID, weight);
-                    if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize)) plot->Fill( (*pruned_genParticles_intree)[j].status, weight);
+                //for (int j=0; j<gpsize; j++)
+                //{
+                    //int chil0 = (int)(*pruned_genParticles_intree)[j].child0;
+                    ////if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize)) plot->Fill( (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0].pdgID, weight);
+                    //if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize)) plot->Fill( (*pruned_genParticles_intree)[j].status, weight);
                                         
                     //chil0 = gpsize - chil0;
                     //if ((*pruned_genParticles_intree)[j].pdgID==25) plot->Fill( chil0, weight );
-                }                
+                                        
+                //}
+        
+                for (int j=0; j<(*preselected_leptons_intree).size(); j++)
+                {
+                    plot->Fill((*preselected_leptons_intree)[j].genMotherPdgID);
+                }               
 
 	}
 

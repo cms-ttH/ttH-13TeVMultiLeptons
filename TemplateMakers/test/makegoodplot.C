@@ -5,19 +5,19 @@
 //
 
 #include "MakeGoodPlot_src/MakeGoodPlot.cc"
-#include "/afs/cern.ch/user/g/gesmith/nicepalette.h"
+#include "MakeGoodPlot_src/nicepalette.h"
 
 void makegoodplot()
 {
-	// declare new instance:
-	MakeGoodPlot *newplot = new MakeGoodPlot();
-	set_plot_style();
-        
+        // declare new instance:
+        MakeGoodPlot *newplot = new MakeGoodPlot();
+        set_plot_style();
+  
         // vector of samples to include in the plot:
 	std::vector<int> samples;
 	std::vector<int> signal;
 	
-        signal.push_back(1); // ttH (125)
+	//	signal.push_back(1); // ttH (125)
         
         // uncomment these to add sample to plot:
 //	samples.push_back(0); // mu data
@@ -28,11 +28,11 @@ void makegoodplot()
 //	samples.push_back(3); // ttbar_b
 //	samples.push_back(4); // ttbar_ccbar
 
-	samples.push_back(5); // TTJets
+//	samples.push_back(5); // TTJets
 //	samples.push_back(6); // ZJets
 //	samples.push_back(7); // WJets
-	samples.push_back(8); // TTWJets
-	samples.push_back(9); // TTZJets
+//	samples.push_back(8); // TTWJets
+//	samples.push_back(9); // TTZJets
 //	samples.push_back(10); // diboson (WZ)
 //        samples.push_back(11); // diboson (ZZ)
         
@@ -85,36 +85,10 @@ void makegoodplot()
         
         //newplot->lepstudies(samples);
         //newplot->fourlstudies(samples);
-        newplot->threelstudies(samples);
-
+	//        newplot->threelstudies(samples);
+	newplot->MatchTester_ttW_SS(samples);
 
 //--------------------------------------------------------------------------
-
-
-//// leftover from 8 TeV (maybe not useful?)
-
-	// don't use:
-//	newplot->visualize_yggdrasil(1); 			// <- only one sample can be drawn here.
-
-/*	
-	TH1F *htemp1 = (TH1F*) gPad->GetPrimitive("asdf_0pt5shift");
-	TH1F *htemp2 = (TH1F*) gPad->GetPrimitive("asdf_1pt0shift");
-	TH1F *htemp3 = (TH1F*) gPad->GetPrimitive("asdf_2pt0shift");
-		
-	TLegend* leg = new TLegend(0.55,0.7,0.9,0.9);
-	
-	leg->SetFillColor(kWhite);
-	leg->SetShadowColor(kWhite);
-	leg->SetTextFont(42);
-	leg->SetTextSize(0.035);
-		
-	leg->AddEntry(htemp1,"0pt5shift","l");
-	leg->AddEntry(htemp2,"1pt0shift","l");
-	leg->AddEntry(htemp3,"2pt0shift","l");
-	
-	leg->Draw();
-*/	
-
 
 
 }

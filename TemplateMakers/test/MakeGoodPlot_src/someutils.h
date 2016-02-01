@@ -40,8 +40,9 @@ void MakeGoodPlot::get_roc_curve(TH1F *sig, TH1F *bkgd, int roc_curve_index) //i
 		//if(prtLvl >= 2) printf(" Bin %i Int %f \n",i,intval);
 		intHist1->SetBinContent(i,intval);	    
 		InvIntHist1->SetBinContent(i,1.-intval);
-		//	  	effS[i] = 1.0 - intval;
-	  	effS[i] = intval;
+		effS[i] = 1.0 - intval;
+		std::cout << "sig interval: " << effS[i] << std::endl;
+	  	//effS[i] = intval;
 	  	npts++;
 	}
 
@@ -60,10 +61,10 @@ void MakeGoodPlot::get_roc_curve(TH1F *sig, TH1F *bkgd, int roc_curve_index) //i
 		//if(prtLvl >= 2) printf(" Bin %i Int %f \n",j,intval);
 		intHist2->SetBinContent(j,intval);
 		InvIntHist2->SetBinContent(j,1.-intval);	
-		//		bckR[j] = intval;    
-		bckR[j] = 1.0 - intval;    
+		bckR[j] = intval;    
+		std::cout << "bckg interval: " << intval << std::endl;
+		//bckR[j] = 1.0 - intval;    
 	}
-	
 	
 	roc_curve[roc_curve_index] = new TGraph(npts,effS,bckR);  	// <-- usual plot
 	//	roc_curve[roc_curve_index] = new TGraph(npts,bckR,effS);  	// <-- for use with "->Eval(..." at a given background rejection
@@ -75,7 +76,7 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
 {
   
   // compares multiple hists that should already be saved to some temp files //
-  
+  gROOT->SetBatch(kTRUE); // suppress display of the canvas
   vector<TFile*> files;
   
   for (int itempfile=0; itempfile<tempfiles.size(); itempfile++)
@@ -95,7 +96,7 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
   TFile *vergleich = new TFile("comparison_output.root","RECREATE");
 
 
-  // Show no statistics box
+  // no statistics box
   gStyle->SetOptStat(0);
 
   //TH1::SetDefaultSumw2();
@@ -154,20 +155,24 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
     for(size_t i=0;i<histos.size();i++)
     {
       //histos.at(i)->Sumw2();
-      histos.at(i)->Scale(1./histos.at(i)->Integral(),"width");
+      if ( strncmp (histos.at(i)->GetName(), "Match_ttH_SS_Bqq_eff",23) !=0)
+	{
+	  histos.at(i)->Scale(1./histos.at(i)->Integral(),"width");
+	}
     }
 
     // Set axis title
     histos.at(0)->GetYaxis()->SetTitle("Normalized units"); 
+    if ( strncmp (histos.at(0)->GetName(), "Match_ttH_SS_Bqq_eff",23) ==0) histos.at(0)->GetYaxis()->SetTitle("mis-tag efficiency"); 
     std::string const histogramName = histos.at(0)->GetName();
-    histos.at(0)->GetXaxis()->SetLabelSize(0.06);
+    histos.at(0)->GetXaxis()->SetLabelSize(0.04);
     histos.at(0)->GetXaxis()->SetLabelOffset(0.006);
-    histos.at(0)->GetYaxis()->SetLabelSize(0.06);
+    histos.at(0)->GetYaxis()->SetLabelSize(0.04);
     histos.at(0)->GetYaxis()->SetLabelOffset(0.006);
-    histos.at(0)->GetXaxis()->SetTitleSize(0.06);
-    histos.at(0)->GetXaxis()->SetTitleOffset(1.1);
-    histos.at(0)->GetYaxis()->SetTitleSize(0.06);
-    histos.at(0)->GetYaxis()->SetTitleOffset(1.08);
+    histos.at(0)->GetXaxis()->SetTitleSize(0.04);
+    histos.at(0)->GetXaxis()->SetTitleOffset(1.1); //1.1
+    histos.at(0)->GetYaxis()->SetTitleSize(0.04);
+    histos.at(0)->GetYaxis()->SetTitleOffset(1.3); //1.08
 
 
     // c->SetName(histos.at(0)->GetName())
@@ -180,7 +185,7 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
         run = 0;
     }
     // If only two histograms per plot make a ratio plot
-    if(histos.size() == 2)
+    if(histos.size() == 0)
     {
 
         //create main pad  
@@ -217,9 +222,11 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
         for(size_t i=0;i<histos.size()-1;i=i+2)
         {
 
-          double ksresult = histos.at(i)->KolmogorovTest(histos.at(i+1));
+          //double ksresult = histos.at(i)->KolmogorovTest(histos.at(i+1));
+          double ksresult = 1.0;
           ksresult=floor(ksresult*1000+0.5)/1000;
-          double chi2result =histos.at(i)->Chi2Test(histos.at(i+1),"WW");
+          //double chi2result =histos.at(i)->Chi2Test(histos.at(i+1),"WW");
+          double chi2result = 1.0;
           chi2result=floor(chi2result*1000+0.5)/1000;
 
           stringstream ss;
@@ -267,54 +274,89 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
     else
     {
 
-        histos.at(0)->Draw("histo E");
+      if ( strncmp (histos.at(0)->GetName(), "Match_ttH_SS_Bqq_eff",23) ==0)
+	{
+	  histos.at(0)->SetMaximum(1.1);  
+	  histos.at(0)->SetMinimum(0);
+	  histos.at(0)->Draw();
+	}
+      else histos.at(0)->Draw("histo");
+      //      histos.at(0)->Draw("histo");
+
         for(size_t i=0;i<histos.size();i++)
         {
-          histos.at(i)->Draw("histo same E");
+          if ( strncmp (histos.at(i)->GetName(), "Match_ttH_SS_Bqq_eff",23) ==0) histos.at(i)->Draw("same");
+          else histos.at(i)->Draw("histo same");
+          //histos.at(i)->Draw("histo same");
         }
 
 
         for(size_t i=0;i<histos.size()-1;i=i+2)
         {
 
-          double ksresult = histos.at(i)->KolmogorovTest(histos.at(i+1));
+          //double ksresult = histos.at(i)->KolmogorovTest(histos.at(i+1));
+          double ksresult = 1.0;
           ksresult=floor(ksresult*1000+0.5)/1000;
-          double chi2result =histos.at(i)->Chi2Test(histos.at(i+1),"WW");
+          //double chi2result =histos.at(i)->Chi2Test(histos.at(i+1),"WW");
+          double chi2result = 1.0;
           chi2result=floor(chi2result*1000+0.5)/1000;
-
+          
           stringstream ss;
           ss << "KS: " <<std::setprecision(3) << ksresult << " chi2: " <<std::setprecision(3) << chi2result; 
           //const char notmych = ss.str().c_str();
           TText * ks = new TText(0.1, 0.9-0.03*i, ss.str().c_str());
           ks->SetTextColor(histos.at(i)->GetLineColor());
           ks->SetNDC();
-          ks->Draw("");      
+          //ks->Draw("");      
 
         }
+	
+	//FOM calculation
+	//	for(size_t i=0;i<histos.size();i++) std::cout << "hist name: " << histos.at(i)->GetName() << std::endl;
 
-        TLegend* l = new TLegend(0.65,0.5,0.9,0.7);
+        TLegend* l = new TLegend(0.11,0.91,0.89,0.99); // 0.11,0.75,0.89,0.89
         l->SetBorderSize(0);
         l->SetLineStyle(0);
         //    l->SetTextSize(0.039);
         l->SetFillStyle(0);
+        l->SetTextFont(42);
+        l->SetTextSize(0.04);
+        l->SetNColumns((files.size()+1));
+	TString legend_text;
         for(size_t i=0;i<names.size();i++)
         {
-          l->AddEntry(histos.at(i),names.at(i),"L");
+	  if ( strncmp (histos.at(i)->GetName(), "Match_ttH_SS_Bqq_FOM",23) ==0)
+	    {
+	      l->SetTextSize(0.03);
+	      float FOM = histos.at(i)->GetBinContent(2) + histos.at(i)->GetBinContent(3)*2. + histos.at(i)->GetBinContent(4)*3.;
+	      legend_text = names.at(i) + "   FOM: " + std::to_string(FOM);
+	    }
+	  else
+	    {
+	      l->SetTextSize(0.04);
+	      legend_text = names.at(i);
+	    }
+	  
+          l->AddEntry(histos.at(i),legend_text,"L");
         }
         l->Draw("same");
     }
-
+    
+    vergleich->WriteTObject(c);
     c->Print("comparisonPlots.pdf");
     c->SaveAs(pictureName);
-    vergleich->WriteTObject(c);
-
+ 
   }
-  
+ 
   c->Print("comparisonPlots.pdf]");
+ }
 
+template <typename almostTLVtype> TLorentzVector MakeGoodPlot::makeTLV( almostTLVtype thing )
+{
+    TLorentzVector thereturnedTLV;
+    thereturnedTLV.SetPxPyPzE(thing.Px(), thing.Py(), thing.Pz(), thing.E());
+    return thereturnedTLV;
 }
-
-
 
 TString MakeGoodPlot::int2ss(int theint)
 {

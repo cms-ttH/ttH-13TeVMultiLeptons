@@ -38,8 +38,8 @@ process.source = cms.Source("PoolSource",
         #'/store/data/Run2015D/MET/MINIAOD/PromptReco-v4/000/258/175/00000/4A8229C0-276D-E511-931E-02163E013870.root'),
         #'/store/data/Run2015D/SingleElectron/MINIAOD/04Dec2015-v2/10000/00F2E38F-E69E-E511-AC8D-0025905822B6.root'),
         #763 MC
-        '/store/mc/RunIIFall15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/14352F79-4DBB-E511-8A90-00259055CA34.root'),
-        
+#        '/store/mc/RunIIFall15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/14352F79-4DBB-E511-8A90-00259055CA34.root'),
+        '/store/mc/RunIIFall15MiniAODv1/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/00000/02680B76-C9BD-E511-8393-00304865C2BC.root'),
         #74X
         #'/store/mc/RunIISpring15MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/10000/3801CAC7-D06D-E511-B32C-0025905C4262.root'),        
         
@@ -157,7 +157,7 @@ if len(sys.argv)>3:
     	
 else:
     process.TFileService = cms.Service("TFileService",
-        fileName = cms.string("multilep_tree_test.root")
+        fileName = cms.string("tree_BDT2_orig.root")
     )
 
 

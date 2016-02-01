@@ -18,7 +18,7 @@ void MakeGoodPlot::initialize()
         ch[12] = new TChain(treename);
 	
 	sample_names[0] = "data"; //"data (mu)";
-	sample_names[1] = "t#bar{t}H (H->non-bb) Summer15"; //"t#bar{t}H(125)";
+	sample_names[1] = "t#bar{t}H (H->non-bb) Spring15"; //"t#bar{t}H(125)";
 	sample_names[2] = "(none)"; //"t#bar{t} + b#bar{b}";
 	sample_names[3] = "(none)"; //"t#bar{t} + b";
 	sample_names[4] = "(none)"; //"t#bar{t} + c#bar{c}";
