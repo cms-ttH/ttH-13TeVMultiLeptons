@@ -973,7 +973,7 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
                                         
                 //}
         
-                for (int j=0; j<(*preselected_leptons_intree).size(); j++)
+                for (unsigned int j=0; j<(*preselected_leptons_intree).size(); j++)
                 {
                     plot->Fill((*preselected_leptons_intree)[j].genMotherPdgID);
                 }               

@@ -79,7 +79,7 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
   gROOT->SetBatch(kTRUE); // suppress display of the canvas
   vector<TFile*> files;
   
-  for (int itempfile=0; itempfile<tempfiles.size(); itempfile++)
+  for (unsigned int itempfile=0; itempfile<tempfiles.size(); itempfile++)
   {
     files.push_back(new TFile(tempfiles[itempfile]));   
   }
@@ -87,7 +87,7 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
 
   vector<TString> names;
   
-  for (int iName=0; iName<samps.size(); iName++)
+  for (unsigned int iName=0; iName<samps.size(); iName++)
   {
     TString iNametemp = sample_names[samps[iName]];
     names.push_back(iNametemp);
