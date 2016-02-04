@@ -17,6 +17,7 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
     Float_t dR_bJet_W_var;
     Float_t dR_j_j_var;	
     Float_t min_dr_var;	
+    Float_t hi_pt_jet_var;	
 
     topReader_ = new TMVA::Reader( "!Color:!Silent" );
     topReader_->AddVariable( "bJet.csv", &bJet_csv_var );
@@ -26,7 +27,7 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
     topReader_->AddVariable( "top_Mass", &topMass_var );
     topReader_->AddVariable( "bJet_W_dR", &dR_bJet_W_var );
     topReader_->AddVariable( "j_j_dR", &dR_j_j_var );
-    //    topReader_->AddVariable( "min_dr", &min_dr_var );
+    topReader_->AddVariable( "hi_pt_jet", &hi_pt_jet_var );
     //topReader_->AddVariable( "wJet1.qgid", &wJet1_qgid_var );
     //topReader_->AddVariable( "wJet2.qgid", &wJet2_qgid_var );
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_all_background_combos.xml");
@@ -35,7 +36,8 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_bkg_reweight.weights.xml");
 
     //best so far
-    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_notOverTrained_bkgReweight.weights.xml");
+    //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_notOverTrained_bkgReweight.weights.xml");
+    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_hipt.weights.xml");
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2.weights.xml"); Feb1
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights.xml");// Feb1
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/matchbox/ttH_BDT_weights/TMVAClassification_BDTG.weights_BDT2.xml");// Feb1
@@ -83,13 +85,13 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
 
         cout << "entries in tree: " << theEntries << endl;
 
-	//	for (int j=0;j<400000;j++)
-	for (int j=0;j < theEntries;j++)
+	for (int j=0;j<400000;j++)
+	//	for (int j=0;j < theEntries;j++)
         {
 	  
 	  if (j%100000 == 0)
 	    {
-	      float fraction = 100.*j/theEntries;
+	      float fraction = 100.*j/400000;
 	      cout << fraction << " % complete" << endl;
 	    }
 	  
@@ -97,8 +99,8 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
             weight = wgt_intree; 
 
 
-	    if ( !(passes_common(samp_int) && passes_2lss(samp_int)) ) continue;
-	    //if ( !(passes_common(samp_int) && passes_3l(samp_int)) ) continue;
+	    //	    if ( !(passes_common(samp_int) && passes_2lss(samp_int)) ) continue;
+	    if ( !(passes_common(samp_int) && passes_3l(samp_int)) ) continue;
 	    if ( (*preselected_jets_intree).size() < 3 ) continue;
 
 	    bool isHadronicTopEvent = false;
@@ -184,15 +186,9 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
 		      wJet1_csv_var = (*preselected_jets_intree)[iJet2].csv;
 		      wJet2_csv_var = (*preselected_jets_intree)[iJet3].csv;
 
-		      min_dr_var = 99.;
-		      for (const auto & lep: *tightMvaBased_leptons_intree)
-			{
-			  TLorentzVector lep_tlv = makeTLV(lep.obj);
-			  if (jet1_vect.DeltaR(lep_tlv) < min_dr_var)
-			    {
-			      min_dr_var = jet1_vect.DeltaR(lep_tlv);
-			    }
-			}
+
+
+		      hi_pt_jet_var = (iJet1 == 0 || iJet2 == 0 || iJet3 == 0) ? 1:0;
 
 		      double mva_value = topReader_->EvaluateMVA( "BDTG method" );
 		      top_scores.push_back(mva_value);
