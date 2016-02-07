@@ -27,7 +27,7 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
     topReader_->AddVariable( "top_Mass", &topMass_var );
     topReader_->AddVariable( "bJet_W_dR", &dR_bJet_W_var );
     topReader_->AddVariable( "j_j_dR", &dR_j_j_var );
-    topReader_->AddVariable( "hi_pt_jet", &hi_pt_jet_var );
+    //    topReader_->AddVariable( "hi_pt_jet", &hi_pt_jet_var );
     //topReader_->AddVariable( "wJet1.qgid", &wJet1_qgid_var );
     //topReader_->AddVariable( "wJet2.qgid", &wJet2_qgid_var );
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_all_background_combos.xml");
@@ -36,8 +36,8 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_bkg_reweight.weights.xml");
 
     //best so far
-    //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_notOverTrained_bkgReweight.weights.xml");
-    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_hipt.weights.xml");
+    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_notOverTrained_bkgReweight.weights.xml");
+    //topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_hipt.weights.xml");
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2.weights.xml"); Feb1
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights.xml");// Feb1
     //    topReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/matchbox/ttH_BDT_weights/TMVAClassification_BDTG.weights_BDT2.xml");// Feb1
@@ -61,8 +61,8 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
         
         BDT_ttH_SS_Bqq_eff[samp_int] = new TH1F("BDT_ttH_SS_Bqq_eff",";hadronic top score",20,-1,1);
         BDT_ttH_SS_Bqq_effB[samp_int] = new TH1F("BDT_ttH_SS_Bqq_effB",";hadronic top score",20,-1,1);
-        BDT_ttH_SS_Bqq_effB1[samp_int] = new TH1F("BDT_ttH_SS_Bqq_effB1",";hadronic top score",20,-1,1);
-        BDT_ttH_SS_Bqq_effB2[samp_int] = new TH1F("BDT_ttH_SS_Bqq_effB2",";hadronic top score",20,-1,1);
+        BDT_ttH_SS_Bqq_effB1[samp_int] = new TH1F("BDT_ttH_SS_Bqq_effB1",";highest pt jet present in triplet",2,0,2);
+        BDT_ttH_SS_Bqq_effB2[samp_int] = new TH1F("BDT_ttH_SS_Bqq_effB2",";highest pt jet present in triplet",2,0,2);
         BDT_top_pt[samp_int] = new TH1F("top_pt",";reconstructed top pt",20,0,200);
         BDT_wjet_qgid[samp_int] = new TH1F("wjet_qgid",";qgl of W jets",40,0,1);
 	
@@ -80,20 +80,20 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
 	ch[samp_int]->SetBranchAddress("tightMvaBased_muons", &tightMvaBased_muons_intree);
         ch[samp_int]->SetBranchAddress("preselected_jets", &preselected_jets_intree);
         ch[samp_int]->SetBranchAddress("met", &met_intree);
-
+	ch[samp_int]->SetBranchAddress("eventnum", &eventnum_intree);
         int theEntries = ch[samp_int]->GetEntries();
 
         cout << "entries in tree: " << theEntries << endl;
 
-	for (int j=0;j<400000;j++)
-	//	for (int j=0;j < theEntries;j++)
+	//	for (int j=0;j<400000;j++)
+	for (int j=0;j < theEntries;j++)
         {
 	  
-	  if (j%100000 == 0)
-	    {
-	      float fraction = 100.*j/400000;
-	      cout << fraction << " % complete" << endl;
-	    }
+	  /* if (j%1000 == 0) */
+	  /*   { */
+	  /*     float fraction = 100.*j/400000; */
+	  /*     cout << fraction << " % complete" << endl; */
+	  /*   } */
 	  
             ch[samp_int]->GetEntry(j);					
             weight = wgt_intree; 
@@ -154,7 +154,7 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
             TLorentzVector top_vect;
             TLorentzVector qq_vect;
 	    double best_mva_value = -99.;
-
+	    int hi_pt=-1;
 	    for (unsigned int iJet1 = 0; iJet1 < (*preselected_jets_intree).size(); iJet1++) 
                 {    
                   TLorentzVector jet1_vect = makeTLV((*preselected_jets_intree)[iJet1].obj);
@@ -203,6 +203,8 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
 			  wJet1_qgid_var = (*preselected_jets_intree)[iJet2].qgid;
 			  wJet2_qgid_var = (*preselected_jets_intree)[iJet3].qgid;
 			  
+			  hi_pt = hi_pt_jet_var;
+
 			}
 		      
                     } //end iJet3
@@ -222,30 +224,25 @@ void MakeGoodPlot::MatchTester_ttW_SS(std::vector<int> samps)
 		else if ( abs(candidate.genPdgID) == 5 ) has_b_jet = true;
 	      }
 
-	    int num_jets_from_higgs = 0;
-	    bool w_from_higgs_present = false;
-	    for (const auto & jet: *preselected_jets_intree)
-	      {
-		if (jet.genGrandMotherPdgID == 25) num_jets_from_higgs+=1;
-	      }
-	    if (num_jets_from_higgs >= 2) w_from_higgs_present = true;  
-
 	    //	    if ( numMatches_BDT == 3 && (*preselected_jets_intree).size() >=3) BDT_ttH_SS_Bqq_eff[samp_int]->Fill(best_mva_value,weight);
-	    if ( isHadronicTopEvent && (*preselected_jets_intree).size() >=3) BDT_ttH_SS_Bqq_eff[samp_int]->Fill(best_mva_value,weight);
+	    if ( isHadronicTopEvent && (*preselected_jets_intree).size() >=3)
+	      {
+		BDT_ttH_SS_Bqq_eff[samp_int]->Fill(best_mva_value,weight);
+		BDT_ttH_SS_Bqq_effB1[samp_int]->Fill(hi_pt,weight);
+		
+	      }
 	    else if ((*preselected_jets_intree).size() >=3)
 	      {
 		BDT_ttH_SS_Bqq_effB[samp_int]->Fill(best_mva_value,weight);
-		/* if ( numMatches_BDT == 2 ) BDT_ttH_SS_Bqq_effB[samp_int]->Fill(best_mva_value,weight); */
-		/* else if ( numMatches_BDT == 1 ) BDT_ttH_SS_Bqq_effB1[samp_int]->Fill(best_mva_value,weight); */
-		/* else if ( numMatches_BDT == 0 ) BDT_ttH_SS_Bqq_effB2[samp_int]->Fill(best_mva_value,weight); */
+		BDT_ttH_SS_Bqq_effB2[samp_int]->Fill(hi_pt,weight);
 	      }
 
 	    BDT_top_pt[samp_int]->Fill(top_vect.Pt(),weight);
 	    BDT_wjet_qgid[samp_int]->Fill(wJet1_qgid_var,weight);
 	    BDT_wjet_qgid[samp_int]->Fill(wJet2_qgid_var,weight);
 	    //	    std::sort(top_scores.begin(), top_scores.end(), [] (float a, float b) { return a > b;});
-
-
+	    cout << "Entry: " << j << " Event: " << eventnum_intree << " BDT score: " << best_mva_value << endl;
+	    
         } // end event loop
     
 
