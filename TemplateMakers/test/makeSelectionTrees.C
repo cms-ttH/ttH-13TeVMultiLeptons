@@ -110,6 +110,13 @@ void run_it(TChain* chain, TString output_file)
   Float_t top_ratio_var;
 
   TMVAReader_ = new TMVA::Reader( "!Color:!Silent" );
+  // TMVAReader_->AddVariable( "bJet.csv", &bJet_csv_var );
+  // TMVAReader_->AddVariable( "wJet1_csv", &wJet1_csv_var );
+  // TMVAReader_->AddVariable( "wJet2_csv", &wJet2_csv_var );
+  // TMVAReader_->AddVariable( "w_Mass", &wMass_var );
+  // TMVAReader_->AddVariable( "top_Mass", &topMass_var );
+  // TMVAReader_->AddVariable( "bJet_W_dR", &dR_bJet_W_var );
+  // TMVAReader_->AddVariable( "j_j_dR", &dR_j_j_var );
   TMVAReader_->AddVariable( "bJet.csv", &bJet_csv_var );
   TMVAReader_->AddVariable( "wJet1.csv", &wJet1_csv_var );
   TMVAReader_->AddVariable( "wJet2.csv", &wJet2_csv_var );
@@ -117,9 +124,11 @@ void run_it(TChain* chain, TString output_file)
   TMVAReader_->AddVariable( "top_quark.M()", &topMass_var );
   TMVAReader_->AddVariable( "bJet_W_dR", &dR_bJet_W_var );
   TMVAReader_->AddVariable( "jj_dR", &dR_j_j_var );
-  TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_3l.weights.xml");
+  TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_ge4j.weights.xml");
   //  TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_notOverTrained_bkgReweight.weights.xml");
-
+  //  TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_no9999pdgids.weights.xml");
+  //  TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG2_attempt.weights.xml");
+  
   
   int chainentries = chain->GetEntries();   
   cout << "# events in tree: "<< chainentries << endl;  
@@ -193,11 +202,12 @@ void run_it(TChain* chain, TString output_file)
   two_lep_tree->Branch("had_top_present", &had_top_present_intree);
 
   
-  Int_t cachesize = 150000000;   //100 MBytes
+  Int_t cachesize = 250000000;   //100 MBytes
   chain->SetCacheSize(cachesize);
   chain->SetCacheLearnEntries(20); 
   
   double starttime = get_wall_time();
+  //  chainentries = 100000;
   for (int i=0; i<chainentries; i++)
     {
       
@@ -220,7 +230,7 @@ void run_it(TChain* chain, TString output_file)
       //figure out if a hadronic top is present
       bool isHadronicTopEvent = false;
       had_top_present_intree = 0;
-      double best_bdt_score = -99.;
+      bdt_score_intree = -99.;
       w_boson_intree.SetPxPyPzE(0,0,0,0);
       top_quark_intree.SetPxPyPzE(0,0,0,0);
       other_jets_intree->clear();
@@ -306,7 +316,7 @@ void run_it(TChain* chain, TString output_file)
 		  wJet2_csv_var = wjet2.csv;
 		  
 		  double mva_value = TMVAReader_->EvaluateMVA( "BDTG method" );
-		  if (mva_value > best_bdt_score)
+		  if (mva_value > bdt_score_intree)
 		    {
 		      top_jets_intree->clear();
 		      top_jets_intree->push_back(bjet);
@@ -314,7 +324,6 @@ void run_it(TChain* chain, TString output_file)
 		      top_jets_intree->push_back(wjet2);
 		      top_quark_intree = top_candidate_vect;
 		      w_boson_intree = w_candidate_vect;
-		      best_bdt_score = mva_value;
 		      bdt_score_intree = mva_value;
 		    }
 		}
@@ -354,34 +363,34 @@ void run_it(TChain* chain, TString output_file)
 
 void makeSelectionTrees(void)
 {
-  TChain *ttw_chain = new TChain("OSTwoLepAna/summaryTree");
-  TChain *tth_chain = new TChain("OSTwoLepAna/summaryTree");
+  //TChain *ttw_chain = new TChain("OSTwoLepAna/summaryTree");
+  //TChain *tth_chain = new TChain("OSTwoLepAna/summaryTree");
   TChain *tt_chain = new TChain("OSTwoLepAna/summaryTree");
   
-  TString ttw_file = "ttw_trees_bdtSelectionTraining.root";
-  TString tth_file = "tth_trees_bdtSelectionTraining.root";
-  TString tt_file = "tt_trees_bdtSelectionTraining.root";
+  //  TString ttw_file = "ttw_trees_test.root";
+  //  TString tth_file = "tth_trees_test.root";
+  TString tt_file = "tt_trees_ttbar_76X.root";
 
-  ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_1.root");
-  ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_2.root");    
-  ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_3.root");    
-  ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_4.root");    
-  ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_5.root");    
-  ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_6.root");    
+  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_1.root");
+  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_2.root");    
+  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_3.root");    
+  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_4.root");    
+  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_5.root");    
+  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_6.root");    
 
-  for (int i=1; i < 165; i++)
-    {
-      char filePath[512];
-      sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160128_161341/0000/tree_BDT_%d.root",i);
-      tth_chain->Add(filePath);
-    }
+  // for (int i=1; i < 165; i++)
+  //   {
+  //     char filePath[512];
+  //     sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160128_161341/0000/tree_BDT_%d.root",i);
+  //     tth_chain->Add(filePath);
+  //   }
   
-  for (int i=1; i < 203; i++)
-    {
-      char filePath[512];
-      sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160128_161921/0000/tree_BDT_%d.root",i);
-      tth_chain->Add(filePath);
-    }
+  // for (int i=1; i < 203; i++)
+  //   {
+  //     char filePath[512];
+  //     sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160128_161921/0000/tree_BDT_%d.root",i);
+  //     tth_chain->Add(filePath);
+  //   }
   
   // for (int i=1; i < 81; i++)
   //   {
@@ -390,15 +399,37 @@ void makeSelectionTrees(void)
   //     tth_chain->Add(filePath);
   //   }
     
-  for (int i=1; i < 84; i++)
+  for (int i=1; i < 103; i++)
     {
       char filePath[512];
-      sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_ttbar_try2/160130_195649/0000/tree_BDT2_orig_%d.root",i);
+      sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/ttbar/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_ttbar_run0/160211_125629/0000/tree_BDT2_orig_%d.root",i);
+      tt_chain->Add(filePath);
+    }
+
+  for (int i=1; i < 25; i++)
+    {
+      char filePath[512];
+      sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/ttbar/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_ttbar_run1/160211_125713/0000/tree_BDT2_orig_%d.root",i);
+      tt_chain->Add(filePath);
+    }
+  
+  for (int i=1; i < 120; i++)
+    {
+      char filePath[512];
+      sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/ttbar/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_ttbar_run2/160211_125746/0000/tree_BDT2_orig_%d.root",i);
+      tt_chain->Add(filePath);
+    }
+
+  for (int i=1; i < 26; i++)
+    {
+      char filePath[512];
+      sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/ttbar/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_ttbar_run3/160211_125815/0000/tree_BDT2_orig_%d.root",i);
       tt_chain->Add(filePath);
     }
 
 
-  run_it(ttw_chain,ttw_file);
-  run_it(tth_chain,tth_file);
+
+  //  run_it(ttw_chain,ttw_file);
+  //  run_it(tth_chain,tth_file);
   run_it(tt_chain,tt_file);
 }

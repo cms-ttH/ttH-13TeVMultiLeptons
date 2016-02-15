@@ -182,71 +182,42 @@ void run_it(TChain* chain, TString output_file)
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
-  TTree *three_lep_top_present_tree = (TTree*)chain->CloneTree(0);
-  three_lep_top_present_tree->SetName("threelep_top_present_tree");
-  three_lep_top_present_tree->Branch("top_jets", &top_jets_intree);
-  three_lep_top_present_tree->Branch("other_jets", &other_jets_intree);
-  three_lep_top_present_tree->Branch("top_quark", &top_quark_intree);
-  three_lep_top_present_tree->Branch("w_boson", &w_boson_intree);
-  three_lep_top_present_tree->Branch("bdt_score", &bdt_score_intree);
-  three_lep_top_present_tree->Branch("had_top_present", &had_top_present_intree);
-  three_lep_top_present_tree->Branch("bJet", &bJet_intree);
-  three_lep_top_present_tree->Branch("wJet1", &wJet1_intree);
-  three_lep_top_present_tree->Branch("wJet2", &wJet2_intree);
-  three_lep_top_present_tree->Branch("bJet_W_dR", &bjet_w_dR_intree);
-  three_lep_top_present_tree->Branch("jj_dR", &jj_dR_intree);
-  three_lep_top_present_tree->Branch("weight", &bkg_weight_intree);
+  TTree *top_present_tree = (TTree*)chain->CloneTree(0);
+  top_present_tree->SetName("top_present_tree");
+  top_present_tree->Branch("top_jets", &top_jets_intree);
+  top_present_tree->Branch("other_jets", &other_jets_intree);
+  top_present_tree->Branch("top_quark", &top_quark_intree);
+  top_present_tree->Branch("w_boson", &w_boson_intree);
+  top_present_tree->Branch("bdt_score", &bdt_score_intree);
+  top_present_tree->Branch("had_top_present", &had_top_present_intree);
+  top_present_tree->Branch("bJet", &bJet_intree);
+  top_present_tree->Branch("wJet1", &wJet1_intree);
+  top_present_tree->Branch("wJet2", &wJet2_intree);
+  top_present_tree->Branch("bJet_W_dR", &bjet_w_dR_intree);
+  top_present_tree->Branch("jj_dR", &jj_dR_intree);
+  top_present_tree->Branch("weight", &bkg_weight_intree);
 
-  TTree *three_lep_top_absent_tree = (TTree*)chain->CloneTree(0);
-  three_lep_top_absent_tree->SetName("threelep_top_absent_tree");
-  three_lep_top_absent_tree->Branch("top_jets", &top_jets_intree);
-  three_lep_top_absent_tree->Branch("other_jets", &other_jets_intree);
-  three_lep_top_absent_tree->Branch("top_quark", &top_quark_intree);
-  three_lep_top_absent_tree->Branch("w_boson", &w_boson_intree);
-  three_lep_top_absent_tree->Branch("bdt_score", &bdt_score_intree);
-  three_lep_top_absent_tree->Branch("had_top_present", &had_top_present_intree);
-  three_lep_top_absent_tree->Branch("bJet", &bJet_intree);
-  three_lep_top_absent_tree->Branch("wJet1", &wJet1_intree);
-  three_lep_top_absent_tree->Branch("wJet2", &wJet2_intree);
-  three_lep_top_absent_tree->Branch("bJet_W_dR", &bjet_w_dR_intree);
-  three_lep_top_absent_tree->Branch("jj_dR", &jj_dR_intree);
-  three_lep_top_absent_tree->Branch("weight", &bkg_weight_intree);
+  TTree *top_absent_tree = (TTree*)chain->CloneTree(0);
+  top_absent_tree->SetName("top_absent_tree");
+  top_absent_tree->Branch("top_jets", &top_jets_intree);
+  top_absent_tree->Branch("other_jets", &other_jets_intree);
+  top_absent_tree->Branch("top_quark", &top_quark_intree);
+  top_absent_tree->Branch("w_boson", &w_boson_intree);
+  top_absent_tree->Branch("bdt_score", &bdt_score_intree);
+  top_absent_tree->Branch("had_top_present", &had_top_present_intree);
+  top_absent_tree->Branch("bJet", &bJet_intree);
+  top_absent_tree->Branch("wJet1", &wJet1_intree);
+  top_absent_tree->Branch("wJet2", &wJet2_intree);
+  top_absent_tree->Branch("bJet_W_dR", &bjet_w_dR_intree);
+  top_absent_tree->Branch("jj_dR", &jj_dR_intree);
+  top_absent_tree->Branch("weight", &bkg_weight_intree);
 
-  TTree *two_lep_top_present_tree = (TTree*)chain->CloneTree(0);
-  two_lep_top_present_tree->SetName("ss2l_top_present_tree");
-  two_lep_top_present_tree->Branch("top_jets", &top_jets_intree);
-  two_lep_top_present_tree->Branch("other_jets", &other_jets_intree);
-  two_lep_top_present_tree->Branch("top_quark", &top_quark_intree);
-  two_lep_top_present_tree->Branch("w_boson", &w_boson_intree);
-  two_lep_top_present_tree->Branch("bdt_score", &bdt_score_intree);
-  two_lep_top_present_tree->Branch("had_top_present", &had_top_present_intree);
-  two_lep_top_present_tree->Branch("bJet", &bJet_intree);
-  two_lep_top_present_tree->Branch("wJet1", &wJet1_intree);
-  two_lep_top_present_tree->Branch("wJet2", &wJet2_intree);
-  two_lep_top_present_tree->Branch("bJet_W_dR", &bjet_w_dR_intree);
-  two_lep_top_present_tree->Branch("jj_dR", &jj_dR_intree);
-  two_lep_top_present_tree->Branch("weight", &bkg_weight_intree);
-
-  TTree *two_lep_top_absent_tree = (TTree*)chain->CloneTree(0);
-  two_lep_top_absent_tree->SetName("ss2l_top_absent_tree");
-  two_lep_top_absent_tree->Branch("top_jets", &top_jets_intree);
-  two_lep_top_absent_tree->Branch("other_jets", &other_jets_intree);
-  two_lep_top_absent_tree->Branch("top_quark", &top_quark_intree);
-  two_lep_top_absent_tree->Branch("w_boson", &w_boson_intree);
-  two_lep_top_absent_tree->Branch("bdt_score", &bdt_score_intree);
-  two_lep_top_absent_tree->Branch("had_top_present", &had_top_present_intree);
-  two_lep_top_absent_tree->Branch("bJet", &bJet_intree);
-  two_lep_top_absent_tree->Branch("wJet1", &wJet1_intree);
-  two_lep_top_absent_tree->Branch("wJet2", &wJet2_intree);
-  two_lep_top_absent_tree->Branch("bJet_W_dR", &bjet_w_dR_intree);
-  two_lep_top_absent_tree->Branch("jj_dR", &jj_dR_intree);
-  two_lep_top_absent_tree->Branch("weight", &bkg_weight_intree);
-
-  Int_t cachesize = 100000000;   //100 MBytes
+  Int_t cachesize = 200000000;   //200 MBytes
   chain->SetCacheSize(cachesize);
   chain->SetCacheLearnEntries(20); 
   
   double starttime = get_wall_time();
+  chainentries = 50000;
   for (int i=0; i<chainentries; i++)
     {
       
@@ -259,12 +230,13 @@ void run_it(TChain* chain, TString output_file)
       
       chain->GetEntry(i);
       
-      //      if ( (*preselected_jets_intree).size() < 3) continue; 
-      bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
-      if (!passesCommon) continue;
-      bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
-      bool passes3l = pass3l(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
-      if ( !(passes2lss || passes3l) || (*preselected_jets_intree).size() < 3 ) continue;
+      if ( (*preselected_jets_intree).size() < 3) continue; 
+      // bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
+      // if (!passesCommon) continue;
+      // bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
+      // bool passes3l = pass3l(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
+      // if ( !(passes2lss || passes3l) || (*preselected_jets_intree).size() < 3 ) continue;
+      //      if ( (*preselected_jets_intree).size() < 4 ) continue;
       
     
       //figure out if a hadronic top is present
@@ -275,9 +247,6 @@ void run_it(TChain* chain, TString output_file)
       top_quark_intree.SetPxPyPzE(0,0,0,0);
       other_jets_intree->clear();
       top_jets_intree->clear();
-      // bJet_intree= NULL;
-      // wJet1_intree= NULL;
-      // wJet2_intree= NULL;
       bJet_intree.clear();
       wJet1_intree.clear();
       wJet2_intree.clear();
@@ -339,6 +308,19 @@ void run_it(TChain* chain, TString output_file)
 	  wJet2_intree = wJet2;
 	  bjet_w_dR_intree = b_vect.DeltaR( w_boson_intree );
 	  jj_dR_intree = w1_vect.DeltaR( w2_vect );
+	}
+      else
+	{
+	  bool isBadJetPresent = false;
+	  for (const auto & jet : *preselected_jets_intree)
+	    {
+	      if (jet.genPdgID == 9999)
+		{
+		  isBadJetPresent = true;
+		  break;
+		}
+	    }
+	  if (isBadJetPresent) continue;
 	}
 
       TLorentzVector bjet_vect;
@@ -416,31 +398,35 @@ void run_it(TChain* chain, TString output_file)
 	}
 
       
+
       int num_jets = (*preselected_jets_intree).size();
-      //      bkg_weight_intree = 1. / ((num_jets*( num_jets - 1 )*( num_jets - 2))-1);
-      if (passes2lss)
-	{
-	  if (num_jets == 4 || num_jets == 5) bkg_weight_intree = 0.3;
-	  else if (num_jets == 6) bkg_weight_intree = 0.2;
-	  else if (num_jets == 7) bkg_weight_intree = 0.1;
-	  else if (num_jets == 8) bkg_weight_intree = 0.05;
-	  else bkg_weight_intree = 0.01;
+      bkg_weight_intree = 1. / ((num_jets*( num_jets - 1 )*( num_jets - 2))-1);
+
+      if ( isHadronicTopEvent ) top_present_tree->Fill();
+      else top_absent_tree->Fill();
+      // if (passes2lss)
+      // 	{
+      // 	  if (num_jets == 4 || num_jets == 5) bkg_weight_intree = 0.3;
+      // 	  else if (num_jets == 6) bkg_weight_intree = 0.2;
+      // 	  else if (num_jets == 7) bkg_weight_intree = 0.1;
+      // 	  else if (num_jets == 8) bkg_weight_intree = 0.05;
+      // 	  else bkg_weight_intree = 0.01;
 
 	  
-	  if ( isHadronicTopEvent ) two_lep_top_present_tree->Fill();
-	  else two_lep_top_absent_tree->Fill();
-	}
-      if (passes3l)
-	{
-	  if (num_jets == 3 || num_jets == 4) bkg_weight_intree = 0.3;
-	  else if (num_jets == 5) bkg_weight_intree = 0.2;
-	  else if (num_jets == 6) bkg_weight_intree = 0.1;
-	  else if (num_jets == 7) bkg_weight_intree = 0.05;
-	  else bkg_weight_intree = 0.01;
+      // 	  if ( isHadronicTopEvent ) two_lep_top_present_tree->Fill();
+      // 	  else two_lep_top_absent_tree->Fill();
+      // 	}
+      // if (passes3l)
+      // 	{
+      // 	  if (num_jets == 3 || num_jets == 4) bkg_weight_intree = 0.3;
+      // 	  else if (num_jets == 5) bkg_weight_intree = 0.2;
+      // 	  else if (num_jets == 6) bkg_weight_intree = 0.1;
+      // 	  else if (num_jets == 7) bkg_weight_intree = 0.05;
+      // 	  else bkg_weight_intree = 0.01;
 
-	  if ( isHadronicTopEvent ) three_lep_top_present_tree->Fill();
-	  else three_lep_top_absent_tree->Fill();
-	}
+      // 	  if ( isHadronicTopEvent ) top_present_tree->Fill();
+      // 	  else top_absent_tree->Fill();
+      // 	}
       
     }
   double endtime = get_wall_time();
@@ -448,10 +434,8 @@ void run_it(TChain* chain, TString output_file)
   cout << "took " << endtime - starttime << " seconds, " << endl;
   if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
   
-  three_lep_top_present_tree->Write();
-  two_lep_top_present_tree->Write();
-  three_lep_top_absent_tree->Write();
-  two_lep_top_absent_tree->Write();
+  top_present_tree->Write();
+  top_absent_tree->Write();
   copiedfile->Close();
   
 }
@@ -463,7 +447,7 @@ void makeSelectionTreesForTraining(void)
   //  TChain *tt_chain = new TChain("OSTwoLepAna/summaryTree");
   
   //  TString ttw_file = "ttw_trees_bdt_top_ratio.root";
-  TString tth_file = "tth_trees_bdt_training.root";
+  TString tth_file = "tth_trees_bdt_training__noSeletion_ge4j.root";
   //  TString tt_file = "tt_trees_bdt_top_ratio.root";
 
   // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_1.root");

@@ -16,7 +16,7 @@ TGraph * makeRoc(TH1D* sig, TH1D* bkg)
       bkg_rej[bin] = integral_bkg / full_integral_bkg;      
     }
   TGraph* roc_curve = new TGraph(num_bins,sig_eff,bkg_rej);
-  roc_curve->SetTitle("ttH - 3l selection");
+  roc_curve->SetTitle("ttH v ttbar - 2lss selection");
   roc_curve->GetXaxis()->SetTitle("signal efficiency");
   roc_curve->GetYaxis()->SetTitle("background rejection");
   roc_curve->SetLineWidth(2);
@@ -39,32 +39,34 @@ TGraph* getRoc(TString file_name)
 TGraph* getRoc(TString file_name1, TString file_name2)
 {
 
-  TChain *chain1 = new TChain("threelep_tree");
+  TChain *chain1 = new TChain("ss2l_tree");
   chain1->Add(file_name1);
-  TChain *chain2 = new TChain("threelep_tree");
+  TChain *chain2 = new TChain("ss2l_tree");
   chain2->Add(file_name2);
-  TH1D* sig_h = new TH1D("sig_h","sig_h",50,-1,1);
-  TH1D* bkg_h = new TH1D("bkg_h","bkg_h",50,-1,1);
-  chain1->Draw("bdt_score >> sig_h","bdt_score > -9","goff");
-  chain2->Draw("bdt_score >> bkg_h","bdt_score > -9","goff");
-  return makeRoc(sig_h,bkg_h);  
+  TH1D* sig_h = new TH1D("sig_h","sig_h",50,0.,0.4);
+  TH1D* bkg_h = new TH1D("bkg_h","bkg_h",50,0.,0.4);
+  // chain1->Draw("abs(tightMvaBased_leptons[0].miniIso-tightMvaBased_leptons[1].miniIso) >> sig_h","mcwgt*(tightMvaBased_leptons[0].lepMVA > 0.65 && tightMvaBased_leptons[1].lepMVA > 0.65)","goff");
+  // chain2->Draw("abs(tightMvaBased_leptons[0].miniIso-tightMvaBased_leptons[1].miniIso) >> bkg_h","mcwgt*(tightMvaBased_leptons[0].lepMVA > 0.65 && tightMvaBased_leptons[1].lepMVA > 0.65)","goff");
+  chain1->Draw("abs(tightMvaBased_leptons[0].relIso-tightMvaBased_leptons[1].relIso) >> sig_h","","goff");
+  chain2->Draw("abs(tightMvaBased_leptons[0].relIso-tightMvaBased_leptons[1].relIso) >> bkg_h","","goff");
+  return makeRoc(bkg_h,sig_h);  
 }
 
 
 void plotRocFromTree(void)
 {
 
-  // TGraph* roc_curve1 = getRoc("tth_trees.root","ttw_trees.root");
-  // TGraph* roc_curve2 = getRoc("tth_trees_bdt_top_ratio.root","ttw_trees_bdt_top_ratio.root");
-  TGraph* roc_curve1 = getRoc("tth_trees.root");
-  TGraph* roc_curve2 = getRoc("tth_trees_bdtSelectionTraining.root");
+  TGraph* roc_curve1 = getRoc("tth_trees.root","tt_trees_ttbar_76X.root");
+  //  TGraph* roc_curve2 = getRoc("tth_trees_bdt_top_ratio.root","ttw_trees_bdt_top_ratio.root");
+  //  TGraph* roc_curve1 = getRoc("tth_trees_test_no9999.root");
+  //  TGraph* roc_curve2 = getRoc("tth_trees_test.root");
   char label1[512];
   float roc_integral1 = roc_curve1->Integral();
-  sprintf(label1,"BDT2, ROC: %.4f",roc_integral1);
+  sprintf(label1,"delta miniIso ROC: %.4f",roc_integral1);
 
-  char label2[512];
-  float roc_integral2 = roc_curve2->Integral();
-  sprintf(label2,"BDT2 training selection (3l), ROC: %.4f",roc_integral2);
+  // char label2[512];
+  // float roc_integral2 = roc_curve2->Integral();
+  // sprintf(label2,"BDT2 , ROC: %.4f",roc_integral2);
 
   gStyle->SetOptStat(0);
   gStyle->SetTitleBorderSize(0);
@@ -73,14 +75,14 @@ void plotRocFromTree(void)
   can1->SetGrid();
   
   roc_curve1->SetLineColor(1);
-  roc_curve2->SetLineColor(2);
+  //  roc_curve2->SetLineColor(2);
 
-  roc_curve1->Draw("AC");
-  roc_curve2->Draw("same");
+  roc_curve1->Draw("ACP");
+  //roc_curve2->Draw("same");
   TLegend *leg = new TLegend(0.1925287,0.3474576,0.5732759,0.4661017,NULL,"brNDC");
   leg->SetTextSize(0.03); 
   leg->AddEntry(roc_curve1,label1,"l");
-  leg->AddEntry(roc_curve2,label2,"l");
+  //leg->AddEntry(roc_curve2,label2,"l");
   leg->SetFillColor(0);
   leg->Draw("same");
   can1->SaveAs("roc.png");  

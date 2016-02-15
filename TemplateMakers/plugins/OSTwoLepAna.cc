@@ -227,7 +227,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////	
 	
 	//saves time by skipping the rest of the loop if <= 2 preselected leptons
-        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
+        if (selectedMuons_tight.size()+selectedElectrons_tight.size() >= 2)
         {
             
 	  eventnum_intree = event.id().event();
@@ -477,7 +477,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    preselected_leptons_intree = preselected_leptons;
 	    preselected_electrons_intree = preselected_electrons;
 	    preselected_muons_intree = preselected_muons;
-        preselected_taus_intree = preselected_taus;
+	    preselected_taus_intree = preselected_taus;
 
 	    looseMvaBased_muons_intree = looseMvaBased_muons;
 	    tightMvaBased_muons_intree = tightMvaBased_muons;

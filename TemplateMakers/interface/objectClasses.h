@@ -124,7 +124,15 @@ namespace ttH
   class Jet
   {
   public:
-    Jet(){} // default constructor
+    Jet(){
+      obj.SetPxPyPzE(0.,0.,0.,0.); 
+      charge = -99.;
+      genPdgID = -9999;
+      genMotherPdgID = -9999;
+      genGrandMotherPdgID = -9999;
+      csv = -99.;
+      qgid = -99.;
+    } // default constructor
     
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
@@ -134,6 +142,17 @@ namespace ttH
     int genGrandMotherPdgID;
     double csv;
     double qgid;
+
+    void clear(void)
+    {
+      obj.SetPxPyPzE(0.,0.,0.,0.); 
+      charge = -99.;
+      genPdgID = -9999;
+      genMotherPdgID = -9999;
+      genGrandMotherPdgID = -9999;
+      csv = -99.;
+      qgid = -99.;      
+    }
 
     virtual ~Jet(){};
     ClassDef(Jet, 1); 
