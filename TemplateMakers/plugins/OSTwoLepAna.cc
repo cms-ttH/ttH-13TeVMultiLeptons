@@ -159,7 +159,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	double minlooseelept = 7.; // lowered for studies
 
 	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, 7., electronID::electronPreselection );	//miniAODhelper.
-	vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, mintightelept, electronID::electronTight);	//miniAODhelper.
 	vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, minlooseelept, electronID::electronLoose );	//miniAODhelper.
 	vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, 7., electronID::electronRaw );	//miniAODhelper.
 
@@ -173,11 +172,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	//double mintightmupt = minTightLeptonPt;
 	//double minloosemupt = minLooseLeptonPt;
         
-    double mintightmupt = 5.; // lowered for studies
+	double mintightmupt = 5.; // lowered for studies
 	double minloosemupt = 5.; // lowered for studies
         
 
-	vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, mintightmupt, muonID::muonTight );
 	vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, minloosemupt, muonID::muonLoose );
 	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, 5., muonID::muonPreselection );
 	vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, 5., muonID::muonRaw );
@@ -227,18 +225,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	////////	
 	
 	//saves time by skipping the rest of the loop if <= 2 preselected leptons
-        if (selectedMuons_tight.size()+selectedElectrons_tight.size() >= 2)
+        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
         {
             
 	  eventnum_intree = event.id().event();
-	    lumiBlock_intree = event.id().luminosityBlock();
-	    runNumber_intree = event.id().run();
+	  lumiBlock_intree = event.id().luminosityBlock();
+	  runNumber_intree = event.id().run();
             
-	    vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
-	    selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
-	
-	    vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
-	
+	  vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
+	  selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
+	  
+	  vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
+	  
 	    /////////
 	    ///
 	    /// Jets
