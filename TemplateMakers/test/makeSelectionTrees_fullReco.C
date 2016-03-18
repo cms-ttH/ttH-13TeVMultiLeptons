@@ -140,6 +140,18 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Lepton> *lep_fromHiggs_intree=0;  
   vector<ttH::Lepton> *lep_fromTop_intree=0;  
 
+  TLorentzVector w_fromHadTop_tlv_intree;
+  TLorentzVector w_fromHiggs_tlv_intree;
+  TLorentzVector higgs_tlv_intree;
+  TLorentzVector hadTop_tlv_intree;
+  TLorentzVector lepTop_tlv_intree;
+
+  w_fromHadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  w_fromHiggs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  higgs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  hadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  lepTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+
   TTree *two_lep_tree = (TTree*)chain->CloneTree(0);
   two_lep_tree->SetName("ss2l_tree");
   two_lep_tree->Branch("reco_score", &reco_score_intree);
@@ -147,14 +159,19 @@ void run_it(TChain* chain, TString output_file)
   two_lep_tree->Branch("matched_jets", &matched_jets_intree);
   two_lep_tree->Branch("lep_fromTop", &lep_fromTop_intree);
   two_lep_tree->Branch("lep_fromHiggs", &lep_fromHiggs_intree);
+  two_lep_tree->Branch("w_fromHadTop", &w_fromHadTop_tlv_intree);
+  two_lep_tree->Branch("w_fromHiggs", &w_fromHiggs_tlv_intree);
+  two_lep_tree->Branch("higgs", &higgs_tlv_intree);
+  two_lep_tree->Branch("hadTop", &hadTop_tlv_intree);
+  two_lep_tree->Branch("lepTop", &lepTop_tlv_intree);
 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
   chain->SetCacheLearnEntries(20); 
   
   double starttime = get_wall_time();
-  chainentries = 100000;
-  for (int i=0; i<chainentries; i++)
+  //  chainentries = 1000000;
+  for (int i=0; i<chainentries; i+=20)
     {
       
       if (i%10000 == 0)
@@ -243,22 +260,44 @@ void run_it(TChain* chain, TString output_file)
       TLorentzVector tth_T_tlv;
       
       num_jets_var = preselected_jets_intree->size();
+      
       ttH::Jet null_jet1;
       ttH::Jet null_jet2;
       ttH::Jet null_jet3;
       null_jet1.csv = -0.4;
       null_jet2.csv = -0.4;
       null_jet3.csv = -0.4;
+      
+      //      if ( num_jets_var <= 5 )
+      //{
       preselected_jets_intree->push_back(null_jet1);
       preselected_jets_intree->push_back(null_jet2);
       preselected_jets_intree->push_back(null_jet3);
-      
+      //}
+      // else if ( num_jets_var <= 7 )
+      // 	{
+      // 	  preselected_jets_intree->push_back(null_jet1);
+      // 	  preselected_jets_intree->push_back(null_jet2);
+      // 	}
+      // else if ( num_jets_var == 8 )
+      // 	{
+      // 	  preselected_jets_intree->push_back(null_jet1);
+      // 	}
+
       //reset tree vars
       reco_score_intree = -1.;
       unmatched_jets_intree->clear();
       matched_jets_intree->clear();
       lep_fromHiggs_intree->clear();  
       lep_fromTop_intree->clear();  
+      w_fromHadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+      w_fromHiggs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+      higgs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+      hadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+      lepTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+
+
+      int tries = 0;
 
       int lep_fromTop_count = -1;
       for (const auto & lep_fromTop : *tight_leptons_intree)
@@ -267,7 +306,6 @@ void run_it(TChain* chain, TString output_file)
 
 	  lep_fromTop_tlv.SetPxPyPzE(lep_fromTop.obj.px(),lep_fromTop.obj.py(),lep_fromTop.obj.pz(),lep_fromTop.obj.E());
 	  lep_fromTop_T_tlv.SetPxPyPzE(lep_fromTop.obj.px(),lep_fromTop.obj.py(), 0. ,lep_fromTop.obj.pt());
-	  
 
 	  int lep_fromHiggs_count = -1;
 	  for (const auto & lep_fromHiggs : *tight_leptons_intree)
@@ -291,13 +329,15 @@ void run_it(TChain* chain, TString output_file)
 		    {
 		      bjet_fromLepTop_count +=1;
 		      if (bjet_fromHadTop_count == bjet_fromLepTop_count) continue;
-		      
+		      if (bjet_fromHadTop.csv < 0.6 && bjet_fromLepTop.csv < 0.6) continue;
+
 		      bjet_fromLepTop_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(),bjet_fromLepTop.obj.pz(),bjet_fromLepTop.obj.E());
 		      bjet_fromLepTop_T_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(), 0. ,bjet_fromLepTop.obj.pt());
 
 		      lepTop_tlv = lep_fromTop_tlv + bjet_fromLepTop_tlv;
 		      lepTop_T_tlv = lep_fromTop_T_tlv + bjet_fromLepTop_T_tlv;
 
+		      if ( lepTop_tlv.M() > 180 ) continue;
 		      
 		      int wjet1_fromHadTop_count = -1;
 		      for (const auto & wjet1_fromHadTop : *preselected_jets_intree)
@@ -315,16 +355,21 @@ void run_it(TChain* chain, TString output_file)
 			      wjet2_fromHadTop_count +=1;
 			      if (wjet2_fromHadTop_count == bjet_fromLepTop_count) continue;
 			      if (wjet2_fromHadTop_count == bjet_fromHadTop_count) continue;
-			      if (wjet2_fromHadTop_count == wjet1_fromHadTop_count) continue;
+			      if (wjet2_fromHadTop_count <= wjet1_fromHadTop_count) continue; //don't need both orderings 
 
 			      wjet2_fromHadTop_tlv.SetPxPyPzE(wjet2_fromHadTop.obj.px(),wjet2_fromHadTop.obj.py(),wjet2_fromHadTop.obj.pz(),wjet2_fromHadTop.obj.E());
 			      wjet2_fromHadTop_T_tlv.SetPxPyPzE(wjet2_fromHadTop.obj.px(),wjet2_fromHadTop.obj.py(), 0. ,wjet2_fromHadTop.obj.pt());
 			      
 			      w_fromHadTop_tlv = wjet1_fromHadTop_tlv + wjet2_fromHadTop_tlv;
 			      w_fromHadTop_T_tlv = wjet1_fromHadTop_T_tlv + wjet2_fromHadTop_T_tlv;
+			      
+			      if (w_fromHadTop_tlv.M() > 120 ) continue; 
 
 			      hadTop_tlv = w_fromHadTop_tlv + bjet_fromHadTop_tlv;
 			      hadTop_T_tlv = w_fromHadTop_T_tlv + bjet_fromHadTop_T_tlv;
+
+
+			      if ( hadTop_tlv.M() > 220 ) continue;
 
 			      int wjet1_fromHiggs_count = -1;
 			      for (const auto & wjet1_fromHiggs : *preselected_jets_intree)
@@ -346,7 +391,7 @@ void run_it(TChain* chain, TString output_file)
 				      if (wjet2_fromHiggs_count == bjet_fromHadTop_count) continue;
 				      if (wjet2_fromHiggs_count == wjet1_fromHadTop_count) continue;
 				      if (wjet2_fromHiggs_count == wjet2_fromHadTop_count) continue;
-				      if (wjet2_fromHiggs_count == wjet1_fromHiggs_count) continue;
+				      if (wjet2_fromHiggs_count <= wjet1_fromHiggs_count) continue;
 				      
 				      wjet2_fromHiggs_tlv.SetPxPyPzE(wjet2_fromHiggs.obj.px(),wjet2_fromHiggs.obj.py(),wjet2_fromHiggs.obj.pz(),wjet2_fromHiggs.obj.E());
 				      wjet2_fromHiggs_T_tlv.SetPxPyPzE(wjet2_fromHiggs.obj.px(),wjet2_fromHiggs.obj.py(), 0. ,wjet2_fromHiggs.obj.pt());
@@ -354,9 +399,14 @@ void run_it(TChain* chain, TString output_file)
 				      w_fromHiggs_tlv = wjet1_fromHiggs_tlv + wjet2_fromHiggs_tlv;
 				      w_fromHiggs_T_tlv = wjet1_fromHiggs_T_tlv + wjet2_fromHiggs_T_tlv;
 				      
+
+				      //if (w_fromHiggs_tlv.M() > 120 ) continue; 
+
 				      higgs_tlv = w_fromHiggs_tlv + lep_fromHiggs_tlv;
 				      higgs_T_tlv = w_fromHiggs_T_tlv + lep_fromHiggs_T_tlv;
 				      
+				      //				      if (higgs_tlv.M() > 130 ) continue; 
+
 				      lepTop_higgs_tlv = higgs_tlv + lepTop_tlv;
 				      lepTop_higgs_T_tlv = higgs_T_tlv + lepTop_T_tlv;
 
@@ -426,8 +476,15 @@ void run_it(TChain* chain, TString output_file)
 					  lep_fromHiggs_intree->push_back(lep_fromHiggs);  
 					  lep_fromTop_intree->push_back(lep_fromTop);  
 
+					  w_fromHadTop_tlv_intree = w_fromHadTop_tlv;
+					  w_fromHiggs_tlv_intree = w_fromHiggs_tlv;
+					  higgs_tlv_intree = higgs_tlv;
+					  hadTop_tlv_intree = hadTop_tlv;
+					  lepTop_tlv_intree = lepTop_tlv;
+
 					}
-				      
+				      //				      cout << "# tries: " << tries << endl;
+				      tries +=1;
 				    }
 				}
 			    }
@@ -476,7 +533,10 @@ void makeSelectionTrees_fullReco(void)
   TChain *tth_chain = loadFiles("ttH");  
   run_it(tth_chain,"ttH_full_recoBDT_results.root");
 
-  // TChain *ttw_chain = loadFiles("ttW");
-  // TChain *ttbar_chain = loadFiles("ttbar");
+  TChain *ttw_chain = loadFiles("ttW");  
+  run_it(ttw_chain,"ttW_full_recoBDT_results.root");
+
+  TChain *ttbar_chain = loadFiles("ttbar");  
+  run_it(ttbar_chain,"ttbar_full_recoBDT_results.root");
 
 }
