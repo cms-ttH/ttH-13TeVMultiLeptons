@@ -11,7 +11,7 @@ vector<ttH::Lepton> get_collection(vector<ttH::Muon> muObjs, vector<ttH::Electro
 bool passCommon(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets)
 {
   auto taggedjetstight = keepTagged(psJets,"M");
-  auto taggedjetsloose = keepUnTagged(psJets,"L");
+  auto taggedjetsloose = keepTagged(psJets,"L");
   
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
