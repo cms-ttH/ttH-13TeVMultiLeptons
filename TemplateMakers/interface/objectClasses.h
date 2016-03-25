@@ -8,7 +8,36 @@ namespace ttH
   class Lepton
   {
   public:
-    Lepton(){} // default constructor
+    Lepton(){
+      obj.SetPxPyPzE(0.,0.,0.,0.);
+      charge = 0;
+      pdgID = -9999;
+      genPdgID = -9999;
+      genMotherPdgID = -9999;
+      genGrandMotherPdgID = -9999;
+      dxy = -99.;
+      dz = -99.;
+      relIso = -99.;
+      miniIso = -99.;
+      
+      lepMVA = -99.;
+      miniIsoCharged = -99.;
+      miniIsoNeutral = -99.;
+      //matchedJetdR = -99.;
+      jetPtRatio = -99.;
+      jetPtRel = -99.;
+      csv = -99.;
+      sip3D = -99.;
+      // extra for sync
+      miniAbsIsoCharged = -99.;
+      miniAbsIsoNeutral = -99.;
+      rho = -99.;
+      effArea = -99.;
+      miniIsoR = -99.;
+      miniAbsIsoNeutralcorr = -99.;    
+
+
+    } // default constructor
     
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
@@ -126,12 +155,20 @@ namespace ttH
   public:
     Jet(){
       obj.SetPxPyPzE(0.,0.,0.,0.); 
-      charge = -99.;
+      //      charge = -99.;
+      charge = 0.;
       genPdgID = -9999;
       genMotherPdgID = -9999;
       genGrandMotherPdgID = -9999;
-      csv = -99.;
+      csv = -.2;
+      //csv = -99.;
       qgid = -99.;
+      /* nearestLep_dr = -99; */
+      /* nearestLep_pt = -99; */
+      /* nearestLep_pdgId = 9999; */
+      /* nearestLep_lepMva = -99; */
+      /* nearestLep_motherPdgId = 9999; */
+      /* nearestLep_charge = -99.; */
     } // default constructor
     
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
@@ -142,7 +179,12 @@ namespace ttH
     int genGrandMotherPdgID;
     double csv;
     double qgid;
-
+    /* double nearestLep_dr; */
+    /* double nearestLep_pt; */
+    /* double nearestLep_pdgId; */
+    /* double nearestLep_lepMva; */
+    /* double nearestLep_motherPdgId; */
+    /* double nearestLep_charge; */
     void clear(void)
     {
       obj.SetPxPyPzE(0.,0.,0.,0.); 
@@ -152,6 +194,12 @@ namespace ttH
       genGrandMotherPdgID = -9999;
       csv = -99.;
       qgid = -99.;      
+      /* nearestLep_dr = -99; */
+      /* nearestLep_pt = -99; */
+      /* nearestLep_pdgId = 9999; */
+      /* nearestLep_motherPdgId = 9999; */
+      /* nearestLep_lepMva = -99; */
+      /* nearestLep_charge = -99.; */
     }
 
     virtual ~Jet(){};
