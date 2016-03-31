@@ -1,3 +1,6 @@
+#ifndef TTH_OBJ_CLASSES
+#define TTH_OBJ_CLASSES
+
 #include <vector>
 
 #include "TObject.h"
@@ -201,3 +204,5 @@ namespace ttH
 
 
 } // end of namespace ttH
+
+#endif

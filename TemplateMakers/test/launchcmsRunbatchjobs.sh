@@ -27,9 +27,10 @@ interjobspacing=5 									# seconds to wait before submitting next job
 intersamplespacing=120 									# seconds to wait before submitting jobs for next sample
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets') 	# samples to run over (has to match array names in sampleLists.sh)
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'ZJets' 'WJets' 'WZJets')
-declare -a samples=('ttH125powheg')
+#declare -a samples=('ttH125powheg')
 #declare -a samples=('data2015DMET')
 #declare -a samples=('ttWkevin')
+declare -a samples=('TTJets')
 # *******************************
 
 

@@ -33,7 +33,7 @@ bool MakeGoodPlot::passes_2lss(int sample_number)
   double MHT_handle = objs_for_mht.Pt();
   double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
   if ( !(metLD_handle> 0.2) ) return false;
-  if ( !((*tightMvaBased_leptons_intree)[0].obj.Pt()>20 && (*tightMvaBased_leptons_intree)[1].obj.Pt()>20) ) return false;
+  if ( !((*tightMvaBased_leptons_intree)[0].obj.Pt()>20 && (*tightMvaBased_leptons_intree)[1].obj.Pt()>15) ) return false;
   if ( !(((*tightMvaBased_leptons_intree)[0].obj.Pt() + (*tightMvaBased_leptons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.) ) return false; 
   if ((*tightMvaBased_electrons_intree).size() ==2 )
     {

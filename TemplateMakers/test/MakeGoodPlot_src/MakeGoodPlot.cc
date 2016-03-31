@@ -289,6 +289,7 @@ class MakeGoodPlot
                 
 		void initialize();
 		void load_samples(std::vector<int> samps);
+                void setBranchAddresses(int sample_number);
 		void get_hist_of_tiered_MVA_response_for_one_sample_5j4t(TH1 *plot, int sample_number=1);
 		void get_hist_of_tiered_MVA_response_for_one_sample_6j4t(TH1 *plot, int sample_number=1);
 		void get_hist_MVA_response_for_one_sample_643203(TH1 *plot, int sample_number=1);
@@ -400,7 +401,7 @@ MakeGoodPlot::~MakeGoodPlot() {}
 
 
 #include "initialize.h"  // <- required
-#include "loadsamples3.h"  // <- required
+#include "loadsamplesNDPCs.h"  // <- required
 //#include "drawROCiso.h"
 //#include "printcutflow.h"
 #include "someutils.h"
@@ -704,11 +705,6 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 	leg->SetNColumns(5);
 	
 	
-	TH1F *flavorhist[3];
-	flavorhist[0] = new TH1F("ttbb",";CSV",50,-1,1);
-	//flavorhist[0] = new TH1F("ttbb",";CSV",100,-50,50);
-	flavorhist[1] = new TH1F("ttcc",";CSV",50,-1,1);
-	flavorhist[2] = new TH1F("ttlf",";CSV",50,-1,1);
 	
 	for (int i=0; i<numsamples; i++)
 	{
@@ -722,7 +718,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		
 		//sample_hist[i] = new TH1F("BDT response, 5j4t " + sample_names[samp_int],"",20,-1,1);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";#Sigma jet p_{T}/#Sigma jet E",10,0,1);       // title  // #Sigma jet p_{T}/#Sigma jet E
-		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";sphericity",10,0,1);       // title  // #Sigma jet p_{T}/#Sigma jet E
+		sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";sphericity",10,0,1);       // title  // #Sigma jet p_{T}/#Sigma jet E
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";average #DeltaR(b-tags)",10,0,4);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";Best Higgs Mass",25,0,500);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";Median Inv. Mass (tag,tag)",10,0,500);
@@ -730,8 +726,14 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";best #DeltaR(b,b)",10,0,5);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";sum p_{T}(lepton,jets,MET)",25,0,1500);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";second highest CSV output (b-tags)",10,0.6,1);
-		sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";awert",1000,10000,10000);
+		//sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";awert",1000,10000,10000);
 		
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";abs(miniIso(lep2) - miniIso(lep1))",100,0,0.5);
+		//sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";sum pt / sum E",100,0,1);
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";sum E",100,0,5000);
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";min pt",100,0,100);
+                
+                
 		//get_hist_of_tiered_MVA_response_for_one_sample_5j4t(sample_hist[i],samp_int);
 		//get_hist_MVA_response_for_one_sample_643203(sample_hist[i],samp_int);
 		
@@ -749,14 +751,6 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		if (samp_int>=4) sample_hist[i]->SetLineColor(2+samp_int);
 		*/
 		
-		// Darren:
-		/*
-		h_ttH->SetLineColor(kBlue);
-		h_ttlf->SetLineColor(kRed);
-		h_ttcc->SetLineColor(kMagenta+2);
-		h_ttbb->SetLineColor(kGreen+1);
-		h_ttb->SetLineColor(kOrange+1);
-		*/
 		
 		if (samp_int==1) sample_hist[i]->SetLineColor(kRed); // ttH
 		//if (samp_int==2) sample_hist[i]->SetLineColor(kGreen+1); //--
@@ -771,7 +765,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
                 
                 
 				
-		sample_hist[i]->GetXaxis()->SetTitle("pdgID");		
+		//sample_hist[i]->GetXaxis()->SetTitle("pdgID");		
 		sample_hist[i]->SetLineWidth(2);
 		leg->AddEntry(sample_hist[i],sample_names[samp_int] + " (" + sample_evts_string + ")","l");  /// have ability to add # of evts per sample to legend... 
 		//leg->AddEntry(sample_hist[i],sample_names[samp_int],"l");
@@ -813,23 +807,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 	SELECTIONInfoLatex->SetTextSize(0.05);
 	//SELECTIONInfoLatex->Draw("same");
 	
-	flavorhist[0]->SetLineWidth(2);
-	flavorhist[0]->SetLineColor(kRed);
-	flavorhist[0]->SetStats(0);
-	flavorhist[1]->SetLineWidth(2);
-	flavorhist[1]->SetLineColor(kBlue);
-	flavorhist[1]->SetStats(0);
-	flavorhist[2]->SetLineWidth(2);
-	flavorhist[2]->SetLineColor(kGreen);
-	flavorhist[2]->SetStats(0);	
-	
-	//leg->AddEntry(flavorhist[0],"b-jets","l");
-	//leg->AddEntry(flavorhist[1],"c-jets","l");
-	//leg->AddEntry(flavorhist[2],"other","l");
-	
-	//flavorhist[0]->DrawNormalized();
-	//flavorhist[1]->DrawNormalized("same");
-	//flavorhist[2]->DrawNormalized("same");
+
 	leg->Draw("same");
 }
 
@@ -944,19 +922,16 @@ void MakeGoodPlot::draw_2D_plot(std::vector<int> samps)
 void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1 *plot2, TH1 *plot3)
 {
 	
-	ch[sample_number]->SetBranchAddress( "preselected_leptons", &preselected_leptons_intree );
-        ch[sample_number]->SetBranchAddress( "preselected_jets", &preselected_jets_intree );
-	ch[sample_number]->SetBranchAddress( "pruned_genParticles", &pruned_genParticles_intree );
-        ch[sample_number]->SetBranchAddress( "wgt", &wgt_intree );
+        setBranchAddresses(sample_number);
         
 	cout << sample_number << endl;
 	cout << ch[sample_number]->GetEntries() << endl;
 	
 	for (Int_t i=0;i<ch[sample_number]->GetEntries();i++)
 	{
-		ch[sample_number]->GetEntry(i);
+		//if (i==10000) break;
                 
-                if (i>10000) break;
+                ch[sample_number]->GetEntry(i);
 					
 		weight = wgt_intree;
 		
@@ -973,10 +948,40 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
                                         
                 //}
         
-                for (unsigned int j=0; j<(*preselected_leptons_intree).size(); j++)
+                //for (unsigned int j=0; j<(*preselected_leptons_intree).size(); j++)
+                //{
+                //    plot->Fill((*preselected_leptons_intree)[j].genMotherPdgID);
+                //}
+                
+                if (passes_common(sample_number))
                 {
-                    plot->Fill((*preselected_leptons_intree)[j].genMotherPdgID);
-                }               
+                    if (passes_2lss(sample_number))
+                    {
+                        //double miniIsoDiff = abs((*tightMvaBased_leptons_intree)[0].miniIso - (*tightMvaBased_leptons_intree)[1].miniIso);
+                        //plot->Fill(miniIsoDiff);
+                        
+                        double sumpt = getsumpt(*preselected_jets_intree,*tightMvaBased_leptons_intree,*met_intree);
+                        double sumE = getsumEnergy(*preselected_jets_intree,*tightMvaBased_leptons_intree,*met_intree);
+                        
+                        double ratio = (sumE==0) ? -1 : sumpt / sumE;
+                        
+                        //plot->Fill(sumE);
+                        
+                        double minpt = ((*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt() < (*preselected_jets_intree)[((*preselected_jets_intree).size()-1)].obj.Pt()) ?
+                            (*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt() : (*preselected_jets_intree)[((*preselected_jets_intree).size()-1)].obj.Pt();
+                        
+                        //plot->Fill(minpt);
+                        
+                        double aplanarity, sphericity;
+                        
+                        getSp(*tightMvaBased_leptons_intree, *met_intree, *preselected_jets_intree, aplanarity, sphericity);
+                        
+                        plot->Fill(sphericity);
+
+                    }
+                }
+                
+                               
 
 	}
 
