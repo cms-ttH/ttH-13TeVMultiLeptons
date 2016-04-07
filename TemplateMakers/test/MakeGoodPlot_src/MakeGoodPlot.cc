@@ -341,6 +341,7 @@ class MakeGoodPlot
                 bool passes_SSemu(int sample_number);
                 bool passes_SSmumu(int sample_number);
                 bool passes_3l(int sample_number);
+                bool passes_geq3l(int sample_number);
                 bool passes_4l(int sample_number);
                 
                 template <typename almostTLVtype> TLorentzVector makeTLV( almostTLVtype thing );
@@ -718,7 +719,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		
 		//sample_hist[i] = new TH1F("BDT response, 5j4t " + sample_names[samp_int],"",20,-1,1);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";#Sigma jet p_{T}/#Sigma jet E",10,0,1);       // title  // #Sigma jet p_{T}/#Sigma jet E
-		sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";sphericity",10,0,1);       // title  // #Sigma jet p_{T}/#Sigma jet E
+		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";sphericity",10,0,1);       // title  // #Sigma jet p_{T}/#Sigma jet E
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";average #DeltaR(b-tags)",10,0,4);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";Best Higgs Mass",25,0,500);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";Median Inv. Mass (tag,tag)",10,0,500);
@@ -728,11 +729,14 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";second highest CSV output (b-tags)",10,0.6,1);
 		//sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";awert",1000,10000,10000);
 		
-                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";abs(miniIso(lep2) - miniIso(lep1))",100,0,0.5);
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";abs(miniIso(lep1)+miniIso(lep2)+miniIso(lep3))",100,0,0.5);
 		//sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";sum pt / sum E",100,0,1);
                 //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";sum E",100,0,5000);
                 //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";min pt",100,0,100);
-                
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";W pt",100,0,1000);
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";status",2000,-1000,1000);
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";deltaR",100,0,10);
+                sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";leading lep pt",100,0,500);
                 
 		//get_hist_of_tiered_MVA_response_for_one_sample_5j4t(sample_hist[i],samp_int);
 		//get_hist_MVA_response_for_one_sample_643203(sample_hist[i],samp_int);
@@ -957,8 +961,8 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
                 {
                     if (passes_2lss(sample_number))
                     {
-                        //double miniIsoDiff = abs((*tightMvaBased_leptons_intree)[0].miniIso - (*tightMvaBased_leptons_intree)[1].miniIso);
-                        //plot->Fill(miniIsoDiff);
+                        double miniIsoDiff = abs((*tightMvaBased_leptons_intree)[0].miniIso + (*tightMvaBased_leptons_intree)[1].miniIso);
+                        //plot->Fill(min(miniIsoDiff,0.5), wgt_intree);
                         
                         double sumpt = getsumpt(*preselected_jets_intree,*tightMvaBased_leptons_intree,*met_intree);
                         double sumE = getsumEnergy(*preselected_jets_intree,*tightMvaBased_leptons_intree,*met_intree);
@@ -976,9 +980,61 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
                         
                         getSp(*tightMvaBased_leptons_intree, *met_intree, *preselected_jets_intree, aplanarity, sphericity);
                         
-                        plot->Fill(sphericity);
+                        //plot->Fill(sphericity);
+                        
+                        auto sumTLVpre = getsumTLV(*tightMvaBased_leptons_intree, *preselected_jets_intree, *met_intree);
+                        TLorentzVector sumTLV = makeRealTLV(sumTLVpre);
+                        
+                        //plot->Fill(sumTLV.Mt());
+                        
+                        // for (int j=0; j<gpsize; j++)
+//                         {
+//                             // if (abs((*pruned_genParticles_intree)[j].pdgID)==24 )
+// //                             {
+// //                                 plot->Fill( (*pruned_genParticles_intree)[j].obj.Pt());
+// // 
+// //                             }
+//                             
+//                             if ( ((*pruned_genParticles_intree)[j].status>19) && ((*pruned_genParticles_intree)[j].status<30) )
+//                             {
+//                             
+//                                 if (abs((*pruned_genParticles_intree)[j].pdgID)==24 )
+//                                 {
+//                                     auto genChild0 = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0];
+//                                     auto genChild1 = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child1];
+//                                     
+//                                     if (abs(genChild0.pdgID)>=11 && abs(genChild0.pdgID)<=14 && abs(genChild1.pdgID)>=11 && abs(genChild1.pdgID)<=14)
+//                                     {
+//                                 
+//                                         double theDR = getdR(genChild0, genChild1);
+//                                 
+//                                         plot->Fill(theDR);
+//                                     }
+//                             
+//                                 }
+//                             }
+//                             
+//                             
+// 
+//                         }                        
 
                     }
+                    
+                    
+                    if (passes_geq3l(sample_number))
+                    {
+                    
+                        double miniIsoDiff = abs((*tightMvaBased_leptons_intree)[0].miniIso + (*tightMvaBased_leptons_intree)[1].miniIso + (*tightMvaBased_leptons_intree)[2].miniIso);
+                        //plot->Fill(min(miniIsoDiff,0.5), wgt_intree);
+                        
+                        //double minpt = ((*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt() < (*preselected_jets_intree)[((*preselected_jets_intree).size()-1)].obj.Pt()) ?
+                        //    (*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt() : (*preselected_jets_intree)[((*preselected_jets_intree).size()-1)].obj.Pt();
+                        double minpt = (*tightMvaBased_leptons_intree)[0].obj.Pt() - (*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt();
+                        //plot->Fill(minpt);                                    
+                        //plot->Fill((*met_intree)[0].obj.Pt());
+                        plot->Fill((*tightMvaBased_leptons_intree)[0].obj.Pt()); 
+                    }
+                    
                 }
                 
                                

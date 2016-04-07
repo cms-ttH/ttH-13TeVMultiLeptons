@@ -305,6 +305,10 @@ template <typename coll1type, typename coll2type> double getTwoObjKineExtreme( c
             
             if (sametypes) thesame = ((*obj1).obj==(*obj2).obj);
             
+            // If the collection types are not the same, this function does NOT explicitly check 
+            // to make sure we are not comparing the same object with itself! (i.e., one should not
+            // try to compare overlapping collections of different types, such as ttH::Leptons and ttH::Muons).
+            
             if (!thesame)
             {
                 if (extremetype=="min")
@@ -434,7 +438,7 @@ template <typename coll1type, typename coll2type> vector<double> getTwoObjKineRa
                 }    
                 else if (quantity=="massSFOS")
                 {
-                    if ( ((float)(*obj1).charge/(float)(*obj2).charge) == -1.0 ) // this doesn't work for ttH::MET (should fix)
+                    if ( (abs((*obj1).pdgID)==abs((*obj2).pdgID)) && ((float)(*obj1).charge/(float)(*obj2).charge == -1.0) )
                     {
                         auto obj12 = (*obj1).obj + (*obj2).obj;
                         kineRawCollecion.push_back(obj12.M());
@@ -478,10 +482,13 @@ template <typename coll1type, typename coll2type> vector<double> getTwoObjKineRa
                             auto obj12 = (*obj1).obj + (*obj2).obj;
                             kineRawCollecion.push_back(obj12.M());  
                         }    
-                        else if (quantity=="massSFOS" && ((float)(*obj1).charge/(float)(*obj2).charge == -1.0))
+                        else if (quantity=="massSFOS") 
                         {
-                            auto obj12 = (*obj1).obj + (*obj2).obj;
-                            kineRawCollecion.push_back(obj12.M());
+                            if ( (abs((*obj1).pdgID)==abs((*obj2).pdgID)) && ((float)(*obj1).charge/(float)(*obj2).charge == -1.0) )
+                            {
+                                auto obj12 = (*obj1).obj + (*obj2).obj;
+                                kineRawCollecion.push_back(obj12.M());
+                            }
                         }
                     }
                                         

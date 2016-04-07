@@ -86,11 +86,12 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
                         //basedir_plus = "TTJets/";
                         //basedir_plus = "ttJets/";
                         //basedir_plus = "";
-                        basedir_plus = "TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/crab_ttJets/150519_150435/0000/";
-			thesample = oldbasedir + basedir_plus + "*.root";
-			ch[5]->Add(thesample);
-                        basedir_plus = "TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/crab_ttJets/150519_150435/0001/";
-			thesample = oldbasedir + basedir_plus + "*.root";
+                        //basedir_plus = "TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/crab_ttJets/150519_150435/0000/";
+			//thesample = oldbasedir + basedir_plus + "*.root";
+			//ch[5]->Add(thesample);
+                        //basedir_plus = "TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/crab_ttJets/150519_150435/0001/";
+			basedir_plus = "try1_ttWkevin_mAODV2/TTJets/";
+			thesample = basedir + basedir_plus + "*.root";
 			ch[5]->Add(thesample);
 			xsecs[5]=815.96; // at 173.2 GeV (top group twiki)
 			numgen[5]=25446993.0;

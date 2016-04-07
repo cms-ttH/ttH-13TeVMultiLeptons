@@ -23,25 +23,60 @@ bool MakeGoodPlot::passes_2lss(int sample_number)
 {
   if ( !( ((*preselected_leptons_intree).size() ==2 && (*tightMvaBased_leptons_intree).size() == 2) || ((*preselected_leptons_intree).size() == 3 && (*tightMvaBased_leptons_intree).size() == 2 && (*preselected_leptons_intree)[2].obj.Pt() < (*tightMvaBased_leptons_intree)[1].obj.Pt() ) ) ) return false;
   //if ( !((*preselected_leptons_intree).size() ==2 && (*tightMvaBased_leptons_intree).size() == 2) ) return false;
-
+  
+  bool is_subleading_ele = (abs((*tightMvaBased_leptons_intree)[1].pdgID)==11) ? true : false;
+  
   if ((*tightMvaBased_leptons_intree)[0].charge != (*tightMvaBased_leptons_intree)[1].charge) return false;
   for (auto &ele: (*tightMvaBased_electrons_intree)) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;
   for (auto &mu: (*tightMvaBased_muons_intree)) if (!(mu.chargeFlip < 0.2)) return false;
   if ( !( (*preselected_jets_intree).size()>3 ) ) return false;
 
-  auto objs_for_mht = getsumTLV((*preselected_leptons_intree),(*preselected_jets_intree));
-  double MHT_handle = objs_for_mht.Pt();
-  double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
-  if ( !(metLD_handle> 0.2) ) return false;
-  if ( !((*tightMvaBased_leptons_intree)[0].obj.Pt()>20 && (*tightMvaBased_leptons_intree)[1].obj.Pt()>15) ) return false;
-  if ( !(((*tightMvaBased_leptons_intree)[0].obj.Pt() + (*tightMvaBased_leptons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.) ) return false; 
+  if ( is_subleading_ele && (!((*tightMvaBased_leptons_intree)[0].obj.Pt()>20 && (*tightMvaBased_leptons_intree)[1].obj.Pt()>15)) ) return false;
+  if ( !((*tightMvaBased_leptons_intree)[0].obj.Pt()>20 && (*tightMvaBased_leptons_intree)[1].obj.Pt()>10) ) return false;
+  //if ( !(((*tightMvaBased_leptons_intree)[0].obj.Pt() + (*tightMvaBased_leptons_intree)[1].obj.Pt() + (*met_intree)[0].obj.Pt())>100.) ) return false; 
   if ((*tightMvaBased_electrons_intree).size() ==2 )
-    {
-      double vetoZmass = pickFromSortedTwoObjKine((*preselected_electrons_intree),"mass",1,91.2);
-      if ( !(fabs(vetoZmass-91.2)>10) ) return false;                     
-    }
+  {
+    double vetoZmass = pickFromSortedTwoObjKine((*preselected_electrons_intree),"mass",1,91.2);
+    if ( !(fabs(vetoZmass-91.2)>10) ) return false;
+
+    auto objs_for_mht = getsumTLV((*preselected_leptons_intree),(*preselected_jets_intree));
+    double MHT_handle = objs_for_mht.Pt();
+    double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;
+    if ( !(metLD_handle> 0.2) ) return false;
+
+  }
   return true;
 }
+
+bool MakeGoodPlot::passes_geq3l(int sample_number)
+{
+    
+    if (!((*tightMvaBased_leptons_intree).size()>=3)) return false;            
+    if (!( (*tightMvaBased_leptons_intree)[0].obj.Pt()>20. && (*tightMvaBased_leptons_intree)[1].obj.Pt()>10. && (*tightMvaBased_leptons_intree)[2].obj.Pt()>10. )) return false;
+    
+    for (auto &ele: (*tightMvaBased_electrons_intree)) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;
+    for (auto &mu: (*tightMvaBased_muons_intree)) if (!(mu.chargeFlip < 0.2)) return false;    
+    
+    if (abs((*tightMvaBased_leptons_intree)[0].charge + (*tightMvaBased_leptons_intree)[1].charge + (*tightMvaBased_leptons_intree)[2].charge)!=1) return false;    
+
+    double vetoZmassSFOS = pickFromSortedTwoObjKine(*tightMvaBased_leptons_intree,"massSFOS",1,91.2);
+    if (!(fabs(vetoZmassSFOS-91.2)>10.)) return false;                  
+    
+    if ((*preselected_jets_intree).size()<4)
+    {        
+        auto objs_for_mht = getsumTLV(*preselected_leptons_intree,*preselected_jets_intree);
+        double MHT_handle = objs_for_mht.Pt();
+        double metLD_handle = 0.00397*((*met_intree)[0].obj.Pt()) + 0.00265*MHT_handle;       
+        
+        if (metLD_handle<=0.2) return false;
+        if ( (vetoZmassSFOS<0) && (metLD_handle<=0.3) ) return false;
+    }
+    
+    return true;
+}
+
+
+//____________________________________________________________________________________________________________________
 
 
 bool MakeGoodPlot::passes_SSee(int sample_number)
@@ -151,6 +186,9 @@ bool MakeGoodPlot::passes_SSemu(int sample_number)
     
     return passes;
 }
+
+
+
 bool MakeGoodPlot::passes_3l(int sample_number)
 {
     bool passes = false;
