@@ -145,7 +145,8 @@ namespace ttH
     int genGrandMotherPdgID;
     double csv;
     double qgid;
-
+    int pdgID; //place holder for Geoff's templated functions
+    
     void clear(void)
     {
       obj.SetPxPyPzE(0.,0.,0.,0.); 
