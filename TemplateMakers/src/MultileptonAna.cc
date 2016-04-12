@@ -349,6 +349,7 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       string thedisc = btagparams.getParameter<string> ("btagdisc");
       jet.csv = iJet.bDiscriminator(thedisc);
       jet.qgid = iJet.userFloat("qgid");
+      jet.pdgID = iJet.pdgId();
       jetCollection.push_back(jet);
 
   }

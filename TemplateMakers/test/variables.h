@@ -416,6 +416,7 @@ template <typename coll1type, typename coll2type> vector<double> getTwoObjKineRa
         {
             for (auto obj2 = collection2.begin(); obj2 != collection2.end(); ++obj2)
             {             
+                //auto objType = typeid(*obj1).name();
                 if (quantity=="dR")
                 {
                     double value = getdR((*obj1),(*obj2));
