@@ -73,9 +73,9 @@ void run_it(TChain* chain, TString output_file)
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
   vector<ttH::Jet> *csvSorted_jets_intree=0;
-  ttH::Jet nearest_jetNoCsvTag_intree;
-  ttH::Lepton nearest_lep_intree;
-  ttH::Lepton furthest_lep_intree;
+  ttH::Jet nearestJet_intree;
+  ttH::Lepton lepHiggs_intree;
+  ttH::Lepton lepTop_intree;
   double min_dR_bl_intree = 0;
   double max_dR_bl_intree = 0;
   TLorentzVector hadTop_tlv_intree;  
@@ -88,23 +88,22 @@ void run_it(TChain* chain, TString output_file)
   signal_tree->Branch("csv_sorted_jets", &csvSorted_jets_intree);
   signal_tree->Branch("min_dR_bl", &min_dR_bl_intree);
   signal_tree->Branch("max_dR_bl", &max_dR_bl_intree);
-  signal_tree->Branch("nearest_jet", &nearest_jetNoCsvTag_intree);
   signal_tree->Branch("hadTop_tlv", &hadTop_tlv_intree);
   signal_tree->Branch("lepTop_tlv", &lepTop_tlv_intree);
-  signal_tree->Branch("nearestLep", &nearest_lep_intree);
-  signal_tree->Branch("furthestLep", &furthest_lep_intree);
+  signal_tree->Branch("lepFromTop", &lepTop_intree);
+  signal_tree->Branch("lepFromHiggs", &lepHiggs_intree);
+  signal_tree->Branch("nearestBJet", &nearestJet_intree);
 
   TTree *background_tree = (TTree*)chain->CloneTree(0);
   background_tree->SetName("background_tree");
   background_tree->Branch("csv_sorted_jets", &csvSorted_jets_intree);
   background_tree->Branch("min_dR_bl", &min_dR_bl_intree);
   background_tree->Branch("max_dR_bl", &max_dR_bl_intree);
-  background_tree->Branch("nearest_jet", &nearest_jetNoCsvTag_intree);
   background_tree->Branch("hadTop_tlv", &hadTop_tlv_intree);
   background_tree->Branch("lepTop_tlv", &lepTop_tlv_intree);
-  background_tree->Branch("nearestLep", &nearest_lep_intree);
-  background_tree->Branch("furthestLep", &furthest_lep_intree);
-
+  background_tree->Branch("lepFromTop", &lepTop_intree);
+  background_tree->Branch("lepFromHiggs", &lepHiggs_intree);
+  background_tree->Branch("nearestBJet", &nearestJet_intree);
 
 
   Int_t cachesize = 250000000;   //250 MBytes
@@ -130,62 +129,70 @@ void run_it(TChain* chain, TString output_file)
       ////
       //////////////////////////
 
-      TLorentzVector bjet1_tlv;
-      TLorentzVector bjet2_tlv;
-      TLorentzVector lep1_tlv;
-      TLorentzVector lep2_tlv;
-      
       *csvSorted_jets_intree = *preselected_jets_intree;
-      std::sort(csvSorted_jets_intree->begin(), csvSorted_jets_intree->end(), [] (ttH::Jet a, ttH::Jet b) { return a.csv > b.csv;});  
-  
+      std::sort(csvSorted_jets_intree->begin(), csvSorted_jets_intree->end(), [] (ttH::Jet a, ttH::Jet b) { return a.csv > b.csv;});
       ttH::Jet bJet1 = (*csvSorted_jets_intree)[0];
       ttH::Jet bJet2 = (*csvSorted_jets_intree)[1];
 
+      TLorentzVector bjet1_tlv;
+      TLorentzVector bjet2_tlv;
+      TLorentzVector lepTop_tlv;
+      TLorentzVector lepHiggs_tlv;
       bjet1_tlv.SetPxPyPzE(bJet1.obj.px(),bJet1.obj.py(),bJet1.obj.pz(),bJet1.obj.E());
       bjet2_tlv.SetPxPyPzE(bJet2.obj.px(),bJet2.obj.py(),bJet2.obj.pz(),bJet2.obj.E());
 
-      lep1_tlv.SetPxPyPzE((*tight_leptons_intree)[0].obj.px(),(*tight_leptons_intree)[0].obj.py(),(*tight_leptons_intree)[0].obj.pz(),(*tight_leptons_intree)[0].obj.E());
-      lep2_tlv.SetPxPyPzE((*tight_leptons_intree)[1].obj.px(),(*tight_leptons_intree)[1].obj.py(),(*tight_leptons_intree)[1].obj.pz(),(*tight_leptons_intree)[1].obj.E());
-      
-      min_dR_bl_intree = bjet1_tlv.DeltaR( lep1_tlv );
-      max_dR_bl_intree = bjet1_tlv.DeltaR( lep2_tlv );
-      lepTop_tlv_intree = bjet1_tlv + lep1_tlv;
-      nearest_lep_intree = (*tight_leptons_intree)[0];
-      furthest_lep_intree = (*tight_leptons_intree)[1];
-      if ( min_dR_bl_intree > max_dR_bl_intree ) 
+      ///signal
+      if ( abs((*tight_leptons_intree)[0].genGrandMotherPdgID) ==6 || abs((*tight_leptons_intree)[1].genGrandMotherPdgID) ==25)
 	{
-	  min_dR_bl_intree = bjet1_tlv.DeltaR( lep2_tlv );
-	  max_dR_bl_intree = bjet1_tlv.DeltaR( lep1_tlv );
-	  lepTop_tlv_intree = bjet1_tlv + lep2_tlv;
-	  nearest_lep_intree = (*tight_leptons_intree)[1];
-	  furthest_lep_intree = (*tight_leptons_intree)[0];
-	} 
-      
-      ///////////////////////////////////////////////////
-      //find the pt of the nearest jet to the highest csv bjet
-      ttH::Jet null_jet; nearest_jetNoCsvTag_intree = null_jet;
-      double min_dR = 100.;
-      TLorentzVector jet_tlv;
-      for (const auto & jet : *preselected_jets_intree)
-	{
-	  if (jet.obj.pt() == bJet1.obj.pt()) continue;
-	  jet_tlv.SetPxPyPzE(jet.obj.px(),jet.obj.py(),jet.obj.pz(),jet.obj.E());
-
-	  double dR = bjet1_tlv.DeltaR( jet_tlv ); 
-	  if (dR < min_dR) 
-	    {
-	      min_dR = dR;
-	      nearest_jetNoCsvTag_intree = jet;
-	      hadTop_tlv_intree = jet_tlv + bjet1_tlv;
-	    }
-
-	  break;
+	  lepTop_intree = (*tight_leptons_intree)[0];
+	  lepHiggs_intree = (*tight_leptons_intree)[1];
 	}
-      ///////////////////////////////////////////
+      else if ( abs((*tight_leptons_intree)[0].genGrandMotherPdgID) ==25 || abs((*tight_leptons_intree)[1].genGrandMotherPdgID) ==6)
+	{
+	  lepTop_intree = (*tight_leptons_intree)[1];
+	  lepHiggs_intree = (*tight_leptons_intree)[0];
+	}
 
+      lepTop_tlv.SetPxPyPzE(lepTop_intree.obj.px(),lepTop_intree.obj.py(),lepTop_intree.obj.pz(),lepTop_intree.obj.E());
+      lepHiggs_tlv.SetPxPyPzE(lepHiggs_intree.obj.px(),lepHiggs_intree.obj.py(),lepHiggs_intree.obj.pz(),lepHiggs_intree.obj.E());
 
-      if (bJet1.genMotherPdgID*nearest_lep_intree.charge > 0) signal_tree->Fill();
-      else background_tree->Fill();
+      min_dR_bl_intree = lepTop_tlv.DeltaR ( bjet1_tlv );
+      max_dR_bl_intree = lepTop_tlv.DeltaR ( bjet2_tlv );
+      nearestJet_intree = bJet1;
+      if ( max_dR_bl_intree < min_dR_bl_intree)
+	{
+	  min_dR_bl_intree = lepTop_tlv.DeltaR ( bjet2_tlv );
+	  max_dR_bl_intree = lepTop_tlv.DeltaR ( bjet1_tlv );
+	  nearestJet_intree = bJet2;
+	}
+
+      signal_tree->Fill();
+      //background
+      if ( abs((*tight_leptons_intree)[0].genGrandMotherPdgID) ==6 || abs((*tight_leptons_intree)[1].genGrandMotherPdgID) ==25)
+	{
+	  lepTop_intree = (*tight_leptons_intree)[1];
+	  lepHiggs_intree = (*tight_leptons_intree)[0];
+	}
+      else if ( abs((*tight_leptons_intree)[0].genGrandMotherPdgID) ==25 || abs((*tight_leptons_intree)[1].genGrandMotherPdgID) ==6)
+	{
+	  lepTop_intree = (*tight_leptons_intree)[0];
+	  lepHiggs_intree = (*tight_leptons_intree)[1];
+	}
+
+      lepTop_tlv.SetPxPyPzE(lepTop_intree.obj.px(),lepTop_intree.obj.py(),lepTop_intree.obj.pz(),lepTop_intree.obj.E());
+      lepHiggs_tlv.SetPxPyPzE(lepHiggs_intree.obj.px(),lepHiggs_intree.obj.py(),lepHiggs_intree.obj.pz(),lepHiggs_intree.obj.E());
+
+      min_dR_bl_intree = lepTop_tlv.DeltaR ( bjet1_tlv );
+      max_dR_bl_intree = lepTop_tlv.DeltaR ( bjet2_tlv );
+      nearestJet_intree = bJet1;
+      if ( max_dR_bl_intree < min_dR_bl_intree)
+	{
+	  min_dR_bl_intree = lepTop_tlv.DeltaR ( bjet2_tlv );
+	  max_dR_bl_intree = lepTop_tlv.DeltaR ( bjet1_tlv );
+	  nearestJet_intree = bJet2;
+	}
+      
+      background_tree->Fill();
     }
   
   
@@ -200,8 +207,8 @@ void run_it(TChain* chain, TString output_file)
 
 void updateTree(void)
 {
-  TString output_file = "ttH_new_tree.root";
+  TString output_file = "ttbar_new_tree.root";
   TChain *chain = new TChain("ss2l_tree");
-  chain->Add("comparison_bdt_weightedBkgSq/ttH_sum_v2.root");
+  chain->Add("comparison_bdt_weightedBkgSq/ttbar_sum_v2.root");
   run_it(chain,output_file);
 }
