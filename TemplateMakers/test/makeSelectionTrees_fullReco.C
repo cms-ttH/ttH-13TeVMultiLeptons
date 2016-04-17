@@ -138,13 +138,24 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Jet> *unmatched_jets_intree=0;
   vector<ttH::Jet> *matched_jets_intree=0;
   vector<ttH::Lepton> *lep_fromHiggs_intree=0;  
-  vector<ttH::Lepton> *lep_fromTop_intree=0;  
+  vector<ttH::Lepton> *lep_fromTop_intree=0;
+
+  vector<double> *reco_scores_intree=0;  
 
   TLorentzVector w_fromHadTop_tlv_intree;
   TLorentzVector w_fromHiggs_tlv_intree;
   TLorentzVector higgs_tlv_intree;
   TLorentzVector hadTop_tlv_intree;
   TLorentzVector lepTop_tlv_intree;
+  
+  double dR_b_W_hadTop_intree = -1.;
+  double dR_b_W_lepTop_intree = -1.;
+  double dR_H_lepTop_intree = -1.;
+  double dR_H_hadTop_intree = -1.;
+  double dR_lepTop_hadTop_intree = -1.;
+  double dR_W1_W2_fromHiggs_intree = -1.;
+  double dR_q1_q2_fromWfromHiggs_intree = -1.;
+
 
   w_fromHadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
   w_fromHiggs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
@@ -165,16 +176,26 @@ void run_it(TChain* chain, TString output_file)
   two_lep_tree->Branch("hadTop", &hadTop_tlv_intree);
   two_lep_tree->Branch("lepTop", &lepTop_tlv_intree);
 
-  Int_t cachesize = 250000000;   //250 MBytes
-  chain->SetCacheSize(cachesize);
-  chain->SetCacheLearnEntries(20); 
+  two_lep_tree->Branch("dR_b_W_hadTop", &dR_b_W_hadTop_intree);
+  two_lep_tree->Branch("dR_b_W_lepTop", &dR_b_W_lepTop_intree);
+  two_lep_tree->Branch("dR_H_lepTop", &dR_H_lepTop_intree);
+  two_lep_tree->Branch("dR_H_hadTop", &dR_H_hadTop_intree);
+  two_lep_tree->Branch("dR_lepTop_hadTop", &dR_lepTop_hadTop_intree);
+  two_lep_tree->Branch("dR_W1_W2_fromHiggs", &dR_W1_W2_fromHiggs_intree);
+  two_lep_tree->Branch("dR_q1_q2_fromWfromHiggs", &dR_q1_q2_fromWfromHiggs_intree);
+  two_lep_tree->Branch("reco_scores", &reco_scores_intree);
+
+
+  // Int_t cachesize = 250000000;   //250 MBytes
+  // chain->SetCacheSize(cachesize);
+  // chain->SetCacheLearnEntries(20); 
   
   double starttime = get_wall_time();
   //  chainentries = 1000000;
-  for (int i=0; i<chainentries; i+=20)
+  for (int i=0; i<chainentries; i++)
     {
       
-      if (i%10000 == 0)
+      if (i%100 == 0)
 	{
 	  float fraction = 100.*i/chainentries;
 	  cout << fraction << " % complete" << endl;
@@ -260,13 +281,19 @@ void run_it(TChain* chain, TString output_file)
       TLorentzVector tth_T_tlv;
       
       num_jets_var = preselected_jets_intree->size();
-      
+
+
+      for (unsigned int i =0; i< preselected_jets_intree->size(); i++)
+	{
+	  double csv = (*preselected_jets_intree)[i].csv;
+	  (*preselected_jets_intree)[i].csv = max(-.1,csv);
+	}
       ttH::Jet null_jet1;
       ttH::Jet null_jet2;
       ttH::Jet null_jet3;
-      null_jet1.csv = -0.4;
-      null_jet2.csv = -0.4;
-      null_jet3.csv = -0.4;
+      null_jet1.csv = -0.2;
+      null_jet2.csv = -0.2;
+      null_jet3.csv = -0.2;
       
       //      if ( num_jets_var <= 5 )
       //{
@@ -296,6 +323,16 @@ void run_it(TChain* chain, TString output_file)
       hadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
       lepTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
 
+      dR_b_W_hadTop_intree = -1.;
+      dR_b_W_lepTop_intree = -1.;
+      dR_H_lepTop_intree = -1.;
+      dR_H_hadTop_intree = -1.;
+      dR_lepTop_hadTop_intree = -1.;
+      dR_W1_W2_fromHiggs_intree = -1.;
+      dR_q1_q2_fromWfromHiggs_intree = -1.;
+      
+      reco_scores_intree->clear();
+      
 
       int tries = 0;
 
@@ -424,7 +461,7 @@ void run_it(TChain* chain, TString output_file)
 				      bJet_fromLepTop_CSV_var = bjet_fromLepTop.csv;
 				      LepTop_pT_var = lepTop_tlv.Pt();
 				      LepTop_mass_var = lepTop_tlv.M();
-				      LepTop_lep_bJet_dR_var = lepTop_tlv.DeltaR( bjet_fromLepTop_tlv );
+				      LepTop_lep_bJet_dR_var = lep_fromTop_tlv.DeltaR( bjet_fromLepTop_tlv );
 				      bJet_fromHadTop_CSV_var = bjet_fromHadTop.csv;
 				      qJet1_fromW_fromHadTop_CSV_var = wjet1_fromHadTop.csv;
 				      qJet1_fromW_fromHadTop_pT_var = wjet1_fromHadTop.obj.pt();
@@ -437,7 +474,8 @@ void run_it(TChain* chain, TString output_file)
 				      W_fromHiggs_mass_var = w_fromHiggs_tlv.M();
 				      Higgs_mass_var = higgs_tlv.M();
 				      Higgs_lep_W_dR_var = w_fromHiggs_tlv.DeltaR( lep_fromHiggs_tlv );
-				      Higgs_lep_W_dPhi_var = w_fromHiggs_tlv.DeltaPhi( lep_fromHiggs_tlv );
+				      Higgs_lep_W_dPhi_var = lep_fromHiggs_tlv.DeltaPhi( w_fromHiggs_tlv );
+
 				      Higgs_lep_W_dEta_var = lep_fromHiggs_tlv.Eta() - w_fromHiggs_tlv.Eta();
 				      numMatchedJets_var =  ( (bjet_fromHadTop.obj.pt() > 0)
 							      + (bjet_fromLepTop.obj.pt() > 0)
@@ -451,16 +489,26 @@ void run_it(TChain* chain, TString output_file)
 				      LepTop_HadTop_MT_var = lepTop_hadTop_T_tlv.M();
 				      LepTop_Higgs_MT_var = lepTop_higgs_T_tlv.M();
 				      ttH_MT_var = tth_T_tlv.M();
-				      HadTop_Higgs_MT_mass_ratio_var = hadTop_higgs_T_tlv.M();
+				      HadTop_Higgs_MT_mass_ratio_var = hadTop_higgs_T_tlv.M() / hadTop_higgs_tlv.M();
 				      ttH_MT_mass_ratio_var = tth_T_tlv.M()/tth_tlv.M();
 				      LepTop_HadTop_dR_var = lepTop_tlv.DeltaR( hadTop_tlv );
 				      LepTop_HadTop_dPhi_var = lepTop_tlv.DeltaPhi( hadTop_tlv );
 				      
+
+				      if (bjet_fromLepTop_tlv.Pt() == 0) LepTop_lep_bJet_dR_var = -1.;
+				      if (wjet1_fromHadTop_tlv.Pt() == 0 || wjet2_fromHadTop_tlv.Pt() == 0) W_fromHadTop_q1_q2_dR_var = -1.; 
+				      if (w_fromHiggs_tlv.Pt() ==0 )
+					{ 
+					  Higgs_lep_W_dR_var = -1.;
+					  Higgs_lep_W_dPhi_var = -4.0;
+					  Higgs_lep_W_dEta_var = -6.0;
+					}
+      
 				      double mva_value = TMVAReader_->EvaluateMVA( "BDTG method" );
+				      reco_scores_intree->push_back( mva_value );
 				      if ( mva_value > reco_score_intree )
 					{
 					  reco_score_intree = mva_value;
-
 					  matched_jets_intree->clear();
 					  lep_fromHiggs_intree->clear();  
 					  lep_fromTop_intree->clear();  
@@ -482,6 +530,15 @@ void run_it(TChain* chain, TString output_file)
 					  hadTop_tlv_intree = hadTop_tlv;
 					  lepTop_tlv_intree = lepTop_tlv;
 
+
+					  dR_b_W_hadTop_intree = bjet_fromHadTop_tlv.DeltaR( w_fromHadTop_tlv );
+					  dR_b_W_lepTop_intree = bjet_fromLepTop_tlv.DeltaR( lep_fromTop_tlv );
+					  dR_H_lepTop_intree = higgs_tlv.DeltaR( lepTop_tlv );
+					  dR_H_hadTop_intree = higgs_tlv.DeltaR( hadTop_tlv );
+					  dR_lepTop_hadTop_intree = hadTop_tlv.DeltaR( lepTop_tlv );
+					  dR_W1_W2_fromHiggs_intree = w_fromHiggs_tlv.DeltaR( lep_fromHiggs_tlv );
+					  dR_q1_q2_fromWfromHiggs_intree = wjet1_fromHiggs_tlv.DeltaR( wjet2_fromHiggs_tlv );
+
 					}
 				      //				      cout << "# tries: " << tries << endl;
 				      tries +=1;
@@ -494,11 +551,12 @@ void run_it(TChain* chain, TString output_file)
 	    }
 	}
 
-
+      
+      std::sort(reco_scores_intree->begin(), reco_scores_intree->end(), [] (double a, double b) { return a > b;});
 
       for (const auto & unmatched_jet : *preselected_jets_intree)
 	{
-	  if (unmatched_jet.csv == -0.4) continue;
+	  if (unmatched_jet.csv == -0.2) continue;
 	  bool is_matched = false;
 	  for (const auto & matched_jet : *matched_jets_intree)
 	    {
@@ -527,16 +585,18 @@ void run_it(TChain* chain, TString output_file)
 
 }
 
-void makeSelectionTrees_fullReco(void)
+void makeSelectionTrees_fullReco(TString sample, int start_file=0, int end_file=0)
 {
 
-  TChain *tth_chain = loadFiles("ttH");  
-  run_it(tth_chain,"ttH_full_recoBDT_results.root");
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/lxbatch_output/";
+  TString output_file = output_dir+sample + "_batch_"+to_string(start_file)+"-"+to_string(end_file)+".root";
+  TChain *tth_chain = loadFiles(sample,start_file,end_file);  
+  run_it(tth_chain,output_file);
 
-  TChain *ttw_chain = loadFiles("ttW");  
-  run_it(ttw_chain,"ttW_full_recoBDT_results.root");
+  // TChain *ttw_chain = loadFiles("ttW");  
+  // run_it(ttw_chain,"ttW_full_recoBDT_results.root");
 
-  TChain *ttbar_chain = loadFiles("ttbar");  
-  run_it(ttbar_chain,"ttbar_full_recoBDT_results.root");
+  // TChain *ttbar_chain = loadFiles("ttbar");  
+  // run_it(ttbar_chain,"ttbar_full_recoBDT_results.root");
 
 }
