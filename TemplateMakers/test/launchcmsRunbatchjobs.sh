@@ -2,7 +2,7 @@
 
 # "crawdad" v2, created by Geoff Smith
 # 
-# Use this on lxplus
+# Use this on lxplus, after first doing grid proxy init
 # 
 # before using for first time, your .ssh/config should look like this:
 # Host *
@@ -20,19 +20,24 @@
 
 # ****** user params ************
 myusername='gesmith'
-joblabel='moreTrigs'									# label for these batch jobs	
+joblabel='try1_ttWkevin_mAODV2'									# label for these batch jobs	
 ndpc="ndpc5"                                                                            # ndpc to push output to
 ndpcDisk="/mnt/ndpc5disk1"		                                                # ndpc disk to push output to
-interjobspacing=5 									# seconds to wait before submitting next job
+interjobspacing=3 #5 									# seconds to wait before submitting next job
 intersamplespacing=120 									# seconds to wait before submitting jobs for next sample
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets') 	# samples to run over (has to match array names in sampleLists.sh)
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'ZJets' 'WJets' 'WZJets')
-declare -a samples=('ttH125powheg')
+#declare -a samples=('ttH125powheg')
 #declare -a samples=('data2015DMET')
+#declare -a samples=('ttWkevin')
+#declare -a samples=('TTJets')
+#declare -a samples=('TTJets_split_2lep')
+declare -a samples=('TTJets_split_1lepFromTBar') # 'TTJets_split_1lepFromTBar') # TTJets_split_1lepFromT
 # *******************************
 
 
 pfx='root://cms-xrd-global.cern.ch/' # which xroot rederict to use (if any)
+#pfx='root://ndcms.crc.nd.edu/'
 
 #source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
 logdir='crawlog'
@@ -43,6 +48,7 @@ mkdir $logdir
 thisdir=$(pwd)
 source $thisdir/sampleLists.sh   # file containing lists of sample files
 cmsenvdir="$CMSSW_BASE/src"
+cp /tmp/x509up_u11231 ~/proxies/x509up_u11231
 
 for sample in "${samples[@]}"
 do
@@ -65,7 +71,7 @@ do
         
 	for fin in "${infilearray[@]}"
 	do
-  		fin=$pfx/$fin
+  		fin=$pfx$fin
 		count=$(expr $count + 1)
   		fout="$destdir/$count.root"
                 ffout="$myusername@$ndpc:$finaldestdir/$count.root"

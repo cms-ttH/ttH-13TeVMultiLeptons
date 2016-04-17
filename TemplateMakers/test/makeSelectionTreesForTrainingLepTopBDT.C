@@ -15,6 +15,7 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "selection.h"
+#include "loadSamples.h"
 
 /////////////////////////////////////////
 ///
@@ -24,6 +25,21 @@
 
 void run_it(TChain* chain, TString output_file)
 {
+
+  TMVA::Reader* TMVAReader_lepTop_;
+  Float_t bjet_lep_dr_var;
+  Float_t bjet_csv_var;
+  Float_t bjet_lep_mass_var;
+  Float_t bjet_lep_pt_var;
+  Float_t bjet_lep_ptratio_var;
+
+  TMVAReader_lepTop_ = new TMVA::Reader( "!Color:!Silent" );
+  TMVAReader_lepTop_->AddVariable( "bjet_lep_dR", &bjet_lep_dr_var );
+  TMVAReader_lepTop_->AddVariable( "bJet.csv", &bjet_csv_var );
+  TMVAReader_lepTop_->AddVariable( "bjet_lep_tlv.M()", &bjet_lep_mass_var);
+  TMVAReader_lepTop_->AddVariable( "bjet_lep_tlv.Pt()", &bjet_lep_pt_var );
+  TMVAReader_lepTop_->AddVariable( "bjet_lep_tlv.Pt()/(lep_tlv.Pt()+bJet.obj.pt())", &bjet_lep_ptratio_var );
+  TMVAReader_lepTop_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG_lepTop.weights.xml");
 
   int chainentries = chain->GetEntries();   
   cout << "# events in tree: "<< chainentries << endl;  
@@ -78,6 +94,16 @@ void run_it(TChain* chain, TString output_file)
   bjet_vect_intree.SetPxPyPzE(0,0,0,0);
   ttH::Jet bJet_intree;
   double bjet_lep_dR_intree = -1.;
+  double isNearestLepton_intree = 0.;
+  double isHighestLepton_intree = 0.;
+  double deltaPt_intree = 0;
+  double met_dr_intree = -1.;
+
+  TLorentzVector lephiggs_vect_intree;
+  TLorentzVector bjet_lephiggs_vect_intree;
+  bjet_lephiggs_vect_intree.SetPxPyPzE(0,0,0,0);
+  lephiggs_vect_intree.SetPxPyPzE(0,0,0,0);
+  double bjet_lephiggs_dR_intree = -1.;
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
@@ -87,6 +113,15 @@ void run_it(TChain* chain, TString output_file)
   top_present_tree->Branch("bjet_lep_dR", &bjet_lep_dR_intree);
   top_present_tree->Branch("bjet_lep_tlv", &bjet_lep_vect_intree);
   top_present_tree->Branch("lep_tlv", &lep_vect_intree);
+  top_present_tree->Branch("isNearestLep", &isNearestLepton_intree);
+  top_present_tree->Branch("isHighestLep", &isHighestLepton_intree);
+  top_present_tree->Branch("deltaPt", &deltaPt_intree);
+  top_present_tree->Branch("met_top_dr", &met_dr_intree);
+
+  top_present_tree->Branch("bjet_lephiggs_dR", &bjet_lephiggs_dR_intree);
+  top_present_tree->Branch("bjet_lephiggs_tlv", &bjet_lephiggs_vect_intree);
+  top_present_tree->Branch("lephiggs_tlv", &lephiggs_vect_intree);
+
   top_present_tree->Branch("weight", &bkg_weight_intree);
 
   TTree *top_absent_tree = (TTree*)chain->CloneTree(0);
@@ -95,6 +130,15 @@ void run_it(TChain* chain, TString output_file)
   top_absent_tree->Branch("bjet_lep_dR", &bjet_lep_dR_intree);
   top_absent_tree->Branch("bjet_lep_tlv", &bjet_lep_vect_intree);
   top_absent_tree->Branch("lep_tlv", &lep_vect_intree);
+  top_absent_tree->Branch("isNearestLep", &isNearestLepton_intree);
+  top_absent_tree->Branch("isHighestLep", &isHighestLepton_intree);
+  top_absent_tree->Branch("deltaPt", &deltaPt_intree);
+  top_absent_tree->Branch("met_top_dr", &met_dr_intree);
+
+  top_absent_tree->Branch("bjet_lephiggs_dR", &bjet_lephiggs_dR_intree);
+  top_absent_tree->Branch("bjet_lephiggs_tlv", &bjet_lephiggs_vect_intree);
+  top_absent_tree->Branch("lephiggs_tlv", &lephiggs_vect_intree);
+
   top_absent_tree->Branch("weight", &bkg_weight_intree);
 
   Int_t cachesize = 200000000;   //200 MBytes
@@ -127,16 +171,78 @@ void run_it(TChain* chain, TString output_file)
       int num_jets = (*preselected_jets_intree).size();
       bkg_weight_intree = 1. / ( num_jets );
       //      bkg_weight_intree = 1. / ((num_jets*( num_jets - 1 )*( num_jets - 2))-1);
+      double best_mva_value = -1.;
+      TLorentzVector bjet_vect;
+      TLorentzVector lep_vect;
+      TLorentzVector bjet_lep_vect;
+      TLorentzVector met_vect;
+      bjet_lep_vect.SetPxPyPzE(0,0,0,0);
+      lep_vect.SetPxPyPzE(0,0,0,0);
+      bjet_vect.SetPxPyPzE(0,0,0,0);
+      met_vect.SetPtEtaPhiE((*met_intree)[0].obj.pt(), (*met_intree)[0].obj.eta(), (*met_intree)[0].obj.phi(), (*met_intree)[0].obj.E());
+
 
       for (const auto & jet : *preselected_jets_intree)
-	{
+ 	{
 	  bjet_vect_intree.SetPtEtaPhiE(jet.obj.pt(), jet.obj.eta(), jet.obj.phi(), jet.obj.E());
-	  bJet_intree = jet;
+	  bjet_vect.SetPtEtaPhiE(jet.obj.pt(), jet.obj.eta(), jet.obj.phi(), jet.obj.E());
+
+
+	  //	  if (jet.csv < 0.5) continue;
+
+	  //find out if the lepton choosen is the nearest.
+	  double min_dR = 10;
 	  for (const auto & lep : *tight_leptons_intree)
 	    {
 	      lep_vect_intree.SetPtEtaPhiE(lep.obj.pt(), lep.obj.eta(), lep.obj.phi(), lep.obj.E());
+	      double dR = bjet_vect_intree.DeltaR( lep_vect_intree );
+	      if ( dR < min_dR)
+		{
+		  min_dR = dR;
+		} 
+	    }
+	  
+	  int lep_count = 0;
+	  for (const auto & lep : *tight_leptons_intree)
+	    {
+
+
+	      bJet_intree = jet;
+	      lep_vect_intree.SetPtEtaPhiE(lep.obj.pt(), lep.obj.eta(), lep.obj.phi(), lep.obj.E());
 	      bjet_lep_vect_intree = bjet_vect_intree+lep_vect_intree;
 	      bjet_lep_dR_intree = bjet_vect_intree.DeltaR( lep_vect_intree );
+
+
+	      met_dr_intree = met_vect.DeltaR( bjet_lep_vect_intree );
+
+	      TLorentzVector lep_vect;
+	      if (lep_count == 0)
+		{
+		  isHighestLepton_intree = lep.obj.pt()/(*tight_leptons_intree)[1].obj.pt();
+		  
+		  lep_vect.SetPtEtaPhiE((*tight_leptons_intree)[1].obj.pt(), (*tight_leptons_intree)[1].obj.eta(), (*tight_leptons_intree)[1].obj.phi(), (*tight_leptons_intree)[1].obj.E());
+		  isNearestLepton_intree = bjet_lep_dR_intree / bjet_vect_intree.DeltaR( lep_vect ) ;
+
+		  lephiggs_vect_intree = lep_vect;
+		  bjet_lephiggs_vect_intree = bjet_vect_intree+lephiggs_vect_intree;
+		  bjet_lephiggs_dR_intree = bjet_vect_intree.DeltaR( lephiggs_vect_intree );
+
+		}
+	      else
+		{
+		  isHighestLepton_intree = lep.obj.pt()/(*tight_leptons_intree)[0].obj.pt();
+
+		  lep_vect.SetPtEtaPhiE((*tight_leptons_intree)[0].obj.pt(), (*tight_leptons_intree)[0].obj.eta(), (*tight_leptons_intree)[0].obj.phi(), (*tight_leptons_intree)[0].obj.E());
+		  isNearestLepton_intree = bjet_lep_dR_intree / bjet_vect_intree.DeltaR( lep_vect ) ;
+
+		  lephiggs_vect_intree = lep_vect;
+		  bjet_lephiggs_vect_intree = bjet_vect_intree+lephiggs_vect_intree;
+		  bjet_lephiggs_dR_intree = bjet_vect_intree.DeltaR( lephiggs_vect_intree );
+
+		}
+
+
+	      deltaPt_intree = ( lep.obj.pt() - (*tight_leptons_intree)[tight_leptons_intree->size()-1].obj.pt() );
 
 	      if (jet.genMotherPdgID == lep.genGrandMotherPdgID && abs(jet.genMotherPdgID) == 6 && abs(jet.genPdgID) == 5)
 		{
@@ -144,10 +250,35 @@ void run_it(TChain* chain, TString output_file)
 		}
 	      else
 		{
+		  // lep_vect.SetPtEtaPhiE(lep.obj.pt(), lep.obj.eta(), lep.obj.phi(), lep.obj.E());
+		  // bjet_lep_vect = bjet_vect+lep_vect;
+		  // bjet_lep_dr_var = bjet_vect.DeltaR( lep_vect );
+		  // bjet_csv_var = jet.csv;
+		  // bjet_lep_mass_var = bjet_lep_vect.M();
+		  // bjet_lep_pt_var = bjet_lep_vect.Pt();
+		  // bjet_lep_ptratio_var = bjet_lep_vect.Pt()/(lep.obj.pt()+jet.obj.pt());
+		  // double mva_value = TMVAReader_lepTop_->EvaluateMVA( "BDTG method" );	  
+		  
+		  // if (mva_value > best_mva_value)
+		  //   {
+		  //     best_mva_value = mva_value;
+		  //     bJet_intree = jet;
+		  //     lep_vect_intree.SetPtEtaPhiE(lep.obj.pt(), lep.obj.eta(), lep.obj.phi(), lep.obj.E());
+		  //     bjet_lep_vect_intree = bjet_vect_intree+lep_vect_intree;
+		  //     bjet_lep_dR_intree = bjet_vect_intree.DeltaR( lep_vect_intree );
+		  //     isNearestLepton_intree = ( min_dR == bjet_lep_dR_intree );
+		  //     isHighestLepton_intree = ( lep.obj.pt() > (*tight_leptons_intree)[tight_leptons_intree->size()-1].obj.pt() );
+		  //     deltaPt_intree = ( lep.obj.pt() - (*tight_leptons_intree)[tight_leptons_intree->size()-1].obj.pt() );		      
+		  //   }
 		  top_absent_tree->Fill();
 		}
+	      lep_count +=1;
 	    }
 	}
+
+      
+      //      top_absent_tree->Fill();
+
       
     }
   double endtime = get_wall_time();
@@ -163,30 +294,8 @@ void run_it(TChain* chain, TString output_file)
 
 void makeSelectionTreesForTrainingLepTopBDT(void)
 {
-  //  TChain *ttw_chain = new TChain("OSTwoLepAna/summaryTree");
-  TChain *tth_chain = new TChain("OSTwoLepAna/summaryTree");
-  //  TChain *tt_chain = new TChain("OSTwoLepAna/summaryTree");
-  
-  //  TString ttw_file = "ttw_trees_bdt_top_ratio.root";
-  TString tth_file = "ttH_lepTop_BDTtraining.root";
-  //  TString tt_file = "tt_trees_bdt_top_ratio.root";
 
-  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_1.root");
-  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_2.root");    
-  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_3.root");    
-  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_4.root");    
-  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_5.root");    
-  // ttw_chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_6.root");    
+  TChain *tth_chain = loadFiles("ttH");
+  run_it(tth_chain,"ttH_lepTop_BDTtraining.root");
 
-  for (int i=1; i < 83; i++)
-    {
-      char filePath[512];
-      sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_%d.root",i);
-      tth_chain->Add(filePath);
-    }
-  
-
-  // run_it(ttw_chain,ttw_file);
-  run_it(tth_chain,tth_file);
-  //  run_it(tt_chain,tt_file);
 }

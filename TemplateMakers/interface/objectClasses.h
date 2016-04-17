@@ -1,3 +1,6 @@
+#ifndef TTH_OBJ_CLASSES
+#define TTH_OBJ_CLASSES
+
 #include <vector>
 
 #include "TObject.h"
@@ -168,12 +171,16 @@ namespace ttH
     int genGrandMotherPdgID;
     double csv;
     double qgid;
+
     double nearestLep_dr;
     double nearestLep_pt;
     double nearestLep_pdgId;
     double nearestLep_lepMva;
     double nearestLep_motherPdgId;
     double nearestLep_charge;
+
+    int pdgID; //place holder for Geoff's templated functions
+    
     void clear(void)
     {
       obj.SetPxPyPzE(0.,0.,0.,0.); 
@@ -238,3 +245,5 @@ namespace ttH
 
 
 } // end of namespace ttH
+
+#endif

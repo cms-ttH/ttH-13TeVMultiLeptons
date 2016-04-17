@@ -351,6 +351,22 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
   c->Print("comparisonPlots.pdf]");
  }
 
+void  MakeGoodPlot::setBranchAddresses(int sample_number)
+{
+    ch[sample_number]->SetBranchAddress( "passTrigger", &passTrigger_intree );
+    ch[sample_number]->SetBranchAddress( "preselected_leptons", &preselected_leptons_intree );
+    ch[sample_number]->SetBranchAddress( "preselected_electrons", &preselected_electrons_intree );
+    ch[sample_number]->SetBranchAddress( "preselected_muons", &preselected_muons_intree );
+    ch[sample_number]->SetBranchAddress( "tightMvaBased_leptons", &tightMvaBased_leptons_intree );
+    ch[sample_number]->SetBranchAddress( "tightMvaBased_muons", &tightMvaBased_muons_intree );
+    ch[sample_number]->SetBranchAddress( "tightMvaBased_electrons", &tightMvaBased_electrons_intree );
+    ch[sample_number]->SetBranchAddress( "met", &met_intree );
+    ch[sample_number]->SetBranchAddress( "preselected_jets", &preselected_jets_intree );
+    ch[sample_number]->SetBranchAddress( "pruned_genParticles", &pruned_genParticles_intree );
+    ch[sample_number]->SetBranchAddress( "wgt", &wgt_intree );    
+    
+}
+
 template <typename almostTLVtype> TLorentzVector MakeGoodPlot::makeTLV( almostTLVtype thing )
 {
     TLorentzVector thereturnedTLV;

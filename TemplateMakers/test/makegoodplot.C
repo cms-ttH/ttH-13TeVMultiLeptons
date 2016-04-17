@@ -28,7 +28,7 @@ void makegoodplot()
 //	samples.push_back(3); // ttbar_b
 //	samples.push_back(4); // ttbar_ccbar
 
-	samples.push_back(5); // TTJets
+//	samples.push_back(5); // TTJets
 //	samples.push_back(6); // ZJets
 //	samples.push_back(7); // WJets
 	samples.push_back(8); // TTWJets
@@ -44,7 +44,7 @@ void makegoodplot()
 
 /////// Do whatever you want here (just modify or make new member function in MakeGoodPlot.cc as appropriate). /////////
 		
-//	newplot->draw_simple_curves_normalized(samples);	// <- draws all samples in vector
+	newplot->draw_simple_curves_normalized(samples);	// <- draws all samples in vector
 
 //	newplot->draw_nice_stack(samples);			// <- draws all samples in vector
 	
@@ -86,7 +86,7 @@ void makegoodplot()
         //newplot->lepstudies(samples);
         //newplot->fourlstudies(samples);
 	//        newplot->threelstudies(samples);
-	newplot->MatchTester_ttW_SS(samples);
+	//newplot->MatchTester_ttW_SS(samples);
 
 //--------------------------------------------------------------------------
 
