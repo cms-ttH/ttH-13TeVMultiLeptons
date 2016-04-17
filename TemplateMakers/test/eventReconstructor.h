@@ -129,96 +129,30 @@ class eventReconstructor
   ttH::Lepton lep_fromTop_bdt;
   ttH::Lepton lep_fromHiggs_bdt;
   vector<int> matching_results;
-  
+
+  TLorentzVector lep_fromTop_bdt_tlv;
+  TLorentzVector lep_fromHiggs_bdt_tlv;
+  TLorentzVector bjet_fromHadTop_bdt_tlv;
+  TLorentzVector bjet_fromLepTop_bdt_tlv;
+  TLorentzVector wjet1_fromHadTop_bdt_tlv;    
+  TLorentzVector wjet2_fromHadTop_bdt_tlv;
+  TLorentzVector wjet1_fromHiggs_bdt_tlv;  
+  TLorentzVector wjet2_fromHiggs_bdt_tlv;
+  TLorentzVector w_fromHadTop_bdt_tlv;    
+  TLorentzVector w_fromHiggs_bdt_tlv;
+  TLorentzVector higgs_bdt_tlv;
+  TLorentzVector hadTop_bdt_tlv;
+  TLorentzVector lepTop_bdt_tlv;
+  TLorentzVector lepTop_higgs_bdt_tlv;
+  TLorentzVector hadTop_higgs_bdt_tlv;
+  TLorentzVector lepTop_hadTop_bdt_tlv;
+  TLorentzVector tth_bdt_tlv;
+    
   void initialize(vector<ttH::Jet> *jets_input, const vector<ttH::Lepton> *leptons_in, ttH::MET met_in)
   {
-    clear();
+    clear(); //reset all output vars
+
     vector<ttH::Jet> *jets_in = jets_input;
-
-    ///////////////////////////
-    /////
-    ///// setup TMVA
-    /////
-    ///////////////////////////
-    
-    /* TMVA::Reader* TMVAReader_; */
-    /* //    Float_t num_jets_var; */
-    /* Float_t bJet_fromLepTop_CSV_var; */
-    /* Float_t LepTop_pT_var; */
-    /* Float_t LepTop_mass_var; */
-    /* Float_t LepTop_lep_bJet_dR_var; */
-    /* Float_t bJet_fromHadTop_CSV_var; */
-    /* Float_t qJet1_fromW_fromHadTop_CSV_var; */
-    /* Float_t qJet1_fromW_fromHadTop_pT_var; */
-    /* Float_t HadTop_pT_var; */
-    /* Float_t W_fromHadTop_mass_var; */
-    /* Float_t HadTop_mass_var; */
-    /* Float_t W_fromHadTop_q1_q2_dR_var; */
-    /* Float_t qJet1_fromW_fromHiggs_CSV_var; */
-    /* Float_t lep_fromW_fromHiggs_pT_var; */
-    /* Float_t W_fromHiggs_mass_var; */
-    /* Float_t Higgs_mass_var; */
-    /* Float_t Higgs_lep_W_dR_var; */
-    /* Float_t Higgs_lep_W_dPhi_var; */
-    /* Float_t Higgs_lep_W_dEta_var; */
-    /* Float_t numMatchedJets_var; */
-    /* Float_t LepTop_Higgs_mass_var; */
-    /* Float_t HadTop_Higgs_mass_var; */
-    /* Float_t LepTop_HadTop_MT_var; */
-    /* Float_t LepTop_Higgs_MT_var; */
-    /* Float_t ttH_MT_var; */
-    /* Float_t HadTop_Higgs_MT_mass_ratio_var; */
-    /* Float_t ttH_MT_mass_ratio_var; */
-    /* Float_t LepTop_HadTop_dR_var; */
-    /* Float_t LepTop_HadTop_dPhi_var; */
-
-    /* //not yet mva inputs... */
-    /* Float_t lep_charge_var; */
-    /* Float_t bJet_fromHadTop_charge_var; */
-    /* Float_t bJet_fromLepTop_charge_var; */
-    /* Float_t W_fromHadTop_charge_var; */
-    /* Float_t W_fromHiggs_charge_var; */
-    /* Float_t lepTop_charge_var; */
-    /* Float_t hadTop_charge_var; */
-    /* Float_t Higgs_charge_var; */
-    /* Float_t ttH_charge_var; */
-    /* Float_t bJet_fromHadTop_charge_correct_var; */
-    /* Float_t bJet_fromLepTop_charge_correct_var; */
-    /* Float_t W_fromHadTop_charge_correct_var; */
-    /* Float_t W_fromHiggs_charge_correct_var; */
-
-    /* TMVAReader_ = new TMVA::Reader( "!Color:!Silent" ); */
-    /* //  TMVAReader_->AddVariable( "numJets", &num_jets_var ); */
-    /* TMVAReader_->AddVariable( "bJet_fromLepTop_CSV", &bJet_fromLepTop_CSV_var ); */
-    /* TMVAReader_->AddVariable( "LepTop_pT", &LepTop_pT_var ); */
-    /* TMVAReader_->AddVariable( "LepTop_mass", &LepTop_mass_var ); */
-    /* TMVAReader_->AddVariable( "LepTop_lep_bJet_dR", &LepTop_lep_bJet_dR_var ); */
-    /* TMVAReader_->AddVariable( "bJet_fromHadTop_CSV", &bJet_fromHadTop_CSV_var ); */
-    /* TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_CSV", &qJet1_fromW_fromHadTop_CSV_var ); */
-    /* TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_pT", &qJet1_fromW_fromHadTop_pT_var ); */
-    /* TMVAReader_->AddVariable( "HadTop_pT", &HadTop_pT_var ); */
-    /* TMVAReader_->AddVariable( "W_fromHadTop_mass", &W_fromHadTop_mass_var ); */
-    /* TMVAReader_->AddVariable( "HadTop_mass", &HadTop_mass_var ); */
-    /* TMVAReader_->AddVariable( "W_fromHadTop_q1_q2_dR", &W_fromHadTop_q1_q2_dR_var ); */
-    /* TMVAReader_->AddVariable( "qJet1_fromW_fromHiggs_CSV", &qJet1_fromW_fromHiggs_CSV_var ); */
-    /* TMVAReader_->AddVariable( "lep_fromW_fromHiggs_pT", &lep_fromW_fromHiggs_pT_var ); */
-    /* TMVAReader_->AddVariable( "W_fromHiggs_mass", &W_fromHiggs_mass_var ); */
-    /* TMVAReader_->AddVariable( "Higgs_mass", &Higgs_mass_var ); */
-    /* TMVAReader_->AddVariable( "Higgs_lep_W_dR", &Higgs_lep_W_dR_var ); */
-    /* TMVAReader_->AddVariable( "Higgs_lep_W_dPhi", &Higgs_lep_W_dPhi_var ); */
-    /* TMVAReader_->AddVariable( "Higgs_lep_W_dEta", &Higgs_lep_W_dEta_var ); */
-    /* TMVAReader_->AddVariable( "numMatchedJets", &numMatchedJets_var ); */
-    /* TMVAReader_->AddVariable( "LepTop_Higgs_mass", &LepTop_Higgs_mass_var ); */
-    /* TMVAReader_->AddVariable( "HadTop_Higgs_mass", &HadTop_Higgs_mass_var ); */
-    /* TMVAReader_->AddVariable( "LepTop_HadTop_MT", &LepTop_HadTop_MT_var ); */
-    /* TMVAReader_->AddVariable( "LepTop_Higgs_MT", &LepTop_Higgs_MT_var ); */
-    /* TMVAReader_->AddVariable( "ttH_MT", &ttH_MT_var ); */
-    /* TMVAReader_->AddVariable( "HadTop_Higgs_MT_mass_ratio", &HadTop_Higgs_MT_mass_ratio_var ); */
-    /* TMVAReader_->AddVariable( "ttH_MT_mass_ratio", &ttH_MT_mass_ratio_var ); */
-    /* TMVAReader_->AddVariable( "LepTop_HadTop_dR", &LepTop_HadTop_dR_var ); */
-    /* TMVAReader_->AddVariable( "LepTop_HadTop_dPhi", &LepTop_HadTop_dPhi_var ); */
-    /* TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_training3.xml"); */
-
 
     ///////////////////////////
     /////
@@ -578,6 +512,25 @@ class eventReconstructor
 					matched_jets.push_back(wjet2_fromHiggs);
 					
 					
+					lep_fromTop_bdt_tlv = lep_fromTop_tlv;
+					lep_fromHiggs_bdt_tlv = lep_fromHiggs_tlv;
+					bjet_fromHadTop_bdt_tlv = bjet_fromHadTop_tlv;
+					bjet_fromLepTop_bdt_tlv = bjet_fromLepTop_tlv;
+					wjet1_fromHadTop_bdt_tlv = wjet1_fromHadTop_tlv;    
+					wjet2_fromHadTop_bdt_tlv = wjet2_fromHadTop_tlv;
+					wjet1_fromHiggs_bdt_tlv = wjet1_fromHiggs_tlv;  
+					wjet2_fromHiggs_bdt_tlv = wjet2_fromHiggs_tlv;
+					w_fromHadTop_bdt_tlv = w_fromHadTop_tlv;    
+					w_fromHiggs_bdt_tlv = w_fromHiggs_tlv;
+					higgs_bdt_tlv = higgs_tlv;
+					hadTop_bdt_tlv = hadTop_tlv;
+					lepTop_bdt_tlv = lepTop_tlv;
+					lepTop_higgs_bdt_tlv = lepTop_higgs_tlv;
+					hadTop_higgs_bdt_tlv = hadTop_higgs_tlv;
+					lepTop_hadTop_bdt_tlv = lepTop_hadTop_tlv;
+					tth_bdt_tlv = tth_tlv;
+
+
 					/* w_fromHadTop_tlv_intree = w_fromHadTop_tlv; */
 					/* w_fromHiggs_tlv_intree = w_fromHiggs_tlv; */
 					/* higgs_tlv_intree = higgs_tlv; */
