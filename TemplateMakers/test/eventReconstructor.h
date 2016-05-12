@@ -15,7 +15,6 @@
 #include "TFile.h"
 #include <cmath>
 #include "TLorentzVector.h"
-//#include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
 #include "TMVA/Config.h"
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
@@ -54,6 +53,7 @@ class eventReconstructor
   Float_t ttH_MT_mass_ratio_var;
   Float_t LepTop_HadTop_dR_var;
   Float_t LepTop_HadTop_dPhi_var;
+  Float_t LepAsym_var;
   
   //not yet mva inputs...
   Float_t lep_charge_var;
@@ -91,24 +91,30 @@ class eventReconstructor
     TMVAReader_->AddVariable( "Higgs_mass", &Higgs_mass_var );
     TMVAReader_->AddVariable( "Higgs_lep_W_dR", &Higgs_lep_W_dR_var );
     TMVAReader_->AddVariable( "Higgs_lep_W_dPhi", &Higgs_lep_W_dPhi_var );
-    TMVAReader_->AddVariable( "Higgs_lep_W_dEta", &Higgs_lep_W_dEta_var );
+    //    TMVAReader_->AddVariable( "Higgs_lep_W_dEta", &Higgs_lep_W_dEta_var );
     TMVAReader_->AddVariable( "numMatchedJets", &numMatchedJets_var );
     TMVAReader_->AddVariable( "LepTop_Higgs_mass", &LepTop_Higgs_mass_var );
     TMVAReader_->AddVariable( "HadTop_Higgs_mass", &HadTop_Higgs_mass_var );
-    TMVAReader_->AddVariable( "LepTop_HadTop_MT", &LepTop_HadTop_MT_var );
-    TMVAReader_->AddVariable( "LepTop_Higgs_MT", &LepTop_Higgs_MT_var );
-    TMVAReader_->AddVariable( "ttH_MT", &ttH_MT_var );
+    //    TMVAReader_->AddVariable( "LepTop_HadTop_MT", &LepTop_HadTop_MT_var );
+    //    TMVAReader_->AddVariable( "LepTop_Higgs_MT", &LepTop_Higgs_MT_var );
+    //    TMVAReader_->AddVariable( "ttH_MT", &ttH_MT_var );
     TMVAReader_->AddVariable( "HadTop_Higgs_MT_mass_ratio", &HadTop_Higgs_MT_mass_ratio_var );
     TMVAReader_->AddVariable( "ttH_MT_mass_ratio", &ttH_MT_mass_ratio_var );
     TMVAReader_->AddVariable( "LepTop_HadTop_dR", &LepTop_HadTop_dR_var );
     TMVAReader_->AddVariable( "LepTop_HadTop_dPhi", &LepTop_HadTop_dPhi_var );
-    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_training3.xml");
+    //    TMVAReader_->AddVariable( "(lep_fromTop.obj.pt()-lep_fromHiggs.obj.pt())/(lep_fromTop.obj.pt()+lep_fromHiggs.obj.pt())", &LepAsym_var );
+    // TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_training3.xml");
+    //    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_misMatchWeightedSq.xml");
+    //    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_baseline.xml");
+    TMVAReader_->BookMVA("BDTG method", "../../simpleweights/reconstruction_bdt/TMVAClassification_BDTG.weights_baseline_slimmedVars.xml");
   }
 
   void clear(void)
   {
     reco_score = -1.;
     num_jet_matches_truth = 0;
+    num_real_jets_bdt = 0;
+    norm_score_sum = 0.;
     matching_results.clear();
     matched_jets.clear();
     matched_jets_truth.clear();
@@ -121,7 +127,10 @@ class eventReconstructor
   } // default constructor
   
   double reco_score;
+  double norm_score_sum;
   int num_jet_matches_truth;
+  int num_real_jets_bdt;
+
   vector<ttH::Jet> matched_jets_truth;
   vector<ttH::Jet> matched_jets;
   ttH::Lepton lep_fromTop_truth;
@@ -493,8 +502,11 @@ class eventReconstructor
 				    W_fromHadTop_charge_correct_var = (W_fromHadTop_charge_var*lep_charge_var < 0);
 				    W_fromHiggs_charge_correct_var = (W_fromHiggs_charge_var*lep_charge_var < 0);
 				    
+				    LepAsym_var = (lep_fromTop.obj.pt()-lep_fromHiggs.obj.pt())/(lep_fromTop.obj.pt()+lep_fromHiggs.obj.pt());
+
 				    double mva_value = TMVAReader_->EvaluateMVA( "BDTG method" );
 				    //				    reco_scores_intree->push_back( mva_value );
+				    norm_score_sum += mva_value;
 				    if ( mva_value > reco_score )
 				      {
 					reco_score = mva_value;
@@ -555,6 +567,8 @@ class eventReconstructor
 	  }
       }
 
+    norm_score_sum = norm_score_sum/jets_in->size();
+
 
     ttH::Jet bjet_fromHadTop = matched_jets[0];
     ttH::Jet bjet_fromLepTop = matched_jets[1];
@@ -580,6 +594,7 @@ class eventReconstructor
     //bjet from hadronic top
     if (bjet_fromHadTop.obj.pt() > 0)
       {
+	num_real_jets_bdt +=1;
 	if (bjet_fromHadTop.obj.pt() == bjet_fromHadTop_truth.obj.pt()) matching_results.push_back(5);
 	else if (bjet_fromHadTop_truth.obj.pt() > 0) matching_results.push_back(3); 
 	else matching_results.push_back(2);
@@ -593,6 +608,7 @@ class eventReconstructor
     //bjet from leptonic top
     if (bjet_fromLepTop.obj.pt() > 0)
       {
+	num_real_jets_bdt +=1;
 	if (bjet_fromLepTop.obj.pt() == bjet_fromLepTop_truth.obj.pt()) matching_results.push_back(5);
 	else if (bjet_fromLepTop_truth.obj.pt() > 0) matching_results.push_back(3); 
 	else matching_results.push_back(2);
@@ -606,6 +622,7 @@ class eventReconstructor
     //wjet1 from hadronic top
     if (wjet1_fromHadTop.obj.pt() > 0)
       {
+	num_real_jets_bdt +=1;
 	if (wjet1_fromHadTop.obj.pt() == wjet1_fromHadTop_truth.obj.pt() || wjet1_fromHadTop.obj.pt() == wjet2_fromHadTop_truth.obj.pt()) matching_results.push_back(5);
 	else if (wjet1_fromHadTop_truth.obj.pt() > 0 || wjet2_fromHadTop_truth.obj.pt() > 0) matching_results.push_back(3); 
 	else matching_results.push_back(2);
@@ -618,6 +635,7 @@ class eventReconstructor
     //wjet2 from hadronic top
     if (wjet2_fromHadTop.obj.pt() > 0)
       {
+	num_real_jets_bdt +=1;
 	if (wjet2_fromHadTop.obj.pt() == wjet2_fromHadTop_truth.obj.pt() || wjet2_fromHadTop.obj.pt() == wjet1_fromHadTop_truth.obj.pt()) matching_results.push_back(5);
 	else if (wjet2_fromHadTop_truth.obj.pt() > 0 || wjet1_fromHadTop_truth.obj.pt() > 0) matching_results.push_back(3); 
 	else matching_results.push_back(2);
@@ -631,6 +649,7 @@ class eventReconstructor
     //wjet1 from higgs
     if (wjet1_fromHiggs.obj.pt() > 0)
       {
+	num_real_jets_bdt +=1;
 	if (wjet1_fromHiggs.obj.pt() == wjet1_fromHiggs_truth.obj.pt() || wjet1_fromHiggs.obj.pt() == wjet2_fromHiggs_truth.obj.pt()) matching_results.push_back(5);
 	else if (wjet1_fromHiggs_truth.obj.pt() > 0 || wjet2_fromHiggs_truth.obj.pt() > 0) matching_results.push_back(3); 
 	else matching_results.push_back(2);
@@ -643,6 +662,7 @@ class eventReconstructor
     //wjet2 from higgs
     if (wjet2_fromHiggs.obj.pt() > 0)
       {
+	num_real_jets_bdt +=1;
 	if (wjet2_fromHiggs.obj.pt() == wjet2_fromHiggs_truth.obj.pt() || wjet2_fromHiggs.obj.pt() == wjet1_fromHiggs_truth.obj.pt()) matching_results.push_back(5);
 	else if (wjet2_fromHiggs_truth.obj.pt() > 0 || wjet1_fromHiggs_truth.obj.pt() > 0) matching_results.push_back(3); 
 	else matching_results.push_back(2);
