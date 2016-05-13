@@ -182,10 +182,10 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
       sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_99.root");
       //164 files
 
-      if (end_file == -1) end_file = sample_vector.size();
+      if (end_file == -1) end_file = int(sample_vector.size());
       for (int i= start_file; i <= end_file; i++)
       	{
-	  if (i > sample_vector.size()) break;
+	  if (i > int(sample_vector.size())) break;
       	  chain->Add(sample_vector[i]);
       	}
 
@@ -398,10 +398,10 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
       sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_99.root");
 
       //203 files
-      if (end_file == -1) end_file = sample_vector.size();
+      if (end_file == -1) end_file = int(sample_vector.size());
       for (int i= start_file; i <= end_file; i++)
       	{
-	  if (i > sample_vector.size()) break;
+	  if (i > int(sample_vector.size())) break;
       	  chain->Add(sample_vector[i]);
       	}
 
@@ -493,10 +493,10 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
       sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_9.root");
 
       //80 files
-      if (end_file == -1) end_file = sample_vector.size();
+      if (end_file == -1) end_file = int(sample_vector.size());
       for (int i= start_file; i <= end_file; i++)
       	{
-	  if (i > sample_vector.size()) break;
+	  if (i > int(sample_vector.size())) break;
       	  chain->Add(sample_vector[i]);
       	}
 
@@ -1086,10 +1086,10 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
       
       //572 files
 
-      if (end_file == -1) end_file = sample_vector.size();
+      if (end_file == -1) end_file = int(sample_vector.size());
       for (int i= start_file; i <= end_file; i++)
       	{
-	  if (i > sample_vector.size()) break;
+	  if (i > int(sample_vector.size())) break;
       	  chain->Add(sample_vector[i]);
       	}
       
@@ -1143,10 +1143,10 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
       sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/jetRecovery_v0p1/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW_aMC/160225_164414/0000/tree_file_6.root");
 
 
-      if (end_file == -1) end_file = sample_vector.size();
+      if (end_file == -1) end_file = int(sample_vector.size());
       for (int i= start_file; i <= end_file; i++)
       	{
-	  if (i > sample_vector.size()) break;
+	  if (i > int(sample_vector.size())) break;
       	  chain->Add(sample_vector[i]);
       	}
 
