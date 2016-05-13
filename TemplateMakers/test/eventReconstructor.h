@@ -106,7 +106,14 @@ class eventReconstructor
     // TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_training3.xml");
     //    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_misMatchWeightedSq.xml");
     //    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_baseline.xml");
-    TMVAReader_->BookMVA("BDTG method", "../../simpleweights/reconstruction_bdt/TMVAClassification_BDTG.weights_baseline_slimmedVars.xml");
+
+    const char* env_p = std::getenv("CMSSW_BASE");
+    std::string weight_file = env_p;
+    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG.weights_baseline_slimmedVars.xml"; 
+    weight_file += file_str;
+
+    TMVAReader_->BookMVA("BDTG method", weight_file);
+
   }
 
   void clear(void)
