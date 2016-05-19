@@ -253,13 +253,13 @@ void MakeGoodPlot::addvarstotree(std::vector<int> samps)
 		    
 		    TLorentzVector had_top1 = lep_fromHiggs_bdt_tlv_ + hadTop_tlv;
 		    TLorentzVector had_top2 = lep_fromHiggs_bdt_tlv_ + w_fromHadTop_bdt_tlv_;
-		    TLorentzVector lep_fromHiggs_bjetpt_tlv; lep_bjetpt_tlv.SetPtEtaPhiM(lep_fromHiggs_bdt_tlv_.Pt()/lep_fromHiggs_bdt_.jetPtRatio,lep_fromHiggs_bdt_tlv_.Eta(),lep_fromHiggs_bdt_tlv_.Phi(),lep_fromHiggs_bdt_tlv_.M());
+		    TLorentzVector lep_fromHiggs_bjetpt_tlv; lep_fromHiggs_bjetpt_tlv.SetPtEtaPhiM(lep_fromHiggs_bdt_tlv_.Pt()/lep_fromHiggs_bdt_.jetPtRatio,lep_fromHiggs_bdt_tlv_.Eta(),lep_fromHiggs_bdt_tlv_.Phi(),lep_fromHiggs_bdt_tlv_.M());
 		    TLorentzVector had_top3 =  lep_fromHiggs_bjetpt_tlv + hadTop_tlv;
 		    TLorentzVector had_top4 =  lep_fromHiggs_bjetpt_tlv + w_fromHadTop_bdt_tlv_;
 
 		    TLorentzVector had_top5 = lep_fromTop_bdt_tlv_ + hadTop_tlv;
 		    TLorentzVector had_top6 = lep_fromTop_bdt_tlv_ + w_fromHadTop_bdt_tlv_;
-		    TLorentzVector lep_fromTop_bjetpt_tlv; lep_bjetpt_tlv.SetPtEtaPhiM(lep_fromTop_bdt_tlv_.Pt()/lep_fromTop_bdt_.jetPtRatio,lep_fromTop_bdt_tlv_.Eta(),lep_fromTop_bdt_tlv_.Phi(),lep_fromTop_bdt_tlv_.M());
+		    TLorentzVector lep_fromTop_bjetpt_tlv; lep_fromTop_bjetpt_tlv.SetPtEtaPhiM(lep_fromTop_bdt_tlv_.Pt()/lep_fromTop_bdt_.jetPtRatio,lep_fromTop_bdt_tlv_.Eta(),lep_fromTop_bdt_tlv_.Phi(),lep_fromTop_bdt_tlv_.M());
 		    TLorentzVector had_top7 =  lep_fromTop_bjetpt_tlv + hadTop_tlv;
 		    TLorentzVector had_top8 =  lep_fromTop_bjetpt_tlv + w_fromHadTop_bdt_tlv_;
 		    
