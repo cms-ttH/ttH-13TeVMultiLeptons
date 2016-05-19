@@ -138,7 +138,7 @@ void run_it(TChain* chain)
   chain->SetBranchStatus("preselected_electrons.*",1);
   chain->SetBranchStatus("preselected_muons.*",1);
   chain->SetBranchStatus("preselected_jets.*",1);
-  chain->SetBranchStatus("selected_taus.*",1);
+  chain->SetBranchStatus("preselected_taus.*",1);
   chain->SetBranchStatus("met.*",1);
 
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
@@ -146,7 +146,7 @@ void run_it(TChain* chain)
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-  chain->SetBranchAddress("selected_taus", &selected_taus_intree);
+  chain->SetBranchAddress("preselected_taus", &selected_taus_intree);
   chain->SetBranchAddress("met", &met_intree);
 
   double starttime = get_wall_time();
