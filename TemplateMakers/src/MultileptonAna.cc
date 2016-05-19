@@ -318,7 +318,9 @@ vector<ttH::Tau> MultileptonAna::GetCollection (vecPatTau theobjs)
       tau.charge = iTau.charge();
       tau.dxy = iTau.userFloat("dxy");
       tau.dz = iTau.userFloat("dz");
-      
+      tau.decayModeFinding = iTau.tauID("decayModeFinding");
+      tau.mvaID = iTau.tauID("byMediumIsolationMVArun2v1DBdR03oldDMwLT");
+
       tauCollection.push_back(tau);
 
   }
@@ -471,9 +473,15 @@ MultileptonAna::GetSelectedTaus(const std::vector<pat::Tau>& inputTaus, const fl
       bool passPt = (tau.pt() >= iMinPt);
       switch(iTauID)
       {
+        case tauID::tauLoose:
+	  passSelection = ((tau.userFloat("idPreselection")>0.5) && passPt);
+	  break;
+        case tauID::tauMedium:
+	  passSelection = ((tau.userFloat("idSelection")>0.5) && passPt);
+	  break;
 	default:
-        case tauID::tauLoose: passSelection = ((tau.userFloat("idPreselection")>0.5) && passPt);
-        //case tauID::tauTight: passSelection = true;
+	  break;
+
       }
     
       if( passSelection ) selectedTaus.push_back(tau);

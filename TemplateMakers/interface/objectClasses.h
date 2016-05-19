@@ -149,6 +149,8 @@ namespace ttH
     
     double dxy;
     double dz;
+    double decayModeFinding;
+    double mvaID;
     //double miniIso; // to be added..
     
     virtual ~Tau(){};
