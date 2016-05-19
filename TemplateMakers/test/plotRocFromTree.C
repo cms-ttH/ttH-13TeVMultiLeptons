@@ -4,8 +4,20 @@
 ///
 ///////////////////////////
 
-TString signal_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/comparison_bdt_weightedBkgSq/ttH_sum_v2.root";
-TString background_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/comparison_bdt_weightedBkgSq/ttbar_sum_v2.root";
+// TString signal_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/comparison_bdt_weightedBkgSq/ttH_sum_v2.root";
+// TString background_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/comparison_bdt_weightedBkgSq/ttbar_sum_v2.root";
+
+// TString signal_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baseline_original/ttH_bdtEval.root";
+// TString background_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baseline_original/ttbar_bdtEval.root";
+
+TString signal_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baseline_original_slimmed/ttH_bdtEval_slimmed_v0.root";
+TString background_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baseline_original_slimmed/ttbar_bdtEval_slimmed_v0.root";
+
+TString signal_file2 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baseline_original_slimmed/ttH_bdtEval_slimmed_v2.root";
+TString background_file2 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baseline_original_slimmed/ttbar_bdtEval_slimmed_v2.root";
+
+
+
 
 // TString signal_file2 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/comparison_bdt_hiMatch_weightedBkg/ttH_sum.root";
 // TString background_file2 = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/comparison_bdt_hiMatch_weightedBkg/ttbar_sum.root";
@@ -48,7 +60,7 @@ TGraph * makeRoc(TH1D* sig, TH1D* bkg)
 TGraph* getRoc(int sample, TString variable_name, int num_bins, double xmin, double xmax, bool reverse=false)
 {
   TString chain_name;
-  if (selection == "2lss") chain_name = "ss2l_csvSorted_tree"; 
+  if (selection == "2lss") chain_name = "ss2l_tree"; 
   else if (selection == "3l") chain_name = "threelep_tree"; 
 
   TChain *chain_sig = new TChain(chain_name);
@@ -59,11 +71,11 @@ TGraph* getRoc(int sample, TString variable_name, int num_bins, double xmin, dou
       chain_sig->Add(signal_file1);
       chain_bkg->Add(background_file1);
     }
-  // else if (sample == 2)
-  //   {
-  //     chain_sig->Add(signal_file2);
-  //     chain_bkg->Add(background_file2);
-  //   }
+  else if (sample == 2)
+    {
+      chain_sig->Add(signal_file2);
+      chain_bkg->Add(background_file2);
+    }
   // else if (sample == 3)
   //   {
   //     chain_sig->Add(signal_file3);
@@ -74,7 +86,7 @@ TGraph* getRoc(int sample, TString variable_name, int num_bins, double xmin, dou
   TH1D* bkg_h = new TH1D("bkg_h","bkg_h",num_bins,xmin,xmax);
 
   //  TCut cuts = "mcwgt*(tightMvaBased_leptons[[]].lepMVA > 0.75)";
-  TCut cuts = "hadTop.M() < 220";
+  TCut cuts = "";
   TString draw_variable_signal = variable_name + " >> sig_h";
   TString draw_variable_background = variable_name + " >> bkg_h";
 
@@ -88,20 +100,20 @@ TGraph* getRoc(int sample, TString variable_name, int num_bins, double xmin, dou
 void plotRocFromTree(void)
 {
 
-  TString variable_name = "hadTop.M()";
+  TString variable_name = "reco_score";
   int num_bins = 100;
-  double xmin = 0;
-  double xmax = 220;
+  double xmin = -1;
+  double xmax = 1;
   TGraph* roc_curve1 = getRoc(1,variable_name,num_bins,xmin,xmax,true);
 
   char label1[512];
   float roc_integral1 = roc_curve1->Integral()+0.5;
-  sprintf(label1,"ROC: %.5f",roc_integral1);
+  sprintf(label1,"full vars ROC: %.5f",roc_integral1);
 
-  // TGraph* roc_curve2 = getRoc(2,variable_name,num_bins,xmin,xmax,true);
-  // char label2[512];
-  // float roc_integral2 = roc_curve2->Integral()+0.5;
-  // sprintf(label2,"hiMatch, ROC: %.5f",roc_integral2);
+  TGraph* roc_curve2 = getRoc(2,variable_name,num_bins,xmin,xmax,true);
+  char label2[512];
+  float roc_integral2 = roc_curve2->Integral()+0.5;
+  sprintf(label2,"slimmed vars ROC: %.5f",roc_integral2);
 
   // TGraph* roc_curve3 = getRoc(3,variable_name,num_bins,xmin,xmax,true);
   // char label3[512];
@@ -115,16 +127,16 @@ void plotRocFromTree(void)
   can1->SetGrid();
   
   roc_curve1->SetLineColor(1);
-  // roc_curve2->SetLineColor(2);
+  roc_curve2->SetLineColor(2);
   // roc_curve3->SetLineColor(4);
 
   roc_curve1->Draw("AC");
-  // roc_curve2->Draw("same");
+  roc_curve2->Draw("same");
   // roc_curve3->Draw("same");
   TLegend *leg = new TLegend(0.1925287,0.3474576,0.5732759,0.4661017,NULL,"brNDC");
   leg->SetTextSize(0.03); 
   leg->AddEntry(roc_curve1,label1,"l");
-  // leg->AddEntry(roc_curve2,label2,"l");
+  leg->AddEntry(roc_curve2,label2,"l");
   // leg->AddEntry(roc_curve3,label3,"l");
   leg->SetFillColor(0);
   leg->Draw("same");
