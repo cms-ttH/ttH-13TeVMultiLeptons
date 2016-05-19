@@ -39,6 +39,7 @@ namespace ttH
     double jetPtRel;
     double csv;
     double sip3D;
+    int jet_nCharged_tracks;
     
     // extra for sync
     double miniAbsIsoCharged;
@@ -69,6 +70,7 @@ namespace ttH
       jetPtRel = -99.;
       csv = -99.;
       sip3D = -99.;
+      jet_nCharged_tracks = -99;
       // extra for sync
       miniAbsIsoCharged = -99.;
       miniAbsIsoNeutral = -99.;
