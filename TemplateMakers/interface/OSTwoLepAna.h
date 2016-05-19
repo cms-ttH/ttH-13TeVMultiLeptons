@@ -69,6 +69,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::Muon> tightMvaBased_muons_intree;
                 
                 vector<ttH::Tau> preselected_taus_intree;
+                vector<ttH::Tau> selected_taus_intree;
 
 		vector<ttH::Jet> raw_jets_intree;
 		vector<ttH::Jet> preselected_jets_intree;
@@ -114,6 +115,7 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
   summaryTree->Branch("preselected_muons", &preselected_muons_intree);
   summaryTree->Branch("preselected_taus", &preselected_taus_intree);
+  summaryTree->Branch("selected_taus", &selected_taus_intree);
   
   summaryTree->Branch("loose_leptons", &loose_leptons_intree);
   summaryTree->Branch("loose_electrons", &loose_electrons_intree);
@@ -157,6 +159,7 @@ void OSTwoLepAna::initialize_variables()
   preselected_electrons_intree.clear();
   preselected_muons_intree.clear();
   preselected_taus_intree.clear();
+  selected_taus_intree.clear();
   loose_leptons_intree.clear();
   loose_electrons_intree.clear();
   loose_muons_intree.clear();

@@ -162,7 +162,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////        
         
-	vecPatTau selectedTaus_preselected = GetSelectedTaus( *taus, 20., tauID::tauLoose ); // the pt cut here must be >= the pt cut in the LeptonIdentifier in order to have any effect.
+	vecPatTau selectedTaus_preselected = GetSelectedTaus( *taus, 20., tauID::tauLoose );
 
 	/////////
 	///
@@ -179,6 +179,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         //remove taus that are close (dR <=0.4) to electrons
 	selectedTaus_preselected = cleanObjects<pat::Tau,pat::Electron>(selectedTaus_preselected,selectedElectrons_preselected,0.4);
         
+	vecPatTau selectedTaus_selected = GetSelectedTaus( selectedTaus_preselected, 20., tauID::tauMedium );
+	
 	/////////
 	///
 	/// Leptons
@@ -234,7 +236,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
               }
 
             vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
-            cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(cleaned_rawJets,selectedTaus_preselected,0.4);                // <------
+            cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(cleaned_rawJets,selectedTaus_selected,0.4);                // <------
             //vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
 
@@ -332,6 +334,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vector<ttH::Muon> tightMvaBased_muons = GetCollection(selectedMuons_tightMvaBased);
             
             vector<ttH::Tau> preselected_taus = GetCollection(selectedTaus_preselected);
+            vector<ttH::Tau> selected_taus = GetCollection(selectedTaus_selected);
 
 	    vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
 	    vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);
@@ -386,11 +389,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             if (preselected_taus.size()>=1) singleTauCount++;
             if (preselected_jets.size()>=1) singleJetCount++;
             
-            
 	    preselected_leptons_intree = preselected_leptons;
 	    preselected_electrons_intree = preselected_electrons;
 	    preselected_muons_intree = preselected_muons;
 	    preselected_taus_intree = preselected_taus;
+	    selected_taus_intree = selected_taus;
 
 	    looseMvaBased_muons_intree = looseMvaBased_muons;
 	    tightMvaBased_muons_intree = tightMvaBased_muons;
