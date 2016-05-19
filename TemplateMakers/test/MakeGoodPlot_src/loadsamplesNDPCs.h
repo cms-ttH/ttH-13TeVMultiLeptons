@@ -19,12 +19,14 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 	int numsamples = samps.size();
 	 
         
+        bool useNumInitialWeightedMCevents = true;
+        
         
 	for (int i=0; i<numsamples; i++)
 	{
 //		sample_raw_evts[10];
 //		sample_weighted_evts[10];
-		
+
 		if (samps[i]==0)
 		{
                         // prob. will just be all data ..
@@ -95,7 +97,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 			ch[5]->Add(thesample);
 			xsecs[5]=815.96; // at 173.2 GeV (top group twiki)
 			numgen[5]=25446993.0;
-                        
+                        if (useNumInitialWeightedMCevents) numgen[5] = getNumInitialMCevents(5);
 
 		}
 		if (samps[i]==6)
@@ -175,11 +177,78 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
                         //thesample = thesample + " " + basedir + basedir_plus + "multileptree_7_1_AwJ.root";
 			thesample = oldbasedir + basedir_plus + "*.root";
                         ch[12]->Add(thesample);
-                        xsecs[12]=0.5085;                // you can't use "i" here, idiot ...
+                        xsecs[12]=0.5085;              
                         //numgen[1]=89671.4186331;
 			//numgen[1]=80535.2587694;
 			numgen[12]=89671.4186331; //charlie
 		}
                 
+		if (samps[i]==13)
+		{
+                        // dilepton ttbar
+
+			basedir_plus = "try1_ttWkevin_mAODV2/TTJets_split_2lep/";
+			thesample = basedir + basedir_plus + "*.root";
+			ch[13]->Add(thesample);
+			xsecs[13]=85.656; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.104976 (BR)
+			numgen[13]=25446993.0;
+                        if (useNumInitialWeightedMCevents) numgen[13] = getNumInitialMCevents(13);
+                }
+                
+                if (samps[i]==14)
+		{
+                        // ttbar: 1l from top
+
+			basedir_plus = "try1_ttWkevin_mAODV2/TTJets_split_1lepFromT/";
+			thesample = basedir + basedir_plus + "*.root";
+			ch[14]->Add(thesample);
+			xsecs[14]=178.71; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.219024 (BR)
+			numgen[14]=25446993.0;
+                        if (useNumInitialWeightedMCevents) numgen[14] = getNumInitialMCevents(14);
+                }
+                
+                if (samps[i]==15)
+		{
+                        // ttbar: 1l from anti-top
+
+			basedir_plus = "try1_ttWkevin_mAODV2/TTJets_split_1lepFromTBar/";
+			thesample = basedir + basedir_plus + "*.root";
+			ch[15]->Add(thesample);
+			xsecs[15]=178.71; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.219024 (BR)
+			numgen[15]=25446993.0;
+                        if (useNumInitialWeightedMCevents) numgen[15] = getNumInitialMCevents(15);
+                }
+                
 	}
+}
+
+double MakeGoodPlot::getNumInitialMCevents (int sample)
+{
+    // derived from https://root.cern.ch/doc/master/classTChain.html#a4d491db32262125e6cb77a8f7a6bfd93
+
+    double returnedEvents=0.;
+    TH1D *sumHist = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
+    
+    TObjArray *fileElements=ch[sample]->GetListOfFiles();
+    TIter next(fileElements);
+    TChainElement *chEl=0;
+    while (( chEl=(TChainElement*)next() ))
+    {
+        TFile *f = new TFile(chEl->GetTitle());
+        //TFile *f = TFile::Open(chEl->GetTitle());
+        TH1D *temphist = (TH1D*)f->Get("OSTwoLepAna/numInitialWeightedMCevents");
+        sumHist->Add(temphist);
+        //double dummyintegral = temphist->GetIntegral();
+        //returnedEvents += dummyintegral;   
+        f->Close();
+        //delete f;   //?     
+    }
+    //cout << "asdf" << endl;
+    returnedEvents = sumHist->Integral();
+    //cout << "asdff" << endl;
+    //cout << returnedEvents << endl;
+    //delete sumHist;
+    //cout << ch[sample]->GetEntries() << endl;
+    delete sumHist;
+    return returnedEvents;
 }
