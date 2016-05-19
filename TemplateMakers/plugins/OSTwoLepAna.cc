@@ -30,34 +30,9 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 void OSTwoLepAna::beginJob()
 {
   
-  if (debug)
-    {
-      fout.open("preselEventDump_muons.csv");
-      
-      fout<<setiosflags(ios::fixed)<<setprecision(5);
-      fout<<setw(10)<<"event"<<
-      setw(10)<<"pT"<<
-      setw(10)<<"Eta"<<
-      setw(10)<<"Phi"<<
-      setw(10)<<"E"<<
-      setw(5)<<"pdgID"<<
-      setw(5)<<"charge"<<
-      setw(15)<<"miniIso"<<
-      setw(15)<<"miniIsoCharged"<<
-      setw(15)<<"miniIsoNeutral"<<
-      setw(10)<<"jetPtRel"<<
-      setw(10)<<"jetCSV"<<
-      setw(10)<<"jetPtRatio"<<
-      setw(10)<<"sip3D"<<
-      setw(10)<<"dxy"<<
-      setw(10)<<"dz"<<
-	//      setw(21)<<"segmentCompatibility"<<endl;
-      setw(21)<<"eleMVA"<<endl;
-      
-    }
   // job setup	
   SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
-  SetFactorizedJetCorrector(); // remove ???
+  //  SetFactorizedJetCorrector(); // remove ???
   
   // needed in edanalyzer:
   edm::Service<TFileService> newfs;
@@ -78,10 +53,6 @@ void OSTwoLepAna::beginJob()
 }
 void OSTwoLepAna::endJob() {
 
-  if (debug)
-    {
-      fout.close();
-    }
   //  cout << "Num Events processed " << numEvents << endl;
   //       << "Passed cuts " << numEventsPassCuts << endl;
   //       << "Failed cuts " << numEventsFailCuts << endl;
@@ -130,22 +101,22 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	if (debug) cout << "numpvs: " << numpvs << endl;
 	
 	edm::Handle<GenEventInfoProduct> GenInfo;
-    if (!isData) event.getByToken(genInfo_token_,GenInfo);
+	if (!isData) event.getByToken(genInfo_token_,GenInfo);
     	
 	///////////////////////////
 	if (!isData) mcwgt_intree = GenInfo->weight();		// <- gen-level weight
         
-    // make it +/-1!
-    mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
+	// make it +/-1!
+	mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
         
 	double weight = 1.;					// <- analysis weight 
 	weight *= mcwgt_intree;					// MC-only (flag to be added if nec)
 	///////////////////////////
 	
         
-    // count number of weighted mc events we started with:
-    numInitialWeightedMCevents->Fill(1,mcwgt_intree);
-	
+	// count number of weighted mc events we started with:
+	numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+    
 					
 	/////////
 	///
@@ -191,24 +162,16 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////        
         
-        
 	vecPatTau selectedTaus_preselected = GetSelectedTaus( *taus, 20., tauID::tauLoose ); // the pt cut here must be >= the pt cut in the LeptonIdentifier in order to have any effect.
-
-                
-        
 
 	/////////
 	///
 	/// Cleaning 
 	///
 	////////
-
+	
 	//remove electrons that are close (dR <=0.05) to muons
 	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	
-
-	//make sure the electrons used for jet cleaning are already cleaned of muons
-        // why are we using this to clean jets? isn't it the same as selectedElectrons_preselected???
-	vecPatElectron selectedElectrons_forcleaning = GetSelectedElectrons(selectedElectrons_preselected, 7., electronID::electronPreselection); // was selectedElectrons_preselected, 10., electronID::electronPreselection
 
         //remove taus that are close (dR <=0.4) to muons
 	selectedTaus_preselected = cleanObjects<pat::Tau,pat::Muon>(selectedTaus_preselected,selectedMuons_preselected,0.4);
@@ -216,17 +179,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         //remove taus that are close (dR <=0.4) to electrons
 	selectedTaus_preselected = cleanObjects<pat::Tau,pat::Electron>(selectedTaus_preselected,selectedElectrons_preselected,0.4);
         
-        // doing the same for taus for consitancy (should check why we're doing it this way...)
-        vecPatTau selectedTaus_forcleaning = GetSelectedTaus(selectedTaus_preselected, 20., tauID::tauLoose );
-    
 	/////////
 	///
 	/// Leptons
 	///
 	////////	
 	
-	//saves time by skipping the rest of the loop if <= 2 preselected leptons
-        if (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2)
+	//	bool skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
+	bool skim_statement = true;
+        if ( skim_statement )
         {
             
 	  eventnum_intree = event.id().event();
@@ -236,7 +197,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	  vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
 	  selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 	  
-	  vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_forcleaning);
+	  vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_preselected);
 	  
 	    /////////
 	    ///
@@ -258,7 +219,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    //vecPatJet correctedRawJets = GetCorrectedJets(rawJets,event,evsetup);
             //no jec
 	    vecPatJet correctedRawJets = (*pfjets);
-            
+          
+
+	    ///// Grab the QGID 
 	    edm::Handle<edm::ValueMap<float>> qgHandle;
 	    event.getByToken(qg_token_, qgHandle);
             int jet_counter = 0;
@@ -271,7 +234,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
               }
 
             vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
-            cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(cleaned_rawJets,selectedTaus_forcleaning,0.4);                // <------
+            cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(cleaned_rawJets,selectedTaus_preselected,0.4);                // <------
             //vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
 
@@ -309,55 +272,55 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    //do anything to pat met here
 
 
-		/////////
+	    /////////
 	    ///
 	    /// Trigger
 	    ///
 	    ////////
-
-		//cout << hlt_alltrigs.size() << endl;
-		
-		// if event passes an HLT path add it to the tree:
-		for (unsigned int trigit=0; trigit<hlt_alltrigs.size(); trigit++)
-		{
-			try
-			{
-				if (triggerResults->accept(hltConfig_.triggerIndex(hlt_alltrigs[trigit])))
-				{
-					// pair: <L1 prescale, HLT prescale>
-					//std::pair<int,int> prescaleVals= hltPrescaleProvider_.prescaleValues(event, evsetup, hlt_alltrigs[trigit]);
-					
-					// pair: < vector of pairs of (L1 seed, L1 prescale), HLT prescale >
-					std::pair<std::vector<std::pair<std::string,int> >,int> prescaleVals = hltPrescaleProvider_.prescaleValuesInDetail(event, evsetup, hlt_alltrigs[trigit]);					
-					std::vector<std::pair<std::string,int> > prescaleValsL1 = prescaleVals.first;
-					
-					if (prescaleVals.second==1) // check if HLT prescale=1
-					{					
-    					for (unsigned int trigit2=0; trigit2<prescaleValsL1.size(); trigit2++)
-    					{    					        					        					
-    					    if (prescaleValsL1[trigit2].second==1) // check for at least 1 L1 seed that had prescale=1 (in the case of multiple seeds, we are assuming they are in OR!)
-    					    {
-					            passTrigger_intree.push_back(hlt_alltrigs[trigit]);
-					            break;
-					        }
-					    }
-				    }
-				}
-			}
-			catch(...)
-			{
-				cout << "problem with trigger loop..." << endl;
-				continue;
-			}
+	    
+	    //cout << hlt_alltrigs.size() << endl;
+	    
+	    // if event passes an HLT path add it to the tree:
+	    for (unsigned int trigit=0; trigit<hlt_alltrigs.size(); trigit++)
+	      {
+		try
+		  {
+		    if (triggerResults->accept(hltConfig_.triggerIndex(hlt_alltrigs[trigit])))
+		      {
+			// pair: <L1 prescale, HLT prescale>
+			//std::pair<int,int> prescaleVals= hltPrescaleProvider_.prescaleValues(event, evsetup, hlt_alltrigs[trigit]);
 			
-		}
-        
+			// pair: < vector of pairs of (L1 seed, L1 prescale), HLT prescale >
+			std::pair<std::vector<std::pair<std::string,int> >,int> prescaleVals = hltPrescaleProvider_.prescaleValuesInDetail(event, evsetup, hlt_alltrigs[trigit]);					
+			std::vector<std::pair<std::string,int> > prescaleValsL1 = prescaleVals.first;
+			
+			if (prescaleVals.second==1) // check if HLT prescale=1
+			  {					
+			    for (unsigned int trigit2=0; trigit2<prescaleValsL1.size(); trigit2++)
+			      {    					        					        					
+				if (prescaleValsL1[trigit2].second==1) // check for at least 1 L1 seed that had prescale=1 (in the case of multiple seeds, we are assuming they are in OR!)
+				  {
+				    passTrigger_intree.push_back(hlt_alltrigs[trigit]);
+				    break;
+				  }
+			      }
+			  }
+		      }
+		  }
+		catch(...)
+		  {
+		    cout << "problem with trigger loop..." << endl;
+		    continue;
+		    }
+		
+	      }
+	    
 	    /////////////////////////
 	    //////
 	    ////// fill the ttH namespace collections
 	    //////
 	    /////////////////////////
-
+	    
 	    vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw);
 	    vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected);
 	    vector<ttH::Electron> looseMvaBased_electrons = GetCollection(selectedElectrons_looseMvaBased);
@@ -396,58 +359,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    {
 	        int higgs_daughter1 = GetHiggsDaughterId(*prunedParticles);
 	        //	int higgs_daughter2 = GetHiggsDaughterId(*prunedParticles,2);	
-	        higgs_decay_intree = (higgs_daughter1==24 || higgs_daughter1==23 || higgs_daughter1==15) ? 1 : 0;
+	        higgs_decay_intree = higgs_daughter1;
 	    }
 
-	    bool foundcolloverlap = false;
-	    
-	    if (debug){
-                
-                if ((preselected_electrons.size()>=1) && (!foundcolloverlap))
-                {
-                           
-                     auto mu = preselected_electrons[0];
-                     
-                     
-                
-                    fout<<setiosflags(ios::fixed)<<setprecision(5);
-                    fout<<setw(10)<<eventnum_intree<<
-                    setw(10)<<mu.obj.Pt()<<
-                    setw(10)<<mu.obj.Eta()<<
-                    setw(10)<<mu.obj.Phi()<<
-                    setw(10)<<mu.obj.E()<<
-                    setw(5)<<mu.pdgID<<
-                    setw(5)<<mu.charge<<
-                    setw(15)<<mu.miniIso<<
-                    setw(15)<<mu.miniAbsIsoCharged<<
-                    //setw(15)<<mu.miniAbsIsoNeutralcorr<<
-                    setw(15)<<mu.miniAbsIsoNeutral<< //Xavier
-                    setw(10)<<mu.jetPtRel<<
-                    setw(10)<<mu.csv<<
-                    setw(10)<<mu.jetPtRatio<<
-                    setw(10)<<mu.sip3D<<
-                    setw(10)<<mu.dxy<<
-                    setw(10)<<mu.dz<<
-                    setw(21)<<mu.mvaID<<endl;
-               
-               
-               }
-                
-                //if (preselected_taus.size()>=1)
-                
-                
-                
-                
-                
-                //if (preselected_jets.size()>=1)
-                
-                
-                
-                
-	    } // end if debug
-            
-
-            
             // dumps available tagging algos:
             // for (jetit iJet = selectedJets_preselected.begin(); iJet != selectedJets_preselected.end(); ++iJet)
 // 	    {                
@@ -467,7 +381,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    /////////////////////////
             
             
-            if ((preselected_muons.size()>=1) && (!foundcolloverlap)) singleMuCount++;
+            if ((preselected_muons.size()>=1)) singleMuCount++;
             if (preselected_electrons.size()>=1) singleEleCount++;
             if (preselected_taus.size()>=1) singleTauCount++;
             if (preselected_jets.size()>=1) singleJetCount++;
