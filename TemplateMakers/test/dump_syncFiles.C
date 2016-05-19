@@ -73,11 +73,48 @@ void dump_electrons(std::ofstream& output, vector<ttH::Electron> *preselected_el
 	 <<ele.mvaID<<endl;
 }
 
+void dump_taus(std::ofstream& output, vector<ttH::Tau> *preselected_taus, int event)
+{
+  if (preselected_taus->size() == 0) return;
+
+  ttH::Tau tau = (*preselected_taus)[0];
+  output << setiosflags(ios::fixed) << setprecision(5);
+  output << event << " "
+	 <<tau.obj.Pt()<< " "
+	 <<tau.obj.Eta()<< " "
+	 <<tau.obj.Phi()<< " "
+	 <<tau.obj.E()<< " "
+	 <<tau.charge<< " "
+	 <<tau.dxy<< " "
+	 <<tau.dz<< " "
+	 <<tau.decayModeFinding<< " "
+	 <<tau.mvaID<<endl;
+}
+
+void dump_jets(std::ofstream& output, vector<ttH::Jet> *preselected_jets, vector<ttH::MET> *input_met, int event)
+{
+  if (preselected_jets->size() == 0 || input_met->size()==0) return;
+
+  ttH::Jet jet = (*preselected_jets)[0];
+  ttH::MET met = (*input_met)[0];
+  output << setiosflags(ios::fixed) << setprecision(5);
+  output << event << " "
+	 <<jet.obj.Pt()<< " "
+	 <<jet.obj.Eta()<< " "
+	 <<jet.obj.Phi()<< " "
+	 <<jet.obj.E()<< " "
+	 <<jet.csv<< " "
+	 <<met.pt_forSync<< " "
+	 <<met.phi_forSync<<endl;
+}
+
 void run_it(TChain* chain)
 {
   
   std::ofstream ele_output; ele_output.open("electron_dump.txt");
   std::ofstream mu_output; mu_output.open("muon_dump.txt");
+  std::ofstream tau_output; tau_output.open("tau_dump.txt");
+  std::ofstream jet_output; jet_output.open("jet_dump.txt");
   
   int chainentries = chain->GetEntries();   
   cout << "# events in tree: "<< chainentries << endl;  
@@ -91,6 +128,7 @@ void run_it(TChain* chain)
   vector<ttH::Muon> *raw_muons_intree=0;
   vector<ttH::Muon> *preselected_muons_intree=0;
   vector<ttH::Jet> *preselected_jets_intree=0;
+  vector<ttH::Tau> *selected_taus_intree=0;
   vector<ttH::MET> *met_intree=0;
 
   //only enable some branches
@@ -100,6 +138,7 @@ void run_it(TChain* chain)
   chain->SetBranchStatus("preselected_electrons.*",1);
   chain->SetBranchStatus("preselected_muons.*",1);
   chain->SetBranchStatus("preselected_jets.*",1);
+  chain->SetBranchStatus("selected_taus.*",1);
   chain->SetBranchStatus("met.*",1);
 
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
@@ -107,10 +146,11 @@ void run_it(TChain* chain)
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
+  chain->SetBranchAddress("selected_taus", &selected_taus_intree);
   chain->SetBranchAddress("met", &met_intree);
 
   double starttime = get_wall_time();
-  for (int i=0; i<chainentries; i++)
+  for (int i=0; i<chainentries; i++)  //// main loop
     {
       
       if (i%7000 == 0)
@@ -121,17 +161,12 @@ void run_it(TChain* chain)
 	}
       chain->GetEntry(i);
 
-      //////////////////////////
-      ////
-      //// main loop
-      ////
-      //////////////////////////
-      
       dump_muons(mu_output, preselected_muons_intree, eventnum_intree);
       dump_electrons(ele_output, preselected_electrons_intree, eventnum_intree);
+      dump_taus(tau_output, selected_taus_intree, eventnum_intree);
+      dump_jets(jet_output, preselected_jets_intree, met_intree, eventnum_intree);
       
     }
-  
   
   double endtime = get_wall_time();
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
@@ -139,6 +174,8 @@ void run_it(TChain* chain)
 
   mu_output.close();
   ele_output.close();
+  tau_output.close();
+  jet_output.close();
   
 }
 
