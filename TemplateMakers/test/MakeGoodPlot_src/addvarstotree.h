@@ -106,6 +106,16 @@ void MakeGoodPlot::addvarstotree(std::vector<int> samps)
         int num_tight_bjets_charlie_handle = -99;
         double reco_score_handle = -99;
         double hadTop_mass_handle = -99;
+
+        double hadTop_mass1_handle = -99;
+        double hadTop_mass2_handle = -99;
+        double hadTop_mass3_handle = -99;
+        double hadTop_mass4_handle = -99;
+        double hadTop_mass5_handle = -99;
+        double hadTop_mass6_handle = -99;
+        double hadTop_mass7_handle = -99;
+        double hadTop_mass8_handle = -99;
+	
         
         double wgt_handle = xsecs[samp_int]/(double)chainentries;
         
@@ -186,6 +196,17 @@ void MakeGoodPlot::addvarstotree(std::vector<int> samps)
         newtree->Branch("reco_score",&reco_score_handle,"reco_score/D");
         newtree->Branch("hadTop_mass",&hadTop_mass_handle,"hadTop_mass/D");
 
+        newtree->Branch("hadTop_mass1",&hadTop_mass1_handle,"hadTop_mass1/D");
+        newtree->Branch("hadTop_mass2",&hadTop_mass2_handle,"hadTop_mass2/D");
+        newtree->Branch("hadTop_mass3",&hadTop_mass3_handle,"hadTop_mass3/D");
+        newtree->Branch("hadTop_mass4",&hadTop_mass4_handle,"hadTop_mass4/D");
+        newtree->Branch("hadTop_mass5",&hadTop_mass5_handle,"hadTop_mass5/D");
+        newtree->Branch("hadTop_mass6",&hadTop_mass6_handle,"hadTop_mass6/D");
+        newtree->Branch("hadTop_mass7",&hadTop_mass7_handle,"hadTop_mass7/D");
+        newtree->Branch("hadTop_mass8",&hadTop_mass8_handle,"hadTop_mass8/D");
+
+
+
         // basic kinematics
         newtree->Branch("met_pt", &met_pt_handle,"met_pt/D");
 
@@ -223,7 +244,35 @@ void MakeGoodPlot::addvarstotree(std::vector<int> samps)
                     double hadTop_mass = hadTop_tlv.M();
                     reco_score_handle = reco_score;
                     hadTop_mass_handle = hadTop_mass;
-                    
+		    
+		    TLorentzVector lep_fromTop_bdt_tlv_ = bdtReconstructor.lep_fromTop_bdt_tlv;
+		    TLorentzVector lep_fromHiggs_bdt_tlv_ = bdtReconstructor.lep_fromHiggs_bdt_tlv;
+		    TLorentzVector w_fromHadTop_bdt_tlv_ = bdtReconstructor.w_fromHadTop_bdt_tlv;
+		    ttH::Lepton lep_fromTop_bdt_ = bdtReconstructor.lep_fromTop_bdt;
+		    ttH::Lepton lep_fromHiggs_bdt_ bdtReconstructor.lep_fromHiggs_bdt;
+		    
+		    TLorentzVector had_top1 = lep_fromHiggs_bdt_tlv_ + hadTop_tlv;
+		    TLorentzVector had_top2 = lep_fromHiggs_bdt_tlv_ + w_fromHadTop_bdt_tlv_;
+		    TLorentzVector lep_fromHiggs_bjetpt_tlv; lep_bjetpt_tlv.SetPtEtaPhiM(lep_fromHiggs_bdt_tlv_.Pt()/lep_fromHiggs_bdt_.jetPtRatio,lep_fromHiggs_bdt_tlv_.Eta(),lep_fromHiggs_bdt_tlv_.Phi(),lep_fromHiggs_bdt_tlv_.M());
+		    TLorentzVector had_top3 =  lep_fromHiggs_bjetpt_tlv + hadTop_tlv;
+		    TLorentzVector had_top4 =  lep_fromHiggs_bjetpt_tlv + w_fromHadTop_bdt_tlv_;
+
+		    TLorentzVector had_top5 = lep_fromTop_bdt_tlv_ + hadTop_tlv;
+		    TLorentzVector had_top6 = lep_fromTop_bdt_tlv_ + w_fromHadTop_bdt_tlv_;
+		    TLorentzVector lep_fromTop_bjetpt_tlv; lep_bjetpt_tlv.SetPtEtaPhiM(lep_fromTop_bdt_tlv_.Pt()/lep_fromTop_bdt_.jetPtRatio,lep_fromTop_bdt_tlv_.Eta(),lep_fromTop_bdt_tlv_.Phi(),lep_fromTop_bdt_tlv_.M());
+		    TLorentzVector had_top7 =  lep_fromTop_bjetpt_tlv + hadTop_tlv;
+		    TLorentzVector had_top8 =  lep_fromTop_bjetpt_tlv + w_fromHadTop_bdt_tlv_;
+		    
+		    hadTop_mass1_handle = had_top1.M();
+		    hadTop_mass2_handle = had_top2.M();
+		    hadTop_mass3_handle = had_top3.M();
+		    hadTop_mass4_handle = had_top4.M();
+		    hadTop_mass5_handle = had_top5.M();
+		    hadTop_mass6_handle = had_top6.M();
+		    hadTop_mass7_handle = had_top7.M();
+		    hadTop_mass8_handle = had_top8.M();
+
+		      
                     //cout << "hey1" << endl;
                     SumJetPt_handle = getsumpt(*preselected_jets_intree);	// A.K.A. 'HT'
                     AvgBtagDiscNonBtags_handle = getAvgCSV(*preselected_jets_intree,"M",false);   			
