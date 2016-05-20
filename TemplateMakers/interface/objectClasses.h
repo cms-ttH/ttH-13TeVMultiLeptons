@@ -175,14 +175,6 @@ namespace ttH
     int genGrandMotherPdgID;
     double csv;
     double qgid;
-
-    double nearestLep_dr;
-    double nearestLep_pt;
-    double nearestLep_pdgId;
-    double nearestLep_lepMva;
-    double nearestLep_motherPdgId;
-    double nearestLep_charge;
-
     int pdgID; //place holder for Geoff's templated functions
     
     void clear(void)
@@ -194,12 +186,6 @@ namespace ttH
       genGrandMotherPdgID = -9999;
       csv = -.2;
       qgid = -99.;      
-      nearestLep_dr = -99;
-      nearestLep_pt = -99;
-      nearestLep_pdgId = 9999;
-      nearestLep_motherPdgId = 9999;
-      nearestLep_lepMva = -99;
-      nearestLep_charge = -99.;
     }
 
     virtual ~Jet(){};
