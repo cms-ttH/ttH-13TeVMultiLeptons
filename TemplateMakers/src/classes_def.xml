@@ -1,0 +1,24 @@
+<lcgdict>
+  <class name="ttH::Lepton"/>
+  <class name="std::vector<ttH::Lepton>"/>
+  <class name="std::vector< std::vector<ttH::Lepton> >"/>
+  <class name="ttH::Electron"/>
+  <class name="std::vector<ttH::Electron>"/>
+  <class name="std::vector< std::vector<ttH::Electron> >"/>
+  <class name="ttH::Muon"/>
+  <class name="std::vector<ttH::Muon>"/>
+  <class name="std::vector< std::vector<ttH::Muon> >"/>
+  <class name="ttH::Tau"/>
+  <class name="std::vector<ttH::Tau>"/>
+  <class name="std::vector< std::vector<ttH::Tau> >"/>
+  <class name="ttH::MET"/>
+  <class name="ttH::Jet"/>
+  <class name="std::vector<ttH::Jet>"/>
+  <class name="std::vector< std::vector<ttH::Jet> >"/>
+  <class name="std::vector<ttH::MET>"/>
+  <class name="std::vector< std::vector<ttH::MET> >"/>
+  <class name="ttH::GenParticle"/>
+  <class name="std::vector<ttH::GenParticle>"/>
+  <class name="std::vector< std::vector<ttH::GenParticle> >"/>
+
+</lcgdict>
