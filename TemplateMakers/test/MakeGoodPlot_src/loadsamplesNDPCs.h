@@ -8,7 +8,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
         //TString eosprfx = "";        
         //TString basedir = "/tmp/gesmith/ttjetstemp/";
         
-        TString basedir = "/mnt/ndpc5disk1/gesmith/sshjobs/";
+        TString basedir = "/mnt/ndpc5disk2/gesmith/sshjobs/updateObjClassesAndSummer2016syncV1skim/";
         
 	TString thesample = "";
 	TString basedir_plus = "";
@@ -41,7 +41,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
                         //thesample = basedir + basedir_plus + "multileptree_2_1_yTv.root";
                         //thesample = thesample + " " + basedir + basedir_plus + "multileptree_7_1_AwJ.root";
 			
-                        basedir_plus = "try1_ttWkevin_mAODV2/ttH125powheg/";
+                        basedir_plus = "ttH125powheg/";
                         thesample = basedir + basedir_plus + "*.root";
                         ch[1]->Add(thesample);
                         xsecs[1]=0.5085;
@@ -124,7 +124,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 			//basedir_plus = "ttwJets/";
                         //basedir_plus = "TTWJets_Tune4C_13TeV-madgraph-tauola/crab_ttWjets/150519_150455/0000/";
                         
-                        basedir_plus = "try1_ttWkevin_mAODV2/ttWkevin/";
+                        basedir_plus = "ttWkevin/";
                         thesample = basedir + basedir_plus + "*.root";
 			ch[8]->Add(thesample);
 			xsecs[8]=0.6647;
@@ -187,7 +187,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		{
                         // dilepton ttbar
 
-			basedir_plus = "try1_ttWkevin_mAODV2/TTJets_split_2lep/";
+			basedir_plus = "TTJets_split_2lep/";
 			thesample = basedir + basedir_plus + "*.root";
 			ch[13]->Add(thesample);
 			xsecs[13]=85.656; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.104976 (BR)
@@ -199,7 +199,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		{
                         // ttbar: 1l from top
 
-			basedir_plus = "try1_ttWkevin_mAODV2/TTJets_split_1lepFromT/";
+			basedir_plus = "TTJets_split_1lepFromT/";
 			thesample = basedir + basedir_plus + "*.root";
 			ch[14]->Add(thesample);
 			xsecs[14]=178.71; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.219024 (BR)
@@ -211,7 +211,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 		{
                         // ttbar: 1l from anti-top
 
-			basedir_plus = "try1_ttWkevin_mAODV2/TTJets_split_1lepFromTBar/";
+			basedir_plus = "TTJets_split_1lepFromTBar/";
 			thesample = basedir + basedir_plus + "*.root";
 			ch[15]->Add(thesample);
 			xsecs[15]=178.71; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.219024 (BR)

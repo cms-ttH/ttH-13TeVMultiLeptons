@@ -9,6 +9,7 @@
 #include "TH1D.h"
 #include "TFile.h"
 #include <cmath>
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
 
 //#include "Math/LorentzVector.h"
 
@@ -24,7 +25,7 @@
 void addvarstotree(TString infiles, TString outfile)
 {
     
-
+    
     //TFile *file = new TFile("ttH125.root");
     //TTree *newchain = (TTree*)file->Get("summaryTree");   
 
@@ -156,7 +157,10 @@ void addvarstotree(TString infiles, TString outfile)
     double met_pt_handle = -99.;
     int num_preselected_jets_handle = -99;
     int num_loose_bjets_charlie_handle = -99;
-    int num_tight_bjets_charlie_handle = -99;
+    int num_tight_bjets_charlie_handle = -99;    
+    double reco_score_handle = -99;
+    double hadTop_mass_handle = -99;
+
 
     chain->SetBranchAddress("mcwgt", &mcwgt_intree);
     chain->SetBranchAddress("wgt", &wgt_intree);
@@ -261,7 +265,8 @@ void addvarstotree(TString infiles, TString outfile)
 
     newtree->Branch("MaxEtaLeps",&MaxEtaLeps_handle,"MaxEtaLeps/D");
     newtree->Branch("MTMetLep1",&MTMetLep1_handle,"MTMetLep1/D");
-
+    newtree->Branch("reco_score",&reco_score_handle,"reco_score/D");
+    newtree->Branch("hadTop_mass",&hadTop_mass_handle,"hadTop_mass/D");
 
     // basic kinematics
     newtree->Branch("met_pt", &met_pt_handle,"met_pt/D");
@@ -290,32 +295,16 @@ void addvarstotree(TString infiles, TString outfile)
         // 2lss:
         if ( !(((*tight_leptons_intree).size()==2) && ((*preselected_leptons_intree).size()==2)) ) continue;
         
-
-
-/// need to fix this part:
-//         vector<ttH::GenParticle> top_daughters;
-//         vector<ttH::GenParticle> higgs_daughters;
-//         
-//         int gensize = (*pruned_genParticles_intree).size();
-//          
-//         for (auto genit = (*pruned_genParticles_intree).begin(); genit != (*pruned_genParticles_intree).end(); ++genit)
-//         {
-//   	    if (abs((*genit).grandmother_pdgID)==6) top_daughters.push_back(*genit);
-//             
-//             else if (abs(genParticle.grandmother_pdgID)==25)
-//             {
-//                 higgs_daughters.push_back(*genit);
-//             }          
-//            if len(higgs_daughters) > 0 and len(top_daughters) >0:
-// //           {    
-// //                  higgs_gChild = higgs_daughters[0]
-// //               top_gChild = top_daughters[0]
-// //               deltaPhi = higgs_gChild.obj.Phi() - top_gChild.obj.Phi()
-// //               deltaEta = higgs_gChild.obj.Eta() - top_gChild.obj.Eta()
-// //               deltaR_boosted_daughters_handle[0] = math.sqrt(math.pow(deltaPhi,2)+math.pow(deltaEta,2))
-//          
         
-        // this part ok:
+        // Charlie's reconstruction BDT:
+        eventReconstructor bdtReconstructor;
+        bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree, (*met_intree)[0]);
+        double reco_score = bdtReconstructor.reco_score;
+        TLorentzVector hadTop_tlv = bdtReconstructor.hadTop_bdt_tlv;
+        double hadTop_mass = hadTop_tlv.M();
+        reco_score_handle = reco_score;
+        hadTop_mass_handle = hadTop_mass;
+        
         
         SumJetPt_handle = getsumpt(*preselected_jets_intree);	// A.K.A. 'HT'
         AvgBtagDiscNonBtags_handle = getAvgCSV(*preselected_jets_intree,"M",false);   			
@@ -350,8 +339,7 @@ void addvarstotree(TString infiles, TString outfile)
 
         vetoZmass_handle = 	pickFromSortedTwoObjKine(*preselected_leptons_intree,"mass",1,91.2);
         vetoZmassSFOS_handle =   pickFromSortedTwoObjKine(*preselected_leptons_intree,"massSFOS",1,91.2);
-        minMassLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,"min","mass");
-        
+        minMassLepLep_handle = 	getTwoObjKineExtreme(*preselected_leptons_intree,"min","mass");        
         
         
         auto sumTLVlep1MET = (*preselected_leptons_intree)[0].obj + (*met_intree)[0].obj;

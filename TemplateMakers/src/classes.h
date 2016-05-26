@@ -1,5 +1,8 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
+#ifndef TTH_DUMMY_OBJS
+#define TTH_DUMMY_OBJS
+
 namespace {
   struct dictionary {
     ttH::Lepton dummy_lepton;
@@ -32,3 +35,5 @@ namespace {
 
   };
 }
+
+#endif
