@@ -187,8 +187,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////	
 	
-	//	bool skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
-	bool skim_statement = true;
+	bool skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
+	//bool skim_statement = true;
         if ( skim_statement )
         {
             

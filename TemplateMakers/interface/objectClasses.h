@@ -83,7 +83,7 @@ namespace ttH
     
     
     virtual ~Lepton(){};
-    ClassDef(Lepton, 1);
+    //ClassDef(Lepton, 1);
     
   };
 
@@ -103,7 +103,7 @@ namespace ttH
     double mvaID;
 
     virtual ~Electron(){};
-    ClassDef(Electron, 1); 
+    //ClassDef(Electron, 1); 
 
   };
 
@@ -130,7 +130,7 @@ namespace ttH
 
 
     virtual ~Muon(){};
-    ClassDef(Muon, 1); 
+    //ClassDef(Muon, 1); 
 
   };
   
@@ -154,7 +154,7 @@ namespace ttH
     //double miniIso; // to be added..
     
     virtual ~Tau(){};
-    ClassDef(Tau, 1); 
+    //ClassDef(Tau, 1); 
 
   };
    
@@ -190,7 +190,7 @@ namespace ttH
     }
 
     virtual ~Jet(){};
-    ClassDef(Jet, 1); 
+    //ClassDef(Jet, 1); 
 
   };
 
@@ -207,7 +207,7 @@ namespace ttH
     float phi_forSync;
     
     virtual ~MET(){};
-    ClassDef(MET, 1); 
+    //ClassDef(MET, 1); 
   };
 
   class GenParticle
@@ -231,7 +231,7 @@ namespace ttH
     unsigned int grandmother;
 
     virtual ~GenParticle(){};
-    ClassDef(GenParticle, 1); 
+    //ClassDef(GenParticle, 1); 
   };
 
 
