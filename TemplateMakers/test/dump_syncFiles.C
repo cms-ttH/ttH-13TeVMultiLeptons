@@ -12,7 +12,7 @@
 #include "TH1D.h"
 #include "TFile.h"
 #include "TLorentzVector.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 #include "variables.h"
 
 /////////////////////////////////////////

@@ -48,7 +48,7 @@
 //#include "stupid_thing_for_trig_studies.h"
 
 
-#include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 
 #if not defined(__CINT__) || defined(__MAKECINT__)
 // needs to be included when makecint runs (ACLIC)

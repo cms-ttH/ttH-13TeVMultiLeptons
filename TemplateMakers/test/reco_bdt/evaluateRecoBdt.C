@@ -11,7 +11,7 @@
 #include "TFile.h"
 #include <cmath>
 #include "TLorentzVector.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/src/LinkDef.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
 #include "TMVA/Config.h"
 #include "TMVA/Tools.h"
