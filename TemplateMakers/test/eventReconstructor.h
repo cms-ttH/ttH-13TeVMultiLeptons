@@ -324,112 +324,124 @@ class eventReconstructor
     /////
     ///////////////////////////
 
-    int lep_fromTop_count = -1;
-    for (const auto & lep_fromTop : *leptons_in)
+    int bjet_fromLepTop_count;
+    int bjet_fromHadTop_count;
+    int wjet1_fromHadTop_count;	    	    
+    int wjet2_fromHadTop_count;
+    int wjet1_fromHiggs_count;
+    int wjet2_fromHiggs_count;
+    int lep_fromTop_count;
+    int lep_fromHiggs_count;
+
+    bjet_fromHadTop_count = -1;
+    for (const auto & bjet_fromHadTop : *jets_in)
       {
-	lep_fromTop_count +=1;
+	bjet_fromHadTop_count +=1;
 	
-	lep_fromTop_tlv.SetPxPyPzE(lep_fromTop.obj.px(),lep_fromTop.obj.py(),lep_fromTop.obj.pz(),lep_fromTop.obj.E());
-	lep_fromTop_T_tlv.SetPxPyPzE(lep_fromTop.obj.px(),lep_fromTop.obj.py(), 0. ,lep_fromTop.obj.pt());
+	bjet_fromHadTop_tlv.SetPxPyPzE(bjet_fromHadTop.obj.px(),bjet_fromHadTop.obj.py(),bjet_fromHadTop.obj.pz(),bjet_fromHadTop.obj.E());
+	bjet_fromHadTop_T_tlv.SetPxPyPzE(bjet_fromHadTop.obj.px(),bjet_fromHadTop.obj.py(), 0. ,bjet_fromHadTop.obj.pt());
 	
-	int lep_fromHiggs_count = -1;
-	for (const auto & lep_fromHiggs : *leptons_in)
+	bjet_fromLepTop_count = -1;
+	for (const auto & bjet_fromLepTop : *jets_in)
 	  {
-	    lep_fromHiggs_count +=1;  
-	    if (lep_fromTop_count == lep_fromHiggs_count) continue;
+	    bjet_fromLepTop_count +=1;
 	    
-	    lep_fromHiggs_tlv.SetPxPyPzE(lep_fromHiggs.obj.px(),lep_fromHiggs.obj.py(),lep_fromHiggs.obj.pz(),lep_fromHiggs.obj.E());
-	    lep_fromHiggs_T_tlv.SetPxPyPzE(lep_fromHiggs.obj.px(),lep_fromHiggs.obj.py(), 0. ,lep_fromHiggs.obj.pt());
+	    if (bjet_fromHadTop_count == bjet_fromLepTop_count) continue;
+	    if ( !( (bjet_fromHadTop.csv > 0.8 || bjet_fromLepTop.csv > 0.8) || (bjet_fromHadTop.csv > 0.4 && bjet_fromLepTop.csv > 0.4) ) ) continue;
 	    
-	    int bjet_fromHadTop_count = -1;
-	    for (const auto & bjet_fromHadTop : *jets_in)
+	    bjet_fromLepTop_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(),bjet_fromLepTop.obj.pz(),bjet_fromLepTop.obj.E());
+	    bjet_fromLepTop_T_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(), 0. ,bjet_fromLepTop.obj.pt());
+	    
+	    wjet1_fromHadTop_count = -1;	    
+	    for (const auto & wjet1_fromHadTop : *jets_in)
 	      {
-		bjet_fromHadTop_count +=1;
+		wjet1_fromHadTop_count +=1;
 		
-		bjet_fromHadTop_tlv.SetPxPyPzE(bjet_fromHadTop.obj.px(),bjet_fromHadTop.obj.py(),bjet_fromHadTop.obj.pz(),bjet_fromHadTop.obj.E());
-		bjet_fromHadTop_T_tlv.SetPxPyPzE(bjet_fromHadTop.obj.px(),bjet_fromHadTop.obj.py(), 0. ,bjet_fromHadTop.obj.pt());
+		if (wjet1_fromHadTop_count == bjet_fromLepTop_count) continue;
+		if (wjet1_fromHadTop_count == bjet_fromHadTop_count) continue;
 		
-		int bjet_fromLepTop_count = -1;
-		for (const auto & bjet_fromLepTop : *jets_in)
+		wjet1_fromHadTop_tlv.SetPxPyPzE(wjet1_fromHadTop.obj.px(),wjet1_fromHadTop.obj.py(),wjet1_fromHadTop.obj.pz(),wjet1_fromHadTop.obj.E());
+		wjet1_fromHadTop_T_tlv.SetPxPyPzE(wjet1_fromHadTop.obj.px(),wjet1_fromHadTop.obj.py(), 0. ,wjet1_fromHadTop.obj.pt());
+		
+		wjet2_fromHadTop_count = -1;
+		for (const auto & wjet2_fromHadTop : *jets_in)
 		  {
-		    bjet_fromLepTop_count +=1;
+		    wjet2_fromHadTop_count +=1;
+		    
+		    if (wjet2_fromHadTop_count == bjet_fromLepTop_count) continue;
+		    if (wjet2_fromHadTop_count == bjet_fromHadTop_count) continue;
+		    if (wjet2_fromHadTop_count <= wjet1_fromHadTop_count) continue; //don't need both orderings 
+		    
+		    wjet2_fromHadTop_tlv.SetPxPyPzE(wjet2_fromHadTop.obj.px(),wjet2_fromHadTop.obj.py(),wjet2_fromHadTop.obj.pz(),wjet2_fromHadTop.obj.E());
+		    wjet2_fromHadTop_T_tlv.SetPxPyPzE(wjet2_fromHadTop.obj.px(),wjet2_fromHadTop.obj.py(), 0. ,wjet2_fromHadTop.obj.pt());
+		    
+		    w_fromHadTop_tlv = wjet1_fromHadTop_tlv + wjet2_fromHadTop_tlv;
+		    w_fromHadTop_T_tlv = wjet1_fromHadTop_T_tlv + wjet2_fromHadTop_T_tlv;
+		    
+		    if (w_fromHadTop_tlv.M() > 120 ) continue; 
+		    
+		    hadTop_tlv = w_fromHadTop_tlv + bjet_fromHadTop_tlv;
+		    hadTop_T_tlv = w_fromHadTop_T_tlv + bjet_fromHadTop_T_tlv;
+		    
+		    if ( hadTop_tlv.M() > 220 ) continue;
 
-		    if (bjet_fromHadTop_count == bjet_fromLepTop_count) continue;
-		    if ( !( (bjet_fromHadTop.csv > 0.8 || bjet_fromLepTop.csv > 0.8) || (bjet_fromHadTop.csv > 0.4 && bjet_fromLepTop.csv > 0.4) ) ) continue;
-		    
-		    bjet_fromLepTop_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(),bjet_fromLepTop.obj.pz(),bjet_fromLepTop.obj.E());
-		    bjet_fromLepTop_T_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(), 0. ,bjet_fromLepTop.obj.pt());
-		    
-		    lepTop_tlv = lep_fromTop_tlv + bjet_fromLepTop_tlv;
-		    lepTop_T_tlv = lep_fromTop_T_tlv + bjet_fromLepTop_T_tlv;
-		    
-		    if ( lepTop_tlv.M() > 180 ) continue;
-		    
-		    int wjet1_fromHadTop_count = -1;
-		    for (const auto & wjet1_fromHadTop : *jets_in)
+		    wjet1_fromHiggs_count = -1;
+		    for (const auto & wjet1_fromHiggs : *jets_in)
 		      {
-			wjet1_fromHadTop_count +=1;
-
-			if (wjet1_fromHadTop_count == bjet_fromLepTop_count) continue;
-			if (wjet1_fromHadTop_count == bjet_fromHadTop_count) continue;
+			wjet1_fromHiggs_count +=1;
 			
-			wjet1_fromHadTop_tlv.SetPxPyPzE(wjet1_fromHadTop.obj.px(),wjet1_fromHadTop.obj.py(),wjet1_fromHadTop.obj.pz(),wjet1_fromHadTop.obj.E());
-			wjet1_fromHadTop_T_tlv.SetPxPyPzE(wjet1_fromHadTop.obj.px(),wjet1_fromHadTop.obj.py(), 0. ,wjet1_fromHadTop.obj.pt());
+			if (wjet1_fromHiggs_count == bjet_fromLepTop_count) continue;
+			if (wjet1_fromHiggs_count == bjet_fromHadTop_count) continue;
+			if (wjet1_fromHiggs_count == wjet1_fromHadTop_count) continue;
+			if (wjet1_fromHiggs_count == wjet2_fromHadTop_count) continue;
 			
-			int wjet2_fromHadTop_count = -1;
-			for (const auto & wjet2_fromHadTop : *jets_in)
+			wjet1_fromHiggs_tlv.SetPxPyPzE(wjet1_fromHiggs.obj.px(),wjet1_fromHiggs.obj.py(),wjet1_fromHiggs.obj.pz(),wjet1_fromHiggs.obj.E());
+			wjet1_fromHiggs_T_tlv.SetPxPyPzE(wjet1_fromHiggs.obj.px(),wjet1_fromHiggs.obj.py(), 0. ,wjet1_fromHiggs.obj.pt());
+			
+			wjet2_fromHiggs_count = -1;
+			for (const auto & wjet2_fromHiggs : *jets_in)
 			  {
-			    wjet2_fromHadTop_count +=1;
+			    wjet2_fromHiggs_count +=1;
 			    
-			    if (wjet2_fromHadTop_count == bjet_fromLepTop_count) continue;
-			    if (wjet2_fromHadTop_count == bjet_fromHadTop_count) continue;
-			    if (wjet2_fromHadTop_count <= wjet1_fromHadTop_count) continue; //don't need both orderings 
+			    if (wjet2_fromHiggs_count == bjet_fromLepTop_count) continue;
+			    if (wjet2_fromHiggs_count == bjet_fromHadTop_count) continue;
+			    if (wjet2_fromHiggs_count == wjet1_fromHadTop_count) continue;
+			    if (wjet2_fromHiggs_count == wjet2_fromHadTop_count) continue;
+			    if (wjet2_fromHiggs_count <= wjet1_fromHiggs_count) continue;
 			    
-			    wjet2_fromHadTop_tlv.SetPxPyPzE(wjet2_fromHadTop.obj.px(),wjet2_fromHadTop.obj.py(),wjet2_fromHadTop.obj.pz(),wjet2_fromHadTop.obj.E());
-			    wjet2_fromHadTop_T_tlv.SetPxPyPzE(wjet2_fromHadTop.obj.px(),wjet2_fromHadTop.obj.py(), 0. ,wjet2_fromHadTop.obj.pt());
-			      
-			    w_fromHadTop_tlv = wjet1_fromHadTop_tlv + wjet2_fromHadTop_tlv;
-			    w_fromHadTop_T_tlv = wjet1_fromHadTop_T_tlv + wjet2_fromHadTop_T_tlv;
+			    wjet2_fromHiggs_tlv.SetPxPyPzE(wjet2_fromHiggs.obj.px(),wjet2_fromHiggs.obj.py(),wjet2_fromHiggs.obj.pz(),wjet2_fromHiggs.obj.E());
+			    wjet2_fromHiggs_T_tlv.SetPxPyPzE(wjet2_fromHiggs.obj.px(),wjet2_fromHiggs.obj.py(), 0. ,wjet2_fromHiggs.obj.pt());
 			    
-			    if (w_fromHadTop_tlv.M() > 120 ) continue; 
+			    w_fromHiggs_tlv = wjet1_fromHiggs_tlv + wjet2_fromHiggs_tlv;
+			    w_fromHiggs_T_tlv = wjet1_fromHiggs_T_tlv + wjet2_fromHiggs_T_tlv;
 			    
-			    hadTop_tlv = w_fromHadTop_tlv + bjet_fromHadTop_tlv;
-			    hadTop_T_tlv = w_fromHadTop_T_tlv + bjet_fromHadTop_T_tlv;
+			    if (w_fromHiggs_tlv.M() > 120 ) continue; 
 			    
-			    if ( hadTop_tlv.M() > 220 ) continue;
+			    //////////////////////////////////////////////////////////////////////////////
 			    
-			    int wjet1_fromHiggs_count = -1;
-			    for (const auto & wjet1_fromHiggs : *jets_in)
+			    lep_fromTop_count = -1;
+			    for (const auto & lep_fromTop : *leptons_in)
 			      {
-				wjet1_fromHiggs_count +=1;
+				lep_fromTop_count +=1;
 				
-				if (wjet1_fromHiggs_count == bjet_fromLepTop_count) continue;
-				if (wjet1_fromHiggs_count == bjet_fromHadTop_count) continue;
-				if (wjet1_fromHiggs_count == wjet1_fromHadTop_count) continue;
-				if (wjet1_fromHiggs_count == wjet2_fromHadTop_count) continue;
+				lep_fromTop_tlv.SetPxPyPzE(lep_fromTop.obj.px(),lep_fromTop.obj.py(),lep_fromTop.obj.pz(),lep_fromTop.obj.E());
+				lep_fromTop_T_tlv.SetPxPyPzE(lep_fromTop.obj.px(),lep_fromTop.obj.py(), 0. ,lep_fromTop.obj.pt());
 				
-				wjet1_fromHiggs_tlv.SetPxPyPzE(wjet1_fromHiggs.obj.px(),wjet1_fromHiggs.obj.py(),wjet1_fromHiggs.obj.pz(),wjet1_fromHiggs.obj.E());
-				wjet1_fromHiggs_T_tlv.SetPxPyPzE(wjet1_fromHiggs.obj.px(),wjet1_fromHiggs.obj.py(), 0. ,wjet1_fromHiggs.obj.pt());
-				
-				int wjet2_fromHiggs_count = -1;
-				for (const auto & wjet2_fromHiggs : *jets_in)
+				lep_fromHiggs_count = -1;
+				for (const auto & lep_fromHiggs : *leptons_in)
 				  {
-				    wjet2_fromHiggs_count +=1;
+				    lep_fromHiggs_count +=1;  
+				    if (lep_fromTop_count == lep_fromHiggs_count) continue;
 				    
-				    if (wjet2_fromHiggs_count == bjet_fromLepTop_count) continue;
-				    if (wjet2_fromHiggs_count == bjet_fromHadTop_count) continue;
-				    if (wjet2_fromHiggs_count == wjet1_fromHadTop_count) continue;
-				    if (wjet2_fromHiggs_count == wjet2_fromHadTop_count) continue;
-				    if (wjet2_fromHiggs_count <= wjet1_fromHiggs_count) continue;
+				    lep_fromHiggs_tlv.SetPxPyPzE(lep_fromHiggs.obj.px(),lep_fromHiggs.obj.py(),lep_fromHiggs.obj.pz(),lep_fromHiggs.obj.E());
+				    lep_fromHiggs_T_tlv.SetPxPyPzE(lep_fromHiggs.obj.px(),lep_fromHiggs.obj.py(), 0. ,lep_fromHiggs.obj.pt());
 				    
-				    wjet2_fromHiggs_tlv.SetPxPyPzE(wjet2_fromHiggs.obj.px(),wjet2_fromHiggs.obj.py(),wjet2_fromHiggs.obj.pz(),wjet2_fromHiggs.obj.E());
-				    wjet2_fromHiggs_T_tlv.SetPxPyPzE(wjet2_fromHiggs.obj.px(),wjet2_fromHiggs.obj.py(), 0. ,wjet2_fromHiggs.obj.pt());
+				    lepTop_tlv = lep_fromTop_tlv + bjet_fromLepTop_tlv;
+				    lepTop_T_tlv = lep_fromTop_T_tlv + bjet_fromLepTop_T_tlv;
 				    
-				    w_fromHiggs_tlv = wjet1_fromHiggs_tlv + wjet2_fromHiggs_tlv;
-				    w_fromHiggs_T_tlv = wjet1_fromHiggs_T_tlv + wjet2_fromHiggs_T_tlv;
+				    if ( lepTop_tlv.M() > 180 ) continue;
 				    
-				    if (w_fromHiggs_tlv.M() > 120 ) continue; 
-				    
+
 				    higgs_tlv = w_fromHiggs_tlv + lep_fromHiggs_tlv;
 				    higgs_T_tlv = w_fromHiggs_T_tlv + lep_fromHiggs_T_tlv;
 				    

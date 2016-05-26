@@ -22,7 +22,7 @@
 
 /////////////////////////////////////////
 ///
-/// usage: root -l makeSelectionTrees.C+
+/// usage: root -l evaluateRecoBdt.C+\("\"ttH-powheg\"",0,1\)
 ///
 /////////////////////////////////////////
 
@@ -34,46 +34,40 @@ void run_it(TChain* chain, TString output_file)
   cout << "# events in tree: "<< chainentries << endl;  
   
   double mcwgt_intree = -999.;
-  double wgt_intree = -999.;
-  double wallTimePerEvent_intree = -99.;  
-  int eventnum_intree = -999;
-  int higgs_decay_intree = -9999;
-  int lumiBlock_intree = -999;
-  int runNumber_intree = -999;
-  
-  vector<ttH::Lepton> *preselected_leptons_intree=0;
-  vector<ttH::Electron> *raw_electrons_intree=0;               
+  int eventnum_intree = -999;  
   vector<ttH::Electron> *preselected_electrons_intree=0;
-  vector<ttH::Muon> *raw_muons_intree=0;
   vector<ttH::Muon> *preselected_muons_intree=0;
   vector<ttH::Jet> *preselected_jets_intree=0;
   vector<ttH::MET> *met_intree=0;
-  vector<ttH::GenParticle> *pruned_genParticles_intree=0;
   vector<ttH::Lepton> *tight_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
-  vector<ttH::Lepton> *tight_leptons_sortedByMiniIso_intree=0;  
   
+  chain->SetBranchStatus("*",0);
+  chain->SetBranchStatus("mcwgt",1);
+  chain->SetBranchStatus("eventnum",1);
+  chain->SetBranchStatus("preselected_electrons.*",1);
+  chain->SetBranchStatus("preselected_muons.*",1);
+  chain->SetBranchStatus("preselected_jets.*",1);
+  chain->SetBranchStatus("tightMvaBased_leptons.*",1);
+  chain->SetBranchStatus("tightMvaBased_electrons.*",1);
+  chain->SetBranchStatus("tightMvaBased_muons.*",1);
+  chain->SetBranchStatus("met.*",1);
+
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
-  chain->SetBranchAddress("wgt", &wgt_intree);
-  chain->SetBranchAddress("wallTimePerEvent", &wallTimePerEvent_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
-  chain->SetBranchAddress("lumiBlock", &lumiBlock_intree);
-  chain->SetBranchAddress("runNumber", &runNumber_intree);
-  chain->SetBranchAddress("higgs_decay", &higgs_decay_intree);
-  chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
+  chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
   chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
   chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
-  chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
   chain->SetBranchAddress("met", &met_intree);
-  chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);   
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
   double reco_score_intree = -1.;
+  double time_per_event_intree = -1.;
   vector<ttH::Jet> *unmatched_jets_intree=0;
   vector<ttH::Jet> *matched_jets_intree=0;
   vector<ttH::Jet> *matched_jets_truth_intree=0;
@@ -81,7 +75,6 @@ void run_it(TChain* chain, TString output_file)
   ttH::Lepton lep_fromTop_intree;
 
   vector<int> *match_results_intree=0;
-
   vector<double> *reco_scores_intree=0;  
 
   TLorentzVector w_fromHadTop_tlv_intree;
@@ -111,6 +104,7 @@ void run_it(TChain* chain, TString output_file)
   TTree *signal_tree = (TTree*)chain->CloneTree(0);
   signal_tree->SetName("ss2l_tree");
   signal_tree->Branch("reco_score", &reco_score_intree);
+  signal_tree->Branch("time_per_event", &time_per_event_intree);
   signal_tree->Branch("unmatched_jets", &unmatched_jets_intree);
   signal_tree->Branch("matched_jets", &matched_jets_intree);
   signal_tree->Branch("matched_jets_truth", &matched_jets_truth_intree);
@@ -143,16 +137,17 @@ void run_it(TChain* chain, TString output_file)
 
   
   double starttime = get_wall_time();
-  //  chainentries = 1000000;
+
+  //  chainentries = 3000;
   for (int i=0; i<chainentries; i++)
     {
-      
       if (i%1000 == 0)
 	{
 	  float fraction = 100.*i/chainentries;
 	  cout << fraction << " % complete" << endl;
 	  cout << i << endl;
 	}
+      clock_t startTime = clock();
       chain->GetEntry(i);
 
       //////////////////////////
@@ -283,6 +278,8 @@ void run_it(TChain* chain, TString output_file)
 
       num_real_jetMatches = bdtReconstructor.num_real_jets_bdt;
 
+      time_per_event_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
+
       signal_tree->Fill();
 
     }
@@ -301,7 +298,7 @@ void evaluateRecoBdt(TString sample, int start_file=0, int end_file=0)
 {
 
   //  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/lxbatch_output/";
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baseline_original_slimmed/";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/";
 
   TString output_file = output_dir+sample + "_batch_bdtEval_"+to_string(start_file)+"-"+to_string(end_file)+".root";
   TChain *tth_chain = loadFiles(sample,start_file,end_file);  
