@@ -186,6 +186,7 @@ namespace ttH
       genGrandMotherPdgID = -9999;
       csv = -.2;
       qgid = -99.;      
+      pdgID = -9999;
     }
 
     virtual ~Jet(){};
