@@ -35,6 +35,7 @@
 #include "TVector.h"
 #include "TLorentzVector.h"
 #include "TGraph.h"
+#include "TChainElement.h"
 
 #include "../variables.h"
 #include "../sample_lists.h"
@@ -47,6 +48,7 @@
 //#include "filelistsatNDnew.h"
 //#include "stupid_thing_for_trig_studies.h"
 
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 
@@ -345,6 +347,7 @@ class MakeGoodPlot
                 bool passes_4l(int sample_number);
                 
                 template <typename almostTLVtype> TLorentzVector makeTLV( almostTLVtype thing );
+                double getNumInitialMCevents (int sample);
 
 	public:	
                 void MatchTester_ttW_SS(std::vector<int> samps);
@@ -370,6 +373,7 @@ class MakeGoodPlot
                 //void draw_ROC_iso(std::vector<int> samps);
 		void draw_several_comparisons(std::vector<int> samps);
                 void draw_2D_plot(std::vector<int> samps);
+                void addvarstotree(std::vector<int> samps);
 		
                 MakeGoodPlot();
 		MakeGoodPlot(std::vector<int> samps);
@@ -407,6 +411,7 @@ MakeGoodPlot::~MakeGoodPlot() {}
 //#include "printcutflow.h"
 #include "someutils.h"
 #include "categories.h"
+#include "addvarstotree.h"
 //#include "trigger_studies.h"
 //#include "lepstudies.h"
 //#include "4lstudies.h"
@@ -720,7 +725,7 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		//sample_hist[i] = new TH1F("BDT response, 5j4t " + sample_names[samp_int],"",20,-1,1);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";#Sigma jet p_{T}/#Sigma jet E",10,0,1);       // title  // #Sigma jet p_{T}/#Sigma jet E
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";sphericity",10,0,1);       // title  // #Sigma jet p_{T}/#Sigma jet E
-		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";average #DeltaR(b-tags)",10,0,4);
+		sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";average #DeltaR(jets)",10,0,4);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";Best Higgs Mass",25,0,500);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";Median Inv. Mass (tag,tag)",10,0,500);
 		//sample_hist[i] = new TH1F("jet E " + sample_names[samp_int],";#sqrt{#Delta#eta(t_{lep},bb)#times#Delta#eta(t_{had},bb)}",10,0,6);
@@ -736,7 +741,9 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
                 //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";W pt",100,0,1000);
                 //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";status",2000,-1000,1000);
                 //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";deltaR",100,0,10);
-                sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";leading lep pt",100,0,500);
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";leading lep pt",100,0,500);
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";lep Mva (leptons in 2lss)",100,0.5,1.0);
+                //sample_hist[i] = new TH1F("blah " + sample_names[samp_int],";lepton Eta (2lss)",100,-3,3);
                 
 		//get_hist_of_tiered_MVA_response_for_one_sample_5j4t(sample_hist[i],samp_int);
 		//get_hist_MVA_response_for_one_sample_643203(sample_hist[i],samp_int);
@@ -766,7 +773,9 @@ void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
 		if (samp_int==8) sample_hist[i]->SetLineColor(kMagenta+1); //ttw
 		if (samp_int==9) sample_hist[i]->SetLineColor(kCyan-3); //ttz
 		if (samp_int==10) sample_hist[i]->SetLineColor(kBlue-6); // diboson
-                
+                if (samp_int==13) sample_hist[i]->SetLineColor(kGreen+1); // ttjets (dilep)
+		if (samp_int==14) sample_hist[i]->SetLineColor(kOrange+1); //ttjets (1 lep from t)
+		if (samp_int==15) sample_hist[i]->SetLineColor(kMagenta+1); //ttjets (1 lep from tbar)
                 
 				
 		//sample_hist[i]->GetXaxis()->SetTitle("pdgID");		
@@ -985,6 +994,9 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
                         auto sumTLVpre = getsumTLV(*tightMvaBased_leptons_intree, *preselected_jets_intree, *met_intree);
                         TLorentzVector sumTLV = makeRealTLV(sumTLVpre);
                         
+                        //plot->Fill((*tightMvaBased_leptons_intree)[0].obj.Eta());
+                        //plot->Fill((*tightMvaBased_leptons_intree)[1].obj.Eta());
+                        
                         //plot->Fill(sumTLV.Mt());
                         
                         // for (int j=0; j<gpsize; j++)
@@ -1016,7 +1028,20 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
 //                             
 //                             
 // 
-//                         }                        
+//                         }
+
+                        
+                        vector<double> drjetvect = getTwoObjKineRawCollection( *preselected_jets_intree, *preselected_jets_intree, "dR", true);
+                        int numpairs = drjetvect.size();
+                        double avgdrjets=0.;
+                        for (int i=0; i<numpairs; i++)
+                        {
+                            avgdrjets += drjetvect[i];
+                        }
+                        avgdrjets /= numpairs;
+                        plot->Fill(avgdrjets);
+                        
+                        
 
                     }
                     
@@ -1032,7 +1057,7 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
                         double minpt = (*tightMvaBased_leptons_intree)[0].obj.Pt() - (*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt();
                         //plot->Fill(minpt);                                    
                         //plot->Fill((*met_intree)[0].obj.Pt());
-                        plot->Fill((*tightMvaBased_leptons_intree)[0].obj.Pt()); 
+                        //plot->Fill((*tightMvaBased_leptons_intree)[0].obj.Pt()); 
                     }
                     
                 }
