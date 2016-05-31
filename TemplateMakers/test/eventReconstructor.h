@@ -54,6 +54,7 @@ class eventReconstructor
   Float_t LepTop_HadTop_dR_var;
   Float_t LepTop_HadTop_dPhi_var;
   Float_t LepAsym_var;
+  Float_t nJets_var;
   
   //not yet mva inputs...
   Float_t lep_charge_var;
@@ -73,7 +74,7 @@ class eventReconstructor
   void bookMVA(void)
   {
     TMVAReader_ = new TMVA::Reader( "!Color:!Silent" );
-    //  TMVAReader_->AddVariable( "numJets", &num_jets_var );
+    //    TMVAReader_->AddVariable( "numJets", &nJets_var );
     TMVAReader_->AddVariable( "bJet_fromLepTop_CSV", &bJet_fromLepTop_CSV_var );
     TMVAReader_->AddVariable( "LepTop_pT", &LepTop_pT_var );
     TMVAReader_->AddVariable( "LepTop_mass", &LepTop_mass_var );
@@ -92,7 +93,7 @@ class eventReconstructor
     TMVAReader_->AddVariable( "Higgs_lep_W_dR", &Higgs_lep_W_dR_var );
     TMVAReader_->AddVariable( "Higgs_lep_W_dPhi", &Higgs_lep_W_dPhi_var );
     //    TMVAReader_->AddVariable( "Higgs_lep_W_dEta", &Higgs_lep_W_dEta_var );
-    TMVAReader_->AddVariable( "numMatchedJets", &numMatchedJets_var );
+    //    TMVAReader_->AddVariable( "numMatchedJets", &numMatchedJets_var );
     TMVAReader_->AddVariable( "LepTop_Higgs_mass", &LepTop_Higgs_mass_var );
     TMVAReader_->AddVariable( "HadTop_Higgs_mass", &HadTop_Higgs_mass_var );
     //    TMVAReader_->AddVariable( "LepTop_HadTop_MT", &LepTop_HadTop_MT_var );
@@ -109,7 +110,7 @@ class eventReconstructor
 
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
-    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG.weights_baseline_slimmedVars.xml"; 
+    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_fullReco_remove_nJetsMatched.C"; 
     weight_file += file_str;
 
     TMVAReader_->BookMVA("BDTG method", weight_file);
@@ -302,6 +303,7 @@ class eventReconstructor
     //only add the same number of empty jets as there are fakes
     
     int num_jets_var = jets_in->size();
+    nJets_var = jets_in->size();
 
     ttH::Jet null_jet;
     if (num_jets_var <= 7)
