@@ -14,7 +14,7 @@ process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_cond
 if isData:
     process.GlobalTag.globaltag = '76X_dataRun2_v15'
 else:
-    process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_v12'
+    process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_RunIIFall15DR76_v1'
 
 process.prefer("GlobalTag")
 
@@ -29,9 +29,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
 
 process.source = cms.Source("PoolSource",
-    	fileNames = cms.untracked.vstring(
-        
-        infile),        
+    	fileNames = cms.untracked.vstring( infile ),        
+#        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
+
 )
 
 ### specifying run / lumi range:
@@ -47,50 +47,19 @@ if isData:
 ######################################
 #JEC
 
-#from RecoJets.Configuration.RecoJets_cff import *
-#from RecoJets.Configuration.RecoPFJets_cff import *
-#from JetMETCorrections.Configuration.JetCorrectionProducersAllAlgos_cff import *
-#from JetMETCorrections.Configuration.JetCorrectionServicesAllAlgos_cff import *
-#from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
-#
-#process.ak4PFCHSL1Fastjet = cms.ESProducer(
-#    'L1FastjetCorrectionESProducer',
-#    level       = cms.string('L1FastJet'),
-#    algorithm   = cms.string('AK4PFchs'),
-#    srcRho      = cms.InputTag( 'fixedGridRhoFastjetCentralNeutral' ), #fixedGridRhoFastjetAll
-#    useCondDB = cms.untracked.bool(True)
-#    )
-#
-#process.ak4PFchsL2Relative   =  ak5PFL2Relative.clone( algorithm = 'AK4PFchs' )
-#process.ak4PFchsL3Absolute   =  ak5PFL3Absolute.clone( algorithm = 'AK4PFchs' )
-#process.ak4PFchsResidual   =  ak5PFResidual.clone( algorithm = 'AK4PFchs' )
-#
-#process.ak4PFCHSL1L2L3Residual = cms.ESProducer("JetCorrectionESChain",
-#     correctors = cms.vstring(
-#        'ak4PFCHSL1Fastjet', 
-#        'ak4PFchsL2Relative', 
-#        'ak4PFchsL3Absolute',
-#        'ak4PFchsResidual'),
-#     useCondDB = cms.untracked.bool(True)                                        
-#)
-######################################
-### trying something else:
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+ src = cms.InputTag("slimmedJets"),
+ levels = ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual'],
+ payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
 
-#from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-#process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-#  src = cms.InputTag("slimmedJets"),
-#  levels = ['L1FastJet', 
-#        'L2Relative', 
-#        'L3Absolute',
-#        'L2L3Residual'],
-#  payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
-#
-#from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-#process.patJetsReapplyJEC = patJetsUpdated.clone(
-#  jetSource = cms.InputTag("slimmedJets"),
-#  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-#  )
-#
+
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+process.patJetsReapplyJEC = patJetsUpdated.clone(
+ jetSource = cms.InputTag("slimmedJets"),
+ jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+ )
+
 
 ######################################
 
@@ -102,6 +71,8 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 ### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile)
 
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
+process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
+process.OSTwoLepAna.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
@@ -154,7 +125,7 @@ process.QGTagger.srcJets          = cms.InputTag('slimmedJets')
 process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
 
 #process.p = cms.Path(process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
-process.p = cms.Path(process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna)
+process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna)
 
 
 # summary
