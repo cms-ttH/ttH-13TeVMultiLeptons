@@ -92,6 +92,15 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/JobParameters.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 
+// Additions for BDT reco
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
+#include "TMVA/Config.h"
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
+#include "TMVA/MethodCuts.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/selection.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/loadSamples.h"
+
 // end includes
 // -----------------------------------------------
 
