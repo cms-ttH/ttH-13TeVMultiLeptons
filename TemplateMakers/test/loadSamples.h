@@ -8,7 +8,7 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
 {
   
   TChain *chain = new TChain("OSTwoLepAna/summaryTree");
-  char filePath[512];
+  //char filePath[512];
   TString file_path;
 
   vector<TString> sample_vector;
