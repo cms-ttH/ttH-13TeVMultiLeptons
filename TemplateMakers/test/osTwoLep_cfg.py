@@ -15,7 +15,6 @@ if isData:
     process.GlobalTag.globaltag = '76X_dataRun2_v15'
 else:
     process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_RunIIFall15DR76_v1'
-
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
@@ -43,7 +42,7 @@ if isData:
     cmsswbase = os.environ['CMSSW_BASE']
     import FWCore.PythonUtilities.LumiList as LumiList
     process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/2015json/goldjsnv2.txt').getVLuminosityBlockRange()
-
+   
 ######################################
 #JEC
 
@@ -66,13 +65,13 @@ process.patJetsReapplyJEC = patJetsUpdated.clone(
 ## Here, load the analysis:
 process.load("RecoEgamma.ElectronIdentification.ElectronMVAValueMapProducer_cfi")
 process.load("ttH.LeptonID.ttHLeptons_cfi")
-process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
+process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi") 
 
 ### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile)
 
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
-process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
-process.OSTwoLepAna.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
+#process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
+#process.OSTwoLepAna.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
@@ -94,7 +93,7 @@ if isData:
     process.OSTwoLepAna.setupoptions.isdata = True
 else:
     process.OSTwoLepAna.setupoptions.isdata = False
-    
+
 process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral"
 process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags"  # "combinedInclusiveSecondaryVertexV2BJetTags" #"combinedMVABJetTags" ##"combinedSecondaryVertexMVABJetTags"
 process.OSTwoLepAna.triggers.hltlabel = "HLT"
@@ -107,13 +106,11 @@ if len(sys.argv)>3:
     outfile = sys.argv[3]
     process.TFileService = cms.Service("TFileService",
         fileName = cms.string(outfile)
-    )
-    	
+    ) 	
 else:
     process.TFileService = cms.Service("TFileService",
         fileName = cms.string("tree_test_.root")
     )
-
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
 my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']
@@ -130,10 +127,9 @@ process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapp
 
 # summary
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(False),
+    wantSummary = cms.untracked.bool(True),
     SkipEvent = cms.untracked.vstring('ProductNotFound')
 )
-
 
 ## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
 #outfile = open('dumped_config.py','w')
