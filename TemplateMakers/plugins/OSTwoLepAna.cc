@@ -3,7 +3,7 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/OSTwoLepAna.h"
 
 OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
-  hltPrescaleProvider_(constructparams, consumesCollector(), *this){ //Anything that needs to be done at creation time
+  hltPrescaleProvider_(constructparams, consumesCollector(), *this), bdtReconstructor() { //Anything that needs to be done at creation time
   
   debug = constructparams.getParameter<bool> ("debug");
   entire_pset = constructparams;
@@ -21,19 +21,19 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   genParticles_token_ = consumes<reco::GenParticleCollection>(prunedparams.getParameter<string>("prunedCollection"));
   rho_token_ = consumes<double>(setupoptionsparams.getParameter<string>("rhoHandle"));
   vertex_token_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices")); // ,"","RECO"));
-  genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
-  
+  genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator")); 
+    
 }
 
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
 
 void OSTwoLepAna::beginJob()
 {
-  
+
   // job setup	
   SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
   //  SetFactorizedJetCorrector(); // remove ???
-  
+
   // needed in edanalyzer:
   edm::Service<TFileService> newfs;
   
@@ -47,9 +47,8 @@ void OSTwoLepAna::beginJob()
   singleEleCount=0;
   singleMuCount=0;
   singleTauCount=0;
-  singleJetCount=0;
-    
-    	
+  singleJetCount=0;    
+  
 }
 void OSTwoLepAna::endJob() {
 
@@ -68,7 +67,7 @@ void OSTwoLepAna::endJob() {
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
-  
+    
   // if ( event.id().event() != 1692766 ) 
   //   {
   //     if (debug) cout << "eventA: " << event.id().event() << endl;
@@ -350,13 +349,30 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vector<ttH::MET> theMET = GetCollection(mets);
 	    vector<ttH::GenParticle> pruned_genParticles;
 	    if (!isData) pruned_genParticles = GetCollection(*prunedParticles);
-	
+            
+            //run BDT Reco if event passes 2lss selection
+            //bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
+            //if (!passesCommon) continue;
+            //bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
+            //if ( !passes2lss ) continue; 
+            
+            // added run reconstruction
+            //bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree, (*met_intree)[0]);
+            bool passesCommon = passCommon(tightMvaBased_electrons, preselected_electrons, tightMvaBased_muons, preselected_muons, preselected_jets);
+            if (passesCommon)
+            {
+              bool passes2lss = pass2lss(tightMvaBased_electrons, preselected_electrons, tightMvaBased_muons, preselected_muons, preselected_jets, theMET);
+              if ( passes2lss )
+              {
+                bdtReconstructor.initialize(&preselected_jets, &tightMvaBased_leptons, theMET[0]); 
+              }
+            }
+
 	    /////////////////////////
 	    //////
 	    ////// cut flow studies
 	    //////
-	    /////////////////////////
-	
+	    /////////////////////////	
 	    
 	    if (!isData) 
 	    {
@@ -413,6 +429,40 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    //tight_bJets_intree = tight_bJets;
 
 	    met_intree = theMET;
+            
+            // MB:Reco objects in tree
+
+            reco_score_intree  = bdtReconstructor.reco_score;
+            norm_score_sum_intree = bdtReconstructor.norm_score_sum;
+            num_real_jetMatches = bdtReconstructor.num_real_jets_bdt;
+            num_jetMatches_truth_intree = bdtReconstructor.num_jet_matches_truth;
+            
+            matched_jets_intree = bdtReconstructor.matched_jets;
+            matched_jets_truth_intree = bdtReconstructor.matched_jets_truth; 
+            lep_fromHiggs_bdt_intree = bdtReconstructor.lep_fromHiggs_bdt;
+            lep_fromTop_bdt_intree = bdtReconstructor.lep_fromTop_bdt;
+            lep_fromHiggs_truth_intree = bdtReconstructor.lep_fromHiggs_truth;
+            lep_fromTop_truth_intree = bdtReconstructor.lep_fromTop_truth;
+            match_results_intree = bdtReconstructor.matching_results;
+
+            lep_fromTop_bdt_tlv_intree = bdtReconstructor.lep_fromTop_bdt_tlv;
+            lep_fromHiggs_bdt_tlv_intree = bdtReconstructor.lep_fromHiggs_bdt_tlv;
+            bjet_fromHadTop_bdt_tlv_intree = bdtReconstructor.bjet_fromHadTop_bdt_tlv;
+            bjet_fromLepTop_bdt_tlv_intree = bdtReconstructor.bjet_fromLepTop_bdt_tlv;
+            wjet1_fromHadTop_bdt_tlv_intree = bdtReconstructor.wjet1_fromHadTop_bdt_tlv;
+            wjet2_fromHadTop_bdt_tlv_intree = bdtReconstructor.wjet2_fromHadTop_bdt_tlv;
+            wjet1_fromHiggs_bdt_tlv_intree = bdtReconstructor.wjet1_fromHiggs_bdt_tlv;  
+            wjet2_fromHiggs_bdt_tlv_intree = bdtReconstructor.wjet2_fromHiggs_bdt_tlv;
+            w_fromHadTop_bdt_tlv_intree = bdtReconstructor.w_fromHadTop_bdt_tlv;
+            w_fromHiggs_bdt_tlv_intree = bdtReconstructor.w_fromHiggs_bdt_tlv;
+            higgs_bdt_tlv_intree = bdtReconstructor.higgs_bdt_tlv;
+            hadTop_bdt_tlv_intree = bdtReconstructor.hadTop_bdt_tlv;           
+            lepTop_bdt_tlv_intree = bdtReconstructor.lepTop_bdt_tlv;
+            lepTop_higgs_bdt_tlv_intree = bdtReconstructor.lepTop_higgs_bdt_tlv;
+            hadTop_higgs_bdt_tlv_intree = bdtReconstructor.hadTop_higgs_bdt_tlv;
+            lepTop_hadTop_bdt_tlv_intree = bdtReconstructor.lepTop_hadTop_bdt_tlv;
+            tth_bdt_tlv_intree = bdtReconstructor.higgs_bdt_tlv;
+            
 
 	    if (!isData) pruned_genParticles_intree = pruned_genParticles;
 
@@ -424,13 +474,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    summaryTree->Fill();// fill tree;
             /////////////////////////////////
 	    
-        } //end skim if statement
+        } //end skim if statement  
 
 } // end event loop
-
 void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
-{
-		
+{	
 	// This has to be done here (not at beginjob):
 	
 	bool changed = true;
@@ -573,8 +621,7 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
             }
         }
     }
-                
-	
+                	
 }
 void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup)
 {

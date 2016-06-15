@@ -9,6 +9,9 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 	
 		HLTPrescaleProvider hltPrescaleProvider_;
 		
+                // initialize reconstructor object
+		eventReconstructor bdtReconstructor; 
+		
 		// EDAnalyzer-specific:
 		virtual void beginJob() ;
       		virtual void analyze(const edm::Event&, const edm::EventSetup&);
@@ -22,6 +25,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		void tree_add_branches();
 		void initialize_variables();
 		vstring hlt_alltrigs;
+
 	public:
 		explicit OSTwoLepAna(const edm::ParameterSet&);
 		~OSTwoLepAna();
@@ -85,9 +89,38 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		edm::EDGetTokenT<pat::MuonCollection> muons_token_;
 		edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
 		edm::EDGetTokenT<pat::TauCollection> taus_token_;
-                
+               
+                // MB: Reco objects to tree!
+                double reco_score_intree;
+                double norm_score_sum_intree;
+                int num_real_jetMatches;
+                int num_jetMatches_truth_intree;
 
+                vector<ttH::Jet> matched_jets_intree;
+                vector<ttH::Jet> matched_jets_truth_intree;
+                ttH::Lepton lep_fromHiggs_bdt_intree;
+                ttH::Lepton lep_fromTop_bdt_intree;
+                ttH::Lepton lep_fromHiggs_truth_intree;
+                ttH::Lepton lep_fromTop_truth_intree;
+                vector<int> match_results_intree;
 
+                TLorentzVector lep_fromTop_bdt_tlv_intree;
+                TLorentzVector lep_fromHiggs_bdt_tlv_intree;
+                TLorentzVector bjet_fromHadTop_bdt_tlv_intree;
+                TLorentzVector bjet_fromLepTop_bdt_tlv_intree;
+                TLorentzVector wjet1_fromHadTop_bdt_tlv_intree;    
+                TLorentzVector wjet2_fromHadTop_bdt_tlv_intree;
+                TLorentzVector wjet1_fromHiggs_bdt_tlv_intree;  
+                TLorentzVector wjet2_fromHiggs_bdt_tlv_intree;
+                TLorentzVector w_fromHadTop_bdt_tlv_intree;
+                TLorentzVector w_fromHiggs_bdt_tlv_intree;
+                TLorentzVector higgs_bdt_tlv_intree;
+                TLorentzVector hadTop_bdt_tlv_intree;
+                TLorentzVector lepTop_bdt_tlv_intree;                
+                TLorentzVector lepTop_higgs_bdt_tlv_intree;
+                TLorentzVector hadTop_higgs_bdt_tlv_intree;
+                TLorentzVector lepTop_hadTop_bdt_tlv_intree;
+                TLorentzVector tth_bdt_tlv_intree;
 
                 int singleEleCount;
                 int singleMuCount;
@@ -142,6 +175,38 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
   summaryTree->Branch("packed_genParticles", &packed_genParticles_intree);
 
+  //MB: Reco branches
+  summaryTree->Branch("reco_score", &reco_score_intree);
+  summaryTree->Branch("norm_score_sum", &norm_score_sum_intree);
+  summaryTree->Branch("num_real_jets_bdt", &num_real_jetMatches);
+  summaryTree->Branch("num_jet_matches_truth", &num_jetMatches_truth_intree);
+
+  summaryTree->Branch("matched_jets", &matched_jets_intree);
+  summaryTree->Branch("matched_jets_truth", &matched_jets_truth_intree);
+  summaryTree->Branch("lep_fromHiggs_bdt", &lep_fromHiggs_bdt_intree);
+  summaryTree->Branch("lep_fromTop_bdt", &lep_fromTop_bdt_intree);
+  summaryTree->Branch("lep_fromHiggs_truth", &lep_fromHiggs_truth_intree);
+  summaryTree->Branch("lep_fromTop_truth", &lep_fromTop_truth_intree);
+  summaryTree->Branch("matching_results", &match_results_intree);
+  
+  summaryTree->Branch("lep_fromTop_bdt_tlv", &lep_fromTop_bdt_tlv_intree);
+  summaryTree->Branch("lep_fromHiggs_bdt_tlv", &lep_fromHiggs_bdt_tlv_intree);
+  summaryTree->Branch("bjet_fromHadTop_bdt_tlv", &bjet_fromHadTop_bdt_tlv_intree);
+  summaryTree->Branch("bjet_fromLepTop_bdt_tlv", &bjet_fromLepTop_bdt_tlv_intree);
+  summaryTree->Branch("wjet1_fromHadTop_bdt_tlv", &wjet1_fromHadTop_bdt_tlv_intree);
+  summaryTree->Branch("wjet2_fromHadTop_bdt_tlv", &wjet2_fromHadTop_bdt_tlv_intree);
+  summaryTree->Branch("wjet1_fromHiggs_bdt_tlv", &wjet1_fromHiggs_bdt_tlv_intree);
+  summaryTree->Branch("wjet2_fromHiggs_bdt_tlv", &wjet2_fromHiggs_bdt_tlv_intree);
+  summaryTree->Branch("w_fromHadTop_bdt_tlv", &w_fromHadTop_bdt_tlv_intree);
+  summaryTree->Branch("w_fromHiggs_bdt_tlv", &w_fromHiggs_bdt_tlv_intree);
+  summaryTree->Branch("higgs_bdt_tlv", &higgs_bdt_tlv_intree);
+  summaryTree->Branch("hadTop_bdt_tlv", &hadTop_bdt_tlv_intree);
+  summaryTree->Branch("lepTop_bdt_tlv", &lepTop_bdt_tlv_intree);
+  summaryTree->Branch("lepTop_higgs_bdt_tlv", &lepTop_higgs_bdt_tlv_intree);
+  summaryTree->Branch("hadTop_higgs_bdt_tlv", &hadTop_higgs_bdt_tlv_intree);
+  summaryTree->Branch("lepTop_hadTop_bdt_tlv", &lepTop_hadTop_bdt_tlv_intree);
+  summaryTree->Branch("tth_bdt_tlv", &tth_bdt_tlv_intree);
+ 
 }
 
 void OSTwoLepAna::initialize_variables()
@@ -186,6 +251,39 @@ void OSTwoLepAna::initialize_variables()
   packed_genParticles_intree.clear();
   
   higgs_decay_intree = -9e6;
+
+  // MB:  Reco initialize variables
+  reco_score_intree = -999.;
+  num_real_jetMatches = 0;
+  norm_score_sum_intree = 0.;
+  num_jetMatches_truth_intree = 0.;  
+
+  matched_jets_intree.clear();
+  matched_jets_truth_intree.clear();
+  lep_fromHiggs_bdt_intree.clear();
+  lep_fromTop_bdt_intree.clear();
+  lep_fromHiggs_truth_intree.clear();
+  lep_fromTop_truth_intree.clear();
+  match_results_intree.clear();
+
+  lep_fromTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  lep_fromHiggs_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  bjet_fromHadTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  bjet_fromLepTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  wjet1_fromHadTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  wjet2_fromHadTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  wjet1_fromHiggs_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  wjet2_fromHiggs_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  w_fromHadTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  w_fromHiggs_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  higgs_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  hadTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  lepTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  lepTop_higgs_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  hadTop_higgs_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  lepTop_hadTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+  tth_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
+
 }
 
 /*  LocalWords:  lumi
