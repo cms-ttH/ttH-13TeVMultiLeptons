@@ -110,7 +110,7 @@ class eventReconstructor
 
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
-    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_fullReco_remove_nJetsMatched.C"; 
+    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG.weights__remove_nJets_matched.xml"; 
     weight_file += file_str;
 
     TMVAReader_->BookMVA("BDTG method", weight_file);
