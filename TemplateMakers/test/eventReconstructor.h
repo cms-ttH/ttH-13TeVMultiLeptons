@@ -73,6 +73,43 @@ class eventReconstructor
   
   void bookMVA(void)
   {
+    // MB: New BDT variables for new weights file:
+    TMVAReader_ = new TMVA::Reader( "!Color:!Silent" );
+    //TMVAReader_->AddVariable( "numJets", &nJets_var );
+    TMVAReader_->AddVariable( "bJet_fromLepTop_CSV", &bJet_fromLepTop_CSV_var );
+    TMVAReader_->AddVariable( "LepTop_pT", &LepTop_pT_var );
+    TMVAReader_->AddVariable( "LepTop_mass", &LepTop_mass_var );
+    TMVAReader_->AddVariable( "LepTop_lep_bJet_dR", &LepTop_lep_bJet_dR_var );
+    TMVAReader_->AddVariable( "bJet_fromHadTop_CSV", &bJet_fromHadTop_CSV_var );
+    TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_CSV", &qJet1_fromW_fromHadTop_CSV_var );
+    //TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_pT", &qJet1_fromW_fromHadTop_pT_var );
+    TMVAReader_->AddVariable( "HadTop_pT", &HadTop_pT_var );
+    TMVAReader_->AddVariable( "W_fromHadTop_mass", &W_fromHadTop_mass_var );
+    TMVAReader_->AddVariable( "HadTop_mass", &HadTop_mass_var );
+    //TMVAReader_->AddVariable( "W_fromHadTop_q1_q2_dR", &W_fromHadTop_q1_q2_dR_var );
+    TMVAReader_->AddVariable( "qJet1_fromW_fromHiggs_CSV", &qJet1_fromW_fromHiggs_CSV_var );
+    //TMVAReader_->AddVariable( "lep_fromW_fromHiggs_pT", &lep_fromW_fromHiggs_pT_var );
+    TMVAReader_->AddVariable( "W_fromHiggs_mass", &W_fromHiggs_mass_var );
+    TMVAReader_->AddVariable( "Higgs_mass", &Higgs_mass_var );
+    TMVAReader_->AddVariable( "Higgs_lep_W_dR", &Higgs_lep_W_dR_var );
+    TMVAReader_->AddVariable( "Higgs_lep_W_dPhi", &Higgs_lep_W_dPhi_var );
+    //TMVAReader_->AddVariable( "Higgs_lep_W_dEta", &Higgs_lep_W_dEta_var );
+    //TMVAReader_->AddVariable( "numMatchedJets", &numMatchedJets_var );
+    //TMVAReader_->AddVariable( "LepTop_Higgs_mass", &LepTop_Higgs_mass_var );
+    //TMVAReader_->AddVariable( "HadTop_Higgs_mass", &HadTop_Higgs_mass_var );
+    //TMVAReader_->AddVariable( "LepTop_HadTop_MT", &LepTop_HadTop_MT_var );
+    //TMVAReader_->AddVariable( "LepTop_Higgs_MT", &LepTop_Higgs_MT_var );
+    //TMVAReader_->AddVariable( "ttH_MT", &ttH_MT_var );
+    TMVAReader_->AddVariable( "HadTop_Higgs_MT_mass_ratio", &HadTop_Higgs_MT_mass_ratio_var );
+    TMVAReader_->AddVariable( "ttH_MT_mass_ratio", &ttH_MT_mass_ratio_var );
+    TMVAReader_->AddVariable( "LepTop_HadTop_dR", &LepTop_HadTop_dR_var );
+    TMVAReader_->AddVariable( "LepTop_HadTop_dPhi", &LepTop_HadTop_dPhi_var );
+    TMVAReader_->AddVariable( "((bJet_fromHadTop_charge-bJet_fromLepTop_charge)*lep_charge)", &LepAsym_var );
+    //TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_training3.xml");
+    //TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_misMatchWeightedSq.xml");
+    //TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_baseline.xml");
+
+/*
     TMVAReader_ = new TMVA::Reader( "!Color:!Silent" );
     //    TMVAReader_->AddVariable( "numJets", &nJets_var );
     TMVAReader_->AddVariable( "bJet_fromLepTop_CSV", &bJet_fromLepTop_CSV_var );
@@ -107,10 +144,12 @@ class eventReconstructor
     // TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_training3.xml");
     //    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_misMatchWeightedSq.xml");
     //    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_baseline.xml");
-
+*/
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
-    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG.weights__remove_nJets_matched.xml"; 
+    // MB: New weights file:
+    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG.weights_v7.xml"; 
+    //std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG.weights__remove_nJets_matched.xml"; 
     weight_file += file_str;
 
     TMVAReader_->BookMVA("BDTG method", weight_file);
