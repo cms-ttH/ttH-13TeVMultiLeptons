@@ -54,7 +54,7 @@ class eventReconstructor
   Float_t LepTop_HadTop_dR_var;
   Float_t LepTop_HadTop_dPhi_var;
   Float_t bJetAsym_var;
-  Float_t LepAsym_var;
+  //Float_t LepAsym_var;
   Float_t nJets_var;
   
   //not yet mva inputs...
@@ -105,7 +105,7 @@ class eventReconstructor
     TMVAReader_->AddVariable( "ttH_MT_mass_ratio", &ttH_MT_mass_ratio_var );
     TMVAReader_->AddVariable( "LepTop_HadTop_dR", &LepTop_HadTop_dR_var );
     TMVAReader_->AddVariable( "LepTop_HadTop_dPhi", &LepTop_HadTop_dPhi_var );
-    TMVAReader_->AddVariable( "((bJet_fromHadTop_charge-bJet_fromLepTop_charge)*lep_charge)", &bJetAsym_var );
+    TMVAReader_->AddVariable( "(bJet_fromHadTop_charge-bJet_fromLepTop_charge)*lep_charge", &bJetAsym_var );
     //TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_training3.xml");
     //TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_misMatchWeightedSq.xml");
     //TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_baseline.xml");
@@ -562,7 +562,7 @@ class eventReconstructor
 				    W_fromHadTop_charge_correct_var = (W_fromHadTop_charge_var*lep_charge_var < 0);
 				    W_fromHiggs_charge_correct_var = (W_fromHiggs_charge_var*lep_charge_var < 0);
 				    
-				    LepAsym_var = (lep_fromTop.obj.pt()-lep_fromHiggs.obj.pt())/(lep_fromTop.obj.pt()+lep_fromHiggs.obj.pt());
+				    //LepAsym_var = (lep_fromTop.obj.pt()-lep_fromHiggs.obj.pt())/(lep_fromTop.obj.pt()+lep_fromHiggs.obj.pt());
                                     bJetAsym_var = ((bJet_fromHadTop_charge_var-bJet_fromLepTop_charge_var)*lep_charge_var);                                    
 
 				    double mva_value = TMVAReader_->EvaluateMVA( "BDTG method" );
