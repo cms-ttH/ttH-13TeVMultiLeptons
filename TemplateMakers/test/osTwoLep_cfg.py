@@ -70,8 +70,8 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 ### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile)
 
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
-#process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
-#process.OSTwoLepAna.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
+process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
+process.OSTwoLepAna.jets.jetCollection = cms.string("patJetsReapplyJEC") #use JEC's from tag
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
@@ -118,7 +118,8 @@ for idmod in my_id_modules: setupAllVIDIdsInModule(process,idmod,setupVIDElectro
 
 
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-process.QGTagger.srcJets          = cms.InputTag('slimmedJets')
+#process.QGTagger.srcJets          = cms.InputTag('slimmedJets')
+process.QGTagger.srcJets          = cms.InputTag('patJetsReapplyJEC')
 process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
 
 #process.p = cms.Path(process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
@@ -131,7 +132,7 @@ process.options = cms.untracked.PSet(
     SkipEvent = cms.untracked.vstring('ProductNotFound')
 )
 
-## comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
-#outfile = open('dumped_config.py','w')
-#print >> outfile,process.dumpPython()
-#outfile.close()
+# # comment this out to suppress dumping of entire config in one file (it is useful as a reference, but doesn't actually get run):
+# outfile = open('dumped_config.py','w')
+# print >> outfile,process.dumpPython()
+# outfile.close()
