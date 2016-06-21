@@ -18,17 +18,18 @@ else:
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1) # number of events
+    input = cms.untracked.int32(2000) # number of events
 )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 ## set up to take input file as command line argument.
-infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
+# infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
 
 process.source = cms.Source("PoolSource",
-    	fileNames = cms.untracked.vstring( infile ),        
+    	# fileNames = cms.untracked.vstring( infile ),        
+    	fileNames = cms.untracked.vstring(),        
 #        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
 
 )
@@ -102,15 +103,15 @@ process.OSTwoLepAna.debug = False
 
 ######################################
 
-if len(sys.argv)>3:
-    outfile = sys.argv[3]
-    process.TFileService = cms.Service("TFileService",
-        fileName = cms.string(outfile)
-    ) 	
-else:
-    process.TFileService = cms.Service("TFileService",
-        fileName = cms.string("tree_test_.root")
-    )
+# if len(sys.argv)>3:
+#     outfile = sys.argv[3]
+#     process.TFileService = cms.Service("TFileService",
+#         fileName = cms.string(outfile)
+#     ) 	
+# else:
+process.TFileService = cms.Service("TFileService",
+                                   fileName = cms.string("charlie_tree.root")
+                                   )
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
 my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']
