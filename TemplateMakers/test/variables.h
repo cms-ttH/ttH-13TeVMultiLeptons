@@ -190,8 +190,8 @@ double convertWPtoCSVvalue(string tagtype)
 {
     double tagcut=0.0;
     if (tagtype=="None") return tagcut;   
-    else if (tagtype=="L") tagcut = 0.423; // 10.1716% DUSG mistag efficiency
-    else if (tagtype=="M") tagcut = 0.814; // 1.0623% DUSG mistag efficiency
+    else if (tagtype=="L") tagcut = 0.605; // 10.1716% DUSG mistag efficiency
+    else if (tagtype=="M") tagcut = 0.890; // 1.0623% DUSG mistag efficiency
     else if (tagtype=="T") tagcut = 0.941; // 0.1144% DUSG mistag efficiency
     return tagcut;
 }
