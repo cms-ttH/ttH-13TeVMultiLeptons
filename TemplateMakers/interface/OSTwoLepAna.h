@@ -254,9 +254,9 @@ void OSTwoLepAna::initialize_variables()
 
   // MB:  Reco initialize variables
   reco_score_intree = -999.;
-  num_real_jetMatches = 0;
-  norm_score_sum_intree = 0.;
-  num_jetMatches_truth_intree = 0.;  
+  num_real_jetMatches = -999;
+  norm_score_sum_intree = -999.;
+  num_jetMatches_truth_intree = -999.;  
 
   matched_jets_intree.clear();
   matched_jets_truth_intree.clear();
@@ -284,6 +284,7 @@ void OSTwoLepAna::initialize_variables()
   lepTop_hadTop_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
   tth_bdt_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
 
+  bdtReconstructor.clear();
 }
 
 /*  LocalWords:  lumi

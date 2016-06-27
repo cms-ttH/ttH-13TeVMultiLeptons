@@ -71,7 +71,7 @@ class eventReconstructor
   Float_t bJet_fromLepTop_charge_correct_var;
   Float_t W_fromHadTop_charge_correct_var;
   Float_t W_fromHiggs_charge_correct_var;
-  
+ 
   void bookMVA(void)
   {
     // MB: New BDT variables for new weights file:
@@ -153,26 +153,44 @@ class eventReconstructor
     //std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG.weights__remove_nJets_matched.xml"; 
     weight_file += file_str;
 
-    TMVAReader_->BookMVA("BDTG method", weight_file);
+    TMVAReader_->BookMVA("BDTG method", weight_file);                                                  
   }
 
-  void clear(void)
-  {
-    reco_score = -1.;
-    num_jet_matches_truth = 0;
-    num_real_jets_bdt = 0;
-    norm_score_sum = 0.;
-    matching_results.clear();
-    matched_jets.clear();
-    matched_jets_truth.clear();
-  }
-  
  public:
   eventReconstructor(){
     bookMVA();
     clear();
   } // default constructor
   
+    void clear(void)
+  {
+    reco_score = -999;
+    num_jet_matches_truth = -999;
+    num_real_jets_bdt = -999;
+    norm_score_sum = -999;
+    matching_results.clear();
+    matched_jets.clear();
+    matched_jets_truth.clear();
+
+    lep_fromTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    lep_fromHiggs_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    bjet_fromHadTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    bjet_fromLepTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    wjet1_fromHadTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);    
+    wjet2_fromHadTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    wjet1_fromHiggs_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);  
+    wjet2_fromHiggs_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    w_fromHadTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);    
+    w_fromHiggs_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    higgs_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    hadTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    lepTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    lepTop_higgs_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    hadTop_higgs_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    lepTop_hadTop_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+    tth_bdt_tlv.SetPxPyPzE(0.,0.,0.,0.);
+  }
+
   double reco_score;
   double norm_score_sum;
   int num_jet_matches_truth;
@@ -373,6 +391,8 @@ class eventReconstructor
     int wjet2_fromHiggs_count;
     int lep_fromTop_count;
     int lep_fromHiggs_count;
+   
+    reco_score = -1.; 
 
     bjet_fromHadTop_count = -1;
     for (const auto & bjet_fromHadTop : *jets_in)

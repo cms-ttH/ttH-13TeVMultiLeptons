@@ -29,7 +29,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.source = cms.Source("PoolSource",
     	# fileNames = cms.untracked.vstring( infile ),        
-    	fileNames = cms.untracked.vstring(),        
+    	fileNames = cms.untracked.vstring()        
 #        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
 
 )
