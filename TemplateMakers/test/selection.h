@@ -15,21 +15,19 @@ bool passCommon(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, v
   
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
-
+  
   if (!( psLeps.size() >2 || tightLeps.size()>=1)) return false;
   double mindilepmass = getTwoObjKineExtreme(psLeps,"min","mass");   
   if (!(mindilepmass>12)) return false;
   if (!((psJets).size()>1)) return false;
   if (!( (taggedjetsloose.size()>1) || (taggedjetstight.size()>0) )) return false;
-
   return true;
 }
 
 bool pass2lss(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, vector<ttH::MET> met)
 {
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
-  vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
-  
+  vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles); 
   if ( !( (psLeps.size() ==2 && tightLeps.size() == 2) || (psLeps.size() == 3 && tightLeps.size() == 2 && psLeps[2].obj.Pt() < tightLeps[1].obj.Pt() ) ) ) return false;
 
   if (tightLeps[0].charge != tightLeps[1].charge) return false;

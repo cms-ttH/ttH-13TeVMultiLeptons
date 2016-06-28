@@ -5,13 +5,13 @@ ROOT.gSystem.Load('/afs/crc.nd.edu/user/m/mbeydler/Work/CMSSW_7_6_3/lib/slc6_amd
 
 #Create ttHChain
 ttHChain = ROOT.TChain('OSTwoLepAna/summaryTree')
-for rootFile in os.listdir('/afs/crc.nd.edu/user/m/mbeydler/Work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/plots4Charlie/bdtreco_v2/tth_nonbb'):
-    ttHChain.Add('/afs/crc.nd.edu/user/m/mbeydler/Work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/plots4Charlie/bdtreco_v2/tth_nonbb/'+rootFile)
+for rootFile in os.listdir('/hadoop/store/user/mbeydler/bdtreco_v6/tth_nonbb'):
+    ttHChain.Add('/hadoop/store/user/mbeydler/bdtreco_v6/tth_nonbb/'+rootFile)
 
 #Create ttbarChain
-ttbarChain = ROOT.TChain('OSTwoLepAna/summaryTree')
-for rootFile in os.listdir('/afs/crc.nd.edu/user/m/mbeydler/Work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/plots4Charlie/bdtreco_v2/ttjets_semilep'):
-    ttbarChain.Add('/afs/crc.nd.edu/user/m/mbeydler/Work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/plots4Charlie/bdtreco_v2/ttjets_semilep/'+rootFile)
+#ttbarChain = ROOT.TChain('OSTwoLepAna/summaryTree')
+#for rootFile in os.listdir('/afs/crc.nd.edu/user/m/mbeydler/Work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/plots4Charlie/bdtreco_v2/ttjets_semilep'):
+#    ttbarChain.Add('/afs/crc.nd.edu/user/m/mbeydler/Work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/plots4Charlie/bdtreco_v2/ttjets_semilep/'+rootFile)
 
 
 #Practice with two of the root files for Charlie that I made with lobster:     
@@ -24,22 +24,22 @@ for rootFile in os.listdir('/afs/crc.nd.edu/user/m/mbeydler/Work/CMSSW_7_6_3/src
 #ttbarChain = backFile.Get('OSTwoLepAna/summaryTree')
 
 #recoScore histograms (ttH and ttbar):
-recoScoreHistTTH = ROOT.TH1F('recoScoreHistTTH','reco_score ttH',100,-1.25,1.25)
-recoScoreHistTTH.SetFillColor(ROOT.kBlue-10)
-recoScoreHistTTH.SetLineColor(ROOT.kBlue)
+#recoScoreHistTTH = ROOT.TH1F('recoScoreHistTTH','reco_score ttH',100,-1.25,1.25)
+#recoScoreHistTTH.SetFillColor(ROOT.kBlue-10)
+#recoScoreHistTTH.SetLineColor(ROOT.kBlue)
 #recoScoreHistTTH.Scale(1./recoScoreHistTTH.Integral()) 
-recoScoreHistTTbar = ROOT.TH1F('recoScoreHistTTbar','reco_score ttbar',100,-1.25,1.25)
-recoScoreHistTTbar.SetFillColor(ROOT.kRed-10)
-recoScoreHistTTbar.SetLineColor(ROOT.kRed)
+#recoScoreHistTTbar = ROOT.TH1F('recoScoreHistTTbar','reco_score ttbar',100,-1.25,1.25)
+#recoScoreHistTTbar.SetFillColor(ROOT.kRed-10)
+#recoScoreHistTTbar.SetLineColor(ROOT.kRed)
 #recoScoreHistTTbar.Scale(1./recoScoreHistTTbar.Integral())
-recoScoreStack = ROOT.THStack('recoScoreStack','reco_score ttH&ttbar')
+#recoScoreStack = ROOT.THStack('recoScoreStack','reco_score ttH&ttbar')
 
 #matchingResults histograms (ttH only)
-#matchingRHist = ROOT.TH1F('matchingResults', 'matchingResults_all', 100, 0, 6)
-#matchingR0Hist = ROOT.TH1F('matchingResults[0]', 'matchingResults_leptons', 100, 0, 6)
-#matchingR1Hist = ROOT.TH1F('matchingResults[1]', 'matchingResults_bJetHadTop', 100, 0, 6)
+matchingRHist = ROOT.TH1F('matchingResults', 'matchingResults_all', 100, 0, 6)
+#matchingR0Hist = ROOT.TH1I('matchingResults[0]', 'matchingResults_leptons', 100, 0, 6)
+matchingR1Hist = ROOT.TH1F('matchingResults[1]', 'matchingResults_bJetHadTop', 100, 0, 6)
 #matchingR2Hist = ROOT.TH1F('matchingResults[2]', 'matchingResults_bJetLepTop', 100, 0, 6)
-#matchingR3Hist = ROOT.TH1F('matchingResults[3]', 'matchingResults_q1JetHadTop', 100, 0, 6)
+matchingR3Hist = ROOT.TH1F('matchingResults[3]', 'matchingResults_q1JetHadTop', 100, 0, 6)
 #matchingR4Hist = ROOT.TH1F('matchingResults[4]', 'matchingResults_q2JetHadTop', 100, 0, 6)
 #matchingR5Hist = ROOT.TH1F('matchingResults[5]', 'matchingResults_q1JetWHiggs', 100, 0, 6)
 #matchingR6Hist = ROOT.TH1F('matchingResults[6]', 'matchingResults_q2JetWHiggs', 100, 0, 6)
@@ -66,21 +66,24 @@ nJets50Stack = ROOT.THStack('nJets50Stack','N_{Jets}')"""
 
 # Fill signal plots with events in ttH file:
 for entry in ttHChain:
-    if entry.reco_score > -999.:
-        recoScoreHistTTH.Fill(entry.reco_score)
-    else:
-        pass
+    #if entry.reco_score > -999.:
+    #    recoScoreHistTTH.Fill(entry.reco_score)
+    #else:
+    #    pass
+    for match in entry.matching_results:
 
-    #for match in entry.matching_results:
-    #    matchingRHist.Fill(entry.matching_results)
+        matchingR1Hist.Fill(entry.matching_results[1])
+        matchingR3Hist.Fill(entry.matching_results[3])
 
 # Fill background plots with events in ttbar file:
-for entry in ttbarChain:
-    recoScoreHistTTbar.Fill(entry.reco_score)
+#for entry in ttbarChain:
+#    recoScoreHistTTbar.Fill(entry.reco_score)
 
 # Draw matching_results plots:
 
-#matchingR0Hist = matchingRHist.Draw(matching_results[0])
+#matchingR1Hist = matchingRHist.Draw(matching_results[1])
+#matchingR3Hist = matchingRHist.Draw(matching_results[3])
+
 
 """#Fill signal plots
 #loop over all events in the ttH file
@@ -130,12 +133,12 @@ for entry in backTree:
     nJets50HistBack.Fill(nJet50)"""
 
 #Normalize Histograms
-recoScoreHistTTH.Scale(1./recoScoreHistTTH.Integral())
-recoScoreHistTTbar.Scale(1./recoScoreHistTTbar.Integral())
+#recoScoreHistTTH.Scale(1./recoScoreHistTTH.Integral())
+#recoScoreHistTTbar.Scale(1./recoScoreHistTTbar.Integral())
 
 #Fill THS Stack and histograms added:
-recoScoreStack.Add(recoScoreHistTTH)
-recoScoreStack.Add(recoScoreHistTTbar)
+#recoScoreStack.Add(recoScoreHistTTH)
+#recoScoreStack.Add(recoScoreHistTTbar)
 
 """#Fill THStack - Stacks the histograms
 #fist histogram added is at the bottom
@@ -151,13 +154,14 @@ nJetsStack.Add(nJetsHistSig)
 nJets50Stack.Add(nJets50HistBack)
 nJets50Stack.Add(nJets50HistSig)"""
 
-outfile = ROOT.TFile.Open('reco_score.root','RECREATE')
+outfile = ROOT.TFile.Open('test_mr.root','RECREATE')
 outfile.cd()
 
-#matchingR0Hist.Write()
-recoScoreHistTTH.Write()
-recoScoreHistTTbar.Write()
-recoScoreStack.Write()
+matchingR1Hist.Write()
+matchingR3Hist.Write()
+#recoScoreHistTTH.Write()
+#recoScoreHistTTbar.Write()
+#recoScoreStack.Write()
 
 """# Write signals
 lepPtHistSig.Write()

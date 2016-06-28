@@ -165,8 +165,8 @@ class eventReconstructor
     void clear(void)
   {
     reco_score = -999;
-    num_jet_matches_truth = -999;
-    num_real_jets_bdt = -999;
+    num_jet_matches_truth = 0;
+    num_real_jets_bdt = 0;
     norm_score_sum = -999;
     matching_results.clear();
     matched_jets.clear();
@@ -247,7 +247,6 @@ class eventReconstructor
     int lep_charge = lep_fromTop_truth.charge;
 
     //truth jets
-    vector<ttH::Jet> matched_jets_truth;
     ttH::Jet bjet_fromHadTop_truth;
     ttH::Jet bjet_fromLepTop_truth;
     ttH::Jet wjet1_fromHadTop_truth;
@@ -285,7 +284,6 @@ class eventReconstructor
       {
 	if (jet.obj.pt() > 0) num_jet_matches_truth +=1;
       }
-    
     ///////////////////////////
     /////
     ///// loop setup
@@ -753,9 +751,10 @@ class eventReconstructor
 	if (wjet2_fromHiggs.obj.pt() == wjet2_fromHiggs_truth.obj.pt() || wjet2_fromHiggs.obj.pt() == wjet1_fromHiggs_truth.obj.pt()) matching_results.push_back(4);
 	else matching_results.push_back(1);
       }
-    
+
   }
-  
+ 
+ 
   //  virtual ~eventReconstructor(){};
   //ClassDef(eventReconstructor, 1); 
 };

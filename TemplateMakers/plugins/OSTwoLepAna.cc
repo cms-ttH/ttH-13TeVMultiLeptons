@@ -29,7 +29,6 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 
 void OSTwoLepAna::beginJob()
 {
-
   // job setup	
   SetUp(analysisYear, sampleNumber, analysisType::DIL, isData);
   //  SetFactorizedJetCorrector(); // remove ???
@@ -56,7 +55,7 @@ void OSTwoLepAna::endJob() {
   //       << "Passed cuts " << numEventsPassCuts << endl;
   //       << "Failed cuts " << numEventsFailCuts << endl;
   
-  
+    
   cout << "singleMuCount: " << singleMuCount << endl;
   cout << "singleEleCount: " << singleEleCount << endl;
   cout << "singleTauCount: " << singleTauCount << endl;
@@ -355,7 +354,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             //if (!passesCommon) continue;
             //bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
             //if ( !passes2lss ) continue; 
-            
+ 
             // added run reconstruction
             //bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree, (*met_intree)[0]);
             bool passesCommon = passCommon(tightMvaBased_electrons, preselected_electrons, tightMvaBased_muons, preselected_muons, preselected_jets);
@@ -367,7 +366,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
                 bdtReconstructor.initialize(&preselected_jets, &tightMvaBased_leptons, theMET[0]); 
               }
             }
-
+  
 	    /////////////////////////
 	    //////
 	    ////// cut flow studies
@@ -473,7 +472,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             /////////////////////////////////
 	    summaryTree->Fill();// fill tree;
             /////////////////////////////////
-	    
+	        
         } //end skim if statement  
 
 } // end event loop

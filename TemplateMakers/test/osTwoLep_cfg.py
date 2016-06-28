@@ -18,10 +18,11 @@ else:
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(2000) # number of events
+    input =cms.untracked.int32(2000) #number of events (lobster)
+    #input = cms.untracked.int32(-1) # number of events (testing)
 )
 
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 
 ## set up to take input file as command line argument.
@@ -96,7 +97,7 @@ else:
     process.OSTwoLepAna.setupoptions.isdata = False
 
 process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral"
-process.OSTwoLepAna.btags.btagdisc = "combinedInclusiveSecondaryVertexV2BJetTags"  # "combinedInclusiveSecondaryVertexV2BJetTags" #"combinedMVABJetTags" ##"combinedSecondaryVertexMVABJetTags"
+process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags"  # "combinedInclusiveSecondaryVertexV2BJetTags" #"combinedMVABJetTags" ##"combinedSecondaryVertexMVABJetTags"
 process.OSTwoLepAna.triggers.hltlabel = "HLT"
 
 process.OSTwoLepAna.debug = False
