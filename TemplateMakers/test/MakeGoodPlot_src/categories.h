@@ -2,7 +2,7 @@ bool MakeGoodPlot::passes_common(int sample_number)
 {
     
     auto taggedjetstight = keepTagged(*preselected_jets_intree,"M");
-    auto taggedjetsloose = keepUnTagged(*preselected_jets_intree,"L");
+    auto taggedjetsloose = keepTagged(*preselected_jets_intree,"L");
     
     bool passes = true;
     
