@@ -36,15 +36,16 @@ void dump_muons(std::ofstream& output, vector<ttH::Muon> *preselected_muons, int
 	 <<mu.charge<< " "
 	 <<mu.jet_nCharged_tracks<< " "
 	 <<mu.miniIso<< " "
-	 <<mu.miniAbsIsoCharged<< " "
-	 <<mu.miniAbsIsoNeutral<< " "
+	 <<mu.miniAbsIsoCharged / mu.obj.Pt()<< " "
+	 <<mu.miniAbsIsoNeutralcorr / mu.obj.Pt()<< " "
 	 <<mu.jetPtRel<< " "
 	 <<mu.csv<< " "
 	 <<mu.jetPtRatio<< " "
 	 <<mu.sip3D<< " "
 	 <<mu.dxy<< " "
 	 <<mu.dz<< " "
-	 <<mu.segCompatibility<<endl;
+	 <<mu.segCompatibility<< " "
+         <<mu.lepMVA<< endl;
 }
 
 void dump_electrons(std::ofstream& output, vector<ttH::Electron> *preselected_electrons, int event)
@@ -62,15 +63,16 @@ void dump_electrons(std::ofstream& output, vector<ttH::Electron> *preselected_el
 	 <<ele.charge<< " "
 	 <<ele.jet_nCharged_tracks<< " "
 	 <<ele.miniIso<< " "
-	 <<ele.miniAbsIsoCharged<< " "
-	 <<ele.miniAbsIsoNeutral<< " "
+	 <<ele.miniAbsIsoCharged / ele.obj.Pt() << " "
+	 <<ele.miniAbsIsoNeutralcorr / ele.obj.Pt()  << " "
 	 <<ele.jetPtRel<< " "
 	 <<ele.csv<< " "
 	 <<ele.jetPtRatio<< " "
 	 <<ele.sip3D<< " "
 	 <<ele.dxy<< " "
 	 <<ele.dz<< " "
-	 <<ele.mvaID<<endl;
+	 <<ele.mvaID<< " "
+         <<ele.lepMVA<<endl;
 }
 
 void dump_taus(std::ofstream& output, vector<ttH::Tau> *preselected_taus, int event)
@@ -183,7 +185,7 @@ void dump_syncFiles(void)
 {
 
   TChain *chain = new TChain("OSTwoLepAna/summaryTree");
-  chain->Add("tree_sync.root");
+  chain->Add("tree_sync_noSkim.root");
   run_it(chain);
 
 }
