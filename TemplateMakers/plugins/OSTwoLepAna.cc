@@ -187,8 +187,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////	
 	
-	bool skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
-	//bool skim_statement = true;
+	//	bool skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
+	bool skim_statement = true;
         if ( skim_statement )
         {
             
@@ -235,8 +235,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
                 jet_counter +=1;
               }
 
-            vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
-            cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(cleaned_rawJets,selectedTaus_selected,0.4);                // <------
+	    //            vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
+            vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets,selectedTaus_preselected,0.4);                // <------
             //vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
 
@@ -264,6 +264,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonTightMvaBased, mintightmupt, selectedElectrons_preselected, electronID::electronTightMvaBased, mintightelept);
 	    vecPatMuon selectedMuons_tightMvaBased = std::get<0>(lepTuple);
 	    vecPatElectron selectedElectrons_tightMvaBased = std::get<1>(lepTuple);
+
+
+	    selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_looseMvaBased,0.4);
+	    selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_looseMvaBased,0.4);
 
 	    /////////
 	    ///
