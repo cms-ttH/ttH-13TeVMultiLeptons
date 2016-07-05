@@ -13,8 +13,9 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
 if isData:
     process.GlobalTag.globaltag = '76X_dataRun2_v15'
-else:
-    process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_RunIIFall15DR76_v1'
+else:    
+    process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
+    #process.GlobalTag.globaltag = '76X_mcRun2_asymptotic_RunIIFall15DR76_v1'
 
 process.prefer("GlobalTag")
 
@@ -26,10 +27,11 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 ## set up to take input file as command line argument.
-infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
+#infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
 
 process.source = cms.Source("PoolSource",
-    	fileNames = cms.untracked.vstring( infile ),        
+#    	fileNames = cms.untracked.vstring( infile ),        
+    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),        
 #        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
 
 )
@@ -47,15 +49,16 @@ if isData:
 ######################################
 #JEC
 
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJetCorrFactors
+process.patJetCorrFactorsReapplyJEC = updatedPatJetCorrFactors.clone(
  src = cms.InputTag("slimmedJets"),
  levels = ['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual'],
  payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
 
 
-from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-process.patJetsReapplyJEC = patJetsUpdated.clone(
+from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets
+process.patJetsReapplyJEC = updatedPatJets.clone(
  jetSource = cms.InputTag("slimmedJets"),
  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
  )
@@ -72,7 +75,7 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
 process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
-process.OSTwoLepAna.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
+#process.OSTwoLepAna.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
