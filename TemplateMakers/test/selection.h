@@ -29,14 +29,9 @@ bool pass2lss(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vec
 {
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
-  cout << "preprepreselection" << endl;
 
   //if ( !( (psLeps.size() ==2 && tightLeps.size() == 2) || (psLeps.size() == 3 && tightLeps.size() == 2 && psLeps[2].obj.Pt() < tightLeps[1].obj.Pt() ) ) ) return false;
   if ( !(tightLeps.size() == 2) ) return false;
-
-  cout << "preselection" << endl;
-
-
 
   if (tightLeps[0].charge != tightLeps[1].charge) return false;
   for (auto &ele: tightEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge
@@ -44,13 +39,8 @@ bool pass2lss(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vec
   for (auto &ele: tightEles) if ((ele.numMissingInnerHits != 0)) return false;//  //lost hits
   for (auto &ele: tightEles) if ( !(ele.passConversioVeto) ) return false;//  //lost hits
   //conversion veto
-  cout << "selection" << endl;
-  if ( !( psJets.size()>3 ) )
-    {
-      cout << "jetssss: " << psJets.size() << endl;
-      return false;
-    }
-  cout << "jets" << endl;
+  if ( !( psJets.size()>3 ) )      return false;
+
   if ( !(tightLeps[0].obj.Pt()>20 && tightLeps[1].obj.Pt()>10) ) return false;
   //  if ( abs(tightLeps[0].pdgID) == 11 && tightLeps[0].obj.Pt()<=25 ) return false; //pretty sure we're not sync'ing on this
 
