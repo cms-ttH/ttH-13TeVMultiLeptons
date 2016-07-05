@@ -17,11 +17,11 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/selection.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/test/loadSamples.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/loadSamples_80x.h"
 
 /////////////////////////////////////////
 ///
-/// usage: root -l trainRecoBdt.C+\(0,1\)
+/// usage: root -l trainRecoBdt.C+\("\"ttH-powheg\"",0,1\)
 ///
 /////////////////////////////////////////
 
@@ -75,81 +75,43 @@ void run_it(TChain* chain, TString output_file)
   Float_t W_fromHadTop_charge_correct_var;
   Float_t W_fromHiggs_charge_correct_var;
   
-
-
-
-  // TMVAReader_ = new TMVA::Reader( "!Color:!Silent" );
-  // TMVAReader_->AddVariable( "numJets", &num_jets_var );
-  // TMVAReader_->AddVariable( "bJet_fromLepTop_CSV", &bJet_fromLepTop_CSV_var );
-  // TMVAReader_->AddVariable( "LepTop_pT", &LepTop_pT_var );
-  // TMVAReader_->AddVariable( "LepTop_mass", &LepTop_mass_var );
-  // TMVAReader_->AddVariable( "LepTop_lep_bJet_dR", &LepTop_lep_bJet_dR_var );
-  // TMVAReader_->AddVariable( "bJet_fromHadTop_CSV", &bJet_fromHadTop_CSV_var );
-  // TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_CSV", &qJet1_fromW_fromHadTop_CSV_var );
-  // TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_pT", &qJet1_fromW_fromHadTop_pT_var );
-  // TMVAReader_->AddVariable( "HadTop_pT", &HadTop_pT_var );
-  // TMVAReader_->AddVariable( "W_fromHadTop_mass", &W_fromHadTop_mass_var );
-  // TMVAReader_->AddVariable( "HadTop_mass", &HadTop_mass_var );
-  // TMVAReader_->AddVariable( "W_fromHadTop_q1_q2_dR", &W_fromHadTop_q1_q2_dR_var );
-  // TMVAReader_->AddVariable( "qJet1_fromW_fromHiggs_CSV", &qJet1_fromW_fromHiggs_CSV_var );
-  // TMVAReader_->AddVariable( "lep_fromW_fromHiggs_pT", &lep_fromW_fromHiggs_pT_var );
-  // TMVAReader_->AddVariable( "W_fromHiggs_mass", &W_fromHiggs_mass_var );
-  // TMVAReader_->AddVariable( "Higgs_mass", &Higgs_mass_var );
-  // TMVAReader_->AddVariable( "Higgs_lep_W_dR", &Higgs_lep_W_dR_var );
-  // TMVAReader_->AddVariable( "Higgs_lep_W_dPhi", &Higgs_lep_W_dPhi_var );
-  // TMVAReader_->AddVariable( "Higgs_lep_W_dEta", &Higgs_lep_W_dEta_var );
-  // TMVAReader_->AddVariable( "numMatchedJets", &numMatchedJets_var );
-  // TMVAReader_->AddVariable( "LepTop_Higgs_mass", &LepTop_Higgs_mass_var );
-  // TMVAReader_->AddVariable( "HadTop_Higgs_mass", &HadTop_Higgs_mass_var );
-  // TMVAReader_->AddVariable( "LepTop_HadTop_MT", &LepTop_HadTop_MT_var );
-  // TMVAReader_->AddVariable( "LepTop_Higgs_MT", &LepTop_Higgs_MT_var );
-  // TMVAReader_->AddVariable( "ttH_MT", &ttH_MT_var );
-  // TMVAReader_->AddVariable( "HadTop_Higgs_MT_mass_ratio", &HadTop_Higgs_MT_mass_ratio_var );
-  // TMVAReader_->AddVariable( "ttH_MT_mass_ratio", &ttH_MT_mass_ratio_var );
-  // TMVAReader_->AddVariable( "LepTop_HadTop_dR", &LepTop_HadTop_dR_var );
-  // TMVAReader_->AddVariable( "LepTop_HadTop_dPhi", &LepTop_HadTop_dPhi_var );
-  // TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/work/a/abrinke1/public/ttH/tmva/weights/TMVAClassification_allVars_opt_v0_allVars_opt_v0_BDTG.weights.xml");
-
   int chainentries = chain->GetEntries();   
   cout << "# events in tree: "<< chainentries << endl;  
   
   double mcwgt_intree = -999.;
-  double wgt_intree = -999.;
-  double wallTimePerEvent_intree = -99.;  
   int eventnum_intree = -999;
-  int higgs_decay_intree = -9999;
-  int lumiBlock_intree = -999;
-  int runNumber_intree = -999;
   
   vector<ttH::Lepton> *preselected_leptons_intree=0;
   vector<ttH::Electron> *raw_electrons_intree=0;               
   vector<ttH::Electron> *preselected_electrons_intree=0;
-  vector<ttH::Muon> *raw_muons_intree=0;
   vector<ttH::Muon> *preselected_muons_intree=0;
   vector<ttH::Jet> *preselected_jets_intree=0;
   vector<ttH::MET> *met_intree=0;
-  vector<ttH::GenParticle> *pruned_genParticles_intree=0;
   vector<ttH::Lepton> *tight_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
-  vector<ttH::Lepton> *tight_leptons_sortedByMiniIso_intree=0;  
-  
+
+  chain->SetBranchStatus("*",0);
+  chain->SetBranchStatus("mcwgt",1);
+  chain->SetBranchStatus("eventnum",1);
+  chain->SetBranchStatus("preselected_electrons.*",1);
+  chain->SetBranchStatus("preselected_muons.*",1);
+  chain->SetBranchStatus("preselected_jets.*",1);
+  chain->SetBranchStatus("tightMvaBased_leptons.*",1);
+  chain->SetBranchStatus("tightMvaBased_electrons.*",1);
+  chain->SetBranchStatus("tightMvaBased_muons.*",1);
+  chain->SetBranchStatus("met.*",1);
+
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
-  chain->SetBranchAddress("wgt", &wgt_intree);
-  chain->SetBranchAddress("wallTimePerEvent", &wallTimePerEvent_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
-  chain->SetBranchAddress("lumiBlock", &lumiBlock_intree);
-  chain->SetBranchAddress("runNumber", &runNumber_intree);
-  chain->SetBranchAddress("higgs_decay", &higgs_decay_intree);
   chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
+  chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
   chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
   chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
-  chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
   chain->SetBranchAddress("met", &met_intree);
-  chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);   
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
@@ -350,7 +312,6 @@ void run_it(TChain* chain, TString output_file)
       ////
       //////////////////////////
 
-      //      if ( (*preselected_jets_intree).size() < 3) continue; 
       bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
       if (!passesCommon) continue;
       bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
@@ -970,43 +931,6 @@ void run_it(TChain* chain, TString output_file)
 
 				      background_tree->Fill();
 
-      				      //double mva_value = TMVAReader_->EvaluateMVA( "BDTG method" );
-      				      //reco_scores_intree->push_back( mva_value );
-      				      // if ( mva_value > reco_score_intree )
-      				      // 	{
-      				      // 	  reco_score_intree = mva_value;
-      				      // 	  matched_jets_intree->clear();
-      				      // 	  lep_fromHiggs_intree->clear();  
-      				      // 	  lep_fromTop_intree->clear();  
-
-      				      // 	  matched_jets_intree->push_back(bjet_fromHadTop);
-      				      // 	  matched_jets_intree->push_back(bjet_fromLepTop);
-      				      // 	  matched_jets_intree->push_back(wjet1_fromHadTop);
-      				      // 	  matched_jets_intree->push_back(wjet2_fromHadTop);
-      				      // 	  matched_jets_intree->push_back(wjet1_fromHiggs);
-      				      // 	  matched_jets_intree->push_back(wjet2_fromHiggs);
-					  
-
-      				      // 	  lep_fromHiggs_intree->push_back(lep_fromHiggs);  
-      				      // 	  lep_fromTop_intree->push_back(lep_fromTop);  
-
-      				      // 	  w_fromHadTop_tlv_intree = w_fromHadTop_tlv;
-      				      // 	  w_fromHiggs_tlv_intree = w_fromHiggs_tlv;
-      				      // 	  higgs_tlv_intree = higgs_tlv;
-      				      // 	  hadTop_tlv_intree = hadTop_tlv;
-      				      // 	  lepTop_tlv_intree = lepTop_tlv;
-
-
-      				      // 	  dR_b_W_hadTop_intree = bjet_fromHadTop_tlv.DeltaR( w_fromHadTop_tlv );
-      				      // 	  dR_b_W_lepTop_intree = bjet_fromLepTop_tlv.DeltaR( lep_fromTop_tlv );
-      				      // 	  dR_H_lepTop_intree = higgs_tlv.DeltaR( lepTop_tlv );
-      				      // 	  dR_H_hadTop_intree = higgs_tlv.DeltaR( hadTop_tlv );
-      				      // 	  dR_lepTop_hadTop_intree = hadTop_tlv.DeltaR( lepTop_tlv );
-      				      // 	  dR_W1_W2_fromHiggs_intree = w_fromHiggs_tlv.DeltaR( lep_fromHiggs_tlv );
-      				      // 	  dR_q1_q2_fromWfromHiggs_intree = wjet1_fromHiggs_tlv.DeltaR( wjet2_fromHiggs_tlv );
-
-      				      // 	}
-      				      //				      cout << "# tries: " << tries << endl;
       				      tries +=1;
       				    }
       				}
@@ -1034,15 +958,9 @@ void run_it(TChain* chain, TString output_file)
 void trainRecoBdt(TString sample, int start_file=0, int end_file=0)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/";
-  TString output_file = output_dir+sample + "_bdtTraining_v2_"+to_string(start_file)+"-"+to_string(end_file)+".root";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v0/";
+  TString output_file = output_dir+sample + "_bdtTraining__"+to_string(start_file)+"-"+to_string(end_file)+".root";
   TChain *tth_chain = loadFiles(sample,start_file,end_file);  
   run_it(tth_chain,output_file);
-
-  // TChain *ttw_chain = loadFiles("ttW");  
-  // run_it(ttw_chain,"ttW_full_recoBDT_results.root");
-
-  // TChain *ttbar_chain = loadFiles("ttbar");  
-  // run_it(ttbar_chain,"ttbar_full_recoBDT_results.root");
 
 }
