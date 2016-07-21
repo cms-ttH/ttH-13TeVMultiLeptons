@@ -85,18 +85,20 @@ class PlotObject
     double x_max = hist_trigger->GetXaxis()->GetXmax();
     
     hist_trigger->SetTitle("");
-    //    TCanvas* can = new TCanvas(can_name, can_name);
-    TCanvas* can = new TCanvas(can_name, can_name,10,32,650,530);
+    TCanvas* can = new TCanvas(can_name, can_name,10,32,530,580);
     TPad* pad1 = new TPad("pad1","pad1",0,0.35,1,1);
-    TLegend *leg = new TLegend(0.6192529,0.7196871,0.8649425,0.8598435);
-    //    TLegend *leg = new TLegend(0.4971264,0.7189542,0.7428161,0.8594771);
-    TLatex * tex = new TLatex(0.6882184,0.625163, category);
-    //TLatex * tex = new TLatex(0.6063218,0.627451, category);
+    //    TLegend *leg = new TLegend(0.6192529,0.7196871,0.8649425,0.8598435);
+    TLegend *leg = new TLegend(0.4410646,0.7296544,0.8536122,0.8690078);
+    //    TLatex * tex = new TLatex(0.6882184,0.625163, category);
+    TLatex * tex = new TLatex(0.5874525,0.6181717, category);
     tex->SetNDC(kTRUE); 
     tex->SetTextFont(42);
     tex->SetTextSize(0.08);
     leg->SetFillColor(0);
     leg->SetBorderSize(0);
+    //    leg->SetTextFont(62);
+    leg->SetTextFont(52);
+    leg->SetTextSize(0.07);
     pad1->SetBottomMargin(0);
     pad1->Draw();
     pad1->cd();
@@ -109,8 +111,7 @@ class PlotObject
     hist_map->SetLineColor(kGreen+2);
     hist_map->SetMarkerColor(kGreen+2);
     leg->AddEntry(hist_trigger,"trigger selection");
-    leg->AddEntry(hist_map,"trigger effiency");
-    leg->SetTextFont(62);
+    leg->AddEntry(hist_map,"trigger efficiency");
     hist_trigger->GetYaxis()->SetTitle("Events");
     hist_trigger->DrawCopy();
     hist_map->DrawCopy("same");
@@ -135,8 +136,8 @@ class PlotObject
     double hist_min = hist_ratio.GetMinimum();
     double y_max = 1 + offset_fraction*max(abs(hist_max - 1), abs(hist_min - 1 ));
     double y_min = 1 - offset_fraction*max(abs(hist_max - 1), abs(hist_min - 1 )); 
-    hist_ratio.GetYaxis()->SetRangeUser( y_min, y_max );
-    //    hist_ratio.GetYaxis()->SetRangeUser(0,2);
+    //    hist_ratio.GetYaxis()->SetRangeUser( y_min, y_max );
+    hist_ratio.GetYaxis()->SetRangeUser(-0.5,2.5);
     hist_ratio.SetLineColor(1);
     hist_ratio.SetMarkerColor(1);
     hist_ratio.GetYaxis()->SetLabelSize(.08);
@@ -508,12 +509,12 @@ void run_it(TChain* chain)
       
     }
   
-  met_plots.drawHists();
-  nJet_plots.drawHists();
+  // met_plots.drawHists();
+  // nJet_plots.drawHists();
   dilepPt_plots.drawHists();
-  ht_plots.drawHists();
-  nJet_csvm_plots.drawHists();
-  nJet_csvl_plots.drawHists();
+  // ht_plots.drawHists();
+  // nJet_csvm_plots.drawHists();
+  // nJet_csvl_plots.drawHists();
 
   double endtime = get_wall_time();
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
