@@ -293,31 +293,35 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 		  {
 		    if (triggerResults->accept(hltConfig_.triggerIndex(hlt_alltrigs[trigit])))
 		      {
+			passTrigger_intree.push_back(hlt_alltrigs[trigit]); //don't care about prescales
 			// pair: <L1 prescale, HLT prescale>
 			//std::pair<int,int> prescaleVals= hltPrescaleProvider_.prescaleValues(event, evsetup, hlt_alltrigs[trigit]);
 			
 			// pair: < vector of pairs of (L1 seed, L1 prescale), HLT prescale >
-			std::pair<std::vector<std::pair<std::string,int> >,int> prescaleVals = hltPrescaleProvider_.prescaleValuesInDetail(event, evsetup, hlt_alltrigs[trigit]);					
-			std::vector<std::pair<std::string,int> > prescaleValsL1 = prescaleVals.first;
+
+			// std::pair<std::vector<std::pair<std::string,int> >,int> prescaleVals = hltPrescaleProvider_.prescaleValuesInDetail(event, evsetup, hlt_alltrigs[trigit]);			
+			// std::vector<std::pair<std::string,int> > prescaleValsL1 = prescaleVals.first;
 			
-			if (prescaleVals.second==1) // check if HLT prescale=1
-			  {					
-			    for (unsigned int trigit2=0; trigit2<prescaleValsL1.size(); trigit2++)
-			      {    					        					        					
-				if (prescaleValsL1[trigit2].second==1) // check for at least 1 L1 seed that had prescale=1 (in the case of multiple seeds, we are assuming they are in OR!)
-				  {
-				    passTrigger_intree.push_back(hlt_alltrigs[trigit]);
-				    break;
-				  }
-			      }
-			  }
+			// if (prescaleVals.second==1) // check if HLT prescale=1
+			//   {					
+			//     for (unsigned int trigit2=0; trigit2<prescaleValsL1.size(); trigit2++)
+			//       {    					        					        					
+			// 	if (prescaleValsL1[trigit2].second==1) // check for at least 1 L1 seed that had prescale=1 (in the case of multiple seeds, we are assuming they are in OR!)
+			// 	  {
+			// 	    passTrigger_intree.push_back(hlt_alltrigs[trigit]);
+			// 	    break;
+			// 	  }
+			//       }
+			//   }
+
+
 		      }
 		  }
 		catch(...)
 		  {
 		    cout << "problem with trigger loop..." << endl;
 		    continue;
-		    }
+		  }
 		
 	      }
 	    
@@ -445,56 +449,30 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
 	std::cout << " HLTConfig processName " << hltConfig_.processName() << " tableName " << hltConfig_.tableName() << " size " << hltConfig_.size() << std::endl; // " globalTag: " << hltConfig_.globalTag() << std::endl;
     
     // also get the L1 + HLT prescales:    
-    if (hltPrescaleProvider_.init(run,evsetup,hltTag,changed)) std::cout << "Got L1 + HLT prescales .." << std::endl;
+	//    if (hltPrescaleProvider_.init(run,evsetup,hltTag,changed)) std::cout << "Got L1 + HLT prescales .." << std::endl;
 	
-	std::vector<std::string> myTriggernames = hltConfig_.triggerNames();
-	int triggersize = myTriggernames.size();
-	vstring hlt_trigstofind;
-	hlt_alltrigs.clear();
-	
-	// Just MC
-	
-    // single lep
-    
-//     hlt_trigstofind.push_back("HLT_IsoMu24_eta2p1_v"); // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? //// "to be kept ps'd" ?! not according to google doc...
-//     hlt_trigstofind.push_back("HLT_IsoMu27_v"); // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? // unps'd
-//     hlt_trigstofind.push_back("HLT_IsoTkMu27_v"); // HLT_IsoMu24_IterTrk02_v1 // HLT_IsoTkMu27_v1 ? // unps'd
-//     hlt_trigstofind.push_back("HLT_Ele32_eta2p1_WP75_Gsf_v"); // <<---
-//     
-//     // double lep
-//     
-//     hlt_trigstofind.push_back("HLT_Mu17_Mu8_DZ_v"); // ps'd (here and data)
-//     hlt_trigstofind.push_back("HLT_Mu17_TkMu8_DZ_v"); // ps'd (here and data)
-//     hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-//     hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");		
-//     hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");		
-//     hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");
-//     hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-//             
-//     // triple lep
-//     
-//     hlt_trigstofind.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");		
-//     hlt_trigstofind.push_back("HLT_TripleMu_12_10_5_v");		
-//     hlt_trigstofind.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v");
-//     hlt_trigstofind.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v");
+    std::vector<std::string> myTriggernames = hltConfig_.triggerNames();
+    int triggersize = myTriggernames.size();
+    vstring hlt_trigstofind;
+    hlt_alltrigs.clear();
     
     
-    // Data + MC
-    
-    
-    //single lep    
     hlt_trigstofind.push_back("HLT_Ele22_eta2p1_WPLoose_Gsf_v");    //Data
     hlt_trigstofind.push_back("HLT_Ele23_WPLoose_Gsf_v");           //Data
+    hlt_trigstofind.push_back("HLT_Ele24_eta2p1_WPLoose_Gsf_v");    //Data
+    hlt_trigstofind.push_back("HLT_Ele25_WPLoose_Gsf_v");           //Data
+    hlt_trigstofind.push_back("HLT_Ele25_eta2p1_WPLoose_Gsf_v");    //Data
     hlt_trigstofind.push_back("HLT_Ele27_WPLoose_Gsf_v");           //Data
     hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");    //Data
     hlt_trigstofind.push_back("HLT_Ele32_eta2p1_WPLoose_Gsf_v");    //Data
+    hlt_trigstofind.push_back("HLT_Ele35_WPLoose_Gsf_v");           //Data
+    
     hlt_trigstofind.push_back("HLT_Ele22_eta2p1_WP75_Gsf_v");       //MC
     hlt_trigstofind.push_back("HLT_Ele27_WP85_Gsf_v");              //MC
     hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WP75_Gsf_v");       //MC
     hlt_trigstofind.push_back("HLT_Ele32_eta2p1_WP75_Gsf_v");       //MC
     hlt_trigstofind.push_back("HLT_Ele23_CaloIdL_TrackIdL_IsoVL_v");//MC
-    
-    
+
     hlt_trigstofind.push_back("HLT_IsoMu18_v");
     hlt_trigstofind.push_back("HLT_IsoMu20_v");
     hlt_trigstofind.push_back("HLT_IsoMu22_v");
@@ -508,7 +486,7 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     hlt_trigstofind.push_back("HLT_IsoTkMu20_eta2p1_v");
     hlt_trigstofind.push_back("HLT_IsoTkMu24_eta2p1_v");
     hlt_trigstofind.push_back("HLT_IsoTkMu27_v");    
-    
+
     // double lep
     hlt_trigstofind.push_back("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");    // unpsd?    
     hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
@@ -520,17 +498,19 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v");
     hlt_trigstofind.push_back("HLT_Mu20_Mu10_SameSign_DZ_v");
     hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v");   
+    hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");
     hlt_trigstofind.push_back("HLT_Mu27_TkMu8_v");
     hlt_trigstofind.push_back("HLT_Mu30_TkMu11_v");
     hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v");
     hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-        
+
     // triple lep (same)
     hlt_trigstofind.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v");
     hlt_trigstofind.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v");
+    hlt_trigstofind.push_back("HLT_TripleMu_5_3_3_v");
     hlt_trigstofind.push_back("HLT_TripleMu_12_10_5_v");
     hlt_trigstofind.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");
-    
+
     // for the met dataset:
     hlt_trigstofind.push_back("HLT_CaloMHTNoPU90_PFMET90_PFMHT90_IDTight_BTagCSV0p72_v");
     hlt_trigstofind.push_back("HLT_CaloMHTNoPU90_PFMET90_PFMHT90_IDTight_v");
@@ -561,24 +541,22 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     hlt_trigstofind.push_back("HLT_PFMETNoMu120_JetIdCleaned_PFMHTNoMu120_IDTight_v");
     hlt_trigstofind.push_back("HLT_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v");
     
-    
-    
-    
-    for (int trigit=0; trigit<triggersize; trigit++)
-	{
-        if (debug) cout << myTriggernames[trigit] << endl;
-        
-        for (unsigned int trigit2=0; trigit2<hlt_trigstofind.size(); trigit2++)
-	    {
-            std::size_t found = myTriggernames[trigit].find(hlt_trigstofind[trigit2]);
-            if (found!=std::string::npos)
-            {
-                hlt_alltrigs.push_back(myTriggernames[trigit]);
-            }
-        }
-    }
-                
 	
+    for (int trigit=0; trigit<triggersize; trigit++)
+      {
+	if (debug) cout << myTriggernames[trigit] << endl;
+	
+	for (unsigned int trigit2=0; trigit2<hlt_trigstofind.size(); trigit2++)
+	  {
+	    std::size_t found = myTriggernames[trigit].find(hlt_trigstofind[trigit2]);
+	    if (found!=std::string::npos)
+	      {
+		hlt_alltrigs.push_back(myTriggernames[trigit]);
+	      }
+	  }
+      }
+	
+    
 }
 void OSTwoLepAna::endRun(edm::Run const& run, edm::EventSetup const& evsetup)
 {
