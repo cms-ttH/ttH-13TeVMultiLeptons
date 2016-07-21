@@ -85,10 +85,13 @@ class PlotObject
     double x_max = hist_trigger->GetXaxis()->GetXmax();
     
     hist_trigger->SetTitle("");
-    TCanvas* can = new TCanvas(can_name, can_name);
+    //    TCanvas* can = new TCanvas(can_name, can_name);
+    TCanvas* can = new TCanvas(can_name, can_name,10,32,650,530);
     TPad* pad1 = new TPad("pad1","pad1",0,0.35,1,1);
     TLegend *leg = new TLegend(0.6192529,0.7196871,0.8649425,0.8598435);
+    //    TLegend *leg = new TLegend(0.4971264,0.7189542,0.7428161,0.8594771);
     TLatex * tex = new TLatex(0.6882184,0.625163, category);
+    //TLatex * tex = new TLatex(0.6063218,0.627451, category);
     tex->SetNDC(kTRUE); 
     tex->SetTextFont(42);
     tex->SetTextSize(0.08);
@@ -106,9 +109,9 @@ class PlotObject
     hist_map->SetLineColor(kGreen+2);
     hist_map->SetMarkerColor(kGreen+2);
     leg->AddEntry(hist_trigger,"trigger selection");
-    leg->AddEntry(hist_map,"derived effiency");
+    leg->AddEntry(hist_map,"trigger effiency");
     leg->SetTextFont(62);
-    hist_trigger->GetYaxis()->SetTitle("events");
+    hist_trigger->GetYaxis()->SetTitle("Events");
     hist_trigger->DrawCopy();
     hist_map->DrawCopy("same");
     leg->Draw("same");
@@ -122,20 +125,25 @@ class PlotObject
     hist_ratio.Divide(hist_map);
     pad2->SetTopMargin(0);
     pad2->SetBottomMargin(0.4);
+    pad2->SetGridy();
     pad2->Draw();
     pad2->cd();
     
-    hist_ratio.GetYaxis()->SetTitle("trigger / eff");
-    double min_max_offset = 1.3;
-    hist_ratio.GetYaxis()->SetRangeUser( (1./min_max_offset * hist_ratio.GetMinimum()), (min_max_offset * hist_ratio.GetMaximum()));
+    hist_ratio.GetYaxis()->SetTitle("sel / eff");
+    double offset_fraction = 1.6;//1.6;
+    double hist_max = hist_ratio.GetMaximum();
+    double hist_min = hist_ratio.GetMinimum();
+    double y_max = 1 + offset_fraction*max(abs(hist_max - 1), abs(hist_min - 1 ));
+    double y_min = 1 - offset_fraction*max(abs(hist_max - 1), abs(hist_min - 1 )); 
+    hist_ratio.GetYaxis()->SetRangeUser( y_min, y_max );
     //    hist_ratio.GetYaxis()->SetRangeUser(0,2);
-    //  hist_ratio.GetYaxis()->SetNdivisions(6);
     hist_ratio.SetLineColor(1);
     hist_ratio.SetMarkerColor(1);
     hist_ratio.GetYaxis()->SetLabelSize(.08);
     hist_ratio.GetXaxis()->SetLabelSize(.12);
     hist_ratio.GetXaxis()->SetTitle(axis_title_);
     hist_ratio.GetXaxis()->SetTitleSize(0.17);
+    hist_ratio.GetXaxis()->SetTitleFont(42);
     hist_ratio.GetYaxis()->SetTitleOffset(.4);
     hist_ratio.GetYaxis()->SetTitleSize(.10);
     hist_ratio.GetYaxis()->CenterTitle();
@@ -329,7 +337,7 @@ class TriggerHelper
 	{
 	case eventType::ss2l_ee:
 	  if (l1_pt < 30 && l2_pt < 25) return 0.78;
-	  else if (l1_pt > 30 && l1_pt > 40 && l2_pt < 25) return 0.89;
+	  else if (l1_pt > 30 && l1_pt < 40 && l2_pt < 25) return 0.89;
 	  else if (l1_pt > 40 && l2_pt < 25) return 0.92;
 	  else if (l1_pt < 40 && l2_pt > 25) return 0.93;
 	  else if (l1_pt > 40 && l2_pt > 25) return 0.96;
@@ -438,8 +446,8 @@ void run_it(TChain* chain)
   //init hists
   PlotObject met_plots; met_plots.bookHists("met","MET","E_{T}^{miss} [GeV]",10,0,400);
   PlotObject nJet_plots; nJet_plots.bookHists("nJets","nJets","N(jet, p_{T} > 25 GeV)",10,2,12);
-  PlotObject nJet_CSVL_plots; nJet_CSVL_plots.bookHists("nJets_CSVL","nJets_CSVL","N(jet, p_{T} > 25 GeV, CSVL)",10,2,12);
-  PlotObject nJet_CSVM_plots; nJet_CSVM_plots.bookHists("nJets_CSVM","nJets_CSVM","N(jet, p_{T} > 25 GeV, CSVM)",10,2,12);
+  PlotObject nJet_csvl_plots; nJet_csvl_plots.bookHists("nJets_CSVL","nJets_CSVL","N(jet, p_{T} > 25 GeV, CSVL)",10,2,12);
+  PlotObject nJet_csvm_plots; nJet_csvm_plots.bookHists("nJets_CSVM","nJets_CSVM","N(jet, p_{T} > 25 GeV, CSVM)",10,2,12);
   PlotObject dilepPt_plots; dilepPt_plots.bookHists("dilep_pt","dilep_pt","p_{T} (ll) [GeV]",10,0,400);
   PlotObject ht_plots; ht_plots.bookHists("HT","HT","MHT [GeV]",10,0,400);
 
@@ -490,9 +498,13 @@ void run_it(TChain* chain)
       double ht_value = mht_tlv.Pt();
       ht_plots.fillHists( triggerHelper.event_type, ht_value, eff_weight, trg_weight );
 
-      auto btaggedjetstight = keepTagged(*preselected_jets_intree,"M");
-      auto btaggedjetsloose = keepTagged(*preselected_jets_intree,"L");
+      auto csvm_preselected_jets = keepTagged(*preselected_jets_intree,"M");
+      int nJet_csvm_value = csvm_preselected_jets.size();
+      nJet_csvm_plots.fillHists( triggerHelper.event_type, nJet_csvm_value, eff_weight, trg_weight );
 
+      auto csvl_preselected_jets = keepTagged(*preselected_jets_intree,"L");
+      int nJet_csvl_value = csvl_preselected_jets.size();
+      nJet_csvl_plots.fillHists( triggerHelper.event_type, nJet_csvl_value, eff_weight, trg_weight );
       
     }
   
@@ -500,6 +512,8 @@ void run_it(TChain* chain)
   nJet_plots.drawHists();
   dilepPt_plots.drawHists();
   ht_plots.drawHists();
+  nJet_csvm_plots.drawHists();
+  nJet_csvl_plots.drawHists();
 
   double endtime = get_wall_time();
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
@@ -510,12 +524,13 @@ void run_it(TChain* chain)
 void makeHists(void)
 {
 
-  // TChain *chain = new TChain("ss2l_tree");
-  // chain->Add("ttH_tree_2lss.root");
+  //  TString input_file_name = "ttH_tree_event_selection_triggerStudies_July20.root";
+  TString input_file_name = "ttH_tree_event_selection_triggerStudies_July21_25_15_eeCuts.root";
+  TString l3_tree_name = input_file_name+"/l3_tree";
 
   TChain *chain = new TChain("ss2l_tree");
-  chain->Add("ttH_tree_event_selection_triggerStudies_July20.root");
-  chain->Add("ttH_tree_event_selection_triggerStudies_July20.root/l3_tree");
+  chain->Add(input_file_name);
+  chain->Add(l3_tree_name);
   run_it(chain);
 }
 
