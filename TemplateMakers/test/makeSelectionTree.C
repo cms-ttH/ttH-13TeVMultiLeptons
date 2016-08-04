@@ -41,40 +41,20 @@ int getChild(ttH::GenParticle foster_parent, std::vector<ttH::GenParticle> gen_p
   biological_parent.child0 = 6666;
   biological_parent.child1 = 6666;
 
-  if (abs(foster_parent.pdgID) == 15)
+  for (const auto & gen_particle : gen_particles)
     {
-      int index=0;
-      for (const auto & gen_particle : gen_particles)
+      if ( gen_particle.pdgID != foster_parent.pdgID ) continue;
+      if ( gen_particle.status != 52 ) continue;
+      TLorentzVector foster_parent_tlv = setTlv(foster_parent);
+      TLorentzVector gen_particle_tlv = setTlv(gen_particle);
+      double dr = foster_parent_tlv.DeltaR( gen_particle_tlv );
+      if (dr < min_dr)
 	{
-	  if ( gen_particle.status == 1 && (abs(gen_particle.pdgID) == 11 || abs(gen_particle.pdgID) == 13) )
-	    {
-	      if ( gen_particles[gen_particle.mother].pdgID == foster_parent.pdgID ) 
-		{
-		  return index;
-		}
-	    }
-	  index+=1;
+	  min_dr = dr;
+	  biological_parent = gen_particle;
 	}
     }
-  else
-    {
-      for (const auto & gen_particle : gen_particles)
-	{
-	  if ( gen_particle.pdgID != foster_parent.pdgID ) continue;
-	  if ( gen_particle.status != 52 ) continue;
-	  TLorentzVector foster_parent_tlv = setTlv(foster_parent);
-	  TLorentzVector gen_particle_tlv = setTlv(gen_particle);
-	  double dr = foster_parent_tlv.DeltaR( gen_particle_tlv );
-	  if (dr < min_dr)
-	    {
-	      min_dr = dr;
-	      biological_parent = gen_particle;
-	    }
-	}
-    }
-
-
-
+  
   if ( child == 0 ) return biological_parent.child0;
   else if ( child == 1 ) return biological_parent.child1;
   else return 7777;
@@ -188,10 +168,15 @@ public:
 	    higgs_intree = gen_particle;
 	    higgs_child_A_intree = gen_particles[higgs_intree.child0];
 	    higgs_child_B_intree = gen_particles[higgs_intree.child1];
+	    
+	    if ( higgs_child_A_intree.child1 > gen_particles.size() ) higgs_child_A_intree.child1 = higgs_child_A_intree.child0 + 1;
+	    if ( higgs_child_B_intree.child1 > gen_particles.size() ) higgs_child_B_intree.child1 = higgs_child_B_intree.child0 + 1;
+
 	    higgs_grandChild_A1_intree = gen_particles[higgs_child_A_intree.child0];
 	    higgs_grandChild_A2_intree = gen_particles[higgs_child_A_intree.child1];
 	    higgs_grandChild_B1_intree = gen_particles[higgs_child_B_intree.child0];
 	    higgs_grandChild_B2_intree = gen_particles[higgs_child_B_intree.child1];
+
 	  }
 	else if ( gen_particle.pdgID == 6 )
 	  {
@@ -208,7 +193,8 @@ public:
 	      }
 
 	    
-	    if ( top_w_intree.child1 > gen_particles.size() ) top_w_intree.child1 = getChild(top_w_intree,gen_particles,1);
+	    if ( top_w_intree.child1 > gen_particles.size() ) top_w_intree.child1 = top_w_intree.child0 + 1;
+
 	    // cout << "top: " << endl;
 	    // cout << top_w_intree.child0 << endl;
 	    // cout << top_w_intree.child1 << endl;
@@ -231,7 +217,7 @@ public:
 		antitop_w_intree = gen_particles[antitop_intree.child0];
 	      }
 
-	    if ( antitop_w_intree.child1 > gen_particles.size() ) antitop_w_intree.child1 = getChild(antitop_w_intree,gen_particles,1);
+	    if ( antitop_w_intree.child1 > gen_particles.size() ) antitop_w_intree.child1 = antitop_w_intree.child0 + 1;
 
 	    // cout << "antitop: " << endl;
 	    // cout << antitop_w_intree.child0 << endl;
@@ -242,7 +228,6 @@ public:
 	  }
 	if (higgs_intree.pdgID == 25 && antitop_intree.pdgID == -6 && top_intree.pdgID == 6) break;
       }
-
     
     bool higgs_grandChild_A1_leptonic = ( abs(higgs_grandChild_A1_intree.pdgID) >= 11 && abs(higgs_grandChild_A1_intree.pdgID) <= 14 );
     bool higgs_grandChild_A2_leptonic = ( abs(higgs_grandChild_A2_intree.pdgID) >= 11 && abs(higgs_grandChild_A2_intree.pdgID) <= 14 );
@@ -323,7 +308,6 @@ void run_it(TChain* chain, TString output_file)
 
   double starttime = get_wall_time();
 
-  //  chainentries = 3000;
   for (int i=0; i<chainentries; i++)
     {
       if (i%int(chainentries/100) == 0)
