@@ -293,7 +293,7 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs)
   return muCollection;
 }
 
-vector<ttH::Tau> MultileptonAna::GetCollection (vecPatTau theobjs)
+vector<ttH::Tau> MultileptonAna::GetCollection(vecPatTau theobjs)
 {
   ttH::Tau tau;
   vector<ttH::Tau> tauCollection;
@@ -352,13 +352,29 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       jet.charge = iJet.jetCharge();
       string thedisc = btagparams.getParameter<string> ("btagdisc");
       jet.csv = iJet.bDiscriminator(thedisc);
-      jet.qgid = iJet.userFloat("qgid");
+      jet.qgid = -99.;//iJet.userFloat("qgid");
       jet.pdgID = iJet.pdgId();
       jetCollection.push_back(jet);
 
   }
   std::sort(jetCollection.begin(), jetCollection.end(), [] (ttH::Jet a, ttH::Jet b) { return a.obj.Pt() > b.obj.Pt();});
   return jetCollection;
+}
+
+vector<ttH::GenParticle> MultileptonAna::GetCollection(std::vector<reco::GenJet> theobjs)
+{
+  vector<ttH::GenParticle> tth_gen_jets;
+  ttH::GenParticle tth_gen_jet;
+
+  for (const auto & pat_gen_jet : theobjs)
+    {
+      tth_gen_jet.obj = pat_gen_jet.p4();
+      tth_gen_jet.pdgID = pat_gen_jet.pdgId();
+      tth_gen_jet.status = pat_gen_jet.status();
+      tth_gen_jet.charge = pat_gen_jet.charge();
+      tth_gen_jets.push_back(tth_gen_jet);
+    }
+  return tth_gen_jets;
 }
 
 vector<ttH::MET> MultileptonAna::GetCollection (patMETs theobjs)

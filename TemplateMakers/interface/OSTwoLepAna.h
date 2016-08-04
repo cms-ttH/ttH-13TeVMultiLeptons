@@ -45,6 +45,9 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
                 
 		vstring passTrigger_intree;
 
+		std::string higgs_final_state;
+		std::string top_final_state; 
+		
 		int eventnum_intree;
 		int higgs_decay_intree;
 
@@ -81,13 +84,11 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::MET> met_intree;
 		vector<ttH::GenParticle> pruned_genParticles_intree;
 		vector<ttH::GenParticle> packed_genParticles_intree;
+		vector<ttH::GenParticle> genJets_intree;
 		
 		edm::EDGetTokenT<pat::MuonCollection> muons_token_;
 		edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
 		edm::EDGetTokenT<pat::TauCollection> taus_token_;
-                
-
-
 
                 int singleEleCount;
                 int singleMuCount;
@@ -131,7 +132,7 @@ void OSTwoLepAna::tree_add_branches()
   
   summaryTree->Branch("raw_electrons", &raw_electrons_intree);
   summaryTree->Branch("raw_muons", &raw_muons_intree);
-  //summaryTree->Branch("raw_jets", &raw_jets_intree);
+  summaryTree->Branch("raw_jets", &raw_jets_intree);
   
   summaryTree->Branch("preselected_jets", &preselected_jets_intree);
   summaryTree->Branch("preselected_jets_uncor", &preselected_jets_uncor_intree);
@@ -141,7 +142,7 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("met", &met_intree);
   summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
   summaryTree->Branch("packed_genParticles", &packed_genParticles_intree);
-
+  summaryTree->Branch("genJets", &genJets_intree);
 }
 
 void OSTwoLepAna::initialize_variables()
@@ -174,7 +175,7 @@ void OSTwoLepAna::initialize_variables()
   
   raw_electrons_intree.clear();
   raw_muons_intree.clear();
-  //raw_jets_intree.clear();
+  raw_jets_intree.clear();
   
   preselected_jets_intree.clear();
   preselected_jets_uncor_intree.clear();
@@ -184,8 +185,11 @@ void OSTwoLepAna::initialize_variables()
   met_intree.clear();
   pruned_genParticles_intree.clear();
   packed_genParticles_intree.clear();
+  genJets_intree.clear();
   
-  higgs_decay_intree = -9e6;
+  higgs_decay_intree = 0;
+  higgs_final_state = "none";
+  top_final_state = "none";
 }
 
 /*  LocalWords:  lumi

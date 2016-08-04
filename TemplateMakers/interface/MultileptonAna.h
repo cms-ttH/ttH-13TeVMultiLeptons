@@ -161,7 +161,8 @@ class MultileptonAna: public MiniAODHelper
   edm::EDGetTokenT<double> rho_token_;
   edm::EDGetTokenT<GenEventInfoProduct> genInfo_token_;
   edm::EDGetTokenT<edm::ValueMap<float>> qg_token_;
-  
+  edm::EDGetTokenT<std::vector<reco::GenJet>> genJet_token_;
+
   void parse_params();
   
   //MiniAODHelper miniAODhelper;
@@ -183,6 +184,7 @@ class MultileptonAna: public MiniAODHelper
   vector<ttH::Muon> GetCollection(vecPatMuon theobjs);
   vector<ttH::Tau> GetCollection(vecPatTau theobjs);
   vector<ttH::Jet> GetCollection(vecPatJet theobjs);
+  vector<ttH::GenParticle> GetCollection(std::vector<reco::GenJet> theobjs);
   vector<ttH::MET> GetCollection(edm::Handle<pat::METCollection> theobjs);
   //  vector<ttH::GenParticle> GetCollection(std::vector<reco::GenParticle> theobjs);
   template <typename templateGenParticle> vector<ttH::GenParticle> GetCollection(std::vector<templateGenParticle> theobjs);
@@ -274,17 +276,11 @@ template <typename templateGenParticle> std::vector<ttH::GenParticle> Multilepto
       genParticle.status = iGenParticle.status();
       
       genParticle.isPromptFinalState = iGenParticle.isPromptFinalState();
-      //      genParticle.isPromptDecayed = iGenParticle.isPromptDecayed();
-      genParticle.isPromptDecayed = false;
+      genParticle.isPromptDecayed = iGenParticle.isPromptDecayed();
       genParticle.isDirectPromptTauDecayProductFinalState = iGenParticle.isDirectPromptTauDecayProductFinalState();
-
-      genParticle.child0 = 9999;
-      genParticle.child1 = 9999;
-      genParticle.mother = 9999;
-      genParticle.grandmother = 9999;
+      
       theGenParticles.push_back(genParticle);
       i+=1;
-
     }
   
   i=0;

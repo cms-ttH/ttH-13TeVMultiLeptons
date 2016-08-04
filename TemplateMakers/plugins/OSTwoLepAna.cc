@@ -22,7 +22,9 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   rho_token_ = consumes<double>(setupoptionsparams.getParameter<string>("rhoHandle"));
   vertex_token_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices")); // ,"","RECO"));
   genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
-  
+  genJet_token_ = consumes< std::vector<reco::GenJet> >(edm::InputTag("slimmedGenJets")); 
+
+
 }
 
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
@@ -92,7 +94,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	edm::Handle<pat::JetCollection> pfjets = 			    get_collection(event, jets_token_);
 	patMETs mets = 				    get_collection(event, mets_token_);
 	prunedGenParticles prunedParticles;
-	if (!isData) prunedParticles =  get_collection(event, genParticles_token_);
+	//	std::vector<reco::GenJet> genjets;
+	edm::Handle<std::vector<reco::GenJet> > genjets;
+	if (!isData)
+	  {
+	    prunedParticles = get_collection(event, genParticles_token_);
+	    genjets = get_collection(event, genJet_token_);
+	  }
 
 	SetRho(rho);
 	
@@ -195,24 +203,24 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	  eventnum_intree = event.id().event();
 	  lumiBlock_intree = event.id().luminosityBlock();
 	  runNumber_intree = event.id().run();
-            
+          
 	  vecPatLepton selectedLeptons_raw = fillLeptons(selectedMuons_raw,selectedElectrons_raw);
 	  selectedLeptons_raw = MiniAODHelper::GetSortedByPt(selectedLeptons_raw);
 	  
 	  vecPatLepton selectedLeptons_forcleaning = fillLeptons(selectedMuons_forcleaning,selectedElectrons_preselected);
 	  
-	    /////////
-	    ///
-	    /// Jets
-	    ///
-	    ////////
- 	
-	    //set up JEC
-	    //const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFCHSL1L2L3Residual", evsetup );  
-	    //MiniAODHelper::SetJetCorrector(corrector);
-
-	    //vecPatJet rawJets = GetUncorrectedJets(*pfjets);
-
+	  /////////
+	  ///
+	  /// Jets
+	  ///
+	  ////////
+	  
+	  //set up JEC
+	  //const JetCorrector* corrector = JetCorrector::getJetCorrector( "ak4PFCHSL1L2L3Residual", evsetup );  
+	  //MiniAODHelper::SetJetCorrector(corrector);
+	  
+	  vecPatJet rawJets = GetUncorrectedJets(*pfjets);
+	  
 	    //no JEC (?)
 	    //	    vecPatJet selectedJets_forLepMVA  = GetSelectedJets(rawJets, 10., 2.4, jetID::none, '-' );
 	    //	    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
@@ -224,16 +232,16 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
           
 
 	    ///// Grab the QGID 
-	    edm::Handle<edm::ValueMap<float>> qgHandle;
-	    event.getByToken(qg_token_, qgHandle);
-            int jet_counter = 0;
-            for(auto jet = pfjets->begin();  jet != pfjets->end(); ++jet)
-              {
-		edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection> (pfjets, jet - pfjets->begin()));
-                float qgLikelihood = (*qgHandle)[jetRef];
-		correctedRawJets[jet_counter].addUserFloat("qgid",qgLikelihood);
-                jet_counter +=1;
-              }
+	    // edm::Handle<edm::ValueMap<float>> qgHandle;
+	    // event.getByToken(qg_token_, qgHandle);
+            // int jet_counter = 0;
+            // for(auto jet = pfjets->begin();  jet != pfjets->end(); ++jet)
+            //   {
+	    // 	edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection> (pfjets, jet - pfjets->begin()));
+            //     float qgLikelihood = (*qgHandle)[jetRef];
+	    // 	correctedRawJets[jet_counter].addUserFloat("qgid",qgLikelihood);
+            //     jet_counter +=1;
+            //   }
 
 	    //            vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,reco::LeafCandidate>(correctedRawJets,selectedLeptons_forcleaning,0.4);  // <------
             vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets,selectedTaus_preselected,0.4);                // <------
@@ -348,7 +356,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vector<ttH::Lepton> looseMvaBased_leptons = GetCollection(looseMvaBased_muons,looseMvaBased_electrons);
 	    vector<ttH::Lepton> tightMvaBased_leptons = GetCollection(tightMvaBased_muons,tightMvaBased_electrons);
 
-	    //vector<ttH::Jet> raw_jets = GetCollection(rawJets);
+	    vector<ttH::Jet> raw_jets = GetCollection(rawJets);
 	    vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
             //vector<ttH::Jet> preselected_jets_uncor = GetCollection(selectedJets_preselected_uncor); // temporary
 	    vector<ttH::Jet> preselected_jets_uncor = preselected_jets; // temporary
@@ -357,7 +365,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	    vector<ttH::MET> theMET = GetCollection(mets);
 	    vector<ttH::GenParticle> pruned_genParticles;
-	    if (!isData) pruned_genParticles = GetCollection(*prunedParticles);
+	    vector<ttH::GenParticle> gen_jets;
+	    if (!isData)
+	      {
+		pruned_genParticles = GetCollection(*prunedParticles);
+		gen_jets = GetCollection(*genjets); 
+	      }
 	
 	    /////////////////////////
 	    //////
@@ -412,7 +425,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    raw_electrons_intree = raw_electrons;
 	    raw_muons_intree = raw_muons;
-	    //    raw_jets_intree = raw_jets;
+	    raw_jets_intree = raw_jets;
             
 	    preselected_jets_intree = preselected_jets;
 	    preselected_jets_uncor_intree = preselected_jets_uncor;
@@ -422,8 +435,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 	    met_intree = theMET;
 
-	    if (!isData) pruned_genParticles_intree = pruned_genParticles;
-
+	    if (!isData)
+	      {
+		pruned_genParticles_intree = pruned_genParticles;
+		genJets_intree = gen_jets;
+	      }
+	    
 	    wgt_intree = weight;
 	
 	    wallTimePerEvent_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;

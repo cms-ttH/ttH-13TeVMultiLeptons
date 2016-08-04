@@ -213,13 +213,15 @@ namespace ttH
   class GenParticle
   {
   public:
-    GenParticle(){} // default constructor
+    GenParticle(){
+      clear();
+    } // default constructor
 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > obj; 
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > tlv() const { return  obj; };
     int pdgID;
     int status;
-
+    double charge;
     //gen information
     bool isPromptFinalState;
     bool isPromptDecayed;
@@ -229,6 +231,23 @@ namespace ttH
     unsigned int child1;
     unsigned int mother;
     unsigned int grandmother;
+
+    void clear(void)
+    {
+      obj.SetPxPyPzE(0.,0.,0.,0.); 
+      charge = 0.;
+      pdgID = -9999;
+      status = 9999;
+      isPromptFinalState = false;
+      isPromptDecayed = false;
+      isDirectPromptTauDecayProductFinalState = false;
+      child0 = 9999;
+      child1 = 9999;
+      mother = 9999;
+      grandmother = 9999;
+    }
+
+
 
     virtual ~GenParticle(){};
     //ClassDef(GenParticle, 1); 
