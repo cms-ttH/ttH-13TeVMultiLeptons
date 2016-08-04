@@ -18,6 +18,7 @@
 #include "TMVA/MethodCuts.h"
 #include "selection.h"
 #include "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/loadSamples_80x.h"
+#include "treeTools.h"
 
 /////////////////////////////////////////
 ///
@@ -25,14 +26,6 @@
 ///        root -l makeSelectionTree.C+\("\"ttH-powheg\""\)
 ///
 /////////////////////////////////////////
-
-template <typename inObj> TLorentzVector setTlv(const inObj inputObj )
-{
-  TLorentzVector tlv; 
-  tlv.SetPxPyPzE( inputObj.obj.px(), inputObj.obj.py(), inputObj.obj.pz(), inputObj.obj.E() );
-  return tlv;
-}
-
 
 int getChild(ttH::GenParticle foster_parent, std::vector<ttH::GenParticle> gen_particles, int child)
 {
