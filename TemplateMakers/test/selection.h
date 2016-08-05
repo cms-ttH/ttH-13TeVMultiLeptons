@@ -43,7 +43,7 @@ bool pass2lss(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vec
 
   if ( !(tightLeps[0].obj.Pt()>20 && tightLeps[1].obj.Pt()>10) ) return false; //pt cut for mumu
   if ( (tightLeps[0].pdgID) == 11 && tightLeps[0].obj.Pt() < 25 ) return false; //pt1 cut for e
-  if ( (tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() < 15 ) return false; //pt1 cut for e
+  if ( (tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() < 15 ) return false; //pt2 cut for e
 
   if (tightEles.size() ==2 )
     {
