@@ -23,7 +23,7 @@
 
 /////////////////////////////////////////
 ///
-/// usage: root -l updateTree.C+
+/// usage: root -l studyTemplate.C+
 ///
 /////////////////////////////////////////
 
@@ -42,11 +42,6 @@ void run_it(TChain* chain, TString output_file)
   int lumiBlock_intree = -999;
   int runNumber_intree = -999;
 
-  vector<double> *deltaR_PF_matching_intree = 0;
-  vector<double> *deltaR_charlie_matching_intree = 0;
-
-
-  
   vector<ttH::Lepton> *preselected_leptons_intree=0;
   vector<ttH::Electron> *raw_electrons_intree=0;               
   vector<ttH::Electron> *preselected_electrons_intree=0;
@@ -59,7 +54,7 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Lepton> *tight_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
-  vector<ttH::Lepton> *tight_leptons_sortedByMiniIso_intree=0;  
+
 
   chain->SetBranchStatus("*",0);
   chain->SetBranchStatus("eventnum",1);
@@ -75,8 +70,6 @@ void run_it(TChain* chain, TString output_file)
   TTree *signal_tree = (TTree*)chain->CloneTree(0);
   signal_tree->SetName("ps_jet_tree");
   signal_tree->Branch("preselected_jets_genMatch", &preselected_jets_genMatch_intree);
-  signal_tree->Branch("deltaR_pflow_genJet_matching", &deltaR_PF_matching_intree);
-  signal_tree->Branch("deltaR_charlie_genJet_matching", &deltaR_charlie_matching_intree);
 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
@@ -102,49 +95,6 @@ void run_it(TChain* chain, TString output_file)
       //////////////////////////
 
       preselected_jets_genMatch_intree->clear();
-      deltaR_PF_matching_intree->clear();
-      deltaR_charlie_matching_intree->clear();
-      
-      double this_deltaR;
-      double min_deltaR = 99.;
-      ttH::GenParticle gen_preselected_jet;
-      ttH::Jet genMatched_reco_jet;
-      
-      for (const auto & reco_jet : *preselected_jets_intree)
-	{
-	  min_deltaR = 99.;
-	  if (reco_jet.genPdgID < 9999.)
-	    {
-	      for (const auto & gen_jet : *pruned_genParticles_intree)
-		{
-		  if ( reco_jet.genPdgID == gen_jet.pdgID)
-		    {
-		      this_deltaR = reco::deltaR( reco_jet.obj.eta(), reco_jet.obj.phi(), gen_jet.obj.eta(), gen_jet.obj.phi() );
-		      if (min_deltaR > this_deltaR ) min_deltaR = this_deltaR;
-		    }
-		}
-	      deltaR_PF_matching_intree->push_back(min_deltaR);
-	      continue;
-	    }	      
-	  for (const auto & gen_jet : *pruned_genParticles_intree)
-	    {
-	      this_deltaR = reco::deltaR( reco_jet.obj.eta(), reco_jet.obj.phi(), gen_jet.obj.eta(), gen_jet.obj.phi() );
-	      if (this_deltaR < 0.4 && min_deltaR > this_deltaR )
-		{
-		  if (gen_jet.pdgID == 21 && (*pruned_genParticles_intree)[gen_jet.mother].pdgID < 2000) continue; //find a better match
-		  if ( abs(gen_jet.pdgID) == 24 || abs(gen_jet.pdgID) == 25 || abs(gen_jet.pdgID) == 6 ) continue; //find a better match
-		  if ( abs(gen_jet.pdgID) == 16 || abs(gen_jet.pdgID) == 12 || abs(gen_jet.pdgID) == 14 ) continue; //find a better match
-		  min_deltaR = this_deltaR;
-		  gen_preselected_jet = gen_jet;
-		}
-	    }
-	  deltaR_charlie_matching_intree->push_back(min_deltaR);
-	  genMatched_reco_jet = reco_jet;
-	  genMatched_reco_jet.genPdgID = gen_preselected_jet.pdgID;
-	  if (gen_preselected_jet.mother < 9999.) genMatched_reco_jet.genMotherPdgID = (*pruned_genParticles_intree)[gen_preselected_jet.mother].pdgID;
-	  if (gen_preselected_jet.grandmother < 9999.) genMatched_reco_jet.genGrandMotherPdgID = (*pruned_genParticles_intree)[gen_preselected_jet.grandmother].pdgID;
-	  preselected_jets_genMatch_intree->push_back(genMatched_reco_jet);	  
-	} 
 
       signal_tree->Fill();
       
@@ -159,9 +109,9 @@ void run_it(TChain* chain, TString output_file)
   copiedfile->Close();  
 }
 
-void updateTree(void)
+void studyTemplate(void)
 {
-  TString output_file = "ttH_psJetGenParentStudy_softGluVeto.root";
+  TString output_file = "my_study.root";
   TChain *chain = new TChain("ss2l_tree");
   chain->Add("tth_tree_newVars.root");
   run_it(chain,output_file);
