@@ -18,11 +18,11 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "../selection.h"
-#include "../loadSamples.h"
+#include "../loadSamples_80x.h"
 
 /////////////////////////////////////////
 ///
-/// usage: root -l evaluateRecoBdt.C+\("\"ttH-powheg\"",0,1\)
+/// usage: root -l evaluateRecoBdt.C+\("\"ttH-powheg\"",1,3\)
 ///
 /////////////////////////////////////////
 
@@ -129,8 +129,8 @@ void run_it(TChain* chain, TString output_file)
   signal_tree->Branch("match_results", &match_results_intree);
   signal_tree->Branch("norm_score_sum", &norm_score_sum_intree);
 
-  // Int_t cachesize = 250000000;   //250 MBytes
-  // chain->SetCacheSize(cachesize);
+  Int_t cachesize = 250000000;   //250 MBytes
+  chain->SetCacheSize(cachesize);
   // chain->SetCacheLearnEntries(20); 
 
   eventReconstructor bdtReconstructor;
@@ -258,7 +258,7 @@ void run_it(TChain* chain, TString output_file)
       /////
       /////////////////////
       
-      bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree, (*met_intree)[0]);
+      bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree);
 
       reco_score_intree = bdtReconstructor.reco_score;
       *match_results_intree = bdtReconstructor.matching_results;
@@ -297,8 +297,7 @@ void run_it(TChain* chain, TString output_file)
 void evaluateRecoBdt(TString sample, int start_file=0, int end_file=0)
 {
 
-  //  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/lxbatch_output/";
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0_July12_1541/";
 
   TString output_file = output_dir+sample + "_batch_bdtEval_"+to_string(start_file)+"-"+to_string(end_file)+".root";
   TChain *tth_chain = loadFiles(sample,start_file,end_file);  
