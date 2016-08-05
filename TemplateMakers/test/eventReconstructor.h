@@ -104,7 +104,7 @@ class eventReconstructor
 
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
-    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG_v0.weights.xml"; 
+    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weightsTMVAClassification_BDTG_v0p5.weights.xml"; 
     //    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_July12_1541.weights.xml"; 
     weight_file += file_str;
 
