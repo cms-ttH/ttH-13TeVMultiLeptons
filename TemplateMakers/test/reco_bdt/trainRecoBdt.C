@@ -289,9 +289,9 @@ void run_it(TChain* chain, TString output_file)
   background_tree->Branch("highestNonBJetCsv", &highestNonBJetCsv_intree );
   signal_tree->Branch("gJet1_ttHObj_avg_dEta", &avg_dEta_gJet1_ttH_intree );
   
-  // Int_t cachesize = 250000000;   //250 MBytes
-  // chain->SetCacheSize(cachesize);
-  // chain->SetCacheLearnEntries(20); 
+  Int_t cachesize = 250000000;   //250 MBytes
+  chain->SetCacheSize(cachesize);
+  //chain->SetCacheLearnEntries(20); 
   
   double starttime = get_wall_time();
   //  chainentries = 1000000;
@@ -328,12 +328,12 @@ void run_it(TChain* chain, TString output_file)
 
       ttH::Lepton lep_fromTop_truth = (*tight_leptons_intree)[0];
       ttH::Lepton lep_fromHiggs_truth = (*tight_leptons_intree)[1];
-      if (abs( lep_fromTop_truth.genGrandMotherPdgID ) == 25 || abs( lep_fromHiggs_truth.genGrandMotherPdgID ) == 6)
+      if (abs( lep_fromTop_truth.genGrandMotherPdgID ) == 25 && abs( lep_fromHiggs_truth.genGrandMotherPdgID ) == 6)
 	{
 	  lep_fromTop_truth = (*tight_leptons_intree)[1];
 	  lep_fromHiggs_truth = (*tight_leptons_intree)[0];
 	}
-      if ( !(lep_fromHiggs_truth.obj.pt() > 0 && lep_fromTop_truth.obj.pt() >0) ) continue;
+      else if ( abs( lep_fromTop_truth.genGrandMotherPdgID ) != 6 || abs( lep_fromHiggs_truth.genGrandMotherPdgID ) == 25 ) continue;
 
       lep_fromTop_intree = lep_fromTop_truth;
       lep_fromHiggs_intree = lep_fromHiggs_truth;
@@ -958,7 +958,7 @@ void run_it(TChain* chain, TString output_file)
 void trainRecoBdt(TString sample, int start_file=0, int end_file=0)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v0/";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v1/";
   TString output_file = output_dir+sample + "_bdtTraining__"+to_string(start_file)+"-"+to_string(end_file)+".root";
   TChain *tth_chain = loadFiles(sample,start_file,end_file);  
   run_it(tth_chain,output_file);
