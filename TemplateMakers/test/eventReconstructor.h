@@ -74,43 +74,38 @@ class eventReconstructor
   void bookMVA(void)
   {
     TMVAReader_ = new TMVA::Reader( "!Color:!Silent" );
-    //    TMVAReader_->AddVariable( "numJets", &nJets_var );
+
     TMVAReader_->AddVariable( "bJet_fromLepTop_CSV", &bJet_fromLepTop_CSV_var );
-    TMVAReader_->AddVariable( "LepTop_pT", &LepTop_pT_var );
-    TMVAReader_->AddVariable( "LepTop_mass", &LepTop_mass_var );
-    TMVAReader_->AddVariable( "LepTop_lep_bJet_dR", &LepTop_lep_bJet_dR_var );
     TMVAReader_->AddVariable( "bJet_fromHadTop_CSV", &bJet_fromHadTop_CSV_var );
-    TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_CSV", &qJet1_fromW_fromHadTop_CSV_var );
-    TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_pT", &qJet1_fromW_fromHadTop_pT_var );
     TMVAReader_->AddVariable( "HadTop_pT", &HadTop_pT_var );
     TMVAReader_->AddVariable( "W_fromHadTop_mass", &W_fromHadTop_mass_var );
     TMVAReader_->AddVariable( "HadTop_mass", &HadTop_mass_var );
-    TMVAReader_->AddVariable( "W_fromHadTop_q1_q2_dR", &W_fromHadTop_q1_q2_dR_var );
-    TMVAReader_->AddVariable( "qJet1_fromW_fromHiggs_CSV", &qJet1_fromW_fromHiggs_CSV_var );
-    TMVAReader_->AddVariable( "lep_fromW_fromHiggs_pT", &lep_fromW_fromHiggs_pT_var );
-    TMVAReader_->AddVariable( "W_fromHiggs_mass", &W_fromHiggs_mass_var );
     TMVAReader_->AddVariable( "Higgs_mass", &Higgs_mass_var );
-    TMVAReader_->AddVariable( "Higgs_lep_W_dR", &Higgs_lep_W_dR_var );
-    TMVAReader_->AddVariable( "Higgs_lep_W_dPhi", &Higgs_lep_W_dPhi_var );
-    //    TMVAReader_->AddVariable( "Higgs_lep_W_dEta", &Higgs_lep_W_dEta_var );
-    //    TMVAReader_->AddVariable( "numMatchedJets", &numMatchedJets_var );
-    TMVAReader_->AddVariable( "LepTop_Higgs_mass", &LepTop_Higgs_mass_var );
-    TMVAReader_->AddVariable( "HadTop_Higgs_mass", &HadTop_Higgs_mass_var );
-    //    TMVAReader_->AddVariable( "LepTop_HadTop_MT", &LepTop_HadTop_MT_var );
-    //    TMVAReader_->AddVariable( "LepTop_Higgs_MT", &LepTop_Higgs_MT_var );
-    //    TMVAReader_->AddVariable( "ttH_MT", &ttH_MT_var );
-    TMVAReader_->AddVariable( "HadTop_Higgs_MT_mass_ratio", &HadTop_Higgs_MT_mass_ratio_var );
-    TMVAReader_->AddVariable( "ttH_MT_mass_ratio", &ttH_MT_mass_ratio_var );
     TMVAReader_->AddVariable( "LepTop_HadTop_dR", &LepTop_HadTop_dR_var );
-    TMVAReader_->AddVariable( "LepTop_HadTop_dPhi", &LepTop_HadTop_dPhi_var );
+    TMVAReader_->AddVariable( "lep_fromW_fromHiggs_pT", &lep_fromW_fromHiggs_pT_var );
+
+    //    TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_CSV", &qJet1_fromW_fromHadTop_CSV_var );
+    //    TMVAReader_->AddVariable( "W_fromHiggs_mass", &W_fromHiggs_mass_var );
+    //    TMVAReader_->AddVariable( "numJets", &nJets_var );
+    /* TMVAReader_->AddVariable( "LepTop_pT", &LepTop_pT_var ); */
+    /* TMVAReader_->AddVariable( "LepTop_mass", &LepTop_mass_var ); */
+    /* TMVAReader_->AddVariable( "LepTop_lep_bJet_dR", &LepTop_lep_bJet_dR_var ); */
+    /* TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_pT", &qJet1_fromW_fromHadTop_pT_var ); */
+    /* TMVAReader_->AddVariable( "W_fromHadTop_q1_q2_dR", &W_fromHadTop_q1_q2_dR_var ); */
+    /* TMVAReader_->AddVariable( "qJet1_fromW_fromHiggs_CSV", &qJet1_fromW_fromHiggs_CSV_var ); */
+    /* TMVAReader_->AddVariable( "Higgs_lep_W_dR", &Higgs_lep_W_dR_var ); */
+    /* TMVAReader_->AddVariable( "Higgs_lep_W_dPhi", &Higgs_lep_W_dPhi_var ); */
+    /* TMVAReader_->AddVariable( "LepTop_Higgs_mass", &LepTop_Higgs_mass_var ); */
+    /* TMVAReader_->AddVariable( "HadTop_Higgs_mass", &HadTop_Higgs_mass_var ); */
+    /* TMVAReader_->AddVariable( "HadTop_Higgs_MT_mass_ratio", &HadTop_Higgs_MT_mass_ratio_var ); */
+    /* TMVAReader_->AddVariable( "ttH_MT_mass_ratio", &ttH_MT_mass_ratio_var ); */
+    /* TMVAReader_->AddVariable( "LepTop_HadTop_dPhi", &LepTop_HadTop_dPhi_var ); */
     //    TMVAReader_->AddVariable( "(lep_fromTop.obj.pt()-lep_fromHiggs.obj.pt())/(lep_fromTop.obj.pt()+lep_fromHiggs.obj.pt())", &LepAsym_var );
-    // TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_training3.xml");
-    //    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_misMatchWeightedSq.xml");
-    //    TMVAReader_->BookMVA("BDTG method", "/afs/cern.ch/user/m/muell149/work/CMSSW_7_2_3/src/TMVA-v4.2.0/test/weights/TMVAClassification_BDTG.weights_baseline.xml");
 
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
-    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG.weights__remove_nJets_matched.xml"; 
+    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/TMVAClassification_BDTG_v0.weights.xml"; 
+    //    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_July12_1541.weights.xml"; 
     weight_file += file_str;
 
     TMVAReader_->BookMVA("BDTG method", weight_file);
@@ -165,7 +160,7 @@ class eventReconstructor
   TLorentzVector lepTop_hadTop_bdt_tlv;
   TLorentzVector tth_bdt_tlv;
     
-  void initialize(vector<ttH::Jet> *jets_input, const vector<ttH::Lepton> *leptons_in, ttH::MET met_in)
+  void initialize(vector<ttH::Jet> *jets_input, const vector<ttH::Lepton> *leptons_in)
   {
     clear(); //reset all output vars
 
@@ -340,9 +335,6 @@ class eventReconstructor
       {
 	bjet_fromHadTop_count +=1;
 	
-	bjet_fromHadTop_tlv.SetPxPyPzE(bjet_fromHadTop.obj.px(),bjet_fromHadTop.obj.py(),bjet_fromHadTop.obj.pz(),bjet_fromHadTop.obj.E());
-	bjet_fromHadTop_T_tlv.SetPxPyPzE(bjet_fromHadTop.obj.px(),bjet_fromHadTop.obj.py(), 0. ,bjet_fromHadTop.obj.pt());
-	
 	bjet_fromLepTop_count = -1;
 	for (const auto & bjet_fromLepTop : *jets_in)
 	  {
@@ -350,9 +342,6 @@ class eventReconstructor
 	    
 	    if (bjet_fromHadTop_count == bjet_fromLepTop_count) continue;
 	    if ( !( (bjet_fromHadTop.csv > 0.8 || bjet_fromLepTop.csv > 0.8) || (bjet_fromHadTop.csv > 0.4 && bjet_fromLepTop.csv > 0.4) ) ) continue;
-	    
-	    bjet_fromLepTop_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(),bjet_fromLepTop.obj.pz(),bjet_fromLepTop.obj.E());
-	    bjet_fromLepTop_T_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(), 0. ,bjet_fromLepTop.obj.pt());
 	    
 	    wjet1_fromHadTop_count = -1;	    
 	    for (const auto & wjet1_fromHadTop : *jets_in)
@@ -362,9 +351,6 @@ class eventReconstructor
 		if (wjet1_fromHadTop_count == bjet_fromLepTop_count) continue;
 		if (wjet1_fromHadTop_count == bjet_fromHadTop_count) continue;
 		
-		wjet1_fromHadTop_tlv.SetPxPyPzE(wjet1_fromHadTop.obj.px(),wjet1_fromHadTop.obj.py(),wjet1_fromHadTop.obj.pz(),wjet1_fromHadTop.obj.E());
-		wjet1_fromHadTop_T_tlv.SetPxPyPzE(wjet1_fromHadTop.obj.px(),wjet1_fromHadTop.obj.py(), 0. ,wjet1_fromHadTop.obj.pt());
-		
 		wjet2_fromHadTop_count = -1;
 		for (const auto & wjet2_fromHadTop : *jets_in)
 		  {
@@ -373,6 +359,15 @@ class eventReconstructor
 		    if (wjet2_fromHadTop_count == bjet_fromLepTop_count) continue;
 		    if (wjet2_fromHadTop_count == bjet_fromHadTop_count) continue;
 		    if (wjet2_fromHadTop_count <= wjet1_fromHadTop_count) continue; //don't need both orderings 
+
+		    bjet_fromHadTop_tlv.SetPxPyPzE(bjet_fromHadTop.obj.px(),bjet_fromHadTop.obj.py(),bjet_fromHadTop.obj.pz(),bjet_fromHadTop.obj.E());
+		    bjet_fromHadTop_T_tlv.SetPxPyPzE(bjet_fromHadTop.obj.px(),bjet_fromHadTop.obj.py(), 0. ,bjet_fromHadTop.obj.pt());
+	
+		    bjet_fromLepTop_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(),bjet_fromLepTop.obj.pz(),bjet_fromLepTop.obj.E());
+		    bjet_fromLepTop_T_tlv.SetPxPyPzE(bjet_fromLepTop.obj.px(),bjet_fromLepTop.obj.py(), 0. ,bjet_fromLepTop.obj.pt());	    
+
+		    wjet1_fromHadTop_tlv.SetPxPyPzE(wjet1_fromHadTop.obj.px(),wjet1_fromHadTop.obj.py(),wjet1_fromHadTop.obj.pz(),wjet1_fromHadTop.obj.E());
+		    wjet1_fromHadTop_T_tlv.SetPxPyPzE(wjet1_fromHadTop.obj.px(),wjet1_fromHadTop.obj.py(), 0. ,wjet1_fromHadTop.obj.pt());
 		    
 		    wjet2_fromHadTop_tlv.SetPxPyPzE(wjet2_fromHadTop.obj.px(),wjet2_fromHadTop.obj.py(),wjet2_fromHadTop.obj.pz(),wjet2_fromHadTop.obj.E());
 		    wjet2_fromHadTop_T_tlv.SetPxPyPzE(wjet2_fromHadTop.obj.px(),wjet2_fromHadTop.obj.py(), 0. ,wjet2_fromHadTop.obj.pt());
@@ -697,7 +692,6 @@ class eventReconstructor
   }
   
   //  virtual ~eventReconstructor(){};
-  //ClassDef(eventReconstructor, 1); 
 };
 
 #endif // _eventReconstructor_h
