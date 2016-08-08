@@ -41,7 +41,7 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
 
   else if (sample == "ttbar-semiLep-powheg")
     {
-      TString base_dir = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160802_215533/0000/tree_test__";
+      TString base_dir = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160804_104748/0000/tree_test__";
       if (end_file == -1 || end_file == 0) end_file = 167; //num input files
       for (int i=start_file; i <= end_file; i++)
 	{

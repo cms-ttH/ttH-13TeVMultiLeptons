@@ -21,7 +21,7 @@
 
 /////////////////////////////////////////
 ///
-/// usage: root -l recoverJets.C+
+/// usage: root -l mapGenInfo_2lss.C+
 ///
 /////////////////////////////////////////
 
@@ -140,11 +140,31 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::GenParticle> *matched_gen_jets_intree=0;
   vector<ttH::GenParticle> *unmatched_gen_jets_intree=0;
 
+  //gen info for later
+  ttH::Lepton *lep_from_higgs_intree=0;
+  ttH::Lepton *lep_from_leptop_intree=0;
+  ttH::Jet *b_from_leptop_intree=0;
+  ttH::Jet *b_from_hadtop_intree=0;
+  ttH::Jet *q1_from_hadtop_intree=0;
+  ttH::Jet *q2_from_hadtop_intree=0;
+  ttH::Jet *q1_from_higgs_intree=0;
+  ttH::Jet *q2_from_higgs_intree=0;
+
+
   signal_tree->Branch("deltaR", &deltaR_vec_intree);
   signal_tree->Branch("matched_reco_jets", &matched_reco_jets_intree);
   signal_tree->Branch("unmatched_reco_jets", &unmatched_reco_jets_intree);
   signal_tree->Branch("matched_gen_jets", &matched_gen_jets_intree);
   signal_tree->Branch("unmatched_gen_jets", &unmatched_gen_jets_intree);
+  signal_tree->Branch("lep_from_higgs_reco_truth", &lep_from_higgs_intree);
+  signal_tree->Branch("lep_from_leptop_reco_truth", &lep_from_leptop_intree);
+  signal_tree->Branch("b_from_leptop_reco_truth", &b_from_leptop_intree);
+  signal_tree->Branch("b_from_hadtop_reco_truth", &b_from_hadtop_intree);
+  signal_tree->Branch("q1_from_hadtop_reco_truth", &q1_from_hadtop_intree);
+  signal_tree->Branch("q2_from_hadtop_reco_truth", &q2_from_hadtop_intree);
+  signal_tree->Branch("q1_from_higgs_reco_truth", &q1_from_higgs_intree);
+  signal_tree->Branch("q2_from_higgs_reco_truth", &q2_from_higgs_intree);
+
 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
@@ -168,6 +188,21 @@ void run_it(TChain* chain, TString output_file)
       //// calculate new vars
       ////
       //////////////////////////
+
+      lep_from_leptop_intree->clear();
+      lep_from_higgs_intree->clear();
+      b_from_leptop_intree->clear();
+      b_from_hadtop_intree->clear();
+      q1_from_hadtop_intree->clear();
+      q2_from_hadtop_intree->clear();
+      q1_from_higgs_intree->clear();
+      q2_from_higgs_intree->clear();
+
+      for (const auto & lep : *tight_leptons_intree)
+	{
+	  if (abs(lep.genGrandMotherPdgID) == 6) *lep_from_leptop_intree = lep;
+	  else if (lep.genGrandMotherPdgID == 25) *lep_from_higgs_intree = lep;
+	}
 
       deltaR_vec_intree->clear();
       matched_reco_jets_intree->clear();
@@ -206,6 +241,34 @@ void run_it(TChain* chain, TString output_file)
 		  deltaR_vec_intree->push_back(deltaR);
 		  matched_reco_jets_intree->push_back(jet);
 		  matched_gen_jets_intree->push_back(gen_jet);
+
+		  if ( gen_jet.obj.pt() == (*top_b_intree).obj.pt() )
+		    {
+		      if ( lep_from_leptop_intree->genGrandMotherPdgID == 6 ) *b_from_leptop_intree = jet;
+		      else *b_from_hadtop_intree = jet;
+		    }
+		  else if ( gen_jet.obj.pt() == (*antitop_b_intree).obj.pt() )
+		    {
+		      if ( lep_from_leptop_intree->genGrandMotherPdgID == -6 ) *b_from_leptop_intree = jet;
+		      else *b_from_hadtop_intree = jet;
+		    }
+		  else if ( gen_jet.obj.pt() == (*higgs_grandChild_A1_intree).obj.pt() || gen_jet.obj.pt()== (*higgs_grandChild_B1_intree).obj.pt() ) 
+		    {
+		      *q1_from_higgs_intree = jet;
+		    }
+		  else if ( gen_jet.obj.pt() == (*higgs_grandChild_A2_intree).obj.pt() || gen_jet.obj.pt()== (*higgs_grandChild_B2_intree).obj.pt() ) 
+		    {
+		      *q2_from_higgs_intree = jet;
+		    }
+		  else if ( gen_jet.obj.pt() == (*top_w_child1_intree).obj.pt() || gen_jet.obj.pt() == (*antitop_w_child1_intree).obj.pt() )
+		    {
+		      *q1_from_hadtop_intree = jet;
+		    }
+		  else if ( gen_jet.obj.pt() == (*top_w_child2_intree).obj.pt() || gen_jet.obj.pt() == (*antitop_w_child2_intree).obj.pt() )
+		    {
+		      *q2_from_hadtop_intree = jet;
+		    }
+
 		  break;
 		}
 	    }
@@ -215,7 +278,7 @@ void run_it(TChain* chain, TString output_file)
 
       for (const auto & gen_j : *unmatched_gen_jets_intree)
       	{
-      	  if ( gen_j.obj.pt() > 30 && abs(gen_j.obj.eta()) < 2.4 ) temp_unmatched_gen_jets.push_back(gen_j);
+      	  if ( gen_j.obj.pt() > 25 && abs(gen_j.obj.eta()) < 2.4 ) temp_unmatched_gen_jets.push_back(gen_j);
       	}
 
       for (auto & reco_j : temp_unmatched_reco_jets)
@@ -241,7 +304,6 @@ void run_it(TChain* chain, TString output_file)
 	      
       	    }
       	}
-      
 
       *unmatched_reco_jets_intree = vector_difference<ttH::Jet>(*matched_reco_jets_intree, *preselected_jets_intree);
       *unmatched_gen_jets_intree = vector_difference<ttH::GenParticle>(*matched_gen_jets_intree, hardScatter_genParticles);
@@ -259,10 +321,11 @@ void run_it(TChain* chain, TString output_file)
   copiedfile->Close();  
 }
 
-void recoverJets(void)
+void mapGenInfo_2lss(void)
 {
-  TString output_file = "jet_study_JetRecovery_pt30_tree.root";
+  TString output_file = "test_ttbar_2lss_tree.root";
   TChain *chain = new TChain("ss2l_tree;");
-  chain->Add("ttH-powheg_selection_tree__good.root");
+  //  chain->Add("ttH-powheg_selection_tree__good.root");
+  chain->Add("ttbar-semiLep-powheg_selection_tree.root");
   run_it(chain,output_file);
 }

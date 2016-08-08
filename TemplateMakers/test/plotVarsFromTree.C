@@ -87,8 +87,15 @@ void plotVarsFromTree(void)
   // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baselineBdt_v1/ttH_tree.root";
   // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baselineBdt_v1/ttbar_tree.root";
 
-  TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttH_best.root";
-  TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttbar_best.root";
+  // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0p6/ttH-powheg_batch_bdtEval.root";
+  // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0p6/ttbar-semiLep-powheg_batch_bdtEval.root";
+
+  // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0_July12_1541/ttH_tree.root";
+  // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0_July12_1541/ttbar_tree.root";
+
+  TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1_Aug8/ttH_tree.root";
+  TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1_Aug8/ttbar_tree.root";
+
   // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttH_nonBest.root";
   // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttbar__nonBest.root";
   // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttH.root";
@@ -102,7 +109,8 @@ void plotVarsFromTree(void)
 
   TCut cut = "";
   //  TString var = "lepTop_hadTop_dR"; TString title = "dR(lep top, had top)";
-  TString var = "hadTop_tlv.M()"; TString title = "hadronic top mass"; int nBins = 20; double xMin = 0; double xMax = 300;
+  //  TString var = "hadTop_tlv.M()"; TString title = "hadronic top mass"; int nBins = 20; double xMin = 0; double xMax = 300;
+  TString var = "reco_score"; TString title = "bdt v0p6"; int nBins = 30; double xMin = -1.; double xMax = 1.;
   //  TString var = "lepTop_tlv.M()"; TString title = "leptonic top mass"; int nBins = 30; double xMin = 0; double xMax = 700;
   //  TString var = "lepTop_tlv.Pt()"; TString title = "leptonic top pt"; int nBins = 20; double xMin = 0; double xMax = 800;
   //  TString var = "hadTop_tlv.Pt()"; TString title = "hadronic top pt"; int nBins = 30; double xMin = 0; double xMax = 600;

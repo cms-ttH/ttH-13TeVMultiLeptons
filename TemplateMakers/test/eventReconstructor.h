@@ -75,14 +75,14 @@ class eventReconstructor
   {
     TMVAReader_ = new TMVA::Reader( "!Color:!Silent" );
 
-    TMVAReader_->AddVariable( "bJet_fromLepTop_CSV", &bJet_fromLepTop_CSV_var );
-    TMVAReader_->AddVariable( "bJet_fromHadTop_CSV", &bJet_fromHadTop_CSV_var );
-    TMVAReader_->AddVariable( "HadTop_pT", &HadTop_pT_var );
-    TMVAReader_->AddVariable( "W_fromHadTop_mass", &W_fromHadTop_mass_var );
-    TMVAReader_->AddVariable( "HadTop_mass", &HadTop_mass_var );
-    TMVAReader_->AddVariable( "Higgs_mass", &Higgs_mass_var );
-    TMVAReader_->AddVariable( "LepTop_HadTop_dR", &LepTop_HadTop_dR_var );
-    TMVAReader_->AddVariable( "lep_fromW_fromHiggs_pT", &lep_fromW_fromHiggs_pT_var );
+    TMVAReader_->AddVariable( "b_from_leptop_bdt.csv", &bJet_fromLepTop_CSV_var );
+    TMVAReader_->AddVariable( "b_from_hadtop_bdt.csv", &bJet_fromHadTop_CSV_var );
+    TMVAReader_->AddVariable( "hadTop_tlv_bdt.Pt()", &HadTop_pT_var );
+    TMVAReader_->AddVariable( "w_from_hadtop_tlv_bdt.M()", &W_fromHadTop_mass_var );
+    TMVAReader_->AddVariable( "hadTop_tlv_bdt.M()", &HadTop_mass_var );
+    TMVAReader_->AddVariable( "higgs_tlv_bdt.M()", &Higgs_mass_var );
+    TMVAReader_->AddVariable( "dR_lepTop_hadTop", &LepTop_HadTop_dR_var );
+    TMVAReader_->AddVariable( "lep_from_higgs_bdt.obj.pt()", &lep_fromW_fromHiggs_pT_var );
 
     //    TMVAReader_->AddVariable( "qJet1_fromW_fromHadTop_CSV", &qJet1_fromW_fromHadTop_CSV_var );
     //    TMVAReader_->AddVariable( "W_fromHiggs_mass", &W_fromHiggs_mass_var );
@@ -104,7 +104,8 @@ class eventReconstructor
 
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
-    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weightsTMVAClassification_BDTG_v0p5.weights.xml"; 
+    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_v1.weights.xml"; 
+    //    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weightsTMVAClassification_BDTG_v0p5.weights.xml"; 
     //    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_July12_1541.weights.xml"; 
     weight_file += file_str;
 

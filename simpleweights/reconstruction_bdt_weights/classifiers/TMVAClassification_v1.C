@@ -56,7 +56,7 @@
 #include "TMVA/Tools.h"
 #include "TMVA/TMVAGui.h"
 
-int TMVAClassification_v8( TString myMethodList = "" )
+int TMVAClassification_v0p5( TString myMethodList = "" )
 {
    // The explicit loading of the shared libTMVA is done in TMVAlogon.C, defined in .rootrc
    // if you use your private .rootrc, or run from a different directory, please copy the
@@ -193,28 +193,28 @@ int TMVAClassification_v8( TString myMethodList = "" )
    // factory->AddVariable( "var3",                "Variable 3", "units", 'F' );
    // factory->AddVariable( "var4",                "Variable 4", "units", 'F' );
 
-   factory->AddVariable( "bJet_fromLepTop_CSV","b leptop csv","csv",'D');
+   factory->AddVariable( "b_from_leptop_bdt.csv","b leptop csv","csv",'D');
    //   factory->AddVariable( "LepTop_pT","lep top pt","pt",'D');
    //   factory->AddVariable( "LepTop_mass","lep top mass","mass",'D');
    //   factory->AddVariable( "LepTop_lep_bJet_dR","dR lep top bjet","dR",'D');
-   factory->AddVariable( "bJet_fromHadTop_CSV","b hadtop csv","csv",'D');
+   factory->AddVariable( "b_from_hadtop_bdt.csv","b hadtop csv","csv",'D');
    //   factory->AddVariable( "qJet1_fromW_fromHadTop_CSV","w1jet had top csv","csv",'D');
-   factory->AddVariable( "HadTop_pT","had top pt","pt",'D');
-   factory->AddVariable( "W_fromHadTop_mass","w frm had top mass","mass",'D');
-   factory->AddVariable( "HadTop_mass","had top mass","mass",'D'); 
+   factory->AddVariable( "hadTop_tlv_bdt.Pt()","had top pt","pt",'D');
+   factory->AddVariable( "w_from_hadtop_tlv_bdt.M()","w frm had top mass","mass",'D');
+   factory->AddVariable( "hadTop_tlv_bdt.M()","had top mass","mass",'D'); 
    // factory->AddVariable( "qJet1_fromW_fromHiggs_CSV","wjet1 from higgs csv","csv",'D');
    //   factory->AddVariable( "W_fromHiggs_mass","w from higgs mass","mass",'D');
-   factory->AddVariable( "Higgs_mass","higgs mass","mass",'D'); 
+   factory->AddVariable( "higgs_tlv_bdt.M()","higgs mass","mass",'D'); 
    //   factory->AddVariable( "Higgs_lep_W_dR","lep W from higgs dR","dR",'D');
    //   factory->AddVariable( "Higgs_lep_W_dPhi","lep W from higgs dPhi","dPhi",'D');
    //   factory->AddVariable( "HadTop_Higgs_MT_mass_ratio","hadtop higgs MT ratio","MT ratio",'D');
    //   factory->AddVariable( "ttH_MT_mass_ratio","MT mass ratio","mass ratio",'D');
-   factory->AddVariable( "LepTop_HadTop_dR","leptop had top dR","dR",'D');
+   factory->AddVariable( "dR_lepTop_hadTop","leptop had top dR","dR",'D');
    //factory->AddVariable( "LepTop_HadTop_dPhi","lepTop hadTop dPhi","dPhi",'D');
    //   factory->AddVariable("(bJet_fromHadTop_charge/abs(bJet_fromHadTop_charge))*lep_charge","dCharge bjets x lep charge","charge",'D');
 
    //not considering these for now...
-   factory->AddVariable( "lep_fromW_fromHiggs_pT","lep fromH pt","pt",'D');
+   factory->AddVariable( "lep_from_higgs_bdt.obj.pt()","lep fromH pt","pt",'D');
    //   factory->AddVariable( "W_fromHadTop_q1_q2_dR","dr q1 q2 from had top","dR",'D');
    //   factory->AddVariable( "qJet1_fromW_fromHadTop_pT","w1jet had top pt","pt",'D');
    //   factory->AddVariable( "lep_fromTop.obj.pt()","lep frm top pt","pt",'D');
@@ -231,8 +231,8 @@ int TMVAClassification_v8( TString myMethodList = "" )
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    //   TString fname = "./tmva_class_example.root";
-   TString fname = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v0/ttH_bdtTraining_tree.root";
-   TString fname_bkg = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v0/ttbar_bdtTraining_tree.root";
+   TString fname = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v1/ttH-powheg_bdtTraining.root";
+   TString fname_bkg = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v1/ttbar_bdtTraining.root";
    
    if (gSystem->AccessPathName( fname ))  // file does not exist in local directory
       gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");
@@ -301,7 +301,7 @@ int TMVAClassification_v8( TString myMethodList = "" )
    //   factory->SetBackgroundWeightExpression( "weight" );
 
    // Apply additional cuts on the signal and background samples (can be different)
-   TCut mycuts = "numMatchedJets > 3"; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
+   TCut mycuts = ""; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
    TCut mycutb = ""; // for example: TCut mycutb = "abs(var1)<0.5";
 
    // Tell the factory how to use the training and testing events
@@ -541,5 +541,5 @@ int main( int argc, char** argv )
       if (!methodList.IsNull()) methodList += TString(","); 
       methodList += regMethod;
    }
-   return TMVAClassification_v8(methodList); 
+   return TMVAClassification_v0p5(methodList); 
 }

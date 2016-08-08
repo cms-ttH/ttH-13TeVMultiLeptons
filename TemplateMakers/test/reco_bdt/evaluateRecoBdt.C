@@ -157,10 +157,10 @@ void run_it(TChain* chain, TString output_file)
       //////////////////////////
 
       //      if ( (*preselected_jets_intree).size() < 3) continue; 
-      bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
-      if (!passesCommon) continue;
-      bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
-      if ( !passes2lss ) continue;
+      // bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
+      // if (!passesCommon) continue;
+      // bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
+      // if ( !passes2lss ) continue;
 
       //////////////////////////
       ////
@@ -297,10 +297,12 @@ void run_it(TChain* chain, TString output_file)
 void evaluateRecoBdt(TString sample, int start_file=0, int end_file=0)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0_July12_1541/";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1_Aug8/";
 
   TString output_file = output_dir+sample + "_batch_bdtEval_"+to_string(start_file)+"-"+to_string(end_file)+".root";
-  TChain *tth_chain = loadFiles(sample,start_file,end_file);  
+  //  TChain *tth_chain = loadFiles(sample,start_file,end_file);  
+  TChain *tth_chain = new TChain("ss2l_tree;");
+  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/test_ttbar_2lss_tree.root");
   run_it(tth_chain,output_file);
 
 }
