@@ -3,6 +3,18 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 
+
+
+void printProgress(int current_index, int total_entries)
+{
+  if (current_index % int(total_entries/100.) == 0)
+    {
+      float fraction = 100.*current_index/total_entries;
+      cout << fraction << " % processed" << endl;
+      //      cout << i << endl;
+    }
+}
+
 template <typename inObj> TLorentzVector setTlv(const inObj inputObj )
 {
   TLorentzVector tlv; 

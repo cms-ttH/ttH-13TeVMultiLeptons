@@ -59,6 +59,42 @@ bool pass2lss(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vec
   return true;
 }
 
+//same as pass2lss, except no requirement on charge of leptons
+bool pass2l(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, vector<ttH::MET> met)
+{
+  vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
+  vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
+
+  if ( !(tightLeps.size() == 2) ) return false;
+
+  //  if (tightLeps[0].charge != tightLeps[1].charge) return false;
+  for (auto &ele: tightEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge
+  for (auto &mu: tightMus) if (!(mu.chargeFlip < 0.2)) return false;//tight charge
+  for (auto &ele: tightEles) if ((ele.numMissingInnerHits != 0)) return false;//  //lost hits
+  for (auto &ele: tightEles) if ( !(ele.passConversioVeto) ) return false;//
+  //conversion veto
+  if ( !( psJets.size()>3 ) )      return false;
+
+  if ( !(tightLeps[0].obj.Pt()>20 && tightLeps[1].obj.Pt()>10) ) return false; //pt cut for mumu
+  if ( (tightLeps[0].pdgID) == 11 && tightLeps[0].obj.Pt() < 25 ) return false; //pt1 cut for e
+  if ( (tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() < 15 ) return false; //pt2 cut for e
+
+  if (tightEles.size() ==2 )
+    {
+      double vetoZmass = pickFromSortedTwoObjKine(psEles,"mass",1,91.2);
+      if ( !(fabs(vetoZmass-91.2)>10) ) return false;                     
+
+      auto objs_for_mht = getsumTLV(psLeps,psJets);
+      double MHT_handle = objs_for_mht.Pt();
+      double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+      if ( !(metLD_handle> 0.2) ) return false;
+
+    }
+  return true;
+}
+
+
+
 bool pass2lss_lepMVA_controlRegion(vector<ttH::Electron> tightEles, vector<ttH::Electron> fakeableEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> fakeableMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, vector<ttH::MET> met)
 {
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);

@@ -22,7 +22,7 @@
 
 /////////////////////////////////////////
 ///
-/// usage: root -l evaluateRecoBdt.C+\("\"ttH-powheg\"",1,3\)
+/// usage: root -l evaluateRecoBdt.C+
 ///
 /////////////////////////////////////////
 
@@ -42,6 +42,20 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Lepton> *tight_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
+
+  //new stuff
+  vector<ttH::Jet> *matched_reco_jets_intree=0;
+  vector<ttH::Jet> *unmatched_reco_jets_intree=0;
+  ttH::Lepton *lep_from_higgs_truth_intree=0;
+  ttH::Lepton *lep_from_leptop_truth_intree=0;
+  ttH::Jet *b_from_leptop_truth_intree=0;
+  ttH::Jet *b_from_hadtop_truth_intree=0;
+  ttH::Jet *q1_from_hadtop_truth_intree=0;
+  ttH::Jet *q2_from_hadtop_truth_intree=0;
+  ttH::Jet *q1_from_higgs_truth_intree=0;
+  ttH::Jet *q2_from_higgs_truth_intree=0;
+  TString *higgs_final_state_intree=0;
+  TString *ttbar_final_state_intree=0;
   
   chain->SetBranchStatus("*",0);
   chain->SetBranchStatus("mcwgt",1);
@@ -52,7 +66,20 @@ void run_it(TChain* chain, TString output_file)
   chain->SetBranchStatus("tightMvaBased_leptons.*",1);
   chain->SetBranchStatus("tightMvaBased_electrons.*",1);
   chain->SetBranchStatus("tightMvaBased_muons.*",1);
-  chain->SetBranchStatus("met.*",1);
+  //  chain->SetBranchStatus("met.*",1);
+  chain->SetBranchStatus("higgs_final_state",1);
+  chain->SetBranchStatus("ttbar_final_state",1);
+  chain->SetBranchStatus("higgs_decay",1);
+  chain->SetBranchStatus("matched_reco_jets.*",1);
+  chain->SetBranchStatus("unmatched_reco_jets.*",1);
+  chain->SetBranchStatus("lep_from_higgs_reco_truth*",1);
+  chain->SetBranchStatus("lep_from_leptop_reco_truth*",1);
+  chain->SetBranchStatus("b_from_leptop_reco_truth*",1);
+  chain->SetBranchStatus("b_from_hadtop_reco_truth*",1);
+  chain->SetBranchStatus("q1_from_hadtop_reco_truth*",1);
+  chain->SetBranchStatus("q2_from_hadtop_reco_truth*",1);
+  chain->SetBranchStatus("q1_from_higgs_reco_truth*",1);
+  chain->SetBranchStatus("q2_from_higgs_reco_truth*",1);
 
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
@@ -62,195 +89,57 @@ void run_it(TChain* chain, TString output_file)
   chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
   chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
-  chain->SetBranchAddress("met", &met_intree);
+  //  chain->SetBranchAddress("met", &met_intree);
+
+  chain->SetBranchAddress("higgs_final_state", &higgs_final_state_intree);
+  chain->SetBranchAddress("ttbar_final_state", &ttbar_final_state_intree);
+  chain->SetBranchAddress("matched_reco_jets", &matched_reco_jets_intree);
+  chain->SetBranchAddress("unmatched_reco_jets", &unmatched_reco_jets_intree);
+
+  chain->SetBranchAddress("lep_from_higgs_reco_truth.", &lep_from_higgs_truth_intree);
+  chain->SetBranchAddress("lep_from_leptop_reco_truth.", &lep_from_leptop_truth_intree);
+  chain->SetBranchAddress("b_from_leptop_reco_truth.", &b_from_leptop_truth_intree);
+  chain->SetBranchAddress("b_from_hadtop_reco_truth.", &b_from_hadtop_truth_intree);
+  chain->SetBranchAddress("q1_from_hadtop_reco_truth.", &q1_from_hadtop_truth_intree);
+  chain->SetBranchAddress("q2_from_hadtop_reco_truth.", &q2_from_hadtop_truth_intree);
+  chain->SetBranchAddress("q1_from_higgs_reco_truth.", &q1_from_higgs_truth_intree);
+  chain->SetBranchAddress("q2_from_higgs_reco_truth.", &q2_from_higgs_truth_intree);
+
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
-  double reco_score_intree = -1.;
+  TH1D* match_eff_hist = new TH1D("Matching efficiency","matchingEff",7,0,7);
+  match_eff_hist->GetXaxis()->SetBinLabel(1,"leptons");
+  match_eff_hist->GetXaxis()->SetBinLabel(2,"b hadtop");
+  match_eff_hist->GetXaxis()->SetBinLabel(3,"b leptop");
+  match_eff_hist->GetXaxis()->SetBinLabel(4,"q1 hadtop");
+  match_eff_hist->GetXaxis()->SetBinLabel(5,"q2 hadtop");
+  match_eff_hist->GetXaxis()->SetBinLabel(6,"q1 higgs");
+  match_eff_hist->GetXaxis()->SetBinLabel(7,"q2 higgs");
+  match_eff_hist->GetYaxis()->SetTitle("matching efficiency");
+  match_eff_hist->GetXaxis()->SetTitle("object");
+
+  eventReconstructor bdtReconstructor;
   double time_per_event_intree = -1.;
-  vector<ttH::Jet> *unmatched_jets_intree=0;
-  vector<ttH::Jet> *matched_jets_intree=0;
-  vector<ttH::Jet> *matched_jets_truth_intree=0;
-  ttH::Lepton lep_fromHiggs_intree;  
-  ttH::Lepton lep_fromTop_intree;
-
-  vector<int> *match_results_intree=0;
-  vector<double> *reco_scores_intree=0;  
-
-  TLorentzVector w_fromHadTop_tlv_intree;
-  TLorentzVector w_fromHiggs_tlv_intree;
-  TLorentzVector higgs_tlv_intree;
-  TLorentzVector hadTop_tlv_intree;
-  TLorentzVector lepTop_tlv_intree;
-  
-  double dR_b_W_hadTop_intree = -1.;
-  double dR_b_W_lepTop_intree = -1.;
-  double dR_H_lepTop_intree = -1.;
-  double dR_H_hadTop_intree = -1.;
-  double dR_lepTop_hadTop_intree = -1.;
-  double dR_W1_W2_fromHiggs_intree = -1.;
-  double dR_q1_q2_fromWfromHiggs_intree = -1.;
-  double       background_weight_intree = -1.;
-  double       num_matches_intree = -1.;
-  double norm_score_sum_intree = 0.;
-  int num_real_jetMatches = 0;
-
-  w_fromHadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-  w_fromHiggs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-  higgs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-  hadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-  lepTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-
   TTree *signal_tree = (TTree*)chain->CloneTree(0);
   signal_tree->SetName("ss2l_tree");
-  signal_tree->Branch("reco_score", &reco_score_intree);
   signal_tree->Branch("time_per_event", &time_per_event_intree);
-  signal_tree->Branch("unmatched_jets", &unmatched_jets_intree);
-  signal_tree->Branch("matched_jets", &matched_jets_intree);
-  signal_tree->Branch("matched_jets_truth", &matched_jets_truth_intree);
-  signal_tree->Branch("lep_fromTop", &lep_fromTop_intree);
-  signal_tree->Branch("lep_fromHiggs", &lep_fromHiggs_intree);
-  signal_tree->Branch("w_fromHadTop", &w_fromHadTop_tlv_intree);
-  signal_tree->Branch("w_fromHiggs", &w_fromHiggs_tlv_intree);
-  signal_tree->Branch("higgs", &higgs_tlv_intree);
-  signal_tree->Branch("hadTop", &hadTop_tlv_intree);
-  signal_tree->Branch("lepTop", &lepTop_tlv_intree);
-
-  signal_tree->Branch("dR_b_W_hadTop", &dR_b_W_hadTop_intree);
-  signal_tree->Branch("dR_b_W_lepTop", &dR_b_W_lepTop_intree);
-  signal_tree->Branch("dR_H_lepTop", &dR_H_lepTop_intree);
-  signal_tree->Branch("dR_H_hadTop", &dR_H_hadTop_intree);
-  signal_tree->Branch("dR_lepTop_hadTop", &dR_lepTop_hadTop_intree);
-  signal_tree->Branch("dR_W1_W2_fromHiggs", &dR_W1_W2_fromHiggs_intree);
-  signal_tree->Branch("dR_q1_q2_fromWfromHiggs", &dR_q1_q2_fromWfromHiggs_intree);
-  signal_tree->Branch("reco_scores", &reco_scores_intree);
-  signal_tree->Branch("num_bdt_matches", &background_weight_intree);
-  signal_tree->Branch("num_true_matches", &num_matches_intree);
-  signal_tree->Branch("match_results", &match_results_intree);
-  signal_tree->Branch("norm_score_sum", &norm_score_sum_intree);
+  bdtReconstructor.initializeTree(signal_tree);
+  
 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
   // chain->SetCacheLearnEntries(20); 
 
-  eventReconstructor bdtReconstructor;
-
-  
   double starttime = get_wall_time();
 
-  //  chainentries = 3000;
+  chainentries = 3000;
   for (int i=0; i<chainentries; i++)
     {
-      if (i%1000 == 0)
-	{
-	  float fraction = 100.*i/chainentries;
-	  cout << fraction << " % complete" << endl;
-	  cout << i << endl;
-	}
+      printProgress(i,chainentries);
+
       clock_t startTime = clock();
       chain->GetEntry(i);
-
-      //////////////////////////
-      ////
-      //// selection, vetos etc
-      ////
-      //////////////////////////
-
-      //      if ( (*preselected_jets_intree).size() < 3) continue; 
-      // bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
-      // if (!passesCommon) continue;
-      // bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
-      // if ( !passes2lss ) continue;
-
-      //////////////////////////
-      ////
-      //// calculation of new vars etc
-      ////
-      //////////////////////////
-
-
-
-      // //final state objs
-
-      // TLorentzVector lep_fromTop_tlv;
-      // TLorentzVector lep_fromTop_T_tlv;
-
-      // TLorentzVector lep_fromHiggs_tlv;
-      // TLorentzVector lep_fromHiggs_T_tlv;
-
-      // TLorentzVector bjet_fromHadTop_tlv;
-      // TLorentzVector bjet_fromHadTop_T_tlv;
-
-      // TLorentzVector bjet_fromLepTop_tlv;
-      // TLorentzVector bjet_fromLepTop_T_tlv;
-
-      // TLorentzVector wjet1_fromHadTop_tlv;
-      // TLorentzVector wjet1_fromHadTop_T_tlv;
-
-      // TLorentzVector wjet2_fromHadTop_tlv;
-      // TLorentzVector wjet2_fromHadTop_T_tlv;
-
-      // TLorentzVector wjet1_fromHiggs_tlv;
-      // TLorentzVector wjet1_fromHiggs_T_tlv;
-
-      // TLorentzVector wjet2_fromHiggs_tlv;
-      // TLorentzVector wjet2_fromHiggs_T_tlv;
-
-      // //intermediate objs
-
-      // TLorentzVector w_fromHadTop_tlv;
-      // TLorentzVector w_fromHadTop_T_tlv;
-
-      // TLorentzVector w_fromHiggs_tlv;
-      // TLorentzVector w_fromHiggs_T_tlv;
-
-      // //initial objs
-
-      // TLorentzVector higgs_tlv;
-      // TLorentzVector higgs_T_tlv;
-
-      // TLorentzVector hadTop_tlv;
-      // TLorentzVector hadTop_T_tlv;
-
-      // TLorentzVector lepTop_tlv;
-      // TLorentzVector lepTop_T_tlv;
-
-      // //misc final state objs
-
-      // TLorentzVector lepTop_higgs_tlv;
-      // TLorentzVector lepTop_higgs_T_tlv;
-
-      // TLorentzVector hadTop_higgs_tlv;
-      // TLorentzVector hadTop_higgs_T_tlv;
-
-      // TLorentzVector lepTop_hadTop_tlv;
-      // TLorentzVector lepTop_hadTop_T_tlv;
-
-      // TLorentzVector tth_tlv;
-      // TLorentzVector tth_T_tlv;
-      
-
-      //reset tree vars
-      reco_score_intree = -1.;
-      unmatched_jets_intree->clear();
-      matched_jets_intree->clear();
-      matched_jets_truth_intree->clear();
-      lep_fromHiggs_intree.clear();  
-      lep_fromTop_intree.clear();  
-      w_fromHadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-      w_fromHiggs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-      higgs_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-      hadTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-      lepTop_tlv_intree.SetPxPyPzE(0.,0.,0.,0.);
-      dR_b_W_hadTop_intree = -1.;
-      dR_b_W_lepTop_intree = -1.;
-      dR_H_lepTop_intree = -1.;
-      dR_H_hadTop_intree = -1.;
-      dR_lepTop_hadTop_intree = -1.;
-      dR_W1_W2_fromHiggs_intree = -1.;
-      dR_q1_q2_fromWfromHiggs_intree = -1.;
-      background_weight_intree = -1.;
-      reco_scores_intree->clear();
 
       /////////////////////
       /////
@@ -258,25 +147,23 @@ void run_it(TChain* chain, TString output_file)
       /////
       /////////////////////
       
+
       bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree);
-
-      reco_score_intree = bdtReconstructor.reco_score;
-      *match_results_intree = bdtReconstructor.matching_results;
-      norm_score_sum_intree = bdtReconstructor.norm_score_sum;
+      bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
+					   lep_from_higgs_truth_intree,
+					   b_from_leptop_truth_intree,
+					   b_from_hadtop_truth_intree,
+					   q1_from_hadtop_truth_intree,
+					   q2_from_hadtop_truth_intree,
+					   q1_from_higgs_truth_intree,
+					   q2_from_higgs_truth_intree ); //order of arguments matters here..
       
-      *matched_jets_intree = bdtReconstructor.matched_jets;
-      *matched_jets_truth_intree = bdtReconstructor.matched_jets_truth;
+      auto match_results = bdtReconstructor.match_results_bdt_intree;
 
-      lep_fromHiggs_intree = bdtReconstructor.lep_fromHiggs_bdt;
-      lep_fromTop_intree = bdtReconstructor.lep_fromTop_bdt;
-
-      w_fromHadTop_tlv_intree = bdtReconstructor.w_fromHadTop_bdt_tlv;
-      w_fromHiggs_tlv_intree = bdtReconstructor.w_fromHiggs_bdt_tlv;
-      higgs_tlv_intree = bdtReconstructor.higgs_bdt_tlv;
-      hadTop_tlv_intree = bdtReconstructor.hadTop_bdt_tlv;
-      lepTop_tlv_intree = bdtReconstructor.lepTop_bdt_tlv;
-
-      num_real_jetMatches = bdtReconstructor.num_real_jets_bdt;
+      for (unsigned int i=1; i<= match_results->size()+1; i++)
+	{
+	  if ((*match_results)[i-1] == 5 || (*match_results)[i-1] == 4) match_eff_hist->Fill( i-1, 1. / chainentries );
+	}
 
       time_per_event_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
 
@@ -288,21 +175,22 @@ void run_it(TChain* chain, TString output_file)
   double endtime = get_wall_time();
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
   if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
-  
+  match_eff_hist->Write();
   signal_tree->Write();
+
   copiedfile->Close();
   
 }
 
-void evaluateRecoBdt(TString sample, int start_file=0, int end_file=0)
+void evaluateRecoBdt(void)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1_Aug8/";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5/";
 
-  TString output_file = output_dir+sample + "_batch_bdtEval_"+to_string(start_file)+"-"+to_string(end_file)+".root";
-  //  TChain *tth_chain = loadFiles(sample,start_file,end_file);  
+  TString output_file = output_dir+"ttH_trial_test.root";
   TChain *tth_chain = new TChain("ss2l_tree;");
-  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/test_ttbar_2lss_tree.root");
+  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/ttH-powheg_selection_tree_2l_ss.root");
+  //  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/ttbar-semiLep-powheg_selection_tree_2l_ss.root");
   run_it(tth_chain,output_file);
 
 }

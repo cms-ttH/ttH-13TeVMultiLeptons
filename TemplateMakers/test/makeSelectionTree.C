@@ -437,12 +437,9 @@ void run_it(TChain* chain, TString output_file)
 
   for (int i=0; i<chainentries; i++)
     {
-      if (i%int(chainentries/100) == 0)
-	{
-	  float fraction = 100.*i/chainentries;
-	  cout << fraction << " % complete" << endl;
-	  cout << i << endl;
-	}
+      
+      printProgress(i,chainentries);
+
       clock_t startTime = clock();
       chain->GetEntry(i);
       

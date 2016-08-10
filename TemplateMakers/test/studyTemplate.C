@@ -54,16 +54,18 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Lepton> *tight_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
-
+  ttH::Jet *b_from_leptop_intree=0;
 
   chain->SetBranchStatus("*",0);
   chain->SetBranchStatus("eventnum",1);
   chain->SetBranchStatus("preselected_jets.*",1);
   chain->SetBranchStatus("pruned_genParticles.*",1);
+  chain->SetBranchStatus("b_from_leptop_reco_truth*",1);
   
   chain->SetBranchAddress("eventnum", &eventnum_intree);
   chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);   
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);  
+  chain->SetBranchAddress("b_from_leptop_reco_truth.", &b_from_leptop_intree);  
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
@@ -80,12 +82,7 @@ void run_it(TChain* chain, TString output_file)
   for (int i=0; i<chainentries; i++)
     {
       
-      if (i%1000 == 0)
-	{
-	  float fraction = 100.*i/chainentries;
-	  cout << fraction << " % complete" << endl;
-	  cout << i << endl;
-	}
+      printProgress(i,chainentries);
       chain->GetEntry(i);
       
       //////////////////////////
@@ -95,7 +92,7 @@ void run_it(TChain* chain, TString output_file)
       //////////////////////////
 
       preselected_jets_genMatch_intree->clear();
-
+      cout << b_from_leptop_intree->genPdgID << endl;
       signal_tree->Fill();
       
     }
@@ -113,6 +110,6 @@ void studyTemplate(void)
 {
   TString output_file = "my_study.root";
   TChain *chain = new TChain("ss2l_tree");
-  chain->Add("tth_tree_newVars.root");
+  chain->Add("ttH-powheg_selection_tree_2l_ss_os.root");
   run_it(chain,output_file);
 }
