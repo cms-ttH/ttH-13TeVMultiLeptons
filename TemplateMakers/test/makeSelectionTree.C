@@ -24,7 +24,7 @@
 ///
 /// usage: root -l makeSelectionTree.C+\("\"ttH-powheg\"",1,3\)
 ///        root -l makeSelectionTree.C+\("\"ttH-powheg\""\)
-///
+///        root -l makeSelectionTree.C+\("\"ttbar-semiLep-powheg\""\)
 /////////////////////////////////////////
 
 class GenParticleHelper
@@ -52,9 +52,6 @@ private:
   ttH::GenParticle antitop_w_child1_intree;
   ttH::GenParticle antitop_w_child2_intree;
 
-  TString higgs_final_state_intree;
-  TString ttbar_final_state_intree;
-
   //reco-gen matching vars
   vector<ttH::Jet> *matched_reco_jets_intree=0;
   vector<ttH::Jet> *unmatched_reco_jets_intree=0;
@@ -70,108 +67,9 @@ private:
   ttH::Jet *q1_from_higgs_intree=0;
   ttH::Jet *q2_from_higgs_intree=0;
 
-
-
-public:
-  GenParticleHelper(){};//default constructor
-
-  void clear(void)
-  {
-
-    higgs_final_state_intree = "none";
-    ttbar_final_state_intree = "none";
-
-    ttH::GenParticle empty_gen_particle;
-
-    empty_gen_particle.obj.SetPxPyPzE(0.,0.,0.,0.);
-    empty_gen_particle.pdgID = -9999;
-    empty_gen_particle.status = 9999;
-    empty_gen_particle.isPromptFinalState = false;
-    empty_gen_particle.isPromptDecayed = false;
-    empty_gen_particle.isDirectPromptTauDecayProductFinalState = false;
-    empty_gen_particle.child0 = 9999;
-    empty_gen_particle.child1 = 9999;
-    empty_gen_particle.mother = 9999;
-    empty_gen_particle.grandmother = 9999;
-
-    higgs_intree = empty_gen_particle;
-    higgs_child_A_intree = empty_gen_particle;
-    higgs_child_B_intree = empty_gen_particle;
-    higgs_grandChild_A1_intree = empty_gen_particle;
-    higgs_grandChild_A2_intree = empty_gen_particle;
-    higgs_grandChild_B1_intree = empty_gen_particle;
-    higgs_grandChild_B2_intree = empty_gen_particle;
-    
-    top_intree = empty_gen_particle;
-    top_b_intree = empty_gen_particle;
-    top_w_intree = empty_gen_particle;
-    top_w_child1_intree = empty_gen_particle;
-    top_w_child2_intree = empty_gen_particle;
-    
-    antitop_intree = empty_gen_particle;
-    antitop_b_intree = empty_gen_particle;
-    antitop_w_intree = empty_gen_particle;
-    antitop_w_child1_intree = empty_gen_particle;
-    antitop_w_child2_intree = empty_gen_particle;
-
-    matched_reco_jets_intree->clear();
-    unmatched_reco_jets_intree->clear();
-    matched_gen_jets_intree->clear();
-    unmatched_gen_jets_intree->clear();
-    lep_from_higgs_intree->clear();
-    lep_from_leptop_intree->clear();
-    b_from_leptop_intree->clear();
-    b_from_hadtop_intree->clear();
-    q1_from_hadtop_intree->clear();
-    q2_from_hadtop_intree->clear();
-    q1_from_higgs_intree->clear();
-    q2_from_higgs_intree->clear();
-
-  }
-
-  void initializeTree(TTree *input_tree)
-  {
-    input_tree->Branch("higgs", &higgs_intree);
-    input_tree->Branch("higgs_childA", &higgs_child_A_intree);
-    input_tree->Branch("higgs_childB", &higgs_child_B_intree);
-    input_tree->Branch("higgs_grandChild_A1", &higgs_grandChild_A1_intree);
-    input_tree->Branch("higgs_grandChild_A2", &higgs_grandChild_A2_intree);
-    input_tree->Branch("higgs_grandChild_B1", &higgs_grandChild_B1_intree);
-    input_tree->Branch("higgs_grandChild_B2", &higgs_grandChild_B2_intree);
-    
-    input_tree->Branch("top", &top_intree);
-    input_tree->Branch("top_b", &top_b_intree);
-    input_tree->Branch("top_w", &top_w_intree);
-    input_tree->Branch("top_w_child1", &top_w_child1_intree);
-    input_tree->Branch("top_w_child2", &top_w_child2_intree);
-    
-    input_tree->Branch("antitop", &antitop_intree);
-    input_tree->Branch("antitop_b", &antitop_b_intree);
-    input_tree->Branch("antitop_w", &antitop_w_intree);
-    input_tree->Branch("antitop_w_child1", &antitop_w_child1_intree);
-    input_tree->Branch("antitop_w_child2", &antitop_w_child2_intree);
-
-    input_tree->Branch("higgs_final_state", &higgs_final_state_intree);
-    input_tree->Branch("ttbar_final_state", &ttbar_final_state_intree);
-    
-    input_tree->Branch("matched_reco_jets", &matched_reco_jets_intree);
-    input_tree->Branch("unmatched_reco_jets", &unmatched_reco_jets_intree);
-    input_tree->Branch("matched_gen_jets", &matched_gen_jets_intree);
-    input_tree->Branch("unmatched_gen_jets", &unmatched_gen_jets_intree);
-    input_tree->Branch("lep_from_higgs_reco_truth", &lep_from_higgs_intree);
-    input_tree->Branch("lep_from_leptop_reco_truth", &lep_from_leptop_intree);
-    input_tree->Branch("b_from_leptop_reco_truth", &b_from_leptop_intree);
-    input_tree->Branch("b_from_hadtop_reco_truth", &b_from_hadtop_intree);
-    input_tree->Branch("q1_from_hadtop_reco_truth", &q1_from_hadtop_intree);
-    input_tree->Branch("q2_from_hadtop_reco_truth", &q2_from_hadtop_intree);
-    input_tree->Branch("q1_from_higgs_reco_truth", &q1_from_higgs_intree);
-    input_tree->Branch("q2_from_higgs_reco_truth", &q2_from_higgs_intree);
-
-  }
-
   void mapGenInfo(vector<ttH::GenParticle> gen_particles)
   {
-
+    
     for (const auto & gen_particle : gen_particles)
       {
 	if ( gen_particle.status != 62 ) continue;
@@ -180,9 +78,19 @@ public:
 	    higgs_intree = gen_particle;
 	    higgs_child_A_intree = gen_particles[higgs_intree.child0];
 	    higgs_child_B_intree = gen_particles[higgs_intree.child1];
+
+	    //cut for os training trees only. 
+	    //	    if (abs(higgs_child_A_intree.pdgID) != 15 && abs(higgs_child_A_intree.pdgID) != 23 && abs(higgs_child_A_intree.pdgID) != 24 ) return;
 	    
 	    if ( higgs_child_A_intree.child1 > gen_particles.size() ) higgs_child_A_intree.child1 = higgs_child_A_intree.child0 + 1;
 	    if ( higgs_child_B_intree.child1 > gen_particles.size() ) higgs_child_B_intree.child1 = higgs_child_B_intree.child0 + 1;
+	    
+	    // cout << higgs_child_A_intree.pdgID << endl;
+	    // cout << higgs_child_A_intree.child0 << endl;
+	    // cout << higgs_child_A_intree.child1 << endl;
+	    // cout << higgs_child_B_intree.child0 << endl;
+	    // cout << higgs_child_B_intree.child1 << endl;
+	    // cout << "----------" << endl;
 
 	    higgs_grandChild_A1_intree = gen_particles[higgs_child_A_intree.child0];
 	    higgs_grandChild_A2_intree = gen_particles[higgs_child_A_intree.child1];
@@ -263,14 +171,121 @@ public:
 
   }
 
+
+
+public:
+  GenParticleHelper(){};//default constructor
+
+  //make these public
+  TString higgs_final_state_intree;
+  TString ttbar_final_state_intree;
+
+  void clear(void)
+  {
+
+    higgs_final_state_intree = "none";
+    ttbar_final_state_intree = "none";
+
+    ttH::GenParticle empty_gen_particle;
+
+    empty_gen_particle.obj.SetPxPyPzE(0.,0.,0.,0.);
+    empty_gen_particle.pdgID = -9999;
+    empty_gen_particle.status = 9999;
+    empty_gen_particle.isPromptFinalState = false;
+    empty_gen_particle.isPromptDecayed = false;
+    empty_gen_particle.isDirectPromptTauDecayProductFinalState = false;
+    empty_gen_particle.child0 = 9999;
+    empty_gen_particle.child1 = 9999;
+    empty_gen_particle.mother = 9999;
+    empty_gen_particle.grandmother = 9999;
+
+    higgs_intree = empty_gen_particle;
+    higgs_child_A_intree = empty_gen_particle;
+    higgs_child_B_intree = empty_gen_particle;
+    higgs_grandChild_A1_intree = empty_gen_particle;
+    higgs_grandChild_A2_intree = empty_gen_particle;
+    higgs_grandChild_B1_intree = empty_gen_particle;
+    higgs_grandChild_B2_intree = empty_gen_particle;
+    
+    top_intree = empty_gen_particle;
+    top_b_intree = empty_gen_particle;
+    top_w_intree = empty_gen_particle;
+    top_w_child1_intree = empty_gen_particle;
+    top_w_child2_intree = empty_gen_particle;
+    
+    antitop_intree = empty_gen_particle;
+    antitop_b_intree = empty_gen_particle;
+    antitop_w_intree = empty_gen_particle;
+    antitop_w_child1_intree = empty_gen_particle;
+    antitop_w_child2_intree = empty_gen_particle;
+
+    matched_reco_jets_intree->clear();
+    unmatched_reco_jets_intree->clear();
+    matched_gen_jets_intree->clear();
+    unmatched_gen_jets_intree->clear();
+    lep_from_higgs_intree->clear();
+    lep_from_leptop_intree->clear();
+    b_from_leptop_intree->clear();
+    b_from_hadtop_intree->clear();
+    q1_from_hadtop_intree->clear();
+    q2_from_hadtop_intree->clear();
+    q1_from_higgs_intree->clear();
+    q2_from_higgs_intree->clear();
+
+  }
+  
+  void initializeTree(TTree *input_tree)
+  {
+    input_tree->Branch("higgs.", &higgs_intree);
+    input_tree->Branch("higgs_childA.", &higgs_child_A_intree);
+    input_tree->Branch("higgs_childB.", &higgs_child_B_intree);
+    input_tree->Branch("higgs_grandChild_A1.", &higgs_grandChild_A1_intree);
+    input_tree->Branch("higgs_grandChild_A2.", &higgs_grandChild_A2_intree);
+    input_tree->Branch("higgs_grandChild_B1.", &higgs_grandChild_B1_intree);
+    input_tree->Branch("higgs_grandChild_B2.", &higgs_grandChild_B2_intree);
+    
+    input_tree->Branch("top.", &top_intree);
+    input_tree->Branch("top_b.", &top_b_intree);
+    input_tree->Branch("top_w.", &top_w_intree);
+    input_tree->Branch("top_w_child1.", &top_w_child1_intree);
+    input_tree->Branch("top_w_child2.", &top_w_child2_intree);
+    
+    input_tree->Branch("antitop.", &antitop_intree);
+    input_tree->Branch("antitop_b.", &antitop_b_intree);
+    input_tree->Branch("antitop_w.", &antitop_w_intree);
+    input_tree->Branch("antitop_w_child1.", &antitop_w_child1_intree);
+    input_tree->Branch("antitop_w_child2.", &antitop_w_child2_intree);
+
+    input_tree->Branch("higgs_final_state", &higgs_final_state_intree);
+    input_tree->Branch("ttbar_final_state", &ttbar_final_state_intree);
+    
+    input_tree->Branch("matched_reco_jets", &matched_reco_jets_intree);
+    input_tree->Branch("unmatched_reco_jets", &unmatched_reco_jets_intree);
+    input_tree->Branch("matched_gen_jets", &matched_gen_jets_intree);
+    input_tree->Branch("unmatched_gen_jets", &unmatched_gen_jets_intree);
+    input_tree->Branch("lep_from_higgs_reco_truth.", &lep_from_higgs_intree);
+    input_tree->Branch("lep_from_leptop_reco_truth.", &lep_from_leptop_intree);
+    input_tree->Branch("b_from_leptop_reco_truth.", &b_from_leptop_intree);
+    input_tree->Branch("b_from_hadtop_reco_truth.", &b_from_hadtop_intree);
+    input_tree->Branch("q1_from_hadtop_reco_truth.", &q1_from_hadtop_intree);
+    input_tree->Branch("q2_from_hadtop_reco_truth.", &q2_from_hadtop_intree);
+    input_tree->Branch("q1_from_higgs_reco_truth.", &q1_from_higgs_intree);
+    input_tree->Branch("q2_from_higgs_reco_truth.", &q2_from_higgs_intree);
+
+  }
+
   void matchReco2Gen(vector<ttH::Lepton> reco_leps, vector<ttH::Jet> reco_jets, vector<ttH::GenParticle> gen_particles)
   {
+
+    mapGenInfo(gen_particles);
+
     //match leptons first
     for (const auto & lep : reco_leps)
       {
 	if (abs(lep.genGrandMotherPdgID) == 6) *lep_from_leptop_intree = lep;
 	else if (lep.genGrandMotherPdgID == 25) *lep_from_higgs_intree = lep;
       }
+
     //match jets
     vector<ttH::GenParticle> hardScatter_genParticles;
     if ( !isLepton( &higgs_grandChild_A1_intree ) ) hardScatter_genParticles.push_back( higgs_grandChild_A1_intree );
@@ -440,23 +455,17 @@ void run_it(TChain* chain, TString output_file)
       bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
       if (!passesCommon) continue;
       bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
-      if ( passes2lss ) 
+      if ( passes2lss) 
 	{
 	  myGenParticleHelper.clear();
-	  myGenParticleHelper.mapGenInfo(*pruned_genParticles_intree);
 	  myGenParticleHelper.matchReco2Gen(*tight_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
 	  ss2l_tree->Fill();
+	  //	  if ( myGenParticleHelper.higgs_final_state_intree.CompareTo("semiLeptonic") == 0 && myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
+ 	  // if ( myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
+	  //   {
+	  //     ss2l_tree->Fill();
+	  //   }
 	}
-      // else
-      // 	{ 
-      // 	  bool passes3l = pass3l(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
-      // 	  if ( passes3l )
-      // 	    {
-      // 	      myGenParticleHelper.clear();
-      // 	      myGenParticleHelper.mapGenInfo(*pruned_genParticles_intree);
-      // 	      l3_tree->Fill();
-      // 	    }
-      // 	}        
 
     }
   
@@ -476,7 +485,7 @@ void makeSelectionTree(TString sample, int start_file=0, int end_file=0)
 
   TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
 
-  TString output_file = sample + "_selection_tree_testtt.root";
+  TString output_file = sample + "_selection_tree_2l_ss.root";
   TChain *tth_chain = loadFiles(sample,start_file,end_file);  
   run_it(tth_chain,output_file);
 
