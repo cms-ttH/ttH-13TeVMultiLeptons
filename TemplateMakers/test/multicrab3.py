@@ -7,7 +7,7 @@ if __name__ == '__main__':
     # We want to put all the CRAB project directories from the tasks we submit here into one common directory.
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
 
-    config.General.workArea = '80X_nTuples_August4th'
+    config.General.workArea = '80X_nTuples_August10th'
     config.General.transferLogs=True
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = 'osTwoLep_cfg.py'
@@ -32,15 +32,15 @@ if __name__ == '__main__':
     
     #ttH samples
             
-    config.General.requestName = 'ttH125_powheg'
-    config.Data.inputDataset = '/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM'
-    config.Data.unitsPerJob = 50000
-    submit(config)
+    # config.General.requestName = 'ttH125_powheg'
+    # config.Data.inputDataset = '/ttHToNonbb_M125_13TeV_powheg_pythia8/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM'
+    # config.Data.unitsPerJob = 50000
+    # submit(config)
 
-    config.General.requestName = 'ttH125_aMC'
-    config.Data.inputDataset = '/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM'
-    config.Data.unitsPerJob = 50000
-    submit(config)
+    # config.General.requestName = 'ttH125_aMC'
+    # config.Data.inputDataset = '/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISpring16MiniAODv2-PUSpring16RAWAODSIM_reHLT_80X_mcRun2_asymptotic_v14_ext1-v1/MINIAODSIM'
+    # config.Data.unitsPerJob = 50000
+    # submit(config)
 
     #    config.General.requestName = 'ttH125_aMC_extn'
     #    config.Data.inputDataset = '/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext1-v1/MINIAODSIM'
@@ -68,20 +68,25 @@ if __name__ == '__main__':
     # config.Data.unitsPerJob = 500000
     # submit(config)
 
-    # config.General.requestName = 'TTJets_MLM_SemiLep_tbar'
-    # config.Data.inputDataset = '/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
-    # config.Data.unitsPerJob = 500000
-    # submit(config)
+    config.General.requestName = 'TTJets_MLM_SemiLep_tbar'
+    config.Data.inputDataset = '/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
+    config.Data.unitsPerJob = 500000
+    submit(config)
 
-    # config.General.requestName = 'TTJets_MLM_SemiLep_tbar_ext'
-    # config.Data.inputDataset = '/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM'
-    # config.Data.unitsPerJob = 500000
-    # submit(config)
+    config.General.requestName = 'TTJets_MLM_SemiLep_tbar_ext'
+    config.Data.inputDataset = '/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM'
+    config.Data.unitsPerJob = 500000
+    submit(config)
 
-    # config.General.requestName = 'TTJets_MLM_SemiLep_t'
-    # config.Data.inputDataset = '/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
-    # config.Data.unitsPerJob = 500000
-    # submit(config)
+    config.General.requestName = 'TTJets_MLM_SemiLep_t'
+    config.Data.inputDataset = '/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
+    config.Data.unitsPerJob = 500000
+    submit(config)
+
+    config.General.requestName = 'TTJets_MLM_SemiLep_t_ext'
+    config.Data.inputDataset = '/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM'
+    config.Data.unitsPerJob = 500000
+    submit(config)
 
     # config.General.requestName = 'TTJets_MLM4'
     # config.Data.inputDataset = '/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM'
@@ -97,20 +102,20 @@ if __name__ == '__main__':
 
     #semi lep powheg
 
-    config.General.requestName = 'TTJets_powheg'
-    config.Data.inputDataset = '/TTToSemiLeptonic_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v2/MINIAODSIM'
-    config.Data.unitsPerJob = 500000
-    submit(config)
+    # config.General.requestName = 'TTJets_powheg'
+    # config.Data.inputDataset = '/TTToSemiLeptonic_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v2/MINIAODSIM'
+    # config.Data.unitsPerJob = 500000
+    # submit(config)
 
     #DY
 
-    config.General.requestName = 'DY_M10-15_NLO'
-    config.Data.inputDataset = '/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
-    config.Data.unitsPerJob = 500000
-    submit(config)
+    # config.General.requestName = 'DY_M10-15_NLO'
+    # config.Data.inputDataset = '/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
+    # config.Data.unitsPerJob = 500000
+    # submit(config)
 
-    config.General.requestName = 'DY_M50_NLO'
-    config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
-    #    config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-BS2016_BSandPUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
-    config.Data.unitsPerJob = 500000
-    submit(config)
+    # config.General.requestName = 'DY_M50_NLO'
+    # config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
+    # #    config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-BS2016_BSandPUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM'
+    # config.Data.unitsPerJob = 500000
+    # submit(config)
