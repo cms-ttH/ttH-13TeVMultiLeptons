@@ -54,7 +54,8 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
 
   else if (sample == "ttbar-semiLep-madgraph")
     {
-      TString base_dir = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_SemiLep_tbar/160707_112808/0000/tree_test__";
+      //tbar
+      TString base_dir = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_SemiLep_tbar/160810_172311/0000/tree_test__";
       if (end_file == -1 || end_file == 0) end_file = 24; //num input files
       for (int i=start_file; i <= end_file; i++)
 	{
@@ -63,9 +64,9 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
 	  TString file_name = base_dir+file_num+post_fix;
 	  chain->Add(file_name);
 	}            
-
-      TString base_dir1 = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_SemiLep_t/160707_112836/0000/tree_test__";
-      if (end_file == -1 || end_file == 0) end_file = 24; //num input files
+      //tbar ext
+      TString base_dir1 = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_SemiLep_tbar_ext/160810_172323/0000/tree_test__";
+      if (end_file == -1 || end_file == 0) end_file = 100; //num input files
       for (int i=start_file; i <= end_file; i++)
 	{
 	  if (i > end_file) break;
@@ -73,14 +74,24 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
 	  TString file_name = base_dir1+file_num+post_fix;
 	  chain->Add(file_name);
 	}            
-      
-      TString base_dir2 = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_SemiLep_tbar_ext/160707_112821/0000/tree_test__";
-      if (end_file == -1 || end_file == 0) end_file = 101; //num input files
+      //t
+      TString base_dir2 = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_SemiLep_t/160810_172334/0000/tree_test__";
+      if (end_file == -1 || end_file == 0) end_file = 20; //num input files
       for (int i=start_file; i <= end_file; i++)
 	{
 	  if (i > end_file) break;
 	  TString file_num = std::to_string(i);
 	  TString file_name = base_dir2+file_num+post_fix;
+	  chain->Add(file_name);
+	}            
+      //t ext
+      TString base_dir3 = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_SemiLep_t_ext/160810_172346/0000/tree_test__";
+      if (end_file == -1 || end_file == 0) end_file = 93; //num input files
+      for (int i=start_file; i <= end_file; i++)
+	{
+	  if (i > end_file) break;
+	  TString file_num = std::to_string(i);
+	  TString file_name = base_dir3+file_num+post_fix;
 	  chain->Add(file_name);
 	}            
     }

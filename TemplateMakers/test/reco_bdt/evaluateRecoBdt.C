@@ -27,7 +27,7 @@
 /////////////////////////////////////////
 
 
-void run_it(TChain* chain, TString output_file)
+void run_it(TChain* chain, TFile *output_file_)
 {
 
   int chainentries = chain->GetEntries();   
@@ -106,8 +106,6 @@ void run_it(TChain* chain, TString output_file)
   chain->SetBranchAddress("q2_from_higgs_reco_truth.", &q2_from_higgs_truth_intree);
 
 
-  TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
-
   TH1D* match_eff_hist = new TH1D("Matching efficiency","matchingEff",7,0,7);
   match_eff_hist->GetXaxis()->SetBinLabel(1,"leptons");
   match_eff_hist->GetXaxis()->SetBinLabel(2,"b hadtop");
@@ -133,7 +131,7 @@ void run_it(TChain* chain, TString output_file)
 
   double starttime = get_wall_time();
 
-  chainentries = 3000;
+  //  chainentries = 1000;
   for (int i=0; i<chainentries; i++)
     {
       printProgress(i,chainentries);
@@ -175,21 +173,27 @@ void run_it(TChain* chain, TString output_file)
   double endtime = get_wall_time();
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
   if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
+
   match_eff_hist->Write();
   signal_tree->Write();
-
-  copiedfile->Close();
+  output_file_->Close();
   
 }
 
 void evaluateRecoBdt(void)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5/";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/";
 
-  TString output_file = output_dir+"ttH_trial_test.root";
+  //  TString output_file = output_dir+"ttbar_powheg_bdtEval.root";
+  TString output_file_name = output_dir+"ttV_bdtEval.root";
+  TFile *output_file = new TFile(output_file_name, "RECREATE"); //"UPDATE");
+
   TChain *tth_chain = new TChain("ss2l_tree;");
-  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/ttH-powheg_selection_tree_2l_ss.root");
+  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttV_selection_tree_2l_ss.root");
+  //  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttH-aMC@NLO_selection_tree_2l_ss.root");
+  //  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/ttH-powheg_selection_tree_2l_ss.root");
+  //tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-powheg_selection_tree_2l_ss.root");
   //  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/ttbar-semiLep-powheg_selection_tree_2l_ss.root");
   run_it(tth_chain,output_file);
 

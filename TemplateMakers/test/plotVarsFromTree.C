@@ -27,7 +27,7 @@ void plotHist(TH1D* sig_h, TH1D* bkg_h, TString title)
   leg->AddEntry(bkg_h,"ttbar","F");
   leg->SetFillColor(0);
   leg->Draw("same");
-  can1->SaveAs("plot.png");  
+  can1->SaveAs("plot.pdf");  
 
 }
 
@@ -76,16 +76,15 @@ void plotRoc(TH1D* sig, TH1D* bkg, TString title)
 
   leg->SetFillColor(0);
   leg->Draw("same");
-  can1->SaveAs("roc.png");  
+  can1->SaveAs("roc.pdf");  
 }
 
 void plotVarsFromTree(void)
 {
 
-  // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/comparison_bdt_weightedBkgSq/ttH_sum_v2.root";
-  // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/comparison_bdt_weightedBkgSq/ttbar_sum_v2.root";
-  // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baselineBdt_v1/ttH_tree.root";
-  // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/baselineBdt_v1/ttbar_tree.root";
+  TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root";
+  //  TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttV_bdtEval.root";
+  TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root";
 
   // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0p6/ttH-powheg_batch_bdtEval.root";
   // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0p6/ttbar-semiLep-powheg_batch_bdtEval.root";
@@ -93,27 +92,29 @@ void plotVarsFromTree(void)
   // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0_July12_1541/ttH_tree.root";
   // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v0_July12_1541/ttbar_tree.root";
 
-  TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1_Aug8/ttH_tree.root";
-  TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1_Aug8/ttbar_tree.root";
+  // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1_Aug8/ttH_tree.root";
+  // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1_Aug8/ttbar_tree.root";
 
-  // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttH_nonBest.root";
-  // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttbar__nonBest.root";
-  // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttH.root";
-  // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reconsruction_study_ttbar.root";
-
+  // TString signal_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5/ttH_bdtEval.root";
+  // TString background_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5/ttbar_bdtEval.root";
 
   TChain *chain1 = new TChain("ss2l_tree");
   chain1->Add(signal_file);
   TChain *chain2 = new TChain("ss2l_tree");
   chain2->Add(background_file);
 
-  TCut cut = "";
+  //  TCut cut = "mcwgt*!(b_from_hadtop_bdt.csv >= 0.8 && b_from_leptop_bdt.csv >=0.8)";
+  TCut cut = "mcwgt*(1.)";
   //  TString var = "lepTop_hadTop_dR"; TString title = "dR(lep top, had top)";
-  //  TString var = "hadTop_tlv.M()"; TString title = "hadronic top mass"; int nBins = 20; double xMin = 0; double xMax = 300;
-  TString var = "reco_score"; TString title = "bdt v0p6"; int nBins = 30; double xMin = -1.; double xMax = 1.;
+  //  TString var = "hadTop_bdt.M()"; TString title = "hadronic top mass"; int nBins = 20; double xMin = 0; double xMax = 250;
+  //  TString var = "higgs_bdt.M()"; TString title = "higgs mass"; int nBins = 40; double xMin = 0; double xMax = 150;
+  //  TString var = "higgs_bdt.Pt()"; TString title = "higgs pt"; int nBins = 40; double xMin = 0; double xMax = 250;
+  //  TString var = "dR_b_W_lepTop_bdt"; TString title = "dR(l,b) leptop"; int nBins = 10; double xMin = 0; double xMax = 5;
+  //  TString var = "dR_lepTop_hadTop_bdt"; TString title = "dR(Th,Tl) leptop"; int nBins = 10; double xMin = 0; double xMax = 5;
+  TString var = "reco_score"; TString title = "bdt v1.5 bT/L"; int nBins = 25; double xMin = -1.; double xMax = 1.;
   //  TString var = "lepTop_tlv.M()"; TString title = "leptonic top mass"; int nBins = 30; double xMin = 0; double xMax = 700;
   //  TString var = "lepTop_tlv.Pt()"; TString title = "leptonic top pt"; int nBins = 20; double xMin = 0; double xMax = 800;
-  //  TString var = "hadTop_tlv.Pt()"; TString title = "hadronic top pt"; int nBins = 30; double xMin = 0; double xMax = 600;
+  //  TString var = "hadTop_bdt.Pt()"; TString title = "hadronic top pt"; int nBins = 20; double xMin = 0; double xMax = 600;
   //  TString var = "hadTop_tlv.M() + lepTop_tlv.M()"; TString title = "top sys mass"; int nBins = 30; double xMin = 0; double xMax = 1000;
   //  TString var = "ttbar_tlv.Pt()"; TString title = "top sys pt"; int nBins = 30; double xMin = 0; double xMax = 700;
   //  TString var = "abs(ttbar_tlv.Eta())"; TString title = "top sys eta"; int nBins = 30; double xMin = 0; double xMax = 5;

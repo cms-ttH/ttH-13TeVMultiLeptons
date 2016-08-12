@@ -23,7 +23,7 @@
 
 /////////////////////////////////////////
 ///
-/// usage: root -l trainRecoBdt.C+\("\"ttH-powheg\"",0,1\)
+/// usage: root -l trainRecoBdt.C+
 ///
 /////////////////////////////////////////
 
@@ -85,14 +85,14 @@ void run_it(TChain* chain, TString output_file)
   chain->SetBranchAddress("higgs_final_state", &higgs_final_state_intree);
   chain->SetBranchAddress("ttbar_final_state", &ttbar_final_state_intree);
   chain->SetBranchAddress("higgs_decay", &higgs_decay_intree);
-  chain->SetBranchAddress("lep_from_higgs_reco_truth", &lep_from_higgs_intree);
-  chain->SetBranchAddress("lep_from_leptop_reco_truth", &lep_from_leptop_intree);
-  chain->SetBranchAddress("b_from_leptop_reco_truth", &b_from_leptop_intree);
-  chain->SetBranchAddress("b_from_hadtop_reco_truth", &b_from_hadtop_intree);
-  chain->SetBranchAddress("q1_from_hadtop_reco_truth", &q1_from_hadtop_intree);
-  chain->SetBranchAddress("q2_from_hadtop_reco_truth", &q2_from_hadtop_intree);
-  chain->SetBranchAddress("q1_from_higgs_reco_truth", &q1_from_higgs_intree);
-  chain->SetBranchAddress("q2_from_higgs_reco_truth", &q2_from_higgs_intree);
+  chain->SetBranchAddress("lep_from_higgs_reco_truth.", &lep_from_higgs_intree);
+  chain->SetBranchAddress("lep_from_leptop_reco_truth.", &lep_from_leptop_intree);
+  chain->SetBranchAddress("b_from_leptop_reco_truth.", &b_from_leptop_intree);
+  chain->SetBranchAddress("b_from_hadtop_reco_truth.", &b_from_hadtop_intree);
+  chain->SetBranchAddress("q1_from_hadtop_reco_truth.", &q1_from_hadtop_intree);
+  chain->SetBranchAddress("q2_from_hadtop_reco_truth.", &q2_from_hadtop_intree);
+  chain->SetBranchAddress("q1_from_higgs_reco_truth.", &q1_from_higgs_intree);
+  chain->SetBranchAddress("q2_from_higgs_reco_truth.", &q2_from_higgs_intree);
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
@@ -116,13 +116,7 @@ void run_it(TChain* chain, TString output_file)
   //  chainentries = 1000000;
   for (int i=0; i<chainentries; i++)
     {
-      
-      if (i%1000 == 0)
-	{
-	  float fraction = 100.*i/chainentries;
-	  cout << fraction << " % complete" << endl;
-	  cout << i << endl;
-	}
+      printProgress(i,chainentries);
       chain->GetEntry(i);
 
       //////////////////////////
@@ -134,7 +128,7 @@ void run_it(TChain* chain, TString output_file)
       ttH::Lepton lep_fromTop_bdtInput_intree = *lep_from_leptop_intree;
       ttH::Lepton lep_fromHiggs_bdtInput_intree = *lep_from_higgs_intree;
 
-      if ( abs( lep_fromTop_bdtInput_intree.genGrandMotherPdgID ) != 6 || abs( lep_fromHiggs_bdtInput_intree.genGrandMotherPdgID ) != 25 ) continue;
+      //      if ( abs( lep_fromTop_bdtInput_intree.genGrandMotherPdgID ) != 6 || abs( lep_fromHiggs_bdtInput_intree.genGrandMotherPdgID ) != 25 ) continue;
 
       ttH::Jet bjet_fromHadTop_truth = *b_from_hadtop_intree;
       ttH::Jet bjet_fromLepTop_truth = *b_from_leptop_intree;
@@ -268,7 +262,7 @@ void run_it(TChain* chain, TString output_file)
 	}
 
       //traditional loop
-      int rand_cut = 40;
+      int rand_cut = 70;
       
       int lep_fromTop_count = -1;
       for (const auto & lep_fromTop : *tight_leptons_intree)
@@ -401,20 +395,21 @@ void run_it(TChain* chain, TString output_file)
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
   if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
   
-  signal_tree->Write();
+  //  signal_tree->Write();
   background_tree->Write();
   copiedfile->Close();
   
 }
 
-void trainRecoBdt(TString sample, int start_file=0, int end_file=0)
+void trainRecoBdt(void)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v1/";
-  TString output_file = output_dir+sample + "_bdtTraining.root";
-  //  TChain *tth_chain = loadFiles(sample,start_file,end_file);  
-  TChain *tth_chain = new TChain("ss2l_tree;");
-  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/test_ttH_2lss_tree.root");
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v1_btightloose/";
+  TString output_file = output_dir+"ttH_powheg_ttbar_mgMLM_bTight_bdtTraining_ss.root";
+  //  TChain *tth_chain = new TChain("bLoose_tree;");
+  TChain *tth_chain = new TChain("bTight_tree;");
+  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttH_2lss_bTightLoose_selection_tree.root",1200);
+  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar_mgMLM_2lss_bTightLoose_selection_tree.root");
   run_it(tth_chain,output_file);
 
 }

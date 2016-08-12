@@ -24,7 +24,10 @@
 ///
 /// usage: root -l makeSelectionTree.C+\("\"ttH-powheg\"",1,3\)
 ///        root -l makeSelectionTree.C+\("\"ttH-powheg\""\)
+///        root -l makeSelectionTree.C+\("\"ttH-aMC@NLO\""\)
 ///        root -l makeSelectionTree.C+\("\"ttbar-semiLep-powheg\""\)
+///        root -l makeSelectionTree.C+\("\"ttbar-semiLep-madgraph\""\)
+///
 /////////////////////////////////////////
 
 class GenParticleHelper
@@ -85,13 +88,6 @@ private:
 	    if ( higgs_child_A_intree.child1 > gen_particles.size() ) higgs_child_A_intree.child1 = higgs_child_A_intree.child0 + 1;
 	    if ( higgs_child_B_intree.child1 > gen_particles.size() ) higgs_child_B_intree.child1 = higgs_child_B_intree.child0 + 1;
 	    
-	    // cout << higgs_child_A_intree.pdgID << endl;
-	    // cout << higgs_child_A_intree.child0 << endl;
-	    // cout << higgs_child_A_intree.child1 << endl;
-	    // cout << higgs_child_B_intree.child0 << endl;
-	    // cout << higgs_child_B_intree.child1 << endl;
-	    // cout << "----------" << endl;
-
 	    higgs_grandChild_A1_intree = gen_particles[higgs_child_A_intree.child0];
 	    higgs_grandChild_A2_intree = gen_particles[higgs_child_A_intree.child1];
 	    higgs_grandChild_B1_intree = gen_particles[higgs_child_B_intree.child0];
@@ -457,6 +453,7 @@ void run_it(TChain* chain, TString output_file)
 	  myGenParticleHelper.clear();
 	  myGenParticleHelper.matchReco2Gen(*tight_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
 	  ss2l_tree->Fill();
+	  //cuts for os only 
 	  //	  if ( myGenParticleHelper.higgs_final_state_intree.CompareTo("semiLeptonic") == 0 && myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
  	  // if ( myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
 	  //   {
@@ -480,7 +477,7 @@ void run_it(TChain* chain, TString output_file)
 void makeSelectionTree(TString sample, int start_file=0, int end_file=0)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/";
 
   TString output_file = sample + "_selection_tree_2l_ss.root";
   TChain *tth_chain = loadFiles(sample,start_file,end_file);  
