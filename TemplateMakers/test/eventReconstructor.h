@@ -88,7 +88,9 @@ class eventReconstructor
     TMVAReader_internal_->AddVariable( "lep_from_higgs_bdt.obj.pt()", &lep_fromW_fromHiggs_pT_var );
     TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()", &lep_fromW_fromTop_pT_var );
     TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()", &lep_pt_ratio_var );
-    
+    //    TMVAReader_internal_->AddVariable( "dR_b_W_lepTop", &LepTop_lep_bJet_dR_var );
+
+
     //    TMVAReader_internal_->AddVariable( "qJet1_fromW_fromHadTop_CSV", &qJet1_fromW_fromHadTop_CSV_var );
     //    TMVAReader_internal_->AddVariable( "W_fromHiggs_mass", &W_fromHiggs_mass_var );
     /* TMVAReader_internal_->AddVariable( "LepTop_pT", &LepTop_pT_var ); */
@@ -108,8 +110,6 @@ class eventReconstructor
 
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
-    //    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5.weights.xml"; 
-    //    std::string file_str = "/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_July12_1541.weights.xml"; 
     weight_file += weights_file_str;
 
     TMVAReader_internal_->BookMVA("BDTG method", weight_file);
@@ -142,7 +142,6 @@ class eventReconstructor
  public:
   eventReconstructor(){
     TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bTight.weights.xml");
-    //    TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights.xml");
     TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bLoose.weights.xml");
   } // default constructor
 

@@ -53,3 +53,22 @@ template <typename inObj1, typename inObj2> double getDeltaR(const inObj1 obj1, 
   TLorentzVector obj2_tlv = setTlv(obj2);
   return obj1_tlv.DeltaR( obj2_tlv );
 }
+
+template <typename particleType> ttH::Jet getClosestJet(const std::vector<ttH::Jet> jets, const particleType object)
+{
+  ttH::Jet result;
+  double minDeltaR = 999;
+  for (const auto & jet : jets)
+    {
+      double dR = getDeltaR(jet, object);
+      if (dR < minDeltaR)
+	{
+	  minDeltaR = dR;
+	  result = jet;
+	}
+    }
+  return result;
+}
+
+
+

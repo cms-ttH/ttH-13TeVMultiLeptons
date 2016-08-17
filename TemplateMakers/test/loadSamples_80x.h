@@ -13,7 +13,7 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
 
   if (start_file == 0) start_file = 1;
 
-  if (sample == "ttH-aMC@NLO")
+  if (sample == "ttH-aMCatNLO")
     {
       TString base_dir = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160804_104730/0000/tree_test__";
       if (end_file == -1 || end_file == 0) end_file = 201;
@@ -100,7 +100,7 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
 	}            
     }
   
-  else if (sample == "ttbar-inclusive-madgraph")
+  else if (sample == "ttbar-allHad-madgraph")
     {
       TString base_dir3 = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_fully_inclusive/160707_121042/0000/tree_test__";
       if (end_file == -1 || end_file == 0) end_file = 22; //num input files
@@ -112,6 +112,20 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
 	  chain->Add(file_name);
 	}            
     }
+
+  else if (sample == "ttbar-inclusive-aMCatNLO")
+    {
+      TString base_dir3 = pre_fix + "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_ttbar_aMCatNLO_inclusive/160815_143425/0000/tree_test__";
+      if (end_file == -1 || end_file == 0) end_file = 75; //num input files
+      for (int i=start_file; i <= end_file; i++)
+	{
+	  if (i > end_file) break;
+	  TString file_num = std::to_string(i);
+	  TString file_name = base_dir3+file_num+post_fix;
+	  chain->Add(file_name);
+	}            
+    }
+  
 
 
   else if (sample == "ttV")

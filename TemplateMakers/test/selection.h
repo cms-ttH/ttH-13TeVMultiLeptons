@@ -94,6 +94,28 @@ bool pass2l(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vecto
 }
 
 
+bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets)
+{
+  vector<ttH::Lepton> looseLeps = get_collection(looseMus,looseEles);
+
+  if ( looseLeps.size() < 2 ) return false;
+
+  if (looseLeps[0].charge != looseLeps[1].charge) return false; 
+  for (auto &ele: looseEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge
+  for (auto &mu: looseMus) if (!(mu.chargeFlip < 0.2)) return false;//tight charge
+  for (auto &ele: looseEles) if ((ele.numMissingInnerHits != 0)) return false;//  //lost hits
+  for (auto &ele: looseEles) if ( !(ele.passConversioVeto) ) return false;//
+  //conversion veto
+  if ( !( psJets.size()>3 ) )      return false;
+
+  if ( !(looseLeps[0].obj.Pt()>20 && looseLeps[1].obj.Pt()>10) ) return false; //pt cut for mumu
+  if ( (looseLeps[0].pdgID) == 11 && looseLeps[0].obj.Pt() < 25 ) return false; //pt1 cut for e
+  if ( (looseLeps[1].pdgID) == 11 && looseLeps[1].obj.Pt() < 15 ) return false; //pt2 cut for e
+
+  return true;
+}
+
+
 
 bool pass2lss_lepMVA_controlRegion(vector<ttH::Electron> tightEles, vector<ttH::Electron> fakeableEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> fakeableMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, vector<ttH::MET> met)
 {
