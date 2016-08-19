@@ -29,7 +29,6 @@
 /////////////////////////////////////////
 
 
-
 void run_it(TChain* chain, TFile* output_file)
 {
   Float_t max_lep_eta_var;
@@ -43,16 +42,21 @@ void run_it(TChain* chain, TFile* output_file)
   Float_t lep1_pt_var;
   Float_t lep2_pt_var;
 
+  Float_t spec0_var;
+  Float_t spec1_var;
+  Float_t spec2_var;
+
   TMVA::Reader* TMVAReader_ttbar_ = new TMVA::Reader( "!Color:!Silent" );
   TMVAReader_ttbar_->AddVariable( "max_lep_eta", &max_lep_eta_var );
   TMVAReader_ttbar_->AddVariable( "nJets", &njets_var );
   TMVAReader_ttbar_->AddVariable( "dR_l1_j", &dR_l1_j_var );
   TMVAReader_ttbar_->AddVariable( "dR_l2_j", &dR_l2_j_var );
   TMVAReader_ttbar_->AddVariable( "MT_l1_met", &MT_l1_met_var );
-  TMVAReader_ttbar_->AddVariable( "met", &met_var );
+  TMVAReader_ttbar_->AddVariable( "min(met,400)", &met_var );
   TMVAReader_ttbar_->AddVariable( "avg_dR_jets", &avg_dr_jets_var );
   //  TMVAReader_ttbar_->AddVariable( "reco_score", &reco_score_var );
-  TString ttbar_weights = "";
+  TString ttbar_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_original.xml";
+  //  TString ttbar_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_reco.xml";
   TMVAReader_ttbar_->BookMVA("BDTG method", ttbar_weights);
 
 
@@ -64,6 +68,9 @@ void run_it(TChain* chain, TFile* output_file)
   TMVAReader_ttV_->AddVariable( "mindr_lep2_jet", &dR_l2_j_var );
   TMVAReader_ttV_->AddVariable( "LepGood_conePt[iF_Recl[0]]", &lep1_pt_var );
   TMVAReader_ttV_->AddVariable( "LepGood_conePt[iF_Recl[1]]", &lep2_pt_var );
+  TMVAReader_ttV_->AddSpectator( "iF_Recl[0]", &spec0_var );
+  TMVAReader_ttV_->AddSpectator( "iF_Recl[1]", &spec1_var );
+  TMVAReader_ttV_->AddSpectator( "iF_Recl[2]", &spec2_var );
   TString ttV_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/final_BDT_forApproval/weights/2lss_ttV_BDTG.weights.xml";
   TMVAReader_ttV_->BookMVA("BDTG method", ttV_weights);
 
@@ -95,8 +102,6 @@ void run_it(TChain* chain, TFile* output_file)
   chain->SetBranchAddress("met", &met_intree);
   chain->SetBranchAddress("reco_score", &reco_score_intree);
 
-  TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
-
   double max_lep_eta_branch=-999.;
   double njets_branch=-999.;
   double dR_l1_j_branch=-999.;
@@ -108,12 +113,10 @@ void run_it(TChain* chain, TFile* output_file)
   double l2_pt_branch=-999.;
   double vs_ttbar_score=-999.;
   double vs_ttv_score=-999.;
-  bool isBtight=false;
-  bool isPositive=false;
-  bool isTau=false;
-  bool isEE=false;
-  bool isEM=false;
-  bool isMM=false;
+  bool isBtight_branch=false;
+  bool isPositive_branch=false;
+  bool isTau_branch=false;
+  TString flavor_branch = "null";
 
   //  TTree *extraction_tree = (TTree*)chain->CloneTree(0);
   TTree *extraction_tree = new TTree("extraction_tree","tree containing signal extraction output");
@@ -129,12 +132,11 @@ void run_it(TChain* chain, TFile* output_file)
   extraction_tree->Branch("l2_pt", &l2_pt_branch);
   extraction_tree->Branch("vs_ttbar_bdt_score", &vs_ttbar_score);
   extraction_tree->Branch("vs_ttv_bdt_score", &vs_ttv_score);
-  extraction_tree->Branch("bTight_category", &isBtight);
-  extraction_tree->Branch("posCharge_category", &isPositive);
-  extraction_tree->Branch("tau_category", &isTau);
-  extraction_tree->Branch("ee_category", &isEE);
-  extraction_tree->Branch("em_category", &isEM);
-  extraction_tree->Branch("mm_category", &isMM);
+  extraction_tree->Branch("bTight_category", &isBtight_branch);
+  extraction_tree->Branch("posCharge_category", &isPositive_branch);
+  extraction_tree->Branch("tau_category", &isTau_branch);
+  extraction_tree->Branch("flavor_category", &flavor_branch);
+
 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
@@ -164,26 +166,20 @@ void run_it(TChain* chain, TFile* output_file)
       ////////////////////////
       double tight_wp = 0.8;
       int num_tight = 0;
-      for (const auto & jet : *preselected_jets_intree)
-	{
-	  if (jet.csv >= tight_wp) num_tight +=1; 
-	}
-      if ( num_tight > 1 ) isBtight = true;
-      else isBtight = false;
-      
-      if ((*lepton_collection_to_use)[0].charge > 0) isPositive = true;
-      else isPositive = false;
-      
-      if ( selected_taus_intree->size() > 0) isTau = true;
-      else isTau = false;
+      for (const auto & jet : *preselected_jets_intree)	if (jet.csv >= tight_wp) num_tight +=1; 
 
-      isEE=false;
-      isEM=false;
-      isMM=false;
-      if (abs((*lepton_collection_to_use)[0].pdgID) == 11 && abs((*lepton_collection_to_use)[1].pdgID) == 11) isEE = true;
-      else if (abs((*lepton_collection_to_use)[0].pdgID) == 13 && abs((*lepton_collection_to_use)[1].pdgID) == 13) isMM = true;
-      else isEM = true;
+      if ( num_tight > 1 ) isBtight_branch = true;
+      else isBtight_branch = false;
       
+      if ((*lepton_collection_to_use)[0].charge > 0) isPositive_branch = true;
+      else isPositive_branch = false;
+      
+      if ( selected_taus_intree->size() > 0) isTau_branch = true;
+      else isTau_branch = false;
+      
+      if (abs((*lepton_collection_to_use)[0].pdgID) == 11 && abs((*lepton_collection_to_use)[1].pdgID) == 11) flavor_branch = "ee";
+      else if (abs((*lepton_collection_to_use)[0].pdgID) == 13 && abs((*lepton_collection_to_use)[1].pdgID) == 13) flavor_branch = "mm";
+      else flavor_branch = "em";
 
       ////////////////////////
       //
@@ -193,13 +189,7 @@ void run_it(TChain* chain, TFile* output_file)
 
       // max eta
       max_lep_eta_var = -1.;
-      for (const auto & lep: *lepton_collection_to_use)
-	{
-	  if (abs(lep.obj.eta()) > max_lep_eta_var)
-	    {
-	      max_lep_eta_var = abs(lep.obj.eta());
-	    }
-	}
+      for (const auto & lep: *lepton_collection_to_use)	if (abs(lep.obj.eta()) > max_lep_eta_var) max_lep_eta_var = abs(lep.obj.eta());
 
       // njets
       njets_var = preselected_jets_intree->size();
@@ -226,7 +216,7 @@ void run_it(TChain* chain, TFile* output_file)
       dR_l2_j_var = getDeltaR(lep2_closest_jet, lep2);
 
       // met
-      met_var = (*met_intree)[0].obj.Pt();
+      met_var = min( (*met_intree)[0].obj.Pt(), 400. );
 
       TLorentzVector met_tlv = setTlv( (*met_intree)[0] );
       TLorentzVector lep1_t_tlv = setTlv( lep1 );
@@ -266,20 +256,8 @@ void run_it(TChain* chain, TFile* output_file)
       l2_pt_branch = lep2_pt_var;
 
       vs_ttbar_score = TMVAReader_ttbar_->EvaluateMVA( "BDTG method" );
-      vs_ttV_score = TMVAReader_ttV_->EvaluateMVA( "BDTG method" );
-
+      vs_ttv_score = TMVAReader_ttV_->EvaluateMVA( "BDTG method" );
       
-      if ( vs_ttbar_score <= -0.2) final_shape_hist->Fill(1, mcwgt_intree);
-      else if ( vs_ttbar_score <= 0.1) final_shape_hist->Fill(2, mcwgt_intree);
-      else if ( vs_ttbar_score <= 0.4 )
-	{
-	  if ( vs_ttV_score <= 0.3 ) final_shape_hist->Fill(3, mcwgt_intree);
-	  else final_shape_hist->Fill(4, mcwgt_intree);
-	}
-      else if ( vs_ttV_score <= 0.1 ) final_shape_hist->Fill(5, mcwgt_intree);
-      else if ( vs_ttV_score <= 0.4 ) final_shape_hist->Fill(6, mcwgt_intree);
-      else final_shape_hist->Fill(7, mcwgt_intree);
-
       extraction_tree->Fill();      
     }
   
@@ -294,7 +272,7 @@ void run_it(TChain* chain, TFile* output_file)
 
 void evaluateSignalExtraction(void)
 {
-  TString output_file_name = "";
+  TString output_file_name = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root";
   TFile *io_file = new TFile(output_file_name, "UPDATE"); //"UPDATE");
   TChain *chain = new TChain("ss2l_tree");
   chain->Add(output_file_name);

@@ -42,16 +42,16 @@ void run_it(TChain* original_chain, TChain* updated_chain)
     }
   cout << "# events in tree: "<< original_chainentries << endl;  
   
-  vector<ttH::MET> *met_original_intree=0;
-  vector<ttH::MET> *met_updated_intree=0;
+  vector<ttH::Tau> *taus_original_intree=0;
+  vector<ttH::Tau> *taus_updated_intree=0;
 
   original_chain->SetBranchStatus("*",0);
-  original_chain->SetBranchStatus("met.*",1);
-  original_chain->SetBranchAddress("met", &met_original_intree);
+  original_chain->SetBranchStatus("selected_taus.*",1);
+  original_chain->SetBranchAddress("selected_taus", &taus_original_intree);
 
   TTree *updated_tree = (TTree*)updated_chain->CloneTree(0);
   updated_tree->SetName("ss2l_tree");
-  updated_tree->Branch("met", &met_updated_intree);
+  updated_tree->Branch("selected_taus", &taus_updated_intree);
 
   Int_t cachesize = 250000000;   //250 MBytes
   original_chain->SetCacheSize(cachesize);
@@ -70,7 +70,7 @@ void run_it(TChain* original_chain, TChain* updated_chain)
       ////
       //////////////////////////
 
-      met_updated_intree = met_original_intree;
+      taus_updated_intree = taus_original_intree;
       updated_tree->Fill();      
     }
     
@@ -83,15 +83,12 @@ void run_it(TChain* original_chain, TChain* updated_chain)
 
 void branchCopier(void)
 {
-  //  TString original_file_name = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttH-aMCatNLO_selection_tree_2lss.root";
-  TString original_file_name = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-powheg_selection_tree_2lss.root";
+  TString original_file_name = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttH-aMCatNLO_selection_tree_2lss.root";
   TChain *original_chain = new TChain("ss2l_tree");
   original_chain->Add(original_file_name);
 
-  //  TString updated_file_name = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root";
-  TString updated_file_name = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root";
+  TString updated_file_name = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root";
   TFile *updated_file = new TFile(updated_file_name, "UPDATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
-  //  TFile *updated_file = new TFile("test.root", "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
   TChain *updated_chain = new TChain("ss2l_tree");
   updated_chain->Add(updated_file_name);
   run_it( original_chain, updated_chain );
