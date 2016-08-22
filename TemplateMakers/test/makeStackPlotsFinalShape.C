@@ -57,21 +57,21 @@ private:
   TFile* fout;
   TH1D* template_hist;
 
-  void SetTitleAndName(TH1D* input_hist_, TString name_postfix_, TString title_postfix_ )
-  {
-    
-    
-    TString hist_name = input_hist_->GetName(); hist_name += "_"+sample.legend_name+"_"+name_postfix_;
-    TString hist_title = input_hist_->GetTitle(); hist_title += " "+sample.legend_name+" "+title_postfix_;
-    input_hist_->SetTitle(hist_title);
-    input_hist_->SetName(hist_name);
-    input_hist_->SetDirectory(fout);
+  TH1D* SetTitleAndName(TString name_postfix_, TString title_postfix_ )
+  {    
+    TString hist_name = template_hist->GetName(); hist_name += "_"+sample.legend_name+"_"+name_postfix_;
+    TString hist_title = template_hist->GetTitle(); hist_title += " "+sample.legend_name+" "+title_postfix_;
+    auto return_hist_ = new TH1D(hist_name, hist_title, template_hist->GetNbinsX(),0,7);
+    return_hist_->SetFillColor(sample.fill_color);
+    return_hist_->SetMarkerColor(sample.fill_color);
+    return return_hist_;
   }
 
   void FillCategories(int bin_num_, double weight_, TString flav_, bool isPlus_, bool bTight_, bool isTau_)
   {
     inclusive_hist->Fill( bin_num_, weight_ );
 
+    cout << flav_ << endl;
     if ( isTau_ ) tau_hist->Fill( bin_num_, weight_ );
     else if (flav_.CompareTo("ee")==0)
       {
@@ -112,39 +112,21 @@ public:
     fout = fout_;
     template_hist = template_hist_;
 
-
-    //set up individual histogram names
-    inclusive_hist = template_hist;
-    ee_plus_hist = template_hist;
-    ee_minus_hist = template_hist;
-    em_bTight_plus_hist = template_hist;
-    em_bTight_minus_hist = template_hist;
-    em_bLoose_plus_hist = template_hist;
-    em_bLoose_minus_hist = template_hist;
-    mm_bTight_plus_hist = template_hist;
-    mm_bTight_minus_hist = template_hist;
-    mm_bLoose_plus_hist = template_hist;
-    mm_bLoose_minus_hist = template_hist;
-    tau_hist = template_hist;
-    cout << "here" << endl;
-
-    SetTitleAndName(inclusive_hist,"","");
-    SetTitleAndName(ee_plus_hist,"ee_p","ee +");
-    SetTitleAndName(ee_minus_hist,"ee_m","ee -");
-    SetTitleAndName(em_bTight_plus_hist,"em_bt_p","em btight +");
-    SetTitleAndName(em_bTight_minus_hist,"em_bt_m","em btight -");
-    SetTitleAndName(em_bLoose_plus_hist,"em_bl_p","em bloose +");
-    SetTitleAndName(em_bLoose_minus_hist,"em_bl_m","em bloose -");
-    SetTitleAndName(mm_bTight_plus_hist,"mm_bt_p","mm btight +");
-    SetTitleAndName(mm_bTight_minus_hist,"mm_bt_m","mm btight -");
-    SetTitleAndName(mm_bLoose_plus_hist,"mm_bl_p","mm bloose +");
-    SetTitleAndName(mm_bLoose_minus_hist,"mm_bl_m","mm bloose -");
-    SetTitleAndName(tau_hist,"tau","tau");
-    cout << "here" << endl;
-
+    inclusive_hist = SetTitleAndName("inclusive","inclusive");
+    ee_plus_hist = SetTitleAndName("ee_p","ee +");
+    ee_minus_hist = SetTitleAndName("ee_m","ee -");
+    em_bTight_plus_hist = SetTitleAndName("em_bt_p","em btight +");
+    em_bTight_minus_hist = SetTitleAndName("em_bt_m","em btight -");
+    em_bLoose_plus_hist = SetTitleAndName("em_bl_p","em bloose +");
+    em_bLoose_minus_hist = SetTitleAndName("em_bl_m","em bloose -");
+    mm_bTight_plus_hist = SetTitleAndName("mm_bt_p","mm btight +");
+    mm_bTight_minus_hist = SetTitleAndName("mm_bt_m","mm btight -");
+    mm_bLoose_plus_hist = SetTitleAndName("mm_bl_p","mm bloose +");
+    mm_bLoose_minus_hist = SetTitleAndName("mm_bl_m","mm bloose -");
+    tau_hist = SetTitleAndName("tau","tau");
 
   }//default constructor
-
+  
   TH1D* inclusive_hist;
   TH1D* ee_plus_hist;
   TH1D* ee_minus_hist;
@@ -190,6 +172,8 @@ public:
     mm_bLoose_minus_hist->Scale( norm_factor );
     tau_hist->Scale( norm_factor );
 
+    fout->cd();
+
     ee_plus_hist->Write();
     ee_minus_hist->Write();
     em_bTight_plus_hist->Write();
@@ -207,16 +191,151 @@ public:
   virtual ~PlotObject(){}
 };
 
+class StackHelper
+{
+private:
+  std::vector<PlotObject> sample_plots;
+  THStack* inclusive_stack;
+  THStack* ee_plus_stack;
+  THStack* ee_minus_stack;
+  THStack* em_bTight_plus_stack;
+  THStack* em_bTight_minus_stack;
+  THStack* em_bLoose_plus_stack;
+  THStack* em_bLoose_minus_stack;
+  THStack* mm_bTight_plus_stack;
+  THStack* mm_bTight_minus_stack;
+  THStack* mm_bLoose_plus_stack;
+  THStack* mm_bLoose_minus_stack;
+  THStack* tau_stack;
+
+  double calculateSoSqrtB(TH1D* signal_hist, vector<TH1D*> background_hists)
+  {
+    double sOverSqrtB = 0.;
+    for (int bin=0; bin <= signal_hist->GetNbinsX(); bin++)
+      {
+	double signal = 0.;
+	double background = 0.;
+	
+	signal = signal_hist->GetBinContent(bin);
+	for (const auto & background_hist : background_hists)
+	  {
+	    background+= background_hist->GetBinContent(bin);
+	  }
+	sOverSqrtB += signal / sqrt(background);
+      }
+    return sOverSqrtB;
+  }
+  
+  void makeStacks(THStack* input_stack, double sigOverSqrtBkg_)
+  {
+    TString input_stack_name = input_stack->GetName();
+    TH1D* hist_to_stack;
+
+    TH1D* signal_hist;
+    vector<TH1D*> background_hists;
+    //loop over samples
+    for (const auto & myPlotObj : sample_plots)
+      {
+	if ( input_stack_name.CompareTo("inclusive")==0 ) hist_to_stack = myPlotObj.inclusive_hist; 
+	else if ( input_stack_name.CompareTo("ee_p")==0 ) hist_to_stack = myPlotObj.ee_plus_hist; 
+	else if ( input_stack_name.CompareTo("ee_m")==0 ) hist_to_stack = myPlotObj.ee_minus_hist; 
+	else if ( input_stack_name.CompareTo("em_bt_p")==0 ) hist_to_stack = myPlotObj.em_bTight_plus_hist; 
+	else if ( input_stack_name.CompareTo("em_bt_m")==0 ) hist_to_stack = myPlotObj.em_bTight_minus_hist; 
+	else if ( input_stack_name.CompareTo("em_bl_p")==0 ) hist_to_stack = myPlotObj.em_bLoose_plus_hist; 
+	else if ( input_stack_name.CompareTo("em_bl_m")==0 ) hist_to_stack = myPlotObj.em_bLoose_minus_hist; 
+	else if ( input_stack_name.CompareTo("mm_bt_p")==0 ) hist_to_stack = myPlotObj.mm_bTight_plus_hist; 
+	else if ( input_stack_name.CompareTo("mm_bt_m")==0 ) hist_to_stack = myPlotObj.mm_bTight_minus_hist; 
+	else if ( input_stack_name.CompareTo("mm_bl_p")==0 ) hist_to_stack = myPlotObj.mm_bLoose_plus_hist; 
+	else if ( input_stack_name.CompareTo("mm_bl_m")==0 ) hist_to_stack = myPlotObj.mm_bLoose_minus_hist;
+	else if ( input_stack_name.CompareTo("tau")==0 ) hist_to_stack = myPlotObj.tau_hist;
+	input_stack->Add(hist_to_stack);
+
+	if ( myPlotObj.sample_plots.legend_name.CompareTo("tth") == 0) signal_hist = hist_to_stack;
+	else background_hists.push_back( hist_to_stack );
+      }
+    
+    sigOverSqrtBkg_ += calculateSoSqrtB(signal_hist, background_hists);
+  }
+
+public:
+  StackHelper(std::vector<PlotObject> sample_plots_)
+  {
+    sample_plots = sample_plots_;
+
+    inclusive_stack = new THStack("inclusive","inclusive");
+    ee_plus_stack = new THStack("ee_p","ee +");
+    ee_minus_stack = new THStack("ee_m","ee -");
+    mm_bTight_plus_stack = new THStack("em_bt_p","em btight +");
+    em_bTight_minus_stack = new THStack("em_bt_m","em btight -");
+    em_bLoose_plus_stack = new THStack("em_bl_p","em bloose +");
+    em_bLoose_minus_stack = new THStack("em_bl_m","em bloose -");
+    mm_bTight_plus_stack = new THStack("mm_bt_p","mm btight +");
+    mm_bTight_minus_stack = new THStack("mm_bt_m","mm btight -");
+    mm_bLoose_plus_stack = new THStack("mm_bl_p","mm bloose +");
+    mm_bLoose_minus_stack = new THStack("mm_bl_m","mm bloose -");
+    tau_stack = new THStack("tau","tau");
+  
+    dobule sigOverSqrtB = 0.;
+    dobule sigOverSqrtB_noCat = 0.;
+
+    makeStacks(inclusive_stack, sigOverSqrtB_noCat);
+    makeStacks(ee_plus_stack, sigOverSqrtB);
+    makeStacks(ee_minus_stack, sigOverSqrtB);
+    makeStacks(em_bTight_plus_stack, sigOverSqrtB);
+    makeStacks(em_bTight_minus_stack, sigOverSqrtB);
+    makeStacks(em_bLoose_plus_stack, sigOverSqrtB);
+    makeStacks(em_bLoose_minus_stack, sigOverSqrtB);
+    makeStacks(mm_bTight_plus_stack, sigOverSqrtB);
+    makeStacks(mm_bTight_minus_stack, sigOverSqrtB);
+    makeStacks(mm_bLoose_plus_stack, sigOverSqrtB);
+    makeStacks(mm_bLoose_minus_stack, sigOverSqrtB);
+    makeStacks(tau_stack, sigOverSqrtB);
+
+    cout << "Signal / sqrt(Background) without categories = " << sigOverSqrtB_noCat << endl; 
+    cout << "Signal / sqrt(Background) = " << sigOverSqrtB << endl; 
+
+  }//default constructor
+  void drawSingleHist(THStack* stack_to_draw_)
+  {
+    TString stack_name = stack_to_draw_->GetName();
+    TString can_name = stack_name + "_can";
+    TString save_name = stack_name + ".root";
+    TCanvas* can = new TCanvas(can_name, can_name,10,32,530,580);
+    //    TLegend *leg = new TLegend(0.4410646,0.7296544,0.8536122,0.8690078);
+    //    leg->SetFillColor(0);
+    stack_to_draw_->Draw();
+    can->Modified();
+    gPad->BuildLegend(0.4410646,0.7296544,0.8536122,0.8690078);
+    can->SaveAs(save_name);
+  }
+  void Draw(void)
+  {
+    drawSingleHist(inclusive_stack);
+    drawSingleHist(ee_plus_stack);
+    drawSingleHist(ee_minus_stack);
+    drawSingleHist(em_bTight_plus_stack);
+    drawSingleHist(em_bTight_minus_stack);
+    drawSingleHist(em_bLoose_plus_stack);
+    drawSingleHist(em_bLoose_minus_stack);
+    drawSingleHist(mm_bTight_plus_stack);
+    drawSingleHist(mm_bTight_minus_stack);
+    drawSingleHist(mm_bLoose_plus_stack);
+    drawSingleHist(mm_bLoose_minus_stack);
+    drawSingleHist(tau_stack);
+  }
+  virtual ~StackHelper(){}
+};
 
 void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* output_file_)
 {
-  //  StackObject myStackObject;
+  vector<PlotObject> plotObject_vector;
   for(const auto & sample : sample_vector_)
     {
       PlotObject myPlotObj(input_hist, sample, output_file_);
 
       TFile* input_file = new TFile(sample.file_name,"READONLY");
       TTree* input_tree = (TTree*)input_file->Get("extraction_tree");
+
       //loop over trees
       int chainentries = input_tree->GetEntries();
 
@@ -227,7 +346,7 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       bool isBtight_branch=false;
       bool isPositive_branch=false;
       bool isTau_branch=false;
-      TString flavor_branch = "null";
+      TString *flavor_branch=0;
 
       //      input_tree->SetBranchStatus("*",0);
       //      input_tree->SetBranchStatus("mcwgt",1);
@@ -236,10 +355,10 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       input_tree->SetBranchAddress("vs_ttbar_bdt_score", &vs_ttbar_score_branch);
       input_tree->SetBranchAddress("vs_ttbar_bdtReco_bdt_score", &vs_ttbar_bdtReco_score_branch);
       input_tree->SetBranchAddress("vs_ttv_bdt_score", &vs_ttv_score_branch);
-      input_tree->Branch("bTight_category", &isBtight_branch);
-      input_tree->Branch("posCharge_category", &isPositive_branch);
-      input_tree->Branch("tau_category", &isTau_branch);
-      input_tree->Branch("flavor_category", &flavor_branch);
+      input_tree->SetBranchAddress("bTight_category", &isBtight_branch);
+      input_tree->SetBranchAddress("posCharge_category", &isPositive_branch);
+      input_tree->SetBranchAddress("tau_category", &isTau_branch);
+      input_tree->SetBranchAddress("flavor_category", &flavor_branch);
 
       Int_t cachesize = 250000000;   //250 MBytes
       input_tree->SetCacheSize(cachesize);
@@ -248,32 +367,21 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
 	{
 	  printProgress(i,chainentries);
 	  input_tree->GetEntry(i);
-	  myPlotObj.Fill(vs_ttbar_score_branch, vs_ttv_score_branch, flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
+	  myPlotObj.Fill(vs_ttbar_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
 	  //	  myPlotObj.Fill(vs_ttbar_bdtReco_score_branch, vs_ttv_score_branch, flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
 	}
       input_file->Close();
       myPlotObj.Write();
-      //etc
-      //      myStackPlotObj.Add( myPlotObj, sample );
-      // stack1->Add(hist1_);
-      // stack1_legend->Add( hist1_, sample.legend_name );
-      // stack2->Add(hist2_);
-      // stack2_legend->Add( hist2_, sample.legend_name );
-      //etc
+      plotObject_vector.push_back( myPlotObj );
     }
-
-  //  myStackPlotObj.Draw();
-  // TCanvas can1;
-  // stack1->Draw();
-  // TCanvas can2;
-  // stack2->Draw();
-  //etc 
+  StackHelper myStackHelper( plotObject_vector );
+  myStackHelper.Draw();
   output_file_->Close();
 }
 
 void makeStackPlotsFinalShape(void)
 {
-  Sample tth("ttH", 2, 1, 0.2586, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root");
+  Sample tth("tth", 2, 1, 0.2586, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root");
   Sample ttbar_fakes("fakes", 1, 4096, 189., "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root");
   
   std::vector<Sample> sample_vector; //push back in order you want stacked

@@ -63,10 +63,17 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
       loadFile(chain, hist_sum, "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_SemiLep_t_ext/160810_172346/0000/" ,1, 93);
     }
   
+  else if (sample == "ttbar-diLep-madgraph")
+    {
+      loadFile(chain, hist_sum, "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_Dilep/160815_143438/0000/",1, 13);
+    }
+
   else if (sample == "ttbar-allHad-madgraph")
     {
       loadFile(chain, hist_sum, "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_fully_inclusive/160707_121042/0000/" ,1, 22);
     }
+
+  
 
   else if (sample == "ttbar-inclusive-aMCatNLO")
     {      

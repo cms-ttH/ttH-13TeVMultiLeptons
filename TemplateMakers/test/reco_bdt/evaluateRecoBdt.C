@@ -153,8 +153,8 @@ void run_it(TChain* chain, TFile *output_file_)
       /////////////////////
       
 
-      //      bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree);
-      bdtReconstructor.initialize(preselected_jets_intree, loose_leptons_intree);
+      bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree);
+      //      bdtReconstructor.initialize(preselected_jets_intree, loose_leptons_intree);
       bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
 					   lep_from_higgs_truth_intree,
 					   b_from_leptop_truth_intree,
@@ -191,11 +191,11 @@ void run_it(TChain* chain, TFile *output_file_)
 void evaluateRecoBdt(void)
 {
 
-  //  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/";
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/training/";
+  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/";
+  //  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/training/";
 
   //  TString output_file_name = output_dir+"ttbar_bdtEval.root";
-  TString output_file_name = output_dir+"ttbar_mg5MLM_forSigExtractionTraingLoosenedSelection_bdtEval_v1p5.root";
+  TString output_file_name = output_dir+"ttz_aMCatNLO_2lss_bdtEval_v1p5.root";
   TFile *output_file = new TFile(output_file_name, "RECREATE"); //"UPDATE");
 
   TChain *tth_chain = new TChain("ss2l_tree;");
@@ -204,7 +204,7 @@ void evaluateRecoBdt(void)
   //  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttH-aMC@NLO_selection_tree_2l_ss.root");
   //  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-powheg_selection_tree_2l_ss.root");
   //  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-madgraph_selection_tree_2l_ss.root");
-  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-madgraph_relaxedTrainSelection_tree_2lss.root");
+  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttZ-aMCatNLO_selection_tree_2lss.root");
   run_it(tth_chain,output_file);
 
 }

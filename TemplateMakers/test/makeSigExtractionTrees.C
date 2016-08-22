@@ -128,8 +128,8 @@ void run_it(TChain* chain, TFile *io_file_)
       ////
       //////////////////////////
 
-      auto lepton_collection_to_use = tight_leptons_intree;
-      //      auto lepton_collection_to_use = loose_leptons_intree;
+      //      auto lepton_collection_to_use = tight_leptons_intree;
+      auto lepton_collection_to_use = loose_leptons_intree;
 
       // max eta
       max_lep_eta_branch = -1.;
@@ -211,9 +211,7 @@ void run_it(TChain* chain, TFile *io_file_)
 
 void makeSigExtractionTrees(void)
 {
-  //  TString output_file = "signal_extraction/training/ttbar-semiLep-madgraph_relaxedTrainSelection_tree_2lss.root";
-  TString output_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/testing/ttH_aMCatNLO_bdtEval.root";
-  //  TString output_file = "signal_extraction/training/ttH_powhegForSigExtraction_bdtEval_v1p5.root";
+  TString output_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/tth_pow_relaxed_2lss_bdtEval_v1p5_test.root";
   TFile *io_file = new TFile(output_file, "UPDATE"); // #, 'test' ) // "RECREATE");
   TChain *chain = new TChain("ss2l_tree");
   chain->Add(output_file);
