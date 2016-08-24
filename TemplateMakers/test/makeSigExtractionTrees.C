@@ -89,6 +89,8 @@ void run_it(TChain* chain, TFile *io_file_)
   double mt_lep1_met_branch;
   double l1_pt_branch;
   double l2_pt_branch;
+  bool bTight_branch;
+
 
   TTree *ttH_vs_ttbar_tree = (TTree*)chain->CloneTree(0);
   ttH_vs_ttbar_tree->SetName("tth_vs_ttbar_tree");
@@ -99,6 +101,7 @@ void run_it(TChain* chain, TFile *io_file_)
   ttH_vs_ttbar_tree->Branch("met", &met_branch);  
   ttH_vs_ttbar_tree->Branch("avg_dR_jets", &avg_dr_jets_branch);
   ttH_vs_ttbar_tree->Branch("MT_l1_met", &mt_lep1_met_branch);
+  ttH_vs_ttbar_tree->Branch("isBtight", &bTight_branch);
 
   TTree *ttH_vs_ttV_tree = (TTree*)chain->CloneTree(0);
   ttH_vs_ttV_tree->SetName("tth_vs_ttV_tree");
@@ -109,6 +112,7 @@ void run_it(TChain* chain, TFile *io_file_)
   ttH_vs_ttV_tree->Branch("MT_l1_met", &mt_lep1_met_branch);
   ttH_vs_ttV_tree->Branch("l1_pt", &l1_pt_branch);
   ttH_vs_ttV_tree->Branch("l2_pt", &l2_pt_branch);
+  ttH_vs_ttV_tree->Branch("isBtight", &bTight_branch);
 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
@@ -178,8 +182,10 @@ void run_it(TChain* chain, TFile *io_file_)
       int jet1_counter = 0;
       double dr_sum = 0.;
       int dr_denom = 0;
+      int num_tight = 0;
       for (const auto & jet1 : *preselected_jets_intree)
 	{
+	  if ( jet1.csv >= 0.8 ) num_tight +=1;
 	  int jet2_counter = -1;
 	  for (const auto & jet2 : *preselected_jets_intree)
 	    {
@@ -191,7 +197,7 @@ void run_it(TChain* chain, TFile *io_file_)
 	    }
 	  jet1_counter +=1;
 	}
-      
+      bTight_branch = ( num_tight > 1);
       avg_dr_jets_branch = dr_sum/double(dr_denom);
 
       ttH_vs_ttbar_tree->Fill();
@@ -211,7 +217,8 @@ void run_it(TChain* chain, TFile *io_file_)
 
 void makeSigExtractionTrees(void)
 {
-  TString output_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/tth_pow_relaxed_2lss_bdtEval_v1p5_test.root";
+  //  TString output_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/tth_pow_relaxed_2lss_bdtEval_v1p5__test.root";
+  TString output_file = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/training/ttbar_mg5MLM_forSigExtractionTraingLoosenedSelection_bdtEval_v1p5__test.root";
   TFile *io_file = new TFile(output_file, "UPDATE"); // #, 'test' ) // "RECREATE");
   TChain *chain = new TChain("ss2l_tree");
   chain->Add(output_file);

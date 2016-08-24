@@ -66,6 +66,7 @@ TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
   else if (sample == "ttbar-diLep-madgraph")
     {
       loadFile(chain, hist_sum, "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_Dilep/160815_143438/0000/",1, 13);
+      loadFile(chain, hist_sum, "/store/user/muell149/ttH-leptons_Skims/80X_nTuples_v0/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM_Dilep_ext/160815_143449/0000/",1, 51);
     }
 
   else if (sample == "ttbar-allHad-madgraph")
