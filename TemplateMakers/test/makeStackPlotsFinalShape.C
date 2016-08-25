@@ -64,6 +64,8 @@ private:
     TString hist_title = template_hist->GetTitle(); hist_title += " "+sample.legend_name+" "+title_postfix_;
     auto return_hist_ = new TH1D(hist_name, hist_title, template_hist->GetNbinsX(),1,8);
     return_hist_->SetFillColor(sample.fill_color);
+    return_hist_->SetFillStyle(sample.fill_style);
+    return_hist_->SetLineColor(sample.fill_color);
     return_hist_->SetMarkerColor(sample.fill_color);
     return return_hist_;
   }
@@ -71,8 +73,6 @@ private:
   void FillCategories(int bin_num_, double weight_, TString flav_, bool isPlus_, bool bTight_, bool isTau_)
   {
     
-    
-
     inclusive_hist->Fill( bin_num_, weight_ );
 
     if ( isTau_ ) tau_hist->Fill( bin_num_, weight_ );
@@ -150,28 +150,28 @@ public:
   {
     //this is where the 2D binning is defined!!!!
     //old shape
-    // if ( ttbar_score <= -0.2) FillCategories(1, weight, flavor, isPlus, bTight, isTau);//-0.2 //-0.2=best
-    // else if ( ttbar_score <= 0.1) FillCategories(2, weight, flavor, isPlus, bTight, isTau);//0.1 //0.1=best
-    // else if ( ttbar_score <= 0.4 ) //0.4 //0.55=best
-    //   {
-    // 	if ( ttv_score <= 0.3 ) FillCategories(3, weight, flavor, isPlus, bTight, isTau); //0.3 //0.2=best
-    // 	else  FillCategories(4, weight, flavor, isPlus, bTight, isTau);
-    //   }
-    // else if ( ttv_score <= 0.1 ) FillCategories(5, weight, flavor, isPlus, bTight, isTau);//0.1 //0.25=best
-    // else if ( ttv_score <= 0.3 ) FillCategories(6, weight, flavor, isPlus, bTight, isTau); //0.4 //0.4=best 
-    // else FillCategories(7, weight, flavor, isPlus, bTight, isTau);
-
-    //new shape
     if ( ttbar_score <= -0.2) FillCategories(1, weight, flavor, isPlus, bTight, isTau);//-0.2 //-0.2=best
     else if ( ttbar_score <= 0.1) FillCategories(2, weight, flavor, isPlus, bTight, isTau);//0.1 //0.1=best
-    else if ( ttbar_score <= 0.55 ) //0.4 //0.55=best
+    else if ( ttbar_score <= 0.4 ) //0.4 //0.55=best
       {
-    	if ( ttv_score <= 0.2 ) FillCategories(3, weight, flavor, isPlus, bTight, isTau); //0.3 //0.2=best
+    	if ( ttv_score <= 0.3 ) FillCategories(3, weight, flavor, isPlus, bTight, isTau); //0.3 //0.2=best
     	else  FillCategories(4, weight, flavor, isPlus, bTight, isTau);
       }
-    else if ( ttv_score <= 0.3 ) FillCategories(5, weight, flavor, isPlus, bTight, isTau);//0.1 //0.25=best
+    else if ( ttv_score <= 0.1 ) FillCategories(5, weight, flavor, isPlus, bTight, isTau);//0.1 //0.25=best
     else if ( ttv_score <= 0.4 ) FillCategories(6, weight, flavor, isPlus, bTight, isTau); //0.4 //0.4=best 
     else FillCategories(7, weight, flavor, isPlus, bTight, isTau);
+
+    //new shape
+    // if ( ttbar_score <= -0.2) FillCategories(1, weight, flavor, isPlus, bTight, isTau);//-0.2 //-0.2=best
+    // else if ( ttbar_score <= 0.1) FillCategories(2, weight, flavor, isPlus, bTight, isTau);//0.1 //0.1=best
+    // else if ( ttbar_score <= 0.55 ) //0.4 //0.55=best
+    //   {
+    // 	if ( ttv_score <= 0.2 ) FillCategories(3, weight, flavor, isPlus, bTight, isTau); //0.3 //0.2=best
+    // 	else  FillCategories(4, weight, flavor, isPlus, bTight, isTau);
+    //   }
+    // else if ( ttv_score <= 0.25 ) FillCategories(5, weight, flavor, isPlus, bTight, isTau);//0.1 //0.25=best
+    // else if ( ttv_score <= 0.4 ) FillCategories(6, weight, flavor, isPlus, bTight, isTau); //0.4 //0.4=best 
+    // else FillCategories(7, weight, flavor, isPlus, bTight, isTau);
 
 
   }
@@ -242,8 +242,7 @@ private:
 	  {
 	    background += background_hist->GetBinContent(bin);
 	  }
-	sOverSqrtB += signal / sqrt(background);
-	//	sOverSqrtB += signal / background;
+	sOverSqrtB += pow(signal / sqrt(background),2);
       }
     return sOverSqrtB;
   }
@@ -253,12 +252,13 @@ private:
     TString input_stack_name = input_stack->GetName();
     TH1D* hist_to_stack;
 
-    TH1D* signal_hist;
+    TH1D* signal_hist=0;
     vector<TH1D*> background_hists;
     //loop over samples
     for (const auto & myPlotObj : sample_plots)
       {
-	if ( input_stack_name.CompareTo("inclusive")==0 ) hist_to_stack = myPlotObj.inclusive_hist; 
+	if ( myPlotObj.sample.legend_name.CompareTo("data_obs") == 0) continue; //don't stack dummy-data
+	if ( input_stack_name.CompareTo("inclusive")==0 ) hist_to_stack = myPlotObj.inclusive_hist;
 	else if ( input_stack_name.CompareTo("ee_p")==0 ) hist_to_stack = myPlotObj.ee_plus_hist; 
 	else if ( input_stack_name.CompareTo("ee_m")==0 ) hist_to_stack = myPlotObj.ee_minus_hist; 
 	else if ( input_stack_name.CompareTo("em_bt_p")==0 ) hist_to_stack = myPlotObj.em_bTight_plus_hist; 
@@ -274,13 +274,14 @@ private:
 
 	if ( myPlotObj.sample.legend_name.CompareTo("ttH") == 0) signal_hist = hist_to_stack;
 	else background_hists.push_back( hist_to_stack );
+	    
       }
     
     if (signal_hist)
       {
 	sigOverSqrtBkg_ += calculateSoSqrtB(signal_hist, background_hists);
       }
-    cout << input_stack_name << ": " << setprecision(10) << sigOverSqrtBkg_ << endl;
+    //    cout << input_stack_name << ": " << setprecision(10) << sigOverSqrtBkg_ << endl;
   }
 
 public:
@@ -317,8 +318,8 @@ public:
     makeStacks(mm_bLoose_minus_stack, sigOverSqrtB);
     makeStacks(tau_stack, sigOverSqrtB);
 
-    cout << "Signal / sqrt(Background) without categories = " << sigOverSqrtB_noCat << endl; 
-    cout << "Signal / sqrt(Background) = " << sigOverSqrtB << endl; 
+    cout << "Signal / sqrt(Background) without categories = " << sqrt(sigOverSqrtB_noCat) << endl; 
+    cout << "Signal / sqrt(Background) = " << sqrt(sigOverSqrtB) << endl; 
 
   }//default constructor
   void drawSingleHist(THStack* stack_to_draw_)
@@ -329,13 +330,13 @@ public:
     TCanvas* can = new TCanvas(can_name, can_name,10,32,530,580);
     //    TLegend *leg = new TLegend(0.4410646,0.7296544,0.8536122,0.8690078);
     //    leg->SetFillColor(0);
-    stack_to_draw_->Draw();
-    //    gPad->BuildLegend(0.4410646,0.7296544,0.8536122,0.8690078);
-    //    can->SaveAs(save_name);
+    stack_to_draw_->Draw("hist");
+    gPad->BuildLegend(0.4410646,0.7296544,0.8536122,0.8690078);
+    can->SaveAs(save_name);
   }
   void Draw(void)
   {
-    // drawSingleHist(inclusive_stack);
+    drawSingleHist(inclusive_stack);
     // drawSingleHist(ee_plus_stack);
     // drawSingleHist(ee_minus_stack);
     // drawSingleHist(em_bTight_plus_stack);
@@ -390,10 +391,10 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       input_tree->SetCacheLearnEntries(20); 
       for(int i=0; i<chainentries; i++)
 	{
-	  printProgress(i,chainentries);
+	  //	  printProgress(i,chainentries);
 	  input_tree->GetEntry(i);
-	  //myPlotObj.Fill(vs_ttbar_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
-	  myPlotObj.Fill(vs_ttbar_bdtReco_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
+	  myPlotObj.Fill(vs_ttbar_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
+	  //myPlotObj.Fill(vs_ttbar_bdtReco_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
 	}
       input_file->Close();
       myPlotObj.Write();
@@ -407,24 +408,28 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
 
 void makeStackPlotsFinalShape(void)
 {
-  double tth_weight = 0.2586*(32206./2965618.);
-  double ttbar_semilep_weight = 182.*(3090./112551635.);
-  double ttw_weight = 0.2043*(3291./130274.);
-  double ttz_weight = 0.2529*(1021./185229.);
-  double ttbar_dilep_weight = 87.3*(833./30682157.);
+  double int_lumi = 1290.; //in pb
+  double tth_weight = 0.2586*(32206./2965618.)*int_lumi;
+  double ttbar_semilep_weight = 182.*(3090./112551635.)*int_lumi;
+  double ttw_weight = 0.2043*(3291./130274.)*int_lumi;
+  double ttz_weight = 0.2529*(1021./185229.)*int_lumi;
+  double ttbar_dilep_weight = 87.3*(833./30682157.)*int_lumi;
 
-  Sample tth("ttH", 2, 1, tth_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root");
-  Sample ttbar_fakes("fakes", 16, 1, ttbar_semilep_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root");
-  Sample ttw("ttW", 32, 1, ttw_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttw_aMCatNLO_2lss_bdtEval_v1p5.root");
-  Sample ttz("ttZ", 8, 1, ttz_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttz_aMCatNLO_2lss_bdtEval_v1p5.root");
-  Sample ttbar_flips("flips", 1, 1, ttbar_dilep_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_dilep_mg5mlm_2lss_bdtEval_v1p5.root");
-  
+  Sample tth("ttH", 2, 1001, tth_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root");
+  Sample ttbar_fakes("fakes", 1, 3005, ttbar_semilep_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root");
+  Sample ttw("ttW", 32, 1001, ttw_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttw_aMCatNLO_2lss_bdtEval_v1p5.root");
+  Sample ttz("ttZ", 8, 1001, ttz_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttz_aMCatNLO_2lss_bdtEval_v1p5.root");
+  Sample ttbar_flips("flips", 1, 3006, ttbar_dilep_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_dilep_mg5mlm_2lss_bdtEval_v1p5.root");
+  Sample psuedo_data("data_obs", 1, 3005, 1., "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root");
+
   std::vector<Sample> sample_vector; //push back in order you want stacked
-  sample_vector.push_back(tth);
+  sample_vector.push_back(ttbar_flips);
   sample_vector.push_back(ttbar_fakes);
   sample_vector.push_back(ttw);
   sample_vector.push_back(ttz);
-  sample_vector.push_back(ttbar_flips);
+  sample_vector.push_back(tth);
+  sample_vector.push_back(psuedo_data);
+
 
   TFile *output_file = new TFile("fatStackPlots.root", "RECREATE"); //"UPDATE");
   TH1D* input_hist = new TH1D("bdt_output_","BDT output 2lss",7,1,8);
