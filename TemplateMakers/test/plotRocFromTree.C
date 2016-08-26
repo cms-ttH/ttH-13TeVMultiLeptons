@@ -33,7 +33,7 @@ private:
       }
     
     TGraph* roc_curve = new TGraph(num_bins,sig_eff,bkg_rej);
-    TString hist_title = "title goes here";
+    TString hist_title = "";
     roc_curve->SetTitle(hist_title);
     roc_curve->GetXaxis()->SetRangeUser(0.,1.);
     roc_curve->GetYaxis()->SetRangeUser(0.,1.);
@@ -110,7 +110,7 @@ void drawRocs(vector<RocObject> roc_vec)
     }
   leg->SetFillColor(0);
   leg->Draw("same");
-  can1->SaveAs("roc.png");  
+  can1->SaveAs("roc.pdf");  
 }
 
 void plotRocFromTree(void)
@@ -120,17 +120,18 @@ void plotRocFromTree(void)
   int num_bins = 100;
   double xmin = -1;
   double xmax = 1;
-  TString tree_name = "ss2l_tree";
+  TString tree_name = "extraction_tree_v2";
   
   TString signal_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root";
   TString background_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root";  
-  RocObject newRoc(signal_file1, background_file1, tree_name, "new", variable_name, num_bins, xmin, xmax, 1);
+  RocObject newRoc(signal_file1, background_file1, "extraction_tree", "bT/L for recoBDT only", "vs_ttbar_bdtReco_bdt_score", num_bins, xmin, xmax, 1);
   roc_vector.push_back(newRoc);
 
-  TString signal_file2 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p6_bTightLoose/ttH_bdtEval.root";
-  TString background_file2 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p6_bTightLoose/ttbar_bdtEval.root";
-  RocObject oldRoc(signal_file2, background_file2, tree_name, "old", variable_name, num_bins, xmin, xmax, 2);
+  RocObject oldRoc(signal_file1, background_file1, "extraction_tree_v2", "bT/L for sig extr", "vs_ttbar_bdtReco_bdt_score", num_bins, xmin, xmax, 2);
   roc_vector.push_back(oldRoc);
+
+  RocObject old1Roc(signal_file1, background_file1, "extraction_tree_v2", "ichep sig extr", "vs_ttbar_bdt_score", num_bins, xmin, xmax, 4);
+  roc_vector.push_back(old1Roc);
 
   drawRocs(roc_vector);
 }
