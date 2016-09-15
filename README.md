@@ -18,7 +18,7 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 
 For now, CMSSW_8_0_13 (and later) seems to be broken so check out an additional package and edit the following:
 
-    	git cms-addpkg CommonTools/Utils
+	git cms-addpkg CommonTools/Utils
 	emacs CommonTools/Utils/interface/normalizedPhi.h
 
 Replace:
