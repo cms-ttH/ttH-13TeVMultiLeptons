@@ -6,23 +6,30 @@ The locations of the latest trees are [here](https://twiki.cern.ch/twiki/bin/vie
 
 ## Installation
 
-See the 8 TeV-based [DIL twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NovaDilWorkflow) for more information.
-
 To get started tree-making from miniAOD (on an SL6 machine) do:        
         
-        cmsrel CMSSW_7_6_3
-        cd CMSSW_7_6_3/src
+        cmsrel CMSSW_8_0_13
+        cd CMSSW_8_0_13/src
         cmsenv        
         git cms-init
         git clone git@github.com:cms-ttH/MiniAOD.git
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
         git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
+
+For now, CMSSW_8_0_13 (and later) seems to be broken so check out an additional package and edit the following:
+
+    	git cms-addpkg CommonTools/Utils
+	emacs CommonTools/Utils/interface/normalizedPhi.h
+
+Replace:
+	#include "DataFormats/Math/include/normalizedPhi.h"
+
+With:
+	#include "DataFormats/Math/interface/normalizedPhi.h"
+
+And compile:
+
         scram b -j 8
-
-Coming soon (with new lMVA vars):
-
-	wget -P ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/ https://github.com/CERN-PH-CMG/cmg-cmssw/blob/CMGTools-from-CMSSW_7_4_12/CMGTools/TTHAnalysis/data/leptonMVA/tth/el_BDTG.weights.xml
-	wget -P ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/lepMVA_weights/ https://github.com/CERN-PH-CMG/cmg-cmssw/blob/CMGTools-from-CMSSW_7_4_12/CMGTools/TTHAnalysis/data/leptonMVA/tth/mu_BDTG.weights.xml
 
 Then try running over some miniAOD:
 
@@ -37,3 +44,7 @@ To view the tth-specific classes' TLorentzVectors in the TBrowser, add the follo
 ## Running the full chain
 
 ### See [Here](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/doc/GENERAL.md)
+
+## 8 TeV reference twiki
+
+### See [Here](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NovaDilWorkflow) 
