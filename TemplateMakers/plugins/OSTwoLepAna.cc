@@ -195,8 +195,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////	
 	
-	bool skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
-	//	bool skim_statement = true;
+	// bool skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
+   	bool skim_statement = true;
         if ( skim_statement )
         {
             
@@ -248,8 +248,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             //vecPatJet cleaned_rawJets_uncor  = cleanObjects<pat::Jet,reco::LeafCandidate>(rawJets,selectedLeptons_forcleaning,0.4);
 	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
 
-	    vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  
-            //vecPatJet correctedJets_noSys		       	= cleaned_rawJets;
+	    //vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  
+        vecPatJet correctedJets_noSys		       	= cleaned_rawJets; //Relying on jet corrections being reapplied upstream
 	    vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' ); 
 	    vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );
 	    vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );
