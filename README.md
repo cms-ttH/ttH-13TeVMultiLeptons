@@ -8,8 +8,8 @@ The locations of the latest trees are [here](https://twiki.cern.ch/twiki/bin/vie
 
 To get started tree-making from miniAOD (on an SL6 machine) do:        
         
-        cmsrel CMSSW_8_0_13
-        cd CMSSW_8_0_13/src
+        cmsrel CMSSW_8_0_14
+        cd CMSSW_8_0_14/src
         cmsenv        
         git cms-init
         git clone git@github.com:cms-ttH/MiniAOD.git
