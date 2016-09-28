@@ -106,16 +106,10 @@ process.OSTwoLepAna.debug = False
 
 ######################################
 
-if len(sys.argv)>3:
-    outfile = sys.argv[3]
-    process.TFileService = cms.Service("TFileService",
-        fileName = cms.string(outfile)
-    )
+process.TFileService = cms.Service("TFileService",
+                                   fileName = cms.string("charlie_tree.root")
+                                   )
     	
-else:
-    process.TFileService = cms.Service("TFileService",
-        fileName = cms.string("tree_test_.root")
-    )
 
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
