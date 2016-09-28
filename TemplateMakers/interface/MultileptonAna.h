@@ -133,6 +133,7 @@ class MultileptonAna: public MiniAODHelper
   string sampleName;
   int sampleNumber;
   bool debug;
+  bool skim;
   int eventcount;
   
   void detectData(string sampleName);

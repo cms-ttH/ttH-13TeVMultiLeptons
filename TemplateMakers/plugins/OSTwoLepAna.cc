@@ -6,6 +6,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   hltPrescaleProvider_(constructparams, consumesCollector(), *this){ //Anything that needs to be done at creation time
   
   debug = constructparams.getParameter<bool> ("debug");
+  skim = constructparams.getParameter<bool> ("skim");
   entire_pset = constructparams;
   parse_params();
   
@@ -195,8 +196,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	///
 	////////	
 	
-	// bool skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
-   	bool skim_statement = true;
+	bool skim_statement = true;
+	if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
+
         if ( skim_statement )
         {
             

@@ -1,7 +1,17 @@
 import FWCore.ParameterSet.Config as cms
+import FWCore.ParameterSet.VarParsing as VarParsing
 import sys
 import os
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+
+
+options = VarParsing.VarParsing('analysis')
+options.maxEvents = -1
+options.register("skim", False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+"Produce skimmed trees.")
+options.parseArguments()
 
 process = cms.Process("Demo")
 
@@ -19,7 +29,7 @@ else:
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1) # number of events
+    input = cms.untracked.int32(options.maxEvents) # number of events
 )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
@@ -30,8 +40,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 process.source = cms.Source("PoolSource",
 #    	fileNames = cms.untracked.vstring( infile ),        
-    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
+#    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/50000/000FF6AC-9F2A-E611-A063-0CC47A4C8EB0.root" ),
+    	fileNames = cms.untracked.vstring( "root://xrootd.unl.edu//store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/premix_withHLT_80X_mcRun2_asymptotic_v14-v1/90000/0A37DE02-3F75-E611-A683-001EC94BE9F4.root" ),
 #        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
 
 )
@@ -45,6 +56,7 @@ if isData:
     cmsswbase = os.environ['CMSSW_BASE']
     import FWCore.PythonUtilities.LumiList as LumiList
     process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/NOVa/2015json/goldjsnv2.txt').getVLuminosityBlockRange()
+
 
 ######################################
 #JEC
@@ -63,7 +75,6 @@ process.patJetsReapplyJEC = updatedPatJets.clone(
  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
  )
 
-
 ######################################
 
 ## Here, load the analysis:
@@ -80,19 +91,6 @@ process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
 
-### new choices for btagging: ###
-# combinedSecondaryVertexBJetTags
-# pfJetBProbabilityBJetTags
-# pfJetProbabilityBJetTags  
-# pfTrackCountingHighPurBJetTags 
-# pfTrackCountingHighEffBJetTags 
-# pfSimpleSecondaryVertexHighEffBJetTags  
-# pfSimpleSecondaryVertexHighPurBJetTags  
-# pfCombinedSecondaryVertexV2BJetTags 
-# pfCombinedInclusiveSecondaryVertexV2BJetTags 
-# pfCombinedSecondaryVertexSoftLeptonBJetTags
-# pfCombinedMVABJetTags
-
 if isData:
     process.OSTwoLepAna.setupoptions.isdata = True
 else:
@@ -104,10 +102,12 @@ process.OSTwoLepAna.triggers.hltlabel = "HLT"
 
 process.OSTwoLepAna.debug = False
 
+process.OSTwoLepAna.skim = cms.bool( options.skim )
+
 ######################################
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("charlie_tree.root")
+                                   fileName = cms.string("output_tree.root")
                                    )
     	
 

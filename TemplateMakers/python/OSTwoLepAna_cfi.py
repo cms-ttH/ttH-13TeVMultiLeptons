@@ -17,6 +17,8 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 
 	debug = cms.bool(False),
 		
+        skim = cms.bool(False),
+
 	## anything to do at the beginning of the job:
         setupoptions = cms.PSet(	
 		rhoHandle = cms.string("fixedGridRhoFastjetAll"), # choices are: fixedGridRhoAll, fixedGridRhoFastjetAll, fixedGridRhoFastjetAllCalo, fixedGridRhoFastjetCentralCalo, fixedGridRhoFastjetCentralChargedPileUp, fixedGridRhoFastjetCentralNeutral
