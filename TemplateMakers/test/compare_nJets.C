@@ -35,6 +35,11 @@
 class PlotObject
 {
 private:
+  TH1D *nJets_selected_;
+  TH1D *nJets_raw_;
+  TH1D *nJets_gen_;
+  int hist_color_;
+
   void FillHist(TString sample_name_input_)
   {
     TChain *chain = loadFiles(sample_name_input_);
@@ -57,8 +62,7 @@ private:
     Int_t cachesize = 250000000;   //250 MBytes
     chain->SetCacheSize(cachesize);
 
-    chainentries = 10000; //trash this
-
+    chainentries = 4000; //trash this
     //    chain->Draw("@raw_jets.size() >> my_hist","mcwgt*(1.0)","goff");
 
     for (int i=0; i<chainentries; i++)
@@ -66,29 +70,44 @@ private:
     	chain->GetEntry(i);
     	printProgress(i,chainentries);
 	//    	int nJets = preselected_jets_intree->size();
-	int nJets = raw_jets_intree->size();
-    	my_hist->Fill(nJets, mcwgt_intree);
+    	nJets_raw_->Fill(raw_jets_intree->size(), mcwgt_intree);
+    	nJets_selected_->Fill(preselected_jets_intree->size(), mcwgt_intree);
       }
     
-    //normalize
-    my_hist->Scale( 1.0 / my_hist->Integral());
-    my_hist->SetStats(0);
+    hist_vector.push_back(nJets_selected_);
+    hist_vector.push_back(nJets_raw_);
+    //    hist_vector.push_back(nJets_gen_);
+
+    for (const auto & my_hist : hist_vector)
+      {
+	my_hist->Scale( 1.0 / my_hist->Integral());
+	my_hist->SetStats(0);
+	my_hist->SetLineColor(hist_color_);
+	my_hist->SetMarkerColor(hist_color_);
+	my_hist->GetYaxis()->SetTitle("normalized units");
+	my_hist->GetYaxis()->SetTitleOffset(1.37);
+	my_hist->GetYaxis()->SetLabelSize(0.025);
+      }
   }
 public:
   PlotObject(TString sample_name_="sample_name", int line_color_=1, TString leg_name_="legend_name")
   { 
-    my_hist = new TH1D(leg_name_,"",35,0,35);
-    my_hist->SetLineColor(line_color_);
-    my_hist->SetMarkerColor(line_color_);
-    my_hist->GetXaxis()->SetTitle("N jets (no selection)");
-    my_hist->GetYaxis()->SetTitle("normalized units");
-    my_hist->GetYaxis()->SetTitleOffset(1.37);
-    my_hist->GetYaxis()->SetLabelSize(0.025);
+    hist_color_ = line_color_;
+
+    nJets_raw_ = new TH1D(leg_name_,"nJets_raw",32,0,32);
+    nJets_raw_->GetXaxis()->SetTitle("N jets (no selection)");
+
+    nJets_selected_ = new TH1D(leg_name_,"nJets_selected",15,0,15);
+    nJets_selected_->GetXaxis()->SetTitle("N jets (selected) ");
+
+    nJets_gen_ = new TH1D(leg_name_,"nJets_gen",32,0,32);
+    nJets_gen_->GetXaxis()->SetTitle("N gen jets (no selection) ");
+
     FillHist(sample_name_);
 
   }//default constructor
 
-  TH1D *my_hist;
+  vector<TH1D*> hist_vector;
   virtual ~PlotObject(){};
 };
 
@@ -96,24 +115,28 @@ public:
 void drawPlots(vector<PlotObject> samples_)
 {
   
-
-  TCanvas* can = new TCanvas("can", "can",10,32,530,580);
-  can->SetTopMargin(0.06);
-  TLegend *leg = new TLegend(0.4753788,0.7815884,0.8882576,0.9205776,NULL,"brNDC"); 
-  leg->SetBorderSize(0);
-  double hist_max_val = 0.;
-  for (const auto & sample : samples_)
+  for (unsigned int i=0; i < samples_[0].hist_vector.size(); i++)
     {
-      //use max val to keep track of first iteration
-      if ( hist_max_val == 0. ) sample.my_hist->Draw("hist");
-      else  sample.my_hist->Draw("histsame");
-      if ( sample.my_hist->GetMaximum() > hist_max_val)	hist_max_val = sample.my_hist->GetMaximum();
-      leg->AddEntry(sample.my_hist, sample.my_hist->GetName(), "l");
-    }  
-  samples_[0].my_hist->GetYaxis()->SetRangeUser(0, 1.3*hist_max_val);
-  leg->Draw("same");
-  can->SaveAs("nJets_raw.pdf");
-
+      TString title = samples_[0].hist_vector[i]->GetTitle();
+      TCanvas* can = new TCanvas(title,title,10,32,530,580);
+      can->SetTopMargin(0.06);
+      TLegend *leg = new TLegend(0.4753788,0.7815884,0.8882576,0.9205776,NULL,"brNDC"); 
+      leg->SetBorderSize(0);
+      double hist_max_val = 0.;
+      TString can_save_name = title + ".pdf";
+      for (const auto & sample : samples_)
+	{
+	  sample.hist_vector[i]->SetTitle("");
+	  //use max val to keep track of first iteration
+	  if ( hist_max_val == 0. ) sample.hist_vector[i]->Draw("hist");
+	  else  sample.hist_vector[i]->Draw("histsame");
+	  if ( sample.hist_vector[i]->GetMaximum() > hist_max_val)  hist_max_val = sample.hist_vector[i]->GetMaximum();
+	  leg->AddEntry(sample.hist_vector[i], sample.hist_vector[i]->GetName(), "l");
+	}  
+      samples_[0].hist_vector[i]->GetYaxis()->SetRangeUser(0, 1.3*hist_max_val);
+      leg->Draw("same");
+      can->SaveAs(can_save_name);
+    }
 }
 
 void compare_nJets(void)
