@@ -20,6 +20,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   qg_token_ = consumes<edm::ValueMap<float>>(edm::InputTag("QGTagger", "qgLikelihood"));
   mets_token_ = consumes<pat::METCollection>(metparams.getParameter<string>("METCollection"));
   genParticles_token_ = consumes<reco::GenParticleCollection>(prunedparams.getParameter<string>("prunedCollection"));
+  genPackedParticles_token_ = consumes<pat::PackedGenParticleCollection>(packedparams.getParameter<string>("packedCollection"));
   rho_token_ = consumes<double>(setupoptionsparams.getParameter<string>("rhoHandle"));
   vertex_token_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices")); // ,"","RECO"));
   genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
@@ -95,11 +96,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	edm::Handle<pat::JetCollection> pfjets = 			    get_collection(event, jets_token_);
 	patMETs mets = 				    get_collection(event, mets_token_);
 	prunedGenParticles prunedParticles;
-	//	std::vector<reco::GenJet> genjets;
+	packedGenParticles packedParticles;
 	edm::Handle<std::vector<reco::GenJet> > genjets;
 	if (!isData)
 	  {
 	    prunedParticles = get_collection(event, genParticles_token_);
+	    packedParticles = get_collection(event, genPackedParticles_token_);
 	    genjets = get_collection(event, genJet_token_);
 	  }
 
@@ -251,7 +253,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    vecPatJet selectedJets_forLepMVA = GetSelectedJets(correctedRawJets, 5., 2.4, jetID::none, '-' );                // was (correctedRawJets, 10., 2.4, jetID::none, '-' );
 
 	    //vecPatJet correctedJets_noSys		       	= GetCorrectedJets(cleaned_rawJets);  
-        vecPatJet correctedJets_noSys		       	= cleaned_rawJets; //Relying on jet corrections being reapplied upstream
+	    vecPatJet correctedJets_noSys		       	= cleaned_rawJets; //Relying on jet corrections being reapplied upstream
 	    vecPatJet selectedJets_noSys_unsorted	       	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, '-' ); 
 	    vecPatJet selectedJets_tag_noSys_unsorted	= GetSelectedJets(correctedJets_noSys, 30., 2.4, jetID::jetLoose, 'M' );
 	    vecPatJet selectedJets_loose_noSys_unsorted     = GetSelectedJets(correctedJets_noSys, 20., 2.4, jetID::jetLoose, '-' );
@@ -367,10 +369,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	
 	    vector<ttH::MET> theMET = GetCollection(mets);
 	    vector<ttH::GenParticle> pruned_genParticles;
+	    vector<ttH::GenParticle> packed_genParticles;
 	    vector<ttH::GenParticle> gen_jets;
 	    if (!isData)
 	      {
 		pruned_genParticles = GetCollection(*prunedParticles);
+		packed_genParticles = GetCollection(*packedParticles);
 		gen_jets = GetCollection(*genjets); 
 	      }
 	
@@ -440,6 +444,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    if (!isData)
 	      {
 		pruned_genParticles_intree = pruned_genParticles;
+		packed_genParticles_intree = packed_genParticles;
 		genJets_intree = gen_jets;
 	      }
 	    

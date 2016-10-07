@@ -158,6 +158,7 @@ class MultileptonAna: public MiniAODHelper
   edm::EDGetTokenT<pat::JetCollection> jets_token_;
   edm::EDGetTokenT<pat::METCollection> mets_token_;
   edm::EDGetTokenT<reco::GenParticleCollection> genParticles_token_;
+  edm::EDGetTokenT<pat::PackedGenParticleCollection> genPackedParticles_token_;
   edm::EDGetTokenT<reco::VertexCollection> vertex_token_;
   edm::EDGetTokenT<double> rho_token_;
   edm::EDGetTokenT<GenEventInfoProduct> genInfo_token_;
@@ -274,10 +275,8 @@ template <typename templateGenParticle> std::vector<ttH::GenParticle> Multilepto
     {
       genParticle.obj = iGenParticle.p4();
       genParticle.pdgID = iGenParticle.pdgId();
-      genParticle.status = iGenParticle.status();
-      
+      genParticle.status = iGenParticle.status();      
       genParticle.isPromptFinalState = iGenParticle.isPromptFinalState();
-      genParticle.isPromptDecayed = iGenParticle.isPromptDecayed();
       genParticle.isDirectPromptTauDecayProductFinalState = iGenParticle.isDirectPromptTauDecayProductFinalState();
       
       theGenParticles.push_back(genParticle);

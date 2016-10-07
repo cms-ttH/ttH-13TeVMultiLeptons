@@ -239,7 +239,6 @@ namespace ttH
       pdgID = -9999;
       status = 9999;
       isPromptFinalState = false;
-      isPromptDecayed = false;
       isDirectPromptTauDecayProductFinalState = false;
       child0 = 9999;
       child1 = 9999;
