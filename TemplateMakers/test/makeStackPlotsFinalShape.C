@@ -23,7 +23,6 @@
 #include "loadSamples.h"
 #include "treeTools.h"
 
-
 /////////////////////////////////////////
 ///
 /// usage: root -l makeStackPlotsFinalShape.C+
@@ -42,7 +41,14 @@ public:
     fill_color = fill_color_;
     fill_style = fill_style_;
     file_name = file_name_;
-    xsec = xsec_;
+
+     TFile* input_file = new TFile(file_name,"READONLY");
+     TH1D* sum_hist = (TH1D*)input_file->Get("numInitialWeightedMCevents");
+     double total_events = sum_hist->GetBinContent(1);
+
+    int integrated_lumi = 12900.; //integrated lumi in pb
+    if (leg_name_ != "data_obs") xsec = xsec_ * integrated_lumi / total_events; //scale the xsec to #of events
+    else xsec = xsec_;
   } //default constructor
   TString legend_name;
   int fill_color;
@@ -65,7 +71,7 @@ private:
     auto return_hist_ = new TH1D(hist_name, hist_title, template_hist->GetNbinsX(),1,8);
     return_hist_->SetFillColor(sample.fill_color);
     return_hist_->SetFillStyle(sample.fill_style);
-    return_hist_->SetLineColor(sample.fill_color);
+    return_hist_->SetLineColor(1);
     return_hist_->SetMarkerColor(sample.fill_color);
     return return_hist_;
   }
@@ -73,16 +79,21 @@ private:
   void FillCategories(int bin_num_, double weight_, TString flav_, bool isPlus_, bool bTight_, bool isTau_)
   {
     
-    inclusive_hist->Fill( bin_num_, weight_ );
-
     if ( isTau_ ) tau_hist->Fill( bin_num_, weight_ );
+
     else if (flav_.CompareTo("ee")==0)
       {
+	
+	if (sample.legend_name == "fakes") weight_*=2.08;
+
 	if ( isPlus_ ) ee_plus_hist->Fill( bin_num_, weight_ );
 	else ee_minus_hist->Fill( bin_num_, weight_ );
       }
     else if (flav_.CompareTo("em")==0)
       {
+
+	if (sample.legend_name == "fakes") weight_*=1.49;
+
 	if ( isPlus_ ) 
 	  {
 	    if ( bTight_ ) em_bTight_plus_hist->Fill( bin_num_, weight_ );
@@ -96,6 +107,10 @@ private:
       }
     else if (flav_.CompareTo("mm")==0)
       {
+
+	if (sample.legend_name == "fakes") weight_*= 1.39;
+	else if (sample.legend_name == "flips") weight_*= 0.;
+	
 	if ( isPlus_ ) 
 	  {
 	    if ( bTight_ ) mm_bTight_plus_hist->Fill( bin_num_, weight_ );
@@ -107,6 +122,9 @@ private:
 	    else mm_bLoose_minus_hist->Fill( bin_num_, weight_ );
 	  }
       }
+
+    inclusive_hist->Fill( bin_num_, weight_ );
+
   }
 public:
   PlotObject(TH1D* template_hist_=0, Sample sample_=Sample(), TFile* fout_=0):
@@ -117,7 +135,7 @@ public:
     // sample = sample_;
     // fout = fout_;
     // template_hist = template_hist_;
-
+    
     inclusive_hist = SetTitleAndName("inclusive","inclusive");
     ee_plus_hist = SetTitleAndName("ee_p","ee +");
     ee_minus_hist = SetTitleAndName("ee_m","ee -");
@@ -130,6 +148,7 @@ public:
     mm_bLoose_plus_hist = SetTitleAndName("mm_bl_p","mm bloose +");
     mm_bLoose_minus_hist = SetTitleAndName("mm_bl_m","mm bloose -");
     tau_hist = SetTitleAndName("tau","tau");
+    
 
   }//default constructor
   Sample sample;  
@@ -173,12 +192,14 @@ public:
     // else if ( ttv_score <= 0.4 ) FillCategories(6, weight, flavor, isPlus, bTight, isTau); //0.4 //0.4=best 
     // else FillCategories(7, weight, flavor, isPlus, bTight, isTau);
 
-
   }
   
   void Write(void)
   {
-    double norm_factor = sample.xsec / inclusive_hist->Integral();
+    double norm_factor;
+    // if (sample.legend_name != "data_obs") norm_factor = sample.xsec * event_eff / inclusive_hist->Integral();
+    // else norm_factor = sample.xsec / inclusive_hist->Integral();
+    norm_factor = sample.xsec;
 
     inclusive_hist->Scale( norm_factor );
     ee_plus_hist->Scale( norm_factor );
@@ -240,7 +261,7 @@ private:
 	signal = signal_hist_->GetBinContent(bin);
 	for (const auto & background_hist : background_hists)
 	  {
-	    background += background_hist->GetBinContent(bin);
+	    background += max(background_hist->GetBinContent(bin), 0.1e-20);
 	  }
 	sOverSqrtB += pow(signal / sqrt(background),2);
       }
@@ -281,7 +302,7 @@ private:
       {
 	sigOverSqrtBkg_ += calculateSoSqrtB(signal_hist, background_hists);
       }
-    //    cout << input_stack_name << ": " << setprecision(10) << sigOverSqrtBkg_ << endl;
+    cout << input_stack_name << ": " << setprecision(10) << sigOverSqrtBkg_ << endl;
   }
 
 public:
@@ -289,7 +310,7 @@ public:
   {
     sample_plots = sample_plots_;
 
-    inclusive_stack = new THStack("inclusive","inclusive");
+    inclusive_stack = new THStack("inclusive","ttV shift");
     ee_plus_stack = new THStack("ee_p","ee +");
     ee_minus_stack = new THStack("ee_m","ee -");
     em_bTight_plus_stack = new THStack("em_bt_p","em btight +");
@@ -327,11 +348,17 @@ public:
     TString stack_name = stack_to_draw_->GetName();
     TString can_name = stack_name + "_can";
     TString save_name = stack_name + ".root";
+
     TCanvas* can = new TCanvas(can_name, can_name,10,32,530,580);
     //    TLegend *leg = new TLegend(0.4410646,0.7296544,0.8536122,0.8690078);
     //    leg->SetFillColor(0);
+    
+    stack_to_draw_->Draw("hist");
+    stack_to_draw_->SetMaximum(125);
+    stack_to_draw_->GetXaxis()->SetTitle("MVA (ttH,tt/ttV) bin");
     stack_to_draw_->Draw("hist");
     gPad->BuildLegend(0.4410646,0.7296544,0.8536122,0.8690078);
+    gPad->SetTicky();
     can->SaveAs(save_name);
   }
   void Draw(void)
@@ -360,7 +387,7 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       PlotObject myPlotObj(input_hist, sample, output_file_);
 
       TFile* input_file = new TFile(sample.file_name,"READONLY");
-      TTree* input_tree = (TTree*)input_file->Get("extraction_tree_v2");
+      TTree* input_tree = (TTree*)input_file->Get("extraction_tree_standard");
 
       //loop over trees
       int chainentries = input_tree->GetEntries();
@@ -389,10 +416,22 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       Int_t cachesize = 250000000;   //250 MBytes
       input_tree->SetCacheSize(cachesize);
       input_tree->SetCacheLearnEntries(20); 
+      double shift = 0.3;
+      int every_other = 3;
       for(int i=0; i<chainentries; i++)
 	{
 	  //	  printProgress(i,chainentries);
 	  input_tree->GetEntry(i);
+
+	  // if ( sample.legend_name == "fakes" )	  
+	  //   {
+	  //     if (i%every_other != 0 && (vs_ttv_score_branch < 0.4 || vs_ttbar_score_branch < 0.4)) vs_ttbar_score_branch = (vs_ttbar_score_branch+1)*( 1.-shift ) -1;
+	  //   }
+
+	  if ( sample.legend_name == "ttW" || sample.legend_name == "ttZ" )
+	    {
+	      if (i%every_other != 0 && (vs_ttv_score_branch < 0.4 || vs_ttbar_score_branch < 0.4)) vs_ttv_score_branch = (vs_ttv_score_branch+1)*( 1.-shift ) -1;
+	    }
 	  myPlotObj.Fill(vs_ttbar_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
 	  //myPlotObj.Fill(vs_ttbar_bdtReco_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
 	}
@@ -408,25 +447,32 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
 
 void makeStackPlotsFinalShape(void)
 {
-  double int_lumi = 1290.; //in pb
-  double tth_weight = 0.2586*(32206./2965618.)*int_lumi;
-  double ttbar_semilep_weight = 182.*(3090./112551635.)*int_lumi;
-  double ttw_weight = 0.2043*(3291./130274.)*int_lumi;
-  double ttz_weight = 0.2529*(1021./185229.)*int_lumi;
-  double ttbar_dilep_weight = 87.3*(833./30682157.)*int_lumi;
+  // double tth_weight = 0.2586*(32206./2965618.);
+  // double ttbar_semilep_weight = 182.*(3090./112551635.);
+  // double ttw_weight = 0.2043*(3291./130274.);
+  // double ttz_weight = 0.2529*(1021./185229.);
+  // double ttbar_dilep_weight = 87.3*(833./30682157.);
 
-  Sample tth("ttH", 2, 1001, tth_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root");
-  Sample ttbar_fakes("fakes", 1, 3005, ttbar_semilep_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root");
-  Sample ttw("ttW", 32, 1001, ttw_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttw_aMCatNLO_2lss_bdtEval_v1p5.root");
-  Sample ttz("ttZ", 8, 1001, ttz_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttz_aMCatNLO_2lss_bdtEval_v1p5.root");
-  Sample ttbar_flips("flips", 1, 3006, ttbar_dilep_weight, "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_dilep_mg5mlm_2lss_bdtEval_v1p5.root");
-  Sample psuedo_data("data_obs", 1, 3005, 1., "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root");
+  double tth_weight = 0.2586;
+  double ttbar_semilep_weight = 182.;
+  double ttw_weight = 0.2043;
+  double ttz_weight = 0.2529;
+  double ttbar_dilep_weight = 87.3;
+
+  Sample tth("ttH", 2, 1001, tth_weight, "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/tth_aMC_old_selection_tree_2lss.root");
+  Sample ttbar_fakes("fakes", 1, 3005, ttbar_semilep_weight, "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttbar-semiLep-powheg_selection_tree_2lss.root");
+  Sample ttw("ttW", 32, 1001, ttw_weight, "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttW-aMCatNLO_selection_tree_2lss.root");
+  Sample ttz("ttZ", 8, 1001, ttz_weight, "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttZ-aMCatNLO_selection_tree_2lss.root");
+  Sample ttbar_flips("flips", 1, 3006, ttbar_dilep_weight, "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttbar-diLep-madgraph_selection_tree_2lss.root");
+  Sample psuedo_data("data_obs", 1, 3005, 1., "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttbar-semiLep-powheg_selection_tree_2lss.root");
+  //  Sample diboson("diboson", 8, 1001, ttz_weight, "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttZ-aMCatNLO_selection_tree_2lss.root");
 
   std::vector<Sample> sample_vector; //push back in order you want stacked
   sample_vector.push_back(ttbar_flips);
   sample_vector.push_back(ttbar_fakes);
-  sample_vector.push_back(ttw);
+  //  sample_vector.push_back(diboson);
   sample_vector.push_back(ttz);
+  sample_vector.push_back(ttw);
   sample_vector.push_back(tth);
   sample_vector.push_back(psuedo_data);
 

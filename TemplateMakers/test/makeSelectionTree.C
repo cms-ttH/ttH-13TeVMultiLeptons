@@ -17,14 +17,14 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "selection.h"
-#include "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/loadSamples_80x.h"
-#include "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/treeTools.h"
+#include "loadSamples_notreDame.h"
+#include "treeTools.h"
 
 /////////////////////////////////////////
 ///
-/// usage: root -l makeSelectionTree.C+\("\"ttH-powheg\"",1,3\)
-///        root -l makeSelectionTree.C+\("\"ttH-powheg\""\)
-///        root -l makeSelectionTree.C+\("\"ttH-aMCatNLO\""\)
+/// usage: root -l makeSelectionTree.C+\("\"tth_powheg_new\""\)
+///        root -l makeSelectionTree.C+\("\"tth_powheg_old\""\)
+///        root -l makeSelectionTree.C+\("\"tth_aMC_old\""\)
 ///        root -l makeSelectionTree.C+\("\"ttbar-semiLep-powheg\""\)
 ///        root -l makeSelectionTree.C+\("\"ttbar-semiLep-madgraph\""\)
 ///        root -l makeSelectionTree.C+\("\"ttbar-inclusive-aMCatNLO\""\)
@@ -386,7 +386,7 @@ public:
   virtual ~GenParticleHelper(){};
 };
 
-void run_it(TChain* chain, TString output_file)
+void run_it(TChain* chain, TString output_file, TH1D* event_hist)
 {
 
   int chainentries = chain->GetEntries();   
@@ -406,7 +406,11 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
   vector<ttH::GenParticle> *pruned_genParticles_intree=0;
-  
+  //adding these
+  vector<ttH::Jet> *bTight_jets_intree=0;  
+  vector<ttH::Jet> *bLoose_jets_intree=0;  
+
+
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
@@ -423,6 +427,7 @@ void run_it(TChain* chain, TString output_file)
   chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
+  event_hist->Write();
 
   TTree *ss2l_tree = (TTree*)chain->CloneTree(0);
   TTree *l3_tree = (TTree*)chain->CloneTree(0);
@@ -433,6 +438,9 @@ void run_it(TChain* chain, TString output_file)
   myGenParticleHelper.initializeTree(ss2l_tree);
   myGenParticleHelper.initializeTree(l3_tree);
 
+  //add new branches
+  ss2l_tree->Branch("bTight_jets", &bTight_jets_intree);  
+  ss2l_tree->Branch("bLoose_jets", &bLoose_jets_intree);
 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
@@ -440,9 +448,18 @@ void run_it(TChain* chain, TString output_file)
 
   double starttime = get_wall_time();
 
+  //  chainentries = 10000;
   for (int i=0; i<chainentries; i++)
     {
       
+      bTight_jets_intree->clear();
+      bLoose_jets_intree->clear();
+      for (const auto & jet : *preselected_jets_intree)
+	{
+	  if (jet.csv >= 0.8 ) bTight_jets_intree->push_back(jet);
+	  else if (jet.csv >= 0.46 ) bLoose_jets_intree->push_back(jet);
+	}
+
       printProgress(i,chainentries);
 
       clock_t startTime = clock();
@@ -471,7 +488,6 @@ void run_it(TChain* chain, TString output_file)
       	  ss2l_tree->Fill();
       	  //cuts for os only 
       	  //	  if ( myGenParticleHelper.higgs_final_state_intree.CompareTo("semiLeptonic") == 0 && myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
-      	  // if ( myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
       	  //   {
       	  //     ss2l_tree->Fill();
       	  //   }
@@ -485,6 +501,7 @@ void run_it(TChain* chain, TString output_file)
       //////////////////////////
 
       // bool passes2lss = pass2lss_bdtTraining(*loose_electrons_intree, *loose_muons_intree, *preselected_jets_intree);
+      // //      bool passes2lss = pass2l_bdtTraining(*loose_electrons_intree, *loose_muons_intree, *preselected_jets_intree); //ss+os
       // if ( passes2lss) 
       // 	{
       // 	  myGenParticleHelper.clear();
@@ -506,14 +523,18 @@ void run_it(TChain* chain, TString output_file)
   
 }
 
-void makeSelectionTree(TString sample, int start_file=0, int end_file=0)
+void makeSelectionTree(TString sample)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/";
+  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/";
 
-  //  TString output_file = output_dir + sample + "_relaxedTrainSelection_tree_2lss.root";
+  //  TString output_file = output_dir + sample + "_relaxedTrainSelection_2lss_withGenInfo.root";
   TString output_file = output_dir + sample + "_selection_tree_2lss.root";
-  TChain *tth_chain = loadFiles(sample,start_file,end_file);  
-  run_it(tth_chain,output_file);
+
+  //testing
+  FileLoader myLoader(sample);
+  TChain *tth_chain = myLoader.chain;
+  TH1D *event_hist = myLoader.hist_sum;
+  run_it(tth_chain,output_file, event_hist);
 
 }

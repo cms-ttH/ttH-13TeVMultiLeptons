@@ -47,15 +47,18 @@ void run_it(TChain* chain, TFile* output_file)
   Float_t spec2_var;
 
   TMVA::Reader* TMVAReader_ttbar_ = new TMVA::Reader( "!Color:!Silent" );
-  TMVAReader_ttbar_->AddVariable( "max_lep_eta", &max_lep_eta_var );
-  TMVAReader_ttbar_->AddVariable( "nJets", &njets_var );
-  TMVAReader_ttbar_->AddVariable( "dR_l1_j", &dR_l1_j_var );
-  TMVAReader_ttbar_->AddVariable( "dR_l2_j", &dR_l2_j_var );
-  TMVAReader_ttbar_->AddVariable( "MT_l1_met", &MT_l1_met_var );
-  TMVAReader_ttbar_->AddVariable( "min(met,400)", &met_var );
-  TMVAReader_ttbar_->AddVariable( "avg_dR_jets", &avg_dr_jets_var );
-  //  TString ttbar_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_original.xml";
-  TString ttbar_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_original_v2.xml";
+  TMVAReader_ttbar_->AddVariable( "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", &max_lep_eta_var );
+  TMVAReader_ttbar_->AddVariable( "nJet25_Recl", &njets_var );
+  TMVAReader_ttbar_->AddVariable( "mindr_lep1_jet", &dR_l1_j_var );
+  TMVAReader_ttbar_->AddVariable( "mindr_lep2_jet", &dR_l2_j_var );
+  TMVAReader_ttbar_->AddVariable( "min(met_pt,400)", &met_var );
+  TMVAReader_ttbar_->AddVariable( "avg_dr_jet", &avg_dr_jets_var );
+  TMVAReader_ttbar_->AddVariable( "MT_met_lep1", &MT_l1_met_var );
+  TMVAReader_ttbar_->AddSpectator( "iF_Recl[0]", &spec0_var );
+  TMVAReader_ttbar_->AddSpectator( "iF_Recl[1]", &spec1_var );
+  TMVAReader_ttbar_->AddSpectator( "iF_Recl[2]", &spec2_var );
+  //  TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_original_v2.xml";
+  TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/2lss_ttbar_BDTG.weights.xml";
   TMVAReader_ttbar_->BookMVA("BDTG method", ttbar_weights);
 
   TMVA::Reader* TMVAReader_ttbar_recoBdt_ = new TMVA::Reader( "!Color:!Silent" );
@@ -67,7 +70,7 @@ void run_it(TChain* chain, TFile* output_file)
   TMVAReader_ttbar_recoBdt_->AddVariable( "min(met,400)", &met_var );
   TMVAReader_ttbar_recoBdt_->AddVariable( "avg_dR_jets", &avg_dr_jets_var );
   TMVAReader_ttbar_recoBdt_->AddVariable( "reco_score", &reco_score_var );
-  TString ttbar_recoBdt_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_reco.xml";
+  TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_reco.xml";
   TMVAReader_ttbar_recoBdt_->BookMVA("BDTG method", ttbar_recoBdt_weights);
 
   TMVA::Reader* TMVAReader_ttbar_recoBdt_bLoose_ = new TMVA::Reader( "!Color:!Silent" );
@@ -79,7 +82,7 @@ void run_it(TChain* chain, TFile* output_file)
   TMVAReader_ttbar_recoBdt_bLoose_->AddVariable( "min(met,400)", &met_var );
   TMVAReader_ttbar_recoBdt_bLoose_->AddVariable( "avg_dR_jets", &avg_dr_jets_var );
   TMVAReader_ttbar_recoBdt_bLoose_->AddVariable( "reco_score", &reco_score_var );
-  TString ttbar_recoBdt_bLoose_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_reco_bLoose_v2.xml";
+  TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_reco_bLoose_v2.xml";
   TMVAReader_ttbar_recoBdt_bLoose_->BookMVA("BDTG method", ttbar_recoBdt_bLoose_weights);
 
   TMVA::Reader* TMVAReader_ttbar_recoBdt_bTight_ = new TMVA::Reader( "!Color:!Silent" );
@@ -91,7 +94,7 @@ void run_it(TChain* chain, TFile* output_file)
   TMVAReader_ttbar_recoBdt_bTight_->AddVariable( "min(met,400)", &met_var );
   TMVAReader_ttbar_recoBdt_bTight_->AddVariable( "avg_dR_jets", &avg_dr_jets_var );
   TMVAReader_ttbar_recoBdt_bTight_->AddVariable( "reco_score", &reco_score_var );
-  TString ttbar_recoBdt_bTight_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_reco_bTight_v2.xml";
+  TString ttbar_recoBdt_bTight_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_reco_bTight_v2.xml";
   TMVAReader_ttbar_recoBdt_bTight_->BookMVA("BDTG method", ttbar_recoBdt_bTight_weights);
 
   TMVA::Reader* TMVAReader_ttV_ = new TMVA::Reader( "!Color:!Silent" );
@@ -105,7 +108,7 @@ void run_it(TChain* chain, TFile* output_file)
   TMVAReader_ttV_->AddSpectator( "iF_Recl[0]", &spec0_var );
   TMVAReader_ttV_->AddSpectator( "iF_Recl[1]", &spec1_var );
   TMVAReader_ttV_->AddSpectator( "iF_Recl[2]", &spec2_var );
-  TString ttV_weights = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/simpleweights/final_BDT_forApproval/weights/2lss_ttV_BDTG.weights.xml";
+  TString ttV_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/2lss_ttV_BDTG.weights.xml";
   TMVAReader_ttV_->BookMVA("BDTG method", ttV_weights);
 
   int chainentries = chain->GetEntries();   
@@ -126,7 +129,7 @@ void run_it(TChain* chain, TFile* output_file)
   chain->SetBranchStatus("selected_taus.*",1);
   chain->SetBranchStatus("tightMvaBased_leptons.*",1);
   chain->SetBranchStatus("met.*",1);
-  chain->SetBranchStatus("reco_score",1);
+  //  chain->SetBranchStatus("reco_score",1);
 
   chain->SetBranchAddress("eventnum", &eventnum_intree);
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
@@ -134,7 +137,7 @@ void run_it(TChain* chain, TFile* output_file)
   chain->SetBranchAddress("selected_taus", &selected_taus_intree);
   chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("met", &met_intree);
-  chain->SetBranchAddress("reco_score", &reco_score_intree);
+  //  chain->SetBranchAddress("reco_score", &reco_score_intree);
 
   double mcwgt_branch=-999.;
   double max_lep_eta_branch=-999.;
@@ -156,7 +159,7 @@ void run_it(TChain* chain, TFile* output_file)
   TString flavor_branch = "null";
 
   //  TTree *extraction_tree = (TTree*)chain->CloneTree(0);
-  TTree *extraction_tree = new TTree("extraction_tree_v3","tree containing signal extraction output");
+  TTree *extraction_tree = new TTree("extraction_tree_standard","tree containing signal extraction output");
   extraction_tree->Branch("mcwgt", &mcwgt_branch);
   extraction_tree->Branch("max_lep_eta", &max_lep_eta_branch);
   extraction_tree->Branch("nJets", &njets_branch);
@@ -167,19 +170,18 @@ void run_it(TChain* chain, TFile* output_file)
   extraction_tree->Branch("MT_l1_met", &mt_lep1_met_branch);
   extraction_tree->Branch("l1_pt", &l1_pt_branch);
   extraction_tree->Branch("l2_pt", &l2_pt_branch);
-  extraction_tree->Branch("reco_score", &reco_score_branch);
+  // extraction_tree->Branch("reco_score", &reco_score_branch);
   extraction_tree->Branch("vs_ttbar_bdt_score", &vs_ttbar_score);
-  extraction_tree->Branch("vs_ttbar_bdtReco_bdt_score", &vs_ttbar_bdtReco_score);
+  // extraction_tree->Branch("vs_ttbar_bdtReco_bdt_score", &vs_ttbar_bdtReco_score);
   extraction_tree->Branch("vs_ttv_bdt_score", &vs_ttv_score);
   extraction_tree->Branch("bTight_category", &isBtight_branch);
   extraction_tree->Branch("posCharge_category", &isPositive_branch);
   extraction_tree->Branch("tau_category", &isTau_branch);
   extraction_tree->Branch("flavor_category", &flavor_branch);
 
-
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
-  chain->SetCacheLearnEntries(20); 
+  chain->SetCacheLearnEntries(20);
   
   double starttime = get_wall_time();
   //  chainentries = 10000;
@@ -299,8 +301,8 @@ void run_it(TChain* chain, TFile* output_file)
 
       vs_ttbar_score = TMVAReader_ttbar_->EvaluateMVA( "BDTG method" );
       //      if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bTight_->EvaluateMVA( "BDTG method" );
-      if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" );
-      else  vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bLoose_->EvaluateMVA( "BDTG method" );
+      //      if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" );
+      //      else  vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bLoose_->EvaluateMVA( "BDTG method" );
       vs_ttv_score = TMVAReader_ttV_->EvaluateMVA( "BDTG method" );
 
       mcwgt_branch = mcwgt_intree;      
@@ -318,32 +320,31 @@ void run_it(TChain* chain, TFile* output_file)
 
 void evaluateSignalExtraction(void)
 {
-  // TString output_file_name1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root";
-  // //  TString output_file_name1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval__test.root";
-  // TFile *io_file1 = new TFile(output_file_name1, "UPDATE"); //"UPDATE");
-  // TChain *chain1 = new TChain("ss2l_tree");
-  // chain1->Add(output_file_name1);
-  // run_it(chain1,io_file1);
+  TString output_file_name1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-diLep-madgraph_selection_tree_2lss.root";
+  TFile *io_file1 = new TFile(output_file_name1, "UPDATE"); //"UPDATE");
+  TChain *chain1 = new TChain("ss2l_tree");
+  chain1->Add(output_file_name1);
+  run_it(chain1,io_file1);
 
-  // TString output_file_name2 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root";
-  // TFile *io_file2 = new TFile(output_file_name2, "UPDATE"); //"UPDATE");
-  // TChain *chain2 = new TChain("ss2l_tree");
-  // chain2->Add(output_file_name2);
-  // run_it(chain2,io_file2);
+  TString output_file_name2 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttW-aMCatNLO_selection_tree_2lss.root";
+  TFile *io_file2 = new TFile(output_file_name2, "UPDATE"); //"UPDATE");
+  TChain *chain2 = new TChain("ss2l_tree");
+  chain2->Add(output_file_name2);
+  run_it(chain2,io_file2);
 
-  // TString output_file_name3 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttw_aMCatNLO_2lss_bdtEval_v1p5.root";
-  // TFile *io_file3 = new TFile(output_file_name3, "UPDATE"); //"UPDATE");
-  // TChain *chain3 = new TChain("ss2l_tree");
-  // chain3->Add(output_file_name3);
-  // run_it(chain3,io_file3);
+  TString output_file_name3 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttZ-aMCatNLO_selection_tree_2lss.root";
+  TFile *io_file3 = new TFile(output_file_name3, "UPDATE"); //"UPDATE");
+  TChain *chain3 = new TChain("ss2l_tree");
+  chain3->Add(output_file_name3);
+  run_it(chain3,io_file3);
 
-  // TString output_file_name4 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttz_aMCatNLO_2lss_bdtEval_v1p5.root";
-  // TFile *io_file4 = new TFile(output_file_name4, "UPDATE"); //"UPDATE");
-  // TChain *chain4 = new TChain("ss2l_tree");
-  // chain4->Add(output_file_name4);
-  // run_it(chain4,io_file4);
+  TString output_file_name4 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttbar-semiLep-powheg_selection_tree_2lss.root";
+  TFile *io_file4 = new TFile(output_file_name4, "UPDATE"); //"UPDATE");
+  TChain *chain4 = new TChain("ss2l_tree");
+  chain4->Add(output_file_name4);
+  run_it(chain4,io_file4);
 
-  TString output_file_name5 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_dilep_mg5mlm_2lss_bdtEval_v1p5.root";
+  TString output_file_name5 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/tth_aMC_old_selection_tree_2lss.root";
   TFile *io_file5 = new TFile(output_file_name5, "UPDATE"); //"UPDATE");
   TChain *chain5 = new TChain("ss2l_tree");
   chain5->Add(output_file_name5);

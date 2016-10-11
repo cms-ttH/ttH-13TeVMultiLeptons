@@ -42,12 +42,18 @@ void run_it(TTree* tree)
   int lumiBlock_intree = -999;
   int runNumber_intree = -999;
   bool isBtight = false;
+  vector<ttH::Jet> *btight_jets_intree=0;
+  vector<ttH::Jet> *bloose_jets_intree=0;
+
 
   vector<ttH::Jet> *preselected_jets_intree=0;
   tree->SetBranchAddress("preselected_jets", &preselected_jets_intree);  
 
+
+  TFile* output_file = new TFile("new_file.root","RECREATE");
   TTree *new_tree = tree->CloneTree(0);
-  new_tree->Branch("bTight_category",&isBtight);
+  new_tree->Branch("bTight_jets",&btight_jets_intree);
+  new_tree->Branch("bLoose_jets",&bloose_jets_intree);
 
   Int_t cachesize = 250000000;   //250 MBytes
   tree->SetCacheSize(cachesize);
@@ -57,7 +63,9 @@ void run_it(TTree* tree)
   //  treeentries = 10000;
   for (int i=0; i<treeentries; i++)
     {
-      
+      btight_jets_intree->clear();
+      bloose_jets_intree->clear();
+
       printProgress(i,treeentries);
       tree->GetEntry(i);
       
@@ -67,10 +75,11 @@ void run_it(TTree* tree)
       ////
       //////////////////////////
 
-      int num_tight = 0;
-      for (const auto & jet : *preselected_jets_intree)	if (jet.csv >= 0.8 ) num_tight +=1;
-      if ( num_tight > 1 ) isBtight = true;
-      else isBtight = false;
+      for (const auto & jet : *preselected_jets_intree)
+	{
+	  if (jet.csv >= 0.8 ) btight_jets_intree->push_back(jet);
+	  else if (jet.csv >= 0.46 ) bloose_jets_intree->push_back(jet);
+	}
 
       new_tree->Fill();
       
@@ -82,12 +91,13 @@ void run_it(TTree* tree)
   if (treeentries>0) cout << "an average of " << (endtime - starttime) / treeentries << " per event." << endl;
   
   new_tree->Write("",TObject::kOverwrite);
+  output_file->Close();
 }
 
 void branchAdder(void)
 {
-  TString file_name = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/tth_powheg_2lss_bdtEval_relaxed_v1p5_remake__test.root";
-  TFile* file = new TFile(file_name,"UPDATE");
+  TString file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/tth_powheg_old_selection_tree_2lss.root";
+  TFile* file = new TFile(file_name,"READONLY");
   TTree *tree = (TTree*)file->Get("ss2l_tree");
   run_it(tree);
   file->Close();
