@@ -276,6 +276,7 @@ template <typename templateGenParticle> std::vector<ttH::GenParticle> Multilepto
       genParticle.obj = iGenParticle.p4();
       genParticle.pdgID = iGenParticle.pdgId();
       genParticle.status = iGenParticle.status();      
+      genParticle.charge = iGenParticle.charge();      
       genParticle.isPromptFinalState = iGenParticle.isPromptFinalState();
       genParticle.isDirectPromptTauDecayProductFinalState = iGenParticle.isDirectPromptTauDecayProductFinalState();
       
