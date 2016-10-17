@@ -16,7 +16,7 @@ bool passCommon(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, v
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
 
-  if (!( psLeps.size() >2 || tightLeps.size()>=1)) return false;
+  if ( psLeps.size() < 2 ) return false;
   double mindilepmass = getTwoObjKineExtreme(psLeps,"min","mass");   
   if (!(mindilepmass>12)) return false;
   if ( psJets.size() < 2 ) return false;
@@ -94,13 +94,45 @@ bool pass2l(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vecto
 }
 
 
-bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets)
+bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets, vector<ttH::Lepton> tightLeps)
 {
   vector<ttH::Lepton> looseLeps = get_collection(looseMus,looseEles);
 
   if ( looseLeps.size() < 2 ) return false;
 
   if (looseLeps[0].charge != looseLeps[1].charge) return false; 
+  if ( !( psJets.size()>3 ) )      return false;
+
+  bool isLep1Tight = false;
+  bool isLep2Tight = false;
+  for (const auto & tightLep : tightLeps)
+    {
+      if (looseLeps[0].obj.pt() == tightLep.obj.pt()) isLep1Tight = true;
+      else if (looseLeps[1].obj.pt() == tightLep.obj.pt()) isLep2Tight = true;
+    }
+
+  double lep1_pt;
+  double lep2_pt;
+
+  if ( !isLep1Tight ) lep1_pt = 0.85*looseLeps[0].obj.pt()/looseLeps[0].jetPtRatio;
+  else lep1_pt = looseLeps[0].obj.pt();
+
+  if ( !isLep2Tight ) lep2_pt = 0.85*looseLeps[1].obj.pt()/looseLeps[1].jetPtRatio;
+  else lep2_pt = looseLeps[1].obj.pt();
+
+  if ( !(lep1_pt>20 && lep2_pt>10) ) return false;
+  /* if ( (looseLeps[0].pdgID) == 11 && looseLeps[0].obj.Pt() < 25 ) return false; //pt1 cut for e */
+  /* if ( (looseLeps[1].pdgID) == 11 && looseLeps[1].obj.Pt() < 15 ) return false; //pt2 cut for e */
+
+  return true;
+}
+
+bool pass2l_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets)
+{
+  vector<ttH::Lepton> looseLeps = get_collection(looseMus,looseEles);
+
+  if ( looseLeps.size() < 2 ) return false;
+
   for (auto &ele: looseEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge
   for (auto &mu: looseMus) if (!(mu.chargeFlip < 0.2)) return false;//tight charge
   for (auto &ele: looseEles) if ((ele.numMissingInnerHits != 0)) return false;//  //lost hits
