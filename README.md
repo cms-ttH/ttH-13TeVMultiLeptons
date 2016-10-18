@@ -43,6 +43,25 @@ To view the tth-specific classes' TLorentzVectors in the TBrowser, add the follo
    	
 	gSystem->Load("libttH-13TeVMultiLeptonsTemplateMakers.so");
 
+## Running limits
+
+Setup the cmssw env for running combine:
+      
+      cd ttH-13TeVMultiLeptons
+      chmod 744 setup_limit.sh
+      ./setup_limit.sh
+      
+If curious look inside setup_limit.sh to see what it is doing. Now, make the histgograms for the datacard:
+   	   
+      cd TemplateMakers/test/
+      cmsenv
+      root -l makeStackPlotsFinalShape.C+
+
+This produces fatStackPlots.root. Now make the datacard and produce the limits in a single step:
+
+     chmod 744 run_limits.sh
+     ./run_limits.sh fatStackPlots.root
+
 ## Running the full chain
 
 ### See [Here](https://github.com/cms-ttH/ttH-13TeVMultiLeptons/blob/master/doc/GENERAL.md)

@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+import CombineHarvester.CombineTools.ch as ch
+import ROOT as r
+import argparse
+
+parser = argparse.ArgumentParser(description='Write some cards.')
+parser.add_argument('input', type=str, nargs=1,
+        help="input ROOT file")
+parser.add_argument('-d', '--discriminant', type=str, default='BDT',
+        help="discriminant to use")
+args = parser.parse_args()
+
+cats = [(1, 'ee_p'), (2,'ee_m'), (3,'em_bt_p'), (4,'em_bt_m'), (5,'em_bl_p'), (6,'em_bl_m'), (7,'mm_bt_p'), (8,'mm_bt_m'), (9,'mm_bl_p'), (10,'mm_bl_m'), (11, 'tau')]
+sigs = ['ttH']
+bkgs = ['fakes','ttW','ttZ','flips']
+
+cb = ch.CombineHarvester()
+# cb.SetVerbosity(2)
+
+#masses = ch.ValsFromRange('120:130|5')
+masses = ['125']
+cb.AddObservations(['*'], ['ttH'], ['13TeV'], ['ttl'], cats)
+cb.AddProcesses(['*'], ['ttH'], ['13TeV'], ['ttl'], bkgs, cats, False)
+cb.AddProcesses(masses, ['ttH'], ['13TeV'], ['ttl'], sigs, cats, True)
+
+cb.cp().AddSyst(cb, 'lumi_13TeV', 'lnN', ch.SystMap()(1.027))
+cb.cp().AddSyst(cb, 'QCDscale_ttH', 'lnN', ch.SystMap("process")(["ttH"], 0.915/1.058) )
+cb.cp().AddSyst(cb, 'QCDscale_ttW', 'lnN', ch.SystMap("process")(["ttW"], 1.12) )
+cb.cp().AddSyst(cb, 'QCDscale_ttZ', 'lnN', ch.SystMap("process")(["ttZ"], 1.11) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_QF', 'lnN', ch.SystMap("process")(["flips"], 1.3) )
+cb.cp().AddSyst(cb, 'CMS_FRe_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["ee_p","ee_m"], 1.4) )
+cb.cp().AddSyst(cb, 'CMS_FRe_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.2) )
+cb.cp().AddSyst(cb, 'CMS_FRe_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau"], 1.2) )
+cb.cp().AddSyst(cb, 'CMS_FRm_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.4) )
+cb.cp().AddSyst(cb, 'CMS_FRm_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.5) )
+cb.cp().AddSyst(cb, 'CMS_FRm_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau"], 1.2) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_tauID', 'lnN', ch.SystMap("process","bin")(["ttH","ttW","ttZ"],["tau"], 1.06) )
+cb.cp().AddSyst(cb, 'pdf_Higgs_ttH', 'lnN', ch.SystMap("process")(["ttH"], 1.036) )
+cb.cp().AddSyst(cb, 'pdf_gg', 'lnN', ch.SystMap("process")(["ttZ"], 0.966) )
+cb.cp().AddSyst(cb, 'pdf_qqbar', 'lnN', ch.SystMap("process")(["ttW"], 1.04) )
+
+#cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_e_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau","ee_p","ee_m","em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 0.96) )
+#cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_m_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau","em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.04) )
+#cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_m_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.11) )
+
+
+cb.cp().backgrounds().ExtractShapes(
+        args.input[0],
+        "bdt_output__$PROCESS_$BIN".format(args.discriminant),
+        "bdt_output__$PROCESS_$BIN_$SYSTEMATIC".format(args.discriminant)
+#        "$PROCESS_{0}_$BIN".format(args.discriminant),
+#        "$PROCESS_{0}_$BIN_$SYSTEMATIC".format(args.discriminant)
+)
+cb.cp().signals().ExtractShapes(
+        args.input[0],
+        "bdt_output__$PROCESS_$BIN".format(args.discriminant),
+        "bdt_output__$PROCESS_$BIN_$SYSTEMATIC".format(args.discriminant)
+#        "$PROCESS$MASS_{0}_$BIN".format(args.discriminant),
+#        "$PROCESS$MASS_{0}_$BIN_$SYSTEMATIC".format(args.discriminant)
+)
+
+cb.PrintObs().PrintProcs().PrintSysts()
+
+cb.WriteDatacard("card.txt", "file.root")
+writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL.txt',
+        '$TAG/common/$ANALYSIS_$CHANNEL.root')
+writer.SetVerbosity(1)
+writer.WriteCards('limits', cb)
