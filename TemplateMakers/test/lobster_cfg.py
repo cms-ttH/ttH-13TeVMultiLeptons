@@ -2,7 +2,7 @@ from lobster import cmssw
 from lobster.core import *
 from lobster.monitor.elk.interface import ElkInterface
 
-version = '_v0'
+version = '_v1'
 projname = 'new_samples'
 
 storage = StorageConfiguration(

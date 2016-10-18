@@ -42,24 +42,39 @@ void run_it(TChain* chain, TFile* output_file)
   Float_t lep1_pt_var;
   Float_t lep2_pt_var;
 
+  Float_t csv1_branch;
+  Float_t csv2_branch;
+
   Float_t spec0_var;
   Float_t spec1_var;
   Float_t spec2_var;
 
   TMVA::Reader* TMVAReader_ttbar_ = new TMVA::Reader( "!Color:!Silent" );
-  TMVAReader_ttbar_->AddVariable( "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", &max_lep_eta_var );
-  TMVAReader_ttbar_->AddVariable( "nJet25_Recl", &njets_var );
+  // TMVAReader_ttbar_->AddVariable( "max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))", &max_lep_eta_var );
+  // TMVAReader_ttbar_->AddVariable( "nJet25_Recl", &njets_var );
+  // TMVAReader_ttbar_->AddVariable( "mindr_lep1_jet", &dR_l1_j_var );
+  // TMVAReader_ttbar_->AddVariable( "mindr_lep2_jet", &dR_l2_j_var );
+  // TMVAReader_ttbar_->AddVariable( "min(met_pt,400)", &met_var );
+  // TMVAReader_ttbar_->AddVariable( "avg_dr_jet", &avg_dr_jets_var );
+  // TMVAReader_ttbar_->AddVariable( "MT_met_lep1", &MT_l1_met_var );
+  // TMVAReader_ttbar_->AddSpectator( "iF_Recl[0]", &spec0_var );
+  // TMVAReader_ttbar_->AddSpectator( "iF_Recl[1]", &spec1_var );
+  // TMVAReader_ttbar_->AddSpectator( "iF_Recl[2]", &spec2_var );
+  // //  TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_original_v2.xml";
+  // TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/2lss_ttbar_BDTG.weights.xml";
+  // TMVAReader_ttbar_->BookMVA("BDTG method", ttbar_weights);
+
+  TMVAReader_ttbar_->AddVariable( "max_Lep_eta", &max_lep_eta_var );
+  TMVAReader_ttbar_->AddVariable( "numJets_float", &njets_var );
   TMVAReader_ttbar_->AddVariable( "mindr_lep1_jet", &dR_l1_j_var );
   TMVAReader_ttbar_->AddVariable( "mindr_lep2_jet", &dR_l2_j_var );
-  TMVAReader_ttbar_->AddVariable( "min(met_pt,400)", &met_var );
-  TMVAReader_ttbar_->AddVariable( "avg_dr_jet", &avg_dr_jets_var );
   TMVAReader_ttbar_->AddVariable( "MT_met_lep1", &MT_l1_met_var );
-  TMVAReader_ttbar_->AddSpectator( "iF_Recl[0]", &spec0_var );
-  TMVAReader_ttbar_->AddSpectator( "iF_Recl[1]", &spec1_var );
-  TMVAReader_ttbar_->AddSpectator( "iF_Recl[2]", &spec2_var );
-  //  TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG.weights_ttbar_extraction_original_v2.xml";
-  TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/2lss_ttbar_BDTG.weights.xml";
+  TMVAReader_ttbar_->AddVariable( "met_double", &met_var );
+  TMVAReader_ttbar_->AddVariable( "avg_dr_jet", &avg_dr_jets_var );
+  TMVAReader_ttbar_->AddVariable( "csv2", &csv2_branch );
+  TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_csv2.xml";
   TMVAReader_ttbar_->BookMVA("BDTG method", ttbar_weights);
+
 
   TMVA::Reader* TMVAReader_ttbar_recoBdt_ = new TMVA::Reader( "!Color:!Silent" );
   TMVAReader_ttbar_recoBdt_->AddVariable( "max_lep_eta", &max_lep_eta_var );
@@ -159,7 +174,7 @@ void run_it(TChain* chain, TFile* output_file)
   TString flavor_branch = "null";
 
   //  TTree *extraction_tree = (TTree*)chain->CloneTree(0);
-  TTree *extraction_tree = new TTree("extraction_tree_standard","tree containing signal extraction output");
+  TTree *extraction_tree = new TTree("extraction_tree_csv2","tree containing signal extraction output");
   extraction_tree->Branch("mcwgt", &mcwgt_branch);
   extraction_tree->Branch("max_lep_eta", &max_lep_eta_branch);
   extraction_tree->Branch("nJets", &njets_branch);
@@ -184,8 +199,8 @@ void run_it(TChain* chain, TFile* output_file)
   chain->SetCacheLearnEntries(20);
   
   double starttime = get_wall_time();
-  //  chainentries = 10000;
-  for (int i=0; i<chainentries; i++)
+  chainentries = 212600;
+  for (int i=212500; i<chainentries; i++)
     {
       
       printProgress(i,chainentries);
@@ -234,7 +249,14 @@ void run_it(TChain* chain, TFile* output_file)
 
       // njets
       njets_var = preselected_jets_intree->size();
-      
+
+
+      //csv
+      auto csv_sorted_jets = *preselected_jets_intree;
+      std::sort(csv_sorted_jets.begin(), csv_sorted_jets.end(), [] (ttH::Jet a, ttH::Jet b) { return a.csv > b.csv;});
+      csv1_branch = csv_sorted_jets[0].csv;
+      csv2_branch = max( csv_sorted_jets[1].csv, 0.);
+
       // find highest pt leptons
       ttH::Lepton lep1;
       ttH::Lepton lep2;
@@ -320,33 +342,33 @@ void run_it(TChain* chain, TFile* output_file)
 
 void evaluateSignalExtraction(void)
 {
-  TString output_file_name1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-diLep-madgraph_selection_tree_2lss.root";
+  TString output_file_name1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttbar-diLep-madgraph_selection_tree_2lss.root";
   TFile *io_file1 = new TFile(output_file_name1, "UPDATE"); //"UPDATE");
   TChain *chain1 = new TChain("ss2l_tree");
   chain1->Add(output_file_name1);
   run_it(chain1,io_file1);
 
-  TString output_file_name2 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttW-aMCatNLO_selection_tree_2lss.root";
-  TFile *io_file2 = new TFile(output_file_name2, "UPDATE"); //"UPDATE");
-  TChain *chain2 = new TChain("ss2l_tree");
-  chain2->Add(output_file_name2);
-  run_it(chain2,io_file2);
+  // TString output_file_name2 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttW-aMCatNLO_selection_tree_2lss.root";
+  // TFile *io_file2 = new TFile(output_file_name2, "UPDATE"); //"UPDATE");
+  // TChain *chain2 = new TChain("ss2l_tree");
+  // chain2->Add(output_file_name2);
+  // run_it(chain2,io_file2);
 
-  TString output_file_name3 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttZ-aMCatNLO_selection_tree_2lss.root";
-  TFile *io_file3 = new TFile(output_file_name3, "UPDATE"); //"UPDATE");
-  TChain *chain3 = new TChain("ss2l_tree");
-  chain3->Add(output_file_name3);
-  run_it(chain3,io_file3);
+  // TString output_file_name3 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttZ-aMCatNLO_selection_tree_2lss.root";
+  // TFile *io_file3 = new TFile(output_file_name3, "UPDATE"); //"UPDATE");
+  // TChain *chain3 = new TChain("ss2l_tree");
+  // chain3->Add(output_file_name3);
+  // run_it(chain3,io_file3);
 
-  TString output_file_name4 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttbar-semiLep-powheg_selection_tree_2lss.root";
-  TFile *io_file4 = new TFile(output_file_name4, "UPDATE"); //"UPDATE");
-  TChain *chain4 = new TChain("ss2l_tree");
-  chain4->Add(output_file_name4);
-  run_it(chain4,io_file4);
+  // TString output_file_name4 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/ttbar-semiLep-powheg_selection_tree_2lss.root";
+  // TFile *io_file4 = new TFile(output_file_name4, "UPDATE"); //"UPDATE");
+  // TChain *chain4 = new TChain("ss2l_tree");
+  // chain4->Add(output_file_name4);
+  // run_it(chain4,io_file4);
 
-  TString output_file_name5 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/tth_aMC_old_selection_tree_2lss.root";
-  TFile *io_file5 = new TFile(output_file_name5, "UPDATE"); //"UPDATE");
-  TChain *chain5 = new TChain("ss2l_tree");
-  chain5->Add(output_file_name5);
-  run_it(chain5,io_file5);
+  // TString output_file_name5 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/tth_aMC_old_selection_tree_2lss.root";
+  // TFile *io_file5 = new TFile(output_file_name5, "UPDATE"); //"UPDATE");
+  // TChain *chain5 = new TChain("ss2l_tree");
+  // chain5->Add(output_file_name5);
+  // run_it(chain5,io_file5);
 }
