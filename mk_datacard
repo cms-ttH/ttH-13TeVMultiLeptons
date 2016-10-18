@@ -42,6 +42,10 @@ cb.cp().AddSyst(cb, 'pdf_qqbar', 'lnN', ch.SystMap("process")(["ttW"], 1.04) )
 #cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_e_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau","ee_p","ee_m","em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 0.96) )
 #cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_m_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau","em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.04) )
 #cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_m_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.11) )
+# cb.cp().AddSyst(cb, 'CMS_scale_j', 'shape', ch.SystMap()(1.0))
+# cb.cp().AddSyst(cb, 'CMS_res_j', 'shape', ch.SystMap()(1.0))
+# cb.cp().AddSyst(cb, 'jetTauFake', 'shape', ch.SystMap()(1.0))
+
 
 
 cb.cp().backgrounds().ExtractShapes(
