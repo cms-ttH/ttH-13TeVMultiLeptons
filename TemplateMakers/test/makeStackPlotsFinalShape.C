@@ -31,6 +31,15 @@
 
 //namespace eventType{ enum eventType{ss2l_ee, ss2l_mumu, ss2l_emu, l3}; }
 
+double shift(double unshifted_value)
+{
+  //  double shift = 0.7;
+  //  double shifted_value = ( unshifted_value + 1. )*( shift ) - 1.;
+  double shifted_value = unshifted_value;
+  if (unshifted_value >= 0.) shifted_value = unshifted_value-0.2;
+  return shifted_value;
+}
+
 class Sample
 {
 private:
@@ -168,9 +177,9 @@ public:
   void Fill(double ttbar_score, double ttv_score, TString flavor, bool isPlus, bool bTight, bool isTau, double weight)
   {
     //this is where the 2D binning is defined!!!!
-    //old shape
-    if ( ttbar_score <= -0.2) FillCategories(1, weight, flavor, isPlus, bTight, isTau);//-0.2 //-0.2=best
-    else if ( ttbar_score <= 0.1) FillCategories(2, weight, flavor, isPlus, bTight, isTau);//0.1 //0.1=best
+    //original shape
+    if ( ttbar_score <= -0.2 ) FillCategories(1, weight, flavor, isPlus, bTight, isTau);//-0.2 //-0.2=best
+    else if ( ttbar_score <= 0.1 ) FillCategories(2, weight, flavor, isPlus, bTight, isTau);//0.1 //0.1=best
     else if ( ttbar_score <= 0.4 ) //0.4 //0.55=best
       {
     	if ( ttv_score <= 0.3 ) FillCategories(3, weight, flavor, isPlus, bTight, isTau); //0.3 //0.2=best
@@ -181,16 +190,17 @@ public:
     else FillCategories(7, weight, flavor, isPlus, bTight, isTau);
 
     //new shape
-    // if ( ttbar_score <= -0.2) FillCategories(1, weight, flavor, isPlus, bTight, isTau);//-0.2 //-0.2=best
-    // else if ( ttbar_score <= 0.1) FillCategories(2, weight, flavor, isPlus, bTight, isTau);//0.1 //0.1=best
-    // else if ( ttbar_score <= 0.55 ) //0.4 //0.55=best
+    // if ( ttv_score <= shift(-0.2)) FillCategories(1, weight, flavor, isPlus, bTight, isTau);//-0.2 //-0.2=best
+    // else if ( ttv_score <= shift(0.1)) FillCategories(2, weight, flavor, isPlus, bTight, isTau);//0.1 //0.1=best
+    // else if ( ttv_score <= shift(0.4) ) //0.4 //0.55=best
     //   {
-    // 	if ( ttv_score <= 0.2 ) FillCategories(3, weight, flavor, isPlus, bTight, isTau); //0.3 //0.2=best
+    // 	if ( ttbar_score <= shift(0.3) ) FillCategories(3, weight, flavor, isPlus, bTight, isTau); //0.3 //0.2=best
     // 	else  FillCategories(4, weight, flavor, isPlus, bTight, isTau);
     //   }
-    // else if ( ttv_score <= 0.25 ) FillCategories(5, weight, flavor, isPlus, bTight, isTau);//0.1 //0.25=best
-    // else if ( ttv_score <= 0.4 ) FillCategories(6, weight, flavor, isPlus, bTight, isTau); //0.4 //0.4=best 
+    // else if ( ttbar_score <= shift(0.1) ) FillCategories(5, weight, flavor, isPlus, bTight, isTau);//0.1 //0.25=best
+    // else if ( ttbar_score <= shift(0.4) ) FillCategories(6, weight, flavor, isPlus, bTight, isTau); //0.4 //0.4=best 
     // else FillCategories(7, weight, flavor, isPlus, bTight, isTau);
+
 
   }
   
@@ -310,7 +320,7 @@ public:
   {
     sample_plots = sample_plots_;
 
-    inclusive_stack = new THStack("inclusive","ttV shift");
+    inclusive_stack = new THStack("inclusive","+csv");
     ee_plus_stack = new THStack("ee_p","ee +");
     ee_minus_stack = new THStack("ee_m","ee -");
     em_bTight_plus_stack = new THStack("em_bt_p","em btight +");
@@ -387,7 +397,8 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       PlotObject myPlotObj(input_hist, sample, output_file_);
 
       TFile* input_file = new TFile(sample.file_name,"READONLY");
-      TTree* input_tree = (TTree*)input_file->Get("extraction_tree_standard");
+      //      TTree* input_tree = (TTree*)input_file->Get("extraction_tree_standard");
+      TTree* input_tree = (TTree*)input_file->Get("extraction_tree_csv2");
 
       //loop over trees
       int chainentries = input_tree->GetEntries();
@@ -416,7 +427,7 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       Int_t cachesize = 250000000;   //250 MBytes
       input_tree->SetCacheSize(cachesize);
       input_tree->SetCacheLearnEntries(20); 
-      double shift = 0.3;
+
       int every_other = 3;
       for(int i=0; i<chainentries; i++)
 	{
@@ -425,13 +436,22 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
 
 	  // if ( sample.legend_name == "fakes" )	  
 	  //   {
-	  //     if (i%every_other != 0 && (vs_ttv_score_branch < 0.4 || vs_ttbar_score_branch < 0.4)) vs_ttbar_score_branch = (vs_ttbar_score_branch+1)*( 1.-shift ) -1;
+	  //     if ( i%every_other != 0 )
+	  // 	{
+	  // 	  vs_ttbar_score_branch = shift(vs_ttbar_score_branch);
+	  // 	  //	  	  vs_ttv_score_branch = shift(vs_ttv_score_branch);
+	  // 	}
 	  //   }
 
-	  if ( sample.legend_name == "ttW" || sample.legend_name == "ttZ" )
-	    {
-	      if (i%every_other != 0 && (vs_ttv_score_branch < 0.4 || vs_ttbar_score_branch < 0.4)) vs_ttv_score_branch = (vs_ttv_score_branch+1)*( 1.-shift ) -1;
-	    }
+	  // if ( sample.legend_name == "ttW" || sample.legend_name == "ttZ" )
+	  //   {
+	  //     if ( i%every_other != 0 )
+	  // 	{
+	  // 	  vs_ttv_score_branch = shift(vs_ttv_score_branch);
+	  // 	  //	  	  vs_ttbar_score_branch = shift(vs_ttbar_score_branch);
+	  // 	}
+	  //   }
+
 	  myPlotObj.Fill(vs_ttbar_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
 	  //myPlotObj.Fill(vs_ttbar_bdtReco_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
 	}
