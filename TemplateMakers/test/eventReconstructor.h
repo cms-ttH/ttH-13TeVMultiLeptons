@@ -149,7 +149,7 @@ class eventReconstructor
 
   void clear(void)
   {
-    reco_score_intree = -1.;
+    reco_score_intree = -2.;
     lep_from_higgs_bdt_intree->clear();  
     lep_from_leptop_bdt_intree->clear();
     b_from_leptop_bdt_intree->clear();
@@ -270,7 +270,6 @@ class eventReconstructor
 	jets_in.push_back(null_jet);
 	null_jets_added_bdt_intree = 1;
       }
-
 
     ///////////////////////////
     /////

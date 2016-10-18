@@ -67,6 +67,9 @@ void run_it(TChain* chain, TFile *io_file_)
   TLorentzVector *lepTop_intree=0;
   TLorentzVector *hadTop_intree=0;
 
+  double reco_score_intree;
+  double reco_score_branch;
+
   chain->SetBranchStatus("*",0);
   chain->SetBranchStatus("eventnum",1);
   chain->SetBranchStatus("mcwgt",1);
@@ -84,6 +87,7 @@ void run_it(TChain* chain, TFile *io_file_)
   chain->SetBranchAddress("looseMvaBased_electrons", &loose_electrons_intree);
   chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("met", &met_intree);
+  chain->SetBranchAddress("reco_score", &reco_score_intree);
   
   double max_lep_eta_branch;
   double njets_branch;
@@ -114,6 +118,7 @@ void run_it(TChain* chain, TFile *io_file_)
   ttH_vs_ttbar_tree->Branch("lep1_Pt", &l1_pt_branch);
   ttH_vs_ttbar_tree->Branch("csv1", &csv1_branch);
   ttH_vs_ttbar_tree->Branch("csv2", &csv2_branch);
+  ttH_vs_ttbar_tree->Branch("reco_score", &reco_score_branch);
 
 
   TTree *ttH_vs_ttV_tree = (TTree*)chain->CloneTree(0);
@@ -128,6 +133,7 @@ void run_it(TChain* chain, TFile *io_file_)
   ttH_vs_ttV_tree->Branch("isBtight", &bTight_branch);
   ttH_vs_ttV_tree->Branch("csv1", &csv1_branch);
   ttH_vs_ttV_tree->Branch("csv2", &csv2_branch);
+  ttH_vs_ttV_tree->Branch("reco_score", &reco_score_branch);
 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
@@ -258,6 +264,8 @@ void run_it(TChain* chain, TFile *io_file_)
       bTight_branch = ( num_tight > 1);
       avg_dr_jets_branch = dr_sum/double(dr_denom);
 
+      reco_score_branch = reco_score_intree;
+
       ttH_vs_ttbar_tree->Fill();
       ttH_vs_ttV_tree->Fill();
       
@@ -275,18 +283,16 @@ void run_it(TChain* chain, TFile *io_file_)
 
 void makeSigExtractionTrees(void)
 {
-  //  TString input_file1 = "selection_trees/ttbar-semiLep-madgraph_moreRelaxedTrainSelection_2lss.root";
-  TString input_file1 = "selection_trees/ttbar-semiLep-madgraph_moreRelaxedTrainSelection_2lss_conePt.root";
-  TString output_file1 = "signal_extraction/training/ttbar-semiLep-madgraph_evenMoreRelaxedTrainSelection_2lss_BDTtraining_lepConePt.root";
-  TFile *io_file1 = new TFile(output_file1, "RECREATE"); // #, 'test' ) // "RECREATE");
-  TChain *chain1 = new TChain("ss2l_tree");
-  chain1->Add(input_file1);
 
-  run_it(chain1,io_file1);
+  // TString input_file1 = "reco_bdt/output/ttbar_semiLep_madgraph_relaxed_2lss.root";
+  // TFile *io_file1 = new TFile(input_file1, "UPDATE"); // #, 'test' ) // "RECREATE");
+  // TChain *chain1 = new TChain("ss2l_tree");
+  // chain1->Add(input_file1);
 
-  TString input_file2 = "selection_trees/tth_powheg_old_moreRelaxedTrainSelection_2lss_conePt.root";
-  TString output_file2 = "signal_extraction/training/tth_powheg_old_moreRelaxedTrainSelection_2lss_BDTtraining_lepConePt.root";
-  TFile *io_file2 = new TFile(output_file2, "RECREATE"); // #, 'test' ) // "RECREATE");
+  // run_it(chain1,io_file1);
+
+  TString input_file2 = "reco_bdt/output/tth_powheg_old_relaxed_2lss.root";
+  TFile *io_file2 = new TFile(input_file2, "UPDATE"); // #, 'test' ) // "RECREATE");
   TChain *chain2 = new TChain("ss2l_tree");
   chain2->Add(input_file2);
 

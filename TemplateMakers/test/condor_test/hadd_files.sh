@@ -7,7 +7,7 @@ prefix=$1
 target_dir="/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output"
 files="$target_dir/$prefix*.root" 
 
-postfix="_2lss.root"
+postfix="_relaxed_2lss.root"
 output="$prefix$postfix"
 
 export SCRAM_ARCH=slc6_amd64_gcc530

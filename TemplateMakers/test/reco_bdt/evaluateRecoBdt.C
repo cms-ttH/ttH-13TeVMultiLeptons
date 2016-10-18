@@ -30,17 +30,21 @@
 void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
 {
 
+  int total_entries = chain->GetEntries();
+
   int min_tree_entry;
   int max_tree_entry;
   if (events_per_job > -1 && job_no > -1)
     {
       min_tree_entry = job_no*events_per_job;
       max_tree_entry = job_no*events_per_job + events_per_job-1;
+      if ( max_tree_entry > total_entries ) max_tree_entry = total_entries;
+      if ( min_tree_entry > max_tree_entry ) return;
     }
   else
     {
       min_tree_entry = 0;
-      max_tree_entry = chain->GetEntries();   
+      max_tree_entry = total_entries;   
     }
       cout << "# events in tree: "<< max_tree_entry - min_tree_entry << endl;  
 
@@ -79,6 +83,8 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   chain->SetBranchStatus("preselected_leptons.*",1);
   chain->SetBranchStatus("preselected_jets.*",1);
   chain->SetBranchStatus("looseMvaBased_leptons.*",1);
+  chain->SetBranchStatus("looseMvaBased_electrons.*",1);
+  chain->SetBranchStatus("looseMvaBased_muons.*",1);
   chain->SetBranchStatus("tightMvaBased_leptons.*",1);
   chain->SetBranchStatus("tightMvaBased_electrons.*",1);
   chain->SetBranchStatus("tightMvaBased_muons.*",1);
@@ -152,7 +158,7 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   for (int i=min_tree_entry; i<max_tree_entry; i++)
     {
 
-      //      printProgress(i,max_tree_entry);
+      //printProgress(i,max_tree_entry);
       clock_t startTime = clock();
       chain->GetEntry(i);
 
@@ -225,6 +231,10 @@ void evaluateRecoBdt(string sample_name="", int events_per_job=-1, int job_no=-1
   else if (sample_name.compare("ttZ_aMCatNLO") == 0)
     {
       input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttZ-aMCatNLO_selection_tree_2lss.root";
+    }
+  else if (sample_name.compare("ttbar_diLep_madgraph") == 0)
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-diLep-madgraph_selection_tree_2lss.root";
     }
   else 
     {
