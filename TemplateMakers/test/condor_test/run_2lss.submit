@@ -1,0 +1,18 @@
+N=10
+
+#+IsExpressJob = True
+universe = vanilla
+executable = run_2lss.sh
+arguments = $(Process) 
+output = stdout.$(Process)
+error = stderr.$(Process)
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+log = simple.logfile
+requirements = (machine != "skynet007.crc.nd.edu")
+requestMemory=130
+queue $(N)
+
+
+
+
