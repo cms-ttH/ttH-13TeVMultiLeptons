@@ -7,11 +7,10 @@
 
 void printProgress(int current_index, int total_entries)
 {
-  if (current_index % int(total_entries/100.) == 0)
+  if (current_index % max(int(total_entries/100.),1) == 0)
     {
       float fraction = 100.*current_index/total_entries;
       cout << int(fraction) << " % processed" << endl;
-      //      cout << i << endl;
     }
 }
 
