@@ -17,9 +17,8 @@ bool passCommon(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, v
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
 
   if ( psLeps.size() < 2 ) return false;
-  double mindilepmass = getTwoObjKineExtreme(psLeps,"min","mass");   
-  if (!(mindilepmass>12)) return false;
-  if ( psJets.size() < 2 ) return false;
+  double mindilepmass = getTwoObjKineExtreme(psLeps,"min","mass");
+  if ( mindilepmass <= 12. ) return false;
 
   if (!( ( taggedjetsloose.size() >= 2 ) || ( taggedjetstight.size() >=1 ) )) return false;
   return true;
@@ -30,31 +29,28 @@ bool pass2lss(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vec
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
 
-  //if ( !( (psLeps.size() ==2 && tightLeps.size() == 2) || (psLeps.size() == 3 && tightLeps.size() == 2 && psLeps[2].obj.Pt() < tightLeps[1].obj.Pt() ) ) ) return false;
-  if ( !(tightLeps.size() == 2) ) return false;
+  if ( tightLeps.size() != 2 ) return false; //exactly two leptons
+  if (tightLeps[0].charge != tightLeps[1].charge) return false; //same sign
+  for (auto &mu: tightMus) if (!(mu.chargeFlip < 0.2)) return false;//tight charge mu
+  for (auto &ele: tightEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge ele
+  for (auto &ele: tightEles) if (ele.numMissingInnerHits != 0) return false;//  //lost hits ele
+  for (auto &ele: tightEles) if ( !(ele.passConversioVeto) ) return false;//conv veto ele
+  if ( psJets.size() < 4 )      return false; //jet requirement
 
-  if (tightLeps[0].charge != tightLeps[1].charge) return false;
-  for (auto &ele: tightEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge
-  for (auto &mu: tightMus) if (!(mu.chargeFlip < 0.2)) return false;//tight charge
-  for (auto &ele: tightEles) if ((ele.numMissingInnerHits != 0)) return false;//  //lost hits
-  for (auto &ele: tightEles) if ( !(ele.passConversioVeto) ) return false;//
-  //conversion veto
-  if ( !( psJets.size()>3 ) )      return false;
+  if ( !(tightLeps[0].obj.Pt()>25. && tightLeps[1].obj.Pt()>10.) ) return false; //pt requirement
+  if ( abs(tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() <= 15. ) return false; //pt2 cut for ele
 
-  if ( !(tightLeps[0].obj.Pt()>20 && tightLeps[1].obj.Pt()>10) ) return false; //pt cut for mumu
-  if ( (tightLeps[0].pdgID) == 11 && tightLeps[0].obj.Pt() < 25 ) return false; //pt1 cut for e
-  if ( (tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() < 15 ) return false; //pt2 cut for e
-
-  if (tightEles.size() ==2 )
+  if (tightEles.size() == 2 )
     {
-      double vetoZmass = pickFromSortedTwoObjKine(psEles,"mass",1,91.2);
-      if ( !(fabs(vetoZmass-91.2)>10) ) return false;                     
-
+      auto ee_obj = tightEles[0].obj + tightEles[1].obj;
+      double vetoZmass = ee_obj.M();
+      //double vetoZmass = pickFromSortedTwoObjKine(tightEles,"mass",1,91.2);
+      if ( fabs(vetoZmass-91.2) <= 10. ) return false;
+      
       auto objs_for_mht = getsumTLV(psLeps,psJets);
       double MHT_handle = objs_for_mht.Pt();
       double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
-      if ( !(metLD_handle> 0.2) ) return false;
-
+      if ( !(metLD_handle > 0.2) ) return false;
     }
   return true;
 }
@@ -81,7 +77,7 @@ bool pass2l(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vecto
 
   if (tightEles.size() ==2 )
     {
-      double vetoZmass = pickFromSortedTwoObjKine(psEles,"mass",1,91.2);
+      double vetoZmass = pickFromSortedTwoObjKine(tightEles,"mass",1,91.2);
       if ( !(fabs(vetoZmass-91.2)>10) ) return false;                     
 
       auto objs_for_mht = getsumTLV(psLeps,psJets);
@@ -102,7 +98,7 @@ bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> loo
 
   if (looseLeps[0].charge != looseLeps[1].charge) return false; 
   if ( !( psJets.size()>3 ) )      return false;
-
+  
   bool isLep1Tight = false;
   bool isLep2Tight = false;
   for (const auto & tightLep : tightLeps)
@@ -121,33 +117,8 @@ bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> loo
   else lep2_pt = looseLeps[1].obj.pt();
 
   if ( !(lep1_pt>20 && lep2_pt>10) ) return false;
-  /* if ( (looseLeps[0].pdgID) == 11 && looseLeps[0].obj.Pt() < 25 ) return false; //pt1 cut for e */
-  /* if ( (looseLeps[1].pdgID) == 11 && looseLeps[1].obj.Pt() < 15 ) return false; //pt2 cut for e */
-
   return true;
 }
-
-bool pass2l_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets)
-{
-  vector<ttH::Lepton> looseLeps = get_collection(looseMus,looseEles);
-
-  if ( looseLeps.size() < 2 ) return false;
-
-  for (auto &ele: looseEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge
-  for (auto &mu: looseMus) if (!(mu.chargeFlip < 0.2)) return false;//tight charge
-  for (auto &ele: looseEles) if ((ele.numMissingInnerHits != 0)) return false;//  //lost hits
-  for (auto &ele: looseEles) if ( !(ele.passConversioVeto) ) return false;//
-  //conversion veto
-  if ( !( psJets.size()>3 ) )      return false;
-
-  if ( !(looseLeps[0].obj.Pt()>20 && looseLeps[1].obj.Pt()>10) ) return false; //pt cut for mumu
-  if ( (looseLeps[0].pdgID) == 11 && looseLeps[0].obj.Pt() < 25 ) return false; //pt1 cut for e
-  if ( (looseLeps[1].pdgID) == 11 && looseLeps[1].obj.Pt() < 15 ) return false; //pt2 cut for e
-
-  return true;
-}
-
-
 
 bool pass2lss_lepMVA_controlRegion(vector<ttH::Electron> tightEles, vector<ttH::Electron> fakeableEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> fakeableMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, vector<ttH::MET> met)
 {
