@@ -47,6 +47,13 @@ private:
   TH1D *lep2_iso_;
   TH1D *lep1_MVA_;
   TH1D *lep2_MVA_;
+
+  TH1D *lep1_csv_;
+  TH1D *lep2_csv_;
+  TH1D *lep1_ptRatio_;
+  TH1D *lep2_ptRatio_;
+  TH1D *lep1_ptRel_;
+  TH1D *lep2_ptRel_;
   int hist_color_;
 
   void FillHist(TString sample_name_input_)
@@ -62,6 +69,7 @@ private:
     vector<ttH::Jet> *raw_jets_intree=0;
     vector<ttH::GenParticle> *gen_jets_intree=0;
     vector<ttH::Lepton> *loose_leptons_intree=0;
+    vector<ttH::Lepton> *tight_leptons_intree=0;
     
     chain->SetBranchStatus("*",0);
     chain->SetBranchStatus("mcwgt",1);
@@ -69,12 +77,13 @@ private:
     chain->SetBranchStatus("raw_jets.*",1);
     chain->SetBranchStatus("genJets.*",1);
     chain->SetBranchStatus("looseMvaBased_leptons.*",1);
+    chain->SetBranchStatus("tightMvaBased_leptons.*",1);
 
     chain->SetBranchAddress("mcwgt", &mcwgt_intree);
     chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
     chain->SetBranchAddress("raw_jets", &raw_jets_intree);
     chain->SetBranchAddress("genJets", &gen_jets_intree);
-    chain->SetBranchAddress("looseMvaBased_leptons",&loose_leptons_intree);
+    chain->SetBranchAddress("tightMvaBased_leptons",&tight_leptons_intree);
 
 
     Int_t cachesize = 250000000;   //250 MBytes
@@ -90,13 +99,23 @@ private:
 	nJets_gen_->Fill(gen_jets_intree->size(), mcwgt_intree);
     	nJets_selected_->Fill(preselected_jets_intree->size(), mcwgt_intree);
 
-	lep1_pt_->Fill((*loose_leptons_intree)[0].obj.pt(),mcwgt_intree);
-	lep2_pt_->Fill((*loose_leptons_intree)[1].obj.pt(),mcwgt_intree);
-	lep1_iso_->Fill((*loose_leptons_intree)[0].miniIso,mcwgt_intree);
-	lep2_iso_->Fill((*loose_leptons_intree)[1].miniIso,mcwgt_intree);
-	lep1_MVA_->Fill((*loose_leptons_intree)[0].lepMVA,mcwgt_intree);
-	lep2_MVA_->Fill((*loose_leptons_intree)[1].lepMVA,mcwgt_intree);
+	//	auto lep_collection = *loose_leptons_intree;
+	auto lep_collection = *tight_leptons_intree;
 
+	lep1_pt_->Fill(lep_collection[0].obj.pt(),mcwgt_intree);
+	lep2_pt_->Fill(lep_collection[1].obj.pt(),mcwgt_intree);
+	lep1_iso_->Fill(lep_collection[0].miniIso,mcwgt_intree);
+	lep2_iso_->Fill(lep_collection[1].miniIso,mcwgt_intree);
+	lep1_MVA_->Fill(lep_collection[0].lepMVA,mcwgt_intree);
+	lep2_MVA_->Fill(lep_collection[1].lepMVA,mcwgt_intree);
+
+	lep1_csv_->Fill(lep_collection[0].csv,mcwgt_intree);
+	lep2_csv_->Fill(lep_collection[1].csv,mcwgt_intree);
+	lep1_ptRatio_->Fill(lep_collection[0].jetPtRatio,mcwgt_intree);
+	lep2_ptRatio_->Fill(lep_collection[1].jetPtRatio,mcwgt_intree);
+	lep1_ptRel_->Fill(lep_collection[0].jetPtRel,mcwgt_intree);
+	lep2_ptRel_->Fill(lep_collection[1].jetPtRel,mcwgt_intree);
+	
 
 	for (const auto & jet : *preselected_jets_intree)
 	  {
@@ -119,6 +138,13 @@ private:
     hist_vector.push_back(lep2_iso_);
     hist_vector.push_back(lep1_MVA_);
     hist_vector.push_back(lep2_MVA_);
+
+    hist_vector.push_back(lep1_csv_);
+    hist_vector.push_back(lep2_csv_);
+    hist_vector.push_back(lep1_ptRatio_);
+    hist_vector.push_back(lep2_ptRatio_);
+    hist_vector.push_back(lep1_ptRel_);
+    hist_vector.push_back(lep2_ptRel_);
 
     for (const auto & my_hist : hist_vector)
       {
@@ -168,11 +194,30 @@ public:
     lep2_iso_ = new TH1D(leg_name_,"lep2_iso",25,0,0.4);
     lep2_iso_->GetXaxis()->SetTitle("lep2 miniIso");
 
-    lep1_MVA_ = new TH1D(leg_name_,"lep1_MVA",25,-1,1);
+    lep1_MVA_ = new TH1D(leg_name_,"lep1_MVA",25,0.,1);
     lep1_MVA_->GetXaxis()->SetTitle("lep1 lepMVA");
 
-    lep2_MVA_ = new TH1D(leg_name_,"lep2_MVA",25,-1,1);
+    lep2_MVA_ = new TH1D(leg_name_,"lep2_MVA",25,0.,1);
     lep2_MVA_->GetXaxis()->SetTitle("lep2 lepMVA");
+
+    lep1_csv_ = new TH1D(leg_name_,"lep1_csv",25,-1,1);
+    lep1_csv_->GetXaxis()->SetTitle("lep1 csv");
+
+    lep2_csv_ = new TH1D(leg_name_,"lep2_csv",25,-1,1);
+    lep2_csv_->GetXaxis()->SetTitle("lep2 csv");
+
+    lep1_ptRatio_ = new TH1D(leg_name_,"lep1_ptRatio",25,0,1.6);
+    lep1_ptRatio_->GetXaxis()->SetTitle("lep1 ptRatio");
+
+    lep2_ptRatio_ = new TH1D(leg_name_,"lep2_ptRatio",25,0,1.6);
+    lep2_ptRatio_->GetXaxis()->SetTitle("lep2 ptRatio");
+
+    lep1_ptRel_ = new TH1D(leg_name_,"lep1_ptRel",25,0,160);
+    lep1_ptRel_->GetXaxis()->SetTitle("lep1 ptRel");
+
+    lep2_ptRel_ = new TH1D(leg_name_,"lep2_ptRel",25,0,160);
+    lep2_ptRel_->GetXaxis()->SetTitle("lep2 ptRel");
+
 
     FillHist(sample_name_);
 
@@ -267,8 +312,8 @@ void drawPlots(vector<PlotObject> samples_)
 
 void compareSamples(void)
 {
-  PlotObject sample1 = PlotObject("ttbar_genFilter_relaxed",1,"filtered");
-  PlotObject sample2 = PlotObject("ttbar_semiLep_madgraph",2,"no filter");
+  PlotObject sample1 = PlotObject("ttbar_genFilter",1,"filtered");
+  PlotObject sample2 = PlotObject("ttbar_semiLep_powheg",2,"no filter");
 
   
   vector<PlotObject> plot_vector;
