@@ -11,30 +11,47 @@ class FileLoader
   void loadFile(TString path_str, vector<string> samples)
   {
     TString pre_fix = "/hadoop/store/user/";
-    //"muell149/lobster_test__v0/";
     TString base_dir = pre_fix + path_str;
-    for (const auto & sample : samples)
+    
+    int num_attempts = 0;
+    bool loaded_files = false;
+    while ( !loaded_files )
       {
-	TString file_name = base_dir+sample;
-	chain->Add(file_name);
-	
-	cout << "loading file: " << file_name << endl;      
-	//for hist
-	TFile* file = TFile::Open(file_name,"READONLY");
-	if ( file )
+	for (const auto & sample : samples)
 	  {
-	    TH1D* hist = (TH1D*)file->Get("OSTwoLepAna/numInitialWeightedMCevents");
-	    hist_sum->Add(hist);
-	    file->Close();
+	    TString file_name = base_dir+sample;
+	    chain->Add(file_name);
+	    
+	    cout << "loading file: " << file_name << endl;      
+	    //for hist
+	    TFile* file = TFile::Open(file_name,"READONLY");
+	    if ( file )
+	      {
+		TH1D* hist = (TH1D*)file->Get("OSTwoLepAna/numInitialWeightedMCevents");
+		hist_sum->Add(hist);
+		file->Close();
+	      }
+
+	    //	    file->Flush();
+	    delete file;
+	  }
+	num_attempts +=1;
+	if (chain->GetEntries() > 0 || num_attempts > 1)
+	  {
+	    loaded_files = true;
+	  }
+	else 
+	  {
+	    loaded_files = false;
+	    //	    std::this_thread::sleep_for(std::chrono::milliseconds(30000)); //pause for 30sec
 	  }
       }
   }
-  
  public:
   FileLoader(TString sample)
     {
       chain = new TChain("OSTwoLepAna/summaryTree");
-      hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
+      hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);      
       
       if (sample == "tth_powheg_new")
 	{
@@ -210,8 +227,10 @@ class FileLoader
       else if (sample == "ttbar_genFilter")
 	{
 	  vector<string> sample_vec;
-	  sample_vec.push_back("output_tree_273.root");
-	  loadFile( "muell149/lobster_test__genFilterV0_and_TTLL/ttbar_semiLep_genFilter/", sample_vec);
+	  sample_vec.push_back("output_tree_17.root");
+	  loadFile( "muell149/lobster_test__genFilterV1/ttbar_semiLep_genFilter/", sample_vec);
+	  /* sample_vec.push_back("output_tree_273.root"); */
+	  /* loadFile( "muell149/lobster_test__genFilterV0_and_TTLL/ttbar_semiLep_genFilter/", sample_vec); */
 	}
       
       else if (sample == "ttW_aMCatNLO")
@@ -331,6 +350,29 @@ class FileLoader
 	  //stuff
 	}
       
+
+      //jet_cleaning_test
+
+      else if (sample == "tth_powheg_jetClean_test")
+	{
+	  vector<string> sample_vec;
+	  sample_vec.push_back("output_tree_346.root");
+	  sample_vec.push_back("output_tree_342.root");
+	  sample_vec.push_back("output_tree_348.root");
+	  sample_vec.push_back("output_tree_349.root");
+	  sample_vec.push_back("output_tree_347.root");
+	  sample_vec.push_back("output_tree_361.root");
+	  sample_vec.push_back("output_tree_362.root");
+	  loadFile( "muell149/lobster_test__tranche3_altJetClean/tth_nonbb_powheg_local_new/", sample_vec);
+	}
+      else if (sample == "ttbar_semiLep_jetClean_test")
+	{
+	  vector<string> sample_vec;
+	  sample_vec.push_back("output_tree_360.root");
+	  loadFile( "muell149/lobster_test__tranche3_altJetClean/ttbar_semiLep_genFilter/", sample_vec);
+	}
+
+      
       else
 	{
 	  cout << "=================================" << endl;
@@ -366,9 +408,23 @@ TString getSelectionFile(TString sample_name)
     {
       input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/tth_aMC_old_selection_2lss.root";
     }
+  
+
+  else if (sample_name == "tth_aMC")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/tth_aMC_old_selection_2lss.root";
+    }
+
+  else if (sample_name == "fakes")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/ttbar_semiLep_powheg_selection_2lss.root";
+    }
+  
+
+
   else if (sample_name == "ttbar_semiLep_powheg")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttbar_semiLep_powheg_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttbar_semiLep_powheg_selection_2lss_original.root";
     }
   else if (sample_name == "ttW_aMCatNLO")
     {
@@ -386,18 +442,26 @@ TString getSelectionFile(TString sample_name)
 
   else if (sample_name == "ttbar_genFilter_relaxed")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttbar_genFilter_Relaxedselection_tree_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/genFilter_tests/ttbar_genFilter_relaxed_training_2lss_kevin_v6.root";
     }
 
   else if (sample_name == "ttbar_genFilter")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttbar_genFilter_selection_tree_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/genFilter_tests/ttbar_genFilter_2lss_kevin_v6.root";
     }
 
   else if (sample_name == "ttbar_diLep_madgraph")
     {
       input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttbar_diLep_madgraph_selection_2lss.root";
     }
+
+  else if (sample_name == "ttbar_diLep_powheg")
+    {
+      //the Kevin Tranche3 sample...
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar_diLep_powheg_2lss.root";
+    }
+
+
   else if (sample_name == "WW_diboson")
     {
       input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/WW_diboson_selection_2lss.root";
@@ -438,10 +502,21 @@ TString getSelectionFile(TString sample_name)
     {
       input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ZZZ_rares_selection_2lss.root";
     }
+
+  else if (sample_name == "ttbar_semiLep_jetClean_test")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/genFilter_tests/ttbar_semiLep_jetClean_test_training_tree_2lss.root";
+    }
+
+  else if (sample_name == "ttbar_semiLep_bdtTraining")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
+    }
+
   else 
     {
       sample_name = "output";
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/tth_aMC_old_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/tth_aMC_old_selection_tree_2lss.root";
     }
 
   return input_file_name;
