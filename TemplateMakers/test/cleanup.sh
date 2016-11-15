@@ -4,3 +4,4 @@ rm -rf *~
 rm -rf *.pcm
 rm -rf *.d
 rm -rf *.so
+rm -rf *.pyc
