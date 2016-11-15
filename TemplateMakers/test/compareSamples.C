@@ -35,116 +35,45 @@
 class PlotObject
 {
 private:
-  TH1D *nJets_selected_;
-  TH1D *jetPt_selected_;
-  TH1D *jetEta_selected_;
-  TH1D *jetCsv_selected_;
-  TH1D *nJets_raw_;
-  TH1D *nJets_gen_;
-  TH1D *lep1_pt_;
-  TH1D *lep2_pt_;
-  TH1D *lep1_iso_;
-  TH1D *lep2_iso_;
-  TH1D *lep1_MVA_;
-  TH1D *lep2_MVA_;
+  TH1D *reco_score_;
 
-  TH1D *lep1_csv_;
-  TH1D *lep2_csv_;
-  TH1D *lep1_ptRatio_;
-  TH1D *lep2_ptRatio_;
-  TH1D *lep1_ptRel_;
-  TH1D *lep2_ptRel_;
   int hist_color_;
 
-  void FillHist(TString sample_name_input_)
+  void FillHist(TString sample_name_input_, TString leg_name_)
   {
-    TChain *chain = new TChain("ss2l_tree");
+    TChain *chain = new TChain("extraction_tree_recobdt_v1");
     
     TString file_ = getSelectionFile(sample_name_input_);
     chain->Add(file_);
     int chainentries = chain->GetEntries();
     
     double mcwgt_intree = -999.;
-    vector<ttH::Jet> *preselected_jets_intree=0;
-    vector<ttH::Jet> *raw_jets_intree=0;
-    vector<ttH::GenParticle> *gen_jets_intree=0;
-    vector<ttH::Lepton> *loose_leptons_intree=0;
-    vector<ttH::Lepton> *tight_leptons_intree=0;
+    double reco_score_intree = -99.;
+    bool isBtight_intree = false;
     
-    chain->SetBranchStatus("*",0);
-    chain->SetBranchStatus("mcwgt",1);
-    chain->SetBranchStatus("preselected_jets.*",1);
-    chain->SetBranchStatus("raw_jets.*",1);
-    chain->SetBranchStatus("genJets.*",1);
-    chain->SetBranchStatus("looseMvaBased_leptons.*",1);
-    chain->SetBranchStatus("tightMvaBased_leptons.*",1);
 
     chain->SetBranchAddress("mcwgt", &mcwgt_intree);
-    chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-    chain->SetBranchAddress("raw_jets", &raw_jets_intree);
-    chain->SetBranchAddress("genJets", &gen_jets_intree);
-    chain->SetBranchAddress("tightMvaBased_leptons",&tight_leptons_intree);
-
+    chain->SetBranchAddress("reco_score", &reco_score_intree);
+    chain->SetBranchAddress("bTight_category", &isBtight_intree);
 
     Int_t cachesize = 250000000;   //250 MBytes
     chain->SetCacheSize(cachesize);
-
-    //    chainentries = 1000; //trash this
 
     for (int i=0; i<chainentries; i++)
       {
     	chain->GetEntry(i);
     	printProgress(i,chainentries);
-	nJets_raw_->Fill(raw_jets_intree->size(), mcwgt_intree);
-	nJets_gen_->Fill(gen_jets_intree->size(), mcwgt_intree);
-    	nJets_selected_->Fill(preselected_jets_intree->size(), mcwgt_intree);
 
-	//	auto lep_collection = *loose_leptons_intree;
-	auto lep_collection = *tight_leptons_intree;
-
-	lep1_pt_->Fill(lep_collection[0].obj.pt(),mcwgt_intree);
-	lep2_pt_->Fill(lep_collection[1].obj.pt(),mcwgt_intree);
-	lep1_iso_->Fill(lep_collection[0].miniIso,mcwgt_intree);
-	lep2_iso_->Fill(lep_collection[1].miniIso,mcwgt_intree);
-	lep1_MVA_->Fill(lep_collection[0].lepMVA,mcwgt_intree);
-	lep2_MVA_->Fill(lep_collection[1].lepMVA,mcwgt_intree);
-
-	lep1_csv_->Fill(lep_collection[0].csv,mcwgt_intree);
-	lep2_csv_->Fill(lep_collection[1].csv,mcwgt_intree);
-	lep1_ptRatio_->Fill(lep_collection[0].jetPtRatio,mcwgt_intree);
-	lep2_ptRatio_->Fill(lep_collection[1].jetPtRatio,mcwgt_intree);
-	lep1_ptRel_->Fill(lep_collection[0].jetPtRel,mcwgt_intree);
-	lep2_ptRel_->Fill(lep_collection[1].jetPtRel,mcwgt_intree);
-	
-
-	for (const auto & jet : *preselected_jets_intree)
-	  {
-	    jetPt_selected_->Fill(jet.obj.pt(), mcwgt_intree);
-	    jetEta_selected_->Fill(jet.obj.eta(), mcwgt_intree);
-	    jetCsv_selected_->Fill(jet.csv, mcwgt_intree);
-	  }
-	
+	/// messy
+	vector<ttH::Lepton> lep_eta_collection;
+	if (sample_name_input_ == "tth_aMC" && leg_name_ == "tth_btight" && isBtight_intree) reco_score_->Fill(reco_score_intree, mcwgt_intree);
+	else if (sample_name_input_ == "tth_aMC" && leg_name_ == "tth_bloose" && !isBtight_intree) reco_score_->Fill(reco_score_intree, mcwgt_intree);
+	else if (sample_name_input_ == "fakes" && leg_name_ == "ttbar_btight" && isBtight_intree) reco_score_->Fill(reco_score_intree, mcwgt_intree);
+	else if (sample_name_input_ == "fakes" && leg_name_ == "ttbar_bloose" && !isBtight_intree) reco_score_->Fill(reco_score_intree, mcwgt_intree);
+	 
       }
     
-    hist_vector.push_back(nJets_selected_);
-    hist_vector.push_back(jetPt_selected_);
-    hist_vector.push_back(jetEta_selected_);
-    hist_vector.push_back(jetCsv_selected_);
-    hist_vector.push_back(nJets_raw_);
-    hist_vector.push_back(nJets_gen_);
-    hist_vector.push_back(lep1_pt_);
-    hist_vector.push_back(lep2_pt_);
-    hist_vector.push_back(lep1_iso_);
-    hist_vector.push_back(lep2_iso_);
-    hist_vector.push_back(lep1_MVA_);
-    hist_vector.push_back(lep2_MVA_);
-
-    hist_vector.push_back(lep1_csv_);
-    hist_vector.push_back(lep2_csv_);
-    hist_vector.push_back(lep1_ptRatio_);
-    hist_vector.push_back(lep2_ptRatio_);
-    hist_vector.push_back(lep1_ptRel_);
-    hist_vector.push_back(lep2_ptRel_);
+    hist_vector.push_back(reco_score_);
 
     for (const auto & my_hist : hist_vector)
       {
@@ -152,6 +81,7 @@ private:
 	my_hist->Scale( 1.0 / my_hist->Integral());
 	
 	my_hist->SetStats(0);
+	my_hist->SetLineWidth(2);
 	my_hist->SetLineColor(hist_color_);
 	my_hist->SetMarkerColor(hist_color_);
 	my_hist->GetYaxis()->SetTitle("normalized units");
@@ -164,62 +94,10 @@ public:
   { 
     hist_color_ = line_color_;
 
-    nJets_raw_ = new TH1D(leg_name_,"nJets_raw",32,0,32);
-    nJets_raw_->GetXaxis()->SetTitle("N jets (no selection)");
+    reco_score_ = new TH1D(leg_name_,"reco_score",40,-1,1.1);
+    reco_score_->GetXaxis()->SetTitle("reco score");
 
-    nJets_selected_ = new TH1D(leg_name_,"nJets_selected",45,0,15);
-    nJets_selected_->GetXaxis()->SetTitle("N jets");
-
-    jetPt_selected_ = new TH1D(leg_name_,"jetPt_selected",25,0,300);
-    jetPt_selected_->GetXaxis()->SetTitle("jet pT [GeV]");
-
-    jetEta_selected_ = new TH1D(leg_name_,"jetEta_selected",25,-2.6,2.6);
-    jetEta_selected_->GetXaxis()->SetTitle("jet eta");
-
-    jetCsv_selected_ = new TH1D(leg_name_,"jetCsv_selected",25,-.1,1.1);
-    jetCsv_selected_->GetXaxis()->SetTitle("jet CSV");
-
-    nJets_gen_ = new TH1D(leg_name_,"nJets_gen",16,0,32);
-    nJets_gen_->GetXaxis()->SetTitle("N gen jets (no selection) ");
-
-    lep1_pt_ = new TH1D(leg_name_,"lep1_pt",25,0,250);
-    lep1_pt_->GetXaxis()->SetTitle("lep1 pt");
-
-    lep2_pt_ = new TH1D(leg_name_,"lep2_pt",25,0,250);
-    lep2_pt_->GetXaxis()->SetTitle("lep2 pt");
-
-    lep1_iso_ = new TH1D(leg_name_,"lep1_iso",25,0,0.4);
-    lep1_iso_->GetXaxis()->SetTitle("lep1 miniIso");
-
-    lep2_iso_ = new TH1D(leg_name_,"lep2_iso",25,0,0.4);
-    lep2_iso_->GetXaxis()->SetTitle("lep2 miniIso");
-
-    lep1_MVA_ = new TH1D(leg_name_,"lep1_MVA",25,0.,1);
-    lep1_MVA_->GetXaxis()->SetTitle("lep1 lepMVA");
-
-    lep2_MVA_ = new TH1D(leg_name_,"lep2_MVA",25,0.,1);
-    lep2_MVA_->GetXaxis()->SetTitle("lep2 lepMVA");
-
-    lep1_csv_ = new TH1D(leg_name_,"lep1_csv",25,-1,1);
-    lep1_csv_->GetXaxis()->SetTitle("lep1 csv");
-
-    lep2_csv_ = new TH1D(leg_name_,"lep2_csv",25,-1,1);
-    lep2_csv_->GetXaxis()->SetTitle("lep2 csv");
-
-    lep1_ptRatio_ = new TH1D(leg_name_,"lep1_ptRatio",25,0,1.6);
-    lep1_ptRatio_->GetXaxis()->SetTitle("lep1 ptRatio");
-
-    lep2_ptRatio_ = new TH1D(leg_name_,"lep2_ptRatio",25,0,1.6);
-    lep2_ptRatio_->GetXaxis()->SetTitle("lep2 ptRatio");
-
-    lep1_ptRel_ = new TH1D(leg_name_,"lep1_ptRel",25,0,160);
-    lep1_ptRel_->GetXaxis()->SetTitle("lep1 ptRel");
-
-    lep2_ptRel_ = new TH1D(leg_name_,"lep2_ptRel",25,0,160);
-    lep2_ptRel_->GetXaxis()->SetTitle("lep2 ptRel");
-
-
-    FillHist(sample_name_);
+    FillHist(sample_name_, leg_name_);
 
   }//default constructor
 
@@ -279,10 +157,12 @@ void drawPlots(vector<PlotObject> samples_)
       pad2->SetTopMargin(0);
       pad2->SetBottomMargin(0.35);
       //      pad2->SetGridy();
+      
+
       pad2->Draw();
       pad2->cd();
       
-      hist_ratio.GetYaxis()->SetTitle("filter / no filter");
+      hist_ratio.GetYaxis()->SetTitle("ratio");
       double offset_fraction = 1.6;//1.6;
       double hist_max = hist_ratio.GetMaximum();
       double hist_min = hist_ratio.GetMinimum();
@@ -312,13 +192,17 @@ void drawPlots(vector<PlotObject> samples_)
 
 void compareSamples(void)
 {
-  PlotObject sample1 = PlotObject("ttbar_genFilter",1,"filtered");
-  PlotObject sample2 = PlotObject("ttbar_semiLep_powheg",2,"no filter");
+  PlotObject sample1 = PlotObject("tth_aMC",2,"tth_btight"); //1 filter, train, fo
+  PlotObject sample2 = PlotObject("tth_aMC",4,"tth_bloose"); //2 no filter, train, fo
+  PlotObject sample3 = PlotObject("fakes",8,"ttbar_btight"); //3 filter, train, ps
+  PlotObject sample4 = PlotObject("fakes",6,"ttbar_bloose"); //3 filter, train, ps
 
   
   vector<PlotObject> plot_vector;
   plot_vector.push_back(sample1);
   plot_vector.push_back(sample2);
+  plot_vector.push_back(sample3);
+  plot_vector.push_back(sample4);
 
   
   drawPlots(plot_vector);
