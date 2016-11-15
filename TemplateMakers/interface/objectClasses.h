@@ -94,6 +94,7 @@ namespace ttH
     
     double SCeta; //supercluster eta
     bool isGsfCtfScPixChargeConsistent;
+    bool isGsfScPixChargeConsistent;
     int numMissingInnerHits;
     bool passConversioVeto;
     double dEtaIn;

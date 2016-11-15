@@ -281,6 +281,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_looseMvaBased,0.4);
 	    selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_looseMvaBased,0.4);
 
+	    // selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
+	    // selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
+
 	    /////////
 	    ///
 	    /// MET

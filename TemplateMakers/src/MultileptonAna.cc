@@ -175,6 +175,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.numMissingInnerHits = iEle.userFloat("numMissingHits");
       ele.charge = iEle.charge();
       ele.isGsfCtfScPixChargeConsistent = iEle.isGsfCtfScPixChargeConsistent();
+      ele.isGsfScPixChargeConsistent = iEle.isGsfScPixChargeConsistent();
       ele.passConversioVeto = iEle.passConversionVeto();
       ele.relIso = iEle.userFloat("relIso");
       ele.miniIso = iEle.userFloat("miniIso");
