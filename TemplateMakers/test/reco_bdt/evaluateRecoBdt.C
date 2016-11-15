@@ -18,6 +18,7 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "../selection.h"
+#include "../loadSamples_notreDame.h"
 
 
 /////////////////////////////////////////
@@ -46,7 +47,7 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
       min_tree_entry = 0;
       max_tree_entry = total_entries;   
     }
-      cout << "# events in tree: "<< max_tree_entry - min_tree_entry << endl;  
+  cout << "# events in tree: "<< max_tree_entry - min_tree_entry << endl;  
 
   
   double mcwgt_intree = -999.;
@@ -114,7 +115,7 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
   chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
-  //  chain->SetBranchAddress("met", &met_intree);
+  chain->SetBranchAddress("met", &met_intree);
 
   chain->SetBranchAddress("higgs_final_state", &higgs_final_state_intree);
   chain->SetBranchAddress("ttbar_final_state", &ttbar_final_state_intree);
@@ -144,9 +145,18 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
 
   eventReconstructor bdtReconstructor;
   double time_per_event_intree = -1.;
+  TLorentzVector hadtop_tlv_intree;
+  TLorentzVector w_hadtop_tlv_intree;
+  TLorentzVector higgs_tlv_intree;
+
   TTree *signal_tree = (TTree*)chain->CloneTree(0);
   signal_tree->SetName("ss2l_tree");
   signal_tree->Branch("time_per_event", &time_per_event_intree);
+
+  signal_tree->Branch("hadtop_reco_truth", &hadtop_tlv_intree);
+  signal_tree->Branch("w_hadtop_reco_truth", &w_hadtop_tlv_intree);
+  signal_tree->Branch("higgs_reco_truth", &higgs_tlv_intree);
+
   bdtReconstructor.initializeTree(signal_tree);
   
   Int_t cachesize = 250000000;   //250 MBytes
@@ -157,8 +167,8 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
 
   for (int i=min_tree_entry; i<max_tree_entry; i++)
     {
-
-      //printProgress(i,max_tree_entry);
+      
+      printProgress(i,max_tree_entry);
       clock_t startTime = clock();
       chain->GetEntry(i);
 
@@ -168,9 +178,19 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
       /////
       /////////////////////
       
+      TLorentzVector b_from_hadtop_tlv = setTlv(*b_from_hadtop_truth_intree);
+      TLorentzVector q1_from_hadtop_tlv = setTlv(*q1_from_hadtop_truth_intree);
+      TLorentzVector q2_from_hadtop_tlv = setTlv(*q2_from_hadtop_truth_intree);
+      TLorentzVector q1_from_higgs_tlv = setTlv(*q1_from_higgs_truth_intree);
+      TLorentzVector q2_from_higgs_tlv = setTlv(*q2_from_higgs_truth_intree);
+      TLorentzVector lep_from_higgs_tlv = setTlv(*lep_from_higgs_truth_intree);
 
-      //      bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree);
-      bdtReconstructor.initialize(preselected_jets_intree, loose_leptons_intree);
+      w_hadtop_tlv_intree = q1_from_hadtop_tlv + q2_from_hadtop_tlv;
+      hadtop_tlv_intree = w_hadtop_tlv_intree + b_from_hadtop_tlv;
+      higgs_tlv_intree = q1_from_higgs_tlv + q2_from_higgs_tlv + lep_from_higgs_tlv;
+
+      bdtReconstructor.initialize(preselected_jets_intree, tight_leptons_intree, (*met_intree)[0]);
+      //      bdtReconstructor.initialize(preselected_jets_intree, loose_leptons_intree, (*met_intree)[0]);
       bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
 					   lep_from_higgs_truth_intree,
 					   b_from_leptop_truth_intree,
@@ -182,10 +202,10 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
       
       auto match_results = bdtReconstructor.match_results_bdt_intree;
 
-      for (unsigned int i=1; i<= match_results->size()+1; i++)
-	{
-	  if ((*match_results)[i-1] == 5 || (*match_results)[i-1] == 4) match_eff_hist->Fill( i-1, 1. / (max_tree_entry-min_tree_entry) );
-	}
+      // for (unsigned int i=1; i<= match_results->size()+1; i++)
+      // 	{
+      // 	  if ((*match_results)[i-1] == 5 || (*match_results)[i-1] == 4) match_eff_hist->Fill( i-1, 1. / (max_tree_entry-min_tree_entry) );
+      // 	}
 
       time_per_event_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
 
@@ -207,42 +227,9 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
 void evaluateRecoBdt(string sample_name="", int events_per_job=-1, int job_no=-1)
 {
 
-  TString input_file_name = "";
-  if (sample_name.compare("tth_powheg_old") == 0)
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/tth_powheg_old_relaxed_2lss.root";
-    }
-  else if (sample_name.compare("ttbar_semiLep_madgraph") == 0)
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-madgraph_relaxed_2lss.root";
-    }
-  else if (sample_name.compare("tth_aMC_old") == 0)
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/tth_aMC_old_selection_tree_2lss.root";
-    }
-  else if (sample_name.compare("ttbar_semiLep_powheg") == 0)
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-powheg_selection_tree_2lss.root";
-    }
-  else if (sample_name.compare("ttW_aMCatNLO") == 0)
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttW-aMCatNLO_selection_tree_2lss.root";
-    }
-  else if (sample_name.compare("ttZ_aMCatNLO") == 0)
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttZ-aMCatNLO_selection_tree_2lss.root";
-    }
-  else if (sample_name.compare("ttbar_diLep_madgraph") == 0)
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-diLep-madgraph_selection_tree_2lss.root";
-    }
-  else 
-    {
-      sample_name = "output";
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/tth_aMC_old_selection_tree_2lss.root";
-    }
-
-  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/";
+  TString input_file_name = getSelectionFile(sample_name);
+  if (sample_name == "") sample_name = "output_test";
+  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/test_simpleTopReco/";
   TString output_file_name = output_dir+sample_name;
   if (events_per_job > -1 && job_no > -1) output_file_name += "_"+std::to_string(job_no);
   output_file_name += ".root";

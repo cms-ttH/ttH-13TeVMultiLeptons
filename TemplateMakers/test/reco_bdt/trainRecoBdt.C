@@ -18,7 +18,6 @@
 #include "TMVA/MethodCuts.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/variables.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/treeTools.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/test/loadSamples_80x.h"
 #include "trainingTreeHelper.h"
 
 /////////////////////////////////////////
@@ -47,6 +46,7 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Jet> *preselected_jets_intree=0;
   vector<ttH::MET> *met_intree=0;
   vector<ttH::Lepton> *tight_leptons_intree=0;
+  vector<ttH::Lepton> *loose_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
   TString *higgs_final_state_intree=0;
@@ -78,6 +78,7 @@ void run_it(TChain* chain, TString output_file)
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
+  chain->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
   chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
   chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
@@ -262,10 +263,14 @@ void run_it(TChain* chain, TString output_file)
 	}
 
       //traditional loop
-      int rand_cut = 70;
+      //      int rand_cut = 70; //standard v1p5
+      int rand_cut = 50;
       
+      //      auto lep_collection = *tight_leptons_intree;
+      auto lep_collection = *loose_leptons_intree;
+
       int lep_fromTop_count = -1;
-      for (const auto & lep_fromTop : *tight_leptons_intree)
+      for (const auto & lep_fromTop : lep_collection)
       	{
       	  lep_fromTop_count +=1;
 	  if (rand() % 100+1 > rand_cut) continue;
@@ -274,7 +279,7 @@ void run_it(TChain* chain, TString output_file)
       	  lep_fromTop_tlv = setTlv(lep_fromTop);
 	  
       	  int lep_fromHiggs_count = -1;
-      	  for (const auto & lep_fromHiggs : *tight_leptons_intree)
+      	  for (const auto & lep_fromHiggs : lep_collection)
       	    {
       	      lep_fromHiggs_count +=1;  
 	      if (lep_fromTop_count == lep_fromHiggs_count) continue;
@@ -404,12 +409,10 @@ void run_it(TChain* chain, TString output_file)
 void trainRecoBdt(void)
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v1_btightloose/";
-  TString output_file = output_dir+"ttH_powheg_ttbar_mgMLM_bTight_bdtTraining_ss.root";
-  //  TChain *tth_chain = new TChain("bLoose_tree;");
-  TChain *tth_chain = new TChain("bTight_tree;");
-  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttH_2lss_bTightLoose_selection_tree.root",1200);
-  tth_chain->Add("/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar_mgMLM_2lss_bTightLoose_selection_tree.root");
-  run_it(tth_chain,output_file);
+  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/";
+  TString output_file = output_dir+"ttbar_semilep_madgraph_recoBdtTraining.root";
+  TChain *chain_ = new TChain("ss2l_tree");
+  chain_->Add("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-madgraph_relaxed_2lss.root");
+  run_it(chain_,output_file);
 
 }

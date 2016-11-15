@@ -21,6 +21,14 @@ template <typename inObj> TLorentzVector setTlv(const inObj inputObj )
   return tlv;
 }
 
+template <typename inObj> TLorentzVector setTlv_T(const inObj inputObj )
+{
+  TLorentzVector tlv; 
+  tlv.SetPxPyPzE( inputObj.obj.px(), inputObj.obj.py(), 0., inputObj.obj.pt() );
+  return tlv;
+}
+
+
 bool isLepton(ttH::GenParticle* gen_particle)
 {
   if ( abs(gen_particle->pdgID) < 11 || abs(gen_particle->pdgID) > 16) return false;

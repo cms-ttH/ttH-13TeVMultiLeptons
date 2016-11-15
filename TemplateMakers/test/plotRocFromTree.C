@@ -53,13 +53,19 @@ private:
     
     TH1D* sig_h = new TH1D("sig_h","sig_h",num_bins,xmin,xmax);
     TH1D* bkg_h = new TH1D("bkg_h","bkg_h",num_bins,xmin,xmax);
-    
-    TCut cuts = "mcwgt*(1.0)";
+
+    TCut cuts = "b_from_hadtop_reco_truth.obj.pt() > 0. && q1_from_hadtop_reco_truth.obj.pt() >0. && q2_from_hadtop_reco_truth.obj.pt() >0.";
+    TCut cuts_sig = "(W_from_hadtop_matching==5 && b_from_hadtop_matching == 5)" && cuts;
+    TCut cuts_bkg = "!(W_from_hadtop_matching==5 && b_from_hadtop_matching == 5)" && cuts;;
+			     
+    cuts_sig *= "mcwgt";
+    cuts_bkg *= "mcwgt";
+
     TString draw_variable_signal = variable_name + " >> sig_h";
     TString draw_variable_background = variable_name + " >> bkg_h";
     
-    chain_sig->Draw(draw_variable_signal, cuts, "goff");
-    chain_bkg->Draw(draw_variable_background, cuts, "goff");
+    chain_sig->Draw(draw_variable_signal, cuts_sig, "goff");
+    chain_bkg->Draw(draw_variable_background, cuts_bkg, "goff");
     
     if ( !reverse) return makeRoc(bkg_h,sig_h);
     else return makeRoc(sig_h,bkg_h);
@@ -79,7 +85,7 @@ public:
     roc_curve = getRoc(true);
     roc_curve->SetLineColor(color);
     double roc_integral = roc_curve->Integral()+0.5;
-    legend_str = legend_str_ + " ROC: "+ std::to_string(roc_integral);
+    legend_str = legend_str_+ " ROC: "+ std::to_string(roc_integral);
     
   }//default constructor
   TString variable_name;
@@ -116,22 +122,21 @@ void drawRocs(vector<RocObject> roc_vec)
 void plotRocFromTree(void)
 {
   vector<RocObject> roc_vector;
-  TString variable_name = "reco_score";
+  TString variable_name = "hadTop_bdt.M()";
   int num_bins = 100;
-  double xmin = -1;
-  double xmax = 1;
-  TString tree_name = "extraction_tree_v2";
+  double xmin = 0.;
+  double xmax = 230;
+  TString tree_name = "ss2l_tree";
   
-  TString signal_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttH_aMCatNLO_bdtEval.root";
-  TString background_file1 = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/bdt_v1p5_bTightLoose/ttbar_powheg_bdtEval.root";  
-  RocObject newRoc(signal_file1, background_file1, "extraction_tree", "bT/L for recoBDT only", "vs_ttbar_bdtReco_bdt_score", num_bins, xmin, xmax, 1);
+  TString signal_file1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/test_fastCheckInBTight/tth_recoBdt_2lss.root";
+
+
+
+  RocObject newRoc(signal_file1, signal_file1, tree_name, "reco'd hadtop mass", variable_name, num_bins, xmin, xmax, 2);
   roc_vector.push_back(newRoc);
 
-  RocObject oldRoc(signal_file1, background_file1, "extraction_tree_v2", "bT/L for sig extr", "vs_ttbar_bdtReco_bdt_score", num_bins, xmin, xmax, 2);
+  RocObject oldRoc(signal_file1, signal_file1, tree_name, "reco score", "reco_score", num_bins, 0, 1.05, 4);
   roc_vector.push_back(oldRoc);
-
-  RocObject old1Roc(signal_file1, background_file1, "extraction_tree_v2", "ichep sig extr", "vs_ttbar_bdt_score", num_bins, xmin, xmax, 4);
-  roc_vector.push_back(old1Roc);
 
   drawRocs(roc_vector);
 }

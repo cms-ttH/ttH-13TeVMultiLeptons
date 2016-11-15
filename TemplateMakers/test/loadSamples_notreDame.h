@@ -406,33 +406,19 @@ TString getSelectionFile(TString sample_name)
     }
   else if (sample_name == "tth_aMC_old")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/tth_aMC_old_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/tth_aMC_old_2lss.root";
     }
-  
-
-  else if (sample_name == "tth_aMC")
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/tth_aMC_old_selection_2lss.root";
-    }
-
-  else if (sample_name == "fakes")
-    {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/ttbar_semiLep_powheg_selection_2lss.root";
-    }
-  
-
-
   else if (sample_name == "ttbar_semiLep_powheg")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttbar_semiLep_powheg_selection_2lss_original.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttbar_semiLep_powheg_2lss.root";
     }
   else if (sample_name == "ttW_aMCatNLO")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttW_aMCatNLO_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttW_aMCatNLO_2lss.root";
     }
   else if (sample_name == "ttZ_aMCatNLO")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttZ_aMCatNLO_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttZ_aMCatNLO_2lss.root";
     }
 
   else if (sample_name == "ttGammaStar")
@@ -457,52 +443,48 @@ TString getSelectionFile(TString sample_name)
 
   else if (sample_name == "ttbar_diLep_powheg")
     {
-      //the Kevin Tranche3 sample...
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar_diLep_powheg_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttbar_diLep_powheg_tranche3_2lss.root";
     }
-
-
   else if (sample_name == "WW_diboson")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/WW_diboson_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WW_diboson_2lss.root";
     }
   else if (sample_name == "ZZ_diboson")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ZZ_diboson_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ZZ_diboson_2lss.root";
     }
   else if (sample_name == "WZ_diboson")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/WZ_diboson_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WZ_diboson_2lss.root";
     }
   else if (sample_name == "tttt")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/tttt_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/tttt_2lss.root";
     }
   else if (sample_name == "tqZ")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/tqZ_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/tqZ_2lss.root";
     }
   else if (sample_name == "WWqq_rares")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/WWqq_rares_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WWqq_rares_2lss.root";
     }
   else if (sample_name == "WW_doublescatering_rares")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/WW_doublescatering_rares_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WW_doublescatering_rares_2lss.root";
     }
   else if (sample_name == "WWZ_rares")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/WWZ_rares_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WWZ_rares_2lss.root";
     }
   else if (sample_name == "WZZ_rares")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/WZZ_rares_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WZZ_rares_2lss.root";
     }
   else if (sample_name == "ZZZ_rares")
     {
-      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ZZZ_rares_selection_2lss.root";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ZZZ_rares_2lss.root";
     }
-
   else if (sample_name == "ttbar_semiLep_jetClean_test")
     {
       input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/genFilter_tests/ttbar_semiLep_jetClean_test_training_tree_2lss.root";

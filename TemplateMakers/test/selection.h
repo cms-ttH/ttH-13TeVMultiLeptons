@@ -99,13 +99,16 @@ bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> loo
   if (looseLeps[0].charge != looseLeps[1].charge) return false; 
   if ( !( psJets.size()>3 ) )      return false;
   
-  bool isLep1Tight = false;
-  bool isLep2Tight = false;
-  for (const auto & tightLep : tightLeps)
-    {
-      if (looseLeps[0].obj.pt() == tightLep.obj.pt()) isLep1Tight = true;
-      else if (looseLeps[1].obj.pt() == tightLep.obj.pt()) isLep2Tight = true;
-    }
+  bool isLep1Tight = true;
+  bool isLep2Tight = true;
+
+  /* bool isLep1Tight = false; */
+  /* bool isLep2Tight = false; */
+  /* for (const auto & tightLep : tightLeps) */
+  /*   { */
+  /*     if (looseLeps[0].obj.pt() == tightLep.obj.pt()) isLep1Tight = true; */
+  /*     else if (looseLeps[1].obj.pt() == tightLep.obj.pt()) isLep2Tight = true; */
+  /*   } */
 
   double lep1_pt;
   double lep2_pt;

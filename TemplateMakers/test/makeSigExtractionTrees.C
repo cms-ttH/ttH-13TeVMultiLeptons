@@ -19,7 +19,6 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "selection.h"
-#include "loadSamples.h"
 #include "treeTools.h"
 
 
@@ -67,8 +66,9 @@ void run_it(TChain* chain, TFile *io_file_)
   TLorentzVector *lepTop_intree=0;
   TLorentzVector *hadTop_intree=0;
 
-  double reco_score_intree;
-  double reco_score_branch;
+  //  double reco_score_intree;
+  //  double reco_score_tr1_inclusivebloose_intree;
+  //  double reco_score_tr1_btightloose_intree;
 
   chain->SetBranchStatus("*",0);
   chain->SetBranchStatus("eventnum",1);
@@ -80,6 +80,8 @@ void run_it(TChain* chain, TFile *io_file_)
   chain->SetBranchStatus("tightMvaBased_leptons.*",1);
   chain->SetBranchStatus("met.*",1);
   chain->SetBranchStatus("reco_score",1);
+  chain->SetBranchStatus("reco_score_tr1_btightloose",1);
+  chain->SetBranchStatus("reco_score_tr1_inclusivebloose",1);
   
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
   chain->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
@@ -87,7 +89,7 @@ void run_it(TChain* chain, TFile *io_file_)
   chain->SetBranchAddress("looseMvaBased_electrons", &loose_electrons_intree);
   chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("met", &met_intree);
-  chain->SetBranchAddress("reco_score", &reco_score_intree);
+  //  chain->SetBranchAddress("reco_score", &reco_score_intree);
   
   double max_lep_eta_branch;
   double njets_branch;
@@ -118,8 +120,7 @@ void run_it(TChain* chain, TFile *io_file_)
   ttH_vs_ttbar_tree->Branch("lep1_Pt", &l1_pt_branch);
   ttH_vs_ttbar_tree->Branch("csv1", &csv1_branch);
   ttH_vs_ttbar_tree->Branch("csv2", &csv2_branch);
-  ttH_vs_ttbar_tree->Branch("reco_score", &reco_score_branch);
-
+ 
 
   TTree *ttH_vs_ttV_tree = (TTree*)chain->CloneTree(0);
   ttH_vs_ttV_tree->SetName("tth_vs_ttV_tree");
@@ -133,8 +134,7 @@ void run_it(TChain* chain, TFile *io_file_)
   ttH_vs_ttV_tree->Branch("isBtight", &bTight_branch);
   ttH_vs_ttV_tree->Branch("csv1", &csv1_branch);
   ttH_vs_ttV_tree->Branch("csv2", &csv2_branch);
-  ttH_vs_ttV_tree->Branch("reco_score", &reco_score_branch);
-
+ 
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
   chain->SetCacheLearnEntries(20); 
@@ -153,9 +153,21 @@ void run_it(TChain* chain, TFile *io_file_)
       ////
       //////////////////////////
 
+      ///////////////////////////////////////
+      ///////////////////////////////////////
+      ////// choose lepton collection
+      ///////////////////////////////////////
+      ///////////////////////////////////////
+
       //      auto lepton_collection_to_use = tight_leptons_intree;
-      auto lepton_collection_to_use = loose_leptons_intree;
-      //      auto lepton_collection_to_use = preselected_leptons_intree;
+      //      auto lepton_collection_to_use = loose_leptons_intree;
+      auto lepton_collection_to_use = preselected_leptons_intree;
+
+      ///////////////////////////////////////
+      ///////////////////////////////////////
+      ///////////////////////////////////////
+      ///////////////////////////////////////
+
 
       // max eta
       max_lep_eta_branch = -1.;
@@ -187,16 +199,16 @@ void run_it(TChain* chain, TFile *io_file_)
       l2_pt_branch = lep2.obj.pt();
 
 
-      bool skip_event = false;
-      for (const auto & ele : *loose_electrons_intree)
-	{
-	  if ( (lep1.obj.pt() == ele.obj.pt() || lep2.obj.pt() == ele.obj.pt()) && ele.numMissingInnerHits > 0)
-	    {
-	      skip_event = true;
-	      break;
-	    }
-	}
-      if ( skip_event ) continue;
+      // bool skip_event = false;
+      // for (const auto & ele : *loose_electrons_intree)
+      // 	{
+      // 	  if ( (lep1.obj.pt() == ele.obj.pt() || lep2.obj.pt() == ele.obj.pt()) && ele.numMissingInnerHits > 0)
+      // 	    {
+      // 	      skip_event = true;
+      // 	      break;
+      // 	    }
+      // 	}
+      // if ( skip_event ) continue;
 
       auto csv_sorted_jets = *preselected_jets_intree;
       std::sort(csv_sorted_jets.begin(), csv_sorted_jets.end(), [] (ttH::Jet a, ttH::Jet b) { return a.csv > b.csv;});
@@ -213,32 +225,26 @@ void run_it(TChain* chain, TFile *io_file_)
 
       TLorentzVector met_tlv = setTlv( (*met_intree)[0] );
       TLorentzVector lep1_t_tlv = setTlv( lep1 );
-      
-      bool isTight = false;
-      for (const auto & lep: *tight_leptons_intree)
-	{
-	  if (lep1.obj.pt() == lep.obj.pt())
-	    {
-	      isTight = true;
-	      break;
-	    }
-	}
+
+      bool isTight = true;
+      // bool isTight = false;
+      // for (const auto & lep: *tight_leptons_intree)
+      // 	{
+      // 	  if (lep1.obj.pt() == lep.obj.pt())
+      // 	    {
+      // 	      isTight = true;
+      // 	      break;
+      // 	    }
+      // 	}
 
       if ( !isTight )
 	{
-	  //	  lep1_t_tlv.SetPxPyPzE(lep1_t_tlv.Px()*0.85/lep1.jetPtRatio, lep1_t_tlv.Py()*0.85/lep1.jetPtRatio, 0., lep1_t_tlv.Pt()/lep1.jetPtRatio*0.85);
-	  //	  lep1_t_tlv.SetPxPyPzE(lep1_closest_jet.obj.px()*0.85, lep1_closest_jet.obj.py()*0.85, 0., lep1_closest_jet.obj.pt()*0.85);
-	  //	  l1_conePt_branch = lep1_closest_jet.obj.pt()*0.85;
 	  l1_conePt_branch = lep1.obj.pt()/lep1.jetPtRatio*0.85;
 	}
       else 
 	{
-	  //	  lep1_t_tlv.SetPxPyPzE(lep1_t_tlv.Px(), lep1_t_tlv.Py(), 0., lep1_t_tlv.Pt());
 	  l1_conePt_branch = lep1.obj.pt();
 	}
-
-      //      TLorentzVector lep1_met_t_tlv = met_tlv + lep1_t_tlv;
-      //      mt_lep1_met_branch = lep1_met_t_tlv.M();
 
       mt_lep1_met_branch = sqrt(2*l1_conePt_branch*met_branch*(1-cos(lep1.obj.phi()-(*met_intree)[0].obj.phi())));
 
@@ -264,8 +270,6 @@ void run_it(TChain* chain, TFile *io_file_)
       bTight_branch = ( num_tight > 1);
       avg_dr_jets_branch = dr_sum/double(dr_denom);
 
-      reco_score_branch = reco_score_intree;
-
       ttH_vs_ttbar_tree->Fill();
       ttH_vs_ttV_tree->Fill();
       
@@ -284,17 +288,15 @@ void run_it(TChain* chain, TFile *io_file_)
 void makeSigExtractionTrees(void)
 {
 
-  // TString input_file1 = "reco_bdt/output/ttbar_semiLep_madgraph_relaxed_2lss.root";
-  // TFile *io_file1 = new TFile(input_file1, "UPDATE"); // #, 'test' ) // "RECREATE");
-  // TChain *chain1 = new TChain("ss2l_tree");
-  // chain1->Add(input_file1);
+  TString input_file1 = "selection_trees/genFilter_tests/ttbar_semiLep_jetClean_test_training_tree_2lss.root";
+  TFile *io_file1 = new TFile(input_file1, "UPDATE"); // #, 'test' ) // "RECREATE");
+  TChain *chain1 = new TChain("ss2l_tree");
+  chain1->Add(input_file1);
+  run_it(chain1,io_file1);
 
-  // run_it(chain1,io_file1);
-
-  TString input_file2 = "reco_bdt/output/tth_powheg_old_relaxed_2lss.root";
-  TFile *io_file2 = new TFile(input_file2, "UPDATE"); // #, 'test' ) // "RECREATE");
-  TChain *chain2 = new TChain("ss2l_tree");
-  chain2->Add(input_file2);
-
-  run_it(chain2,io_file2);
+  // TString input_file2 = "reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
+  // TFile *io_file2 = new TFile(input_file2, "UPDATE"); // #, 'test' ) // "RECREATE");
+  // TChain *chain2 = new TChain("ss2l_tree");
+  // chain2->Add(input_file2);
+  // run_it(chain2,io_file2);
 }

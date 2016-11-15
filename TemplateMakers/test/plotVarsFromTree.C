@@ -63,31 +63,35 @@ void drawPlots(vector<PlotObject> plot_vec)
 void plotVarsFromTree(void)
 {
   vector<PlotObject> plot_vector;
-  TString variable_name = "b_from_leptop_matching";
-  int num_bins = 7;
+  //  TString variable_name = "hadTop_bdt.M()";
+  //  TString variable_name = "reco_score";
+  int num_bins = 3;
   double xmin = 0;
-  double xmax = 7;
+  double xmax = 3;
   
-  TString file1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/test/tth__recoBdt_2lss.root";
+  TString file1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/test_fastCheckInBTight/tth_recoBdt_2lss.root";
+  TString file2 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/test_simpleTopReco/tth_aMC_old_recoBdt_2lss.root";
   
-  // TCut cuts1 = "W_from_hadtop_matching==5 && b_from_hadtop_matching >= 4";
-  // TCut cuts2 = "(W_from_hadtop_matching==4 && b_from_hadtop_matching >= 4) || (W_from_hadtop_matching==5 && b_from_hadtop_matching < 4)";
-  // TCut cuts1 = "b_from_hadtop_reco_truth.obj.pt() > 0. && q1_from_hadtop_reco_truth.obj.pt() >0. && q2_from_hadtop_reco_truth.obj.pt() >0.";
-  // TCut cuts2 = "(b_from_hadtop_reco_truth.obj.pt()*q1_from_hadtop_reco_truth.obj.pt() >0||b_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()>0 ||q1_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()>0)  && b_from_hadtop_reco_truth.obj.pt()*q1_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()==0";
-  //  TCut cuts3 = !cuts1 && !cuts2;
+  //  TCut cuts = "W_from_hadtop_matching==5 && b_from_hadtop_matching >= 4";
+  //  TCut cuts23 = "(W_from_hadtop_matching==4 && b_from_hadtop_matching >= 4) || (W_from_hadtop_matching==5 && b_from_hadtop_matching < 4)";
+  TCut cuts = "b_from_hadtop_reco_truth.obj.pt()*q1_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt() >0.";
+  // TCut cuts23 = "(b_from_hadtop_reco_truth.obj.pt()*q1_from_hadtop_reco_truth.obj.pt() >0||b_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()>0 || q1_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()>0) && b_from_hadtop_reco_truth.obj.pt()*q1_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()==0";
+  //  TCut cutss = !cuts && !cuts23;
 
-  TCut cuts1 = "@bTight_jets.size() >1";
-  TCut cuts2 = !cuts1;
-  TCut cuts3 = "";
+  // TCut cuts1 = "W_from_hadtop_matching==5 && b_from_hadtop_matching == 5" && cuts;
+  // TCut cuts2 = "(W_from_hadtop_matching==4 && b_from_hadtop_matching >= 4) || (W_from_hadtop_matching==5 && b_from_hadtop_matching < 4)" && cuts;
+  // TCut cuts3 = "(W_from_hadtop_matching<=4 && b_from_hadtop_matching < 4) || (W_from_hadtop_matching==3 && b_from_hadtop_matching <=5)" && cuts;
+  
+  //colors 418/41/603
 
-  PlotObject plot1(file1, "ss2l_tree", "b tight", variable_name, cuts1, num_bins, xmin, xmax, 2);
+  PlotObject plot1(file2, "ss2l_tree", "bdt reco", "(b_from_hadtop_matching ==5 && W_from_hadtop_matching ==5)", cuts, num_bins, xmin, xmax, 4);
   plot_vector.push_back(plot1);
 
-  PlotObject plot2(file1, "ss2l_tree", "b loose", variable_name, cuts2, num_bins, xmin, xmax, 4);
+  PlotObject plot2(file2, "ss2l_tree", "simple reco", "(b_simple_matching == 5 && w_simple_matching==5)", cuts, num_bins, xmin, xmax, 2);
   plot_vector.push_back(plot2);
 
-  PlotObject plot3(file1, "ss2l_tree", "inclusive", variable_name, cuts3, num_bins, xmin, xmax, 8);
-  plot_vector.push_back(plot3);
+  // PlotObject plot3(file2, "ss2l_tree", "<= 1/3 matches correct", variable_name, cutss, num_bins, xmin, xmax, 2);
+  // plot_vector.push_back(plot3);
 
   drawPlots(plot_vector);
 }
