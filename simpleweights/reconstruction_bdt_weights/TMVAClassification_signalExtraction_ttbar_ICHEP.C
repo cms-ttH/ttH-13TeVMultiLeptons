@@ -148,6 +148,8 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    factory->AddVariable( "met_double","met","missing Et",'D');
    factory->AddVariable( "avg_dr_jet","average dR jets","dR",'D');
    factory->AddVariable( "reco_score","reco bdt","bdt output",'D');
+   //factory->AddVariable( "reco_score_tr1_inclusivebloose","reco bdt (tr1)","bdt tr1 output",'D');
+   //   factory->AddVariable( "reco_score_tr1_btightloose","reco bdt (tr1)","bdt tr1 output",'D');
 
    //   factory->AddVariable( "csv1","leading csv","csv",'D');
    //   factory->AddVariable( "csv2","subleading csv","csv",'D');
@@ -166,12 +168,12 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    // TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/training/tth_powheg_old_relaxed_2lss_BDTtraining.root";
    // TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/training/ttbar-semiLep-madgraph_relaxed_2lss_BDTtraining.root";
 
-   TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/tth_powheg_old_relaxed_2lss.root";
-   TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/ttbar_semiLep_madgraph_relaxed_2lss.root";
+   // TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/tth_powheg_old_relaxed_2lss.root";
+   // TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/ttbar_semiLep_madgraph_relaxed_2lss.root";
 
-   // TString fname_sig_test = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/testing/ttH_aMCatNLO_bdtEval.root";
-   // TString fname_bkg_test = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/testing/ttbar_powheg_bdtEval.root";
-   
+   TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
+   TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
+
    if (gSystem->AccessPathName( fname_sig_train ))  // file does not exist in local directory
       gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");
    
@@ -253,8 +255,8 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    TCut mycuts = "";
    TCut mycutb = ""; // for example: TCut mycutb = "abs(var1)<0.5";
 
-   //TCut mycuts = "abs(looseMvaBased_leptons[0].pdgID) == 13"; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
-   //TCut mycutb = "abs(looseMvaBased_leptons[0].pdgID) == 13"; // for example: TCut mycutb = "abs(var1)<0.5";
+   // TCut mycuts = "!isBtight";
+   // TCut mycutb = "!isBtight";
 
    // Tell the factory how to use the training and testing events
    //
@@ -265,9 +267,9 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    //    factory->PrepareTrainingAndTestTree( mycut,
    //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
    factory->PrepareTrainingAndTestTree( mycuts, mycutb,
-					"nTrain_Signal=41000:nTrain_Background=81000:SplitMode=Random:NormMode=NumEvents:!V" );
-   //					"nTrain_Signal=24000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );
-   //					"nTrain_Signal=18000:nTrain_Background=16600:SplitMode=Random:NormMode=NumEvents:!V" );
+					"nTrain_Signal=41000:nTrain_Background=81000:SplitMode=Random:NormMode=NumEvents:!V" );//inclusive
+   					//					"nTrain_Signal=24000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose
+					//					"nTrain_Signal=18000:nTrain_Background=16600:SplitMode=Random:NormMode=NumEvents:!V" );//b tigh
 					//					"SplitMode=Random:NormMode=NumEvents:!V" );
 
    // ---- Book MVA methods
