@@ -40,6 +40,7 @@ namespace ttH
     double csv;
     double sip3D;
     int jet_nCharged_tracks;
+    double correctedPt;
     
     // extra for sync
     double miniAbsIsoCharged;
@@ -50,7 +51,6 @@ namespace ttH
     double miniAbsIsoNeutralcorr;    
     void clear(void)
     {
-
       obj.SetPxPyPzE(0.,0.,0.,0.);
       charge = 0;
       pdgID = -9999;
@@ -58,6 +58,7 @@ namespace ttH
       genMotherPdgID = -9999;
       genGrandMotherPdgID = -9999;
       dxy = -99.;
+      correctedPt = -99.;
       dz = -99.;
       relIso = -99.;
       miniIso = -99.;

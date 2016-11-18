@@ -31,8 +31,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
 		vstring alltriggerstostudy;
 		
-                // declare any histos
-                // Charlie, don't worry we'll keep these to a minimum..
                 TH1D *numInitialWeightedMCevents; // <- easily keep track of num (weighted) mc events we started with
                 
 		// declare the tree
@@ -55,21 +53,18 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int runNumber_intree;
 		
 		vector<ttH::Lepton> preselected_leptons_intree;
-		vector<ttH::Lepton> loose_leptons_intree;
-		vector<ttH::Lepton> looseMvaBased_leptons_intree;
-		vector<ttH::Lepton> tightMvaBased_leptons_intree;
+		vector<ttH::Lepton> fakeable_leptons_intree;
+		vector<ttH::Lepton> tight_leptons_intree;
  
 		vector<ttH::Electron> raw_electrons_intree;               
 		vector<ttH::Electron> preselected_electrons_intree;
-		vector<ttH::Electron> loose_electrons_intree;
-		vector<ttH::Electron> looseMvaBased_electrons_intree;
-		vector<ttH::Electron> tightMvaBased_electrons_intree;
+		vector<ttH::Electron> fakeable_electrons_intree;
+		vector<ttH::Electron> tight_electrons_intree;
 
 		vector<ttH::Muon> raw_muons_intree;
 		vector<ttH::Muon> preselected_muons_intree;
-		vector<ttH::Muon> loose_muons_intree;
-		vector<ttH::Muon> looseMvaBased_muons_intree;
-		vector<ttH::Muon> tightMvaBased_muons_intree;
+		vector<ttH::Muon> fakeable_muons_intree;
+		vector<ttH::Muon> tight_muons_intree;
                 
                 vector<ttH::Tau> preselected_taus_intree;
                 vector<ttH::Tau> selected_taus_intree;
@@ -78,9 +73,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vector<ttH::Jet> preselected_jets_intree;
 		vector<ttH::Jet> preselected_jets_uncor_intree;
                 
-		vector<ttH::Jet> loose_bJets_intree;
-		vector<ttH::Jet> tight_bJets_intree;
-		
 		vector<ttH::MET> met_intree;
 		vector<ttH::GenParticle> pruned_genParticles_intree;
 		vector<ttH::GenParticle> packed_genParticles_intree;
@@ -110,7 +102,6 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("higgs_decay", &higgs_decay_intree);
   
   summaryTree->Branch("passTrigger", &passTrigger_intree);
-  //summaryTree->Branch("passTrigger", passTrigger_intree, "passTrigger/C");
   
   summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
   summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
@@ -118,17 +109,13 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("preselected_taus", &preselected_taus_intree);
   summaryTree->Branch("selected_taus", &selected_taus_intree);
   
-  summaryTree->Branch("loose_leptons", &loose_leptons_intree);
-  summaryTree->Branch("loose_electrons", &loose_electrons_intree);
-  summaryTree->Branch("loose_muons", &loose_muons_intree);
+  summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
+  summaryTree->Branch("fakeable_electrons", &fakeable_electrons_intree);
+  summaryTree->Branch("fakeable_muons", &fakeable_muons_intree);
   
-  summaryTree->Branch("looseMvaBased_leptons", &looseMvaBased_leptons_intree);
-  summaryTree->Branch("looseMvaBased_electrons", &looseMvaBased_electrons_intree);
-  summaryTree->Branch("looseMvaBased_muons", &looseMvaBased_muons_intree);
-  
-  summaryTree->Branch("tightMvaBased_leptons", &tightMvaBased_leptons_intree);
-  summaryTree->Branch("tightMvaBased_electrons", &tightMvaBased_electrons_intree);
-  summaryTree->Branch("tightMvaBased_muons", &tightMvaBased_muons_intree);
+  summaryTree->Branch("tight_leptons", &tight_leptons_intree);
+  summaryTree->Branch("tight_electrons", &tight_electrons_intree);
+  summaryTree->Branch("tight_muons", &tight_muons_intree);
   
   summaryTree->Branch("raw_electrons", &raw_electrons_intree);
   summaryTree->Branch("raw_muons", &raw_muons_intree);
@@ -137,8 +124,6 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("preselected_jets", &preselected_jets_intree);
   summaryTree->Branch("preselected_jets_uncor", &preselected_jets_uncor_intree);
   
-  //summaryTree->Branch("loose_bJets", &loose_bJets_intree);
-  //summaryTree->Branch("tight_bJets", &tight_bJets_intree);
   summaryTree->Branch("met", &met_intree);
   summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
   summaryTree->Branch("packed_genParticles", &packed_genParticles_intree);
@@ -161,17 +146,14 @@ void OSTwoLepAna::initialize_variables()
   preselected_muons_intree.clear();
   preselected_taus_intree.clear();
   selected_taus_intree.clear();
-  loose_leptons_intree.clear();
-  loose_electrons_intree.clear();
-  loose_muons_intree.clear();
   
-  looseMvaBased_leptons_intree.clear();
-  looseMvaBased_electrons_intree.clear();
-  looseMvaBased_muons_intree.clear();
+  fakeable_leptons_intree.clear();
+  fakeable_electrons_intree.clear();
+  fakeable_muons_intree.clear();
   
-  tightMvaBased_leptons_intree.clear();
-  tightMvaBased_electrons_intree.clear();
-  tightMvaBased_muons_intree.clear();
+  tight_leptons_intree.clear();
+  tight_electrons_intree.clear();
+  tight_muons_intree.clear();
   
   raw_electrons_intree.clear();
   raw_muons_intree.clear();
@@ -179,8 +161,6 @@ void OSTwoLepAna::initialize_variables()
   
   preselected_jets_intree.clear();
   preselected_jets_uncor_intree.clear();
-  //loose_bJets_intree.clear();
-  //tight_bJets_intree.clear();
 	
   met_intree.clear();
   pruned_genParticles_intree.clear();
@@ -191,6 +171,3 @@ void OSTwoLepAna::initialize_variables()
   higgs_final_state = "none";
   top_final_state = "none";
 }
-
-/*  LocalWords:  lumi
- */

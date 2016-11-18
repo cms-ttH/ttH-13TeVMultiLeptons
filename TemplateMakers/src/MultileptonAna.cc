@@ -192,6 +192,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.sip3D = iEle.userFloat("sip3D");
       ele.mvaID = iEle.userFloat("eleMvaId");
       ele.jet_nCharged_tracks = iEle.userFloat("nearestJetNDauCharged");
+      ele.correctedPt = iEle.userFloat("correctedPt");
 
       // extra for sync     
       ele.miniAbsIsoCharged = iEle.userFloat("miniAbsIsoCharged");
@@ -259,6 +260,7 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs)
       mu.csv = iMu.userFloat("nearestJetCsv");
       mu.sip3D = iMu.userFloat("sip3D");
       mu.jet_nCharged_tracks = iMu.userFloat("nearestJetNDauCharged");
+      mu.correctedPt = iMu.userFloat("correctedPt");
 
       // extra for sync     
       mu.miniAbsIsoCharged = iMu.userFloat("miniAbsIsoCharged");
@@ -411,17 +413,11 @@ MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const
 	case muonID::muonPreselection: 
             passSelection = (mu.userFloat("idPreselection") > 0.5 && passPt);
             break;
-	case muonID::muonLoose: 
-            passSelection = (mu.userFloat("idLooseCut") > 0.5 && passPt);
+	case muonID::muonFakeable: 
+            passSelection = (mu.userFloat("idFakeable") > 0.5 && passPt);
             break;
 	case muonID::muonTight: 
-            passSelection = (mu.userFloat("idTightCut") > 0.5 && passPt);
-            break;
-	case muonID::muonLooseMvaBased: 
-            passSelection = (mu.userFloat("idLooseMVA") > 0.5 && passPt);
-            break;
-	case muonID::muonTightMvaBased: 
-            passSelection = (mu.userFloat("idTightMVA") > 0.5 && passPt);
+            passSelection = (mu.userFloat("idMVABased") > 0.5 && passPt);
             break;
         default:
             cout << "GetSelectedMuons-> no such muonID!" << endl;
@@ -453,17 +449,11 @@ MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElec
 	case electronID::electronPreselection: 
             passSelection = (ele.userFloat("idPreselection") > 0.5 && passPt);
             break;
-	case electronID::electronLoose: 
-            passSelection = (ele.userFloat("idLooseCut") > 0.5 && passPt);
+	case electronID::electronFakeable: 
+            passSelection = (ele.userFloat("idFakeable") > 0.5 && passPt);
             break;
 	case electronID::electronTight: 
-            passSelection = (ele.userFloat("idTightCut") > 0.5 && passPt);
-            break;
-	case electronID::electronLooseMvaBased: 
-            passSelection = (ele.userFloat("idLooseMVA") > 0.5 && passPt);
-            break;
-	case electronID::electronTightMvaBased: 
-            passSelection = (ele.userFloat("idTightMVA") > 0.5 && passPt);
+            passSelection = (ele.userFloat("idMVABased") > 0.5 && passPt);
             break;
         default:
             cout << "GetSelectedElectrons-> no such electronID!" << endl;
@@ -528,20 +518,21 @@ MultileptonAna::pickLeptons(const vecPatMuon& iMuons, const muonID::muonID iMuon
 	  bool passPt = (ele.pt() >= iMinElePt);
 	  switch(iElectronID)
 	    {
-	    case electronID::electronLoose: 
-                passSelection = (ele.userFloat("idLooseCut") > 0.5 && passPt);
-                break;
+	    case electronID::electronRaw: 
+	      passSelection = true;
+	      break;
+	    case electronID::electronPreselection: 
+	      passSelection = (ele.userFloat("idPreselection") > 0.5 && passPt);
+	      break;
+	    case electronID::electronFakeable: 
+	      passSelection = (ele.userFloat("idFakeable") > 0.5 && passPt);
+	      break;
 	    case electronID::electronTight: 
-                passSelection = (ele.userFloat("idTightCut") > 0.5 && passPt);
-	        break;
-            case electronID::electronLooseMvaBased: 
-                passSelection = (ele.userFloat("idLooseMVA") > 0.5 && passPt);
-                break;
-	    case electronID::electronTightMvaBased: 
-                passSelection = (ele.userFloat("idTightMVA") > 0.5 && passPt);
-                break;
+	      passSelection = (ele.userFloat("idMVABased") > 0.5 && passPt);
+	      break;
             default:
-                cout << "pickLeptons-> no such electronID!" << endl;
+	      cout << "pickLeptons-> no such electronID!" << endl;
+	      break;
 	    }
 	  if ( passSelection ) theElectrons.push_back(ele);
 	  else break;
@@ -554,21 +545,21 @@ MultileptonAna::pickLeptons(const vecPatMuon& iMuons, const muonID::muonID iMuon
 	  bool passPt = (mu.pt() >= iMinMuPt);
 	  switch(iMuonID)
 	    {
-	    case muonID::muonLoose: 
-                passSelection = (mu.userFloat("idLooseCut") > 0.5 && passPt);
-	        break;
-            case muonID::muonTight: 
-                passSelection = (mu.userFloat("idTightCut") > 0.5 && passPt);
-                break;
-	    case muonID::muonLooseMvaBased: 
-                passSelection = (mu.userFloat("idLooseMVA") > 0.5 && passPt);
-                break;
-	    case muonID::muonTightMvaBased: 
-                passSelection = (mu.userFloat("idTightMVA") > 0.5 && passPt);
-                break;            
-            default:
-                cout << "pickLeptons-> no such muonID!" << endl;
-                break;
+	    case muonID::muonRaw: 
+	      passSelection = true;
+	      break;
+	    case muonID::muonPreselection: 
+	      passSelection = (mu.userFloat("idPreselection") > 0.5 && passPt);
+	      break;
+	    case muonID::muonFakeable: 
+	      passSelection = (mu.userFloat("idFakeable") > 0.5 && passPt);
+	      break;
+	    case muonID::muonTight: 
+	      passSelection = (mu.userFloat("idMVABased") > 0.5 && passPt);
+	      break;
+	    default:
+	      cout << "GetSelectedMuons-> no such muonID!" << endl;
+	      break;
 	    }
 	  if ( passSelection ) theMuons.push_back(mu);
 	  else break;
