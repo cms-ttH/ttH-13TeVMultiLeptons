@@ -23,20 +23,19 @@
 
 /////////////////////////////////////////
 ///
-/// usage: root -l makeSelectionTree.C+\("\"tth_powheg_new\""\)
-///        root -l makeSelectionTree.C+\("\"tth_powheg_old\""\)
-///        root -l makeSelectionTree.C+\("\"tth_aMC_old\""\)
-///        root -l makeSelectionTree.C+\("\"ttbar-semiLep-powheg\""\)
-///        root -l makeSelectionTree.C+\("\"ttbar-semiLep-madgraph\""\)
-///        root -l makeSelectionTree.C+\("\"ttbar-inclusive-aMCatNLO\""\)
+/// usage: root -l makeSelectionTree.C+
 ///
 /////////////////////////////////////////
 
 
-void run_it(TString sample_name, TString selection, TString output_file, int job_no, int num_jobs)
+void run_it(TString sample_name, TString selection, TString output_file, int job_no)
 {
+  int jobs_per_file = 15;
+  int load_file_idx = job_no / jobs_per_file; 
+  int job_idx = job_no - (jobs_per_file * load_file_idx);
+
+  FileLoader myLoader(sample_name, load_file_idx);
   
-  FileLoader myLoader(sample_name);
   TChain *chain = myLoader.chain;
   TH1D* event_hist = myLoader.hist_sum;
 
@@ -47,13 +46,22 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   
   if (job_no != -1)
     {
-      int total_events = int(ceil( float(chainentries)/float(num_jobs) ));
-      first_entry = job_no*total_events;
-      if (first_entry > chainentries) return;
-      last_entry = first_entry + (total_events-1);
-      if ( last_entry > chainentries )  last_entry = chainentries;
+      int total_events = int(ceil( float(chainentries)/float(jobs_per_file) ));
+      first_entry = job_idx*total_events;
+      last_entry = first_entry + total_events - 1;
+      if (last_entry > chainentries)  last_entry = chainentries;
     }
-  
+
+  cout << "job_no: " << job_no << endl;
+  cout << "jobs per file: " << jobs_per_file << endl;
+  cout << "file index: " << load_file_idx << endl;
+  cout << "job index: " << job_idx << endl;
+  cout << "chainentries: " << chainentries << endl;
+  cout << "first entry: " << first_entry << endl;
+  cout << "last entry: " << last_entry << endl;
+
+
+
   double mcwgt_intree = -999.;
   int eventnum_intree = -999;  
   vector<ttH::Electron> *preselected_electrons_intree=0;
@@ -78,12 +86,12 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
   chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-  chain->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
-  chain->SetBranchAddress("looseMvaBased_muons", &loose_muons_intree);
-  chain->SetBranchAddress("looseMvaBased_electrons", &loose_electrons_intree);
-  chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
-  chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
-  chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
+  chain->SetBranchAddress("loose_leptons", &loose_leptons_intree);
+  chain->SetBranchAddress("loose_muons", &loose_muons_intree);
+  chain->SetBranchAddress("loose_electrons", &loose_electrons_intree);
+  chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
+  chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
+  chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
   chain->SetBranchAddress("met", &met_intree);
   chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
 
@@ -164,14 +172,14 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 	  //////////////////////////
 	  
 	  //fakeable
-	  auto lep_collection = *loose_leptons_intree;
-	  auto mu_collection = *loose_muons_intree;
-	  auto ele_collection = *loose_electrons_intree;
+	  // auto lep_collection = *loose_leptons_intree;
+	  // auto mu_collection = *loose_muons_intree;
+	  // auto ele_collection = *loose_electrons_intree;
 	  
 	  //preselected
-	  // auto lep_collection = *preselected_leptons_intree;
-	  // auto mu_collection = *preselected_muons_intree;
-	  // auto ele_collection = *preselected_electrons_intree;
+	  auto lep_collection = *preselected_leptons_intree;
+	  auto mu_collection = *preselected_muons_intree;
+	  auto ele_collection = *preselected_electrons_intree;
 	  
 	  bool passes2lss = pass2lss_bdtTraining(ele_collection, mu_collection, *preselected_jets_intree, *tight_leptons_intree);
 	  if ( passes2lss) 
@@ -199,7 +207,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   
 }
 
-void makeSelectionTree(TString sample="tth_powheg_old", TString selection="training", int job_no=-1, int num_jobs=-1)
+void makeSelectionTree(TString sample="tth_powheg_new", TString selection="training", int job_no=-1)
 {
 
   TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor/";
@@ -211,6 +219,6 @@ void makeSelectionTree(TString sample="tth_powheg_old", TString selection="train
   TString output_file = output_dir + sample + postfix;
   if (job_no != -1) output_file = output_dir + sample + "_2lss_"+std::to_string(job_no)+".root";
 
-  run_it(sample, selection, output_file, job_no, num_jobs);
+  run_it(sample, selection, output_file, job_no);
 
 }
