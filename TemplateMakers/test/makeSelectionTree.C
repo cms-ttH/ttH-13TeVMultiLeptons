@@ -17,7 +17,7 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "selection.h"
-#include "loadSamples_notreDame.h"
+#include "loadSamples.h"
 #include "treeTools.h"
 #include "GenParticleHelper.h"
 
@@ -30,11 +30,7 @@
 
 void run_it(TString sample_name, TString selection, TString output_file, int job_no)
 {
-  int jobs_per_file = 15;
-  int load_file_idx = job_no / jobs_per_file; 
-  int job_idx = job_no - (jobs_per_file * load_file_idx);
-
-  FileLoader myLoader(sample_name, load_file_idx);
+  FileLoader myLoader(sample_name, job_no);
   
   TChain *chain = myLoader.chain;
   TH1D* event_hist = myLoader.hist_sum;
@@ -44,14 +40,6 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   int first_entry = 0;
   cout << "# events in tree: "<< chainentries << endl;  
   
-  if (job_no != -1)
-    {
-      int total_events = int(ceil( float(chainentries)/float(jobs_per_file) ));
-      first_entry = job_idx*total_events;
-      last_entry = first_entry + total_events - 1;
-      if (last_entry > chainentries)  last_entry = chainentries;
-    }
-
   cout << "job_no: " << job_no << endl;
   cout << "jobs per file: " << jobs_per_file << endl;
   cout << "file index: " << load_file_idx << endl;
@@ -59,8 +47,6 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   cout << "chainentries: " << chainentries << endl;
   cout << "first entry: " << first_entry << endl;
   cout << "last entry: " << last_entry << endl;
-
-
 
   double mcwgt_intree = -999.;
   int eventnum_intree = -999;  

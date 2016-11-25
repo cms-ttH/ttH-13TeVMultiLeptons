@@ -18,7 +18,7 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "../selection.h"
-#include "../loadSamples_notreDame.h"
+#include "../loadSamples.h"
 
 
 /////////////////////////////////////////

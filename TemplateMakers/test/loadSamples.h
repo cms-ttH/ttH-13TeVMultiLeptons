@@ -1,1167 +1,323 @@
+#include "TSystemDirectory.h"
+#include "TSystemFile.h"
+#include "TString.h"
+
 ///////////////////////////
 ////
 //// Choose a sample: ttH, ttW, ttbar
 ////
 ///////////////////////////
 
-TChain* loadFiles(TString sample, int start_file =0, int end_file=-1)
+class FileLoader
 {
+ private:
+  void loadFile(vector<TString> path_strs, int file_index)
+  {
+    
+
+    TString pre_fix = "/hadoop/store/user/"; //FUSE method
+
+    int file_count = 0;
+    for (const auto & path_str : path_strs)
+      {
+	TString base_dir = pre_fix + path_str;    
+	TSystemDirectory dir(base_dir, base_dir);
+	TList *files = dir.GetListOfFiles();
+	if (files) 
+	  {
+	    TSystemFile *sys_file;
+	    TString fname;
+	    TIter next(files);
+	    while ((sys_file=(TSystemFile*)next()))
+	      {
+
+		fname = base_dir + sys_file->GetName();
+		if (!sys_file->IsDirectory() && fname.EndsWith(".root")) 
+		  {
+		    
+		    if (file_index == -1 || file_count == file_index)
+		      {
+			chain->Add(fname);
+			cout << "loading file: " << fname << endl;      
+		      }
+		    //for hist
+		    TFile* file = TFile::Open(fname,"READONLY");
+		    if ( file )
+		      {
+			TH1D* hist = (TH1D*)file->Get("OSTwoLepAna/numInitialWeightedMCevents");
+			hist_sum->Add(hist);
+			file->Close();
+		      }	
+		    delete file;
+		    
+		    file_count +=1;
+		  }
+	      }
+	  }
+      }
+    
+  }
+public:
+  FileLoader(TString sample, int file_index=-1)
+    {
+      chain = new TChain("OSTwoLepAna/summaryTree");
+      hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);      
+      
+      if (sample == "tth_powheg_new")
+	{
+	  loadFile( {"muell149/lobster_test__v0/tth_nonbb_powheg_new/"} , file_index);
+	}
+      
+      else if (sample == "tth_powheg_old")
+      	{
+      	  loadFile( {"muell149/lobster_test__v0/tth_nonbb_powheg_old/"} , file_index);
+      	}
+      
+      else if (sample == "tth_aMC_old")
+      	{
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test__v0/tth_nonbb_aMCatNLO_old/");
+      	  sample_vec.push_back("muell149/lobster_test__v0/tth_nonbb_aMCatNLOextn_old/");
+	  
+      	  loadFile( sample_vec , file_index);
+      	}
+      
+      else if (sample == "ttbar_semiLep_powheg")
+      	{
+      	  loadFile( {"muell149/lobster_test__v0/ttbar_semilep_powheg/"} , file_index);
+      	}
+
+      else if (sample == "ttbar_semiLep_madgraph")
+      	{
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test__v0/ttbar_semilep_fromTop_mg/");
+      	  sample_vec.push_back("muell149/lobster_test__v0/ttbar_semilep_fromTop_mg_extn/");
+      	  sample_vec.push_back("muell149/lobster_test__v0/ttbar_semilep_fromAntitop_mg/");
+      	  sample_vec.push_back("muell149/lobster_test__v0/ttbar_semilep_fromAntitop_mg_extn/");
+      	  loadFile( sample_vec, file_index);
+      	}
+      
+      else if (sample == "ttbar_diLep_powheg_tranche3")
+      	{
+      	  loadFile( {"muell149/lobster_test__KevinTranche3_foreign/ttbar_DL_tranche3/"} , file_index);
+      	}
+      
+      else if (sample == "ttbar_genFilter")
+      	{
+      	  loadFile( {"muell149/lobster_test__genFilterV1/ttbar_semiLep_genFilter/"}, file_index);
+      	  /* loadFile( {"muell149/lobster_test__genFilterV0_and_TTLL/ttbar_semiLep_genFilter/"}, file_index); */
+      	}
+      
+      else if (sample == "ttW_aMCatNLO")
+      	{
+      	  loadFile( {"muell149/lobster_test__v0/ttW/"}, file_index);
+      	}
+
+      else if (sample == "ttZ_aMCatNLO")
+      	{
+      	  loadFile( {"muell149/lobster_test__v0/ttZ/"}, file_index);
+      	}
+
+      else if (sample == "ttGammaStar")
+      	{
+      	  loadFile( {"muell149/lobster_test__genFilterV0_and_TTLL/ttll_m10/"}, file_index);
+      	}
+
+      else if ( sample == "WW_diboson")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/WW_2l2nu/"}, file_index);
+      	}
+
+      else if ( sample == "ZZ_diboson")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/ZZ_to4l/"}, file_index);
+      	}
+      else if ( sample == "WZ_diboson")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/WZ_to3lnu/"}, file_index);
+      	}
+      else if ( sample == "tttt")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/tttt/"}, file_index);
+      	}
+      else if ( sample == "tqZ")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/tZq/"}, file_index);
+      	}
+      else if ( sample == "WWqq_rares")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/WWqq_rares/"}, file_index);
+      	}
+      else if ( sample == "WW_doublescatering_rares")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/WW_DoubleScattering_rares/"}, file_index);
+      	}
+      else if ( sample == "WWZ_rares")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/WWZ_rares/"}, file_index);
+      	}
+      else if ( sample == "WZZ_rares")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/WZZ_rares/"}, file_index);
+      	}
+      else if ( sample == "ZZZ_rares")
+      	{
+      	  loadFile( {"muell149/lobster_test__spring16_backgrounds/ZZZ_rares/"}, file_index);
+      	}
+      else if (sample == "tth_powheg_jetClean_test")
+      	{
+	  loadFile( {"muell149/lobster_test__tranche3_genFilter_altJetClean_part2/tth_nonbb_genFilter_altJetClean/"}, file_index);
+      	}
+      else if (sample == "ttbar_semiLep_jetClean_test")
+      	{
+      	  loadFile( {"muell149/lobster_test__tranche3_genFilter_altJetClean_part2/ttbar_semilep_genFilter_altJetClean/"}, file_index);
+      	}
+      else if (sample == "ttw_jetClean_test")
+      	{
+      	  loadFile( {"muell149/lobster_test__tranche3_genFilter_altJetClean_part2/ttw_genFilter_altJetClean/"}, file_index);
+      	}
+
+      else
+	{
+	  cout << "=================================" << endl;
+	  cout << "=================================" << endl;
+	  cout << "please specify valid sample name" << endl;
+	  cout << "=================================" << endl;
+	  cout << "=================================" << endl;
+	}
+      
+      cout << "Weighted number of events in sample " << sample << " = " << setprecision(10) << hist_sum->GetBinContent(1) << endl;
+      //  hist_sum->Draw();
+    }//default constructor
+
+  //public members
+  TChain *chain;
+  TH1D* hist_sum;
   
-  TChain *chain = new TChain("OSTwoLepAna/summaryTree");
-  char filePath[512];
-  TString file_path;
+  virtual ~FileLoader(){}
+};
+ 
+TString getSelectionFile(TString sample_name)
+{
+  TString input_file_name="";
 
-  vector<TString> sample_vector;
-
-  if (sample == "ttH-aMC@NLO")
+  if (sample_name == "tth_powheg_old")
     {
-
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_1.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_10.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_100.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_101.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_102.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_103.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_104.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_105.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_106.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_107.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_108.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_109.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_11.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_110.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_111.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_112.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_113.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_114.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_115.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_116.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_117.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_118.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_119.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_12.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_120.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_121.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_122.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_123.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_124.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_125.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_126.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_127.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_128.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_129.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_13.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_130.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_131.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_132.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_133.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_134.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_135.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_136.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_137.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_138.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_139.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_14.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_140.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_141.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_142.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_143.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_144.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_145.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_146.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_147.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_148.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_149.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_15.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_150.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_151.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_152.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_153.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_154.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_155.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_156.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_157.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_158.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_159.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_16.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_160.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_161.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_162.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_163.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_164.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_17.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_18.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_19.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_2.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_20.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_21.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_22.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_23.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_24.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_25.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_26.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_27.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_28.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_29.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_3.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_30.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_31.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_32.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_33.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_34.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_35.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_36.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_37.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_38.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_39.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_4.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_40.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_41.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_42.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_43.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_44.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_45.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_46.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_47.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_48.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_49.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_5.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_50.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_51.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_52.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_53.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_54.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_55.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_56.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_57.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_58.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_59.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_6.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_60.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_61.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_62.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_63.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_64.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_65.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_66.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_67.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_68.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_69.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_7.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_70.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_71.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_72.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_73.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_74.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_75.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_76.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_77.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_78.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_79.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_8.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_80.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_81.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_82.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_83.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_84.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_85.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_86.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_87.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_88.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_89.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_9.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_90.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_91.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_92.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_93.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_94.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_95.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_96.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_97.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_98.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC/160219_093049/0000/tree_BDT2_orig_99.root");
-      //164 files
-
-      if (end_file == -1) end_file = int(sample_vector.size());
-      for (int i= start_file; i <= end_file; i++)
-      	{
-	  if (i > int(sample_vector.size())) break;
-      	  chain->Add(sample_vector[i]);
-      	}
-
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/tth_aMC_old_2lss.root";
     }
-  
-  else if (sample == "ttH-aMC@NLO-ext")
-    {      
 
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_1.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_10.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_100.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_101.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_102.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_103.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_104.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_105.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_106.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_107.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_108.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_109.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_11.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_110.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_111.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_112.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_113.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_114.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_115.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_116.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_117.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_118.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_119.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_12.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_120.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_121.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_122.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_123.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_124.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_125.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_126.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_127.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_128.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_129.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_13.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_130.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_131.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_132.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_133.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_134.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_135.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_136.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_137.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_138.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_139.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_14.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_140.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_141.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_142.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_143.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_144.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_145.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_146.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_147.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_148.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_149.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_15.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_150.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_151.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_152.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_153.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_154.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_155.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_156.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_157.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_158.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_159.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_16.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_160.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_161.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_162.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_163.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_164.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_165.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_166.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_167.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_168.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_169.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_17.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_170.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_171.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_172.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_173.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_174.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_175.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_176.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_177.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_178.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_179.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_18.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_180.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_181.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_182.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_183.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_184.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_185.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_186.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_187.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_188.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_189.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_19.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_190.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_191.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_192.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_193.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_194.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_195.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_196.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_197.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_198.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_199.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_2.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_20.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_200.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_201.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_202.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_21.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_22.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_23.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_24.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_25.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_26.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_27.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_28.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_29.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_3.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_30.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_31.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_32.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_33.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_34.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_35.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_36.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_37.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_38.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_39.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_4.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_40.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_41.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_42.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_43.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_44.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_45.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_46.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_47.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_48.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_49.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_5.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_50.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_51.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_52.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_53.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_54.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_55.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_56.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_57.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_58.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_59.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_6.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_60.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_61.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_62.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_63.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_64.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_65.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_66.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_67.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_68.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_69.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_7.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_70.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_71.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_72.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_73.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_74.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_75.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_76.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_77.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_78.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_79.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_8.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_80.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_81.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_82.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_83.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_84.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_85.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_86.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_87.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_88.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_89.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_9.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_90.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_91.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_92.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_93.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_94.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_95.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_96.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_97.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_98.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/crab_ttH125_aMC_extn/160219_093101/0000/tree_BDT2_orig_99.root");
-
-      //203 files
-      if (end_file == -1) end_file = int(sample_vector.size());
-      for (int i= start_file; i <= end_file; i++)
-      	{
-	  if (i > int(sample_vector.size())) break;
-      	  chain->Add(sample_vector[i]);
-      	}
-
-    } 
-
-  else if (sample == "ttH-powheg")
+  else if (sample_name == "tth_powheg_old_altJetClean")
     {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor/tth_powheg_jetClean_test_recoBdt_2lss.root";
+    }
 
-      
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_1.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_10.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_11.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_12.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_13.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_14.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_15.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_16.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_17.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_18.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_19.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_2.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_20.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_21.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_22.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_23.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_24.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_25.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_26.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_27.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_28.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_29.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_3.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_30.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_31.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_32.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_33.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_34.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_35.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_36.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_37.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_38.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_39.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_4.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_40.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_41.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_42.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_43.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_44.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_45.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_46.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_47.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_48.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_49.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_5.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_50.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_51.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_52.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_53.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_54.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_55.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_56.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_57.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_58.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_59.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_6.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_60.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_61.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_62.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_63.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_64.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_65.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_66.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_67.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_68.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_69.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_7.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_70.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_71.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_72.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_73.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_74.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_75.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_76.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_77.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_78.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_79.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_8.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_80.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/ttHToNonbb_M125_13TeV_powheg_pythia8/crab_ttH125_powheg/160219_093036/0000/tree_BDT2_orig_9.root");
-
-      //80 files
-      if (end_file == -1) end_file = int(sample_vector.size());
-      for (int i= start_file; i <= end_file; i++)
-      	{
-	  if (i > int(sample_vector.size())) break;
-      	  chain->Add(sample_vector[i]);
-      	}
-
-
+  else if (sample_name == "tth_powheg_old_training")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
     }
 
 
-
-  else if (sample == "ttbar-semiLep-powheg")
+  else if (sample_name == "ttbar_semiLep_madgraph")
     {
-
-
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_1.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_10.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_100.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_101.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_102.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_103.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_104.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_105.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_106.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_107.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_108.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_109.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_110.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_111.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_112.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_113.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_114.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_115.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_116.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_117.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_118.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_12.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_120.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_122.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_123.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_125.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_126.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_127.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_128.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_129.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_13.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_130.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_131.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_132.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_133.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_134.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_135.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_136.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_137.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_138.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_139.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_14.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_140.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_141.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_142.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_143.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_144.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_145.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_146.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_147.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_148.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_149.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_15.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_150.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_151.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_152.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_153.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_154.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_155.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_156.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_157.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_158.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_159.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_16.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_160.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_161.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_162.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_163.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_165.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_166.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_167.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_168.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_169.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_17.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_170.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_172.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_173.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_174.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_175.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_176.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_177.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_178.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_179.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_18.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_180.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_181.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_182.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_184.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_185.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_186.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_188.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_189.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_19.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_191.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_193.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_194.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_195.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_196.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_197.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_199.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_2.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_20.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_200.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_201.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_203.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_204.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_205.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_206.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_207.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_208.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_21.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_210.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_211.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_212.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_213.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_214.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_215.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_216.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_217.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_219.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_22.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_220.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_221.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_222.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_223.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_224.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_225.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_226.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_227.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_228.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_229.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_23.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_230.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_231.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_232.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_233.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_234.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_235.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_236.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_237.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_238.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_24.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_241.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_242.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_244.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_245.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_246.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_247.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_248.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_250.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_251.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_252.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_253.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_255.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_258.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_259.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_26.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_262.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_263.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_264.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_265.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_267.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_268.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_270.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_271.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_272.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_273.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_274.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_275.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_277.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_278.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_28.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_280.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_281.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_283.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_284.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_285.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_286.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_287.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_288.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_289.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_29.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_290.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_291.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_292.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_293.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_294.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_295.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_296.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_298.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_299.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_3.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_30.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_300.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_302.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_303.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_304.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_305.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_306.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_307.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_308.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_309.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_31.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_310.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_311.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_312.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_313.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_314.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_315.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_316.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_317.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_318.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_319.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_32.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_321.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_322.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_323.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_326.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_327.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_328.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_329.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_33.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_333.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_334.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_335.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_336.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_337.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_338.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_34.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_340.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_342.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_344.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_345.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_347.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_348.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_349.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_35.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_350.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_352.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_353.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_355.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_357.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_358.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_359.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_36.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_361.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_362.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_365.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_367.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_368.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_369.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_37.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_370.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_373.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_374.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_375.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_376.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_377.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_378.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_379.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_38.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_380.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_381.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_382.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_383.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_384.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_386.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_387.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_39.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_390.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_391.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_392.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_393.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_394.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_395.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_396.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_397.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_398.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_399.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_4.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_40.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_400.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_401.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_404.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_405.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_408.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_409.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_41.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_410.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_411.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_413.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_414.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_416.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_417.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_418.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_419.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_42.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_421.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_422.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_423.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_424.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_425.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_426.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_427.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_428.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_429.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_430.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_432.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_434.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_435.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_436.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_437.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_439.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_44.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_440.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_441.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_442.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_443.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_444.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_445.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_446.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_447.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_448.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_449.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_45.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_450.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_453.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_454.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_455.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_457.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_458.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_459.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_46.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_460.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_461.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_462.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_464.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_466.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_467.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_469.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_47.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_472.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_473.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_474.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_475.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_476.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_477.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_478.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_479.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_48.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_480.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_481.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_482.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_483.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_484.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_485.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_486.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_487.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_488.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_489.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_49.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_490.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_491.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_492.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_493.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_494.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_495.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_496.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_497.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_498.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_499.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_5.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_50.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_500.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_503.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_505.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_506.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_508.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_51.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_511.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_512.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_515.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_516.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_517.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_518.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_52.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_520.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_521.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_522.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_525.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_526.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_529.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_53.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_530.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_531.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_532.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_535.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_536.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_537.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_54.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_540.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_541.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_542.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_545.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_546.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_547.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_548.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_55.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_551.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_552.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_555.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_556.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_557.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_558.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_56.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_560.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_562.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_563.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_564.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_565.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_566.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_567.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_568.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_57.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_570.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_571.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_572.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_574.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_575.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_576.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_577.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_578.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_579.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_58.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_580.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_582.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_584.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_586.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_587.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_588.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_59.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_591.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_593.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_594.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_596.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_597.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_598.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_599.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_6.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_60.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_600.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_601.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_603.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_604.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_605.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_606.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_608.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_609.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_61.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_611.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_612.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_613.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_614.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_615.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_616.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_617.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_618.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_619.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_62.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_620.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_624.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_625.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_626.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_627.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_628.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_63.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_630.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_631.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_632.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_633.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_636.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_637.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_638.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_639.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_64.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_641.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_642.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_643.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_644.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_646.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_648.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_65.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_650.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_651.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_654.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_655.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_658.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_66.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_661.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_662.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_664.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_668.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_67.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_671.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_672.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_673.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_674.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_676.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_677.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_678.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_679.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_68.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_680.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_681.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_682.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_683.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_684.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_685.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_686.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_687.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_688.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_689.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_69.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_690.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_691.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_692.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_694.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_695.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_696.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_697.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_699.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_7.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_70.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_700.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_701.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_702.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_704.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_705.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_706.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_708.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_709.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_71.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_711.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_712.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_713.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_714.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_72.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_73.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_75.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_76.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_77.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_78.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_79.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_80.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_82.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_83.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_84.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_85.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_86.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_87.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_89.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_9.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_90.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_91.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_92.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_93.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_94.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_95.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_96.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_97.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_98.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTToSemiLeptonic_13TeV-powheg/crab_TTJets_powheg/160219_093217/0000/tree_BDT2_orig_99.root");
-
-
-      
-      //572 files
-
-      if (end_file == -1) end_file = int(sample_vector.size());
-      for (int i= start_file; i <= end_file; i++)
-      	{
-	  if (i > int(sample_vector.size())) break;
-      	  chain->Add(sample_vector[i]);
-      	}
-      
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-madgraph_relaxed_2lss.root";
     }
-  else if (sample == "ttbar")
+  else if (sample_name == "tth_aMC_old")
     {
-
-      for (int i=1; i < 104; i++)
-      	{
-      	  char filePath[512];
-      	  sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM3/160219_093153/0000/tree_BDT2_orig_%d.root",i);
-      	  chain->Add(filePath);
-      	}
-      
-      for (int i=1; i < 30; i++)
-      	{
-      	  char filePath[512];
-      	  sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM4/160219_093206/0000/tree_BDT2_orig_%d.root",i);
-      	  chain->Add(filePath);
-      	}
-      
-      for (int i=1; i < 106; i++)
-      	{
-      	  char filePath[512];
-      	  sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM1/160219_093129/0000/tree_BDT2_orig_%d.root",i);
-      	  chain->Add(filePath);
-      	}
-      
-      for (int i=1; i < 30; i++)
-      	{
-      	  char filePath[512];
-      	  sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_TTJets_MLM2/160219_093141/0000/tree_BDT2_orig_%d.root",i);
-      	  chain->Add(filePath);
-      	}
-      
-      for (int i=1; i < 80; i++)
-      	{
-      	  char filePath[512];
-      	  sprintf(filePath,"root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/76X_remake/TTJets_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_ttbar_aMC/160219_093117/0000/tree_BDT2_orig_%d.root",i);
-      	  chain->Add(filePath);
-      	}
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/tth_aMC_old_2lss.root";
+    }
+  else if (sample_name == "ttbar_semiLep_powheg")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttbar_semiLep_powheg_2lss.root";
+    }
+  else if (sample_name == "ttW_aMCatNLO")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttW_aMCatNLO_2lss.root";
+    }
+  else if (sample_name == "ttZ_aMCatNLO")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttZ_aMCatNLO_2lss.root";
     }
 
-  else if (sample == "ttW")
+  else if (sample_name == "ttGammaStar")
     {
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/jetRecovery_v0p1/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW_aMC/160225_164414/0000/tree_file_1.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/jetRecovery_v0p1/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW_aMC/160225_164414/0000/tree_file_2.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/jetRecovery_v0p1/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW_aMC/160225_164414/0000/tree_file_3.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/jetRecovery_v0p1/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW_aMC/160225_164414/0000/tree_file_4.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/jetRecovery_v0p1/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW_aMC/160225_164414/0000/tree_file_5.root");
-      sample_vector.push_back("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/jetRecovery_v0p1/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW_aMC/160225_164414/0000/tree_file_6.root");
-
-
-      if (end_file == -1) end_file = int(sample_vector.size());
-      for (int i= start_file; i <= end_file; i++)
-      	{
-	  if (i > int(sample_vector.size())) break;
-      	  chain->Add(sample_vector[i]);
-      	}
-
-
-      /* chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_1.root"); */
-      /* chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_2.root");     */
-      /* chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_3.root");     */
-      /* chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_4.root");     */
-      /* chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_5.root");     */
-      /* chain->Add("root://eoscms.cern.ch//eos/cms/store/user/muell149/ttH-leptons_Skims/qgid/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_ttW/160128_162243/0000/tree_BDT_6.root"); */
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttGammaStar_selection_tree_2lss.root";
     }
-  else
+
+  else if (sample_name == "ttbar_genFilter_relaxed")
     {
-      cout << "please specify valid sample name" << endl;
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/genFilter_tests/ttbar_genFilter_relaxed_training_2lss_kevin_v6.root";
     }
-  
-  return chain;
+
+  else if (sample_name == "ttbar_genFilter")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/genFilter_tests/ttbar_genFilter_2lss_kevin_v6.root";
+    }
+
+  else if (sample_name == "ttbar_diLep_madgraph")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor_stageout/ttbar_diLep_madgraph_selection_2lss.root";
+    }
+
+  else if (sample_name == "ttbar_diLep_powheg")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttbar_diLep_powheg_tranche3_2lss.root";
+    }
+  else if (sample_name == "WW_diboson")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WW_diboson_2lss.root";
+    }
+  else if (sample_name == "ZZ_diboson")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ZZ_diboson_2lss.root";
+    }
+  else if (sample_name == "WZ_diboson")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WZ_diboson_2lss.root";
+    }
+  else if (sample_name == "tttt")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/tttt_2lss.root";
+    }
+  else if (sample_name == "tqZ")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/tqZ_2lss.root";
+    }
+  else if (sample_name == "WWqq_rares")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WWqq_rares_2lss.root";
+    }
+  else if (sample_name == "WW_doublescatering_rares")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WW_doublescatering_rares_2lss.root";
+    }
+  else if (sample_name == "WWZ_rares")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WWZ_rares_2lss.root";
+    }
+  else if (sample_name == "WZZ_rares")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/WZZ_rares_2lss.root";
+    }
+  else if (sample_name == "ZZZ_rares")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ZZZ_rares_2lss.root";
+    }
+  else if (sample_name == "ttbar_semiLep_jetClean_test")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/genFilter_tests/ttbar_semiLep_jetClean_test_training_tree_2lss.root";
+    }
+
+  else if (sample_name == "ttbar_semiLep_bdtTraining")
+    {
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
+    }
+
+  else 
+    {
+      sample_name = "output";
+      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/tth_aMC_old_selection_tree_2lss.root";
+    }
+
+  return input_file_name;
+
 }
