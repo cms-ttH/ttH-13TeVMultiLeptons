@@ -58,6 +58,7 @@ template <typename inObj1, typename inObj2> double getDeltaR(const inObj1 obj1, 
 {
   TLorentzVector obj1_tlv = setTlv(obj1);
   TLorentzVector obj2_tlv = setTlv(obj2);
+  if (obj1_tlv.Pt()*obj2_tlv.Pt() == 0) return -1.;
   return obj1_tlv.DeltaR( obj2_tlv );
 }
 
