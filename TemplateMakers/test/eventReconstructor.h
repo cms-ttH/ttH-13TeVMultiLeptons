@@ -75,10 +75,11 @@ class eventReconstructor
   Float_t W_fromHadTop_charge_correct_var;
   Float_t W_fromHiggs_charge_correct_var;
   //my new vars
-  Float_t tth_mt_var;
-  Float_t leptop_mt_var;
-  Float_t higgs_mt_var;
-  
+  Float_t dr_lepFromHiggs_bFromHadTop;
+  Float_t dr_lepFromTop_bFromLepTop;
+  Float_t dr_lepFromTop_bFromHadTop;
+  Float_t dr_lepFromHiggs_bFromLepTop;
+
   TMVA::Reader* bookMVA(std::string weights_file_str)
   {
     TMVA::Reader* TMVAReader_internal_ = new TMVA::Reader( "!Color:!Silent" );
@@ -88,35 +89,15 @@ class eventReconstructor
     TMVAReader_internal_->AddVariable( "hadTop_tlv_bdt.Pt()", &HadTop_pT_var );
     TMVAReader_internal_->AddVariable( "w_from_hadtop_tlv_bdt.M()", &W_fromHadTop_mass_var );
     TMVAReader_internal_->AddVariable( "hadTop_tlv_bdt.M()", &HadTop_mass_var );
-    TMVAReader_internal_->AddVariable( "higgs_tlv_bdt.M()", &Higgs_mass_var );
+    //    TMVAReader_internal_->AddVariable( "higgs_tlv_bdt.M()", &Higgs_mass_var );
     TMVAReader_internal_->AddVariable( "lep_from_higgs_bdt.obj.pt()", &lep_fromW_fromHiggs_pT_var );
     TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()", &lep_fromW_fromTop_pT_var );
     TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()", &lep_pt_ratio_var );
 
-    //my vars
-    /* TMVAReader_internal_->AddVariable( "tth_t_tlv.M()", &tth_mt_var ); */
-    /* TMVAReader_internal_->AddVariable( "higgs_t_tlv.M()", &higgs_mt_var ); */
-    /* TMVAReader_internal_->AddVariable( "leptop_t_tlv.M()", &leptop_mt_var ); */
-
-
-    //    TMVAReader_internal_->AddVariable( "dR_lepTop_hadTop", &LepTop_HadTop_dR_var );
-    //    TMVAReader_internal_->AddVariable( "dR_b_W_lepTop", &LepTop_lep_bJet_dR_var );
-    //    TMVAReader_internal_->AddVariable( "qJet1_fromW_fromHadTop_CSV", &qJet1_fromW_fromHadTop_CSV_var );
-    //    TMVAReader_internal_->AddVariable( "W_fromHiggs_mass", &W_fromHiggs_mass_var );
-    /* TMVAReader_internal_->AddVariable( "LepTop_pT", &LepTop_pT_var ); */
-    /* TMVAReader_internal_->AddVariable( "LepTop_mass", &LepTop_mass_var ); */
-    /* TMVAReader_internal_->AddVariable( "LepTop_lep_bJet_dR", &LepTop_lep_bJet_dR_var ); */
-    /* TMVAReader_internal_->AddVariable( "qJet1_fromW_fromHadTop_pT", &qJet1_fromW_fromHadTop_pT_var ); */
-    /* TMVAReader_internal_->AddVariable( "W_fromHadTop_q1_q2_dR", &W_fromHadTop_q1_q2_dR_var ); */
-    /* TMVAReader_internal_->AddVariable( "qJet1_fromW_fromHiggs_CSV", &qJet1_fromW_fromHiggs_CSV_var ); */
-    /* TMVAReader_internal_->AddVariable( "Higgs_lep_W_dR", &Higgs_lep_W_dR_var ); */
-    /* TMVAReader_internal_->AddVariable( "Higgs_lep_W_dPhi", &Higgs_lep_W_dPhi_var ); */
-    /* TMVAReader_internal_->AddVariable( "LepTop_Higgs_mass", &LepTop_Higgs_mass_var ); */
-    /* TMVAReader_internal_->AddVariable( "HadTop_Higgs_mass", &HadTop_Higgs_mass_var ); */
-    /* TMVAReader_internal_->AddVariable( "HadTop_Higgs_MT_mass_ratio", &HadTop_Higgs_MT_mass_ratio_var ); */
-    /* TMVAReader_internal_->AddVariable( "ttH_MT_mass_ratio", &ttH_MT_mass_ratio_var ); */
-    /* TMVAReader_internal_->AddVariable( "LepTop_HadTop_dPhi", &LepTop_HadTop_dPhi_var ); */
-    //    TMVAReader_internal_->AddVariable( "(lep_fromTop.obj.pt()-lep_fromHiggs.obj.pt())/(lep_fromTop.obj.pt()+lep_fromHiggs.obj.pt())", &LepAsym_var );
+    TMVAReader_internal_->AddVariable( "dr_lepFromHiggs_bFromHadTop", &dr_lepFromHiggs_bFromHadTop );
+    TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromLepTop", &dr_lepFromTop_bFromLepTop );
+    TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromHadTop", &dr_lepFromTop_bFromHadTop );
+    TMVAReader_internal_->AddVariable( "dr_lepFromHiggs_bFromLepTop", &dr_lepFromHiggs_bFromLepTop );
 
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
@@ -126,7 +107,6 @@ class eventReconstructor
     return TMVAReader_internal_;
   }
   
-  double reco_score_intree;
   vector<double> best_combo_vec_intree;
   vector<double> all_combo_vec_intree;
   vector<ttH::Jet> *unmatched_jets_bdt_intree=0;
@@ -170,15 +150,15 @@ class eventReconstructor
 
  public:
   eventReconstructor(){
-    TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bTight.weights.xml");
-    TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bLoose.weights.xml");
-    /* TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_recoBdt_v1p7_btight_deep.xml"); */
-    /* TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_recoBdt_v1p7_bloose_deep.xml"); */
+    /* TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bTight.weights.xml"); */
+    /* TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bLoose.weights.xml"); */
+    TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bTight__bjet_lep_dr.xml");
+    TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bLoose__bjet_lep_dr.xml");
 
   } // default constructor
 
   vector<int> *match_results_bdt_intree=0;
-
+  double reco_score_intree;
 
   void clear(void)
   {
@@ -270,7 +250,6 @@ class eventReconstructor
     input_tree->Branch("b_simple_matching", &b_simple_matching_intree);
     input_tree->Branch("w_simple_matching", &w_simple_matching_intree);
     
-
     input_tree->Branch("lepton_matching", &lepton_matching_intree);
     input_tree->Branch("b_from_hadtop_matching", &b_from_hadtop_matching_intree);
     input_tree->Branch("b_from_leptop_matching", &b_from_leptop_matching_intree);
@@ -291,15 +270,8 @@ class eventReconstructor
 	if (jet.csv >= 0.8) btight_jets_intree->push_back(jet);
 	else if (jet.csv >= 0.46) bloose_jets_intree->push_back(jet);
       }
-    if ( btight_jets_intree->size() > 1 )
-      {
-	TMVAReader_ = TMVAReader_bTight_;
-      }
-    else 
-      {
-	TMVAReader_ = TMVAReader_bLoose_;
-      }
-
+    if ( btight_jets_intree->size() > 1 ) TMVAReader_ = TMVAReader_bTight_;
+    else 	TMVAReader_ = TMVAReader_bLoose_;
 
     ////////////////////////////
     ////////
@@ -617,9 +589,11 @@ class eventReconstructor
 				      + b_from_hadtop_T_tlv + q1_from_hadtop_T_tlv + q2_from_hadtop_T_tlv
 				      + lep_from_higgs_T_tlv + q1_from_higgs_T_tlv + q2_from_higgs_T_tlv;
 				    
-				    tth_mt_var = ttH_T_tlv_intree.M();
-				    leptop_mt_var = leptop_T_tlv_intree.M();
-				    higgs_mt_var = higgs_T_tlv_intree.M();
+				    dr_lepFromHiggs_bFromHadTop = getDeltaR(bjet_fromHadTop, lep_fromHiggs);
+				    dr_lepFromTop_bFromLepTop = getDeltaR(bjet_fromLepTop, lep_fromTop);
+				    dr_lepFromTop_bFromHadTop = getDeltaR(bjet_fromHadTop, lep_fromTop);
+				    dr_lepFromHiggs_bFromLepTop = getDeltaR(bjet_fromLepTop, lep_fromHiggs);
+				    
 
 				    double mva_value = TMVAReader_->EvaluateMVA( "BDTG method" );
 				    all_combo_vec_intree.push_back(mva_value);

@@ -33,17 +33,12 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   FileLoader myLoader(sample_name, job_no);
   
   TChain *chain = myLoader.chain;
-  TH1D* event_hist = myLoader.hist_sum;
 
   int chainentries = chain->GetEntries();   
   int last_entry = chainentries;
   int first_entry = 0;
-  cout << "# events in tree: "<< chainentries << endl;  
   
   cout << "job_no: " << job_no << endl;
-  cout << "jobs per file: " << jobs_per_file << endl;
-  cout << "file index: " << load_file_idx << endl;
-  cout << "job index: " << job_idx << endl;
   cout << "chainentries: " << chainentries << endl;
   cout << "first entry: " << first_entry << endl;
   cout << "last entry: " << last_entry << endl;
@@ -55,9 +50,9 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   vector<ttH::Lepton> *preselected_leptons_intree=0;
   vector<ttH::Jet> *preselected_jets_intree=0;
   vector<ttH::MET> *met_intree=0;
-  vector<ttH::Lepton> *loose_leptons_intree=0;
-  vector<ttH::Muon> *loose_muons_intree=0;
-  vector<ttH::Electron> *loose_electrons_intree=0;
+  vector<ttH::Lepton> *fakeable_leptons_intree=0;
+  vector<ttH::Muon> *fakeable_muons_intree=0;
+  vector<ttH::Electron> *fakeable_electrons_intree=0;
   vector<ttH::Lepton> *tight_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
@@ -72,9 +67,9 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
   chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-  chain->SetBranchAddress("loose_leptons", &loose_leptons_intree);
-  chain->SetBranchAddress("loose_muons", &loose_muons_intree);
-  chain->SetBranchAddress("loose_electrons", &loose_electrons_intree);
+  chain->SetBranchAddress("fakeable_leptons", &fakeable_leptons_intree);
+  chain->SetBranchAddress("fakeable_muons", &fakeable_muons_intree);
+  chain->SetBranchAddress("fakeable_electrons", &fakeable_electrons_intree);
   chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
   chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
@@ -82,10 +77,25 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
-  if (job_no == -1 || job_no == 0) event_hist->Write();
+  if (job_no == -1 || job_no == 0)
+    {
+      TH1D* event_hist = myLoader.hist_sum;
+      event_hist->Write();
+    }
 
   TTree *ss2l_tree = (TTree*)chain->CloneTree(0);
   ss2l_tree->SetName("ss2l_tree");
+
+  TH1D* failure_hist = new TH1D("failure_hist","Event Selection Sideband",7,1,8);
+  failure_hist->GetXaxis()->SetBinLabel(1,"psLeps >= 2");
+  failure_hist->GetXaxis()->SetBinLabel(2,"minDiLepMass > 12");
+  failure_hist->GetXaxis()->SetBinLabel(3,"bjet cut");
+  failure_hist->GetXaxis()->SetBinLabel(4,"(tight || FO leps) > 2");
+  failure_hist->GetXaxis()->SetBinLabel(5,"same-sign leptons");
+  failure_hist->GetXaxis()->SetBinLabel(6,"nJets >= 4");
+  failure_hist->GetXaxis()->SetBinLabel(7,"l1pt > 20, l2pt > 10");
+  failure_hist->GetYaxis()->SetTitle("Events");
+  failure_hist->GetXaxis()->SetTitle("failed cut");
 
   GenParticleHelper myGenParticleHelper;
   myGenParticleHelper.initializeTree(ss2l_tree);
@@ -94,12 +104,12 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   ss2l_tree->Branch("bTight_jets", &bTight_jets_intree);  
   ss2l_tree->Branch("bLoose_jets", &bLoose_jets_intree);
 
-  Int_t cachesize = 250000000;   //250 MBytes
+  Int_t cachesize = 250000000;   //500 MBytes
+  //  Int_t cachesize = 1024000000;   //1 GBytes
   chain->SetCacheSize(cachesize);
 
   double starttime = get_wall_time();
 
-  //  last_entry = 100000;
   for (int i=first_entry; i<=last_entry; i++)
     {
       
@@ -115,15 +125,18 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 
       clock_t startTime = clock();
       chain->GetEntry(i);
-      
+
       //////////////////////////
       ////
       //// selection, vetos etc
       ////
       //////////////////////////
 
-      bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
-      if (!passesCommon) continue;
+      bool passesCommon = passCommon(*preselected_electrons_intree, *preselected_muons_intree, *preselected_jets_intree, failure_hist);
+      if (!passesCommon)
+	{
+	  continue;
+	}
 
       if (selection == "analysis")
 	{
@@ -158,20 +171,20 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 	  //////////////////////////
 	  
 	  //fakeable
-	  // auto lep_collection = *loose_leptons_intree;
-	  // auto mu_collection = *loose_muons_intree;
-	  // auto ele_collection = *loose_electrons_intree;
+	  // auto lep_collection = *fakeable_leptons_intree;
+	  // auto mu_collection = *fakeable_muons_intree;
+	  // auto ele_collection = *fakeable_electrons_intree;
 	  
 	  //preselected
 	  auto lep_collection = *preselected_leptons_intree;
 	  auto mu_collection = *preselected_muons_intree;
 	  auto ele_collection = *preselected_electrons_intree;
 	  
-	  bool passes2lss = pass2lss_bdtTraining(ele_collection, mu_collection, *preselected_jets_intree, *tight_leptons_intree);
-	  if ( passes2lss) 
+	  bool passes2lss = pass2lss_bdtTraining(ele_collection, mu_collection, *preselected_jets_intree, failure_hist);
+	  if ( passes2lss ) 
 	    {
-	      myGenParticleHelper.clear();
-	      myGenParticleHelper.matchReco2Gen(lep_collection, *preselected_jets_intree, *pruned_genParticles_intree);
+	      //	      myGenParticleHelper.clear();
+	      //    myGenParticleHelper.matchReco2Gen(lep_collection, *preselected_jets_intree, *pruned_genParticles_intree);
 	      //	  myGenParticleHelper.matchReco2Gen(*preselected_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
 	      //cuts for os only 
 	      //      	  if ( myGenParticleHelper.higgs_final_state_intree.CompareTo("semiLeptonic") == 0 && myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
@@ -188,15 +201,17 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
   if ( (last_entry - first_entry) >0) cout << "an average of " << (endtime - starttime) / (last_entry - first_entry) << " per event." << endl;
   
+  failure_hist->Write();  
   ss2l_tree->Write();
   copiedfile->Close();
   
 }
 
-void makeSelectionTree(TString sample="tth_powheg_new", TString selection="training", int job_no=-1)
+void makeSelectionTree(TString sample="tth_powheg_jetClean_test", TString selection="training", int job_no=-1)
 {
 
-  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor/";
+  //  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor/";
+  TString output_dir = "/scratch365/cmuelle2/selection_trees/nov22_ICHEP_trees/";
 
   TString postfix;
   if (selection == "analysis") postfix = "_selection_tree_2lss.root";

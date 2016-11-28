@@ -8,19 +8,30 @@ vector<ttH::Lepton> get_collection(vector<ttH::Muon> muObjs, vector<ttH::Electro
   return lepCollection;
 }
 
-bool passCommon(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets)
+bool passCommon(vector<ttH::Electron> psEles, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, TH1D* failure_hist)
 {
   auto taggedjetstight = keepTagged(psJets,"M");
   auto taggedjetsloose = keepTagged(psJets,"L");
   
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
-  vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
 
-  if ( psLeps.size() < 2 ) return false;
+  if ( psLeps.size() < 2 )
+    {
+      failure_hist->Fill(1);
+      return false;
+    }
   double mindilepmass = getTwoObjKineExtreme(psLeps,"min","mass");
-  if ( mindilepmass <= 12. ) return false;
+  if ( mindilepmass <= 12. )
+    {
+      failure_hist->Fill(2);
+      return false;
+    }
 
-  if (!( ( taggedjetsloose.size() >= 2 ) || ( taggedjetstight.size() >=1 ) )) return false;
+  if (!( ( taggedjetsloose.size() >= 2 ) || ( taggedjetstight.size() >=1 ) ))
+    {
+      failure_hist->Fill(3);
+      return false;
+    }
   return true;
 }
 
@@ -90,36 +101,33 @@ bool pass2l(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vecto
 }
 
 
-bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets, vector<ttH::Lepton> tightLeps)
+bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets, TH1D* failure_hist)
 {
   vector<ttH::Lepton> looseLeps = get_collection(looseMus,looseEles);
 
-  if ( looseLeps.size() < 2 ) return false;
+  if ( looseLeps.size() < 2 ) 
+    {
+      failure_hist->Fill(4);
+      return false;
+    }
+  if (looseLeps[0].charge != looseLeps[1].charge)
+    {
+      failure_hist->Fill(5);
+      return false; 
+    }
+  if ( psJets.size() < 4 )
+    {
+      failure_hist->Fill(6);
+      return false;
+    }
+  double lep1_pt = looseLeps[0].correctedPt;
+  double lep2_pt = looseLeps[1].correctedPt;
 
-  if (looseLeps[0].charge != looseLeps[1].charge) return false; 
-  if ( !( psJets.size()>3 ) )      return false;
-  
-  bool isLep1Tight = true;
-  bool isLep2Tight = true;
-
-  /* bool isLep1Tight = false; */
-  /* bool isLep2Tight = false; */
-  /* for (const auto & tightLep : tightLeps) */
-  /*   { */
-  /*     if (looseLeps[0].obj.pt() == tightLep.obj.pt()) isLep1Tight = true; */
-  /*     else if (looseLeps[1].obj.pt() == tightLep.obj.pt()) isLep2Tight = true; */
-  /*   } */
-
-  double lep1_pt;
-  double lep2_pt;
-
-  if ( !isLep1Tight ) lep1_pt = 0.85*looseLeps[0].obj.pt()/looseLeps[0].jetPtRatio;
-  else lep1_pt = looseLeps[0].obj.pt();
-
-  if ( !isLep2Tight ) lep2_pt = 0.85*looseLeps[1].obj.pt()/looseLeps[1].jetPtRatio;
-  else lep2_pt = looseLeps[1].obj.pt();
-
-  if ( !(lep1_pt>20 && lep2_pt>10) ) return false;
+  if ( !(lep1_pt>20 && lep2_pt>10) )
+    {
+      failure_hist->Fill(7);
+      return false;
+    }
   return true;
 }
 
