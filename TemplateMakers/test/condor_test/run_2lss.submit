@@ -1,10 +1,10 @@
-sample = ZZ_diboson
-N = 2
+sample = WZZ_rares
+N = 1
 
 #+IsExpressJob = True
 universe = vanilla
 executable = run_2lss.sh
-arguments = $(sample) $(Process) $(N) 
+arguments = $(sample) $(Process)
 output = condor_logs/$(sample).stdout.$(Process)
 error = condor_logs/$(sample).stderr.$(Process)
 should_transfer_files = yes
