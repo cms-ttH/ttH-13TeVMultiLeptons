@@ -19,6 +19,7 @@
 #include "TMVA/MethodCuts.h"
 #include "selection.h"
 #include "loadSamples.h"
+#include "treeTools.h"
 
 /////////////////////////////////////////
 ///
@@ -27,9 +28,9 @@
 /////////////////////////////////////////
 
 
-void write_csv(std::ofstream& in_file, vector<ttH::Jet> in_jets, vector<ttH::Lepton> in_leps, int event_num)
+void write_csv(std::ofstream& in_file, vector<ttH::Jet> in_jets, vector<ttH::Lepton> in_leps, int event_num, int ls_num)
 {
-  in_file << 0 << ", " << event_num <<", ";  
+  in_file << 0 << ", " << event_num <<", " << ls_num <<", ";  
 
   int jet_count=1;
   for (const auto & jet : in_jets)
@@ -47,77 +48,94 @@ void write_csv(std::ofstream& in_file, vector<ttH::Jet> in_jets, vector<ttH::Lep
 
 }
 
-void run_it(TChain* chain, TString output_file, TString sorted_file, TString unsorted_file)
+void run_it(TChain* tree, TString output_file, TString sorted_file, TString ptsorted_file)
 {
 
-  int chainentries = chain->GetEntries();   
-  cout << "# events in tree: "<< chainentries << endl;  
-  
+  int treeentries = tree->GetEntries();   
+  cout << "# events in tree: "<< treeentries << endl;  
+
   double mcwgt_intree = -999.;
-  double wgt_intree = -999.;
   double wallTimePerEvent_intree = -99.;  
   int eventnum_intree = -999;
-  int higgs_decay_intree = -9999;
   int lumiBlock_intree = -999;
   int runNumber_intree = -999;
   
   vector<ttH::Lepton> *preselected_leptons_intree=0;
-  vector<ttH::Electron> *raw_electrons_intree=0;               
-  vector<ttH::Electron> *preselected_electrons_intree=0;
-  vector<ttH::Muon> *raw_muons_intree=0;
-  vector<ttH::Muon> *preselected_muons_intree=0;
   vector<ttH::Jet> *preselected_jets_intree=0;
-  vector<ttH::MET> *met_intree=0;
-  vector<ttH::GenParticle> *pruned_genParticles_intree=0;
   vector<ttH::Lepton> *tight_leptons_intree=0;
-  vector<ttH::Electron> *tight_electrons_intree=0;
-  vector<ttH::Muon> *tight_muons_intree=0;
-  vector<ttH::Lepton> *tight_leptons_sortedByMiniIso_intree=0;  
   
-  chain->SetBranchAddress("mcwgt", &mcwgt_intree);
-  chain->SetBranchAddress("wgt", &wgt_intree);
-  chain->SetBranchAddress("wallTimePerEvent", &wallTimePerEvent_intree);
-  chain->SetBranchAddress("eventnum", &eventnum_intree);
-  chain->SetBranchAddress("lumiBlock", &lumiBlock_intree);
-  chain->SetBranchAddress("runNumber", &runNumber_intree);
-  chain->SetBranchAddress("higgs_decay", &higgs_decay_intree);
-  chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
-  chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
-  chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
-  chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
-  chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
-  chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
-  chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-  chain->SetBranchAddress("met", &met_intree);
-  chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);   
+  //gen-matched objs
+  ttH::Lepton *lep_from_higgs_truth_intree=0;
+  ttH::Lepton *lep_from_leptop_truth_intree=0;
+  ttH::Jet *b_from_leptop_truth_intree=0;
+  ttH::Jet *b_from_hadtop_truth_intree=0;
+  ttH::Jet *q1_from_hadtop_truth_intree=0;
+  ttH::Jet *q2_from_hadtop_truth_intree=0;
+  ttH::Jet *q1_from_higgs_truth_intree=0;
+  ttH::Jet *q2_from_higgs_truth_intree=0;
+
+  tree->SetBranchStatus("*",0);
+  tree->SetBranchStatus("mcwgt",1);
+  tree->SetBranchStatus("wallTimePerEvent",1);
+  tree->SetBranchStatus("eventnum",1);
+  tree->SetBranchStatus("lumiBlock",1);
+  tree->SetBranchStatus("preselected_leptons.*",1);
+  tree->SetBranchStatus("preselected_jets.*",1);
+  tree->SetBranchStatus("lep_from_higgs_reco_truth*",1);
+  tree->SetBranchStatus("lep_from_leptop_reco_truth*",1);
+  tree->SetBranchStatus("b_from_leptop_reco_truth*",1);
+  tree->SetBranchStatus("b_from_hadtop_reco_truth*",1);
+  tree->SetBranchStatus("q1_from_hadtop_reco_truth*",1);
+  tree->SetBranchStatus("q2_from_hadtop_reco_truth*",1);
+  tree->SetBranchStatus("q1_from_higgs_reco_truth*",1);
+  tree->SetBranchStatus("q2_from_higgs_reco_truth*",1);
+
+
+  tree->SetBranchAddress("mcwgt", &mcwgt_intree);
+  tree->SetBranchAddress("wallTimePerEvent", &wallTimePerEvent_intree);
+  tree->SetBranchAddress("eventnum", &eventnum_intree);
+  tree->SetBranchAddress("lumiBlock", &lumiBlock_intree);
+  tree->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
+  // tree->SetBranchAddress("tight_leptons", &tight_leptons_intree);
+  tree->SetBranchAddress("preselected_jets", &preselected_jets_intree);
+  //gen-matched objs
+  tree->SetBranchAddress("lep_from_higgs_reco_truth.", &lep_from_higgs_truth_intree);
+  tree->SetBranchAddress("lep_from_leptop_reco_truth.", &lep_from_leptop_truth_intree);
+  tree->SetBranchAddress("b_from_leptop_reco_truth.", &b_from_leptop_truth_intree);
+  tree->SetBranchAddress("b_from_hadtop_reco_truth.", &b_from_hadtop_truth_intree);
+  tree->SetBranchAddress("q1_from_hadtop_reco_truth.", &q1_from_hadtop_truth_intree);
+  tree->SetBranchAddress("q2_from_hadtop_reco_truth.", &q2_from_hadtop_truth_intree);
+  tree->SetBranchAddress("q1_from_higgs_reco_truth.", &q1_from_higgs_truth_intree);
+  tree->SetBranchAddress("q2_from_higgs_reco_truth.", &q2_from_higgs_truth_intree);
+
 
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
-  TTree *summary_tree = (TTree*)chain->CloneTree(0);
+  TTree *summary_tree = (TTree*)tree->CloneTree(0);
   summary_tree->SetName("ss2l_tree");
-  // Int_t cachesize = 250000000;   //250 MBytes
-  // chain->SetCacheSize(cachesize);
-  // chain->SetCacheLearnEntries(20); 
+  Int_t cachesize = 250000000;   //250 MBytes
+  tree->SetCacheSize(cachesize);
+  tree->SetCacheLearnEntries(20); 
 
   // fout<<setiosflags(ios::fixed)<<setprecision(5);
-  ofstream signal_unsorted_file;
+  ofstream signal_ptsorted_file;
   ofstream signal_sorted_file;
-  signal_unsorted_file.open(unsorted_file);
+  signal_ptsorted_file.open(ptsorted_file);
   signal_sorted_file.open(sorted_file);
 
-  //unsorted
-  // signal_unsorted_file <<"signal (1) / bkg (0), eventnum, ";  
-  // signal_unsorted_file<<"jet1 pT, jet1 eta, jet1 phi, jet1 mass, ";
-  // signal_unsorted_file<<"jet2 pT, jet2 eta, jet2 phi, jet2 mass, ";
-  // signal_unsorted_file<<"jet3 pT, jet3 eta, jet3 phi, jet3 mass, ";
-  // signal_unsorted_file<<"jet4 pT, jet4 eta, jet4 phi, jet4 mass, ";
-  // signal_unsorted_file<<"jet5 pT, jet5 eta, jet5 phi, jet5 mass, ";
-  // signal_unsorted_file<<"jet6 pT, jet6 eta, jet6 phi, jet6 mass, ";
-  // signal_unsorted_file<<"jet7 pT, jet7 eta, jet7 phi, jet7 mass, ";
-  // signal_unsorted_file<<"jet8 pT, jet8 eta, jet8 phi, jet8 mass, ";
-  // signal_unsorted_file<<"jet9 pT, jet9 eta, jet9 phi, jet9 mass, ";
-  // signal_unsorted_file<<"lep1 pT, lep1 eta, lep1 phi, lep1 mass, ";
-  // signal_unsorted_file<<"lep2 pT, lep2 eta, lep2 phi, lep2 mass \n";
+  //ptsorted
+  // signal_ptsorted_file <<"signal (1) / bkg (0), eventnum, ";  
+  // signal_ptsorted_file<<"jet1 pT, jet1 eta, jet1 phi, jet1 mass, ";
+  // signal_ptsorted_file<<"jet2 pT, jet2 eta, jet2 phi, jet2 mass, ";
+  // signal_ptsorted_file<<"jet3 pT, jet3 eta, jet3 phi, jet3 mass, ";
+  // signal_ptsorted_file<<"jet4 pT, jet4 eta, jet4 phi, jet4 mass, ";
+  // signal_ptsorted_file<<"jet5 pT, jet5 eta, jet5 phi, jet5 mass, ";
+  // signal_ptsorted_file<<"jet6 pT, jet6 eta, jet6 phi, jet6 mass, ";
+  // signal_ptsorted_file<<"jet7 pT, jet7 eta, jet7 phi, jet7 mass, ";
+  // signal_ptsorted_file<<"jet8 pT, jet8 eta, jet8 phi, jet8 mass, ";
+  // signal_ptsorted_file<<"jet9 pT, jet9 eta, jet9 phi, jet9 mass, ";
+  // signal_ptsorted_file<<"lep1 pT, lep1 eta, lep1 phi, lep1 mass, ";
+  // signal_ptsorted_file<<"lep2 pT, lep2 eta, lep2 phi, lep2 mass \n";
 
   // //sorted file
   // signal_sorted_file <<"signal (1) / bkg (0), eventnum, ";  
@@ -136,17 +154,12 @@ void run_it(TChain* chain, TString output_file, TString sorted_file, TString uns
 
   
   double starttime = get_wall_time();
-  //  chainentries = 1000000;
-  for (int i=0; i<chainentries; i++)
+  //  treeentries = 1000000;
+  for (int i=0; i<treeentries; i++)
     {
-      
-      if (i%1000 == 0)
-	{
-	  float fraction = 100.*i/chainentries;
-	  cout << fraction << " % complete" << endl;
-	  cout << i << endl;
-	}
-      chain->GetEntry(i);
+
+      printProgress(i,treeentries);
+      tree->GetEntry(i);
 
       //////////////////////////
       ////
@@ -154,11 +167,10 @@ void run_it(TChain* chain, TString output_file, TString sorted_file, TString uns
       ////
       //////////////////////////
 
-      //      if ( (*preselected_jets_intree).size() < 3) continue; 
-      bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
-      if (!passesCommon) continue;
-      bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
-      if ( !passes2lss ) continue;
+      // bool passesCommon = passCommon(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree);
+      // if (!passesCommon) continue;
+      // bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
+      // if ( !passes2lss ) continue;
 
       //////////////////////////
       ////
@@ -166,59 +178,21 @@ void run_it(TChain* chain, TString output_file, TString sorted_file, TString uns
       ////
       //////////////////////////
 
-
       //sorted info
       vector<ttH::Jet> matched_jets_truth;
-      ttH::Jet bjet_fromHadTop_truth;
-      ttH::Jet bjet_fromLepTop_truth;
-      ttH::Jet wjet1_fromHadTop_truth;
-      ttH::Jet wjet2_fromHadTop_truth;
-      ttH::Jet wjet1_fromHiggs_truth;
-      ttH::Jet wjet2_fromHiggs_truth;
-
+      matched_jets_truth.push_back(*b_from_hadtop_truth_intree);
+      matched_jets_truth.push_back(*b_from_leptop_truth_intree);
+      matched_jets_truth.push_back(*q1_from_hadtop_truth_intree);
+      matched_jets_truth.push_back(*q2_from_hadtop_truth_intree);
+      matched_jets_truth.push_back(*q1_from_higgs_truth_intree);
+      matched_jets_truth.push_back(*q2_from_higgs_truth_intree);
       
-      // for (const auto & jet : *preselected_jets_intree)
-      // 	{
-      // 	  if (abs(jet.genPdgID) == 5)
-      // 	    {
-      // 	      if (jet.genPdgID*(*tight_leptons_intree)[0].charge < 0) bjet_fromHadTop_truth = jet;
-      // 	      else bjet_fromLepTop_truth = jet;
-      // 	    }
-      // 	  else if ( jet.genGrandMotherPdgID == 25 )
-      // 	    {
-      // 	      if (wjet1_fromHiggs_truth.obj.pt() == 0) wjet1_fromHiggs_truth = jet;
-      // 	      else wjet2_fromHiggs_truth = jet;
-      // 	    }
-      // 	  else if ( abs(jet.genGrandMotherPdgID) == 6 )
-      // 	    {
-      // 	      if (wjet1_fromHadTop_truth.obj.pt() == 0) wjet1_fromHadTop_truth = jet;
-      // 	      else wjet2_fromHadTop_truth = jet;
-      // 	    }
-      // 	}
-
-      for (const auto & jet : *preselected_jets_intree)
-	{
-	  if (abs(jet.genPdgID) == 5)
-	    {
-	      if (jet.genPdgID*(*tight_leptons_intree)[0].charge < 0) bjet_fromHadTop_truth = jet;
-	      else bjet_fromLepTop_truth = jet;
-	    }
-	  else if ( abs(jet.genGrandMotherPdgID) == 6 && jet.genGrandMotherPdgID*(*tight_leptons_intree)[0].charge < 0 )
-	    {
-	      if (wjet1_fromHadTop_truth.obj.pt() == 0) wjet1_fromHadTop_truth = jet;
-	      else wjet2_fromHadTop_truth = jet;
-	    }
-	}
-
-      
-      matched_jets_truth.push_back(bjet_fromHadTop_truth);
-      matched_jets_truth.push_back(bjet_fromLepTop_truth);
-      matched_jets_truth.push_back(wjet1_fromHadTop_truth);
-      matched_jets_truth.push_back(wjet2_fromHadTop_truth);
-      matched_jets_truth.push_back(wjet1_fromHiggs_truth);
-      matched_jets_truth.push_back(wjet2_fromHiggs_truth);
-
-      bool is_matched = false;    
+      //////////////////////////
+      ////
+      //// Add unmatched jets to end of matched-jets vector
+      ////
+      //////////////////////////      
+      bool is_matched;    
       for (const auto & jet : *preselected_jets_intree)
 	{
 	  is_matched =false;
@@ -232,30 +206,41 @@ void run_it(TChain* chain, TString output_file, TString sorted_file, TString uns
 	    }
 	  if ( !is_matched ) matched_jets_truth.push_back(jet);
 	}
-      
+      //////////////////////////
+      //////////////////////////      
+      //////////////////////////      
+      //////////////////////////      
+
       int num_jets_added = 9 - matched_jets_truth.size();
       ttH::Jet empty_jet;
       for (int i=1; i<= num_jets_added; i++) matched_jets_truth.push_back(empty_jet);
-      
-      ttH::Lepton lep_fromTop_truth = (*tight_leptons_intree)[0];
-      ttH::Lepton lep_fromHiggs_truth = (*tight_leptons_intree)[1];
-      
-      if (abs(lep_fromTop_truth.genGrandMotherPdgID) == 25 || abs(lep_fromHiggs_truth.genGrandMotherPdgID) == 6 )
+
+      ttH::Lepton lep1 = (*preselected_leptons_intree)[0];
+      ttH::Lepton lep2 = (*preselected_leptons_intree)[1];
+      vector<ttH::Lepton> pt_sorted_leptons = { lep1, lep2 }; 
+
+
+      // if we're mising leptons, try to add them in order of pt
+      if ( (*lep_from_leptop_truth_intree).obj.pt() == 0 )
 	{
-	  lep_fromTop_truth = (*tight_leptons_intree)[1];
-	  lep_fromHiggs_truth = (*tight_leptons_intree)[0];
+	  if ( (*lep_from_higgs_truth_intree).obj.pt() != lep1.obj.pt() ) *lep_from_leptop_truth_intree = lep1;
+	  else 	*lep_from_leptop_truth_intree = lep2;
 	}
-      vector<ttH::Lepton> matched_leptons_truth;
-      matched_leptons_truth.push_back(lep_fromTop_truth);
-      matched_leptons_truth.push_back(lep_fromHiggs_truth);
+      else if ( (*lep_from_higgs_truth_intree).obj.pt() == 0 )
+	{
+	  if ( (*lep_from_leptop_truth_intree).obj.pt() != lep2.obj.pt() ) *lep_from_higgs_truth_intree = lep2;
+	  else 	*lep_from_higgs_truth_intree = lep1;
+	}
       
-      ///sorted
+      vector<ttH::Lepton> matched_leptons_truth = { *lep_from_leptop_truth_intree, *lep_from_higgs_truth_intree };
+
+      ///sorted jets
       num_jets_added = 9 - preselected_jets_intree->size();
       for (int i=1; i<= num_jets_added; i++) preselected_jets_intree->push_back(empty_jet);
 
       //write csv files
-      write_csv(signal_sorted_file, matched_jets_truth, matched_leptons_truth, eventnum_intree);
-      write_csv(signal_unsorted_file, *preselected_jets_intree, *tight_leptons_intree, eventnum_intree);
+      write_csv(signal_sorted_file, matched_jets_truth, matched_leptons_truth, eventnum_intree, lumiBlock_intree);
+      write_csv(signal_ptsorted_file, *preselected_jets_intree, pt_sorted_leptons, eventnum_intree, lumiBlock_intree);
       
       summary_tree->Fill();
     }
@@ -263,26 +248,40 @@ void run_it(TChain* chain, TString output_file, TString sorted_file, TString uns
   
   double endtime = get_wall_time();
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
-  if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
+  if (treeentries>0) cout << "an average of " << (endtime - starttime) / treeentries << " per event." << endl;
   
   summary_tree->Write();
   copiedfile->Close();
   signal_sorted_file.close();
-  signal_unsorted_file.close();
+  signal_ptsorted_file.close();
 
 }
 
-void makeFlatTreesForKevin(TString sample, int start_file=0, int end_file=0)
+void makeFlatTreesForKevin(TString sample="")
 {
 
-  TString output_dir = "/afs/cern.ch/user/m/muell149/work/CMSSW_7_6_3/src/ttH-13TeVMultiLeptons/TemplateMakers/test/forKevin/";
+  TString output_dir = "";
+  TString input_file;
+  
+  if (sample =="")
+    {
+      //      input_file = getSelectionFile( "tth_powheg_genFilterTraining" );
+      //input_file = getSelectionFile( "ttbar_semiLep_genFilterTraining" );
+      input_file = getSelectionFile( "ttw_genFilterTraining" );
+      sample = "ttw";
+    }
+  else 
+    {
+      input_file = getSelectionFile( sample );
+    }
+  
+  TString output_file = output_dir+sample + "_treeForDeepLearning.root";
+  TChain *tth_chain = new TChain("ss2l_tree");    
+  tth_chain->Add(input_file);
 
-  TString output_file = output_dir+sample + "_treeForKevin_"+to_string(start_file)+"-"+to_string(end_file)+".root";
-  TChain *tth_chain = loadFiles(sample,start_file,end_file);  
+  TString sorted_file_csv = output_dir+sample + "_sorted_tree.csv";
+  TString ptsorted_file_csv = output_dir+sample + "_ptsorted_tree.csv";
 
-  TString sorted_file_csv = output_dir+sample + "_sorted_treeForKevin_"+to_string(start_file)+"-"+to_string(end_file)+".csv";
-  TString unsorted_file_csv = output_dir+sample + "_unsorted_treeForKevin_"+to_string(start_file)+"-"+to_string(end_file)+".csv";
-
-  run_it(tth_chain,output_file,sorted_file_csv,unsorted_file_csv);
+  run_it(tth_chain,output_file,sorted_file_csv,ptsorted_file_csv);
 
 }
