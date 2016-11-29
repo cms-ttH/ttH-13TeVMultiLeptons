@@ -43,8 +43,7 @@ public:
     fill_style = fill_style_;
     file_name = file_name_;
 
-    TString hist_file = file_name_.ReplaceAll("extraction","selection");
-    TFile* input_file_ = new TFile(hist_file,"READONLY");
+    TFile* input_file_ = new TFile(file_name,"READONLY");
     TH1D* sum_hist = (TH1D*)input_file_->Get("numInitialWeightedMCevents");
     double total_events = sum_hist->GetBinContent(1);
 
