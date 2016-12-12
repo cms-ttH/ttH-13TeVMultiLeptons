@@ -2,8 +2,8 @@ from lobster import cmssw
 from lobster.core import *
 from lobster.monitor.elk.interface import ElkInterface
 
-version = '_nov18_ttll_local'
-version_output = 'nov18_ICHEP_attempt2'
+version = '_ttbar_v6parts_ttw_part2'
+version_output = '_nov18_genFilter_altJetClean'
 
 storage = StorageConfiguration(
     input=[
@@ -32,17 +32,17 @@ processing = Category(
 
 workflows = []
 
-# ttbar_semiLep_genFilter = Workflow(
-#     label='ttbar_semilep',
-#     dataset=Dataset(
-#         files=['lannon/mcprod_ttjets_semilep_newisr_filtered/v6_part2/mAOD_step/','lannon/mcprod_ttjets_semilep_newisr_filtered/v6/mAOD_step/']
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     arguments=['skim=True'],
-#     merge_size='1.0G'
-#     )
-# workflows.append(ttbar_semiLep_genFilter)
+ttbar_semiLep_genFilter = Workflow(
+    label='ttbar_semilep_v6_part6',
+    dataset=Dataset(
+        files='lannon/mcprod_ttjets_semilep_newisr_filtered/v6_part6/mAOD_step/'
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    arguments=['skim=True'],
+    merge_size='1.0G'
+    )
+workflows.append(ttbar_semiLep_genFilter)
 
 # tth_nonbb_powheg = Workflow(
 #     label='tth_nonbb_powheg',
@@ -56,30 +56,30 @@ workflows = []
 #     )
 # workflows.append(tth_nonbb_powheg)
 
-# ttw = Workflow(
-#     label='ttw_mg5',
-#     dataset=Dataset(
-#         files='lannon/mcprod_ttW_alpha1273_filtered/v0/mAOD_step/'
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     arguments=['skim=True'],
-#     merge_size='1.0G'
-#     )
-# workflows.append(ttw)
-
-
-ttll = Workflow(
-    label='ttll_m10',
+ttw = Workflow(
+    label='ttw_mg5_part2',
     dataset=Dataset(
-        files='muell149/ttll'
+        files='lannon/mcprod_ttW_alpha1273_filtered/v0_part2/mAOD_step/'
         ),
     category=processing,
     pset='osTwoLep_cfg.py',
     arguments=['skim=True'],
     merge_size='1.0G'
     )
-workflows.append(ttll)
+workflows.append(ttw)
+
+
+# ttll = Workflow(
+#     label='ttll_m10',
+#     dataset=Dataset(
+#         files='muell149/ttll'
+#         ),
+#     category=processing,
+#     pset='osTwoLep_cfg.py',
+#     arguments=['skim=True'],
+#     merge_size='1.0G'
+#     )
+# workflows.append(ttll)
 
 
 config = Config(
