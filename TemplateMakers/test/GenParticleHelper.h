@@ -40,7 +40,7 @@ private:
 
   void mapGenInfo(vector<ttH::GenParticle> gen_particles)
   {
-    
+
     for (const auto & gen_particle : gen_particles)
       {
 	if ( gen_particle.status != 62 ) continue;
@@ -52,15 +52,10 @@ private:
 	    higgs_child_B_intree = gen_particles[higgs_intree.child1];
 
 	    //cut for os training trees only. 
-	    if (abs(higgs_child_A_intree.pdgID) != 15 && abs(higgs_child_A_intree.pdgID) != 23 && abs(higgs_child_A_intree.pdgID) != 24 ) return;
+	    //if (abs(higgs_child_A_intree.pdgID) != 15 && abs(higgs_child_A_intree.pdgID) != 23 && abs(higgs_child_A_intree.pdgID) != 24 ) return;
 	    
 	    if ( higgs_child_A_intree.child1 > gen_particles.size() ) higgs_child_A_intree.child1 = higgs_child_A_intree.child0 + 1;
 	    if ( higgs_child_B_intree.child1 > gen_particles.size() ) higgs_child_B_intree.child1 = higgs_child_B_intree.child0 + 1;
-
-	    /* cout << higgs_child_A_intree.pdgID << endl; */
-	    /* cout << higgs_child_B_intree.pdgID << endl; */
-	    /* cout << gen_particles[higgs_child_A_intree.child1].pdgID << endl; */
-	    /* cout << higgs_child_B_intree.child1 << endl; */
 
 	    higgs_grandChild_A1_intree = gen_particles[higgs_child_A_intree.child0];
 	    higgs_grandChild_A2_intree = gen_particles[higgs_child_A_intree.child1];
@@ -71,42 +66,47 @@ private:
 	else if ( gen_particle.pdgID == 6 )
 	  {
 	    top_intree = gen_particle;
-	    if ( gen_particles[top_intree.child0].pdgID == 5 )
-	      {
-		top_b_intree = gen_particles[top_intree.child0];
-		top_w_intree = gen_particles[top_intree.child1];
-	      }
-	    else if ( gen_particles[top_intree.child1].pdgID == 5 )
+	    if ( gen_particles[top_intree.child0].pdgID == 24 )
 	      {
 		top_b_intree = gen_particles[top_intree.child1];
 		top_w_intree = gen_particles[top_intree.child0];
 	      }
+	    else if ( gen_particles[top_intree.child1].pdgID == 24 )
+	      {
+		top_b_intree = gen_particles[top_intree.child0];
+		top_w_intree = gen_particles[top_intree.child1];
+	      }
 
-	    
 	    if ( top_w_intree.child1 > gen_particles.size() ) top_w_intree.child1 = top_w_intree.child0 + 1;
-
+	    	    
+	    /* cout << top_w_intree.pdgID << endl; */
+	    /* cout << gen_particles[top_intree.child0].pdgID << endl; */
+	    /* cout << gen_particles[top_intree.child1].pdgID << endl; */
+	    
 	    top_w_child1_intree = gen_particles[top_w_intree.child0];
 	    top_w_child2_intree = gen_particles[top_w_intree.child1];
 	    
 	  }
 	else if ( gen_particle.pdgID == -6 )
 	  {
+
 	    antitop_intree = gen_particle;
-	    if ( gen_particles[antitop_intree.child0].pdgID == -5 )
-	      {
-		antitop_b_intree = gen_particles[antitop_intree.child0];
-		antitop_w_intree = gen_particles[antitop_intree.child1];
-	      }
-	    else if ( gen_particles[antitop_intree.child1].pdgID == -5 )
+	    if ( gen_particles[antitop_intree.child0].pdgID == -24 )
 	      {
 		antitop_b_intree = gen_particles[antitop_intree.child1];
 		antitop_w_intree = gen_particles[antitop_intree.child0];
+	      }
+	    else if ( gen_particles[antitop_intree.child1].pdgID == -24 )
+	      {
+		antitop_b_intree = gen_particles[antitop_intree.child0];
+		antitop_w_intree = gen_particles[antitop_intree.child1];
 	      }
 
 	    if ( antitop_w_intree.child1 > gen_particles.size() ) antitop_w_intree.child1 = antitop_w_intree.child0 + 1;
 
 	    antitop_w_child1_intree = gen_particles[antitop_w_intree.child0];
 	    antitop_w_child2_intree = gen_particles[antitop_w_intree.child1];
+
 	  }
 
 	if (higgs_intree.pdgID == 25 && antitop_intree.pdgID == -6 && top_intree.pdgID == 6) break;
@@ -248,7 +248,6 @@ public:
   void matchReco2Gen(vector<ttH::Lepton> reco_leps, vector<ttH::Jet> reco_jets, vector<ttH::GenParticle> gen_particles)
   {
 
-
     mapGenInfo(gen_particles);
 
     //match leptons first
@@ -270,7 +269,7 @@ public:
     if ( !isLepton( &antitop_b_intree ) ) hardScatter_genParticles.push_back( antitop_b_intree );
     if ( !isLepton( &antitop_w_child1_intree ) ) hardScatter_genParticles.push_back( antitop_w_child1_intree );
     if ( !isLepton( &antitop_w_child2_intree ) ) hardScatter_genParticles.push_back( antitop_w_child2_intree );
-    
+
     std::vector<ttH::Jet> temp_unmatched_reco_jets;
     std::vector<ttH::GenParticle> temp_unmatched_gen_jets;
     
