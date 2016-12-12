@@ -64,17 +64,6 @@ void run_it(TChain* chain, TFile* output_file)
   TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/2lss_ttbar_BDTG.weights.xml";
   TMVAReader_ttbar_->BookMVA("BDTG method", ttbar_weights);
 
-  // TMVAReader_ttbar_->AddVariable( "max_Lep_eta", &max_lep_eta_var );
-  // TMVAReader_ttbar_->AddVariable( "numJets_float", &njets_var );
-  // TMVAReader_ttbar_->AddVariable( "mindr_lep1_jet", &dR_l1_j_var );
-  // TMVAReader_ttbar_->AddVariable( "mindr_lep2_jet", &dR_l2_j_var );
-  // TMVAReader_ttbar_->AddVariable( "MT_met_lep1", &MT_l1_met_var );
-  // TMVAReader_ttbar_->AddVariable( "met_double", &met_var );
-  // TMVAReader_ttbar_->AddVariable( "avg_dr_jet", &avg_dr_jets_var );
-  // TMVAReader_ttbar_->AddVariable( "csv2", &csv2_branch );
-  // TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_csv2.xml";
-  // TMVAReader_ttbar_->BookMVA("BDTG method", ttbar_weights);
-
   TMVA::Reader* TMVAReader_ttbar_recoBdt_ = new TMVA::Reader( "!Color:!Silent" );
   TMVAReader_ttbar_recoBdt_->AddVariable( "max_Lep_eta", &max_lep_eta_var );
   TMVAReader_ttbar_recoBdt_->AddVariable( "numJets_float", &njets_var );
@@ -141,7 +130,7 @@ void run_it(TChain* chain, TFile* output_file)
   chain->SetBranchStatus("mcwgt",1);
   chain->SetBranchStatus("preselected_jets.*",1);
   chain->SetBranchStatus("selected_taus.*",1);
-  chain->SetBranchStatus("tightMvaBased_leptons.*",1);
+  chain->SetBranchStatus("tight_leptons.*",1);
   chain->SetBranchStatus("met.*",1);
   chain->SetBranchStatus("reco_score",1);
 
@@ -149,7 +138,7 @@ void run_it(TChain* chain, TFile* output_file)
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
   chain->SetBranchAddress("selected_taus", &selected_taus_intree);
-  chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
+  chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("met", &met_intree);
   chain->SetBranchAddress("reco_score", &reco_score_intree);
 
@@ -188,6 +177,7 @@ void run_it(TChain* chain, TFile* output_file)
   extraction_tree->Branch("vs_ttbar_bdt_score", &vs_ttbar_score);
   extraction_tree->Branch("vs_ttbar_bdtReco_bdt_score", &vs_ttbar_bdtReco_score);
   extraction_tree->Branch("vs_ttv_bdt_score", &vs_ttv_score);
+
   extraction_tree->Branch("bTight_category", &isBtight_branch);
   extraction_tree->Branch("posCharge_category", &isPositive_branch);
   extraction_tree->Branch("tau_category", &isTau_branch);
@@ -323,8 +313,7 @@ void run_it(TChain* chain, TFile* output_file)
 
 
       vs_ttbar_score = TMVAReader_ttbar_->EvaluateMVA( "BDTG method" );
-      //if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bTight_->EvaluateMVA( "BDTG method" );
-      if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" );
+      if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" ); //if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bTight_->EvaluateMVA( "BDTG method" );
       else  vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bLoose_->EvaluateMVA( "BDTG method" );
 
       vs_ttv_score = TMVAReader_ttV_->EvaluateMVA( "BDTG method" );
