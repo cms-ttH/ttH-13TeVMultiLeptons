@@ -165,12 +165,6 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    //   TString fname = "./tmva_class_example.root";
 
-   // TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/training/tth_powheg_old_relaxed_2lss_BDTtraining.root";
-   // TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/signal_extraction/training/ttbar-semiLep-madgraph_relaxed_2lss_BDTtraining.root";
-
-   // TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/tth_powheg_old_relaxed_2lss.root";
-   // TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/output/ttbar_semiLep_madgraph_relaxed_2lss.root";
-
    TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
    TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
 
@@ -271,6 +265,13 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    					//					"nTrain_Signal=24000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose
 					//					"nTrain_Signal=18000:nTrain_Background=16600:SplitMode=Random:NormMode=NumEvents:!V" );//b tigh
 					//					"SplitMode=Random:NormMode=NumEvents:!V" );
+
+   //
+   //					"nTrain_Signal=20000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose 0ht nulls
+//					"nTrain_Signal=15000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose 1ht nulls
+   //					"nTrain_Signal=16000:nTrain_Background=14000:SplitMode=Random:NormMode=NumEvents:!V" );//b tight 0ht nulls
+   //					"nTrain_Signal=13000:nTrain_Background=15000:SplitMode=Random:NormMode=NumEvents:!V" );//b tight 1ht nulls
+
 
    // ---- Book MVA methods
    //
