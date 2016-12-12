@@ -46,7 +46,7 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Jet> *preselected_jets_intree=0;
   vector<ttH::MET> *met_intree=0;
   vector<ttH::Lepton> *tight_leptons_intree=0;
-  vector<ttH::Lepton> *loose_leptons_intree=0;
+  vector<ttH::Lepton> *fakeable_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
   TString *higgs_final_state_intree=0;
@@ -67,9 +67,9 @@ void run_it(TChain* chain, TString output_file)
   // chain->SetBranchStatus("preselected_electrons.*",1);
   // chain->SetBranchStatus("preselected_muons.*",1);
   // chain->SetBranchStatus("preselected_jets.*",1);
-  // chain->SetBranchStatus("tightMvaBased_leptons.*",1);
-  // chain->SetBranchStatus("tightMvaBased_electrons.*",1);
-  // chain->SetBranchStatus("tightMvaBased_muons.*",1);
+  // chain->SetBranchStatus("tight_leptons.*",1);
+  // chain->SetBranchStatus("tight_electrons.*",1);
+  // chain->SetBranchStatus("tight_muons.*",1);
   // chain->SetBranchStatus("met.*",1);
 
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
@@ -78,10 +78,10 @@ void run_it(TChain* chain, TString output_file)
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-  chain->SetBranchAddress("looseMvaBased_leptons", &loose_leptons_intree);
-  chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
-  chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
-  chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
+  chain->SetBranchAddress("fakeable_leptons", &fakeable_leptons_intree);
+  chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
+  chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
+  chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
   chain->SetBranchAddress("met", &met_intree);
   chain->SetBranchAddress("higgs_final_state", &higgs_final_state_intree);
   chain->SetBranchAddress("ttbar_final_state", &ttbar_final_state_intree);
@@ -175,6 +175,8 @@ void run_it(TChain* chain, TString output_file)
 	}
       signal_treeHelper.resetVars();
 
+
+
       /////////////////////
       /////
       ///// background 
@@ -247,34 +249,34 @@ void run_it(TChain* chain, TString output_file)
       vector<ttH::Jet> jets_collection = *preselected_jets_intree;
 
       if (preselected_jets_intree->size() <=7)
-	{
-	  jets_collection.push_back(null_jet);
-	  jets_collection.push_back(null_jet);
-	  jets_collection.push_back(null_jet);
-	}
+      	{
+      	  jets_collection.push_back(null_jet);
+      	  jets_collection.push_back(null_jet);
+      	  jets_collection.push_back(null_jet);
+      	}
       else if (preselected_jets_intree->size() ==8)
-	{
-	  jets_collection.push_back(null_jet);
-	  jets_collection.push_back(null_jet);
-	}
+      	{
+      	  jets_collection.push_back(null_jet);
+      	  jets_collection.push_back(null_jet);
+      	}
       else 
-	{
-	  jets_collection.push_back(null_jet);
-	}
+      	{
+      	  jets_collection.push_back(null_jet);
+      	}
 
       //traditional loop
       //      int rand_cut = 70; //standard v1p5
-      int rand_cut = 50;
+      int rand_cut = 70;
       
       //      auto lep_collection = *tight_leptons_intree;
-      auto lep_collection = *loose_leptons_intree;
+      auto lep_collection = *fakeable_leptons_intree;
 
       int lep_fromTop_count = -1;
       for (const auto & lep_fromTop : lep_collection)
       	{
       	  lep_fromTop_count +=1;
-	  if (rand() % 100+1 > rand_cut) continue;
-	  //if (lep_fromTop.obj.pt() == lep_fromTop_truth.obj.pt()) continue; //train only against incorrect lepton backgrounds
+      	  if (rand() % 100+1 > rand_cut) continue;
+      	  //if (lep_fromTop.obj.pt() == lep_fromTop_truth.obj.pt()) continue; //train only against incorrect lepton backgrounds
 	  
       	  lep_fromTop_tlv = setTlv(lep_fromTop);
 	  
@@ -282,8 +284,8 @@ void run_it(TChain* chain, TString output_file)
       	  for (const auto & lep_fromHiggs : lep_collection)
       	    {
       	      lep_fromHiggs_count +=1;  
-	      if (lep_fromTop_count == lep_fromHiggs_count) continue;
-	      if (rand() % 100+1 > rand_cut) continue;
+      	      if (lep_fromTop_count == lep_fromHiggs_count) continue;
+      	      if (rand() % 100+1 > rand_cut) continue;
 
       	      lep_fromHiggs_tlv = setTlv(lep_fromHiggs);
 
@@ -291,14 +293,14 @@ void run_it(TChain* chain, TString output_file)
       	      for (const auto & bjet_fromHadTop : jets_collection)
       		{
       		  bjet_fromHadTop_count +=1;
-		  if (rand() % 100+1 > rand_cut) continue;
+      		  if (rand() % 100+1 > rand_cut) continue;
       		  bjet_fromHadTop_tlv = setTlv(bjet_fromHadTop);
 
       		  int bjet_fromLepTop_count = -1;
       		  for (const auto & bjet_fromLepTop : jets_collection)
       		    {
       		      bjet_fromLepTop_count +=1;
-		      if (rand() % 100+1 > rand_cut) continue;
+      		      if (rand() % 100+1 > rand_cut) continue;
       		      if (bjet_fromHadTop_count == bjet_fromLepTop_count) continue;
       		      if ( !( (bjet_fromHadTop.csv > 0.8 || bjet_fromLepTop.csv > 0.8) || (bjet_fromHadTop.csv > 0.4 && bjet_fromLepTop.csv > 0.4) ) ) continue;
 
@@ -311,7 +313,7 @@ void run_it(TChain* chain, TString output_file)
       		      for (const auto & wjet1_fromHadTop : jets_collection)
       			{
       			  wjet1_fromHadTop_count +=1;
-			  if (rand() % 100+1 > rand_cut) continue;
+      			  if (rand() % 100+1 > rand_cut) continue;
       			  if (wjet1_fromHadTop_count == bjet_fromLepTop_count) continue;
       			  if (wjet1_fromHadTop_count == bjet_fromHadTop_count) continue;
 			  
@@ -321,7 +323,7 @@ void run_it(TChain* chain, TString output_file)
       			  for (const auto & wjet2_fromHadTop : jets_collection)
       			    {
       			      wjet2_fromHadTop_count +=1;
-			      if (rand() % 100+1 > rand_cut) continue;
+      			      if (rand() % 100+1 > rand_cut) continue;
 				  
       			      if (wjet2_fromHadTop_count == bjet_fromLepTop_count) continue;
       			      if (wjet2_fromHadTop_count == bjet_fromHadTop_count) continue;
@@ -341,7 +343,7 @@ void run_it(TChain* chain, TString output_file)
       			      for (const auto & wjet1_fromHiggs : jets_collection)
       				{
       				  wjet1_fromHiggs_count +=1;
-			  	  if (rand() % 100+1 > rand_cut) continue;
+      			  	  if (rand() % 100+1 > rand_cut) continue;
 				  
       				  if (wjet1_fromHiggs_count == bjet_fromLepTop_count) continue;
       				  if (wjet1_fromHiggs_count == bjet_fromHadTop_count) continue;
@@ -354,7 +356,7 @@ void run_it(TChain* chain, TString output_file)
       				  for (const auto & wjet2_fromHiggs : jets_collection)
       				    {
       				      wjet2_fromHiggs_count +=1;
-				      if (rand() % 100+1 > rand_cut) continue;
+      				      if (rand() % 100+1 > rand_cut) continue;
 				  
       				      if (wjet2_fromHiggs_count == bjet_fromLepTop_count) continue;
       				      if (wjet2_fromHiggs_count == bjet_fromHadTop_count) continue;
@@ -370,19 +372,19 @@ void run_it(TChain* chain, TString output_file)
 				      
       				      higgs_tlv = w_fromHiggs_tlv + lep_fromHiggs_tlv;
 				      
-				      if (higgs_tlv.M() > 130 ) continue; 
+      				      if (higgs_tlv.M() > 130 ) continue; 
 
-				      background_treeHelper.lep_from_higgs_bdt_intree = lep_fromHiggs;
-				      background_treeHelper.lep_from_leptop_bdt_intree = lep_fromTop;
-				      background_treeHelper.b_from_leptop_bdt_intree = bjet_fromLepTop;
-				      background_treeHelper.b_from_hadtop_bdt_intree = bjet_fromHadTop;
-				      background_treeHelper.q1_from_hadtop_bdt_intree = wjet1_fromHadTop;
-				      background_treeHelper.q2_from_hadtop_bdt_intree = wjet2_fromHadTop;
-				      background_treeHelper.q1_from_higgs_bdt_intree = wjet1_fromHiggs;
-				      background_treeHelper.q2_from_higgs_bdt_intree = wjet2_fromHiggs;
-				      background_treeHelper.calculateInputs();
+      				      background_treeHelper.lep_from_higgs_bdt_intree = lep_fromHiggs;
+      				      background_treeHelper.lep_from_leptop_bdt_intree = lep_fromTop;
+      				      background_treeHelper.b_from_leptop_bdt_intree = bjet_fromLepTop;
+      				      background_treeHelper.b_from_hadtop_bdt_intree = bjet_fromHadTop;
+      				      background_treeHelper.q1_from_hadtop_bdt_intree = wjet1_fromHadTop;
+      				      background_treeHelper.q2_from_hadtop_bdt_intree = wjet2_fromHadTop;
+      				      background_treeHelper.q1_from_higgs_bdt_intree = wjet1_fromHiggs;
+      				      background_treeHelper.q2_from_higgs_bdt_intree = wjet2_fromHiggs;
+      				      background_treeHelper.calculateInputs();
 				      
-				      background_tree->Fill();
+      				      background_tree->Fill();
       				    }
       				}
       			    }
@@ -400,7 +402,7 @@ void run_it(TChain* chain, TString output_file)
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
   if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
   
-  //  signal_tree->Write();
+  //signal_tree->Write();
   background_tree->Write();
   copiedfile->Close();
   
@@ -409,10 +411,9 @@ void run_it(TChain* chain, TString output_file)
 void trainRecoBdt(void)
 {
 
-  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/";
-  TString output_file = output_dir+"ttbar_semilep_madgraph_recoBdtTraining.root";
+  TString output_file = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttbar_genFiltered_recoBdtTraining.root";
   TChain *chain_ = new TChain("ss2l_tree");
-  chain_->Add("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-madgraph_relaxed_2lss.root");
+  chain_->Add("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/ttbar_semiLep_jetClean_test_recoBdt_2lss.root");
   run_it(chain_,output_file);
 
 }

@@ -141,40 +141,18 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    // factory->AddVariable( "var4",                "Variable 4", "units", 'F' );
 
    factory->AddVariable( "b_from_leptop_bdt.csv","b leptop csv","csv",'D');
-   //   factory->AddVariable( "LepTop_pT","lep top pt","pt",'D');
-   //   factory->AddVariable( "LepTop_mass","lep top mass","mass",'D');
-   //   factory->AddVariable( "LepTop_lep_bJet_dR","dR lep top bjet","dR",'D');
    factory->AddVariable( "b_from_hadtop_bdt.csv","b hadtop csv","csv",'D');
-   //   factory->AddVariable( "qJet1_fromW_fromHadTop_CSV","w1jet had top csv","csv",'D');
    factory->AddVariable( "hadTop_tlv_bdt.Pt()","had top pt","pt",'D');
    factory->AddVariable( "w_from_hadtop_tlv_bdt.M()","w frm had top mass","mass",'D');
    factory->AddVariable( "hadTop_tlv_bdt.M()","had top mass","mass",'D'); 
-   // factory->AddVariable( "qJet1_fromW_fromHiggs_CSV","wjet1 from higgs csv","csv",'D');
-   //   factory->AddVariable( "W_fromHiggs_mass","w from higgs mass","mass",'D');
    factory->AddVariable( "higgs_tlv_bdt.M()","higgs mass","mass",'D'); 
-   //   factory->AddVariable( "Higgs_lep_W_dR","lep W from higgs dR","dR",'D');
-   //   factory->AddVariable( "Higgs_lep_W_dPhi","lep W from higgs dPhi","dPhi",'D');
-   //   factory->AddVariable( "HadTop_Higgs_MT_mass_ratio","hadtop higgs MT ratio","MT ratio",'D');
-   //   factory->AddVariable( "ttH_MT_mass_ratio","MT mass ratio","mass ratio",'D');
-   //   factory->AddVariable( "dR_lepTop_hadTop","leptop had top dR","dR",'D');
-   //factory->AddVariable( "LepTop_HadTop_dPhi","lepTop hadTop dPhi","dPhi",'D');
-   //   factory->AddVariable("(bJet_fromHadTop_charge/abs(bJet_fromHadTop_charge))*lep_charge","dCharge bjets x lep charge","charge",'D');
-
    factory->AddVariable( "lep_from_higgs_bdt.obj.pt()","lep from higgs pt","pt",'D');
    factory->AddVariable( "lep_from_leptop_bdt.obj.pt()","lep from top pt","pt",'D');
    factory->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()","lep pt ratio","pt",'D');
+   //factory->AddVariable( "(lep_from_leptop_bdt.obj.pt()-lep_from_higgs_bdt.obj.pt())/(lep_from_leptop_bdt.obj.pt()+lep_from_higgs_bdt.obj.pt())","lep pt asym","asym",'D');
    
-
-   // factory->AddVariable( "tth_t_tlv.M()","tth mass","mass",'D');
-   // factory->AddVariable( "higgs_t_tlv.M()","higgs mass","mass",'D');
-   // factory->AddVariable( "leptop_t_tlv.M()","leptop mass","mass",'D');
-
-   //   factory->AddVariable( "W_fromHadTop_q1_q2_dR","dr q1 q2 from had top","dR",'D');
-   //   factory->AddVariable( "qJet1_fromW_fromHadTop_pT","w1jet had top pt","pt",'D');
-   //   factory->AddVariable( "lep_fromTop.obj.pt()","lep frm top pt","pt",'D');
-   //   factory->AddVariable( "numJets","num jets","num jets",'D');
-   //   factory->AddVariable("abs(lep_fromTop.obj.pt()-lep_fromHiggs.obj.pt())/(lep_fromTop.obj.pt()+lep_fromHiggs.obj.pt())","lep pt asym","asym",'D');
-
+   //factory->AddVariable( "dr_lepFromTop_bFromLepTop","dR(b_leptop,lep_top)","dR",'D'); 
+   //factory->AddVariable( "dr_lepFromTop_bFromHadTop","dR(b_hadtop,lep_top)","dR",'D'); 
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -185,12 +163,12 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    //   TString fname = "./tmva_class_example.root";
-   // TString fname = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v1/ttH-powheg_bdtTraining.root";
-   // TString fname_bkg = "/afs/cern.ch/user/m/muell149/work/CMSSW_8_0_13/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/80x_trainingTrees_v1/ttbar_bdtTraining.root";
 
-   //   TString fname_sig = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttH_powheg_relaxed_2lss.root";
-   TString fname_sig = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttH_powheg_relaxed_2lssos.root";
-   TString fname_bkg = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttbar_semilep_madgraph_recoBdtTraining.root";
+   TString fname_sig = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/tth_genFiltered_recoBdtTraining.root";
+   TString fname_bkg = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttbar_genFiltered_recoBdtTraining.root";
+
+   // TString fname_sig = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttH_powheg_relaxed_2lssos.root";
+   // TString fname_bkg = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttbar_semilep_madgraph_recoBdtTraining.root";
    
    if (gSystem->AccessPathName( fname_sig ))  // file does not exist in local directory
       gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");
@@ -204,7 +182,27 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
 
    TTree *signal     = (TTree*)input_sig->Get("signal_tree");
    TTree *background = (TTree*)input_bkg->Get("background_tree");
-   //   TTree *background = (TTree*)input_bkg->Get("background_tree");
+
+   signal->SetBranchStatus("*",0);
+   signal->SetBranchStatus("b_from_leptop_bdt*",1);
+   signal->SetBranchStatus("b_from_hadtop_bdt*",1);
+   signal->SetBranchStatus("hadTop_tlv_bdt*",1);
+   signal->SetBranchStatus("w_from_hadtop_tlv_bdt*",1);
+   signal->SetBranchStatus("dr_lepFromHiggs_bFromHadTop",1);
+   signal->SetBranchStatus("dr_lepFromTop_bFromLepTop",1);
+   signal->SetBranchStatus("dr_lepFromTop_bFromHadTop",1);
+   signal->SetBranchStatus("dr_lepFromHiggs_bFromLepTop",1);
+
+   background->SetBranchStatus("*",0);
+   background->SetBranchStatus("b_from_leptop_bdt*",1);
+   background->SetBranchStatus("b_from_hadtop_bdt*",1);
+   background->SetBranchStatus("hadTop_tlv_bdt*",1);
+   background->SetBranchStatus("w_from_hadtop_tlv_bdt*",1);
+   background->SetBranchStatus("dr_lepFromHiggs_bFromHadTop",1);
+   background->SetBranchStatus("dr_lepFromTop_bFromLepTop",1);
+   background->SetBranchStatus("dr_lepFromTop_bFromHadTop",1);
+   background->SetBranchStatus("dr_lepFromHiggs_bFromLepTop",1);
+   
    
    // global event weights per tree (see below for setting event-wise weights)
    Double_t signalWeight     = 1.0;
@@ -262,8 +260,13 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    // TCut mycuts = ""; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
    // TCut mycutb = ""; // for example: TCut mycutb = "abs(var1)<0.5";
 
-   TCut mycuts = "@bTight_jets.size() < 2";
-   TCut mycutb = "@bTight_jets.size() < 2";
+   TCut lep_wrong = "lep_from_leptop_bdt.obj.pt() != lep_from_leptop_reco_truth.obj.pt()";
+   TCut bjet_wrong = "b_from_leptop_bdt.obj.pt() != b_from_leptop_reco_truth.obj.pt() && b_from_hadtop_bdt.obj.pt() != b_from_hadtop_reco_truth.obj.pt()";
+   TCut non_zero_leps = "lep_from_leptop_bdt.obj.pt()*lep_from_higgs_bdt.obj.pt()>0";
+   TCut bTight = "@bTight_jets.size() < 2";
+
+   TCut mycuts = bTight && non_zero_leps;
+   TCut mycutb = bTight && non_zero_leps;
 
    // Tell the factory how to use the training and testing events
    //
@@ -274,21 +277,18 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    //    factory->PrepareTrainingAndTestTree( mycut,
    //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
    factory->PrepareTrainingAndTestTree( mycuts, mycutb,
-					"nTrain_Signal=41000:nTrain_Background=200000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose os 
+					"nTrain_Signal=110000:nTrain_Background=150000:nTest_Background=150000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose gen-filter
+					//"nTrain_Signal=180000:nTrain_Background=150000:nTest_Background=150000:SplitMode=Random:NormMode=NumEvents:!V" );//inclus gen-filter
+					//"nTrain_Signal=60000:nTrain_Background=70000:nTest_Background=70000:SplitMode=Random:NormMode=NumEvents:!V" );//btight gen-filter
+
 					//"nTrain_Signal=28000:nTrain_Background=110000:SplitMode=Random:NormMode=NumEvents:!V" );//btight os
 					//"nTrain_Signal=70000:nTrain_Background=180000:SplitMode=Random:NormMode=NumEvents:!V" );//inclsuive os 
+					//"nTrain_Signal=41000:nTrain_Background=200000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose os 
 
 
+   
 
-
-					//					"nTrain_Signal=10000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose 1m0l os
-   //					"nTrain_Signal=17000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose 1m1l os
-   //					"nTrain_Signal=10000:nTrain_Background=75000:SplitMode=Random:NormMode=NumEvents:!V" );//btight os ge5j
-   //					"nTrain_Signal=16000:nTrain_Background=50000:SplitMode=Random:NormMode=NumEvents:!V" );//btight os le5j
-					//					"nTrain_Signal=24000:nTrain_Background=150000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose os le5j
-   //					"nTrain_Signal=15000:nTrain_Background=150000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose os ge5j
-
-
+   
 
    //                                        "nTrain_Signal=13000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//btight ss
    //                                        "nTrain_Signal=34000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//inclsuive ss

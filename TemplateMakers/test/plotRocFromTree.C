@@ -130,14 +130,35 @@ void plotRocFromTree(void)
   TString signal_file1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
   TString background_file1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
 
-  TString signal_file2 = "/scratch365/cmuelle2/bdt_test/tth_training_2lssos_2lss_trainingSelection.root";
-  TString background_file2 = "/scratch365/cmuelle2/bdt_test/ttbar_training_2lss_2lss_trainingSelection.root";
+  TString signal_file2 = "/scratch365/cmuelle2/bdt_test/factorized_bdt_dr_lep_b/tth_training_2lssos_2lss_trainingSelection.root";
+  TString background_file2 = "/scratch365/cmuelle2/bdt_test/factorized_bdt_dr_lep_b/ttbar_training_2lss_2lss_trainingSelection.root";
 
-  RocObject newRoc(signal_file1, background_file1, tree_name, "Baseline BDT ", variable_name, num_bins, xmin, xmax, 2);
-  roc_vector.push_back(newRoc);
+  // TString signal_file3 = "/scratch365/cmuelle2/extraction_trees/nov22_ICHEP_trees_with_WgtHist/tth_aMC_old_2lss_extraction.root";
+  // TString background_file3 = "/scratch365/cmuelle2/extraction_trees/nov22_ICHEP_trees_with_WgtHist/ttbar_semiLep_powheg_2lss_extraction.root";
 
-  RocObject oldRoc(signal_file2, background_file2, tree_name, "Factorized BDT", variable_name, num_bins, xmin, xmax, 419);
+  TString signal_file3 = "/scratch365/cmuelle2/bdt_test/slimmed_factorized_2dr_lep_b_dec4/tth_training_2lssos_2lss_trainingSelection.root";
+  TString background_file3 = "/scratch365/cmuelle2/bdt_test/slimmed_factorized_2dr_lep_b_dec4/ttbar_training_2lss_2lss_trainingSelection.root";
+
+  TString signal_file4 = "/scratch365/cmuelle2/bdt_test/factorized_bdt_3dr_lep_b/tth_training_2lssos_2lss_trainingSelection.root";
+  TString background_file4 = "/scratch365/cmuelle2/bdt_test/factorized_bdt_3dr_lep_b/ttbar_training_2lss_2lss_trainingSelection.root";
+
+  TString signal_file5 = "/scratch365/cmuelle2/bdt_test/genFiltered/tth_training_2lssos_genFilterTraining_2lss.root";
+  TString background_file5 = "/scratch365/cmuelle2/bdt_test/genFiltered/ttbar_training_2lss_genFilterTraining_2lss.root";
+
+  // RocObject newRoc(signal_file1, background_file1, tree_name, "standard training", variable_name, num_bins, xmin, xmax, 2);
+  // roc_vector.push_back(newRoc);
+
+  RocObject oldRoc(signal_file2, background_file2, tree_name, "Factorized BDT (+4 addt'l inputs)", variable_name, num_bins, xmin, xmax, 419);
   roc_vector.push_back(oldRoc);
+
+  RocObject olderrRoc(signal_file4, background_file4, tree_name, "Factorized BDT (+3 addt'l inputs)", variable_name, num_bins, xmin, xmax, 6);
+  roc_vector.push_back(olderrRoc);
+
+  RocObject olderRoc(signal_file3, background_file3, tree_name, "Factorized BDT (+2 addt'l inputs)", variable_name, num_bins, xmin, xmax, 4);
+  roc_vector.push_back(olderRoc);
+
+  // RocObject olderrrRoc(signal_file5, background_file5, tree_name, "gen-filtered training", variable_name, num_bins, xmin, xmax, 4);
+  // roc_vector.push_back(olderrrRoc);
 
   drawRocs(roc_vector);
 }

@@ -31,7 +31,7 @@ class FileLoader
 	    TIter next(files);
 	    while ((sys_file=(TSystemFile*)next()))
 	      {
-
+		
 		fname = base_dir + sys_file->GetName();
 		if (!sys_file->IsDirectory() && fname.EndsWith(".root")) 
 		  {
@@ -44,7 +44,6 @@ class FileLoader
 
 		    if ( file_index == -1 || file_index == 0 )
 		      {
-			//for hist
 			TFile* file = TFile::Open(fname,"READONLY");
 			if ( file )
 			  {
@@ -183,11 +182,18 @@ public:
       	}
       else if (sample == "ttbar_semiLep_jetClean_test")
       	{
-      	  loadFile( {"muell149/lobster_test__nov18_genFilter_altJetClean/ttbar_semilep/"}, file_index);
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test__nov18_genFilter_altJetClean/ttbar_semilep_v6_part6/");
+      	  sample_vec.push_back("muell149/lobster_test__nov18_genFilter_altJetClean/ttbar_semilep_v6_parts4_5/");
+      	  sample_vec.push_back("muell149/lobster_test__nov18_genFilter_altJetClean/ttbar_semilep/");
+      	  loadFile( sample_vec, file_index);
       	}
       else if (sample == "ttw_jetClean_test")
       	{
-      	  loadFile( {"muell149/lobster_test__nov18_genFilter_altJetClean/ttw_mg5/"}, file_index);
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test__nov18_genFilter_altJetClean/ttw_mg5/");
+      	  sample_vec.push_back("muell149/lobster_test__nov18_genFilter_altJetClean/ttw_mg5_part2/");
+      	  loadFile( sample_vec, file_index);
       	}
 
       else
@@ -235,9 +241,9 @@ TString getSelectionFile(TString sample_name)
   else if (sample_name == "WWZ_rares")      input_file_name += "WWZ_rares_2lss_selection.root";
   else if (sample_name == "WZZ_rares")      input_file_name += "WZZ_rares_2lss_selection.root";
   else if (sample_name == "ZZZ_rares")      input_file_name += "ZZZ_rares_2lss_selection.root";
-  else if (sample_name == "ttbar_semiLep_genFilterTraining")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/ttbar_semiLep_jetClean_test_recoBdt_2lss.root";
+  else if (sample_name == "ttbar_semiLep_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/ttbar_semiLep_jetClean_test_genFilterTraining_2lss.root";
   else if (sample_name == "tth_powheg_genFilterTraining")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/tth_powheg_jetClean_test_recoBdt_2lss.root";
-  else if (sample_name == "ttw_genFilterTraining")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/ttw_jetClean_test_recoBdt_2lss.root";
+  else if (sample_name == "ttw_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/ttw_jetClean_test_genFilterTraining_2lss.root";
 
   else if (sample_name == "tth_training_2lssos")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
   else if (sample_name == "ttbar_training_2lss")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";

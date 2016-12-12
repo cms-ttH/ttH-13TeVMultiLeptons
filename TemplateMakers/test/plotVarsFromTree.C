@@ -18,9 +18,10 @@ public:
     TString drawString = var_name_ + ">> hist";
     tree->Draw(drawString, cuts_, "goffnorm");
     hist->SetLineColor(color);
-    hist->SetLineWidth(2);
+    hist->SetLineWidth(1);
     hist->GetXaxis()->SetTitle(var_name_);
     hist->GetYaxis()->SetTitle("normalized units");
+    cout << hist->GetEntries() << endl;
     legend_str = legend_str_;
     
   }//default constructor
@@ -36,6 +37,7 @@ void drawPlots(vector<PlotObject> plot_vec)
   gStyle->SetTitleBorderSize(0);
   gStyle->SetLegendBorderSize(0); 
   TCanvas* can1 = new TCanvas("can", "can");
+  //  can1->SetRightMargin(0.1);
   can1->SetGrid();
   TLegend *leg = new TLegend(0.1925287,0.3474576,0.5732759,0.4661017,NULL,"brNDC");
   leg->SetTextSize(0.03); 
@@ -63,35 +65,34 @@ void drawPlots(vector<PlotObject> plot_vec)
 void plotVarsFromTree(void)
 {
   vector<PlotObject> plot_vector;
-  //  TString variable_name = "hadTop_bdt.M()";
-  //  TString variable_name = "reco_score";
-  int num_bins = 3;
-  double xmin = 0;
-  double xmax = 3;
+  TString variable_name = "hadTop_bdt.M()";
+  //TString variable_name = "reco_score";
+  int num_bins = 100;
+  double xmin = 0.;
+  double xmax = 230;
   
-  TString file1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/test_fastCheckInBTight/tth_recoBdt_2lss.root";
-  TString file2 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/test_simpleTopReco/tth_aMC_old_recoBdt_2lss.root";
+  TString file_sig = "/scratch365/cmuelle2/bdt_test/factorized_bdt_dr_lep_b/tth_training_2lssos_2lss_trainingSelection.root";
+  TString file_bkg = "/scratch365/cmuelle2/bdt_test/factorized_bdt_dr_lep_b/ttbar_training_2lss_2lss_trainingSelection.root";
   
-  //  TCut cuts = "W_from_hadtop_matching==5 && b_from_hadtop_matching >= 4";
-  //  TCut cuts23 = "(W_from_hadtop_matching==4 && b_from_hadtop_matching >= 4) || (W_from_hadtop_matching==5 && b_from_hadtop_matching < 4)";
-  TCut cuts = "b_from_hadtop_reco_truth.obj.pt()*q1_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt() >0.";
-  // TCut cuts23 = "(b_from_hadtop_reco_truth.obj.pt()*q1_from_hadtop_reco_truth.obj.pt() >0||b_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()>0 || q1_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()>0) && b_from_hadtop_reco_truth.obj.pt()*q1_from_hadtop_reco_truth.obj.pt()*q2_from_hadtop_reco_truth.obj.pt()==0";
-  //  TCut cutss = !cuts && !cuts23;
+  TCut b_tight_cut_ = "@bTight_jets.size() >1";
+  TCut hadtop_present_cut_ = "b_from_hadtop_bdt.obj.pt()*q1_from_hadtop_bdt.obj.pt()*q2_from_hadtop_bdt.obj.pt() > 0";
 
-  // TCut cuts1 = "W_from_hadtop_matching==5 && b_from_hadtop_matching == 5" && cuts;
-  // TCut cuts2 = "(W_from_hadtop_matching==4 && b_from_hadtop_matching >= 4) || (W_from_hadtop_matching==5 && b_from_hadtop_matching < 4)" && cuts;
-  // TCut cuts3 = "(W_from_hadtop_matching<=4 && b_from_hadtop_matching < 4) || (W_from_hadtop_matching==3 && b_from_hadtop_matching <=5)" && cuts;
-  
+  TCut hadtop_present_cut = b_tight_cut_ && hadtop_present_cut_;
+  TCut hadtop_absent_cut = b_tight_cut_ && !hadtop_present_cut_;
+
   //colors 418/41/603
 
-  PlotObject plot1(file2, "ss2l_tree", "bdt reco", "(b_from_hadtop_matching ==5 && W_from_hadtop_matching ==5)", cuts, num_bins, xmin, xmax, 4);
+  PlotObject plot1(file_sig, "ss2l_tree", "b-tight, ttH, 0 hadtop nulls", variable_name, hadtop_present_cut, num_bins, xmin, xmax, 4);
   plot_vector.push_back(plot1);
 
-  PlotObject plot2(file2, "ss2l_tree", "simple reco", "(b_simple_matching == 5 && w_simple_matching==5)", cuts, num_bins, xmin, xmax, 2);
+  PlotObject plot2(file_bkg, "ss2l_tree", "b-tight, semilep ttbar, 0 hadtop nulls", variable_name, hadtop_present_cut, num_bins, xmin, xmax, 2);
   plot_vector.push_back(plot2);
 
-  // PlotObject plot3(file2, "ss2l_tree", "<= 1/3 matches correct", variable_name, cutss, num_bins, xmin, xmax, 2);
-  // plot_vector.push_back(plot3);
+  PlotObject plot3(file_sig, "ss2l_tree", "b-tight, ttH, >=1 hadtop nulls", variable_name, hadtop_absent_cut, num_bins, xmin, xmax, 418);
+  plot_vector.push_back(plot3);
+
+  PlotObject plot4(file_bkg, "ss2l_tree", "b-tight, semilep ttbar, >=1 hadtop nulls", variable_name, hadtop_absent_cut, num_bins, xmin, xmax, 6);
+  plot_vector.push_back(plot4);
 
   drawPlots(plot_vector);
 }

@@ -265,10 +265,10 @@ void makeFlatTreesForKevin(TString sample="")
   
   if (sample =="")
     {
-      //      input_file = getSelectionFile( "tth_powheg_genFilterTraining" );
-      //input_file = getSelectionFile( "ttbar_semiLep_genFilterTraining" );
-      input_file = getSelectionFile( "ttw_genFilterTraining" );
-      sample = "ttw";
+      //input_file = getSelectionFile( "tth_powheg_genFilterTraining" );
+      input_file = getSelectionFile( "ttbar_semiLep_genFilterTraining" );
+      //input_file = getSelectionFile( "ttw_genFilterTraining" );
+      sample = "ttbar";
     }
   else 
     {

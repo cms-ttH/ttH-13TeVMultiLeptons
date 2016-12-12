@@ -183,9 +183,8 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 	  bool passes2lss = pass2lss_bdtTraining(ele_collection, mu_collection, *preselected_jets_intree, failure_hist);
 	  if ( passes2lss ) 
 	    {
-	      //	      myGenParticleHelper.clear();
-	      //    myGenParticleHelper.matchReco2Gen(lep_collection, *preselected_jets_intree, *pruned_genParticles_intree);
-	      //	  myGenParticleHelper.matchReco2Gen(*preselected_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
+	      myGenParticleHelper.clear();
+	      myGenParticleHelper.matchReco2Gen(lep_collection, *preselected_jets_intree, *pruned_genParticles_intree);
 	      //cuts for os only 
 	      //      	  if ( myGenParticleHelper.higgs_final_state_intree.CompareTo("semiLeptonic") == 0 && myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
 	      //	    {
@@ -207,11 +206,11 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   
 }
 
-void makeSelectionTree(TString sample="tth_powheg_jetClean_test", TString selection="training", int job_no=-1)
+void makeSelectionTree(TString sample="ttw_jetClean_test", TString selection="training", int job_no=-1)
 {
 
-  //  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/condor/";
-  TString output_dir = "/scratch365/cmuelle2/selection_trees/nov22_ICHEP_trees/";
+  //TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/";
+  TString output_dir = "/scratch365/cmuelle2/genFilter_trees/";
 
   TString postfix;
   if (selection == "analysis") postfix = "_selection_tree_2lss.root";

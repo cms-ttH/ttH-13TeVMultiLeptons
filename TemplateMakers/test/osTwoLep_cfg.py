@@ -99,7 +99,7 @@ else:
     process.OSTwoLepAna.setupoptions.isdata = False
     
 process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral"
-process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags"  # "combinedInclusiveSecondaryVertexV2BJetTags" #"combinedMVABJetTags" ##"combinedSecondaryVertexMVABJetTags"
+process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags"
 process.OSTwoLepAna.triggers.hltlabel = "HLT"
 
 process.OSTwoLepAna.debug = False
