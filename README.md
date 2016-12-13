@@ -17,7 +17,7 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
         git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
 
-For now, CMSSW_8_0_13 (and later) seems to be broken so edit the following:
+For now, CMSSW_8_0_X (and later) seems to be broken so edit the following:
 
     	sed -i 's|Math/include|Math/interface|' CommonTools/Utils/interface/normalizedPhi.h
 
