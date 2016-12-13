@@ -11,7 +11,7 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
         cmsrel CMSSW_8_0_20
         cd CMSSW_8_0_20/src
         cmsenv        
-	git cms-addpkg CommonTools/Utils
+        git cms-addpkg CommonTools/Utils
         git cms-init
         git clone git@github.com:cms-ttH/MiniAOD.git
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
