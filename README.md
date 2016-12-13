@@ -8,28 +8,20 @@ The locations of the latest trees are [here](https://twiki.cern.ch/twiki/bin/vie
 
 To get started tree-making from miniAOD (on an SL6 machine) do:        
         
-        cmsrel CMSSW_8_0_14
-        cd CMSSW_8_0_14/src
+        cmsrel CMSSW_8_0_20
+        cd CMSSW_8_0_20/src
         cmsenv        
+	git cms-addpkg CommonTools/Utils
         git cms-init
         git clone git@github.com:cms-ttH/MiniAOD.git
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
         git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
 
-For now, CMSSW_8_0_13 (and later) seems to be broken so check out an additional package and edit the following:
+For now, CMSSW_8_0_13 (and later) seems to be broken so edit the following:
 
-	git cms-addpkg CommonTools/Utils
-	emacs CommonTools/Utils/interface/normalizedPhi.h
+    	sed -i 's|Math/include|Math/interface|' CommonTools/Utils/interface/normalizedPhi.h
 
-Replace:
-
-	#include "DataFormats/Math/include/normalizedPhi.h"
-
-With:
-
-	#include "DataFormats/Math/interface/normalizedPhi.h"
-
-And compile:
+And compile (try again if it fails the first time):
 
         scram b -j 8
 

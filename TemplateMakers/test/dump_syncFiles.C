@@ -185,7 +185,7 @@ void dump_syncFiles(void)
 {
 
   TChain *chain = new TChain("OSTwoLepAna/summaryTree");
-  chain->Add("tree_sync_noSkim.root");
+  chain->Add("output_tree.root");
   run_it(chain);
 
 }

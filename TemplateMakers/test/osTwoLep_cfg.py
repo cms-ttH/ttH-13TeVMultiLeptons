@@ -24,7 +24,8 @@ process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_cond
 if isData:
     process.GlobalTag.globaltag = '80X_dataRun2_Prompt_ICHEP16JEC_v0'
 else:    
-    process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
+    process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
+    #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
 
 
 process.prefer("GlobalTag")
@@ -43,7 +44,7 @@ process.source = cms.Source("PoolSource",
 #    	fileNames = cms.untracked.vstring( infile ),        
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/50000/000FF6AC-9F2A-E611-A063-0CC47A4C8EB0.root" ),
-    	fileNames = cms.untracked.vstring( "file:0A37DE02-3F75-E611-A683-001EC94BE9F4.root" ),
+    	fileNames = cms.untracked.vstring( "file:ttW_2017_sync_miniAODv2.root" ),
 #    	fileNames = cms.untracked.vstring( "file:singleMu2016B.root" ),
 #        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
 
