@@ -54,14 +54,17 @@ private:
 	    //cut for os training trees only. 
 	    //if (abs(higgs_child_A_intree.pdgID) != 15 && abs(higgs_child_A_intree.pdgID) != 23 && abs(higgs_child_A_intree.pdgID) != 24 ) return;
 	    
-	    if ( higgs_child_A_intree.child1 > gen_particles.size() ) higgs_child_A_intree.child1 = higgs_child_A_intree.child0 + 1;
-	    if ( higgs_child_B_intree.child1 > gen_particles.size() ) higgs_child_B_intree.child1 = higgs_child_B_intree.child0 + 1;
-
-	    higgs_grandChild_A1_intree = gen_particles[higgs_child_A_intree.child0];
-	    higgs_grandChild_A2_intree = gen_particles[higgs_child_A_intree.child1];
-	    higgs_grandChild_B1_intree = gen_particles[higgs_child_B_intree.child0];
-	    higgs_grandChild_B2_intree = gen_particles[higgs_child_B_intree.child1];
-
+	    if ( higgs_child_A_intree.child0 < gen_particles.size())
+	      {
+		if ( higgs_child_A_intree.child1 > gen_particles.size() ) higgs_child_A_intree.child1 = higgs_child_A_intree.child0 + 1;
+		if ( higgs_child_B_intree.child1 > gen_particles.size() ) higgs_child_B_intree.child1 = higgs_child_B_intree.child0 + 1;
+		
+		
+		higgs_grandChild_A1_intree = gen_particles[higgs_child_A_intree.child0];
+		higgs_grandChild_A2_intree = gen_particles[higgs_child_A_intree.child1];
+		higgs_grandChild_B1_intree = gen_particles[higgs_child_B_intree.child0];
+		higgs_grandChild_B2_intree = gen_particles[higgs_child_B_intree.child1];
+	      }
 	  }
 	else if ( gen_particle.pdgID == 6 )
 	  {
