@@ -8,8 +8,8 @@ samples=( ["tth_training_2lssos"]=81 ["ttbar_training_2lss"]=122 )
 
 for samp in "${!samples[@]}"
 do
-    sed -i 's/^sample = .*/sample = '"${samp}"'/' /afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/condor_test/bdt_reco.submit
-    sed -i 's/^N = .*/N = '"${samples[${samp}]}"'/' /afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/condor_test/bdt_reco.submit
+    sed -i 's/^sample = .*/sample = '"${samp}"'/' bdt_reco.submit
+    sed -i 's/^N = .*/N = '"${samples[${samp}]}"'/' bdt_reco.submit
     condor_submit bdt_reco.submit
 done
 

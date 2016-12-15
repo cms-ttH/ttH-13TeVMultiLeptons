@@ -1,5 +1,5 @@
-sample = ttw_jetClean_test
-N = 32
+sample = tth_powheg_old
+N = 19
 
 +IsExpressJob = True
 universe = vanilla
@@ -10,6 +10,9 @@ error = condor_logs/$(sample).stderr.$(Process)
 should_transfer_files = yes
 when_to_transfer_output = on_exit
 log = condor_logs/logfile.log
+
+#noop_job = !( stringListMember("$(Process)","0,4,9,14") )
+
 on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
 requirements = (machine != "skynet007.crc.nd.edu")
 #requirements = (machine != "skynet007.crc.nd.edu" && machine != "d12chas563.crc.nd.edu" && machine != "d12chas564.crc.nd.edu" && machine != "d12chas579.crc.nd.edu" && machine != "d12chas584.crc.nd.edu" )

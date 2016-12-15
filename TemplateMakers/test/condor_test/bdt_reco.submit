@@ -1,0 +1,20 @@
+events_per_job = 1000
+
+sample = ttbar_training_2lss
+N = 122
+
++IsExpressJob = True
+universe = vanilla
+executable = bdt_reco.sh
+getenv = True
+arguments = $(sample) $(events_per_job) $(Process) 
+output = condor_logs/$(sample).stdout.$(Process)
+error = condor_logs/$(sample).stderr.$(Process)
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+log = condor_logs/simple.logfile
+requirements = (machine != "skynet007.crc.nd.edu" )
+requestMemory=130
+queue $(N)
+
+
