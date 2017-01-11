@@ -182,7 +182,7 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   TTree *ttH_vs_ttbar_tree = new TTree("tth_vs_ttbar_tree","tth_vs_ttbar_tree");
   TTree *ttH_vs_ttV_tree = new TTree("tth_vs_ttv_tree","tth_vs_ttv_tree");
 
-  bool evaluateSignalExtraction = false;
+  bool evaluateSignalExtraction = true;
   signalExtractionTreeMaker mySigExtrTreeMaker(ttH_vs_ttbar_tree, ttH_vs_ttV_tree, ss2l_tree, evaluateSignalExtraction);
   
   Int_t cachesize = 250000000;   //250 MBytes
@@ -230,7 +230,7 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
 					   q2_from_higgs_truth_intree ); //order of arguments matters here..
       
       auto match_results = bdtReconstructor.match_results_bdt_intree;
-      mySigExtrTreeMaker.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0], selected_taus_intree, bdtReconstructor.reco_score_intree);
+      mySigExtrTreeMaker.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0], selected_taus_intree, bdtReconstructor);
       
       time_per_event_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
       ss2l_tree->Fill();
@@ -251,13 +251,13 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   
 }
 
-void evaluateRecoBdt(string sample_name="tth_training_2lssos", int events_per_job=-1, int job_no=-1)
+void evaluateRecoBdt(string sample_name="tth_sigExtr_training_2lss", int events_per_job=-1, int job_no=-1)
 {
   TString input_file_name = getSelectionFile(sample_name);
   TFile *input_file = new TFile(input_file_name, "READONLY");
 
   if (sample_name == "") sample_name = "output_test";
-  TString output_dir = "/scratch365/cmuelle2/bdt_test/";
+  TString output_dir = "/scratch365/cmuelle2/bdt_test/jan11_SE_training/";
   TString output_file_name = output_dir+sample_name;
   if (events_per_job > -1 && job_no > -1) output_file_name += "_"+std::to_string(job_no);
   output_file_name += ".root";

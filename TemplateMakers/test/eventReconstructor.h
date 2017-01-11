@@ -25,16 +25,9 @@ class eventReconstructor
 {
  private:
   TMVA::Reader* TMVAReader_;
-  TMVA::Reader* TMVAReader_wrongLep_;
-  TMVA::Reader* TMVAReader_wrongB_;
 
   TMVA::Reader* TMVAReader_bTight_;
   TMVA::Reader* TMVAReader_bLoose_;
-
-  TMVA::Reader* TMVAReader_bTight_wrongLep_;
-  TMVA::Reader* TMVAReader_bTight_wrongB_;
-  TMVA::Reader* TMVAReader_bLoose_wrongLep_;
-  TMVA::Reader* TMVAReader_bLoose_wrongB_;
 
   Float_t bJet_fromLepTop_CSV_var;
   Float_t LepTop_pT_var;
@@ -103,10 +96,9 @@ class eventReconstructor
     //TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()", &lep_pt_ratio_var );
     TMVAReader_internal_->AddVariable( "(lep_from_leptop_bdt.obj.pt()-lep_from_higgs_bdt.obj.pt())/(lep_from_leptop_bdt.obj.pt()+lep_from_higgs_bdt.obj.pt())", &lep_pt_ratio_var );
 
-    //    TMVAReader_internal_->AddVariable( "dr_lepFromHiggs_bFromHadTop", &dr_lepFromHiggs_bFromHadTop );
     TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromLepTop", &dr_lepFromTop_bFromLepTop );
     TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromHadTop", &dr_lepFromTop_bFromHadTop );
-    //TMVAReader_internal_->AddVariable( "dr_lepFromHiggs_bFromLepTop", &dr_lepFromHiggs_bFromLepTop );
+    TMVAReader_internal_->AddVariable( "dr_lepFromHiggs_bFromLepTop", &dr_lepFromHiggs_bFromLepTop );
 
     const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
@@ -125,16 +117,12 @@ class eventReconstructor
   ttH::Lepton *lep_from_higgs_bdt_intree=0;  
   ttH::Lepton *lep_from_leptop_bdt_intree=0;
   ttH::Jet *b_from_leptop_bdt_intree=0;
-  ttH::Jet *b_from_hadtop_bdt_intree=0;
-  ttH::Jet *q1_from_hadtop_bdt_intree=0;
-  ttH::Jet *q2_from_hadtop_bdt_intree=0;
   ttH::Jet *q1_from_higgs_bdt_intree=0;
   ttH::Jet *q2_from_higgs_bdt_intree=0;
   
   TLorentzVector w_from_hadtop_tlv_bdt_intree;
   TLorentzVector w_from_higgs_tlv_bdt_intree;
   TLorentzVector higgs_tlv_bdt_intree;
-  TLorentzVector hadTop_tlv_bdt_intree;
   TLorentzVector lepTop_tlv_bdt_intree;
   
   //simple hadtop reco
@@ -161,19 +149,18 @@ class eventReconstructor
   eventReconstructor(){
     /* TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bTight.weights.xml"); */
     /* TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bLoose.weights.xml"); */
-    TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bTight_slimmed_Dec4_v0.xml");
-    TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bLoose_slimmed_Dec4_v0.xml");
-
-    /* TMVAReader_bTight_wrongLep_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bTight_wrongLeps.xml"); */
-    /* TMVAReader_bTight_wrongB_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bTight_wrongBs.xml"); */
-    /* TMVAReader_bLoose_wrongLep_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bLoose_wrongLeps.xml"); */
-    /* TMVAReader_bLoose_wrongB_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bLoose_wrongBs.xml"); */
-
+    TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_bTight.xml");
+    TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_bLoose.xml");
 
   } // default constructor
 
   vector<int> *match_results_bdt_intree=0;
   double reco_score_intree;
+  TLorentzVector hadTop_tlv_bdt_intree;
+  ttH::Jet *b_from_hadtop_bdt_intree=0;
+  ttH::Jet *q1_from_hadtop_bdt_intree=0;
+  ttH::Jet *q2_from_hadtop_bdt_intree=0;
+
 
   void clear(void)
   {
@@ -288,14 +275,10 @@ class eventReconstructor
     if ( btight_jets_intree->size() > 1 )
       {
 	TMVAReader_ = TMVAReader_bTight_;
-	/* TMVAReader_wrongLep_ = TMVAReader_bTight_wrongLep_; */
-	/* TMVAReader_wrongB_ = TMVAReader_bTight_wrongB_; */
       }
     else 
       {
 	TMVAReader_ = TMVAReader_bLoose_;
-	/* TMVAReader_wrongLep_ = TMVAReader_bLoose_wrongLep_; */
-	/* TMVAReader_wrongB_ = TMVAReader_bLoose_wrongB_; */
       }
 
     ////////////////////////////
@@ -448,7 +431,6 @@ class eventReconstructor
 	if ( btight_jets_intree->size() > 1 && bjet_fromHadTop.csv < 0.8) continue;
 	//	if ( bjet_fromHadTop.csv > 0 && bjet_fromHadTop.csv < 0.46 ) continue;
 
-
 	bjet_fromLepTop_count = -1;
 	for (const auto & bjet_fromLepTop : jets_in)
 	  {
@@ -456,9 +438,9 @@ class eventReconstructor
 	    
 	    if (bjet_fromHadTop_count == bjet_fromLepTop_count) continue;
 	    if (bjet_fromLepTop.obj.pt()==0 && jets_in[bjet_fromLepTop_count-1].obj.pt()==0) continue; //skip useless empty b-jet iterations
+	    //if (bjet_fromLepTop.obj.pt()==0 && bjet_fromHadTop.obj.pt()==0) continue; //skip useless empty b-jet iterations
 	    if ( btight_jets_intree->size() > 1 && bjet_fromLepTop.csv < 0.8) continue;
 	    //  if ( bjet_fromLepTop.csv > 0 && bjet_fromLepTop.csv < 0.46 ) continue;
-
 
 	    if ( !( (bjet_fromHadTop.csv > 0.8 || bjet_fromLepTop.csv > 0.8) || (bjet_fromHadTop.csv > 0.4 && bjet_fromLepTop.csv > 0.4) ) ) continue;
 	    
@@ -620,9 +602,7 @@ class eventReconstructor
 				    dr_lepFromTop_bFromHadTop = getDeltaR(bjet_fromHadTop, lep_fromTop);
 				    dr_lepFromHiggs_bFromLepTop = getDeltaR(bjet_fromLepTop, lep_fromHiggs);
 				    
-				    
 				    double mva_value = TMVAReader_->EvaluateMVA( "BDTG method" );
-				    //double mva_value = TMVAReader_wrongLep_->EvaluateMVA( "BDTG method" ) + TMVAReader_->EvaluateMVA( "BDTG method" );//TMVAReader_wrongB_->EvaluateMVA( "BDTG method" );
 				    all_combo_vec_intree.push_back(mva_value);
 				    
 				    if ( mva_value > reco_score_intree )
