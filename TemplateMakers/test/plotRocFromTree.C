@@ -57,8 +57,8 @@ private:
     TH1D* sig_h = new TH1D("sig_h","sig_h",num_bins,xmin,xmax);
     TH1D* bkg_h = new TH1D("bkg_h","bkg_h",num_bins,xmin,xmax);
 
-    TCut cuts_sig = "mcwgt*1.";
-    TCut cuts_bkg = "mcwgt*1.";
+    TCut cuts_sig = "mcwgt*(@bTight_jets.size() >=2)";
+    TCut cuts_bkg = "mcwgt*(@bTight_jets.size() >=2)";
 
     TString draw_variable_signal = variable_name + " >> sig_h";
     TString draw_variable_background = variable_name + " >> bkg_h";
@@ -127,38 +127,41 @@ void plotRocFromTree(void)
   double xmax = 1.05;
   TString tree_name = "ss2l_tree";
   
-  TString signal_file1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
-  TString background_file1 = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
+  TString signal_file1 = "/scratch365/cmuelle2/bdt_test/jan10_tests/standard_reco_bdt_with_bjetcut/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString background_file1 = "/scratch365/cmuelle2/bdt_test/jan10_tests/standard_reco_bdt_with_bjetcut/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
-  TString signal_file2 = "/scratch365/cmuelle2/bdt_test/factorized_bdt_dr_lep_b/tth_training_2lssos_2lss_trainingSelection.root";
-  TString background_file2 = "/scratch365/cmuelle2/bdt_test/factorized_bdt_dr_lep_b/ttbar_training_2lss_2lss_trainingSelection.root";
+  TString signal_file2 = "/scratch365/cmuelle2/bdt_test/jan10_tests/standard_reco_bdt_without_bjetcut/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString background_file2 = "/scratch365/cmuelle2/bdt_test/jan10_tests/standard_reco_bdt_without_bjetcut/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
-  // TString signal_file3 = "/scratch365/cmuelle2/extraction_trees/nov22_ICHEP_trees_with_WgtHist/tth_aMC_old_2lss_extraction.root";
-  // TString background_file3 = "/scratch365/cmuelle2/extraction_trees/nov22_ICHEP_trees_with_WgtHist/ttbar_semiLep_powheg_2lss_extraction.root";
+  TString signal_file3 = "/scratch365/cmuelle2/bdt_test/jan10_tests/factorized_reco_bdt_with_bjetcut/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString background_file3 = "/scratch365/cmuelle2/bdt_test/jan10_tests/factorized_reco_bdt_with_bjetcut/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
-  TString signal_file3 = "/scratch365/cmuelle2/bdt_test/slimmed_factorized_2dr_lep_b_dec4/tth_training_2lssos_2lss_trainingSelection.root";
-  TString background_file3 = "/scratch365/cmuelle2/bdt_test/slimmed_factorized_2dr_lep_b_dec4/ttbar_training_2lss_2lss_trainingSelection.root";
+  TString signal_file4 = "/scratch365/cmuelle2/bdt_test/jan10_tests/factorized_reco_bdt_without_bjetcut/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString background_file4 = "/scratch365/cmuelle2/bdt_test/jan10_tests/factorized_reco_bdt_without_bjetcut/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
-  TString signal_file4 = "/scratch365/cmuelle2/bdt_test/factorized_bdt_3dr_lep_b/tth_training_2lssos_2lss_trainingSelection.root";
-  TString background_file4 = "/scratch365/cmuelle2/bdt_test/factorized_bdt_3dr_lep_b/ttbar_training_2lss_2lss_trainingSelection.root";
+  TString signal_file5 = "/scratch365/cmuelle2/bdt_test/jan12_SE_training_fast/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString background_file5 = "/scratch365/cmuelle2/bdt_test/jan12_SE_training_fast/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
-  TString signal_file5 = "/scratch365/cmuelle2/bdt_test/genFiltered/tth_training_2lssos_genFilterTraining_2lss.root";
-  TString background_file5 = "/scratch365/cmuelle2/bdt_test/genFiltered/ttbar_training_2lss_genFilterTraining_2lss.root";
+  TString signal_file6 = "/scratch365/cmuelle2/bdt_test/jan13_factorizedTest_sansHiggsJetsLoop/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString background_file6 = "/scratch365/cmuelle2/bdt_test/jan13_factorizedTest_sansHiggsJetsLoop/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
-  // RocObject newRoc(signal_file1, background_file1, tree_name, "standard training", variable_name, num_bins, xmin, xmax, 2);
-  // roc_vector.push_back(newRoc);
+  RocObject Roc1(signal_file1, background_file1, tree_name, "std w/ bjet cut", variable_name, num_bins, xmin, xmax, 419);
+  roc_vector.push_back(Roc1);
 
-  RocObject oldRoc(signal_file2, background_file2, tree_name, "Factorized BDT (+4 addt'l inputs)", variable_name, num_bins, xmin, xmax, 419);
-  roc_vector.push_back(oldRoc);
+  RocObject Roc2(signal_file2, background_file2, tree_name, "std w/out bjet cut", variable_name, num_bins, xmin, xmax, 6);
+  roc_vector.push_back(Roc2);
 
-  RocObject olderrRoc(signal_file4, background_file4, tree_name, "Factorized BDT (+3 addt'l inputs)", variable_name, num_bins, xmin, xmax, 6);
-  roc_vector.push_back(olderrRoc);
+  RocObject Roc3(signal_file3, background_file3, tree_name, "factorized w/ bjet cut", variable_name, num_bins, xmin, xmax, 4);
+  roc_vector.push_back(Roc3);
 
-  RocObject olderRoc(signal_file3, background_file3, tree_name, "Factorized BDT (+2 addt'l inputs)", variable_name, num_bins, xmin, xmax, 4);
-  roc_vector.push_back(olderRoc);
+  RocObject Roc4(signal_file4, background_file4, tree_name, "factorized w/out bjet cut", variable_name, num_bins, xmin, xmax, 2);
+  roc_vector.push_back(Roc4);
 
-  // RocObject olderrrRoc(signal_file5, background_file5, tree_name, "gen-filtered training", variable_name, num_bins, xmin, xmax, 4);
-  // roc_vector.push_back(olderrrRoc);
+  RocObject Roc5(signal_file5, background_file5, tree_name, "factorized w/ bjet speed cuts", variable_name, num_bins, xmin, xmax, 28);
+  roc_vector.push_back(Roc5);
+
+  RocObject Roc6(signal_file6, background_file6, tree_name, "factorized w/ bjet speed cuts & skipped higgs loops", variable_name, num_bins, xmin, xmax, 1);
+  roc_vector.push_back(Roc6);
 
   drawRocs(roc_vector);
 }
