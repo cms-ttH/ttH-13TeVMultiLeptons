@@ -127,41 +127,23 @@ void plotRocFromTree(void)
   double xmax = 1.05;
   TString tree_name = "ss2l_tree";
   
-  TString signal_file1 = "/scratch365/cmuelle2/bdt_test/jan10_tests/standard_reco_bdt_with_bjetcut/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
-  TString background_file1 = "/scratch365/cmuelle2/bdt_test/jan10_tests/standard_reco_bdt_with_bjetcut/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString signal_file1 = "/scratch365/cmuelle2/extraction_trees/jan13_ICHEP_trees_withFactorizedRecoBdt_fastPermutations_noHiggsLoop/tth_aMC_old_2lss_extraction.root";
+  TString background_file1 = "/scratch365/cmuelle2/extraction_trees/jan13_ICHEP_trees_withFactorizedRecoBdt_fastPermutations_noHiggsLoop/ttbar_semiLep_powheg_2lss_extraction.root";
 
-  TString signal_file2 = "/scratch365/cmuelle2/bdt_test/jan10_tests/standard_reco_bdt_without_bjetcut/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
-  TString background_file2 = "/scratch365/cmuelle2/bdt_test/jan10_tests/standard_reco_bdt_without_bjetcut/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString signal_file2 = "/scratch365/cmuelle2/extraction_trees/jan14_ICHEP_trees_withFactorizedRecoBdt_fastPerm_noHiggsLoop_genFilterWeights/tth_aMC_old_2lss_extraction.root";
+  TString background_file2 = "/scratch365/cmuelle2/extraction_trees/jan14_ICHEP_trees_withFactorizedRecoBdt_fastPerm_noHiggsLoop_genFilterWeights/ttbar_semiLep_powheg_2lss_extraction.root";
 
-  TString signal_file3 = "/scratch365/cmuelle2/bdt_test/jan10_tests/factorized_reco_bdt_with_bjetcut/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
-  TString background_file3 = "/scratch365/cmuelle2/bdt_test/jan10_tests/factorized_reco_bdt_with_bjetcut/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
+  TString signal_file3 = "/scratch365/cmuelle2/extraction_trees/jan15_ICHEP_trees_withFactorizedRecoBdt_fastPerm_yesHiggsLoop_genFilterWeights/tth_aMC_old_2lss_extraction.root";
+  TString background_file3 = "/scratch365/cmuelle2/extraction_trees/jan15_ICHEP_trees_withFactorizedRecoBdt_fastPerm_yesHiggsLoop_genFilterWeights/ttbar_semiLep_powheg_2lss_extraction.root";
 
-  TString signal_file4 = "/scratch365/cmuelle2/bdt_test/jan10_tests/factorized_reco_bdt_without_bjetcut/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
-  TString background_file4 = "/scratch365/cmuelle2/bdt_test/jan10_tests/factorized_reco_bdt_without_bjetcut/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
-
-  TString signal_file5 = "/scratch365/cmuelle2/bdt_test/jan12_SE_training_fast/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
-  TString background_file5 = "/scratch365/cmuelle2/bdt_test/jan12_SE_training_fast/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
-
-  TString signal_file6 = "/scratch365/cmuelle2/bdt_test/jan13_factorizedTest_sansHiggsJetsLoop/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
-  TString background_file6 = "/scratch365/cmuelle2/bdt_test/jan13_factorizedTest_sansHiggsJetsLoop/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
-
-  RocObject Roc1(signal_file1, background_file1, tree_name, "std w/ bjet cut", variable_name, num_bins, xmin, xmax, 419);
+  RocObject Roc1(signal_file1, background_file1, tree_name, "weights for marco", variable_name, num_bins, xmin, xmax, 419);
   roc_vector.push_back(Roc1);
 
-  RocObject Roc2(signal_file2, background_file2, tree_name, "std w/out bjet cut", variable_name, num_bins, xmin, xmax, 6);
+  RocObject Roc2(signal_file2, background_file2, tree_name, "gen filter", variable_name, num_bins, xmin, xmax, 6);
   roc_vector.push_back(Roc2);
 
-  RocObject Roc3(signal_file3, background_file3, tree_name, "factorized w/ bjet cut", variable_name, num_bins, xmin, xmax, 4);
+  RocObject Roc3(signal_file3, background_file3, tree_name, "gen filter hybrid", variable_name, num_bins, xmin, xmax, 4);
   roc_vector.push_back(Roc3);
-
-  RocObject Roc4(signal_file4, background_file4, tree_name, "factorized w/out bjet cut", variable_name, num_bins, xmin, xmax, 2);
-  roc_vector.push_back(Roc4);
-
-  RocObject Roc5(signal_file5, background_file5, tree_name, "factorized w/ bjet speed cuts", variable_name, num_bins, xmin, xmax, 28);
-  roc_vector.push_back(Roc5);
-
-  RocObject Roc6(signal_file6, background_file6, tree_name, "factorized w/ bjet speed cuts & skipped higgs loops", variable_name, num_bins, xmin, xmax, 1);
-  roc_vector.push_back(Roc6);
 
   drawRocs(roc_vector);
 }

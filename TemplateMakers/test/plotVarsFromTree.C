@@ -71,28 +71,22 @@ void plotVarsFromTree(void)
   double xmin = 0.;
   double xmax = 230;
   
-  TString file_sig = "/scratch365/cmuelle2/bdt_test/factorized_bdt_dr_lep_b/tth_training_2lssos_2lss_trainingSelection.root";
-  TString file_bkg = "/scratch365/cmuelle2/bdt_test/factorized_bdt_dr_lep_b/ttbar_training_2lss_2lss_trainingSelection.root";
+  TString file1 = "";
+  TString file2 = "";
+  TString file3 = "";
   
-  TCut b_tight_cut_ = "@bTight_jets.size() >1";
-  TCut hadtop_present_cut_ = "b_from_hadtop_bdt.obj.pt()*q1_from_hadtop_bdt.obj.pt()*q2_from_hadtop_bdt.obj.pt() > 0";
-
-  TCut hadtop_present_cut = b_tight_cut_ && hadtop_present_cut_;
-  TCut hadtop_absent_cut = b_tight_cut_ && !hadtop_present_cut_;
+  TCut cut = "";
 
   //colors 418/41/603
 
-  PlotObject plot1(file_sig, "ss2l_tree", "b-tight, ttH, 0 hadtop nulls", variable_name, hadtop_present_cut, num_bins, xmin, xmax, 4);
+  PlotObject plot1(file1, "ss2l_tree", "gen-filtered preselected lep", variable_name1, cut, num_bins, xmin, xmax, 4);
   plot_vector.push_back(plot1);
 
-  PlotObject plot2(file_bkg, "ss2l_tree", "b-tight, semilep ttbar, 0 hadtop nulls", variable_name, hadtop_present_cut, num_bins, xmin, xmax, 2);
+  PlotObject plot2(file2, "ss2l_tree", "standard fakeable leps", variable_name2, cut, num_bins, xmin, xmax, 2);
   plot_vector.push_back(plot2);
 
-  PlotObject plot3(file_sig, "ss2l_tree", "b-tight, ttH, >=1 hadtop nulls", variable_name, hadtop_absent_cut, num_bins, xmin, xmax, 418);
+  PlotObject plot3(file3, "ss2l_tree", "standard tight leps", variable_name3, cut, num_bins, xmin, xmax, 418);
   plot_vector.push_back(plot3);
-
-  PlotObject plot4(file_bkg, "ss2l_tree", "b-tight, semilep ttbar, >=1 hadtop nulls", variable_name, hadtop_absent_cut, num_bins, xmin, xmax, 6);
-  plot_vector.push_back(plot4);
 
   drawPlots(plot_vector);
 }
