@@ -13,6 +13,7 @@
 #include "TLorentzVector.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor_factorized.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/signalExtractionTreeMaker.h"
 #include "TMVA/Config.h"
 #include "TMVA/Tools.h"
@@ -86,20 +87,19 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   chain->SetBranchStatus("preselected_leptons.*",1);
   chain->SetBranchStatus("preselected_jets.*",1);
 
-  // chain->SetBranchStatus("fakeable_leptons.*",1);
-  // chain->SetBranchStatus("fakeable_electrons.*",1);
-  // chain->SetBranchStatus("fakeable_muons.*",1);
-  // chain->SetBranchStatus("tight_leptons.*",1);
-  // chain->SetBranchStatus("tight_electrons.*",1);
-  // chain->SetBranchStatus("tight_muons.*",1);
+  chain->SetBranchStatus("fakeable_leptons.*",1);
+  chain->SetBranchStatus("fakeable_electrons.*",1);
+  chain->SetBranchStatus("fakeable_muons.*",1);
+  chain->SetBranchStatus("tight_leptons.*",1);
+  chain->SetBranchStatus("tight_electrons.*",1);
+  chain->SetBranchStatus("tight_muons.*",1);
 
-  chain->SetBranchStatus("looseMvaBased_leptons.*",1);
-  chain->SetBranchStatus("looseMvaBased_electrons.*",1);
-  chain->SetBranchStatus("looseMvaBased_muons.*",1);
-  chain->SetBranchStatus("tightMvaBased_leptons.*",1);
-  chain->SetBranchStatus("tightMvaBased_electrons.*",1);
-  chain->SetBranchStatus("tightMvaBased_muons.*",1);
-
+  // chain->SetBranchStatus("looseMvaBased_leptons.*",1);
+  // chain->SetBranchStatus("looseMvaBased_electrons.*",1);
+  // chain->SetBranchStatus("looseMvaBased_muons.*",1);
+  // chain->SetBranchStatus("tightMvaBased_leptons.*",1);
+  // chain->SetBranchStatus("tightMvaBased_electrons.*",1);
+  // chain->SetBranchStatus("tightMvaBased_muons.*",1);
 
   chain->SetBranchStatus("selected_taus.*",1);
   chain->SetBranchStatus("met.*",1);
@@ -124,15 +124,15 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
 
-  // chain->SetBranchAddress("fakeable_leptons", &fakeable_leptons_intree);
-  // chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
-  // chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
-  // chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
+  chain->SetBranchAddress("fakeable_leptons", &fakeable_leptons_intree);
+  chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
+  chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
+  chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
 
-  chain->SetBranchAddress("looseMvaBased_leptons", &fakeable_leptons_intree);
-  chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
-  chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
-  chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
+  // chain->SetBranchAddress("looseMvaBased_leptons", &fakeable_leptons_intree);
+  // chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
+  // chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
+  // chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
 
   chain->SetBranchAddress("met", &met_intree);
   chain->SetBranchAddress("selected_taus", &selected_taus_intree);
@@ -216,8 +216,8 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
       higgs_tlv_intree = q1_from_higgs_tlv + q2_from_higgs_tlv + lep_from_higgs_tlv;
 
       // auto lep_collection = preselected_leptons_intree;
-      auto lep_collection = fakeable_leptons_intree;
-      //auto lep_collection = tight_leptons_intree;
+      //auto lep_collection = fakeable_leptons_intree;
+      auto lep_collection = tight_leptons_intree;
 
       bdtReconstructor.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
       bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
@@ -251,23 +251,23 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   
 }
 
-void evaluateRecoBdt(string sample_name="tth_sigExtr_training_2lss", int events_per_job=-1, int job_no=-1)
+void evaluateRecoBdt(string sample_name="tth_aMC_old", int events_per_job=-1, int job_no=-1)
 {
   TString input_file_name = getSelectionFile(sample_name);
   TFile *input_file = new TFile(input_file_name, "READONLY");
 
   if (sample_name == "") sample_name = "output_test";
-  TString output_dir = "/scratch365/cmuelle2/bdt_test/jan11_SE_training/";
+  TString output_dir = "/scratch365/cmuelle2/extraction_trees/jan15_ICHEP_trees_withFactorizedRecoBdt_fastPerm_yesHiggsLoop_genFilterWeights/";
   TString output_file_name = output_dir+sample_name;
   if (events_per_job > -1 && job_no > -1) output_file_name += "_"+std::to_string(job_no);
   output_file_name += ".root";
   TFile *output_file = new TFile(output_file_name, "RECREATE"); //"UPDATE");
 
-  // if (job_no < 1)
-  //   {
-  //     TH1D* event_hist = (TH1D*)input_file->Get("numInitialWeightedMCevents");
-  //     event_hist->Write();
-  //   }
+  if (job_no < 1)
+    {
+      TH1D* event_hist = (TH1D*)input_file->Get("numInitialWeightedMCevents");
+      event_hist->Write();
+    }
   
   TChain *chain_ = new TChain("ss2l_tree");
   chain_->Add(input_file_name);
