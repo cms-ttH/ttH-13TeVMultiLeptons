@@ -47,24 +47,32 @@ private:
 	if ( gen_particle.pdgID == 25 )
 	  {
 	    higgs_intree = gen_particle;
-	   
-	    higgs_child_A_intree = gen_particles[higgs_intree.child0];
-	    higgs_child_B_intree = gen_particles[higgs_intree.child1];
+	    
+	    if ( higgs_intree.child0 < gen_particles.size() && higgs_intree.child1 < gen_particles.size())
+	      {
+		higgs_child_A_intree = gen_particles[higgs_intree.child0];
+		higgs_child_B_intree = gen_particles[higgs_intree.child1];
+	      }
+
 
 	    //cut for os training trees only. 
 	    //if (abs(higgs_child_A_intree.pdgID) != 15 && abs(higgs_child_A_intree.pdgID) != 23 && abs(higgs_child_A_intree.pdgID) != 24 ) return;
 	    
+	    if ( higgs_child_A_intree.child1 > gen_particles.size() ) higgs_child_A_intree.child1 = higgs_child_A_intree.child0 + 1;
+	    if ( higgs_child_B_intree.child1 > gen_particles.size() ) higgs_child_B_intree.child1 = higgs_child_B_intree.child0 + 1;
+	    
 	    if ( higgs_child_A_intree.child0 < gen_particles.size())
 	      {
-		if ( higgs_child_A_intree.child1 > gen_particles.size() ) higgs_child_A_intree.child1 = higgs_child_A_intree.child0 + 1;
-		if ( higgs_child_B_intree.child1 > gen_particles.size() ) higgs_child_B_intree.child1 = higgs_child_B_intree.child0 + 1;
-		
-		
 		higgs_grandChild_A1_intree = gen_particles[higgs_child_A_intree.child0];
 		higgs_grandChild_A2_intree = gen_particles[higgs_child_A_intree.child1];
+	      }
+	    
+	    if ( higgs_child_B_intree.child0 < gen_particles.size())
+	      {
 		higgs_grandChild_B1_intree = gen_particles[higgs_child_B_intree.child0];
 		higgs_grandChild_B2_intree = gen_particles[higgs_child_B_intree.child1];
 	      }
+
 	  }
 	else if ( gen_particle.pdgID == 6 )
 	  {
@@ -88,7 +96,6 @@ private:
 	    
 	    top_w_child1_intree = gen_particles[top_w_intree.child0];
 	    top_w_child2_intree = gen_particles[top_w_intree.child1];
-	    
 	  }
 	else if ( gen_particle.pdgID == -6 )
 	  {
@@ -111,8 +118,9 @@ private:
 	    antitop_w_child2_intree = gen_particles[antitop_w_intree.child1];
 
 	  }
-
+	
 	if (higgs_intree.pdgID == 25 && antitop_intree.pdgID == -6 && top_intree.pdgID == 6) break;
+
       }
     
     bool higgs_grandChild_A1_leptonic = ( abs(higgs_grandChild_A1_intree.pdgID) >= 11 && abs(higgs_grandChild_A1_intree.pdgID) <= 14 );
@@ -345,9 +353,9 @@ public:
 	  }
 	if (min_dr <= 0.4 && ( abs(1. - matched_gen_j.obj.pt()/reco_j.obj.pt()) < 0.5 ) )
 	  {
-	    reco_j.genPdgID = matched_gen_j.pdgID; 
-	    reco_j.genMotherPdgID = gen_particles[matched_gen_j.mother].pdgID; 
-	    reco_j.genGrandMotherPdgID = gen_particles[matched_gen_j.grandmother].pdgID; 
+	    reco_j.genPdgID = matched_gen_j.pdgID;
+	    reco_j.genMotherPdgID = gen_particles[matched_gen_j.mother].pdgID;
+	    reco_j.genGrandMotherPdgID = gen_particles[matched_gen_j.grandmother].pdgID;
 	    matched_reco_jets_intree->push_back( reco_j );
 	    matched_gen_jets_intree->push_back( matched_gen_j );
 	    
