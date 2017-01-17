@@ -14,6 +14,13 @@ class TrainingTreeHelper
   double dR_lepTop_hadTop_intree;
   double dR_W1_W2_fromHiggs_intree;
 
+  //my new vars
+  double dr_lepFromHiggs_bFromHadTop;
+  double dr_lepFromTop_bFromLepTop;
+  double dr_lepFromTop_bFromHadTop;
+  double dr_lepFromHiggs_bFromLepTop;
+
+
  public:
   TrainingTreeHelper(){
     resetVars();
@@ -52,6 +59,13 @@ class TrainingTreeHelper
     dR_H_hadTop_intree = -99.;
     dR_lepTop_hadTop_intree = -99.;
     dR_W1_W2_fromHiggs_intree = -99.;
+
+    dr_lepFromHiggs_bFromHadTop = -99.;
+    dr_lepFromTop_bFromLepTop = -99.;
+    dr_lepFromTop_bFromHadTop = -99.;
+    dr_lepFromHiggs_bFromLepTop = -99.;
+    
+
   }
 
   void initializeTree(TTree *input_tree)
@@ -75,6 +89,11 @@ class TrainingTreeHelper
     input_tree->Branch("dR_H_hadTop", &dR_H_hadTop_intree);
     input_tree->Branch("dR_lepTop_hadTop", &dR_lepTop_hadTop_intree);
     input_tree->Branch("dR_W1_W2_fromHiggs", &dR_W1_W2_fromHiggs_intree);
+
+    input_tree->Branch("dr_lepFromHiggs_bFromHadTop", &dr_lepFromHiggs_bFromHadTop);
+    input_tree->Branch("dr_lepFromTop_bFromLepTop", &dr_lepFromTop_bFromLepTop);
+    input_tree->Branch("dr_lepFromTop_bFromHadTop", &dr_lepFromTop_bFromHadTop);
+    input_tree->Branch("dr_lepFromHiggs_bFromLepTop", &dr_lepFromHiggs_bFromLepTop);
 
   }
   
@@ -106,6 +125,15 @@ class TrainingTreeHelper
     if (w_from_higgs_tlv_intree.Pt() == 0) dR_W1_W2_fromHiggs_intree = -1.;
     else dR_W1_W2_fromHiggs_intree = w_from_higgs_tlv_intree.DeltaR( lep_from_higgs_tlv );
     
+
+
+
+    dr_lepFromHiggs_bFromHadTop = getDeltaR(lep_from_higgs_bdt_intree,b_from_hadtop_bdt_intree);
+    dr_lepFromTop_bFromLepTop = getDeltaR(lep_from_leptop_bdt_intree,b_from_leptop_bdt_intree);
+    dr_lepFromTop_bFromHadTop = getDeltaR(lep_from_leptop_bdt_intree,b_from_hadtop_bdt_intree);
+    dr_lepFromHiggs_bFromLepTop = getDeltaR(lep_from_higgs_bdt_intree,b_from_leptop_bdt_intree);
+
+
   }
 
   
