@@ -148,12 +148,8 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    factory->AddVariable( "met_double","met","missing Et",'D');
    factory->AddVariable( "avg_dr_jet","average dR jets","dR",'D');
    factory->AddVariable( "reco_score","reco bdt","bdt output",'D');
-   //factory->AddVariable( "reco_score_tr1_inclusivebloose","reco bdt (tr1)","bdt tr1 output",'D');
-   //   factory->AddVariable( "reco_score_tr1_btightloose","reco bdt (tr1)","bdt tr1 output",'D');
-
-   //   factory->AddVariable( "csv1","leading csv","csv",'D');
-   //   factory->AddVariable( "csv2","subleading csv","csv",'D');
-
+   //factory->AddVariable( "hadTop_bdt.M()","reco hadtop mass","mass [GeV]",'D');
+   
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -165,8 +161,18 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    //   TString fname = "./tmva_class_example.root";
 
-   TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
-   TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
+   // TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
+   // TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
+
+   // TString fname_sig_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss_withFriendTrees.root";
+   // TString fname_bkg_train = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss_withFriendTrees.root";
+
+   //jan 11 2017
+   // TString fname_sig_train = "/scratch365/cmuelle2/bdt_test/jan11_SE_training/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+   // TString fname_bkg_train = "/scratch365/cmuelle2/bdt_test/jan11_SE_training/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
+
+   TString fname_sig_train = "/scratch365/cmuelle2/bdt_test/jan11_SE_training_incl/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+   TString fname_bkg_train = "/scratch365/cmuelle2/bdt_test/jan11_SE_training_incl/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
    if (gSystem->AccessPathName( fname_sig_train ))  // file does not exist in local directory
       gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");
@@ -246,8 +252,12 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    // factory->SetBackgroundWeightExpression("mcwgt");
 
    // Apply additional cuts on the signal and background samples (can be different)
+   //TCut hadtop_present_cut_ = "b_from_hadtop_bdt.obj.pt()*q1_from_hadtop_bdt.obj.pt()*q2_from_hadtop_bdt.obj.pt() == 0";
+   //TCut btight_cut_ = "isBtight";
+
+   //   TCut mycuts = "@bTight_jets.size() < 2";
    TCut mycuts = "";
-   TCut mycutb = ""; // for example: TCut mycutb = "abs(var1)<0.5";
+   TCut mycutb = mycuts;
 
    // TCut mycuts = "!isBtight";
    // TCut mycutb = "!isBtight";
@@ -262,16 +272,26 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
    factory->PrepareTrainingAndTestTree( mycuts, mycutb,
 					"nTrain_Signal=41000:nTrain_Background=81000:SplitMode=Random:NormMode=NumEvents:!V" );//inclusive
-   					//					"nTrain_Signal=24000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose
-					//					"nTrain_Signal=18000:nTrain_Background=16600:SplitMode=Random:NormMode=NumEvents:!V" );//b tigh
-					//					"SplitMode=Random:NormMode=NumEvents:!V" );
+					//"nTrain_Signal=18000:nTrain_Background=16600:SplitMode=Random:NormMode=NumEvents:!V" );//b tight
+					//"nTrain_Signal=24000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose
 
-   //
-   //					"nTrain_Signal=20000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose 0ht nulls
-//					"nTrain_Signal=15000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose 1ht nulls
-   //					"nTrain_Signal=16000:nTrain_Background=14000:SplitMode=Random:NormMode=NumEvents:!V" );//b tight 0ht nulls
-   //					"nTrain_Signal=13000:nTrain_Background=15000:SplitMode=Random:NormMode=NumEvents:!V" );//b tight 1ht nulls
 
+
+
+					//"nTrain_Signal=36000:nTrain_Background=47000:SplitMode=Random:NormMode=NumEvents:!V" );//incl 0ht nulls
+					//"nTrain_Signal=28000:nTrain_Background=48000:SplitMode=Random:NormMode=NumEvents:!V" );//incl 1ht nulls
+					//"nTrain_Signal=13000:nTrain_Background=15000:SplitMode=Random:NormMode=NumEvents:!V" );//b tight 1ht nulls
+					//"nTrain_Signal=20000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose 0ht nulls
+					//"nTrain_Signal=15000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose 1ht nulls
+					//"nTrain_Signal=16000:nTrain_Background=14000:SplitMode=Random:NormMode=NumEvents:!V" );//b tight 0ht nulls
+   					
+
+
+
+
+
+
+					
 
    // ---- Book MVA methods
    //

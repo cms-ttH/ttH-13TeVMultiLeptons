@@ -51,8 +51,10 @@ class signalExtractionTreeMaker
   Float_t spec0_var;
   Float_t spec1_var;
   Float_t spec2_var;
-  double vs_ttbar_score;
-  double vs_ttbar_bdtReco_score;
+  double vs_ttbar_score; //traditional
+  double vs_ttbar_bdtReco_score; //btight-btight, bloose-bloose
+  double vs_ttbar_bdtReco_bti_blbl_score; //btight-incl, bloose-bloose this is what you found originally worked well
+  double vs_ttbar_bdtReco_bti_bli_score; //btight-incl, bloose-incl
   double vs_ttv_score;
   bool evaluate_signal_extraction = false;
   bool isBtight_branch=false;
@@ -86,6 +88,10 @@ class signalExtractionTreeMaker
 	ttbar_tree->Branch("reco_score", &reco_score_branch);
 	ss2l_tree->Branch("vs_ttbar_score", &vs_ttbar_score);
 	ss2l_tree->Branch("vs_ttbar_withRecoBdt_score", &vs_ttbar_bdtReco_score);
+
+	ss2l_tree->Branch("vs_ttbar_withRecoBdt_bti_blbl_score", &vs_ttbar_bdtReco_bti_blbl_score);
+	ss2l_tree->Branch("vs_ttbar_withRecoBdt_bti_bli_score", &vs_ttbar_bdtReco_bti_bli_score);
+
 	ss2l_tree->Branch("vs_ttv_score", &vs_ttv_score);
 	ss2l_tree->Branch("bTight_category", &isBtight_branch);
 	ss2l_tree->Branch("posCharge_category", &isPositive_branch);
@@ -116,8 +122,8 @@ class signalExtractionTreeMaker
 	TMVAReader_ttbar_recoBdt_->AddVariable( "avg_dr_jet", &avg_dr_jets_branch );
 	TMVAReader_ttbar_recoBdt_->AddVariable( "reco_score", &reco_score_branch );
 	//TMVAReader_ttbar_recoBdt_->AddVariable( "hadTop_bdt.M()", &hadtop_mass_branch );
-	TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt.xml";
-	//TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/dec13_sigExtraction_training/weights_with_hadtop_mass_added/TMVAClassification_BDTG.weights_inclusive.xml";
+	//TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt.xml";
+	TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt.xml";
 	TMVAReader_ttbar_recoBdt_->BookMVA("BDTG method", ttbar_recoBdt_weights);
 	
 	TMVAReader_ttbar_recoBdt_bLoose_ = new TMVA::Reader( "!Color:!Silent" );
@@ -130,8 +136,8 @@ class signalExtractionTreeMaker
 	TMVAReader_ttbar_recoBdt_bLoose_->AddVariable( "avg_dr_jet", &avg_dr_jets_branch );
 	TMVAReader_ttbar_recoBdt_bLoose_->AddVariable( "reco_score", &reco_score_branch );
 	//	TMVAReader_ttbar_recoBdt_bLoose_->AddVariable( "hadTop_bdt.M()", &hadtop_mass_branch );
-	TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt_bloose.xml";
-	//TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/dec13_sigExtraction_training/weights_with_hadtop_mass_added/TMVAClassification_BDTG.weights_bLoose.xml";
+	//TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt_bloose.xml";
+	TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt_bloose.xml";
 	TMVAReader_ttbar_recoBdt_bLoose_->BookMVA("BDTG method", ttbar_recoBdt_bLoose_weights);
 	
 	TMVAReader_ttbar_recoBdt_bTight_ = new TMVA::Reader( "!Color:!Silent" );
@@ -143,7 +149,8 @@ class signalExtractionTreeMaker
 	TMVAReader_ttbar_recoBdt_bTight_->AddVariable( "met_double", &met_branch );
 	TMVAReader_ttbar_recoBdt_bTight_->AddVariable( "avg_dr_jet", &avg_dr_jets_branch );
 	TMVAReader_ttbar_recoBdt_bTight_->AddVariable( "reco_score", &reco_score_branch );
-	TString ttbar_recoBdt_bTight_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt_btight.xml";
+	//TString ttbar_recoBdt_bTight_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt_btight.xml";
+	TString ttbar_recoBdt_bTight_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt_btight.xml";
 	TMVAReader_ttbar_recoBdt_bTight_->BookMVA("BDTG method", ttbar_recoBdt_bTight_weights);
 	
 
@@ -320,9 +327,19 @@ class signalExtractionTreeMaker
 
 
 	vs_ttbar_score = TMVAReader_ttbar_->EvaluateMVA( "BDTG method" );
+	vs_ttbar_bdtReco_bti_bli_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" ); 
 
-	if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" ); //if ( isBtight_branch ) vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bTight_->EvaluateMVA( "BDTG method" );
-	else  vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bLoose_->EvaluateMVA( "BDTG method" );
+	if ( isBtight_branch )
+	  {
+	    //vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" );
+	    vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bTight_->EvaluateMVA( "BDTG method" );
+	    vs_ttbar_bdtReco_bti_blbl_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" );
+	  }
+	else
+	  {
+	    vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_bLoose_->EvaluateMVA( "BDTG method" );
+	    vs_ttbar_bdtReco_bti_blbl_score = TMVAReader_ttbar_recoBdt_bLoose_->EvaluateMVA( "BDTG method" );
+	  }
 
 	/* if ( isBtight_branch ) */
 	/*   { */
