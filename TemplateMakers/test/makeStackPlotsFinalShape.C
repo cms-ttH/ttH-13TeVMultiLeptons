@@ -448,6 +448,10 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       double mcwgt_branch=-999.;
       double vs_ttbar_score_branch=-999.;
       double vs_ttbar_bdtReco_score_branch=-999.;
+
+      double vs_ttbar_bdtReco_bti_blbl_score_branch=-999.;
+      double vs_ttbar_bdtReco_bti_bli_score_branch=-999.;
+
       double vs_ttv_score_branch=-999.;
       bool isBtight_branch=false;
       bool isPositive_branch=false;
@@ -458,6 +462,8 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       input_tree->SetBranchStatus("mcwgt",1);
       input_tree->SetBranchStatus("vs_ttbar_score",1);
       input_tree->SetBranchStatus("vs_ttbar_withRecoBdt_score",1);
+      input_tree->SetBranchStatus("vs_ttbar_withRecoBdt_bti_blbl_score",1);
+      input_tree->SetBranchStatus("vs_ttbar_withRecoBdt_bti_bli_score",1);
       input_tree->SetBranchStatus("vs_ttv_score",1);
       input_tree->SetBranchStatus("bTight_category",1);
       input_tree->SetBranchStatus("flavor_category",1);
@@ -467,6 +473,8 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
       input_tree->SetBranchAddress("mcwgt", &mcwgt_branch);
       input_tree->SetBranchAddress("vs_ttbar_score", &vs_ttbar_score_branch);
       input_tree->SetBranchAddress("vs_ttbar_withRecoBdt_score", &vs_ttbar_bdtReco_score_branch);
+      input_tree->SetBranchAddress("vs_ttbar_withRecoBdt_bti_blbl_score",&vs_ttbar_bdtReco_bti_blbl_score_branch);
+      input_tree->SetBranchAddress("vs_ttbar_withRecoBdt_bti_bli_score",&vs_ttbar_bdtReco_bti_bli_score_branch);
       input_tree->SetBranchAddress("vs_ttv_score", &vs_ttv_score_branch);
       input_tree->SetBranchAddress("bTight_category", &isBtight_branch);
       input_tree->SetBranchAddress("posCharge_category", &isPositive_branch);
@@ -481,8 +489,10 @@ void stackPlots(TH1D* input_hist, std::vector<Sample> sample_vector_, TFile* out
 	{
 	  //	  printProgress(i,chainentries);
 	  input_tree->GetEntry(i);	  
-	  myPlotObj.Fill(vs_ttbar_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
-	  //	  myPlotObj.Fill(vs_ttbar_bdtReco_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
+	  //myPlotObj.Fill(vs_ttbar_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
+	  myPlotObj.Fill(vs_ttbar_bdtReco_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
+	  //myPlotObj.Fill(vs_ttbar_bdtReco_bti_blbl_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
+	  //myPlotObj.Fill(vs_ttbar_bdtReco_bti_bli_score_branch, vs_ttv_score_branch, *flavor_branch, isPositive_branch, isBtight_branch, isTau_branch, mcwgt_branch);
 	  
 	}
       input_file->Close();
@@ -518,7 +528,7 @@ void makeStackPlotsFinalShape(void)
   int diboson_color = 880;
   int rares_color = 860-9;
 
-  TString dir_prefix = "/scratch365/cmuelle2/extraction_trees/nov22_ICHEP_trees/";
+  TString dir_prefix = "/scratch365/cmuelle2/extraction_trees/jan13_ICHEP_trees_withFactorizedRecoBdt_fastPermutations_noHiggsLoop/";
 
   TString tth_file = dir_prefix + "tth_aMC_old_2lss_extraction.root";
   TString ttbar_semilep_file = dir_prefix + "ttbar_semiLep_powheg_2lss_extraction.root";
