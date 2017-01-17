@@ -90,21 +90,22 @@ class eventReconstructor
     TMVAReader_internal_->AddVariable( "hadTop_tlv_bdt.Pt()", &HadTop_pT_var );
     TMVAReader_internal_->AddVariable( "w_from_hadtop_tlv_bdt.M()", &W_fromHadTop_mass_var );
     TMVAReader_internal_->AddVariable( "hadTop_tlv_bdt.M()", &HadTop_mass_var );
-    //TMVAReader_internal_->AddVariable( "higgs_tlv_bdt.M()", &Higgs_mass_var );
+    TMVAReader_internal_->AddVariable( "higgs_tlv_bdt.M()", &Higgs_mass_var );
     TMVAReader_internal_->AddVariable( "lep_from_higgs_bdt.obj.pt()", &lep_fromW_fromHiggs_pT_var );
     TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()", &lep_fromW_fromTop_pT_var );
-    //TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()", &lep_pt_ratio_var );
-    TMVAReader_internal_->AddVariable( "(lep_from_leptop_bdt.obj.pt()-lep_from_higgs_bdt.obj.pt())/(lep_from_leptop_bdt.obj.pt()+lep_from_higgs_bdt.obj.pt())", &lep_pt_ratio_var );
+    TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()", &lep_pt_ratio_var );
+    //TMVAReader_internal_->AddVariable( "(lep_from_leptop_bdt.obj.pt()-lep_from_higgs_bdt.obj.pt())/(lep_from_leptop_bdt.obj.pt()+lep_from_higgs_bdt.obj.pt())", &lep_pt_ratio_var );
 
-    TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromLepTop", &dr_lepFromTop_bFromLepTop );
-    TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromHadTop", &dr_lepFromTop_bFromHadTop );
-    TMVAReader_internal_->AddVariable( "dr_lepFromHiggs_bFromLepTop", &dr_lepFromHiggs_bFromLepTop );
+    //TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromLepTop", &dr_lepFromTop_bFromLepTop );
+    //TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromHadTop", &dr_lepFromTop_bFromHadTop );
+    //TMVAReader_internal_->AddVariable( "dr_lepFromHiggs_bFromLepTop", &dr_lepFromHiggs_bFromLepTop );
 
-    const char* env_p = std::getenv("CMSSW_BASE");
-    std::string weight_file = env_p;
-    weight_file += weights_file_str;
+    /* const char* env_p = std::getenv("CMSSW_BASE"); */
+    /* std::string weight_file = env_p; */
+    /* weight_file += weights_file_str; */
+    /* TMVAReader_internal_->BookMVA("BDTG method", weight_file); */
 
-    TMVAReader_internal_->BookMVA("BDTG method", weight_file);
+    TMVAReader_internal_->BookMVA("BDTG method", weights_file_str);
     return TMVAReader_internal_;
   }
   
@@ -149,8 +150,14 @@ class eventReconstructor
   eventReconstructor(){
     /* TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bTight.weights.xml"); */
     /* TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/classifiers/weights/TMVAClassification_BDTG_v1p5_bLoose.weights.xml"); */
-    TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_bTight.xml");
-    TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_bLoose.xml");
+
+    //TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_bTight.xml");
+    //TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_bLoose.xml");
+
+    TMVAReader_bTight_ = bookMVA("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bTight_genFilter.xml");
+    TMVAReader_bLoose_ = bookMVA("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_v1p5_bLoose_genFilter.xml");
+    
+
 
   } // default constructor
 
@@ -272,13 +279,14 @@ class eventReconstructor
 	if (jet.csv >= 0.8) btight_jets_intree->push_back(jet);
 	else if (jet.csv >= 0.46) bloose_jets_intree->push_back(jet);
       }
+
     if ( btight_jets_intree->size() > 1 )
       {
-	TMVAReader_ = TMVAReader_bTight_;
+    	TMVAReader_ = TMVAReader_bTight_;
       }
-    else 
+    else
       {
-	TMVAReader_ = TMVAReader_bLoose_;
+    	TMVAReader_ = TMVAReader_bLoose_;
       }
 
     ////////////////////////////
@@ -429,7 +437,7 @@ class eventReconstructor
 	bjet_fromHadTop_count +=1;
 	if (bjet_fromHadTop.obj.pt()==0 && jets_in[bjet_fromHadTop_count-1].obj.pt()==0) continue; //skip useless empty b-jet iterations
 	if ( btight_jets_intree->size() > 1 && bjet_fromHadTop.csv < 0.8) continue;
-	//	if ( bjet_fromHadTop.csv > 0 && bjet_fromHadTop.csv < 0.46 ) continue;
+	if ( bjet_fromHadTop.csv > 0 && bjet_fromHadTop.csv < 0.46 ) continue;
 
 	bjet_fromLepTop_count = -1;
 	for (const auto & bjet_fromLepTop : jets_in)
@@ -440,7 +448,7 @@ class eventReconstructor
 	    if (bjet_fromLepTop.obj.pt()==0 && jets_in[bjet_fromLepTop_count-1].obj.pt()==0) continue; //skip useless empty b-jet iterations
 	    //if (bjet_fromLepTop.obj.pt()==0 && bjet_fromHadTop.obj.pt()==0) continue; //skip useless empty b-jet iterations
 	    if ( btight_jets_intree->size() > 1 && bjet_fromLepTop.csv < 0.8) continue;
-	    //  if ( bjet_fromLepTop.csv > 0 && bjet_fromLepTop.csv < 0.46 ) continue;
+	    if ( bjet_fromLepTop.csv > 0 && bjet_fromLepTop.csv < 0.46 ) continue;
 
 	    if ( !( (bjet_fromHadTop.csv > 0.8 || bjet_fromLepTop.csv > 0.8) || (bjet_fromHadTop.csv > 0.4 && bjet_fromLepTop.csv > 0.4) ) ) continue;
 	    
