@@ -137,9 +137,39 @@ bool pass2lss_lepMVA_AR(vector<ttH::Electron> tightEles, vector<ttH::Electron> f
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
   vector<ttH::Lepton> fakeableLeps = get_collection(fakeableMus,fakeableEles);
 
-  if ( tightLeps.size() != 1 ) return false; 
   if ( fakeableLeps.size() < 2) return false;
+  if ( tightLeps.size() > 2 ) return false; 
+  if ( tightLeps.size() == 0 ) return false; 
+  if ( fakeableLeps[0].obj.pt() != tightLeps[0].obj.pt() && fakeableLeps[1].obj.pt() != tightLeps[0].obj.pt()) return false; //require a tight lepton among the leading two fakeable.
+  if (fakeableLeps[0].charge != fakeableLeps[1].charge) return false; //same sign
+  if ( psJets.size() < 4 )      return false; //jet requirement
 
+  if ((tightLeps[0].obj.pdgID) == 13)
+    {
+      if (!(tightMus[0].chargeFlip < 0.2)) return false;//tight charge mu
+    }
+  else
+    {
+       if ( !tightEles[0].isGsfCtfScPixChargeConsistent ) return false;//tight charge ele
+       if ( tightEles[0].numMissingInnerHits != 0 ) return false;//  //lost hits ele
+       if ( !tightEles[0].passConversioVeto ) return false;//conv veto ele
+    }
+
+  if ( !(fakeableLeps[0].obj.Pt()>25. && fakeableLeps[1].obj.Pt()>10.) ) return false; //pt requirement
+  if ( abs(fakeableLeps[1].pdgID) == 11 && fakeableLeps[1].obj.Pt() <= 15. ) return false; //pt2 cut for ele
+
+  if (fakeableEles.size() == 2 )
+    {
+      auto ee_obj = fakeableEles[0].obj + fakeableEles[1].obj;
+      double vetoZmass = ee_obj.M();
+      //double vetoZmass = pickFromSortedTwoObjKine(tightEles,"mass",1,91.2);
+      if ( fabs(vetoZmass-91.2) <= 10. ) return false;
+      
+      auto objs_for_mht = getsumTLV(psLeps,psJets);
+      double MHT_handle = objs_for_mht.Pt();
+      double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+      if ( !(metLD_handle > 0.2) ) return false;
+    }
 
   return true;
 }
