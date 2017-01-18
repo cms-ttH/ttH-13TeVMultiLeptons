@@ -144,7 +144,7 @@ bool pass2lss_lepMVA_AR(vector<ttH::Electron> tightEles, vector<ttH::Electron> f
   if (fakeableLeps[0].charge != fakeableLeps[1].charge) return false; //same sign
   if ( psJets.size() < 4 )      return false; //jet requirement
 
-  if ((tightLeps[0].obj.pdgID) == 13)
+  if (abs(tightLeps[0].pdgID) == 13)
     {
       if (!(tightMus[0].chargeFlip < 0.2)) return false;//tight charge mu
     }
