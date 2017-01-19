@@ -204,6 +204,29 @@ public:
       	  loadFile( sample_vec, file_index);
       	}
 
+
+      else if (sample == "data")
+	{
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("ksalyer/lobster_test__ICHEP_data/doubleMu2016D/"); //4
+      	  sample_vec.push_back("ksalyer/lobster_test__ICHEP_data/doubleMu2016B/"); //10
+      	  sample_vec.push_back("ksalyer/lobster_test__ICHEP_data/doubleMu2016C/"); //4
+      	  sample_vec.push_back("ksalyer/lobster_test__ICHEP_data/singleMu2016B/"); //12
+      	  sample_vec.push_back("ksalyer/lobster_test__ICHEP_data/singleMu2016C/"); //3
+      	  sample_vec.push_back("ksalyer/lobster_test__ICHEP_data/singleMu2016D/"); //5
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/MuonEg2016B/"); //2
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/MuonEg2016C/"); //1
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/MuonEg2016D/"); //1
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/doubleEg2016B/"); //4
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/doubleEg2016C/"); //2
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/doubleEg2016D/"); //3
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/singleEle2016B/"); //4
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/singleEle2016C/"); //2
+      	  sample_vec.push_back("jcharter/lobster_test__ICHEP_data/singleEle2016D/"); //3
+      	  loadFile( sample_vec, file_index); //60 files total
+	} 
+
+
       else
 	{
 	  cout << "=================================" << endl;
@@ -254,6 +277,7 @@ TString getSelectionFile(TString sample_name)
   else if (sample_name == "ttw_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/ttw_jetClean_test_genFilterTraining_2lss.root";
   else if (sample_name == "tth_sigExtr_training_2lss")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
   else if (sample_name == "ttbar_sigExtr_training_2lss")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
+  else if (sample_name == "data")      input_file_name = "/scratch365/cmuelle2/selection_trees/jan18_johnAndKaitlin_data_lepMVA_applicationRegion_preview/data_2lss_selection.root";
   else                                                  input_file_name = "/scratch365/cmuelle2/selection_trees/nov22_ICHEP_trees/tth_aMC_old_2lss_selection.root";
 
   return input_file_name;
