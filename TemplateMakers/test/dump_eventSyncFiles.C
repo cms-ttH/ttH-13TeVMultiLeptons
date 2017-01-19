@@ -150,12 +150,12 @@ void run_it(TChain* chain,TString region)
 
         chain->GetEntry(i);
     
-        if (abs((*tight_leptons_intree)[0].pdgID) == 11 && abs((*tight_leptons_intree)[1].pdgID) == 11 && (*selected_taus_intree).size() == 0) {
-            dumpToFile(sr_2lss_ee_output, eventnum_intree, tight_leptons_intree, preselected_jets_intree, met_intree);
-        } else if (abs((*tight_leptons_intree)[0].pdgID) == 13 && abs((*tight_leptons_intree)[1].pdgID) == 13 && (*selected_taus_intree).size() == 0) {
-            dumpToFile(sr_2lss_mm_output, eventnum_intree, tight_leptons_intree, preselected_jets_intree, met_intree);
-        } else if (((abs((*tight_leptons_intree)[0].pdgID) == 13 && abs((*tight_leptons_intree)[1].pdgID) == 11) || (abs((*tight_leptons_intree)[0].pdgID) == 11 && abs((*tight_leptons_intree)[1].pdgID) == 13)) && (*selected_taus_intree).size() == 0) {
-            dumpToFile(sr_2lss_em_output, eventnum_intree, tight_leptons_intree, preselected_jets_intree, met_intree);
+        if (abs((*fakeable_leptons_intree)[0].pdgID) == 11 && abs((*fakeable_leptons_intree)[1].pdgID) == 11 && (*selected_taus_intree).size() == 0) {
+            dumpToFile(sr_2lss_ee_output, eventnum_intree, fakeable_leptons_intree, preselected_jets_intree, met_intree);
+        } else if (abs((*fakeable_leptons_intree)[0].pdgID) == 13 && abs((*fakeable_leptons_intree)[1].pdgID) == 13 && (*selected_taus_intree).size() == 0) {
+            dumpToFile(sr_2lss_mm_output, eventnum_intree, fakeable_leptons_intree, preselected_jets_intree, met_intree);
+        } else if (((abs((*fakeable_leptons_intree)[0].pdgID) == 13 && abs((*fakeable_leptons_intree)[1].pdgID) == 11) || (abs((*fakeable_leptons_intree)[0].pdgID) == 11 && abs((*fakeable_leptons_intree)[1].pdgID) == 13)) && (*selected_taus_intree).size() == 0) {
+            dumpToFile(sr_2lss_em_output, eventnum_intree, fakeable_leptons_intree, preselected_jets_intree, met_intree);
         }
     }
   
@@ -174,10 +174,10 @@ void dump_eventSyncFiles(void)
     TChain *chain = new TChain("ss2l_tree");
 
     if (region == "SR") {
-        chain->Add("sync_SR_selection_tree_2lss.root");
+        chain->Add("sync_selection_tree_2lss.root");
     } else if (region == "AR") {
         chain->Add("sync_AR_selection_tree_2lss.root");
     }
 
-    run_it(chain); 
+    run_it(chain,region); 
 }
