@@ -4,7 +4,7 @@ vector<ttH::Lepton> get_collection(vector<ttH::Muon> muObjs, vector<ttH::Electro
 {
   vector<ttH::Lepton> lepCollection(muObjs.begin(),muObjs.end());
   lepCollection.insert(lepCollection.end(),eleObjs.begin(),eleObjs.end());
-  std::sort(lepCollection.begin(), lepCollection.end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.obj.Pt() > b.obj.Pt();});
+  std::sort(lepCollection.begin(), lepCollection.end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.correctedPt > b.correctedPt;});
   return lepCollection;
 }
 
@@ -35,19 +35,26 @@ bool passCommon(vector<ttH::Electron> psEles, vector<ttH::Muon> psMus, vector<tt
   return true;
 }
 
-bool pass2lss(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, vector<ttH::MET> met)
+bool pass2lss(vector<ttH::Electron> tightEles, vector<ttH::Electron> fakeableEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> fakeableMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, vector<ttH::MET> met)
 {
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
+  vector<ttH::Lepton> fakeableLeps = get_collection(fakeableMus,fakeableEles);
+  /* tightMus = get_2lss_sr_mus(tightMus); */
+  /* tightEles = get_2lss_sr_eles(tightEles,"tight"); */
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
+
+  
 
   if ( tightLeps.size() != 2 ) return false; //exactly two leptons
   if (tightLeps[0].charge != tightLeps[1].charge) return false; //same sign
+  if (tightLeps[0].obj.pt() != fakeableLeps[0].obj.pt() || tightLeps[1].obj.pt() != fakeableLeps[1].obj.pt()) return false; //leading two must be tight
+  
   for (auto &mu: tightMus) if (!(mu.chargeFlip < 0.2)) return false;//tight charge mu
   for (auto &ele: tightEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge ele
   for (auto &ele: tightEles) if (ele.numMissingInnerHits != 0) return false;//  //lost hits ele
   for (auto &ele: tightEles) if ( !(ele.passConversioVeto) ) return false;//conv veto ele
-  if ( psJets.size() < 4 )      return false; //jet requirement
 
+  if ( psJets.size() < 4 )      return false; //jet requirement
   if ( !(tightLeps[0].obj.Pt()>25. && tightLeps[1].obj.Pt()>10.) ) return false; //pt requirement
   if ( abs(tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() <= 15. ) return false; //pt2 cut for ele
 
@@ -133,30 +140,57 @@ bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> loo
 
 bool pass2lss_lepMVA_AR(vector<ttH::Electron> tightEles, vector<ttH::Electron> fakeableEles, vector<ttH::Electron> psEles, vector<ttH::Muon> tightMus, vector<ttH::Muon> fakeableMus, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, vector<ttH::MET> met)
 {
-  vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
-  vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
+  vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);  
   vector<ttH::Lepton> fakeableLeps = get_collection(fakeableMus,fakeableEles);
+  vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);  
 
   if ( fakeableLeps.size() < 2) return false;
-  if ( tightLeps.size() > 2 ) return false; 
-  if ( tightLeps.size() == 0 ) return false; 
-  if ( fakeableLeps[0].obj.pt() != tightLeps[0].obj.pt() && fakeableLeps[1].obj.pt() != tightLeps[0].obj.pt()) return false; //require a tight lepton among the leading two fakeable.
+  if ( tightLeps.size() > 0 && fakeableLeps[0].obj.pt() == tightLeps[0].obj.pt() && tightLeps.size() >1 && fakeableLeps[1].obj.pt() == tightLeps[1].obj.pt()) return false; //veto 2lss SR events
   if (fakeableLeps[0].charge != fakeableLeps[1].charge) return false; //same sign
   if ( psJets.size() < 4 )      return false; //jet requirement
 
-  if (abs(tightLeps[0].pdgID) == 13)
+
+  for (int i = 0; i <=1; i++)
     {
-      if (!(tightMus[0].chargeFlip < 0.2)) return false;//tight charge mu
-    }
-  else
-    {
-       if ( !tightEles[0].isGsfCtfScPixChargeConsistent ) return false;//tight charge ele
-       if ( tightEles[0].numMissingInnerHits != 0 ) return false;//  //lost hits ele
-       if ( !tightEles[0].passConversioVeto ) return false;//conv veto ele
+      if (abs(fakeableLeps[i].pdgID) == 11)
+	{
+	  for (auto & ele : fakeableEles)
+	    {
+	      if (fakeableLeps[i].obj.pt() == ele.obj.pt())
+		{
+		  if (ele.numMissingInnerHits != 0) return false;
+		  //if (!ele.isGsfCtfScPixChargeConsistent) return false;
+		  break;
+		}
+	    }
+
+	  for (auto & ele : tightEles)
+	    {
+	      if (fakeableLeps[i].obj.pt() == ele.obj.pt())
+		{
+		  if (ele.numMissingInnerHits != 0) return false;
+		  if (!ele.isGsfCtfScPixChargeConsistent) return false;
+		  if (!ele.passConversioVeto) return false;
+		  break;
+		}
+	    }
+	  
+	}
+      else if (abs(fakeableLeps[i].pdgID) == 13)      
+	{
+	  for (auto & mu : fakeableMus)
+	    {
+	      if (fakeableLeps[i].obj.pt() == mu.obj.pt())
+		{
+		  if (mu.chargeFlip > 0.2) return false;
+		  break;
+		}
+	    }
+	}
     }
 
-  if ( !(fakeableLeps[0].obj.Pt()>25. && fakeableLeps[1].obj.Pt()>10.) ) return false; //pt requirement
-  if ( abs(fakeableLeps[1].pdgID) == 11 && fakeableLeps[1].obj.Pt() <= 15. ) return false; //pt2 cut for ele
+  if ( !(fakeableLeps[0].correctedPt>25. && fakeableLeps[1].correctedPt>10.) ) return false; //pt requirement
+  if ( abs(fakeableLeps[1].pdgID) == 11 && fakeableLeps[1].correctedPt <= 15. ) return false; //pt2 cut for ele
 
   if (fakeableEles.size() == 2 )
     {

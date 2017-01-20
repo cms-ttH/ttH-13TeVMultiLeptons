@@ -208,18 +208,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	  ///
 	  ////////
 	  
-      vecPatElectron selectedElectrons_fakeable = GetSelectedElectrons( selectedElectrons_preselected, 10, electronID::electronFakeable );   //miniAODhelper.
-      vecPatMuon selectedMuons_fakeable = GetSelectedMuons( selectedMuons_preselected, 10,muonID::muonFakeable);
-      //vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, min_mu_pt, muonID::muonPreselection );
-
-	  //auto lepTuple = pickLeptons(selectedMuons_preselected, muonID::muonFakeable, min_mu_pt, selectedElectrons_preselected, electronID::electronFakeable, min_ele_pt);
-	  //vecPatMuon selectedMuons_fakeable = std::get<0>(lepTuple);
-	  //vecPatElectron selectedElectrons_fakeable = std::get<1>(lepTuple);
+	  vecPatElectron selectedElectrons_fakeable = GetSelectedElectrons( selectedElectrons_preselected, 10, electronID::electronFakeable );
+	  vecPatMuon selectedMuons_fakeable = GetSelectedMuons( selectedMuons_preselected, 10,muonID::muonFakeable);
 	  
-	  auto lepTuple = pickLeptons(selectedMuons_fakeable, muonID::muonTight, 10, selectedElectrons_fakeable, electronID::electronTight, 15);
-	  vecPatMuon selectedMuons_tight = std::get<0>(lepTuple);
-	  vecPatElectron selectedElectrons_tight = std::get<1>(lepTuple);
-	  
+	  vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
+	  vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
 	  
 	  selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
 	  selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);

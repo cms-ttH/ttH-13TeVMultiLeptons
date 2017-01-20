@@ -209,7 +209,6 @@ class MultileptonAna: public MiniAODHelper
   std::vector<pat::Electron> GetSelectedElectrons(const std::vector<pat::Electron>&, const float, const electronID::electronID);
   std::vector<pat::Tau> GetSelectedTaus(const std::vector<pat::Tau>&, const float, const tauID::tauID);
   int GetHiggsDaughterId(const std::vector<reco::GenParticle>&);
-  std::tuple<std::vector<pat::Muon>,std::vector<pat::Electron>> pickLeptons(const vecPatMuon&, const muonID::muonID, const float, const vecPatElectron&, const electronID::electronID, const float);
   template <typename obj1, typename obj2> std::vector<obj1> cleanObjects(const std::vector<obj1>&, const std::vector<obj2>&, const double);
   template <typename particleType> pat::Jet getClosestJet(const std::vector<pat::Jet>&, const particleType&);
 
