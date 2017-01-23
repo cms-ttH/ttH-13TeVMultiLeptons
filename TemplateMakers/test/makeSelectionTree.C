@@ -20,6 +20,7 @@
 #include "loadSamples.h"
 #include "treeTools.h"
 #include "GenParticleHelper.h"
+#include "FakeRateEvaluator.h"
 
 /////////////////////////////////////////
 ///
@@ -31,8 +32,10 @@
 void run_it(TString sample_name, TString selection, TString output_file, int job_no)
 {
   FileLoader myLoader(sample_name, job_no);
-  
   TChain *chain = myLoader.chain;
+
+  //  TFile* file = new TFile("output_tree.root","READONLY");
+  // TTree *chain = (TTree*)file->Get("OSTwoLepAna/summaryTree");  
 
   int chainentries = chain->GetEntries();   
   int last_entry = chainentries;
@@ -61,7 +64,8 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   vector<ttH::Jet> *bTight_jets_intree=0;  
   vector<ttH::Jet> *bLoose_jets_intree=0;  
 
-  chain->SetBranchAddress("mcwgt", &mcwgt_intree);
+  if (sample_name == "data") chain->SetBranchStatus("mcwgt",0);      
+  else chain->SetBranchAddress("mcwgt", &mcwgt_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
@@ -76,6 +80,8 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   chain->SetBranchAddress("met", &met_intree);
   chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
 
+  FakeRateEvaluator lepFakeRateObject;
+  
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
   if (job_no == -1 || job_no == 0)
     {
@@ -85,6 +91,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 
   TTree *ss2l_tree = (TTree*)chain->CloneTree(0);
   ss2l_tree->SetName("ss2l_tree");
+  if (sample_name == "data") ss2l_tree->Branch("mcwgt",&mcwgt_intree);
 
   TH1D* failure_hist = new TH1D("failure_hist","Event Selection Sideband",7,1,8);
   failure_hist->GetXaxis()->SetBinLabel(1,"psLeps >= 2");
@@ -109,7 +116,6 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   chain->SetCacheSize(cachesize);
 
   double starttime = get_wall_time();
-
   for (int i=first_entry; i<=last_entry; i++)
     {
       
@@ -145,9 +151,16 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 	  //// normal selection
 	  ////
 	  //////////////////////////
-	  bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
+	  //bool passes2lss = pass2lss(*tight_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
+	  //bool passes2lss = pass2lss(*tight_electrons_intree, *fakeable_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *fakeable_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
+	  bool passes2lss = pass2lss_lepMVA_AR(*tight_electrons_intree, *fakeable_electrons_intree, *preselected_electrons_intree, *tight_muons_intree, *fakeable_muons_intree, *preselected_muons_intree, *preselected_jets_intree, *met_intree);
 	  if ( passes2lss) 
 	    {
+	      if (sample_name == "data")
+		{
+		  mcwgt_intree = lepFakeRateObject.get_fr(*tight_leptons_intree, *fakeable_leptons_intree);
+		}
+
 	       if (sample_name == "tth_aMC_old")
 		 {
 		   myGenParticleHelper.clear();
@@ -206,11 +219,10 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
   
 }
 
-void makeSelectionTree(TString sample="ttw_jetClean_test", TString selection="training", int job_no=-1)
+void makeSelectionTree(TString sample="data", TString selection="analysis", int job_no=-1)
 {
 
-  //TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/";
-  TString output_dir = "/scratch365/cmuelle2/genFilter_trees/";
+  TString output_dir = "/scratch365/cmuelle2/extraction_trees/jan22_ichep_data/";
 
   TString postfix;
   if (selection == "analysis") postfix = "_selection_tree_2lss.root";
