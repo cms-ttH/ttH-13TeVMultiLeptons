@@ -57,8 +57,8 @@ private:
     TH1D* sig_h = new TH1D("sig_h","sig_h",num_bins,xmin,xmax);
     TH1D* bkg_h = new TH1D("bkg_h","bkg_h",num_bins,xmin,xmax);
 
-    TCut cuts_sig = "mcwgt*(@bTight_jets.size() >=2)";
-    TCut cuts_bkg = "mcwgt*(@bTight_jets.size() >=2)";
+    TCut cuts_sig = "mcwgt*(1.)";
+    TCut cuts_bkg = "mcwgt*(1.)";
 
     TString draw_variable_signal = variable_name + " >> sig_h";
     TString draw_variable_background = variable_name + " >> bkg_h";
@@ -121,8 +121,8 @@ void drawRocs(vector<RocObject> roc_vec)
 void plotRocFromTree(void)
 {
   vector<RocObject> roc_vector;
-  TString variable_name = "reco_score";
-  int num_bins = 100;
+  TString variable_name = "vs_ttbar_score";
+  int num_bins = 30;
   double xmin = -1.;
   double xmax = 1.05;
   TString tree_name = "ss2l_tree";
@@ -133,17 +133,22 @@ void plotRocFromTree(void)
   TString signal_file2 = "/scratch365/cmuelle2/extraction_trees/jan14_ICHEP_trees_withFactorizedRecoBdt_fastPerm_noHiggsLoop_genFilterWeights/tth_aMC_old_2lss_extraction.root";
   TString background_file2 = "/scratch365/cmuelle2/extraction_trees/jan14_ICHEP_trees_withFactorizedRecoBdt_fastPerm_noHiggsLoop_genFilterWeights/ttbar_semiLep_powheg_2lss_extraction.root";
 
-  TString signal_file3 = "/scratch365/cmuelle2/extraction_trees/jan15_ICHEP_trees_withFactorizedRecoBdt_fastPerm_yesHiggsLoop_genFilterWeights/tth_aMC_old_2lss_extraction.root";
-  TString background_file3 = "/scratch365/cmuelle2/extraction_trees/jan15_ICHEP_trees_withFactorizedRecoBdt_fastPerm_yesHiggsLoop_genFilterWeights/ttbar_semiLep_powheg_2lss_extraction.root";
+  TString background_file3 = "/scratch365/cmuelle2/extraction_trees/jan23_ichep_data/data.root";
 
-  RocObject Roc1(signal_file1, background_file1, tree_name, "weights for marco", variable_name, num_bins, xmin, xmax, 419);
+  RocObject Roc1(signal_file1, background_file1, tree_name, "weights for marco, MC bkg standard", variable_name, num_bins, xmin, xmax, 419);
   roc_vector.push_back(Roc1);
 
-  RocObject Roc2(signal_file2, background_file2, tree_name, "gen filter", variable_name, num_bins, xmin, xmax, 6);
+  RocObject Roc2(signal_file1, background_file1, tree_name, "weights for marco, MC bkg w/ recoBDT", "vs_ttbar_withRecoBdt_bti_blbl_score", num_bins, xmin, xmax, 1);
   roc_vector.push_back(Roc2);
 
-  RocObject Roc3(signal_file3, background_file3, tree_name, "gen filter hybrid", variable_name, num_bins, xmin, xmax, 4);
+  // RocObject Roc2(signal_file2, background_file2, tree_name, "gen filter", variable_name, num_bins, xmin, xmax, 6);
+  // roc_vector.push_back(Roc2);
+
+  RocObject Roc3(signal_file1, background_file3, tree_name, "weights for marco, data driven bkg, standard", variable_name, num_bins, xmin, xmax, 4);
   roc_vector.push_back(Roc3);
+
+  RocObject Roc4(signal_file1, background_file3, tree_name, "weights for marco, data driven bkg, w/ reco bdt", "vs_ttbar_withRecoBdt_bti_blbl_score", num_bins, xmin, xmax, 6);
+  roc_vector.push_back(Roc4);
 
   drawRocs(roc_vector);
 }
