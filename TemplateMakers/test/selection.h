@@ -44,11 +44,7 @@ bool pass2lss(
 {
   vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
   vector<ttH::Lepton> fakeableLeps = get_collection(fakeableMus,fakeableEles);
-  /* tightMus = get_2lss_sr_mus(tightMus); */
-  /* tightEles = get_2lss_sr_eles(tightEles,"tight"); */
   vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
-
-  
 
   if ( tightLeps.size() != 2 ) return false; //exactly two leptons
   if (tightLeps[0].charge != tightLeps[1].charge) return false; //same sign
