@@ -12,8 +12,8 @@
 #include <cmath>
 #include "TLorentzVector.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
-//#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor_factorized.h"
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor_factorized.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/signalExtractionTreeMaker.h"
 #include "TMVA/Config.h"
 #include "TMVA/Tools.h"
@@ -191,7 +191,7 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   //  gEnv->SetValue("TFile.AsyncPrefetching",1.);
   double starttime = get_wall_time();
 
-  //  max_tree_entry = 1000;
+  //max_tree_entry = 10000;
   for (int i=min_tree_entry; i<max_tree_entry; i++)
     {      
       printProgress(i,max_tree_entry);
@@ -216,8 +216,8 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
       higgs_tlv_intree = q1_from_higgs_tlv + q2_from_higgs_tlv + lep_from_higgs_tlv;
 
       // auto lep_collection = preselected_leptons_intree;
-      //auto lep_collection = fakeable_leptons_intree;
-      auto lep_collection = tight_leptons_intree;
+      auto lep_collection = fakeable_leptons_intree;
+      //auto lep_collection = tight_leptons_intree;
 
       bdtReconstructor.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
       bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
@@ -251,13 +251,13 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   
 }
 
-void evaluateRecoBdt(string sample_name="tth_aMC_old", int events_per_job=-1, int job_no=-1)
+void evaluateRecoBdt(string sample_name="data", int events_per_job=-1, int job_no=-1)
 {
   TString input_file_name = getSelectionFile(sample_name);
   TFile *input_file = new TFile(input_file_name, "READONLY");
 
   if (sample_name == "") sample_name = "output_test";
-  TString output_dir = "/scratch365/cmuelle2/extraction_trees/jan15_ICHEP_trees_withFactorizedRecoBdt_fastPerm_yesHiggsLoop_genFilterWeights/";
+  TString output_dir = "/scratch365/cmuelle2/extraction_trees/jan23_ichep_data/";
   TString output_file_name = output_dir+sample_name;
   if (events_per_job > -1 && job_no > -1) output_file_name += "_"+std::to_string(job_no);
   output_file_name += ".root";
