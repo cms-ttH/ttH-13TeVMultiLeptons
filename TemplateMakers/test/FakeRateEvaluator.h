@@ -19,29 +19,24 @@ class FakeRateEvaluator
 
   double get_fr(vector<ttH::Lepton> tightLeps, vector<ttH::Lepton> fakeableLeps)
   {
+    std::sort(fakeableLeps.begin(), fakeableLeps.end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.correctedPt > b.correctedPt;});
     double fr_weight = 1.;
     int bin;
     for (unsigned int i=0; i <=1; i++)
       {
-	bool isTight = false;
-	for (auto & tightLep : tightLeps)
-	  {
-	    if (fakeableLeps[i].obj.pt() == tightLep.obj.pt())
-	      {
-		isTight = true;
-		break;
-	      }
-	  }
+	bool isTight = false;	
+	if (fakeableLeps[i].obj.pt() == fakeableLeps[i].correctedPt) isTight = true;
+
 	if (!isTight)
 	  {
 	    if (abs(fakeableLeps[i].pdgID) == 11)
 	      {
-		bin = ele_fr_data->FindBin(fakeableLeps[i].correctedPt,fakeableLeps[i].obj.eta());
+		bin = ele_fr_data->FindBin( min(99.,fakeableLeps[i].correctedPt), abs(fakeableLeps[i].obj.eta()));
 		fr_weight *= ele_fr_data->GetBinContent(bin)/(1.-ele_fr_data->GetBinContent(bin));
 	      }
 	    else if (abs(fakeableLeps[i].pdgID) == 13)
 	      {
-		bin = mu_fr_data->FindBin(fakeableLeps[i].correctedPt,fakeableLeps[i].obj.eta());
+		bin = mu_fr_data->FindBin( min(99.,fakeableLeps[i].correctedPt), abs(fakeableLeps[i].obj.eta()));
 		fr_weight *= mu_fr_data->GetBinContent(bin)/(1.-mu_fr_data->GetBinContent(bin));
 	      }
 	  }
