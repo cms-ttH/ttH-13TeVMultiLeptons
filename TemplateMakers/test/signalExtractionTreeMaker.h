@@ -270,8 +270,10 @@ class signalExtractionTreeMaker
       }
 
     ///SHOULD PROBABLY USE CORRECTED PT HERE
-    l1_pt_branch = lep1.obj.pt();
-    l2_pt_branch = lep2.obj.pt();
+    /* l1_pt_branch = lep1.obj.pt(); */
+    /* l2_pt_branch = lep2.obj.pt(); */
+    l1_pt_branch = lep1.correctedPt;
+    l2_pt_branch = lep2.correctedPt;
     
     ttH::Jet lep1_closest_jet = getClosestJet(*jets_input, lep1);
     ttH::Jet lep2_closest_jet = getClosestJet(*jets_input, lep2);
