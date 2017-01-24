@@ -2,19 +2,19 @@ from lobster import cmssw
 from lobster.core import *
 from lobster.monitor.elk.interface import ElkInterface
 
-version = '_ICHEP_data'
-projname = 'new_samples'
+version = '_ICHEP_data_jan20_v2'
+projname = 'data'
 
 storage = StorageConfiguration(
         output=[
-            "hdfs://eddie.crc.nd.edu:19000/store/user/$USER/lobster_test_" + version,
-            "file:///hadoop/store/user/$USER/lobster_test_" + version,
+            "hdfs://eddie.crc.nd.edu:19000/store/user/muell149/lobster_test_" + version,
+            #"file:///hadoop/store/user/muell149/lobster_test_" + version,
             # ND is not in the XrootD redirector, thus hardcode server.
             # Note the double-slash after the hostname!
-            "root://deepthought.crc.nd.edu//store/user/$USER/lobster_test_" + version,
-            #"chirp://eddie.crc.nd.edu:9094/store/user/$USER/lobster_test_" + version,
-            "gsiftp://T3_US_NotreDame/store/user/$USER/lobster_test_" + version,
-            "srm://T3_US_NotreDame/store/user/$USER/lobster_test_" + version
+            "root://deepthought.crc.nd.edu//store/user/muell149/lobster_test_" + version,
+            #"chirp://eddie.crc.nd.edu:9094/store/user/muell149/lobster_test_" + version,
+            "gsiftp://T3_US_NotreDame/store/user/muell149/lobster_test_" + version,
+            #"srm://T3_US_NotreDame/store/user/muell149/lobster_test_" + version
         ]
 )
 
@@ -232,10 +232,10 @@ workflows.append(MuonEG2016D)
 
 
 config = Config(
-    workdir='/tmpscratch/users/$USER/lobster_test_' + version,
+    workdir='/tmpscratch/users/cmuelle2/lobster_test_' + version,
     plotdir='~/www/lobster/test_' + version,
     storage=storage,
     workflows=workflows,
     advanced=AdvancedOptions(log_level=1, xrootd_servers=['ndcms.crc.nd.edu', 'cmsxrootd.fnal.gov', 'xrootd-local.unl.edu', 'xrootd.rcac.purdue.edu', 'xrootd.cmsaf.mit.edu', 'deepthought.crc.nd.edu'], bad_exit_codes=[127,160]),
-    elk=ElkInterface(es_host='elk.crc.nd.edu', es_port=9200, kib_host='elk.crc.nd.edu', kib_port=5601, project=projname + version, dashboards=['Core', 'Advanced', 'Tasks'], refresh_interval=30)
+#    elk=ElkInterface(es_host='elk.crc.nd.edu', es_port=9200, kib_host='elk.crc.nd.edu', kib_port=5601, project=projname + version, dashboards=['Core', 'Advanced', 'Tasks'], refresh_interval=30)
 )
