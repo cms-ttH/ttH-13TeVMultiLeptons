@@ -95,17 +95,6 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     ss2l_tree->SetName("ss2l_tree");
     if (sample_name == "data") ss2l_tree->Branch("mcwgt",&mcwgt_intree);
 
-    TH1D* failure_hist = new TH1D("failure_hist","Event Selection Sideband",7,1,8);
-    failure_hist->GetXaxis()->SetBinLabel(1,"psLeps >= 2");
-    failure_hist->GetXaxis()->SetBinLabel(2,"minDiLepMass > 12");
-    failure_hist->GetXaxis()->SetBinLabel(3,"bjet cut");
-    failure_hist->GetXaxis()->SetBinLabel(4,"(tight || FO leps) > 2");
-    failure_hist->GetXaxis()->SetBinLabel(5,"same-sign leptons");
-    failure_hist->GetXaxis()->SetBinLabel(6,"nJets >= 4");
-    failure_hist->GetXaxis()->SetBinLabel(7,"l1pt > 20, l2pt > 10");
-    failure_hist->GetYaxis()->SetTitle("Events");
-    failure_hist->GetXaxis()->SetTitle("failed cut");
-
     GenParticleHelper myGenParticleHelper;
     myGenParticleHelper.initializeTree(ss2l_tree);
 
@@ -140,7 +129,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
         ////
         //////////////////////////
 
-        bool passesCommon = passCommon(*preselected_electrons_intree, *preselected_muons_intree, *preselected_jets_intree, failure_hist);
+        bool passesCommon = passCommon(*preselected_electrons_intree, *preselected_muons_intree, *preselected_jets_intree);
         if (!passesCommon) {
             continue;
         }
@@ -152,16 +141,16 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
             ////
             //////////////////////////
 
-            bool passes2lss = pass2lss(
-                    *tight_electrons_intree,
-                    *fakeable_electrons_intree,
-                    *preselected_electrons_intree,
-                    *tight_muons_intree,
-                    *fakeable_muons_intree,
-                    *preselected_muons_intree,
-                    *preselected_jets_intree,
-                    *met_intree
-            );
+            // bool passes2lss = pass2lss(
+            //         *tight_electrons_intree,
+            //         *fakeable_electrons_intree,
+            //         *preselected_electrons_intree,
+            //         *tight_muons_intree,
+            //         *fakeable_muons_intree,
+            //         *preselected_muons_intree,
+            //         *preselected_jets_intree,
+            //         *met_intree
+            // );
 
             bool passes2lss_lepMVA_AR = pass2lss_lepMVA_AR(
                     *tight_electrons_intree,
@@ -174,44 +163,44 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
                     *met_intree
             );
 
-            bool passes2los = pass2los(
-                *tight_electrons_intree,
-                *fakeable_electrons_intree,
-                *preselected_electrons_intree,
-                *tight_muons_intree,
-                *fakeable_muons_intree,
-                *preselected_muons_intree,
-                *preselected_jets_intree,
-                *met_intree
-            );
+            // bool passes2los = pass2los(
+            //     *tight_electrons_intree,
+            //     *fakeable_electrons_intree,
+            //     *preselected_electrons_intree,
+            //     *tight_muons_intree,
+            //     *fakeable_muons_intree,
+            //     *preselected_muons_intree,
+            //     *preselected_jets_intree,
+            //     *met_intree
+            // );
 
-            bool passes3l = pass3l(
-                *tight_electrons_intree,
-                *fakeable_electrons_intree,
-                *preselected_electrons_intree,
-                *tight_muons_intree,
-                *fakeable_muons_intree,
-                *preselected_muons_intree,
-                *preselected_jets_intree,
-                *met_intree
-            );
+            // bool passes3l = pass3l(
+            //     *tight_electrons_intree,
+            //     *fakeable_electrons_intree,
+            //     *preselected_electrons_intree,
+            //     *tight_muons_intree,
+            //     *fakeable_muons_intree,
+            //     *preselected_muons_intree,
+            //     *preselected_jets_intree,
+            //     *met_intree
+            // );
 
-            bool passes3l_lepMVA_AR = pass3l_lepMVA_AR(
-                *tight_electrons_intree,
-                *fakeable_electrons_intree,
-                *preselected_electrons_intree,
-                *tight_muons_intree,
-                *fakeable_muons_intree,
-                *preselected_muons_intree,
-                *preselected_jets_intree,
-                *met_intree
-            );
+            // bool passes3l_lepMVA_AR = pass3l_lepMVA_AR(
+            //     *tight_electrons_intree,
+            //     *fakeable_electrons_intree,
+            //     *preselected_electrons_intree,
+            //     *tight_muons_intree,
+            //     *fakeable_muons_intree,
+            //     *preselected_muons_intree,
+            //     *preselected_jets_intree,
+            //     *met_intree
+            // );
 
-            if (passes2lss) {
+            if (passes2lss_lepMVA_AR) {
                 if (sample_name == "data") {
                     mcwgt_intree = lepFakeRateObject.get_fr(*tight_leptons_intree, *fakeable_leptons_intree);
                 }
-                if (sample_name == "tth_aMC_old") {
+                else if (sample_name == "tth_aMC_old") {
                     myGenParticleHelper.clear();
                     myGenParticleHelper.matchReco2Gen(*tight_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
                 }
@@ -239,7 +228,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
             auto mu_collection = *preselected_muons_intree;
             auto ele_collection = *preselected_electrons_intree;
       
-            bool passes2lss = pass2lss_bdtTraining(ele_collection, mu_collection, *preselected_jets_intree, failure_hist);
+            bool passes2lss = pass2lss_bdtTraining(ele_collection, mu_collection, *preselected_jets_intree);
             if ( passes2lss ) {
                 myGenParticleHelper.clear();
                 myGenParticleHelper.matchReco2Gen(lep_collection, *preselected_jets_intree, *pruned_genParticles_intree);
@@ -256,16 +245,13 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
     if ( (last_entry - first_entry) >0) cout << "an average of " << (endtime - starttime) / (last_entry - first_entry) << " per event." << endl;
 
-    failure_hist->Write();  
     ss2l_tree->Write();
     copiedfile->Close();
 }
 
 void makeSelectionTree(TString sample="data", TString selection="analysis", int job_no=-1)
 {
-    //TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/";
-    //TString output_dir = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
-    TString output_dir = "/scratch365/cmuelle2/extraction_trees/jan22_ichep_data/";
+    TString output_dir = "/scratch365/cmuelle2/selection_trees/jan24_ichep_trees/";
 
     TString postfix;
     if (selection == "analysis") postfix = "_selection_tree_2lss.root";

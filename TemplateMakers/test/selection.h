@@ -8,7 +8,7 @@ vector<ttH::Lepton> get_collection(vector<ttH::Muon> muObjs, vector<ttH::Electro
     return lepCollection;
 }
 
-bool passCommon(vector<ttH::Electron> psEles, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets, TH1D* failure_hist)
+bool passCommon(vector<ttH::Electron> psEles, vector<ttH::Muon> psMus, vector<ttH::Jet> psJets)
 {
     auto taggedjetstight = keepTagged(psJets,"M");
     auto taggedjetsloose = keepTagged(psJets,"L");
@@ -16,17 +16,14 @@ bool passCommon(vector<ttH::Electron> psEles, vector<ttH::Muon> psMus, vector<tt
     vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
 
     if ( psLeps.size() < 2 ) {
-        failure_hist->Fill(1);
         return false;
     }
     double mindilepmass = getTwoObjKineExtreme(psLeps,"min","mass");
     if ( mindilepmass <= 12. ) {
-        failure_hist->Fill(2);
         return false;
     }
 
     if (!( ( taggedjetsloose.size() >= 2 ) || ( taggedjetstight.size() >=1 ) )) {
-        failure_hist->Fill(3);
         return false;
     }
     return true;
@@ -109,23 +106,20 @@ bool pass2l(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vecto
 }
 
 
-bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets, TH1D* failure_hist)
+bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets)
 {
   vector<ttH::Lepton> looseLeps = get_collection(looseMus,looseEles);
 
   if ( looseLeps.size() < 2 ) 
     {
-      failure_hist->Fill(4);
       return false;
     }
   if (looseLeps[0].charge != looseLeps[1].charge)
     {
-      failure_hist->Fill(5);
       return false; 
     }
   if ( psJets.size() < 4 )
     {
-      failure_hist->Fill(6);
       return false;
     }
   double lep1_pt = looseLeps[0].correctedPt;
@@ -133,7 +127,6 @@ bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> loo
 
   if ( !(lep1_pt>20 && lep2_pt>10) )
     {
-      failure_hist->Fill(7);
       return false;
     }
   return true;
