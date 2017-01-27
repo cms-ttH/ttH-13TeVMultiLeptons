@@ -229,7 +229,7 @@ class eventReconstructor
     //for 7-jet (and fewer events), add 3 nulls
     //for 8-jet events, add 2 nulls
     //for >=9jet events, add 1 null
-    ttH::Jet null_jet;
+    ttH::Jet null_jet; //NOTE: all null jets have csv = -0.2
     if (jets_in.size() <= 7)
       {
 	jets_in.push_back(null_jet);
