@@ -11,7 +11,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   parse_params();
   
   alltriggerstostudy = HLTInfo();
-	
+  
   muons_token_ = consumes<pat::MuonCollection>(constructparams.getParameter<edm::InputTag>("muons"));
   electrons_token_ = consumes<pat::ElectronCollection>(constructparams.getParameter<edm::InputTag>("electrons"));
   taus_token_ = consumes<pat::TauCollection>(constructparams.getParameter<edm::InputTag>("taus"));
@@ -34,7 +34,7 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 void OSTwoLepAna::beginJob()
 {
   
-  // job setup	
+  // job setup  
   SetUp(analysisYear, -9999, analysisType::DIL, isData);
   //  SetFactorizedJetCorrector(); // remove ???
   
@@ -45,15 +45,15 @@ void OSTwoLepAna::beginJob()
   numInitialWeightedMCevents = newfs->make<TH1D>("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
   
   // add the tree:
-  summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");	
+  summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");  
   tree_add_branches();
 
   singleEleCount=0;
   singleMuCount=0;
   singleTauCount=0;
   singleJetCount=0;
+  
     
-    	
 }
 void OSTwoLepAna::endJob() {
 
@@ -72,7 +72,6 @@ void OSTwoLepAna::endJob() {
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
-  
   // if ( event.id().event() != 1692766 ) 
   //   {
   //     if (debug) cout << "eventA: " << event.id().event() << endl;
@@ -81,318 +80,322 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   
   // analysis goes here
   //  if (debug) cout << "eventB: " << event.id().event() << endl;
-	clock_t startTime = clock();
-	eventcount++;
-	SetupOptions(event); // chgd
-    
-    
-        // tree vars to default values:
-        initialize_variables();
+  clock_t startTime = clock();
+  eventcount++;
+  SetupOptions(event); // chgd
   
-	trigRes triggerResults = 		GetTriggers(event);
-	auto muons =                    get_collection(event, muons_token_);
-	auto electrons =                get_collection(event, electrons_token_);
-	auto taus =                     get_collection(event, taus_token_);
-	edm::Handle<pat::JetCollection> pfjets = 			    get_collection(event, jets_token_);
-	patMETs mets = 				    get_collection(event, mets_token_);
-	prunedGenParticles prunedParticles;
-	packedGenParticles packedParticles;
-	edm::Handle<std::vector<reco::GenJet> > genjets;
-	if (!isData)
-	  {
-	    prunedParticles = get_collection(event, genParticles_token_);
-	    packedParticles = get_collection(event, genPackedParticles_token_);
-	    genjets = get_collection(event, genJet_token_);
-	  }
+  
+  // tree vars to default values:
+  initialize_variables();
 
-	SetRho(rho);
-	
-	int numpvs =				GetVertices(event);
-        if (numpvs<1) return; // skips event?
-	if (debug) cout << "numpvs: " << numpvs << endl;
-	
-	edm::Handle<GenEventInfoProduct> GenInfo;
-	if (!isData) event.getByToken(genInfo_token_,GenInfo);
-    	
-	///////////////////////////
-	if (!isData) mcwgt_intree = GenInfo->weight();		// <- gen-level weight
-        
-	// make it +/-1!
-	mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
-        
-	double weight = 1.;					// <- analysis weight 
-	weight *= mcwgt_intree;					// MC-only (flag to be added if nec)
-	///////////////////////////
-	        
-	// count number of weighted mc events we started with:
-	numInitialWeightedMCevents->Fill(1,mcwgt_intree);
-    					
-	/////////
-	///
-	/// Electrons
-	///
-	////////
-	
-	double min_ele_pt = 7.; // lowered for studies
+  trigRes triggerResults =        GetTriggers(event);
+  auto muons =                    get_collection(event, muons_token_);
+  auto electrons =                get_collection(event, electrons_token_);
+  auto taus =                     get_collection(event, taus_token_);
+  edm::Handle<pat::JetCollection> pfjets =                get_collection(event, jets_token_);
+  patMETs mets =                  get_collection(event, mets_token_);
+  prunedGenParticles prunedParticles;
+  packedGenParticles packedParticles;
+  edm::Handle<std::vector<reco::GenJet> > genjets;
+  if (!isData)
+  {
+    prunedParticles = get_collection(event, genParticles_token_);
+    packedParticles = get_collection(event, genPackedParticles_token_);
+    genjets = get_collection(event, genJet_token_);
+  }
 
-	vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronPreselection );	//miniAODhelper.
-	vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronRaw );	//miniAODhelper.
+  SetRho(rho);
 
-	/////////
-	///
-	/// Muons
-	///
-	////////
+  int numpvs =                GetVertices(event);
+  if (numpvs<1) return; // skips event?
+  if (debug) cout << "numpvs: " << numpvs << endl;
+  
+  edm::Handle<GenEventInfoProduct> GenInfo;
+  if (!isData) event.getByToken(genInfo_token_,GenInfo);
 
-	double min_mu_pt = 5.; // lowered for studies
-        
-	vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, min_mu_pt, muonID::muonPreselection );
-	vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, min_mu_pt, muonID::muonRaw );
-        
-	/////////
-	///
-	/// Taus
-	///
-	////////        
-        
-	vecPatTau selectedTaus_preselected = GetSelectedTaus( *taus, 20., tauID::tauLoose );
+  ///////////////////////////
+  if (!isData) mcwgt_intree = GenInfo->weight();      // <- gen-level weight
 
-	/////////
-	///
-	/// Cleaning 
-	///
-	////////
-	
-	//remove electrons that are close (dR <=0.05) to muons
-	selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05); 	
+  // make it +/-1!
+  mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
 
-        //remove taus that are close (dR <=0.3) to muons
-	selectedTaus_preselected = cleanObjects<pat::Tau,pat::Muon>(selectedTaus_preselected,selectedMuons_preselected,0.3);
-        
-        //remove taus that are close (dR <=0.3) to electrons
-	selectedTaus_preselected = cleanObjects<pat::Tau,pat::Electron>(selectedTaus_preselected,selectedElectrons_preselected,0.3);
-        
-	vecPatTau selectedTaus_selected = GetSelectedTaus( selectedTaus_preselected, 20., tauID::tauMedium );
-	
-	/////////
-	///
-	/// Leptons
-	///
-	////////	
-	
-	bool skim_statement = true;
-	if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
+  double weight = 1.;                 // <- analysis weight 
+  weight *= mcwgt_intree;                 // MC-only (flag to be added if nec)
+  ///////////////////////////
 
-        if ( skim_statement )
+  // count number of weighted mc events we started with:
+  numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+
+  /////////
+  ///
+  /// Electrons
+  ///
+  ////////
+  
+  double min_ele_pt = 7.; // lowered for studies
+
+  vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronPreselection );    //miniAODhelper.
+  vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronRaw ); //miniAODhelper.
+
+  /////////
+  ///
+  /// Muons
+  ///
+  ////////
+
+  double min_mu_pt = 5.; // lowered for studies
+
+  vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, min_mu_pt, muonID::muonPreselection );
+  vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, min_mu_pt, muonID::muonRaw );
+
+  /////////
+  ///
+  /// Taus
+  ///
+  ////////        
+
+  vecPatTau selectedTaus_preselected = GetSelectedTaus( *taus, 20., tauID::tauLoose );
+
+  /////////
+  ///
+  /// Cleaning 
+  ///
+  ////////
+  
+  //remove electrons that are close (dR <=0.05) to muons
+  selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05);    
+
+  //remove taus that are close (dR <=0.3) to muons
+  selectedTaus_preselected = cleanObjects<pat::Tau,pat::Muon>(selectedTaus_preselected,selectedMuons_preselected,0.3);
+
+  //remove taus that are close (dR <=0.3) to electrons
+  selectedTaus_preselected = cleanObjects<pat::Tau,pat::Electron>(selectedTaus_preselected,selectedElectrons_preselected,0.3);
+
+  vecPatTau selectedTaus_selected = GetSelectedTaus( selectedTaus_preselected, 20., tauID::tauMedium );
+  
+  /////////
+  ///
+  /// Leptons
+  ///
+  ////////    
+  
+  bool skim_statement = true;
+  if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
+
+  if ( skim_statement )
+  {
+
+    eventnum_intree = event.id().event();
+    lumiBlock_intree = event.id().luminosityBlock();
+    runNumber_intree = event.id().run();
+      
+    /////////
+    ///
+    /// Jets
+    ///
+    ////////
+
+    vecPatJet rawJets = GetUncorrectedJets(*pfjets);
+    vecPatJet correctedRawJets = (*pfjets);
+
+    ///// Grab the QGID 
+    edm::Handle<edm::ValueMap<float>> qgHandle;
+    event.getByToken(qg_token_, qgHandle);
+    int jet_counter = 0;
+    for(auto jet = pfjets->begin();  jet != pfjets->end(); ++jet)
+    {
+      edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection> (pfjets, jet - pfjets->begin()));
+      float qgLikelihood = (*qgHandle)[jetRef];
+      correctedRawJets[jet_counter].addUserFloat("qgid",qgLikelihood);
+      rawJets[jet_counter].addUserFloat("qgid",qgLikelihood);
+      jet_counter +=1;
+    }
+
+    vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets,selectedTaus_preselected,0.4);
+    vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
+
+    /////////
+    ///
+    /// Filling final selection PAT collections
+    ///
+    ////////
+
+    vecPatElectron selectedElectrons_fakeable = GetSelectedElectrons( selectedElectrons_preselected, 10, electronID::electronFakeable );
+    vecPatMuon selectedMuons_fakeable = GetSelectedMuons( selectedMuons_preselected, 10,muonID::muonFakeable);
+
+    vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
+    vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
+
+    selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
+    selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
+
+    // selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
+    // selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
+
+    /////////
+    ///
+    /// MET
+    ///
+    ////////
+
+    //do anything to pat met here
+
+    /////////
+    ///
+    /// Trigger
+    ///
+    ////////
+
+    //cout << hlt_alltrigs.size() << endl;
+
+    // if event passes an HLT path add it to the tree:
+    for (unsigned int trigit=0; trigit<hlt_alltrigs.size(); trigit++)
+    {
+      try
+      {
+        if (triggerResults->accept(hltConfig_.triggerIndex(hlt_alltrigs[trigit])))
         {
-            
-	  eventnum_intree = event.id().event();
-	  lumiBlock_intree = event.id().luminosityBlock();
-	  runNumber_intree = event.id().run();
-          
-	  /////////
-	  ///
-	  /// Jets
-	  ///
-	  ////////
-	  
-	  vecPatJet rawJets = GetUncorrectedJets(*pfjets);
+          passTrigger_intree.push_back(hlt_alltrigs[trigit]); //don't care about prescales
+          // pair: <L1 prescale, HLT prescale>
+          //std::pair<int,int> prescaleVals= hltPrescaleProvider_.prescaleValues(event, evsetup, hlt_alltrigs[trigit]);
+          // pair: < vector of pairs of (L1 seed, L1 prescale), HLT prescale >
+          // std::pair<std::vector<std::pair<std::string,int> >,int> prescaleVals = hltPrescaleProvider_.prescaleValuesInDetail(event, evsetup, hlt_alltrigs[trigit]);          
+          // std::vector<std::pair<std::string,int> > prescaleValsL1 = prescaleVals.first;
+          // if (prescaleVals.second==1) // check if HLT prescale=1
+          //   {                    
+          //     for (unsigned int trigit2=0; trigit2<prescaleValsL1.size(); trigit2++)
+          //       {                                                                                
+          //    if (prescaleValsL1[trigit2].second==1) // check for at least 1 L1 seed that had prescale=1 (in the case of multiple seeds, we are assuming they are in OR!)
+          //      {
+          //        passTrigger_intree.push_back(hlt_alltrigs[trigit]);
+          //        break;
+          //      }
+          //       }
+          //   }
+        }
+      }
+      catch(...)
+      {
+        cout << "problem with trigger loop..." << endl;
+        continue;
+      }
+    }
 
-	  vecPatJet correctedRawJets = (*pfjets);          	  
-	  vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets,selectedTaus_preselected,0.4);
-	  vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
-	  
-	  /////////
-	  ///
-	  /// Filling final selection PAT collections
-	  ///
-	  ////////
-	  
-	  vecPatElectron selectedElectrons_fakeable = GetSelectedElectrons( selectedElectrons_preselected, 10, electronID::electronFakeable );
-	  vecPatMuon selectedMuons_fakeable = GetSelectedMuons( selectedMuons_preselected, 10,muonID::muonFakeable);
-	  
-	  vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
-	  vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
-	  
-	  selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
-	  selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
-	  
-	  // selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
-	  // selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
-	  
-	  /////////
-	  ///
-	  /// MET
-	  ///
-	  ////////
-	  
-	  //do anything to pat met here
-	  
-	  
-	  /////////
-	  ///
-	  /// Trigger
-	  ///
-	  ////////
-	  
-	  //cout << hlt_alltrigs.size() << endl;
-	  
-	  // if event passes an HLT path add it to the tree:
-	  for (unsigned int trigit=0; trigit<hlt_alltrigs.size(); trigit++)
-	    {
-	      try
-		{
-		  if (triggerResults->accept(hltConfig_.triggerIndex(hlt_alltrigs[trigit])))
-		    {
-		      passTrigger_intree.push_back(hlt_alltrigs[trigit]); //don't care about prescales
-		      // pair: <L1 prescale, HLT prescale>
-		      //std::pair<int,int> prescaleVals= hltPrescaleProvider_.prescaleValues(event, evsetup, hlt_alltrigs[trigit]);
-		      
-		      // pair: < vector of pairs of (L1 seed, L1 prescale), HLT prescale >
-		      
-		      // std::pair<std::vector<std::pair<std::string,int> >,int> prescaleVals = hltPrescaleProvider_.prescaleValuesInDetail(event, evsetup, hlt_alltrigs[trigit]);			
-		      // std::vector<std::pair<std::string,int> > prescaleValsL1 = prescaleVals.first;
-		      
-		      // if (prescaleVals.second==1) // check if HLT prescale=1
-		      //   {					
-		      //     for (unsigned int trigit2=0; trigit2<prescaleValsL1.size(); trigit2++)
-		      //       {    					        					        					
-		      // 	if (prescaleValsL1[trigit2].second==1) // check for at least 1 L1 seed that had prescale=1 (in the case of multiple seeds, we are assuming they are in OR!)
-		      // 	  {
-		      // 	    passTrigger_intree.push_back(hlt_alltrigs[trigit]);
-		      // 	    break;
-		      // 	  }
-		      //       }
-		      //   }
-		      
-		      
-		    }
-		}
-	      catch(...)
-		{
-		  cout << "problem with trigger loop..." << endl;
-		  continue;
-		}
-	      
-	    }
-	  
-	  /////////////////////////
-	  //////
-	  ////// fill the ttH namespace collections
-	  //////
-	  /////////////////////////
-	  
-	  vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw);
-	  vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected);
-	  vector<ttH::Electron> fakeable_electrons = GetCollection(selectedElectrons_fakeable);
-	  vector<ttH::Electron> tight_electrons = GetCollection(selectedElectrons_tight);
-	  
-	  vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw);
-	  vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected);
-	  vector<ttH::Muon> fakeable_muons = GetCollection(selectedMuons_fakeable);
-	  vector<ttH::Muon> tight_muons = GetCollection(selectedMuons_tight);
-          
-	  vector<ttH::Tau> preselected_taus = GetCollection(selectedTaus_preselected);
-	  vector<ttH::Tau> selected_taus = GetCollection(selectedTaus_selected);
-	  
-	  vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
-	  vector<ttH::Lepton> fakeable_leptons = GetCollection(fakeable_muons,fakeable_electrons);
-	  vector<ttH::Lepton> tight_leptons = GetCollection(tight_muons,tight_electrons);
-	  
-	  vector<ttH::Jet> raw_jets = GetCollection(rawJets);
-	  vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
-	  vector<ttH::Jet> preselected_jets_uncor = preselected_jets; // temporary
-	  
-	  vector<ttH::MET> theMET = GetCollection(mets);
-	  vector<ttH::GenParticle> pruned_genParticles;
-	  vector<ttH::GenParticle> packed_genParticles;
-	  vector<ttH::GenParticle> gen_jets;
+    /////////////////////////
+    //////
+    ////// fill the ttH namespace collections
+    //////
+    /////////////////////////
+    
+    vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw);
+    vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected);
+    vector<ttH::Electron> fakeable_electrons = GetCollection(selectedElectrons_fakeable);
+    vector<ttH::Electron> tight_electrons = GetCollection(selectedElectrons_tight);
 
-	  if (!isData)
-	    {
-	      pruned_genParticles = GetCollection(*prunedParticles);
-	      packed_genParticles = GetCollection(*packedParticles);
-	      gen_jets = GetCollection(*genjets); 
-	    }
-	  
-	  /////////////////////////
-	  //////
-	  ////// cut flow studies
-	  //////
-	  /////////////////////////
-	  
-	  
-	  if (!isData) 
-	    {
-	      int higgs_daughter = GetHiggsDaughterId(*prunedParticles);
-	      higgs_decay_intree = higgs_daughter;
-	    }
-	  
-	  // dumps available tagging algos:
-	  // for (jetit iJet = selectedJets_preselected.begin(); iJet != selectedJets_preselected.end(); ++iJet)
-	  // 	    {                
-	  //                 // this just dumps all the available taggers.. should be commented out in normal operation!
-	  //                 std::vector<std::pair<std::string, float> > dislist = iJet->getPairDiscri();
-	  //                 for (auto pairit = dislist.begin(); pairit != dislist.end(); ++pairit)
-	  //                 {
-	  //                     cout << pairit->first << "  " << pairit->second << endl;
-	  //                 }
-	  // 	    }
-	  
-	  /////////////////////////
-	  //////
-	  ////// finally, associate the ttH collections
-	  ////// with the ones stored in the tree
-	  //////
-	  /////////////////////////
-          
-          
-	  if ((preselected_muons.size()>=1)) singleMuCount++;
-	  if (preselected_electrons.size()>=1) singleEleCount++;
-	  if (preselected_taus.size()>=1) singleTauCount++;
-	  if (preselected_jets.size()>=1) singleJetCount++;
+    vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw);
+    vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected);
+    vector<ttH::Muon> fakeable_muons = GetCollection(selectedMuons_fakeable);
+    vector<ttH::Muon> tight_muons = GetCollection(selectedMuons_tight);
 
-	  raw_electrons_intree = raw_electrons;
-	  raw_muons_intree = raw_muons;
-	  raw_jets_intree = raw_jets;
-            
-	  preselected_leptons_intree = preselected_leptons;
-	  preselected_electrons_intree = preselected_electrons;
-	  preselected_muons_intree = preselected_muons;
+    vector<ttH::Tau> preselected_taus = GetCollection(selectedTaus_preselected);
+    vector<ttH::Tau> selected_taus = GetCollection(selectedTaus_selected);
 
-	  fakeable_leptons_intree = fakeable_leptons;
-	  fakeable_muons_intree = fakeable_muons;
-	  fakeable_electrons_intree = fakeable_electrons;
+    vector<ttH::Lepton> preselected_leptons = GetCollection(preselected_muons,preselected_electrons);
+    vector<ttH::Lepton> fakeable_leptons = GetCollection(fakeable_muons,fakeable_electrons);
+    vector<ttH::Lepton> tight_leptons = GetCollection(tight_muons,tight_electrons);
 
-	  tight_leptons_intree = tight_leptons;
-	  tight_muons_intree = tight_muons;
-	  tight_electrons_intree = tight_electrons;
+    vector<ttH::Jet> raw_jets = GetCollection(rawJets);
+    vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
+    vector<ttH::Jet> preselected_jets_uncor = preselected_jets; // temporary
+    
+    vector<ttH::MET> theMET = GetCollection(mets);
+    vector<ttH::GenParticle> pruned_genParticles;
+    vector<ttH::GenParticle> packed_genParticles;
+    vector<ttH::GenParticle> gen_jets;
 
-	  preselected_taus_intree = preselected_taus;
-	  selected_taus_intree = selected_taus;
-          
-	  preselected_jets_intree = preselected_jets;
-	  preselected_jets_uncor_intree = preselected_jets_uncor;
-          
-	  met_intree = theMET;
-	  
-	  if (!isData)
-	    {
-	      pruned_genParticles_intree = pruned_genParticles;
-	      packed_genParticles_intree = packed_genParticles;
-	      genJets_intree = gen_jets;
-	    }
-	  
-	  wgt_intree = weight;
-	  
-	  wallTimePerEvent_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
-	  
-	  /////////////////////////////////
-	  summaryTree->Fill();// fill tree;
-	  /////////////////////////////////
-	  
-        } //end skim if statement
-	
+    if (!isData)
+    {
+      pruned_genParticles = GetCollection(*prunedParticles);
+      packed_genParticles = GetCollection(*packedParticles);
+      gen_jets = GetCollection(*genjets); 
+    }
+    
+    /////////////////////////
+    //////
+    ////// cut flow studies
+    //////
+    /////////////////////////
+    
+    
+    if (!isData) 
+    {
+      int higgs_daughter = GetHiggsDaughterId(*prunedParticles);
+      higgs_decay_intree = higgs_daughter;
+    }
+    
+    // dumps available tagging algos:
+    // for (jetit iJet = selectedJets_preselected.begin(); iJet != selectedJets_preselected.end(); ++iJet)
+    //        {                
+    //                 // this just dumps all the available taggers.. should be commented out in normal operation!
+    //                 std::vector<std::pair<std::string, float> > dislist = iJet->getPairDiscri();
+    //                 for (auto pairit = dislist.begin(); pairit != dislist.end(); ++pairit)
+    //                 {
+    //                     cout << pairit->first << "  " << pairit->second << endl;
+    //                 }
+    //        }
+    
+    /////////////////////////
+    //////
+    ////// finally, associate the ttH collections
+    ////// with the ones stored in the tree
+    //////
+    /////////////////////////
+      
+      
+    if ((preselected_muons.size()>=1)) singleMuCount++;
+    if (preselected_electrons.size()>=1) singleEleCount++;
+    if (preselected_taus.size()>=1) singleTauCount++;
+    if (preselected_jets.size()>=1) singleJetCount++;
+
+    raw_electrons_intree = raw_electrons;
+    raw_muons_intree = raw_muons;
+    raw_jets_intree = raw_jets;
+      
+    preselected_leptons_intree = preselected_leptons;
+    preselected_electrons_intree = preselected_electrons;
+    preselected_muons_intree = preselected_muons;
+
+    fakeable_leptons_intree = fakeable_leptons;
+    fakeable_muons_intree = fakeable_muons;
+    fakeable_electrons_intree = fakeable_electrons;
+
+    tight_leptons_intree = tight_leptons;
+    tight_muons_intree = tight_muons;
+    tight_electrons_intree = tight_electrons;
+
+    preselected_taus_intree = preselected_taus;
+    selected_taus_intree = selected_taus;
+      
+    preselected_jets_intree = preselected_jets;
+    preselected_jets_uncor_intree = preselected_jets_uncor;
+      
+    met_intree = theMET;
+    
+    if (!isData)
+    {
+      pruned_genParticles_intree = pruned_genParticles;
+      packed_genParticles_intree = packed_genParticles;
+      genJets_intree = gen_jets;
+    }
+    
+    wgt_intree = weight;
+
+    wallTimePerEvent_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
+    
+    /////////////////////////////////
+    summaryTree->Fill();// fill tree;
+    /////////////////////////////////
+  } //end skim if statement
 } // end event loop
 
 void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
@@ -502,18 +505,18 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
   
   
   for (int trigit=0; trigit<triggersize; trigit++)
+  {
+    if (debug) cout << myTriggernames[trigit] << endl;
+    
+    for (unsigned int trigit2=0; trigit2<hlt_trigstofind.size(); trigit2++)
+  {
+    std::size_t found = myTriggernames[trigit].find(hlt_trigstofind[trigit2]);
+    if (found!=std::string::npos)
     {
-      if (debug) cout << myTriggernames[trigit] << endl;
-      
-      for (unsigned int trigit2=0; trigit2<hlt_trigstofind.size(); trigit2++)
-	{
-	  std::size_t found = myTriggernames[trigit].find(hlt_trigstofind[trigit2]);
-	  if (found!=std::string::npos)
-	    {
-	      hlt_alltrigs.push_back(myTriggernames[trigit]);
-	    }
-	}
+      hlt_alltrigs.push_back(myTriggernames[trigit]);
     }
+  }
+  }
   
   
 }
@@ -528,4 +531,5 @@ void OSTwoLepAna::endLuminosityBlock(edm::LuminosityBlock const& lumi, edm::Even
 
 
 DEFINE_FWK_MODULE(OSTwoLepAna);
+
 

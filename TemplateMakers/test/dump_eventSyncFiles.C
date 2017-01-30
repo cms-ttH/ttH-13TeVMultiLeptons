@@ -15,12 +15,27 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 #include "variables.h"
 #include "treeTools.h"
+#include "TMVA/Reader.h"
 
 /////////////////////////////////////////
 ///
 /// usage: root -l dump_eventSyncFiles.C+
 ///
 /////////////////////////////////////////
+
+//Declare global variables for the BDTs
+Float_t g_hj_mva_min_dr;
+Float_t g_hj_mva_jet_csv;
+Float_t g_hj_mva_jet_qg;
+Float_t g_hj_mva_max_dr;
+Float_t g_hj_mva_jet_pt;
+
+Float_t g_hjj_mva_jj_lep_mass;
+Float_t g_hjj_mva_hj_sum_bdt;
+Float_t g_hjj_mva_jj_dr;
+Float_t g_hjj_mva_min_jet_dr;
+Float_t g_hjj_mva_jj_mass;
+Float_t g_hjj_mva_jj_dr_ratio;
 
 //Merge the two vectors, and sort by highest pt
 vector<ttH::Lepton> get_collection_ll(vector<ttH::Lepton> lepObjs_1, vector<ttH::Lepton> lepObjs_2)
@@ -29,6 +44,36 @@ vector<ttH::Lepton> get_collection_ll(vector<ttH::Lepton> lepObjs_1, vector<ttH:
   lepCollection.insert(lepCollection.end(),lepObjs_2.begin(),lepObjs_2.end());
   std::sort(lepCollection.begin(), lepCollection.end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.obj.Pt() > b.obj.Pt();});
   return lepCollection;
+}
+
+double getHjBDTOutput(
+    TMVA::Reader* hj_mva,
+    ttH::Jet target_jet,
+    vector<ttH::Jet> *jets,
+    vector<ttH::Lepton> *leptons
+)
+{
+    double min_dr_jet = getDeltaR(target_jet,leptons->at(0));
+    double max_dr_jet = getDeltaR(target_jet,leptons->at(0));
+    for (auto &lep: *leptons) {
+        double dr_jet = getDeltaR(target_jet,lep);
+        if (dr_jet < min_dr_jet) {
+            min_dr_jet = dr_jet;
+        }
+        if (dr_jet > max_dr_jet) {
+            max_dr_jet = dr_jet;
+        }
+    }
+
+    g_hj_mva_min_dr = min_dr_jet;
+    g_hj_mva_jet_csv = target_jet.csv;
+    g_hj_mva_jet_qg = target_jet.qgid;
+    g_hj_mva_max_dr = max_dr_jet;
+    g_hj_mva_jet_pt = target_jet.obj.Pt();
+
+    double output = hj_mva->EvaluateMVA("BDTG method");
+
+    return output;
 }
 
 void dumpToFile(
@@ -135,6 +180,89 @@ void dumpToFile(
     }
 }
 
+void dumpHTagger(
+    std::ofstream& output,
+    int event,
+    vector<ttH::Lepton> *leptons,
+    vector<ttH::Lepton> *psLeps,
+    vector<ttH::Jet> *jets,
+    vector<ttH::MET> *met,
+    TMVA::Reader* hj_mva,
+    TMVA::Reader* hjj_mva,
+    TString region
+)
+{
+    ttH::Jet jet_1 = jets->at(0);
+    ttH::Jet jet_2 = jets->at(1);
+
+    double min_dr_jet = getDeltaR(jet_1,leptons->at(0));
+    double max_dr_jet = getDeltaR(jet_1,leptons->at(0));
+    for (auto &lep: *leptons) {
+        double dr_jet = getDeltaR(jet_1,lep);
+        if (dr_jet < min_dr_jet) {
+            min_dr_jet = dr_jet;
+        }
+        if (dr_jet > max_dr_jet) {
+            max_dr_jet = dr_jet;
+        }
+    }
+
+    ttH::Jet jj_system;
+    jj_system.obj = jet_1.obj+jet_2.obj;
+
+    ttH::Lepton closest_lep = leptons->at(0);
+    double jj_lep_mass = (jj_system.obj+closest_lep.obj).M();
+    for (auto & lep: *leptons) {
+        if (getDeltaR(lep,jj_system) < getDeltaR(closest_lep,jj_system)) {
+            closest_lep = lep;
+            jj_lep_mass = (jj_system.obj+lep.obj).M();
+        }
+    }
+
+    double min_resid_jet_dr = 999.0;
+    double max_resid_jet_dr = -999.0;
+    for (auto & jet: *jets) {
+        if (jet.obj.Pt() == jet_1.obj.Pt() || jet.obj.Pt() == jet_2.obj.Pt()) {
+            continue;
+        }
+        double jet_dr = getDeltaR(jj_system,jet);
+        if (jet_dr < min_resid_jet_dr) {
+            min_resid_jet_dr = jet_dr;
+        }
+        if (jet_dr > max_resid_jet_dr) {
+            max_resid_jet_dr = jet_dr;
+        }
+    }
+
+    double hj_bdt_score_1 = getHjBDTOutput(hj_mva,jet_1,jets,leptons);
+    double hj_bdt_score_2 = getHjBDTOutput(hj_mva,jet_2,jets,leptons);
+    double hj_bdt_sum = hj_bdt_score_1 + hj_bdt_score_2;
+
+    g_hjj_mva_jj_lep_mass = jj_lep_mass;
+    g_hjj_mva_hj_sum_bdt = hj_bdt_sum;
+    g_hjj_mva_jj_dr = getDeltaR(jet_1,jet_2);
+    g_hjj_mva_min_jet_dr = min_resid_jet_dr;
+    g_hjj_mva_jj_mass = jj_system.obj.M();
+    g_hjj_mva_jj_dr_ratio = (min_resid_jet_dr / max_resid_jet_dr);
+
+    double hjj_bdt_score = hjj_mva->EvaluateMVA("BDTG method");
+
+    output << setiosflags(ios::fixed) << setprecision(5);
+    output << event << " "                                // 1
+           << min_dr_jet << " "                           // 2
+           << jet_1.csv << " "                            // 3
+           << jet_1.qgid << " "                           // 4
+           << max_dr_jet << " "                           // 5
+           << jet_1.obj.Pt() << " "                       // 6
+           << hj_bdt_score_1 << " "                       // 7
+           << jj_lep_mass << " "                          // 8
+           << hj_bdt_sum << " "                           // 9
+           << getDeltaR(jet_1,jet_2) << " "               // 10
+           << min_resid_jet_dr << " "                     // 11
+           << jj_system.obj.M() << " "                    // 12
+           << (min_resid_jet_dr / max_resid_jet_dr) << " "// 13
+           << hjj_bdt_score << endl;                      // 14
+}
 
 void run_it(TChain* chain,TString region)
 {  
@@ -156,11 +284,14 @@ void run_it(TChain* chain,TString region)
     std::ofstream sr_3l_output;
     std::ofstream ar_3l_lepMVA_output;
 
+    std::ofstream sr_2lss_htag_output;
+
     if (region == "2lss_SR") {
         sr_2lss_ee_output.open("event_dump_2lss_ee_sr.txt");
         sr_2lss_em_output.open("event_dump_2lss_em_sr.txt");
         sr_2lss_mm_output.open("event_dump_2lss_mm_sr.txt");
         sr_2lss_tau_output.open("event_dump_2lss_tau_sr.txt");
+        sr_2lss_htag_output.open("event_dump_2lss_htag_sr.txt");
     } else if (region == "2lss_AR") {
         ar_2lss_ee_output.open("event_dump_2lss_ee_ar.txt");
         ar_2lss_em_output.open("event_dump_2lss_em_ar.txt");
@@ -218,6 +349,28 @@ void run_it(TChain* chain,TString region)
     chain->SetBranchAddress("fakeable_leptons", &fakeable_leptons_intree);
     chain->SetBranchAddress("preselected_leptons",&preselected_leptons_intree);
 
+    TMVA::Reader *hj_mva = new TMVA::Reader("!Color:!Silent");
+    hj_mva->AddVariable("Jet_lepdrmin",&g_hj_mva_min_dr);
+    hj_mva->AddVariable("Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags",&g_hj_mva_jet_csv);
+    hj_mva->AddVariable("Jet_qg",&g_hj_mva_jet_qg);
+    hj_mva->AddVariable("Jet_lepdrmax",&g_hj_mva_max_dr);
+    hj_mva->AddVariable("Jet_pt",&g_hj_mva_jet_pt);
+
+    TString hj_weights = "/afs/cern.ch/user/a/awightma/workspace/misc_code/Hj_csv_BDTG.weights.xml";
+    hj_mva->BookMVA("BDTG method", hj_weights);
+
+    TMVA::Reader *hjj_mva = new TMVA::Reader("!Color:!Silent");
+    hjj_mva->AddVariable("bdtJetPair_minlepmass",&g_hjj_mva_jj_lep_mass);
+    hjj_mva->AddVariable("bdtJetPair_sumbdt",&g_hjj_mva_hj_sum_bdt);
+    hjj_mva->AddVariable("bdtJetPair_dr",&g_hjj_mva_jj_dr);
+    hjj_mva->AddVariable("bdtJetPair_minjdr",&g_hjj_mva_min_jet_dr);
+    hjj_mva->AddVariable("bdtJetPair_mass",&g_hjj_mva_jj_mass);
+    hjj_mva->AddVariable("bdtJetPair_minjOvermaxjdr",&g_hjj_mva_jj_dr_ratio);
+
+    TString hjj_weights = "/afs/cern.ch/user/a/awightma/workspace/misc_code/Hjj_csv_BDTG.weights.xml";
+    hjj_mva->BookMVA("BDTG method", hjj_weights);
+
+
     double starttime = get_wall_time();
     for (int i=0; i<chainentries; i++)  //// main loop
     {
@@ -233,7 +386,7 @@ void run_it(TChain* chain,TString region)
         //11 == electron, 13 == muon
         if (region == "2lss_SR") {    
             if (abs((*tight_leptons_intree)[0].pdgID) == 11 && abs((*tight_leptons_intree)[1].pdgID) == 11 && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//ee
                     sr_2lss_ee_output,
                     eventnum_intree,
                     tight_leptons_intree,
@@ -243,7 +396,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if (abs((*tight_leptons_intree)[0].pdgID) == 13 && abs((*tight_leptons_intree)[1].pdgID) == 13 && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//mm
                     sr_2lss_mm_output,
                     eventnum_intree,
                     tight_leptons_intree,
@@ -253,7 +406,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if (((abs((*tight_leptons_intree)[0].pdgID) == 13 && abs((*tight_leptons_intree)[1].pdgID) == 11) || (abs((*tight_leptons_intree)[0].pdgID) == 11 && abs((*tight_leptons_intree)[1].pdgID) == 13)) && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//em
                     sr_2lss_em_output,
                     eventnum_intree,
                     tight_leptons_intree,
@@ -263,7 +416,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if ((*selected_taus_intree).size() == 1) {
-                dumpToFile(
+                dumpToFile(//tau
                     sr_2lss_tau_output,
                     eventnum_intree,
                     tight_leptons_intree,
@@ -273,9 +426,23 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             }
+
+            if ((*selected_taus_intree).size() == 0) {            
+                dumpHTagger(//htagger
+                    sr_2lss_htag_output,
+                    eventnum_intree,
+                    tight_leptons_intree,
+                    preselected_leptons_intree,
+                    preselected_jets_intree,
+                    met_intree,
+                    hj_mva,
+                    hjj_mva,
+                    region
+                );
+            }
         } else if (region == "2lss_AR") {
             if (abs((*fakeable_leptons_intree)[0].pdgID) == 11 && abs((*fakeable_leptons_intree)[1].pdgID) == 11 && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//ee
                     ar_2lss_ee_output,
                     eventnum_intree,
                     fakeable_leptons_intree,
@@ -285,7 +452,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if (abs((*fakeable_leptons_intree)[0].pdgID) == 13 && abs((*fakeable_leptons_intree)[1].pdgID) == 13 && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//mm
                     ar_2lss_mm_output,
                     eventnum_intree,
                     fakeable_leptons_intree,
@@ -295,7 +462,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if (((abs((*fakeable_leptons_intree)[0].pdgID) == 13 && abs((*fakeable_leptons_intree)[1].pdgID) == 11) || (abs((*fakeable_leptons_intree)[0].pdgID) == 11 && abs((*fakeable_leptons_intree)[1].pdgID) == 13)) && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//em
                     ar_2lss_em_output,
                     eventnum_intree,
                     fakeable_leptons_intree,
@@ -305,7 +472,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if ((*selected_taus_intree).size() == 1) {
-                dumpToFile(
+                dumpToFile(//tau
                     ar_2lss_tau_output,
                     eventnum_intree,
                     fakeable_leptons_intree,
@@ -317,7 +484,7 @@ void run_it(TChain* chain,TString region)
             }
         } else if (region == "2los_AR") {
             if (abs((*tight_leptons_intree)[0].pdgID) == 11 && abs((*tight_leptons_intree)[1].pdgID) == 11 && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//ee
                     ar_2los_ee_output,
                     eventnum_intree,
                     tight_leptons_intree,
@@ -327,7 +494,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if (abs((*tight_leptons_intree)[0].pdgID) == 13 && abs((*tight_leptons_intree)[1].pdgID) == 13 && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//mm
                     ar_2los_mm_output,
                     eventnum_intree,
                     tight_leptons_intree,
@@ -337,7 +504,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if (((abs((*tight_leptons_intree)[0].pdgID) == 13 && abs((*tight_leptons_intree)[1].pdgID) == 11) || (abs((*tight_leptons_intree)[0].pdgID) == 11 && abs((*tight_leptons_intree)[1].pdgID) == 13)) && (*selected_taus_intree).size() == 0) {
-                dumpToFile(
+                dumpToFile(//em
                     ar_2los_em_output,
                     eventnum_intree,
                     tight_leptons_intree,
@@ -347,7 +514,7 @@ void run_it(TChain* chain,TString region)
                     region
                 );
             } else if ((*selected_taus_intree).size() == 1) {
-                dumpToFile(
+                dumpToFile(//tau
                     ar_2los_tau_output,
                     eventnum_intree,
                     tight_leptons_intree,
@@ -389,6 +556,7 @@ void run_it(TChain* chain,TString region)
         sr_2lss_em_output.close();
         sr_2lss_mm_output.close();
         sr_2lss_tau_output.close();
+        sr_2lss_htag_output.close();
     } else if (region == "2lss_AR") {
         ar_2lss_ee_output.close();
         ar_2lss_em_output.close();
@@ -404,12 +572,11 @@ void run_it(TChain* chain,TString region)
     } else if (region == "3l_lepMVA_AR") {
         ar_3l_lepMVA_output.close();
     }
-
 }
 
 void dump_eventSyncFiles(void)
 {
-    TString region = "2lss_AR";
+    TString region = "2lss_SR";
     TChain *chain = new TChain("ss2l_tree");
 
     if (region == "2lss_SR") {
@@ -429,3 +596,4 @@ void dump_eventSyncFiles(void)
     //chain->Scan("eventnum:tight_leptons.pdgID:@tight_leptons.size():@fakeable_leptons.size()","@fakeable_leptons.size() > 2");
   
 }
+

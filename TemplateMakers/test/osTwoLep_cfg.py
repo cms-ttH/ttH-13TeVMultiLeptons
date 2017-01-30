@@ -120,13 +120,13 @@ my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID
 for idmod in my_id_modules: setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 
-#process.load('RecoJets.JetProducers.QGTagger_cfi')
-#process.QGTagger.srcJets          = cms.InputTag('slimmedJets')
-#process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
+process.load('RecoJets.JetProducers.QGTagger_cfi')
+process.QGTagger.srcJets          = cms.InputTag('slimmedJets')
+process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
 
 #process.p = cms.Path(process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
-#process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna)
-process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
+process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna)
+#process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
 
 
 # summary
@@ -140,3 +140,4 @@ process.options = cms.untracked.PSet(
 #outfile = open('dumped_config.py','w')
 #print >> outfile,process.dumpPython()
 #outfile.close()
+

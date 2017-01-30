@@ -355,7 +355,8 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       jet.charge = iJet.jetCharge();
       string thedisc = btagparams.getParameter<string> ("btagdisc");
       jet.csv = iJet.bDiscriminator(thedisc);
-      jet.qgid = -99.;//iJet.userFloat("qgid");
+      //jet.qgid = -99.;//iJet.userFloat("qgid");
+      jet.qgid = iJet.userFloat("qgid");
       jet.pdgID = iJet.pdgId();
       jetCollection.push_back(jet);
 
@@ -535,3 +536,4 @@ std::pair<const reco::Candidate*, const reco::Candidate*> MultileptonAna::GetGen
 }
 
 //// #endif // !defined( MULTILEPTONANA_CC ) 
+
