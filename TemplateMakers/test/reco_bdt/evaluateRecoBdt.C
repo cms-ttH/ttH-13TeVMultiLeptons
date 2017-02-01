@@ -182,7 +182,7 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
   TTree *ttH_vs_ttbar_tree = new TTree("tth_vs_ttbar_tree","tth_vs_ttbar_tree");
   TTree *ttH_vs_ttV_tree = new TTree("tth_vs_ttv_tree","tth_vs_ttv_tree");
 
-  bool evaluateSignalExtraction = true;
+  bool evaluateSignalExtraction = false;
   signalExtractionTreeMaker mySigExtrTreeMaker(ttH_vs_ttbar_tree, ttH_vs_ttV_tree, ss2l_tree, evaluateSignalExtraction);
   
   Int_t cachesize = 250000000;   //250 MBytes
@@ -216,8 +216,8 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
       higgs_tlv_intree = q1_from_higgs_tlv + q2_from_higgs_tlv + lep_from_higgs_tlv;
 
       // auto lep_collection = preselected_leptons_intree;
-      auto lep_collection = fakeable_leptons_intree;
-      //auto lep_collection = tight_leptons_intree;
+      //auto lep_collection = fakeable_leptons_intree;
+      auto lep_collection = tight_leptons_intree;
 
       bdtReconstructor.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
       bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
@@ -236,7 +236,6 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
       ss2l_tree->Fill();
       ttH_vs_ttbar_tree->Fill();
       ttH_vs_ttV_tree->Fill();
-
     }
     
   double endtime = get_wall_time();
@@ -253,14 +252,32 @@ void run_it(TChain* chain, TFile *output_file_, int events_per_job, int job_no)
 
 void evaluateRecoBdt(string sample_name="data", int events_per_job=-1, int job_no=-1)
 {
-  TString input_file_name = getSelectionFile(sample_name);
+  //sample_name = "output_tree_2lss_SR_sync";
+  //sample_name = "tagger_compare_tree_background_modified_score";
+  //sample_name = "tagger_compare_tree_signal_modified_score";
+  //sample_name = "";
+
+  //TString input_file_name = getSelectionFile(sample_name);
+  
+  //Sync file
+  //TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/sync_2lss_SR_selection_tree_2lss.root";
+
+  //Signal file (make sure to reduce max_events)
+  //TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/ttH_root_files/tth_powheg_old_2lss_selection.root";
+
+  //Background file
+  //TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/ttH_root_files/ttbar_semiLep_powheg_2lss_selection.root";
+
   TFile *input_file = new TFile(input_file_name, "READONLY");
 
   if (sample_name == "") sample_name = "output_test";
+  //TString output_dir = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
   TString output_dir = "/scratch365/cmuelle2/extraction_trees/jan23_ichep_data/";
   TString output_file_name = output_dir+sample_name;
   if (events_per_job > -1 && job_no > -1) output_file_name += "_"+std::to_string(job_no);
   output_file_name += ".root";
+
+
   TFile *output_file = new TFile(output_file_name, "RECREATE"); //"UPDATE");
 
   if (job_no < 1)
@@ -268,9 +285,11 @@ void evaluateRecoBdt(string sample_name="data", int events_per_job=-1, int job_n
       TH1D* event_hist = (TH1D*)input_file->Get("numInitialWeightedMCevents");
       event_hist->Write();
     }
-  
+
   TChain *chain_ = new TChain("ss2l_tree");
   chain_->Add(input_file_name);
+
   run_it(chain_,output_file,events_per_job,job_no);
 
 }
+

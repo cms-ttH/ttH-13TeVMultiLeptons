@@ -16,26 +16,13 @@
 #include "variables.h"
 #include "treeTools.h"
 #include "TMVA/Reader.h"
+#include "hTaggerBDT.h"
 
 /////////////////////////////////////////
 ///
 /// usage: root -l dump_eventSyncFiles.C+
 ///
 /////////////////////////////////////////
-
-//Declare global variables for the BDTs
-Float_t g_hj_mva_min_dr;
-Float_t g_hj_mva_jet_csv;
-Float_t g_hj_mva_jet_qg;
-Float_t g_hj_mva_max_dr;
-Float_t g_hj_mva_jet_pt;
-
-Float_t g_hjj_mva_jj_lep_mass;
-Float_t g_hjj_mva_hj_sum_bdt;
-Float_t g_hjj_mva_jj_dr;
-Float_t g_hjj_mva_min_jet_dr;
-Float_t g_hjj_mva_jj_mass;
-Float_t g_hjj_mva_jj_dr_ratio;
 
 //Merge the two vectors, and sort by highest pt
 vector<ttH::Lepton> get_collection_ll(vector<ttH::Lepton> lepObjs_1, vector<ttH::Lepton> lepObjs_2)
@@ -44,36 +31,6 @@ vector<ttH::Lepton> get_collection_ll(vector<ttH::Lepton> lepObjs_1, vector<ttH:
   lepCollection.insert(lepCollection.end(),lepObjs_2.begin(),lepObjs_2.end());
   std::sort(lepCollection.begin(), lepCollection.end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.obj.Pt() > b.obj.Pt();});
   return lepCollection;
-}
-
-double getHjBDTOutput(
-    TMVA::Reader* hj_mva,
-    ttH::Jet target_jet,
-    vector<ttH::Jet> *jets,
-    vector<ttH::Lepton> *leptons
-)
-{
-    double min_dr_jet = getDeltaR(target_jet,leptons->at(0));
-    double max_dr_jet = getDeltaR(target_jet,leptons->at(0));
-    for (auto &lep: *leptons) {
-        double dr_jet = getDeltaR(target_jet,lep);
-        if (dr_jet < min_dr_jet) {
-            min_dr_jet = dr_jet;
-        }
-        if (dr_jet > max_dr_jet) {
-            max_dr_jet = dr_jet;
-        }
-    }
-
-    g_hj_mva_min_dr = min_dr_jet;
-    g_hj_mva_jet_csv = target_jet.csv;
-    g_hj_mva_jet_qg = target_jet.qgid;
-    g_hj_mva_max_dr = max_dr_jet;
-    g_hj_mva_jet_pt = target_jet.obj.Pt();
-
-    double output = hj_mva->EvaluateMVA("BDTG method");
-
-    return output;
 }
 
 void dumpToFile(
@@ -187,8 +144,7 @@ void dumpHTagger(
     vector<ttH::Lepton> *psLeps,
     vector<ttH::Jet> *jets,
     vector<ttH::MET> *met,
-    TMVA::Reader* hj_mva,
-    TMVA::Reader* hjj_mva,
+    hTagger* h_tagger,
     TString region
 )
 {
@@ -234,18 +190,11 @@ void dumpHTagger(
         }
     }
 
-    double hj_bdt_score_1 = getHjBDTOutput(hj_mva,jet_1,jets,leptons);
-    double hj_bdt_score_2 = getHjBDTOutput(hj_mva,jet_2,jets,leptons);
+    double hj_bdt_score_1 = h_tagger->getHJBDTOutput(jet_1,leptons);
+    double hj_bdt_score_2 = h_tagger->getHJBDTOutput(jet_2,leptons);
     double hj_bdt_sum = hj_bdt_score_1 + hj_bdt_score_2;
 
-    g_hjj_mva_jj_lep_mass = jj_lep_mass;
-    g_hjj_mva_hj_sum_bdt = hj_bdt_sum;
-    g_hjj_mva_jj_dr = getDeltaR(jet_1,jet_2);
-    g_hjj_mva_min_jet_dr = min_resid_jet_dr;
-    g_hjj_mva_jj_mass = jj_system.obj.M();
-    g_hjj_mva_jj_dr_ratio = (min_resid_jet_dr / max_resid_jet_dr);
-
-    double hjj_bdt_score = hjj_mva->EvaluateMVA("BDTG method");
+    double hjj_bdt_score = h_tagger->getHJJBDTOutput(jets,leptons);
 
     output << setiosflags(ios::fixed) << setprecision(5);
     output << event << " "                                // 1
@@ -262,6 +211,47 @@ void dumpHTagger(
            << jj_system.obj.M() << " "                    // 12
            << (min_resid_jet_dr / max_resid_jet_dr) << " "// 13
            << hjj_bdt_score << endl;                      // 14
+}
+
+void dumpHadTopTagger(
+    std::ofstream& output,
+    int event,
+    double reco_score,
+    ttH::Jet b_from_hadtop,
+    ttH::Jet b_from_leptop,
+    ttH::Jet q1_from_hadtop,
+    ttH::Jet q2_from_hadtop,
+    TLorentzVector hadTop_tlv,
+    TLorentzVector w_from_hadtop_tlv,
+    ttH::Lepton lep_from_leptop,
+    ttH::Lepton lep_from_higgs,
+    double dr_lepFromTop_bFromLepTop,
+    double dr_lepFromTop_bFromHadTop,
+    double dr_lepFromHiggs_bFromLepTop
+
+)
+{
+    vector<ttH::Jet> jet_collection = {b_from_hadtop,q1_from_hadtop,q2_from_hadtop};
+    std::sort(jet_collection.begin(),jet_collection.end(), [] (ttH::Jet a, ttH::Jet b) {return a.obj.Pt() > b.obj.Pt();});
+
+    double lep_pt_ratio = lep_from_leptop.correctedPt/lep_from_higgs.correctedPt;
+
+    output << setiosflags(ios::fixed) << setprecision(5);
+    output << event << " "
+           << jet_collection[0].obj.Pt() << " "
+           << jet_collection[1].obj.Pt() << " "
+           << jet_collection[2].obj.Pt() << " "
+           << b_from_hadtop.csv << " "
+           << b_from_leptop.csv << " "
+           << hadTop_tlv.M() << " "
+           << hadTop_tlv.Pt() << " "
+           << w_from_hadtop_tlv.M() << " "
+           << lep_pt_ratio << " "
+           << dr_lepFromTop_bFromLepTop << " "
+           << dr_lepFromTop_bFromHadTop << " "
+           << dr_lepFromHiggs_bFromLepTop << " "
+           << reco_score << endl;
+
 }
 
 void run_it(TChain* chain,TString region)
@@ -285,6 +275,7 @@ void run_it(TChain* chain,TString region)
     std::ofstream ar_3l_lepMVA_output;
 
     std::ofstream sr_2lss_htag_output;
+    std::ofstream sr_2lss_hadtoptag_output;
 
     if (region == "2lss_SR") {
         sr_2lss_ee_output.open("event_dump_2lss_ee_sr.txt");
@@ -306,6 +297,8 @@ void run_it(TChain* chain,TString region)
         sr_3l_output.open("event_dump_3l_sr.txt");
     } else if (region == "3l_lepMVA_AR") {
         ar_3l_lepMVA_output.open("event_dump_3l_lepMVA_ar.txt");
+    } else if (region == "2lss_SR_hadtop_tagger") {
+        sr_2lss_hadtoptag_output.open("event_dump_2lss_hadtop_tagger_sr.txt");
     }
   
     int chainentries = chain->GetEntries();   
@@ -324,6 +317,19 @@ void run_it(TChain* chain,TString region)
     vector<ttH::Jet> *preselected_jets_intree=0;
     vector<ttH::Tau> *selected_taus_intree=0;
     vector<ttH::MET> *met_intree=0;
+
+    double reco_score_intree = -2;
+    ttH::Jet* b_from_hadtop_bdt_intree=0;
+    ttH::Jet* b_from_leptop_bdt_intree=0;
+    ttH::Jet* q1_from_hadtop_bdt_intree=0;
+    ttH::Jet* q2_from_hadtop_bdt_intree=0;
+    TLorentzVector* hadTop_tlv_bdt_intree=0;
+    TLorentzVector* w_from_hadtop_tlv_bdt_intree=0;
+    ttH::Lepton* lep_from_leptop_bdt_intree=0;
+    ttH::Lepton* lep_from_higgs_bdt_intree=0;
+    double dr_lepFromTop_bFromLepTop_intree;
+    double dr_lepFromTop_bFromHadTop_intree;
+    double dr_lepFromHiggs_bFromLepTop_intree;
 
     //only enable some branches
     chain->SetBranchStatus("*",0);
@@ -349,27 +355,43 @@ void run_it(TChain* chain,TString region)
     chain->SetBranchAddress("fakeable_leptons", &fakeable_leptons_intree);
     chain->SetBranchAddress("preselected_leptons",&preselected_leptons_intree);
 
-    TMVA::Reader *hj_mva = new TMVA::Reader("!Color:!Silent");
-    hj_mva->AddVariable("Jet_lepdrmin",&g_hj_mva_min_dr);
-    hj_mva->AddVariable("Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags",&g_hj_mva_jet_csv);
-    hj_mva->AddVariable("Jet_qg",&g_hj_mva_jet_qg);
-    hj_mva->AddVariable("Jet_lepdrmax",&g_hj_mva_max_dr);
-    hj_mva->AddVariable("Jet_pt",&g_hj_mva_jet_pt);
+    if (region == "2lss_SR_hadtop_tagger") {
+        /* Get branches that only appear in output of hadtop_reco_bdt*/
+        chain->SetBranchStatus("reco_score",1);
+        chain->SetBranchStatus("b_from_hadtop_bdt.*",1);
+        chain->SetBranchStatus("b_from_leptop_bdt.*",1);
+        chain->SetBranchStatus("q1_from_hadtop_bdt.*",1);
+        chain->SetBranchStatus("q2_from_hadtop_bdt.*",1);
 
-    TString hj_weights = "/afs/cern.ch/user/a/awightma/workspace/misc_code/Hj_csv_BDTG.weights.xml";
-    hj_mva->BookMVA("BDTG method", hj_weights);
+        chain->SetBranchStatus("hadTop_bdt",1);
+        chain->SetBranchStatus("w_from_hadtop_bdt",1);
+        chain->SetBranchStatus("lep_from_leptop_bdt.*",1);
+        chain->SetBranchStatus("lep_from_higgs_bdt.*",1);
 
-    TMVA::Reader *hjj_mva = new TMVA::Reader("!Color:!Silent");
-    hjj_mva->AddVariable("bdtJetPair_minlepmass",&g_hjj_mva_jj_lep_mass);
-    hjj_mva->AddVariable("bdtJetPair_sumbdt",&g_hjj_mva_hj_sum_bdt);
-    hjj_mva->AddVariable("bdtJetPair_dr",&g_hjj_mva_jj_dr);
-    hjj_mva->AddVariable("bdtJetPair_minjdr",&g_hjj_mva_min_jet_dr);
-    hjj_mva->AddVariable("bdtJetPair_mass",&g_hjj_mva_jj_mass);
-    hjj_mva->AddVariable("bdtJetPair_minjOvermaxjdr",&g_hjj_mva_jj_dr_ratio);
+        chain->SetBranchStatus("dR_lepFromTop_bFromLepTop",1);
+        chain->SetBranchStatus("dR_lepFromTop_bFromHadTop",1);
+        chain->SetBranchStatus("dR_lepFromHiggs_bFromLepTop",1);
 
-    TString hjj_weights = "/afs/cern.ch/user/a/awightma/workspace/misc_code/Hjj_csv_BDTG.weights.xml";
-    hjj_mva->BookMVA("BDTG method", hjj_weights);
+        chain->SetBranchAddress("reco_score",&reco_score_intree);
+        chain->SetBranchAddress("b_from_hadtop_bdt.",&b_from_hadtop_bdt_intree);
+        chain->SetBranchAddress("b_from_leptop_bdt.",&b_from_leptop_bdt_intree);
+        chain->SetBranchAddress("q1_from_hadtop_bdt.",&q1_from_hadtop_bdt_intree);
+        chain->SetBranchAddress("q2_from_hadtop_bdt.",&q2_from_hadtop_bdt_intree);
 
+        chain->SetBranchAddress("hadTop_bdt", &hadTop_tlv_bdt_intree);
+        chain->SetBranchAddress("w_from_hadtop_bdt", &w_from_hadtop_tlv_bdt_intree);
+        chain->SetBranchAddress("lep_from_leptop_bdt.", &lep_from_leptop_bdt_intree);
+        chain->SetBranchAddress("lep_from_higgs_bdt.", &lep_from_higgs_bdt_intree);
+
+        chain->SetBranchAddress("dR_lepFromTop_bFromLepTop", &dr_lepFromTop_bFromLepTop_intree);
+        chain->SetBranchAddress("dR_lepFromTop_bFromHadTop", &dr_lepFromTop_bFromHadTop_intree);
+        chain->SetBranchAddress("dR_lepFromHiggs_bFromLepTop", &dr_lepFromHiggs_bFromLepTop_intree);
+    }
+
+    hTagger* h_tagger = new hTagger(
+        "/afs/cern.ch/user/a/awightma/workspace/misc_code/Hj_csv_BDTG.weights.xml",
+        "/afs/cern.ch/user/a/awightma/workspace/misc_code/Hjj_csv_BDTG.weights.xml"
+    );
 
     double starttime = get_wall_time();
     for (int i=0; i<chainentries; i++)  //// main loop
@@ -435,8 +457,7 @@ void run_it(TChain* chain,TString region)
                     preselected_leptons_intree,
                     preselected_jets_intree,
                     met_intree,
-                    hj_mva,
-                    hjj_mva,
+                    h_tagger,
                     region
                 );
             }
@@ -544,6 +565,25 @@ void run_it(TChain* chain,TString region)
                 met_intree,
                 region
             );
+        } else if (region == "2lss_SR_hadtop_tagger") {
+            if ((*selected_taus_intree).size() == 0) {            
+                dumpHadTopTagger(//hadtop tagger
+                    sr_2lss_hadtoptag_output,
+                    eventnum_intree,
+                    reco_score_intree,
+                    *b_from_hadtop_bdt_intree,
+                    *b_from_leptop_bdt_intree,
+                    *q1_from_hadtop_bdt_intree,
+                    *q2_from_hadtop_bdt_intree,
+                    *hadTop_tlv_bdt_intree,
+                    *w_from_hadtop_tlv_bdt_intree,
+                    *lep_from_leptop_bdt_intree,
+                    *lep_from_higgs_bdt_intree,
+                    dr_lepFromTop_bFromLepTop_intree,
+                    dr_lepFromTop_bFromHadTop_intree,
+                    dr_lepFromHiggs_bFromLepTop_intree
+                );
+            }
         }
     }
   
@@ -571,12 +611,14 @@ void run_it(TChain* chain,TString region)
         sr_3l_output.close();
     } else if (region == "3l_lepMVA_AR") {
         ar_3l_lepMVA_output.close();
+    } else if (region == "2lss_SR_hadtop_tagger") {
+        sr_2lss_hadtoptag_output.close();
     }
 }
 
 void dump_eventSyncFiles(void)
 {
-    TString region = "2lss_SR";
+    TString region = "2lss_SR_hadtop_tagger";
     TChain *chain = new TChain("ss2l_tree");
 
     if (region == "2lss_SR") {
@@ -589,6 +631,8 @@ void dump_eventSyncFiles(void)
         chain->Add("sync_3l_SR_selection_tree_2lss.root");
     } else if (region == "3l_lepMVA_AR") {
         chain->Add("sync_3l_lepMVA_AR_selection_tree_2lss.root");
+    } else if (region == "2lss_SR_hadtop_tagger") {
+        chain->Add("output_tree_2lss_SR_sync.root");
     }
     run_it(chain,region);
 
@@ -596,4 +640,5 @@ void dump_eventSyncFiles(void)
     //chain->Scan("eventnum:tight_leptons.pdgID:@tight_leptons.size():@fakeable_leptons.size()","@fakeable_leptons.size() > 2");
   
 }
+
 
