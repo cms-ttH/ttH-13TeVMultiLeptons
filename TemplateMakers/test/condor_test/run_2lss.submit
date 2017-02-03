@@ -1,5 +1,5 @@
-sample = data
-N = 48
+sample = ttbar_semiLep_madgraph
+N = 89
 
 +IsExpressJob = True
 universe = vanilla

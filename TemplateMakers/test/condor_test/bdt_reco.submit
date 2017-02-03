@@ -1,15 +1,15 @@
-events_per_job = 1000
+events_per_job = 9000
 
-sample = WZZ_rares
-N = 1
+sample = data
+N = 2
 
 +IsExpressJob = True
 universe = vanilla
 executable = bdt_reco.sh
 getenv = True
 arguments = $(sample) $(events_per_job) $(Process) 
-output = condor_logs/$(sample).stdout.$(Process)
-error = condor_logs/$(sample).stderr.$(Process)
+output = condor_logs/$(sample)_bdtReco.stdout.$(Process)
+error = condor_logs/$(sample)_bdtReco.stderr.$(Process)
 should_transfer_files = yes
 when_to_transfer_output = on_exit
 log = condor_logs/simple.logfile

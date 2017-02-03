@@ -4,7 +4,7 @@
 
 prefix=$1
 
-target_dir="/scratch365/cmuelle2/extraction_trees/jan15_ICHEP_trees_withFactorizedRecoBdt_fastPerm_yesHiggsLoop_genFilterWeights/";
+target_dir="/scratch365/cmuelle2/extraction_trees/jan28_tests_allCorrPt/";
 
 files="$target_dir/$prefix*.root" 
 
