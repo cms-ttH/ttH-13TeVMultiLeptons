@@ -2,17 +2,17 @@ from lobster import cmssw
 from lobster.core import *
 from lobster.monitor.elk.interface import ElkInterface
 
-version = '_ttbar_v6parts_ttw_part2'
+version = '_jan13_topOffs'
 version_output = '_nov18_genFilter_altJetClean'
 
 storage = StorageConfiguration(
     input=[
             "hdfs://eddie.crc.nd.edu:19000/store/user",
-            "file:///hadoop/store/user",
+            #"file:///hadoop/store/user",
             "root://deepthought.crc.nd.edu//store/user"
             ],
         output=[
-            "file:///hadoop/store/user/muell149/lobster_test_" + version_output,
+            #"file:///hadoop/store/user/muell149/lobster_test_" + version_output,
             "hdfs://eddie.crc.nd.edu:19000/store/user/muell149/lobster_test_" + version_output,
             # ND is not in the XrootD redirector, thus hardcode server.
             # Note the double-slash after the hostname!
@@ -33,9 +33,9 @@ processing = Category(
 workflows = []
 
 ttbar_semiLep_genFilter = Workflow(
-    label='ttbar_semilep_v6_part6',
+    label='ttbar_semilep_v6_part7',
     dataset=Dataset(
-        files='lannon/mcprod_ttjets_semilep_newisr_filtered/v6_part6/mAOD_step/'
+        files='lannon/mcprod_ttjets_semilep_newisr_filtered/v6_part7/mAOD_step/'
         ),
     category=processing,
     pset='osTwoLep_cfg.py',
@@ -44,32 +44,32 @@ ttbar_semiLep_genFilter = Workflow(
     )
 workflows.append(ttbar_semiLep_genFilter)
 
-# tth_nonbb_powheg = Workflow(
-#     label='tth_nonbb_powheg',
-#     dataset=Dataset(
-#         files='lannon/mcprod_tthnonbb_newisr_filtered/v1/mAOD_step/'
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     arguments=['skim=True'],
-#     merge_size='1.0G'
-#     )
-# workflows.append(tth_nonbb_powheg)
-
-ttw = Workflow(
-    label='ttw_mg5_part2',
+tth_nonbb_powheg = Workflow(
+    label='tth_nonbb_powheg_v1_part2',
     dataset=Dataset(
-        files='lannon/mcprod_ttW_alpha1273_filtered/v0_part2/mAOD_step/'
+        files='lannon/mcprod_tthnonbb_newisr_filtered/v1_part2/mAOD_step/'
         ),
     category=processing,
     pset='osTwoLep_cfg.py',
     arguments=['skim=True'],
     merge_size='1.0G'
     )
-workflows.append(ttw)
+workflows.append(tth_nonbb_powheg)
+
+# ttw = Workflow(
+#     label='ttw_mg5_part2',
+#     dataset=Dataset(
+#         files='lannon/mcprod_ttW_alpha1273_filtered/v0_part2/mAOD_step/'
+#         ),
+#     category=processing,
+#     pset='osTwoLep_cfg.py',
+#     arguments=['skim=True'],
+#     merge_size='1.0G'
+#     )
+# workflows.append(ttw)
 
 
-# ttll = Workflow(
+# Ttll = Workflow(
 #     label='ttll_m10',
 #     dataset=Dataset(
 #         files='muell149/ttll'
