@@ -8,7 +8,7 @@ class FakeRateEvaluator
  public:
   FakeRateEvaluator(){
     
-    TFile *lepMVA_fr_file = new TFile("FR_data_ttH_mva.root","READONLY");
+    TFile *lepMVA_fr_file = new TFile("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/FR_data_ttH_mva.root","READONLY");
     mu_fr_data = (TH2F*)lepMVA_fr_file->Get("FR_mva075_mu_data_comb");
     ele_fr_data = (TH2F*)lepMVA_fr_file->Get("FR_mva075_el_data_comb");
     mu_fr_data->SetDirectory(0); //reads hists into memory
@@ -17,7 +17,7 @@ class FakeRateEvaluator
 
   };//default constructor
 
-  double get_fr(vector<ttH::Lepton> tightLeps, vector<ttH::Lepton> fakeableLeps)
+  double get_fr(vector<ttH::Lepton> fakeableLeps)
   {
     std::sort(fakeableLeps.begin(), fakeableLeps.end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.correctedPt > b.correctedPt;});
     double fr_weight = 1.;

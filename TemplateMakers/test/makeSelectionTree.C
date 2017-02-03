@@ -198,7 +198,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 
             if (passes2lss_lepMVA_AR) {
                 if (sample_name == "data") {
-                    mcwgt_intree = lepFakeRateObject.get_fr(*tight_leptons_intree, *fakeable_leptons_intree);
+                    mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
                 }
                 else if (sample_name == "tth_aMC_old") {
                     myGenParticleHelper.clear();
