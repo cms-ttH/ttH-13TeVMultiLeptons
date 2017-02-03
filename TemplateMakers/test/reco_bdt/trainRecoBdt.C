@@ -19,6 +19,7 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/variables.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/treeTools.h"
 #include "trainingTreeHelper.h"
+//#include "../FakeRateEvaluator.h"
 
 /////////////////////////////////////////
 ///
@@ -62,7 +63,7 @@ void run_it(TChain* chain, TString output_file)
   ttH::Jet *q2_from_higgs_intree=0;
 
   // chain->SetBranchStatus("*",0);
-  // chain->SetBranchStatus("mcwgt",1);
+  //chain->SetBranchStatus("mcwgt",0);
   // chain->SetBranchStatus("eventnum",1);
   // chain->SetBranchStatus("preselected_electrons.*",1);
   // chain->SetBranchStatus("preselected_muons.*",1);
@@ -72,7 +73,7 @@ void run_it(TChain* chain, TString output_file)
   // chain->SetBranchStatus("tight_muons.*",1);
   // chain->SetBranchStatus("met.*",1);
 
-  chain->SetBranchAddress("mcwgt", &mcwgt_intree);
+  //  chain->SetBranchAddress("mcwgt", &mcwgt_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
   chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
@@ -95,6 +96,8 @@ void run_it(TChain* chain, TString output_file)
   chain->SetBranchAddress("q1_from_higgs_reco_truth.", &q1_from_higgs_intree);
   chain->SetBranchAddress("q2_from_higgs_reco_truth.", &q2_from_higgs_intree);
 
+  //FakeRateEvaluator lepFakeRateObject;
+
   TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
   vector<ttH::Jet> *matched_reco_jets_nonNull_truth_intree=0;
@@ -107,6 +110,7 @@ void run_it(TChain* chain, TString output_file)
   TTree *background_tree = (TTree*)chain->CloneTree(0);
   background_tree->SetName("background_tree");
   background_tree->Branch("matched_reco_jets_nonNull_truth", &matched_reco_jets_nonNull_truth_intree);
+  background_tree->Branch("mcwgt", &mcwgt_intree);
   background_treeHelper.initializeTree(background_tree);
   
   Int_t cachesize = 250000000;   //250 MBytes
@@ -125,7 +129,7 @@ void run_it(TChain* chain, TString output_file)
       //// calculation of new vars etc
       ////
       //////////////////////////
-
+      
       ttH::Lepton lep_fromTop_bdtInput_intree = *lep_from_leptop_intree;
       ttH::Lepton lep_fromHiggs_bdtInput_intree = *lep_from_higgs_intree;
 
@@ -267,6 +271,8 @@ void run_it(TChain* chain, TString output_file)
       //traditional loop
       //      int rand_cut = 70; //standard v1p5
       int rand_cut = 700;
+      //      mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
+
       
       //      auto lep_collection = *tight_leptons_intree;
       auto lep_collection = *fakeable_leptons_intree;
@@ -424,9 +430,9 @@ void run_it(TChain* chain, TString output_file)
 void trainRecoBdt(void)
 {
 
-  TString output_file = "/scratch365/cmuelle2/training_trees/reco_bdt_factorized_noHiggsLoops/ttbar_recoBdtTraining.root";
+  TString output_file = "/scratch365/cmuelle2/training_trees/jan28_bkg_conePt_fr/tth_scrambled_bkg_bdtReco_training.root";
   TChain *chain_ = new TChain("ss2l_tree");
-  chain_->Add("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/ttbar_semiLep_jetClean_test_recoBdt_2lss.root");
+  chain_->Add("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov22_genFilterTrainingSelection_trees/tth_powheg_jetClean_test_recoBdt_2lss.root");
   run_it(chain_,output_file);
 
 }
