@@ -148,7 +148,8 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    factory->AddVariable( "met_double","met","missing Et",'D');
    factory->AddVariable( "avg_dr_jet","average dR jets","dR",'D');
    factory->AddVariable( "reco_score","reco bdt","bdt output",'D');
-   //factory->AddVariable( "hadTop_bdt.M()","reco hadtop mass","mass [GeV]",'D');
+   // factory->AddVariable( "hadTop_bdt.M()","reco hadtop mass","mass [GeV]",'D');
+   // factory->AddVariable( "hadTop_bdt.Pt()","reco hadtop pt","pt [GeV]",'D');
    
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
@@ -171,8 +172,9 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    // TString fname_sig_train = "/scratch365/cmuelle2/bdt_test/jan11_SE_training/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
    // TString fname_bkg_train = "/scratch365/cmuelle2/bdt_test/jan11_SE_training/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
-   TString fname_sig_train = "/scratch365/cmuelle2/bdt_test/jan11_SE_training_incl/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
-   TString fname_bkg_train = "/scratch365/cmuelle2/bdt_test/jan11_SE_training_incl/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
+   TString fname_sig_train = "/scratch365/cmuelle2/bdt_test/jan25_SE_training/tth_sigExtr_training_2lss_2lss_trainingSelection.root";
+   TString fname_bkg_train = "/scratch365/cmuelle2/bdt_test/jan25_SE_training_newBkg/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
+   //   TString fname_bkg_train = "/scratch365/cmuelle2/bdt_test/jan25_SE_training/ttbar_sigExtr_training_2lss_2lss_trainingSelection.root";
 
    if (gSystem->AccessPathName( fname_sig_train ))  // file does not exist in local directory
       gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");
@@ -255,8 +257,8 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    //TCut hadtop_present_cut_ = "b_from_hadtop_bdt.obj.pt()*q1_from_hadtop_bdt.obj.pt()*q2_from_hadtop_bdt.obj.pt() == 0";
    //TCut btight_cut_ = "isBtight";
 
-   //   TCut mycuts = "@bTight_jets.size() < 2";
-   TCut mycuts = "";
+   TCut mycuts = "@bTight_jets.size() > 1";
+   //TCut mycuts = "";
    TCut mycutb = mycuts;
 
    // TCut mycuts = "!isBtight";
@@ -271,9 +273,11 @@ int TMVAClassification_signalExtraction_ttbar_ICHEP( TString myMethodList = "" )
    //    factory->PrepareTrainingAndTestTree( mycut,
    //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
    factory->PrepareTrainingAndTestTree( mycuts, mycutb,
-					"nTrain_Signal=41000:nTrain_Background=81000:SplitMode=Random:NormMode=NumEvents:!V" );//inclusive
-					//"nTrain_Signal=18000:nTrain_Background=16600:SplitMode=Random:NormMode=NumEvents:!V" );//b tight
+					"nTrain_Signal=18000:nTrain_Background=16600:SplitMode=Random:NormMode=NumEvents:!V" );//b tight
+					//"nTrain_Signal=41000:nTrain_Background=81000:SplitMode=Random:NormMode=NumEvents:!V" );//inclusive
 					//"nTrain_Signal=24000:nTrain_Background=33000:SplitMode=Random:NormMode=NumEvents:!V" );//b loose
+
+
 
 
 

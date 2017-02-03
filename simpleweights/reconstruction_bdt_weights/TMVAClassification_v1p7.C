@@ -56,11 +56,13 @@
 #include "TMVA/Tools.h"
 #include "TMVA/TMVAGui.h"
 
-int TMVAClassification_v1p7( TString myMethodList = "" )
+int TMVAClassification_v1p7( TString input_string = "" )
 {
-   // The explicit loading of the shared libTMVA is done in TMVAlogon.C, defined in .rootrc
-   // if you use your private .rootrc, or run from a different directory, please copy the
-   // corresponding lines from .rootrc
+  
+  TString myMethodList = "";
+  // The explicit loading of the shared libTMVA is done in TMVAlogon.C, defined in .rootrc
+  // if you use your private .rootrc, or run from a different directory, please copy the
+  // corresponding lines from .rootrc
 
    // methods to be processed can be given as an argument; use format:
    //
@@ -110,7 +112,8 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    // --- Here the preparation phase begins
 
    // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
-   TString outfileName( "TMVA.root" );
+   TString outFileNameStr = "TMVA_"+input_string+".root";
+   TString outfileName( outFileNameStr );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
    // Create the factory object. Later you can choose the methods
@@ -123,14 +126,16 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    // The second argument is the output file for the training results
    // All TMVA output can be suppressed by removing the "!" (not) in
    // front of the "Silent" argument in the option string
-   TMVA::Factory *factory = new TMVA::Factory( "TMVAClassification", outputFile,
+   TString arg1 = "TMVAClassification_"+input_string;
+
+   TMVA::Factory *factory = new TMVA::Factory( arg1, outputFile,
                                                "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" );
 
    // If you wish to modify default settings
    // (please check "src/Config.h" to see all available global options)
    //    (TMVA::gConfig().GetVariablePlotting()).fTimesRMS = 8.0;
 
-   //    (TMVA::gConfig().GetIONames()).fWeightFileDir = "myWeightDirectory";
+   (TMVA::gConfig().GetIONames()).fWeightFileDir = "jan28_conePt_fr_recoBdt_weights_factorized";
 
    // Define the input variables that shall be used for the MVA training
    // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
@@ -146,10 +151,10 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    factory->AddVariable( "w_from_hadtop_tlv_bdt.M()","w frm had top mass","mass",'D');
    factory->AddVariable( "hadTop_tlv_bdt.M()","had top mass","mass",'D'); 
    //factory->AddVariable( "higgs_tlv_bdt.M()","higgs mass","mass",'D'); 
-   factory->AddVariable( "lep_from_higgs_bdt.obj.pt()","lep from higgs pt","pt",'D');
-   factory->AddVariable( "lep_from_leptop_bdt.obj.pt()","lep from top pt","pt",'D');
-   //factory->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()","lep pt ratio","pt",'D');
-   factory->AddVariable( "(lep_from_leptop_bdt.obj.pt()-lep_from_higgs_bdt.obj.pt())/(lep_from_leptop_bdt.obj.pt()+lep_from_higgs_bdt.obj.pt())","lep pt asym","asym",'D');
+   //factory->AddVariable( "lep_from_higgs_bdt.obj.pt()","lep from higgs pt","pt",'D');
+   //factory->AddVariable( "lep_from_leptop_bdt.obj.pt()","lep from top pt","pt",'D');
+   factory->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()","lep pt ratio","pt",'D');
+   //factory->AddVariable( "(lep_from_leptop_bdt.obj.pt()-lep_from_higgs_bdt.obj.pt())/(lep_from_leptop_bdt.obj.pt()+lep_from_higgs_bdt.obj.pt())","lep pt asym","asym",'D');
    
    factory->AddVariable( "dr_lepFromTop_bFromLepTop","dR(b_leptop,lep_top)","dR",'D'); 
    factory->AddVariable( "dr_lepFromTop_bFromHadTop","dR(b_hadtop,lep_top)","dR",'D'); 
@@ -165,12 +170,13 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    //   TString fname = "./tmva_class_example.root";
 
-   TString fname_sig = "/scratch365/cmuelle2/training_trees/reco_bdt_factorized/tth_genFilter_recoBdtTraining_2lss.root";
-   TString fname_bkg = "/scratch365/cmuelle2/training_trees/reco_bdt_factorized_noHiggsLoops/ttbar_recoBdtTraining.root";
+   // TString fname_sig = "/scratch365/cmuelle2/training_trees/reco_bdt_factorized/tth_genFilter_recoBdtTraining_2lss.root";
+   // TString fname_bkg = "/scratch365/cmuelle2/training_trees/reco_bdt_factorized_noHiggsLoops/ttbar_recoBdtTraining.root";
    //TString fname_bkg = "/scratch365/cmuelle2/training_trees/reco_bdt_factorized/ttbar_genFilter_bdtTraining_2lss.root";
    
-   //TString fname_sig = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttH_powheg_relaxed_2lssos.root";
-   //TString fname_bkg = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttbar_semilep_madgraph_recoBdtTraining.root";
+   TString fname_sig = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttH_powheg_relaxed_2lssos.root";
+   //   TString fname_bkg = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttbar_semilep_madgraph_recoBdtTraining.root";
+   TString fname_bkg = "/scratch365/cmuelle2/training_trees/jan28_bkg_conePt_fr/ttbar_bdtReco_training.root";
    
    if (gSystem->AccessPathName( fname_sig ))  // file does not exist in local directory
       gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");
@@ -256,7 +262,7 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    // Set individual event weights (the variables must exist in the original TTree)
    //    for signal    : factory->SetSignalWeightExpression    ("weight1*weight2");
    //    for background: factory->SetBackgroundWeightExpression("weight1*weight2");
-   //   factory->SetBackgroundWeightExpression( "weight" );
+   factory->SetBackgroundWeightExpression( "mcwgt" );
 
    // Apply additional cuts on the signal and background samples (can be different)
    // TCut mycuts = ""; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
@@ -264,10 +270,14 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
 
    // TCut lep_wrong = "lep_from_leptop_bdt.obj.pt() != lep_from_leptop_reco_truth.obj.pt()";
    // TCut bjet_wrong = "b_from_leptop_bdt.obj.pt() != b_from_leptop_reco_truth.obj.pt() && b_from_hadtop_bdt.obj.pt() != b_from_hadtop_reco_truth.obj.pt()";
-   // TCut non_zero_leps = "lep_from_leptop_bdt.obj.pt()*lep_from_higgs_bdt.obj.pt()>0";
-   TCut bTight = "@bTight_jets.size() < 2";
+   TCut non_zero_leps = "lep_from_leptop_bdt.obj.pt()*lep_from_higgs_bdt.obj.pt()>0";
+   TCut bTight; 
+   
+   if (input_string == "btight") bTight = "@bTight_jets.size() > 1";
+   else if (input_string == "bloose") bTight = "@bTight_jets.size() < 2";
+   else bTight = "";
 
-   TCut mycuts = bTight;
+   TCut mycuts = bTight && non_zero_leps;
    TCut mycutb = mycuts;
 
    // Tell the factory how to use the training and testing events
@@ -278,11 +288,27 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    // To also specify the number of testing events, use:
    //    factory->PrepareTrainingAndTestTree( mycut,
    //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
-   factory->PrepareTrainingAndTestTree( mycuts, mycutb,
-					"nTrain_Signal=110000:nTrain_Background=200000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose gen-filter hybrid
-					//"nTrain_Signal=60000:nTrain_Background=110000:SplitMode=Random:NormMode=NumEvents:!V" );//btight gen-filter hybrid
-					//"nTrain_Signal=180000:nTrain_Background=180000:SplitMode=Random:NormMode=NumEvents:!V" );//inclus gen-filter hybrid
-
+   
+   if (input_string == "btight")
+     {
+       factory->PrepareTrainingAndTestTree( mycuts, mycutb,
+					    "nTrain_Signal=13000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//btight ss
+     }
+   else if (input_string == "bloose")
+     {
+       factory->PrepareTrainingAndTestTree( mycuts, mycutb,
+					    "nTrain_Signal=19000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose ss        
+     }
+   else 
+     {
+       factory->PrepareTrainingAndTestTree( mycuts, mycutb,
+					    "nTrain_Signal=34000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//inclsuive ss
+     }
+   
+   
+   //"nTrain_Signal=110000:nTrain_Background=200000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose gen-filter hybrid
+   //"nTrain_Signal=60000:nTrain_Background=110000:SplitMode=Random:NormMode=NumEvents:!V" );//btight gen-filter hybrid
+   //"nTrain_Signal=180000:nTrain_Background=180000:SplitMode=Random:NormMode=NumEvents:!V" );//inclus gen-filter hybrid
 
    //"nTrain_Signal=60000:nTrain_Background=70000:nTest_Background=70000:SplitMode=Random:NormMode=NumEvents:!V" );//btight gen-filter
    //"nTrain_Signal=110000:nTrain_Background=150000:nTest_Background=150000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose gen-filter
@@ -294,9 +320,7 @@ int TMVAClassification_v1p7( TString myMethodList = "" )
    //"nTrain_Signal=41000:nTrain_Background=200000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose os
    
 
-   //                                        "nTrain_Signal=13000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//btight ss
-   //                                        "nTrain_Signal=34000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//inclsuive ss
-   //                                        "nTrain_Signal=19000:nTrain_Background=90000:SplitMode=Random:NormMode=NumEvents:!V" );//bloose ss 
+
 
 
    // ---- Book MVA methods
