@@ -98,12 +98,14 @@ public:
   }
 
   double getHJJBDTOutput(
+    ttH::Jet target_jet_1,
+    ttH::Jet target_jet_2,
     const vector<ttH::Jet> *ps_jets,
     const vector<ttH::Lepton> *tight_leptons
   )
   {
-    ttH::Jet target_jet_1 = ps_jets->at(0);
-    ttH::Jet target_jet_2 = ps_jets->at(1);
+    //ttH::Jet target_jet_1 = ps_jets->at(0);
+    //ttH::Jet target_jet_2 = ps_jets->at(1);
 
     double min_dr_jet = getDeltaR(target_jet_1,tight_leptons->at(0));
     double max_dr_jet = getDeltaR(target_jet_1,tight_leptons->at(0));
@@ -133,6 +135,7 @@ public:
     double max_resid_jet_dr = -999.0;
     for (auto & jet: *ps_jets) {
         if (jet.obj.Pt() == target_jet_1.obj.Pt() || jet.obj.Pt() == target_jet_2.obj.Pt()) {
+            /* Ignore self jets */
             continue;
         }
         double jet_dr = getDeltaR(jj_system,jet);

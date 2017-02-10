@@ -1,3 +1,6 @@
+#ifndef TREETOOLS_H_
+#define TREETOOLS_H_
+
 //Tools for working with TTrees
 #include "TLorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -85,5 +88,5 @@ template <typename particleType> ttH::Jet getClosestJet(const std::vector<ttH::J
   return result;
 }
 
-
-
+#endif
+/* TREETOOLS_H_ */
