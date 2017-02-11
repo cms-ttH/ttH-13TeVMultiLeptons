@@ -141,27 +141,27 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
             ////
             //////////////////////////
 
-            //bool passes2lss = pass2lss(
-            //        *tight_electrons_intree,
-            //        *fakeable_electrons_intree,
-            //        *preselected_electrons_intree,
-            //        *tight_muons_intree,
-            //        *fakeable_muons_intree,
-            //        *preselected_muons_intree,
-            //        *preselected_jets_intree,
-            //        *met_intree
-            //);
-
-            bool passes2lss_lepMVA_AR = pass2lss_lepMVA_AR(
-                    *tight_electrons_intree,
-                    *fakeable_electrons_intree,
-                    *preselected_electrons_intree,
-                    *tight_muons_intree,
-                    *fakeable_muons_intree,
-                    *preselected_muons_intree,
-                    *preselected_jets_intree,
-                    *met_intree
+            bool passes2lss = pass2lss(
+                   *tight_electrons_intree,
+                   *fakeable_electrons_intree,
+                   *preselected_electrons_intree,
+                   *tight_muons_intree,
+                   *fakeable_muons_intree,
+                   *preselected_muons_intree,
+                   *preselected_jets_intree,
+                   *met_intree
             );
+
+            // bool passes2lss_lepMVA_AR = pass2lss_lepMVA_AR(
+            //         *tight_electrons_intree,
+            //         *fakeable_electrons_intree,
+            //         *preselected_electrons_intree,
+            //         *tight_muons_intree,
+            //         *fakeable_muons_intree,
+            //         *preselected_muons_intree,
+            //         *preselected_jets_intree,
+            //         *met_intree
+            // );
 
             // bool passes2los = pass2los(
             //     *tight_electrons_intree,
@@ -196,7 +196,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
             //     *met_intree
             // );
 
-            if (passes2lss_lepMVA_AR) {
+            if (passes2lss) {
                 if (sample_name == "data") {
                     mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
                 }
@@ -252,7 +252,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 void makeSelectionTree(TString sample="data", TString selection="analysis", int job_no=-1)
 {
     //TString output_dir = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
-    TString output_dir = "/scratch365/cmuelle2/selection_trees/jan24_ichep_trees/";
+    TString output_dir = "/scratch365/cmuelle2/selection_trees/feb6_ichep_trees/";
 
     TString postfix;
     if (selection == "analysis") postfix = "_selection_tree_2lss.root";
