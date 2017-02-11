@@ -1,0 +1,19 @@
+events_per_job = 18378
+N = 200
+
++IsExpressJob = True
+universe = vanilla
+executable = branchAdder.sh
+getenv = True
+arguments = $(events_per_job) $(Process) 
+output = condor_logs/branchAdder.stdout.$(Process)
+error = condor_logs/branchAdder.stderr.$(Process)
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+log = condor_logs/simple.logfile
+#on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
+requirements = (machine != "skynet007.crc.nd.edu" )
+requestMemory=400
+queue $(N)
+
+

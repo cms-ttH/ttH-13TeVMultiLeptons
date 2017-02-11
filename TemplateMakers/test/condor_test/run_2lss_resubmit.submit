@@ -1,0 +1,23 @@
+sample = tth_aMC_old
+N = 1
+job_no = 55
+
++IsExpressJob = True
+universe = vanilla
+executable = run_2lss.sh
+arguments = $(sample) $(job_no)
+output = condor_logs/$(sample).stdout.$(job_no)
+error = condor_logs/$(sample).stderr.$(job_no)
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+log = condor_logs/logfile.log
+
+#on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
+requirements = (machine != "skynet007.crc.nd.edu" )
+#(&& machine != "d12chas562.crc.nd.edu" && machine != "d12chas561.crc.nd.edu" && machine != "d12chas585.crc.nd.edu" && machine != "d12chas582.crc.nd.edu" && machine != "d12chas560.crc.nd.edu" && machine != "d12chas559.crc.nd.edu")
+requestMemory=4400
+queue $(N)
+
+
+
+

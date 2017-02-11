@@ -1,5 +1,5 @@
-sample = ttbar_semiLep_madgraph
-N = 89
+sample = ttbar_semiLep_powheg
+N = 61
 
 +IsExpressJob = True
 universe = vanilla
