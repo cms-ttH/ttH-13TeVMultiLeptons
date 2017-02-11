@@ -17,7 +17,7 @@ void printProgress(int current_index, int total_entries)
     }
 }
 
-template <typename inObj> TLorentzVector setTlv(const ttH::Lepton inputObj )
+TLorentzVector setLepTlv(const ttH::Lepton inputObj )
 {
   TLorentzVector tlv; 
   tlv.SetPxPyPzE( inputObj.correctedPt*cos(inputObj.obj.phi()), inputObj.correctedPt*sin(inputObj.obj.phi()), inputObj.obj.pz(), inputObj.obj.E() );
@@ -28,6 +28,13 @@ template <typename inObj> TLorentzVector setTlv(const inObj inputObj )
 {
   TLorentzVector tlv; 
   tlv.SetPxPyPzE( inputObj.obj.px(), inputObj.obj.py(), inputObj.obj.pz(), inputObj.obj.E() );
+  return tlv;
+}
+
+TLorentzVector setLepTlv_T(const ttH::Lepton inputObj )
+{
+  TLorentzVector tlv; 
+  tlv.SetPxPyPzE( inputObj.correctedPt*cos(inputObj.obj.phi()), inputObj.correctedPt*sin(inputObj.obj.phi()), 0., inputObj.obj.E() );
   return tlv;
 }
 
