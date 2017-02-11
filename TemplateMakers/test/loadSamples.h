@@ -74,7 +74,10 @@ public:
     {
       chain = new TChain("OSTwoLepAna/summaryTree");
       hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);      
-      
+ 
+      // lobster_test_nov18_ICHEP_attempt2 == old
+      // lobster_test_feb2_ICHEP == new
+     
       if (sample == "tth_powheg_new")
 	{
 	  loadFile( {"muell149/lobster_test__v0/tth_nonbb_powheg_new/"} , file_index);
@@ -82,38 +85,38 @@ public:
       
       else if (sample == "tth_powheg_old")
       	{
-      	  loadFile( {"muell149/lobster_test_jan24_bdtTraining/tth_nonbb_powheg_/"} , file_index);
+      	  loadFile( {"muell149/lobster_test_feb2_ICHEP/tth_nonbb_powheg_/"} , file_index);
       	}
       
       else if (sample == "tth_aMC_old")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_nov18_ICHEP_attempt2/tth_nonbb_aMCatNLO_/");
-      	  sample_vec.push_back("muell149/lobster_test_nov18_ICHEP_attempt2/tth_nonbb_aMCatNLOextn_/");
+      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/tth_nonbb_aMCatNLO_/"); //37
+      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/tth_nonbb_aMCatNLOextn_/"); //63
       	  loadFile( sample_vec , file_index);
       	}
       
       else if (sample == "ttbar_semiLep_powheg")
       	{
-      	  loadFile( {"muell149/lobster_test_jan24_bdtTraining/ttbar_semilep_powheg/"} , file_index);
+      	  loadFile( {"muell149/lobster_test_feb2_ICHEP/ttbar_semilep_powheg/"} , file_index);
       	}
 
       else if (sample == "ttbar_diLep_mg")
       	{
 
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_nov18_ICHEP_attempt2/ttbar_dilep_mg/");
-      	  sample_vec.push_back("muell149/lobster_test_nov18_ICHEP_attempt2/ttbar_dilep_mg_extn/");
+      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_dilep_mg/");
+      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_dilep_mg_extn/");
       	  loadFile( sample_vec , file_index);
       	}
 
       else if (sample == "ttbar_semiLep_madgraph")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_jan24_bdtTraining/ttbar_semilep_fromTop_mg/");
-      	  sample_vec.push_back("muell149/lobster_test_jan24_bdtTraining/ttbar_semilep_fromTop_mg_extn/");
-      	  sample_vec.push_back("muell149/lobster_test_jan24_bdtTraining/ttbar_semilep_fromAntitop_mg/");
-      	  sample_vec.push_back("muell149/lobster_test_jan24_bdtTraining/ttbar_semilep_fromAntitop_mg_extn/");
+      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_semilep_fromTop_mg/");
+      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_semilep_fromTop_mg_extn/");
+      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_semilep_fromAntitop_mg/");
+      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_semilep_fromAntitop_mg_extn/");
       	  loadFile( sample_vec, file_index);
       	}
       
@@ -130,12 +133,12 @@ public:
       
       else if (sample == "ttW_aMCatNLO")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/ttW/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_feb2_ICHEP/ttW/"}, file_index);//2
       	}
 
       else if (sample == "ttZ_aMCatNLO")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/ttZ/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_feb2_ICHEP/ttZ/"}, file_index);//3
       	}
 
       else if (sample == "ttGammaStar")
