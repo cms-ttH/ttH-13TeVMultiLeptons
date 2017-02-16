@@ -75,8 +75,8 @@ private:
     }
 
     hj_mva_min_dr = min_dr_jet;
-    hj_mva_jet_csv = target_jet.csv;
-    hj_mva_jet_qg = target_jet.qgid;
+    hj_mva_jet_csv = max(target_jet.csv,0.);
+    hj_mva_jet_qg = max(target_jet.qgid,0.);
     hj_mva_max_dr = max_dr_jet;
     hj_mva_jet_pt = target_jet.obj.Pt();
 
