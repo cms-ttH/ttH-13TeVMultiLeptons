@@ -21,10 +21,6 @@
 #include "TMVA/MethodCuts.h"
 #include "treeTools.h"
 
-#include <typeinfo>
-#include <tuple>
-#include "hTaggerBDT.h"
-  
 class eventReconstructor
 {
  private:
@@ -44,6 +40,9 @@ class eventReconstructor
   Float_t dr_lepFromTop_bFromLepTop_var;
   Float_t dr_lepFromTop_bFromHadTop_var;
   Float_t dr_lepFromHiggs_bFromLepTop_var;
+  Float_t q1_fromHadTop_csv_var;
+  Float_t q2_fromHadTop_csv_var;
+  const char* env_p = std::getenv("CMSSW_BASE");
 
   TMVA::Reader* bookMVA(std::string weights_file_str)
   {
@@ -57,18 +56,19 @@ class eventReconstructor
     //TMVAReader_internal_->AddVariable( "lep_from_higgs_bdt.obj.pt()", &lep_fromHiggs_pT_var );
     //TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()", &lep_fromTop_pT_var );
     //TMVAReader_internal_->AddVariable( "(lep_from_leptop_bdt.obj.pt()-lep_from_higgs_bdt.obj.pt())/(lep_from_leptop_bdt.obj.pt()+lep_from_higgs_bdt.obj.pt())", &lep_pt_ratio_var );
-    TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()", &lep_pt_ratio_var );
-    //TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()", &lep_pt_ratio_var );//PORTED FROM: test/reco_bdt/bdt_fw_integration
+    TMVAReader_internal_->AddVariable( "lep_from_leptop_bdt.obj.pt()/lep_from_higgs_bdt.obj.pt()", &lep_pt_ratio_var );//PORTED FROM: test/reco_bdt/bdt_fw_integration
+    
+    //TMVAReader_internal_->AddVariable( "q1_from_hadtop_bdt.csv", &q1_fromHadTop_csv_var );
+    //TMVAReader_internal_->AddVariable( "q2_from_hadtop_bdt.csv", &q2_fromHadTop_csv_var );
+
     TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromLepTop", &dr_lepFromTop_bFromLepTop_var );
     TMVAReader_internal_->AddVariable( "dr_lepFromTop_bFromHadTop", &dr_lepFromTop_bFromHadTop_var );
     TMVAReader_internal_->AddVariable( "dr_lepFromHiggs_bFromLepTop", &dr_lepFromHiggs_bFromLepTop_var );
 
-    const char* env_p = std::getenv("CMSSW_BASE");
     std::string weight_file = env_p;
     weight_file += weights_file_str;
     TMVAReader_internal_->BookMVA("BDTG method", weight_file);
 
-    //    TMVAReader_internal_->BookMVA("BDTG method", weights_file_str);
     return TMVAReader_internal_;
   }
   
@@ -105,23 +105,16 @@ class eventReconstructor
     /* TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_genFilter_bTight.xml"); */
     /* TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_genFilter_bLoose.xml"); */
 
-    //jan15 hybrid test
-    //TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_genFilter_noHiggsLoops_bTight.xml");
-    //TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_factorized_genFilter_noHiggsLoops_bLoose.xml");
-
-    h_tagger = new hTagger(
-      "/afs/cern.ch/user/a/awightma/workspace/misc_code/Hj_csv_BDTG.weights.xml",
-      "/afs/cern.ch/user/a/awightma/workspace/misc_code/Hjj_csv_BDTG.weights.xml"
-    );
-
+    //Feb11 ttW signal test
+    //TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/feb10_weights_recoBdt_weights_factorized/TMVAClassification_btight_BDTG.weights.xml");
+    //TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/feb10_weights_recoBdt_weights_factorized/TMVAClassification_bloose_BDTG.weights.xml");
+    
+    //Feb14 only hadtop objs test
+    //TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/feb14_weights_recoBdt_weights_factorized/TMVAClassification_inclusive_BDTG.weights.xml");
+    //TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/feb14_weights_recoBdt_weights_factorized/TMVAClassification_inclusive_BDTG.weights.xml");
+    
   } // default constructor
 
-  hTagger* h_tagger;
-
-  vector<ttH::Jet> *hj_bdt_jets_intree=0;    // Both of these vectors are of length 2
-  vector<double> *hj_bdt_scores_intree=0;    // Both of these vectors are of length 2
-  vector<ttH::Jet> *hjj_bdt_jets_intree=0;
-  vector<double> *hjj_bdt_score_intree=0;
 
   vector<int> *match_results_bdt_intree=0;
   double reco_score_intree;
@@ -168,10 +161,6 @@ class eventReconstructor
     matched_jets_bdt_intree->clear();
     match_results_bdt_intree->clear();
 
-    hj_bdt_jets_intree->clear();
-    hj_bdt_scores_intree->clear();
-    hjj_bdt_jets_intree->clear();
-    hjj_bdt_score_intree->clear();
   }
     
     void initializeTree(TTree *input_tree)
@@ -206,10 +195,6 @@ class eventReconstructor
     input_tree->Branch("b_from_leptop_matching", &b_from_leptop_matching_intree);
     input_tree->Branch("W_from_hadtop_matching", &W_from_hadtop_matching_intree);
 
-    input_tree->Branch("hj_bdt_jets",&hj_bdt_jets_intree);
-    input_tree->Branch("hj_bdt_scores",&hj_bdt_scores_intree);
-    input_tree->Branch("hjj_bdt_jets",&hjj_bdt_jets_intree);
-    input_tree->Branch("hjj_bdt_score",&hjj_bdt_score_intree);
   }
 
 
@@ -287,59 +272,6 @@ class eventReconstructor
       null_jets_added_bdt_intree = 1;
     }
     
-    // Find the best hj/hjj scores amongst all possible jets
-    double hj_mva_value = -2;
-    double hjj_mva_value = -2;
-    vector<std::tuple<ttH::Jet,double>> hj_jet_tuple;
-    vector<std::tuple<ttH::Jet,ttH::Jet,double>> hjj_jet_tuple;
-    for (unsigned int i = 0; i < jets_input->size(); i++) {
-      ttH::Jet tmp_jet_1 = jets_input->at(i);
-      hj_mva_value = h_tagger->getHJBDTOutput(tmp_jet_1,leptons_in);
-      hj_jet_tuple.emplace_back(std::make_tuple(tmp_jet_1,hj_mva_value));
-      for (unsigned int j = 0; j < jets_input->size(); j++) {
-        ttH::Jet tmp_jet_2 = jets_input->at(j);
-        if (i >= j) {
-          /* Avoid double counting and self counting */
-          continue;
-        }
-        hjj_mva_value = h_tagger->getHJJBDTOutput(tmp_jet_1,tmp_jet_2,jets_input,leptons_in);
-        hjj_jet_tuple.emplace_back(std::make_tuple(tmp_jet_1,tmp_jet_2,hjj_mva_value));
-      }
-    }
-    /* Sort by bdt score */
-    std::sort(hj_jet_tuple.begin(), hj_jet_tuple.end(), [](std::tuple<ttH::Jet,double> &t1, std::tuple<ttH::Jet,double> &t2) {
-      return std::get<1>(t1) > std::get<1>(t2);
-    });
-    std::sort(hjj_jet_tuple.begin(), hjj_jet_tuple.end(), [](std::tuple<ttH::Jet,ttH::Jet,double> &t1, std::tuple<ttH::Jet,ttH::Jet,double> &t2) {
-      return std::get<2>(t1) > std::get<2>(t2);
-    });
-    /* Store the best 2 hj_bdt jets and their scores */
-    if (hj_jet_tuple.size() > 1) {
-      /* At least 2 entries */
-      hj_bdt_jets_intree->push_back(std::get<0>(hj_jet_tuple.at(0)));
-      hj_bdt_jets_intree->push_back(std::get<0>(hj_jet_tuple.at(1)));
-      hj_bdt_scores_intree->push_back(std::get<1>(hj_jet_tuple.at(0)));
-      hj_bdt_scores_intree->push_back(std::get<1>(hj_jet_tuple.at(1)));
-    } else if (hj_jet_tuple.size() > 0) {
-      /* At least 1 entry */
-      hj_bdt_jets_intree->push_back(std::get<0>(hj_jet_tuple.at(0)));
-      hj_bdt_scores_intree->push_back(std::get<1>(hj_jet_tuple.at(0)));
-      hj_bdt_scores_intree->push_back(-2.);
-    } else {
-      /* No entries */
-      hj_bdt_scores_intree->push_back(-2.);
-      hj_bdt_scores_intree->push_back(-2.);
-    }
-    /* Store the best hjj_bdt jets and the score */
-    if (hjj_jet_tuple.size() > 0) {
-      /* This check can fail if for instance we only have 4 jets in the event and 3 got put into the hadtop*/
-      hjj_bdt_jets_intree->push_back(std::get<0>(hjj_jet_tuple.at(0)));
-      hjj_bdt_jets_intree->push_back(std::get<1>(hjj_jet_tuple.at(0)));
-      hjj_bdt_score_intree->push_back(std::get<2>(hjj_jet_tuple.at(0)));
-    } else {
-      /* Fill the event with a default value */
-      hjj_bdt_score_intree->push_back(-2.);
-    }
 
     ///////////////////////////
     /////
@@ -428,6 +360,10 @@ class eventReconstructor
                 //calculate all your *new* variables
                 bJet_fromLepTop_csv_var = bjet_fromLepTop.csv;
                 bJet_fromHadTop_csv_var = bjet_fromHadTop.csv;
+
+		q1_fromHadTop_csv_var = wjet1_fromHadTop.csv;
+		q2_fromHadTop_csv_var = wjet2_fromHadTop.csv;
+
                 hadTop_pt_var = hadTop_tlv.Pt();
                 w_fromHadTop_mass_var = w_fromHadTop_tlv.M();
                 hadTop_mass_var = hadTop_tlv.M();
@@ -453,32 +389,6 @@ class eventReconstructor
                 double mva_value = TMVAReader_->EvaluateMVA( "BDTG method" );
 
                 
-                null_check_1 = bjet_fromHadTop.obj.Pt() == 0;
-                null_check_2 = wjet1_fromHadTop.obj.Pt() == 0;
-                null_check_3 = wjet2_fromHadTop.obj.Pt() == 0;
-                null_jet_check = (null_check_1 + null_check_2 + null_check_3) == 0;    // True if exactly 0 null jets
-                //null_jet_check = (null_check_1 + null_check_2 + null_check_3) == 1;    // True if exactly 1 null jets
-                //null_jet_check = (null_check_1 + null_check_2 + null_check_3) == 2;    // True if exactly 2 null jets
-
-                //if (null_jet_check) {
-                if (false) {//Disabled
-                  // None of the reco jets are null jets
-                  //ttH::Jet h_jet_1 = hj_bdt_jets_intree->at(0);
-                  //ttH::Jet h_jet_2 = hj_bdt_jets_intree->at(1);
-
-                  ttH::Jet h_jet_1 = hjj_bdt_jets_intree->at(0);
-                  ttH::Jet h_jet_2 = hjj_bdt_jets_intree->at(1);
-
-                  bool check_b_jet = (h_jet_1.obj.Pt() == bjet_fromHadTop.obj.Pt()) || (hj_jet_2.obj.Pt() == bjet_fromHadTop.obj.Pt());
-                  bool check_q1_jet = (h_jet_1.obj.Pt() == wjet1_fromHadTop.obj.Pt()) || (hj_jet_2.obj.Pt() == wjet1_fromHadTop.obj.Pt());
-                  bool check_q2_jet = (h_jet_1.obj.Pt() == wjet2_fromHadTop.obj.Pt()) || (hj_jet_2.obj.Pt() == wjet2_fromHadTop.obj.Pt());
-
-                  if (check_b_jet + check_q1_jet + check_q2_jet > 1) {
-                    // Both h_jets overlap with reco_bdt jets
-                    mva_value *= 1.0;
-                  }
-                }
-
                 all_combo_vec_intree.push_back(mva_value);
           
                 if ( mva_value > reco_score_intree )
@@ -507,99 +417,7 @@ class eventReconstructor
         }
       }
     }
-    
-    null_check_1 = b_from_hadtop_bdt_intree->obj.Pt() == 0;
-    null_check_2 = q1_from_hadtop_bdt_intree->obj.Pt() == 0;
-    null_check_3 = q2_from_hadtop_bdt_intree->obj.Pt() == 0;
-    null_jet_check = (null_check_1 + null_check_2 + null_check_3) == 0;    // True if exactly 0 null jets
-    //null_jet_check = (null_check_1 + null_check_2 + null_check_3) == 1;    // True if exactly 1 null jets
-    //null_jet_check = (null_check_1 + null_check_2 + null_check_3) == 2;    // True if exactly 2 null jets
 
-    //double m_hadtop = (b_from_hadtop_bdt_intree->obj + q1_from_hadtop_bdt_intree->obj + q2_from_hadtop_bdt_intree->obj).M();
-    //bool hadtop_mass_check = fabs(m_hadtop - 173) <= 20;
-    bool hadtop_mass_check = fabs(hadTop_tlv_bdt_intree.M() - 173) <= 20;
-    bool reco_score_check = reco_score_intree > 0.5;
-
-    vector<ttH::Jet> non_reco_jets;
-    //if (null_jet_check && hadtop_mass_check) {
-    if (false) {//Disabled
-      /* Passed null check --> restrict which jets to check hj/hjj values for */
-      hj_bdt_jets_intree->clear();
-      hj_bdt_scores_intree->clear();
-      hjj_bdt_jets_intree->clear();
-      hjj_bdt_score_intree->clear();
-
-      hjj_jet_tuple.clear();
-      hj_jet_tuple.clear();
-      
-      hj_mva_value = -2;
-      hjj_mva_value = -2;
-      for (unsigned int i = 0; i < jets_input->size(); i++) {
-        ttH::Jet tmp_jet = jets_input->at(i);
-        if (b_from_hadtop_bdt_intree->obj.Pt() == tmp_jet.obj.Pt()) {
-          continue;
-        } else if (q1_from_hadtop_bdt_intree->obj.Pt() == tmp_jet.obj.Pt()) {
-          continue;
-        } else if (q2_from_hadtop_bdt_intree->obj.Pt() == tmp_jet.obj.Pt()) {
-          continue;
-        } else {
-          non_reco_jets.push_back(tmp_jet);
-        }
-      }
-      hj_mva_value = -2.;
-      hjj_mva_value = -2.;
-      hj_jet_tuple.clear();
-      hjj_jet_tuple.clear();
-      for (unsigned int i = 0; i < non_reco_jets.size(); i++) {
-        ttH::Jet tmp_jet_1 = non_reco_jets.at(i);
-        hj_mva_value = h_tagger->getHJBDTOutput(tmp_jet_1,leptons_in);
-        hj_jet_tuple.emplace_back(std::make_tuple(tmp_jet_1,hj_mva_value));
-        for (unsigned int j = 0; j < non_reco_jets.size(); j++) {
-          ttH::Jet tmp_jet_2 = non_reco_jets.at(j);
-          if (i >= j) {
-            /* Avoid double counting and self counting */
-            continue;
-          }
-          hjj_mva_value = h_tagger->getHJJBDTOutput(tmp_jet_1,tmp_jet_2,&non_reco_jets,leptons_in);
-          hjj_jet_tuple.emplace_back(std::make_tuple(tmp_jet_1,tmp_jet_2,hjj_mva_value));
-        }
-      }
-      /* Sort by bdt score */
-      std::sort(hj_jet_tuple.begin(), hj_jet_tuple.end(), [](std::tuple<ttH::Jet,double> &t1, std::tuple<ttH::Jet,double> &t2) {
-        return std::get<1>(t1) > std::get<1>(t2);
-      });
-      std::sort(hjj_jet_tuple.begin(), hjj_jet_tuple.end(), [](std::tuple<ttH::Jet,ttH::Jet,double> &t1, std::tuple<ttH::Jet,ttH::Jet,double> &t2) {
-        return std::get<2>(t1) > std::get<2>(t2);
-      });
-
-      /* Store the best 2 hj_bdt jets and their scores */
-      if (hj_jet_tuple.size() > 1) {
-        /* At least 2 entries */
-        hj_bdt_jets_intree->push_back(std::get<0>(hj_jet_tuple.at(0)));
-        hj_bdt_jets_intree->push_back(std::get<0>(hj_jet_tuple.at(1)));
-        hj_bdt_scores_intree->push_back(std::get<1>(hj_jet_tuple.at(0)));
-        hj_bdt_scores_intree->push_back(std::get<1>(hj_jet_tuple.at(1)));
-      } else if (hj_jet_tuple.size() > 0) {
-        /* At least 1 entry */
-        hj_bdt_jets_intree->push_back(std::get<0>(hj_jet_tuple.at(0)));
-        hj_bdt_scores_intree->push_back(std::get<1>(hj_jet_tuple.at(0)));
-        hj_bdt_scores_intree->push_back(-2.);
-      } else {
-        /* No entries */
-        hj_bdt_scores_intree->push_back(-2.);
-        hj_bdt_scores_intree->push_back(-2.);
-      }
-      /* Store the best hjj_bdt jets and the score */
-      if (hjj_jet_tuple.size() > 0) {
-        /* This check can fail if for instance we only have 4 jets in the event and 3 got put into the hadtop*/
-        hjj_bdt_jets_intree->push_back(std::get<0>(hjj_jet_tuple.at(0)));
-        hjj_bdt_jets_intree->push_back(std::get<1>(hjj_jet_tuple.at(0)));
-        hjj_bdt_score_intree->push_back(std::get<2>(hjj_jet_tuple.at(0)));
-      } else {
-        /* Fill the event with a default value */
-        hjj_bdt_score_intree->push_back(-2.);
-      }
-    }//No need for an else, since we already calculated the best hj/hjj bdt scores at the start
 
     if ((*b_from_hadtop_bdt_intree).obj.pt() > 0.) matched_jets_bdt_intree->push_back(*b_from_hadtop_bdt_intree);
     if ((*b_from_leptop_bdt_intree).obj.pt() > 0.) matched_jets_bdt_intree->push_back(*b_from_leptop_bdt_intree);

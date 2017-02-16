@@ -14,6 +14,7 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 //#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor_factorized.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/hTaggerBDT.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/signalExtractionTreeMaker.h"
 #include "TMVA/Config.h"
 #include "TMVA/Tools.h"
@@ -163,6 +164,8 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   match_eff_hist->GetXaxis()->SetTitle("object");
 
   eventReconstructor bdtReconstructor;
+  hTagger higgsJetTagger;
+
   double time_per_event_intree = -1.;
   TLorentzVector hadtop_tlv_intree;
   TLorentzVector w_hadtop_tlv_intree;
@@ -177,6 +180,7 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   ss2l_tree->Branch("higgs_reco_truth", &higgs_tlv_intree);
 
   bdtReconstructor.initializeTree(ss2l_tree);
+  higgsJetTagger.initializeTree(ss2l_tree);
 
   //new stuff for bdt trainin/evaluation. 
   TTree *ttH_vs_ttbar_tree = new TTree("tth_vs_ttbar_tree","tth_vs_ttbar_tree");
@@ -233,6 +237,20 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
 					   q2_from_higgs_truth_intree ); //order of arguments matters here..
       
       auto match_results = bdtReconstructor.match_results_bdt_intree;
+
+
+      /// apply hadtop jet removal for higgs tagger:
+      //vector<ttH::Jet> *jets_for_higgsTagger = preselected_jets_intree;
+      vector<ttH::Jet> jets_for_higgsTagger;
+      for (const auto & jet : *preselected_jets_intree)
+       	{
+       	  if (jet.obj.pt() == bdtReconstructor.b_from_hadtop_bdt_intree->obj.pt()) continue;
+       	  else if (jet.obj.pt() == bdtReconstructor.q1_from_hadtop_bdt_intree->obj.pt()) continue;
+      	  else if (jet.obj.pt() == bdtReconstructor.q2_from_hadtop_bdt_intree->obj.pt()) continue;
+       	  else jets_for_higgsTagger.push_back(jet);
+       	}
+      higgsJetTagger.initialize(&jets_for_higgsTagger, lep_collection, (*met_intree)[0]);
+
       mySigExtrTreeMaker.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0], selected_taus_intree, bdtReconstructor);
       
       time_per_event_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
@@ -253,14 +271,14 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   
 }
 
-void evaluateRecoBdt(string sample_name="ttbar_semiLep_powheg", int events_per_job=-1, int job_no=-1)
+void evaluateRecoBdt(string sample_name="ttz_qgid", int events_per_job=-1, int job_no=-1)
 {
   //sample_name = "output_tree_2lss_SR_sync";
   //sample_name = "tagger_compare_tree_background_modified_score";
   //sample_name = "tagger_compare_tree_signal_modified_score";
   //sample_name = "";
 
-  //TString input_file_name = getSelectionFile(sample_name);
+  TString input_file_name = getSelectionFile(sample_name);
   
   //Sync file
   //TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/sync_2lss_SR_selection_tree_2lss.root";
@@ -271,11 +289,11 @@ void evaluateRecoBdt(string sample_name="ttbar_semiLep_powheg", int events_per_j
   //Background file
   //TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/ttH_root_files/ttbar_semiLep_powheg_2lss_selection.root";
 
-  TFile *input_file = new TFile(input_file_name, "READONLY");
+  //TFile *input_file = new TFile(input_file_name, "READONLY");
 
   if (sample_name == "") sample_name = "output_test";
   //TString output_dir = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
-  TString output_dir = "/scratch365/cmuelle2/extraction_trees/jan23_ichep_data/";
+  TString output_dir = "/scratch365/cmuelle2/extraction_trees/feb15_htag_NoTopTagRemoval_syncWeights/";
   TString output_file_name = output_dir+sample_name;
   if (events_per_job > -1 && job_no > -1) output_file_name +=std::to_string(job_no);
   output_file_name += ".root";
@@ -283,11 +301,11 @@ void evaluateRecoBdt(string sample_name="ttbar_semiLep_powheg", int events_per_j
 
   TFile *output_file = new TFile(output_file_name, "RECREATE"); //"UPDATE");
 
-  if (job_no < 1)
-    {
-      TH1D* event_hist = (TH1D*)input_file->Get("numInitialWeightedMCevents");
-      event_hist->Write();
-    }
+  // if (job_no < 1)
+  //   {
+  //     TH1D* event_hist = (TH1D*)input_file->Get("numInitialWeightedMCevents");
+  //     event_hist->Write();
+  //   }
 
   TChain *chain_ = new TChain("ss2l_tree");
   chain_->Add(input_file_name);
