@@ -30,8 +30,8 @@ private:
   {
     TMVA::Reader* TMVAReader_internal_ = new TMVA::Reader("!Color:!Silent");
     TMVAReader_internal_->AddVariable("Jet_lepdrmin",&hj_mva_min_dr);
-    TMVAReader_internal_->AddVariable("Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags",&hj_mva_jet_csv);
-    TMVAReader_internal_->AddVariable("Jet_qg",&hj_mva_jet_qg);
+    TMVAReader_internal_->AddVariable("max(Jet_pfCombinedInclusiveSecondaryVertexV2BJetTags,0.)",&hj_mva_jet_csv);
+    TMVAReader_internal_->AddVariable("max(Jet_qg,0.)",&hj_mva_jet_qg);
     TMVAReader_internal_->AddVariable("Jet_lepdrmax",&hj_mva_max_dr);
     TMVAReader_internal_->AddVariable("Jet_pt",&hj_mva_jet_pt);
 
