@@ -13,6 +13,7 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
         cmsenv        
         git cms-addpkg CommonTools/Utils
         git cms-init
+	git cms-merge-topic ikrav:egm_id_80X_v2
         git clone git@github.com:cms-ttH/MiniAOD.git
         git clone git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
         git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
@@ -20,6 +21,18 @@ To get started tree-making from miniAOD (on an SL6 machine) do:
 For now, CMSSW_8_0_X (and later) seems to be broken so edit the following:
 
     	sed -i 's|Math/include|Math/interface|' CommonTools/Utils/interface/normalizedPhi.h
+
+Then add the new Spring16 EleMVAID weights by doing:
+
+	cd $CMSSW_BASE/external
+	# below, you may have a different architecture, this is just one example from lxplus
+	cd slc6_amd64_gcc530/
+	git clone https://github.com/ikrav/RecoEgamma-ElectronIdentification.git data/RecoEgamma/ElectronIdentification/data
+	cd data/RecoEgamma/ElectronIdentification/data
+	git checkout egm_id_80X_v1
+	# Go back to the src/
+	cd $CMSSW_BASE/src
+
 
 And compile (try again if it fails the first time):
 
