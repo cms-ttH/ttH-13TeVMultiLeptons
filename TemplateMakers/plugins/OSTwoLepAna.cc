@@ -36,7 +36,6 @@ void OSTwoLepAna::beginJob()
   
   // job setup  
   SetUp(analysisYear, -9999, analysisType::DIL, isData);
-  //  SetFactorizedJetCorrector(); // remove ???
   
   // needed in edanalyzer:
   edm::Service<TFileService> newfs;
@@ -59,8 +58,7 @@ void OSTwoLepAna::endJob() {
 
   //  cout << "Num Events processed " << numEvents << endl;
   //       << "Passed cuts " << numEventsPassCuts << endl;
-  //       << "Failed cuts " << numEventsFailCuts << endl;
-  
+  //       << "Failed cuts " << numEventsFailCuts << endl;  
   
   cout << "singleMuCount: " << singleMuCount << endl;
   cout << "singleEleCount: " << singleEleCount << endl;
@@ -92,7 +90,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   auto muons =                    get_collection(event, muons_token_);
   auto electrons =                get_collection(event, electrons_token_);
   auto taus =                     get_collection(event, taus_token_);
-  edm::Handle<pat::JetCollection> pfjets =                get_collection(event, jets_token_);
   patMETs mets =                  get_collection(event, mets_token_);
   prunedGenParticles prunedParticles;
   packedGenParticles packedParticles;
@@ -103,6 +100,19 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     packedParticles = get_collection(event, genPackedParticles_token_);
     genjets = get_collection(event, genJet_token_);
   }
+
+  /////////////////////
+  /////////
+  ///////// Setting up JECs
+  /////////
+  /////////////////////
+
+  edm::Handle<pat::JetCollection> pfjets =                get_collection(event, jets_token_);
+  edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
+  evsetup.get<JetCorrectionsRecord>().get("AK5PF", JetCorParColl);
+  const JetCorrectorParameters& JetCorPar = (*JetCorParColl)["Uncertainty"];
+  junc_.reset(new JetCorrectionUncertainty(JetCorPar));
+
 
   SetRho(rho);
 
@@ -198,6 +208,28 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     vecPatJet rawJets = GetUncorrectedJets(*pfjets);
     vecPatJet correctedRawJets = (*pfjets);
 
+    vecPatJet correctedRawJets_JECdown;
+    vecPatJet correctedRawJets_JECup;
+
+
+    for (auto j: correctedRawJets)
+      {
+    	junc_->setJetEta(j.eta());
+    	junc_->setJetPt(j.pt());
+    	auto unc = junc_->getUncertainty(true);
+    	j.scaleEnergy(1 + unc*-1.);
+	correctedRawJets_JECdown.push_back(j);
+      }
+
+    for (auto j: correctedRawJets)
+      {
+    	junc_->setJetEta(j.eta());
+    	junc_->setJetPt(j.pt());
+    	auto unc = junc_->getUncertainty(true);
+    	j.scaleEnergy(1 + unc*1.);
+	correctedRawJets_JECup.push_back(j);
+      }
+
     ///// Grab the QGID 
     edm::Handle<edm::ValueMap<float>> qgHandle;
     event.getByToken(qg_token_, qgHandle);
@@ -207,12 +239,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
       edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection> (pfjets, jet - pfjets->begin()));
       float qgLikelihood = (*qgHandle)[jetRef];
       correctedRawJets[jet_counter].addUserFloat("qgid",qgLikelihood);
+      correctedRawJets_JECdown[jet_counter].addUserFloat("qgid",qgLikelihood);
+      correctedRawJets_JECup[jet_counter].addUserFloat("qgid",qgLikelihood);
       rawJets[jet_counter].addUserFloat("qgid",qgLikelihood);
       jet_counter +=1;
     }
 
     vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets,selectedTaus_preselected,0.4);
+    vecPatJet cleaned_rawJets_JECup  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets_JECup,selectedTaus_preselected,0.4);
+    vecPatJet cleaned_rawJets_JECdown  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets_JECdown,selectedTaus_preselected,0.4);
     vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
+    vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 25., 2.4, jetID::jetPU, '-' );
+    vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 25., 2.4, jetID::jetPU, '-' );
 
     /////////
     ///
@@ -229,6 +267,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
     selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
 
+    selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECup_preselected,selectedMuons_fakeable,0.4);
+    selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected,selectedElectrons_fakeable,0.4);
+    selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECdown_preselected,selectedMuons_fakeable,0.4);
+    selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECdown_preselected,selectedElectrons_fakeable,0.4);
+
+    //This cleaning for gen-filtered MC samples ONLY!
     // selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
     // selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
 
@@ -306,6 +350,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
     vector<ttH::Jet> raw_jets = GetCollection(rawJets);
     vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
+    vector<ttH::Jet> preselected_jets_JECup = GetCollection(selectedJets_JECup_preselected);
+    vector<ttH::Jet> preselected_jets_JECdown = GetCollection(selectedJets_JECdown_preselected);
     vector<ttH::Jet> preselected_jets_uncor = preselected_jets; // temporary
     
     vector<ttH::MET> theMET = GetCollection(mets);
@@ -377,6 +423,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     selected_taus_intree = selected_taus;
       
     preselected_jets_intree = preselected_jets;
+    preselected_jets_JECup_intree = preselected_jets_JECup;
+    preselected_jets_JECdown_intree = preselected_jets_JECdown;
     preselected_jets_uncor_intree = preselected_jets_uncor;
       
     met_intree = theMET;

@@ -25,7 +25,6 @@ if isData:
     process.GlobalTag.globaltag = '80X_dataRun2_Prompt_ICHEP16JEC_v0'
 else:    
     process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
-    #process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
 
 
 process.prefer("GlobalTag")
@@ -43,8 +42,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.source = cms.Source("PoolSource",
 #    	fileNames = cms.untracked.vstring( infile ),        
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
-#    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/50000/000FF6AC-9F2A-E611-A063-0CC47A4C8EB0.root" ),
-    	fileNames = cms.untracked.vstring( "file:ttW_2017_sync_miniAODv2.root" ),
+    	fileNames = cms.untracked.vstring( "/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/161C938B-99BE-E611-A0DF-002590FD5A3A.root"),
+#    	fileNames = cms.untracked.vstring( "file:ttW_2017_sync_miniAODv2.root" ),
 #    	fileNames = cms.untracked.vstring( "file:singleMu2016B.root" ),
 #        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
 
@@ -89,6 +88,7 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
 process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
+process.ttHLeptons.JECTag = "patJetCorrFactorsReapplyJEC"
 #process.OSTwoLepAna.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
