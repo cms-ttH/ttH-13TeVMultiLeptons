@@ -86,6 +86,8 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
 ### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile)
 
+process.ttHLeptons.LooseCSVWP = cms.double(0.5426)
+process.ttHLeptons.MediumCSVWP = cms.double(0.8484)
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
 process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
 process.ttHLeptons.JECTag = "patJetCorrFactorsReapplyJEC"
