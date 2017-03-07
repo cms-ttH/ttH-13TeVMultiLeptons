@@ -45,5 +45,39 @@ class FakeRateEvaluator
     return fr_weight;
 
   }
+
+
+  double flipProb(vector<ttH::Lepton> leps)
+  {
+    double flip_prob = 0.;
+    int count = 0;
+    for (const auto & lep: leps)
+      {
+	if (count >= 2) break; //only first two leps for 2lss
+	if (abs(lep.pdgID) == 11)
+	  {
+	    if (lep.obj.pt() < 25)
+	      {
+		if (abs(lep.obj.eta()) < 1.479)	flip_prob += 0.0442;
+		else flip_prob += 0.1329;
+	      }
+	    else if (lep.obj.pt() < 50)
+	      {
+		if (abs(lep.obj.eta()) < 1.479)	flip_prob += 0.0179;
+		else flip_prob += 0.1898;
+	      }
+	    else 
+	      {
+		if (abs(lep.obj.eta()) < 1.479)	flip_prob += 0.0262;
+		else flip_prob += 0.3067;
+	      }
+	  }
+	count ++;
+      }
+    if (flip_prob == 0.) return 1.;
+    else return flip_prob;
+  }
+  
+
   virtual ~FakeRateEvaluator(){};
 };
