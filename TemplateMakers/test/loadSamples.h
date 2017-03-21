@@ -80,19 +80,23 @@ public:
      
       if (sample == "tth_powheg_new")
 	{
-	  loadFile( {"muell149/lobster_test__v0/tth_nonbb_powheg_new/"} , file_index);
+	  loadFile( {"muell149/lobster_test__marchGenFilterStudies_noGenFilter/tth_nonbb_powheg/"} , file_index);//30
 	}
-      
-      else if (sample == "tth_powheg_old")
+
+      else if (sample == "tth_powheg")
       	{
-      	  loadFile( {"muell149/lobster_test_feb2_ICHEP/tth_nonbb_powheg_/"} , file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/tth_nonbb_powheg_/"} , file_index); //8
       	}
+
+      else if (sample == "tth_aMC_new")
+	{
+	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/tth_nonbb_aMCatNLO_/"} , file_index); //22
+	}
       
       else if (sample == "tth_aMC_old")
       	{
       	  vector<TString> sample_vec;
       	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/tth_nonbb_aMCatNLO_/"); //37
-      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/tth_nonbb_aMCatNLOextn_/"); //63
       	  loadFile( sample_vec , file_index);
       	}
       
@@ -103,7 +107,6 @@ public:
 
       else if (sample == "ttbar_diLep_mg")
       	{
-
       	  vector<TString> sample_vec;
       	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_dilep_mg/");
       	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_dilep_mg_extn/");
@@ -113,10 +116,10 @@ public:
       else if (sample == "ttbar_semiLep_madgraph")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_semilep_fromTop_mg/");
-      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_semilep_fromTop_mg_extn/");
-      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_semilep_fromAntitop_mg/");
-      	  sample_vec.push_back("muell149/lobster_test_feb2_ICHEP/ttbar_semilep_fromAntitop_mg_extn/");
+      	  sample_vec.push_back("muell149/lobster_test_feb17_Moriond17_v0/ttbar_semilep_fromTop_mg/"); //9
+      	  sample_vec.push_back("muell149/lobster_test_feb17_Moriond17_v0/ttbar_semilep_fromTop_mg_extn/"); //35
+      	  sample_vec.push_back("muell149/lobster_test_feb17_Moriond17_v0/ttbar_semilep_fromAntitop_mg/"); //9
+      	  sample_vec.push_back("muell149/lobster_test_feb17_Moriond17_v0/ttbar_semilep_fromAntitop_mg_extn/"); //33
       	  loadFile( sample_vec, file_index);
       	}
       
@@ -133,59 +136,100 @@ public:
       
       else if (sample == "ttW_aMCatNLO")
       	{
-      	  loadFile( {"muell149/lobster_test_feb2_ICHEP/ttW/"}, file_index);//2
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/ttW/"); //6
+      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/ttW_extn/"); //9
+	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "ttZ_aMCatNLO")
       	{
-      	  loadFile( {"muell149/lobster_test_feb2_ICHEP/ttZ/"}, file_index);//3
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/ttZ/"); //7
+	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "ttGammaStar")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/ttll_m10/"}, file_index);
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/ttZ_M1_10/"); //7
+	  loadFile( sample_vec, file_index);
       	}
 
+      else if (sample == "wGamma")
+      	{
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/wPlusJets/"); //1
+	  loadFile( sample_vec, file_index);
+      	}
+
+      else if (sample == "zGamma")
+      	{
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/zPlusJets/"); //35
+	  loadFile( sample_vec, file_index);
+      	}
+      
       else if ( sample == "WW_diboson")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/WW_2l2nu/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0_pt2/WW_2l2nu/"}, file_index); //5
       	}
 
       else if ( sample == "ZZ_diboson")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/ZZ_to4l/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0_pt2/ZZ_to4l/"}, file_index);//19
       	}
       else if ( sample == "WZ_diboson")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/WZ_to3lnu/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0_pt3/WZ_to3lnu/"}, file_index);//5
+      	}
+
+      else if (sample == "convs_sT")
+      	{
+      	  vector<TString> sample_vec;
+      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/convs_sT/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/convs_sT_extn/"); //1
+      	  loadFile( sample_vec, file_index);
+      	}
+      else if ( sample == "convs_ttbar")
+      	{
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/convs_ttbar/"}, file_index); //4
       	}
       else if ( sample == "tttt")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/tttt/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/tttt/"}, file_index); //1
       	}
       else if ( sample == "tZq")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/tZq/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/tZq/"}, file_index); //74
       	}
       else if ( sample == "WWqq_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/WWqq_rares/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WWqq_rares/"}, file_index); //1
       	}
       else if ( sample == "WW_doublescatering_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/WW_DoubleScattering_rares/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WW_DoubleScattering_rares/"}, file_index); //2
       	}
       else if ( sample == "WWZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/WWZ_rares/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WWZ_rares/"}, file_index); //1
+      	}
+      else if ( sample == "WWW_rares")
+      	{
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WWW_rares/"}, file_index); //1
       	}
       else if ( sample == "WZZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/WZZ_rares/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WZZ_rares/"}, file_index); //1
       	}
       else if ( sample == "ZZZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_nov18_ICHEP_attempt2/ZZZ_rares/"}, file_index);
+      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/ZZZ_rares/"}, file_index); //1
+      	}
+      else if (sample == "tth_powheg_genFilter")
+      	{
+	  loadFile( {"muell149/lobster_test__marchGenFilterStudies/tth_nonbb_powheg_v1_part2_genFilter/"}, file_index); //44
       	}
       else if (sample == "tth_powheg_jetClean_test")
       	{
@@ -210,23 +254,53 @@ public:
 
       else if (sample == "data")
 	{
-      	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/doubleMu2016D/"); //4
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/doubleMu2016B/"); //6
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/doubleMu2016C/"); //3
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/singleMu2016B/"); //6
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/singleMu2016C/"); //3
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/singleMu2016D/"); //4
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/MuonEg2016B/"); //2
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/MuonEg2016C/"); //1
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/MuonEg2016D/"); //1
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/doubleEg2016B/"); //4
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/doubleEg2016C/"); //2
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/doubleEg2016D/"); //3
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/singleEle2016B/"); //4
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/singleEle2016C/"); //2
-      	  sample_vec.push_back("muell149/lobster_test__ICHEP_data_jan20_v2/singleEle2016D/"); //3
-      	  loadFile( sample_vec, file_index); //48 files total
+      	  vector<TString> sample_vec; //209 TOTAL
+
+	  //67 total
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016B/"); //11
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016C/"); //5
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016D/"); //8
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016E/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016F/"); //6
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016G/"); //14
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016H_pr2/"); //16
+
+	  //64 total
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016B/"); //11
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016C/"); //5
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016D/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016E/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016F/"); //6
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016G/"); //13
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016H_pr2/"); //15
+
+	  //10 total
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016B/"); //2
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016C/"); //1
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016D/"); //1
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016E/"); //1
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016F/"); //1
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016G/"); //2
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016H_pr2/"); //2
+
+	  //34 total
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016B/"); //6
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016C/"); //3
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016D/"); //4
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016E/"); //4
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016F/"); //3
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016G/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016H_pr2/"); //7
+
+	  //34 total
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016B/"); //6
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016C/"); //3
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016D/"); //4
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016E/"); //4
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016F/"); //3
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016G/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016H_pr2/"); //7
+      	  loadFile( sample_vec, file_index);
 	} 
 
 
@@ -252,36 +326,51 @@ public:
  
 TString getSelectionFile(TString sample_name)
 {
-  TString prefix = "/scratch365/cmuelle2/selection_trees/nov22_ICHEP_trees/";
+  TString prefix = "/scratch365/cmuelle2/selection_trees/march14_moriond17/";
   TString input_file_name = prefix;
 
-  if (sample_name == "tth_powheg_old")                   input_file_name += "tth_powheg_old_2lss_selection.root";
-  else if (sample_name == "tth_powheg_old_training")     input_file_name += "tth_powheg_old_2lss_training.root";
-  else if (sample_name == "ttbar_semiLep_madgraph")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/ttbar-semiLep-madgraph_relaxed_2lss.root";
-  else if (sample_name == "tth_aMC_old")                 input_file_name += "tth_aMC_old_2lss_selection.root";
-  else if (sample_name == "ttbar_semiLep_powheg")        input_file_name += "ttbar_semiLep_powheg_2lss_selection.root";
+  if (sample_name == "tth_powheg")                   input_file_name += "tth_powheg_2lss_selection.root";
   else if (sample_name == "ttW_aMCatNLO")      input_file_name += "ttW_aMCatNLO_2lss_selection.root";
   else if (sample_name == "ttZ_aMCatNLO")      input_file_name += "ttZ_aMCatNLO_2lss_selection.root";
   else if (sample_name == "ttGammaStar")      input_file_name += "ttGammaStar_2lss_selection.root";
-  else if (sample_name == "ttbar_diLep_mg")      input_file_name += "ttbar_diLep_mg_2lss_selection.root";
-  else if (sample_name == "ttbar_diLep_powheg")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttbar_diLep_powheg_tranche3_2lss.root";
-  else if (sample_name == "WW_diboson")      input_file_name += "WW_diboson_2lss_selection.root";
-  else if (sample_name == "ZZ_diboson")      input_file_name += "ZZ_diboson_2lss_selection.root";
-  else if (sample_name == "WZ_diboson")      input_file_name += "WZ_diboson_2lss_selection.root";
-  else if (sample_name == "tttt")      input_file_name += "tttt_2lss_selection.root";
-  else if (sample_name == "tZq")      input_file_name += "tZq_2lss_selection.root";
+  else if (sample_name == "wGamma")      input_file_name += "wGamma_2lss_selection.root";
+  else if (sample_name == "zGamma")      input_file_name += "zGamma_2lss_selection.root";
+  else if (sample_name == "convs_sT")      input_file_name += "convs_sT_2lss_selection.root";
+  else if (sample_name == "convs_ttbar")      input_file_name += "convs_ttbar_2lss_selection.root";
   else if (sample_name == "WWqq_rares")      input_file_name += "WWqq_rares_2lss_selection.root";
   else if (sample_name == "WW_doublescatering_rares")      input_file_name += "WW_doublescatering_rares_2lss_selection.root";
+  else if (sample_name == "WWW_rares")      input_file_name += "WWW_rares_2lss_selection.root";
   else if (sample_name == "WWZ_rares")      input_file_name += "WWZ_rares_2lss_selection.root";
   else if (sample_name == "WZZ_rares")      input_file_name += "WZZ_rares_2lss_selection.root";
   else if (sample_name == "ZZZ_rares")      input_file_name += "ZZZ_rares_2lss_selection.root";
-  else if (sample_name == "ttbar_semiLep_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/ttbar_semiLep_jetClean_test_genFilterTraining_2lss.root";
-  else if (sample_name == "tth_powheg_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/tth_powheg_jetClean_test_genFilterTraining_2lss.root";
-  else if (sample_name == "ttw_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/ttw_jetClean_test_genFilterTraining_2lss.root";
-  else if (sample_name == "tth_sigExtr_training_2lss")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root";
-  else if (sample_name == "ttbar_sigExtr_training_2lss")      input_file_name = "/scratch365/cmuelle2/selection_trees/jan25_ichep_trees/ttbar_semiLep_madgraph_2lss_trainingSelection.root";
-  else if (sample_name == "data")      input_file_name = "/scratch365/cmuelle2/selection_trees/jan24_ichep_trees/data_2lss_selection.root";
-  else                                                  input_file_name = "/scratch365/cmuelle2/selection_trees/nov22_ICHEP_trees/tth_aMC_old_2lss_selection.root";
+  else if (sample_name == "tZq")      input_file_name += "tZq_2lss_selection.root";
+  else if (sample_name == "tttt")      input_file_name += "tttt_2lss_selection.root";
+  else if (sample_name == "WW_diboson")      input_file_name += "WW_diboson_2lss_selection.root";
+  else if (sample_name == "ZZ_diboson")      input_file_name += "ZZ_diboson_2lss_selection.root";
+  else if (sample_name == "WZ_diboson")      input_file_name += "WZ_diboson_2lss_selection.root";
+  else if (sample_name == "fakes")      input_file_name = "fakes_2lss_selection.root";
+  else if (sample_name == "flips")      input_file_name = "flips_2lss_selection.root";
+  else if (sample_name == "data")      input_file_name = "data_2lss_selection.root";
+  else                                 input_file_name = "data_2lss_selection.root";
+
+
+  /* else if (sample_name == "tth_powheg_old_training")     input_file_name += "tth_powheg_old_2lss_training.root"; */
+  /* else if (sample_name == "ttbar_semiLep_madgraph")      input_file_name += "ttbar_semiLep_madgraph_2lss_extraction.root"; */
+  /* else if (sample_name == "tth_aMC")                 input_file_name += "tth_aMC_new_2lss_extraction.root"; */
+  /* else if (sample_name == "ttbar_semiLep_powheg")        input_file_name += "ttbar_semiLep_powheg_2lss_selection.root"; */
+  /* else if (sample_name == "ttbar_diLep_mg")      input_file_name += "ttbar_diLep_mg_2lss_selection.root"; */
+  /* else if (sample_name == "ttbar_diLep_powheg")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/selection_trees/nov8_trees/ttbar_diLep_powheg_tranche3_2lss.root"; */
+  /* else if (sample_name == "ttbar_semiLep_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/ttbar_semiLep_jetClean_test_genFilterTraining_2lss.root"; */
+  /* else if (sample_name == "tth_powheg_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/tth_powheg_jetClean_test_genFilterTraining_2lss.root"; */
+  /* else if (sample_name == "ttw_genFilterTraining")      input_file_name = "/scratch365/cmuelle2/genFilter_trees/ttw_jetClean_test_genFilterTraining_2lss.root"; */
+  /* else if (sample_name == "tth_sigExtr_training_2lss")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/tth_powheg_old_relaxed_training_2lss.root"; */
+  /* else if (sample_name == "ttbar_sigExtr_training_2lss")      input_file_name = "/scratch365/cmuelle2/selection_trees/jan25_ichep_trees/ttbar_semiLep_madgraph_2lss_trainingSelection.root"; */
+
+  /* //temporary */
+  /* else if (sample_name == "tth_qgid")      input_file_name = "/scratch365/cmuelle2/selection_trees/feb6_ichep_trees/tth_aMC_old_2lss_selection.root"; */
+  /* else if (sample_name == "ttw_qgid")      input_file_name = "/scratch365/cmuelle2/selection_trees/feb6_ichep_trees/ttW_aMCatNLO_2lss_selection.root"; */
+  /* else if (sample_name == "ttz_qgid")      input_file_name = "/scratch365/cmuelle2/selection_trees/feb6_ichep_trees/ttZ_aMCatNLO_2lss_selection.root"; */
+  /* else                                                  input_file_name = "/scratch365/cmuelle2/selection_trees/nov22_ICHEP_trees/tth_aMC_old_2lss_selection.root"; */
   //  else if (sample_name == "ttbar_sigExtr_training_2lss")      input_file_name = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training2_tests/ttbar_semiLep_madgraph_relaxed_training_2lss.root";
 
   return input_file_name;
