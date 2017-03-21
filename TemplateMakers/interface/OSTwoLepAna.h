@@ -71,6 +71,8 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 
 		vector<ttH::Jet> raw_jets_intree;
 		vector<ttH::Jet> preselected_jets_intree;
+		vector<ttH::Jet> preselected_jets_JECup_intree;
+		vector<ttH::Jet> preselected_jets_JECdown_intree;
 		vector<ttH::Jet> preselected_jets_uncor_intree;
                 
 		vector<ttH::MET> met_intree;
@@ -81,6 +83,10 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		edm::EDGetTokenT<pat::MuonCollection> muons_token_;
 		edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
 		edm::EDGetTokenT<pat::TauCollection> taus_token_;
+		
+		std::auto_ptr<JetCorrectionUncertainty> junc_;//charlie
+
+
 
                 int singleEleCount;
                 int singleMuCount;
@@ -122,6 +128,8 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("raw_jets", &raw_jets_intree);
   
   summaryTree->Branch("preselected_jets", &preselected_jets_intree);
+  summaryTree->Branch("preselected_jets_JECup", &preselected_jets_JECup_intree);
+  summaryTree->Branch("preselected_jets_JECdown", &preselected_jets_JECdown_intree);
   summaryTree->Branch("preselected_jets_uncor", &preselected_jets_uncor_intree);
   
   summaryTree->Branch("met", &met_intree);
@@ -160,6 +168,8 @@ void OSTwoLepAna::initialize_variables()
   raw_jets_intree.clear();
   
   preselected_jets_intree.clear();
+  preselected_jets_JECup_intree.clear();
+  preselected_jets_JECdown_intree.clear();
   preselected_jets_uncor_intree.clear();
 	
   met_intree.clear();

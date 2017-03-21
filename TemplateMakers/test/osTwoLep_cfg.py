@@ -9,8 +9,10 @@ options = VarParsing.VarParsing('analysis')
 options.maxEvents = -1
 options.register("skim", False,
                  VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.bool,
-"Produce skimmed trees.")
+                 VarParsing.VarParsing.varType.bool, "Produce skimmed trees.")
+options.register("hip",True,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool, "Run hip safe muID.")
 options.parseArguments()
 
 process = cms.Process("Demo")
@@ -43,7 +45,7 @@ process.source = cms.Source("PoolSource",
 #    	fileNames = cms.untracked.vstring( infile ),        
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
     	fileNames = cms.untracked.vstring( "/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/161C938B-99BE-E611-A0DF-002590FD5A3A.root"),
-#    	fileNames = cms.untracked.vstring( "file:ttW_2017_sync_miniAODv2.root" ),
+#    	fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/23Sep2016-v1/70000/081A803C-8B8A-E611-86A7-008CFA110C90.root" ),
 #    	fileNames = cms.untracked.vstring( "file:singleMu2016B.root" ),
 #        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
 
@@ -57,7 +59,7 @@ process.source = cms.Source("PoolSource",
 if isData:
    cmsswbase = os.environ['CMSSW_BASE']
    import FWCore.PythonUtilities.LumiList as LumiList
-   process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/ichep_json.txt').getVLuminosityBlockRange()
+   process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt').getVLuminosityBlockRange()
 
 
 ######################################
@@ -88,10 +90,10 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
 process.ttHLeptons.LooseCSVWP = cms.double(0.5426)
 process.ttHLeptons.MediumCSVWP = cms.double(0.8484)
+process.ttHLeptons.IsHIPSafe = cms.bool(options.hip)
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
 process.ttHLeptons.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
 process.ttHLeptons.JECTag = "patJetCorrFactorsReapplyJEC"
-#process.OSTwoLepAna.jets = cms.InputTag("patJetsReapplyJEC") #use JEC's from tag
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
@@ -114,8 +116,6 @@ process.OSTwoLepAna.skim = cms.bool( options.skim )
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output_tree.root")
                                    )
-    	
-
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
 my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']

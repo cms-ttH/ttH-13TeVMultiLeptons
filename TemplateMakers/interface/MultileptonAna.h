@@ -41,6 +41,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "DataFormats/Common/interface/Handle.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -74,6 +75,10 @@
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+
+//JEC
+#include "JetMETCorrections/Objects/interface/JetCorrector.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
 
 // Trigger
 #include "DataFormats/Common/interface/TriggerResults.h"
