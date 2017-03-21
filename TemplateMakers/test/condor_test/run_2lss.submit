@@ -1,5 +1,5 @@
-sample = ttbar_semiLep_powheg
-N = 61
+sample = data
+N = 209
 
 +IsExpressJob = True
 universe = vanilla
@@ -12,6 +12,8 @@ when_to_transfer_output = on_exit
 log = condor_logs/logfile.log
 
 #on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
+#noop_job = !( stringListMember("$(Process)","0,4,9,14") )
+
 requirements = (machine != "skynet007.crc.nd.edu" )
 requestMemory=4400
 queue $(N)

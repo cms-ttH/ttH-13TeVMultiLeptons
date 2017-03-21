@@ -1,15 +1,9 @@
 #!/bin/bash
 #usage: ./hadd_many.sh
 
-#samples=( "tth_powheg_jetClean_test" "ttbar_semiLep_jetClean_test" "ttw_jetClean_test" )
-#samples=( "ttbar_semiLep_jetClean_test" "ttw_jetClean_test" )
-#samples=( "tth_sigExtr_training_2lss" "ttbar_sigExtr_training_2lss" )
-#samples=( "tth_powheg_genFilterTraining" "ttbar_semiLep_genFilterTraining" "ttw_genFilterTraining" )
-#samples=( "tth_aMC_old" "ttbar_semiLep_powheg" "ttbar_diLep_mg" "ttW_aMCatNLO" "ttZ_aMCatNLO" "ttGammaStar" "tttt" "tZq" "WW_diboson" "ZZ_diboson" "WZ_diboson" "WWqq_rares" "WW_doublescatering_rares" "WWZ_rares" "WZZ_rares" "ZZZ_rares" ) 
-samples=( "tth_aMC_old" "data" )
-#samples=( "ttbar_semiLep_madgraph" )
-#samples=( "ttbar_sigExtr_training_2lss" )
-
+#samples=( "tth_powheg_genFilter" "tth_powheg_new" )
+#samples=( "tth_powheg" "ttW_aMCatNLO" "ttZ_aMCatNLO" "ttGammaStar" "wGamma" "zGamma" "convs_sT" "convs_ttbar" "WWqq_rares" "WW_doublescatering_rares" "WWW_rares" "WWZ_rares" "WZZ_rares" "ZZZ_rares" "tZq" "tttt" "WW_diboson" "ZZ_diboson" "WZ_diboson" )
+samples=( "data" )
 for i in "${samples[@]}"
 do
     ./hadd_files.sh $i

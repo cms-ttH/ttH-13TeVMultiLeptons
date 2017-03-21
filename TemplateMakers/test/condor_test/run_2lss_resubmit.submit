@@ -1,6 +1,6 @@
-sample = tth_aMC_old
+sample = data
 N = 1
-job_no = 55
+job_no = 132
 
 +IsExpressJob = True
 universe = vanilla

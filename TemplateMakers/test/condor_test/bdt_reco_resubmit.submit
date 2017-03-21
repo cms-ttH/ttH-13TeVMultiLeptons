@@ -1,7 +1,7 @@
 events_per_job = 9000
 
-sample = tth_aMC_old
-job_no = 8
+sample = tth_qgid
+job_no = 23
 
 +IsExpressJob = True
 universe = vanilla

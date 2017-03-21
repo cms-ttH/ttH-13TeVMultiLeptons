@@ -10,5 +10,5 @@ hostname
 root -l -b -q makeSelectionTree.C\(\""$sample"\",\""analysis"\",${job_no}\)
 #root -l -b -q makeSelectionTree.C+\(\""$sample"\",${job_no}\)
 #sleep 180
-#date
+date
 #printenv
