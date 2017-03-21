@@ -52,7 +52,9 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
     }
   cout << "# events in tree: "<< max_tree_entry - min_tree_entry << endl;  
 
-  
+
+  double delta_hj_intree = -99.;
+
   double mcwgt_intree = -999.;
   int eventnum_intree = -999;  
   vector<ttH::Electron> *preselected_electrons_intree=0;
@@ -178,6 +180,7 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   ss2l_tree->Branch("hadtop_reco_truth", &hadtop_tlv_intree);
   ss2l_tree->Branch("w_hadtop_reco_truth", &w_hadtop_tlv_intree);
   ss2l_tree->Branch("higgs_reco_truth", &higgs_tlv_intree);
+  ss2l_tree->Branch("delta_hj", &delta_hj_intree);
 
   bdtReconstructor.initializeTree(ss2l_tree);
   higgsJetTagger.initializeTree(ss2l_tree);
@@ -186,7 +189,7 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   TTree *ttH_vs_ttbar_tree = new TTree("tth_vs_ttbar_tree","tth_vs_ttbar_tree");
   TTree *ttH_vs_ttV_tree = new TTree("tth_vs_ttv_tree","tth_vs_ttv_tree");
 
-  bool evaluateSignalExtraction = false;
+  bool evaluateSignalExtraction = true;
   signalExtractionTreeMaker mySigExtrTreeMaker(ttH_vs_ttbar_tree, ttH_vs_ttV_tree, ss2l_tree, evaluateSignalExtraction);
   
   Int_t cachesize = 250000000;   //250 MBytes
@@ -195,7 +198,7 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   //  gEnv->SetValue("TFile.AsyncPrefetching",1.);
   double starttime = get_wall_time();
 
-  //max_tree_entry = 10000;
+  //  max_tree_entry = 3000.;
   for (int i=min_tree_entry; i<max_tree_entry; i++)
     {      
       printProgress(i,max_tree_entry);
@@ -221,12 +224,11 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
 
       // auto lep_collection = preselected_leptons_intree;
       vector<ttH::Lepton> *lep_collection;
-      if (sample_name == "data") lep_collection = fakeable_leptons_intree;
+      if (sample_name == "fakes") lep_collection = fakeable_leptons_intree;
       else lep_collection = tight_leptons_intree;
 
       //std::sort(lep_collection->begin(), lep_collection->end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.correctedPt > b.correctedPt;});
 
-      higgsJetTagger.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
       bdtReconstructor.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
       bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
 					   lep_from_higgs_truth_intree,
@@ -239,72 +241,24 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
       
       auto match_results = bdtReconstructor.match_results_bdt_intree;
 
-      //////////////////////////////////
-      ///////////
-      ///////////
-      /////////// SCORE DROP
-      ///////////
-      ///////////
-      //////////////////////////////////
-      double top_score0 = bdtReconstructor.reco_score_intree;
-      double higgs_score0 = higgsJetTagger.hj_bdt_scores_intree->at(0);
-
-      vector<ttH::Jet> slimmed_jets_forTop;
-      vector<ttH::Jet> slimmed_jets_forHiggs;
-      bool overlap = false;
-      if (higgsJetTagger.hj_bdt_jets_intree->at(0).obj.pt() == bdtReconstructor.b_from_hadtop_bdt_intree->obj.pt()) overlap = true;
-      else if (higgsJetTagger.hj_bdt_jets_intree->at(0).obj.pt() == bdtReconstructor.q1_from_hadtop_bdt_intree->obj.pt()) overlap = true;
-      else if (higgsJetTagger.hj_bdt_jets_intree->at(0).obj.pt() == bdtReconstructor.q2_from_hadtop_bdt_intree->obj.pt()) overlap = true;
-      
-      if (overlap)
-	{
-	  for (const auto & jet : *preselected_jets_intree)
-	    {
-	      if (jet.obj.pt() != higgsJetTagger.hj_bdt_jets_intree->at(0).obj.pt()) slimmed_jets_forTop.push_back(jet);
-	      if (jet.obj.pt() != bdtReconstructor.b_from_hadtop_bdt_intree->obj.pt() &&
-		  jet.obj.pt() != bdtReconstructor.q1_from_hadtop_bdt_intree->obj.pt() &&
-		  jet.obj.pt() != bdtReconstructor.q2_from_hadtop_bdt_intree->obj.pt()) slimmed_jets_forHiggs.push_back(jet);
-	    } 
-	  //recalculate hadtop score
-	  bdtReconstructor.initialize(&slimmed_jets_forTop, lep_collection, (*met_intree)[0]);
-	  higgsJetTagger.initialize(&slimmed_jets_forHiggs, lep_collection, (*met_intree)[0]);
-	}
-      double top_score1 = bdtReconstructor.reco_score_intree;
-      double higgs_score1 = higgsJetTagger.hj_bdt_scores_intree->at(0);
-
-      double top_asym = abs(top_score0 - top_score1)/(top_score0+top_score1);
-      double higgs_asym = abs(higgs_score0 - higgs_score1)/(higgs_score0+higgs_score1);
-
-      if (top_asym > higgs_asym)
-	{
-	  bdtReconstructor.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
-	}
-      else if (higgs_asym > top_asym)
-	{
-	  higgsJetTagger.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
-	}
-      
+      //////////////////////////////
+      ///
       /// apply hadtop jet removal for higgs tagger:
-      //vector<ttH::Jet> jets_for_higgsTagger = *preselected_jets_intree;
-      // vector<ttH::Jet> jets_for_higgsTagger;
-      // for (const auto & jet : *preselected_jets_intree)
-      //  	{
-      //  	  if (jet.obj.pt() == bdtReconstructor.b_from_hadtop_bdt_intree->obj.pt()) continue;
-      //  	  else if (jet.obj.pt() == bdtReconstructor.q1_from_hadtop_bdt_intree->obj.pt()) continue;
-      // 	  else if (jet.obj.pt() == bdtReconstructor.q2_from_hadtop_bdt_intree->obj.pt()) continue;
-      //  	  else jets_for_higgsTagger.push_back(jet);
-      //  	}
+      ///
+      //////////////////////////////
+      
+      vector<ttH::Jet> jets_for_higgsTagger;
+      for (const auto & jet : *preselected_jets_intree)
+	{
+	  if (jet.obj.pt() == bdtReconstructor.b_from_hadtop_bdt_intree->obj.pt()) continue;
+	  else if (jet.obj.pt() == bdtReconstructor.q1_from_hadtop_bdt_intree->obj.pt()) continue;
+	  else if (jet.obj.pt() == bdtReconstructor.q2_from_hadtop_bdt_intree->obj.pt()) continue;
+	  else jets_for_higgsTagger.push_back(jet);
+	}	  
+      higgsJetTagger.initialize(&jets_for_higgsTagger, lep_collection, (*met_intree)[0]);
       
 
-
-      // higgsJetTagger.initialize(&jets_for_higgsTagger, lep_collection, (*met_intree)[0]);
-
-
-
-
-      
-
-      mySigExtrTreeMaker.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0], selected_taus_intree, bdtReconstructor);
+      mySigExtrTreeMaker.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0], selected_taus_intree, bdtReconstructor, higgsJetTagger);
       
       time_per_event_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
       ss2l_tree->Fill();
@@ -324,7 +278,7 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   
 }
 
-void evaluateRecoBdt(string sample_name="ttz_qgid", int events_per_job=-1, int job_no=-1)
+void evaluateRecoBdt(string sample_name="tth_aMC", int events_per_job=-1, int job_no=-1)
 {
   //sample_name = "output_tree_2lss_SR_sync";
   //sample_name = "tagger_compare_tree_background_modified_score";
@@ -346,7 +300,7 @@ void evaluateRecoBdt(string sample_name="ttz_qgid", int events_per_job=-1, int j
 
   if (sample_name == "") sample_name = "output_test";
   //TString output_dir = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
-  TString output_dir = "/scratch365/cmuelle2/extraction_trees/feb16_htag_scoreDropTest_withNulls/";
+  TString output_dir = "/scratch365/cmuelle2/extraction_trees/feb24_se_test_SelectivehTopRemoval/";
   TString output_file_name = output_dir+sample_name;
   if (events_per_job > -1 && job_no > -1) output_file_name +=std::to_string(job_no);
   output_file_name += ".root";
