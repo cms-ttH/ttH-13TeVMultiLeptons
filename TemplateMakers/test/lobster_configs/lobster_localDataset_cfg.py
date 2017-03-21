@@ -2,8 +2,8 @@ from lobster import cmssw
 from lobster.core import *
 from lobster.monitor.elk.interface import ElkInterface
 
-version = '_jan13_topOffs'
-version_output = '_nov18_genFilter_altJetClean'
+version = '_marchGenFilterLocal'
+version_output = '_marchGenFilterStudies'
 
 storage = StorageConfiguration(
     input=[
@@ -19,7 +19,7 @@ storage = StorageConfiguration(
             "root://deepthought.crc.nd.edu//store/user/muell149/lobster_test_" + version_output,
             #            "chirp://eddie.crc.nd.edu:9094/store/user/muell149/lobster_test_" + version_output,
             "gsiftp://T3_US_NotreDame/store/user/muell149/lobster_test_" + version_output,
-            "srm://T3_US_NotreDame/store/user/muell149/lobster_test_" + version_output
+            #"srm://T3_US_NotreDame/store/user/muell149/lobster_test_" + version_output
         ]
 )
 
@@ -32,20 +32,20 @@ processing = Category(
 
 workflows = []
 
-ttbar_semiLep_genFilter = Workflow(
-    label='ttbar_semilep_v6_part7',
-    dataset=Dataset(
-        files='lannon/mcprod_ttjets_semilep_newisr_filtered/v6_part7/mAOD_step/'
-        ),
-    category=processing,
-    pset='osTwoLep_cfg.py',
-    arguments=['skim=True'],
-    merge_size='1.0G'
-    )
-workflows.append(ttbar_semiLep_genFilter)
+# ttbar_semiLep_genFilter = Workflow(
+#     label='ttbar_semilep_v6_part7',
+#     dataset=Dataset(
+#         files='lannon/mcprod_ttjets_semilep_newisr_filtered/v6_part7/mAOD_step/'
+#         ),
+#     category=processing,
+#     pset='osTwoLep_cfg.py',
+#     arguments=['skim=True'],
+#     merge_size='1.0G'
+#     )
+# workflows.append(ttbar_semiLep_genFilter)
 
 tth_nonbb_powheg = Workflow(
-    label='tth_nonbb_powheg_v1_part2',
+    label='tth_nonbb_powheg_v1_part2_genFilter',
     dataset=Dataset(
         files='lannon/mcprod_tthnonbb_newisr_filtered/v1_part2/mAOD_step/'
         ),
@@ -89,5 +89,5 @@ config = Config(
     workflows=workflows,
     advanced=AdvancedOptions(log_level=1, xrootd_servers=['ndcms.crc.nd.edu', 'cmsxrootd.fnal.gov', 'xrootd-local.unl.edu', 'xrootd.rcac.purdue.edu', 'xrootd.cmsaf.mit.edu', 'deepthought.crc.nd.edu'], bad_exit_codes=[127,160]),
 #    advanced=AdvancedOptions(use_dashboard=False, log_level=1, xrootd_servers=['ndcms.crc.nd.edu', 'cmsxrootd.fnal.gov', 'xrootd-local.unl.edu', 'xrootd.rcac.purdue.edu', 'xrootd.cmsaf.mit.edu', 'deepthought.crc.nd.edu'], bad_exit_codes=[127,160]),
-    elk=ElkInterface(es_host='elk.crc.nd.edu', es_port=9200, kib_host='elk.crc.nd.edu', kib_port=5601, project=version, dashboards=['Core', 'Advanced', 'Tasks'], refresh_interval=30)
+#    elk=ElkInterface(es_host='elk.crc.nd.edu', es_port=9200, kib_host='elk.crc.nd.edu', kib_port=5601, project=version, dashboards=['Core', 'Advanced', 'Tasks'], refresh_interval=30)
 )
