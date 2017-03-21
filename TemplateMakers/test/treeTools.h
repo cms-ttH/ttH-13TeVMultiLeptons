@@ -95,5 +95,70 @@ template <typename particleType> ttH::Jet getClosestJet(const std::vector<ttH::J
   return result;
 }
 
+
+bool passesTrigger(std::vector<std::string> trg_vector, vector<ttH::Lepton> leps)
+{
+    
+  bool pass_trigger_ee = false;
+  bool pass_trigger_emu = false;
+  bool pass_trigger_mumu = false;
+  bool pass_trigger_3l = false;
+
+  std::vector<string> pass_trigger_vec_ee;
+  std::vector<string> pass_trigger_vec_emu;
+  std::vector<string> pass_trigger_vec_mumu;
+  std::vector<string> pass_trigger_vec_3l;
+  
+  //mumu
+  pass_trigger_vec_mumu.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
+  pass_trigger_vec_mumu.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"); 	
+  pass_trigger_vec_mumu.push_back("HLT_IsoMu22_v"); 					
+  pass_trigger_vec_mumu.push_back("HLT_IsoTkMu22_v"); 				
+  //ee
+  pass_trigger_vec_ee.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"); 
+  pass_trigger_vec_ee.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v"); 
+  //emu
+  pass_trigger_vec_emu.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"); 
+  pass_trigger_vec_emu.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v"); 
+  pass_trigger_vec_emu.push_back("HLT_IsoMu22_v"); 
+  pass_trigger_vec_emu.push_back("HLT_IsoTkMu22_v"); 
+  pass_trigger_vec_emu.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v"); 
+  pass_trigger_vec_emu.push_back("HLT_Ele25_eta2p1_WPLoose_Gsf_v"); 
+
+  //ge3l
+  pass_trigger_vec_3l.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v"); 
+  pass_trigger_vec_3l.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v"); 
+  pass_trigger_vec_3l.push_back("HLT_TripleMu_12_10_5_v"); 
+  pass_trigger_vec_3l.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v"); 
+  pass_trigger_vec_3l.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"); 
+  pass_trigger_vec_3l.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v"); 
+  pass_trigger_vec_3l.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"); 
+  pass_trigger_vec_3l.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v"); 
+  pass_trigger_vec_3l.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"); 
+  pass_trigger_vec_3l.push_back("HLT_IsoMu22_v"); 
+  pass_trigger_vec_3l.push_back("HLT_IsoTkMu22_v"); 
+  pass_trigger_vec_3l.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v"); 
+  
+  for (const auto & trigger : trg_vector)
+    {
+      
+      for (const auto & trigger_ee : pass_trigger_vec_ee) if ( trigger.find(trigger_ee) != std::string::npos) pass_trigger_ee = true;
+      for (const auto & trigger_mumu : pass_trigger_vec_mumu) if ( trigger.find(trigger_mumu) != std::string::npos) pass_trigger_mumu = true;
+      for (const auto & trigger_emu : pass_trigger_vec_emu) if ( trigger.find(trigger_emu) != std::string::npos) pass_trigger_emu = true;
+      for (const auto & trigger_3l : pass_trigger_vec_3l) if ( trigger.find(trigger_3l) != std::string::npos) pass_trigger_3l = true;
+      
+    }
+
+  /* if (abs(leps[0].pdgID) == 11 && abs(leps[1].pdgID)== 11) return pass_trigger_ee; */
+  /* if (abs(leps[0].pdgID) == 13 && abs(leps[1].pdgID)== 13) return pass_trigger_mumu; */
+  /* else return pass_trigger_emu; */
+
+  return (pass_trigger_ee || pass_trigger_mumu || pass_trigger_emu);
+  
+}
+
+
+
+
 #endif
 /* TREETOOLS_H_ */
