@@ -208,70 +208,37 @@ bool pass2los(
     vector<ttH::Jet> psJets,
     vector<ttH::MET> met)
 {
-    vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
-    vector<ttH::Lepton> fakeableLeps = get_collection(fakeableMus,fakeableEles);
-    vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
+  vector<ttH::Lepton> psLeps = get_collection(psMus,psEles);
+  vector<ttH::Lepton> fakeableLeps = get_collection(fakeableMus,fakeableEles);
+  vector<ttH::Lepton> tightLeps = get_collection(tightMus,tightEles);
 
-    if (fakeableLeps.size() < 2) return false;
-    if (tightLeps.size() != 2) return false;
-    if (psJets.size() < 4) return false;
+  if ( tightLeps.size() != 2 ) return false; //exactly two leptons
+  if (tightLeps[0].charge == tightLeps[1].charge) return false; //opposite sign
+  if (tightLeps[0].obj.pt() != fakeableLeps[0].obj.pt() || tightLeps[1].obj.pt() != fakeableLeps[1].obj.pt()) return false; //leading two must be tight
+  
+  for (auto &mu: tightMus) if (!(mu.chargeFlip < 0.2)) return false;//tight charge mu
+  for (auto &ele: tightEles) if (!(ele.isGsfCtfScPixChargeConsistent)) return false;//tight charge ele
+  for (auto &ele: tightEles) if (ele.numMissingInnerHits != 0) return false;//  //lost hits ele
+  for (auto &ele: tightEles) if ( !(ele.passConversioVeto) ) return false;//conv veto ele
 
-    if (tightLeps[0].obj.pt() != fakeableLeps[0].obj.pt()) return false; //leading lep must be tight
-    if (tightLeps[1].obj.pt() != fakeableLeps[1].obj.pt()) return false; //sub-leading lep must be tight
+  if ( psJets.size() < 4 )      return false; //jet requirement
+  if ( !(tightLeps[0].obj.Pt()>25. && tightLeps[1].obj.Pt()>10.) ) return false; //pt requirement
+  if ( abs(tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() <= 15. ) return false; //pt2 cut for ele
 
-    for (auto &lep1: psLeps) {
-        for (auto &lep2: psLeps) {
-            if (lep1.obj == lep2.obj) {
-                continue;
-            } else if ((lep1.obj+lep2.obj).M() < 12) {//invariant dilep mass
-                return false;
-            }
-        }
+  if (tightEles.size() == 2 )
+    {
+      auto ee_obj = tightEles[0].obj + tightEles[1].obj;
+      double vetoZmass = ee_obj.M();
+      //double vetoZmass = pickFromSortedTwoObjKine(tightEles,"mass",1,91.2);
+      if ( fabs(vetoZmass-91.2) <= 10. ) return false;
+      
+      auto objs_for_mht = getsumTLV(psLeps,psJets);
+      double MHT_handle = objs_for_mht.Pt();
+      double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+      if ( !(metLD_handle > 0.2) ) return false;
     }
+  return true;
 
-    for (auto &ele1: tightEles) {
-        if (ele1.numMissingInnerHits != 0) {
-            return false;
-        } else if (!ele1.passConversioVeto) {
-            return false;
-        } else if (!ele1.isGsfCtfScPixChargeConsistent) {
-            return false;
-        }
-        for (auto &ele2: tightEles) {
-            if (ele1.obj == ele2.obj) {
-                continue;
-            }
-            double m_ll = (ele1.obj+ele2.obj).M();
-            if (fabs(m_ll - 91.2) <= 10.) {//Zmass check
-                return false;
-            }
-        }
-    }
-
-    for (auto &mu: tightMus) {
-        if (mu.chargeFlip > 0.2) {//tight muon charge
-            return false;
-        }
-    }
-
-    if ((abs(tightLeps[0].pdgID) == 13 && tightLeps[0].obj.Pt() < 25) || (abs(tightLeps[0].pdgID) == 11 && tightLeps[0].obj.Pt() < 25)) {//lep1 pt req.
-        return false;
-    } else if ((abs(tightLeps[1].pdgID) == 13 && tightLeps[1].obj.Pt() < 10) || (abs(tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() < 15)) {//lep2 pt req.
-        return false;
-    }
-
-    if (tightLeps[0].charge*tightLeps[1].charge > 0) {
-        return false;
-    }
-
-    auto objs_for_mht = getsumTLV(psLeps,psJets);
-    double MHT_handle = objs_for_mht.Pt();
-    double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
-    if (!(abs(tightLeps[0].pdgID) == 13 || abs(tightLeps[1].pdgID) == 13 || metLD_handle > 0.2)) {
-        return false;
-    }
-
-    return true;
 }
 
 bool pass3l(
