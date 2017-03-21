@@ -1,19 +1,25 @@
 class FakeRateEvaluator
 {
- #include "TH2F.h"
- #include "TFile.h"
+#include "TH2F.h"
+#include "TFile.h"
  private:
   TH2F *mu_fr_data;
   TH2F *ele_fr_data;
+  TH2F *flip_data;
  public:
   FakeRateEvaluator(){
     
-    TFile *lepMVA_fr_file = new TFile("/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/FR_data_ttH_mva.root","READONLY");
-    mu_fr_data = (TH2F*)lepMVA_fr_file->Get("FR_mva075_mu_data_comb");
-    ele_fr_data = (TH2F*)lepMVA_fr_file->Get("FR_mva075_el_data_comb");
+    TFile *lepMVA_fr_file = new TFile("../data/CERN/fakerate/FR_data_ttH_mva.root","READONLY");
+    mu_fr_data = (TH2F*)lepMVA_fr_file->Get("FR_mva090_mu_data_comb");
+    ele_fr_data = (TH2F*)lepMVA_fr_file->Get("FR_mva090_el_data_comb");
     mu_fr_data->SetDirectory(0); //reads hists into memory
     ele_fr_data->SetDirectory(0);
     lepMVA_fr_file->Close();
+
+    TFile *flips_file = new TFile("../data/CERN/fakerate/QF_data_el.root","READONLY");
+    flip_data = (TH2F*)flips_file->Get("chargeMisId");
+    flip_data->SetDirectory(0);//
+    flips_file->Close();
 
   };//default constructor
 
@@ -49,33 +55,22 @@ class FakeRateEvaluator
 
   double flipProb(vector<ttH::Lepton> leps)
   {
+
     double flip_prob = 0.;
     int count = 0;
+    int bin;
+
     for (const auto & lep: leps)
       {
 	if (count >= 2) break; //only first two leps for 2lss
 	if (abs(lep.pdgID) == 11)
-	  {
-	    if (lep.obj.pt() < 25)
-	      {
-		if (abs(lep.obj.eta()) < 1.479)	flip_prob += 0.0442;
-		else flip_prob += 0.1329;
-	      }
-	    else if (lep.obj.pt() < 50)
-	      {
-		if (abs(lep.obj.eta()) < 1.479)	flip_prob += 0.0179;
-		else flip_prob += 0.1898;
-	      }
-	    else 
-	      {
-		if (abs(lep.obj.eta()) < 1.479)	flip_prob += 0.0262;
-		else flip_prob += 0.3067;
-	      }
+	  {	    
+	    bin = flip_data->FindBin( min(900.,lep.obj.pt()), abs(lep.obj.eta()));
+	    flip_prob += flip_data->GetBinContent(bin);
 	  }
 	count ++;
       }
-    if (flip_prob == 0.) return 1.;
-    else return flip_prob;
+    return flip_prob;
   }
   
 

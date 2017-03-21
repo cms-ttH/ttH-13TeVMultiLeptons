@@ -28,7 +28,6 @@
 ///
 /////////////////////////////////////////
 
-
 void run_it(TString sample_name, TString selection, TString output_file, int job_no)
 {
     FileLoader myLoader(sample_name, job_no);
@@ -48,6 +47,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 
     double mcwgt_intree = -999.;
     int eventnum_intree = -999;  
+    std::vector<std::string> *passTrigger_intree=0;
     vector<ttH::Electron> *preselected_electrons_intree=0;
     vector<ttH::Muon> *preselected_muons_intree=0;
     vector<ttH::Lepton> *preselected_leptons_intree=0;
@@ -82,6 +82,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
     chain->SetBranchAddress("met", &met_intree);
     chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
+    chain->SetBranchAddress("passTrigger", &passTrigger_intree);
 
     FakeRateEvaluator lepFakeRateObject;
   
@@ -111,9 +112,9 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
         bTight_jets_intree->clear();
         bLoose_jets_intree->clear();
         for (const auto & jet : *preselected_jets_intree) {
-            if (jet.csv >= 0.8 ) {
+            if (jet.csv >= 0.8484 ) {
                 bTight_jets_intree->push_back(jet);
-            } else if (jet.csv >= 0.46 ) {
+            } else if (jet.csv >= 0.5426 ) {
                 bLoose_jets_intree->push_back(jet);
             }
         }
@@ -141,27 +142,27 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
             ////
             //////////////////////////
 
-            bool passes2lss = pass2lss(
-                   *tight_electrons_intree,
-                   *fakeable_electrons_intree,
-                   *preselected_electrons_intree,
-                   *tight_muons_intree,
-                   *fakeable_muons_intree,
-                   *preselected_muons_intree,
-                   *preselected_jets_intree,
-                   *met_intree
-            );
-
-            // bool passes2lss_lepMVA_AR = pass2lss_lepMVA_AR(
-            //         *tight_electrons_intree,
-            //         *fakeable_electrons_intree,
-            //         *preselected_electrons_intree,
-            //         *tight_muons_intree,
-            //         *fakeable_muons_intree,
-            //         *preselected_muons_intree,
-            //         *preselected_jets_intree,
-            //         *met_intree
+            // bool passes2lss = pass2lss(
+            //        *tight_electrons_intree,
+            //        *fakeable_electrons_intree,
+            //        *preselected_electrons_intree,
+            //        *tight_muons_intree,
+            //        *fakeable_muons_intree,
+            //        *preselected_muons_intree,
+            //        *preselected_jets_intree,
+            //        *met_intree
             // );
+
+            bool passes2lss_lepMVA_AR = pass2lss_lepMVA_AR(
+                    *tight_electrons_intree,
+                    *fakeable_electrons_intree,
+                    *preselected_electrons_intree,
+                    *tight_muons_intree,
+                    *fakeable_muons_intree,
+                    *preselected_muons_intree,
+                    *preselected_jets_intree,
+                    *met_intree
+            );
 
             // bool passes2los = pass2los(
             //     *tight_electrons_intree,
@@ -196,48 +197,52 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
             //     *met_intree
             // );
 
-            if (passes2lss) {
-                if (sample_name == "data") {
-                    mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
-                }
-                else if (sample_name == "tth_aMC_old") {
-                    myGenParticleHelper.clear();
-                    myGenParticleHelper.matchReco2Gen(*tight_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
-                }
-                ss2l_tree->Fill();
+            if (passes2lss_lepMVA_AR) {
+	      if (sample_name == "data") mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
+                // else if (sample_name == "tth_aMC_new" || sample_name == "tth_powheg_new") {
+                //     myGenParticleHelper.clear();
+                //     myGenParticleHelper.matchReco2Gen(*tight_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
+                // }
+
+                //myGenParticleHelper.clear();
+		// myGenParticleHelper.matchReco2Gen(*tight_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
+
+	      ss2l_tree->Fill();
                 //cuts for os only 
                 //    if ( myGenParticleHelper.higgs_final_state_intree.CompareTo("semiLeptonic") == 0 && myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 )
                 //   {
                 //     ss2l_tree->Fill();
                 //   }
             }
-        } else {
-            //////////////////////////
-            ////
-            //// bdt training selection
-            ////
-            //////////////////////////
+        } 
+	// else {
+        //     //////////////////////////
+        //     ////
+        //     //// bdt training selection
+        //     ////
+        //     //////////////////////////
           
-            //fakeable
-            // auto lep_collection = *fakeable_leptons_intree;
-            // auto mu_collection = *fakeable_muons_intree;
-            // auto ele_collection = *fakeable_electrons_intree;
+        //     //fakeable
+        //     // auto lep_collection = *fakeable_leptons_intree;
+        //     // auto mu_collection = *fakeable_muons_intree;
+        //     // auto ele_collection = *fakeable_electrons_intree;
           
-            //preselected
-            auto lep_collection = *preselected_leptons_intree;
-            auto mu_collection = *preselected_muons_intree;
-            auto ele_collection = *preselected_electrons_intree;
+        //     //preselected
+        //     auto lep_collection = *preselected_leptons_intree;
+        //     auto mu_collection = *preselected_muons_intree;
+        //     auto ele_collection = *preselected_electrons_intree;
       
-            bool passes2lss = pass2lss_bdtTraining(ele_collection, mu_collection, *preselected_jets_intree);
-            if ( passes2lss ) {
-                myGenParticleHelper.clear();
-                myGenParticleHelper.matchReco2Gen(lep_collection, *preselected_jets_intree, *pruned_genParticles_intree);
-                //cuts for os only 
-                //if ( myGenParticleHelper.higgs_final_state_intree.CompareTo("semiLeptonic") == 0 && myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 ) {
-                ss2l_tree->Fill();
-                //}
-            }
-        }
+        //     bool passes2lss = pass2lss_bdtTraining(ele_collection, mu_collection, *preselected_jets_intree);
+        //     if ( passes2lss ) {
+        //         myGenParticleHelper.clear();
+        //         myGenParticleHelper.matchReco2Gen(lep_collection, *preselected_jets_intree, *pruned_genParticles_intree);
+        //         //cuts for os only 
+        //         //if ( myGenParticleHelper.higgs_final_state_intree.CompareTo("semiLeptonic") == 0 && myGenParticleHelper.ttbar_final_state_intree.CompareTo("semiLeptonic") == 0 ) {
+        //         ss2l_tree->Fill();
+        //         //}
+        //     }
+        // }
+
     }
 
 
@@ -249,18 +254,18 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     copiedfile->Close();
 }
 
-void makeSelectionTree(TString sample="data", TString selection="analysis", int job_no=-1)
+void makeSelectionTree(TString sample="data", TString selection="analysis", int job_no=107)
 {
-    //TString output_dir = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
-    TString output_dir = "/scratch365/cmuelle2/selection_trees/feb6_ichep_trees/";
-
-    TString postfix;
-    if (selection == "analysis") postfix = "_selection_tree_2lss.root";
-    else  postfix = "_training_tree_2lss.root";
-
-    TString output_file = output_dir + sample + postfix;
-    if (job_no != -1) output_file = output_dir + sample + "_2lss_"+std::to_string(job_no)+".root";
-
-    run_it(sample, selection, output_file, job_no);
+  //  TString output_dir = "/scratch365/cmuelle2/selection_trees/march14_moriond17_dataDrivenFakes/";
+  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
+  
+  TString postfix;
+  if (selection == "analysis") postfix = "_selection_tree_2lss.root";
+  else  postfix = "_training_tree_2lss.root";
+  
+  TString output_file = output_dir + sample + postfix;
+  if (job_no != -1) output_file = output_dir + sample + "_2lss_"+std::to_string(job_no)+".root";
+  
+  run_it(sample, selection, output_file, job_no);
 }
 
