@@ -63,7 +63,7 @@ OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 
 	## how are btagged jets defined
 	btags = cms.PSet(
-		btagdisc = cms.string("combinedSecondaryVertexBJetTags")
+		btagdisc = cms.string("pfCombinedInclusiveSecondaryVertexV2BJetTags")
 	),
      
         prunedgenparticles = cms.PSet(

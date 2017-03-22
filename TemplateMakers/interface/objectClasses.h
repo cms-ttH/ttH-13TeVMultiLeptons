@@ -175,6 +175,7 @@ namespace ttH
     int genPdgID; // this is the matched genParton (not genJet)
     int genMotherPdgID;
     int genGrandMotherPdgID;
+    int flavor;
     double csv;
     double qgid;
     int pdgID; //place holder for Geoff's templated functions
@@ -189,6 +190,7 @@ namespace ttH
       csv = -.2;
       qgid = -99.;      
       pdgID = -9999;
+      flavor = -99;
     }
 
     virtual ~Jet(){};

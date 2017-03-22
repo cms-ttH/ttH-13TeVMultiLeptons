@@ -358,6 +358,7 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       //jet.qgid = -99.;//iJet.userFloat("qgid");
       jet.qgid = iJet.userFloat("qgid");
       jet.pdgID = iJet.pdgId();
+      jet.flavor = iJet.hadronFlavour();
       jetCollection.push_back(jet);
 
   }
