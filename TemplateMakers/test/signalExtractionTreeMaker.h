@@ -102,7 +102,7 @@ class signalExtractionTreeMaker
 	TMVAReader_ttbar_->AddSpectator( "iLepFO_Recl[0]", &spec0_var );
 	TMVAReader_ttbar_->AddSpectator( "iLepFO_Recl[1]", &spec1_var );
 	TMVAReader_ttbar_->AddSpectator( "iLepFO_Recl[2]", &spec2_var );
-	TString ttbar_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/moriond17_signalExtraction/2lss_ttbar_BDTG.weights.xml";
+	TString ttbar_weights = "../../simpleweights/moriond17_signalExtraction/2lss_ttbar_BDTG.weights.xml";
 	/* TMVAReader_ttbar_->AddVariable( "max_Lep_eta", &max_lep_eta_branch ); */
 	/* TMVAReader_ttbar_->AddVariable( "numJets_float", &njets_branch ); */
 	/* TMVAReader_ttbar_->AddVariable( "mindr_lep1_jet", &dR_l1_j_branch ); */
@@ -125,7 +125,7 @@ class signalExtractionTreeMaker
 	TMVAReader_ttbar_recoBdt_->AddVariable( "reco_score", &reco_score_branch );
 	//TMVAReader_ttbar_recoBdt_->AddVariable( "hadTop_bdt.M()", &hadtop_mass_branch );
 	//TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt.xml";
-	TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt.xml";
+	TString ttbar_recoBdt_weights = "../../simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt.xml";
 	//TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_jan25_v1_incl.weights.xml";
 	//TString ttbar_recoBdt_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_jan25_ICHEP_reco_incl.weights.xml";
 	TMVAReader_ttbar_recoBdt_->BookMVA("BDTG method", ttbar_recoBdt_weights);
@@ -141,7 +141,7 @@ class signalExtractionTreeMaker
 	TMVAReader_ttbar_recoBdt_bLoose_->AddVariable( "reco_score", &reco_score_branch );
 	//TMVAReader_ttbar_recoBdt_bLoose_->AddVariable( "hadTop_bdt.M()", &hadtop_mass_branch );
 	//TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt_bloose.xml";
-	TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt_bloose.xml";
+	TString ttbar_recoBdt_bLoose_weights = "../../simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt_bloose.xml";
 	//TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_jan25_v1_bloose.weights.xml";
 	//TString ttbar_recoBdt_bLoose_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_jan25_ICHEP_reco_bLoose.weights.xml";
 	TMVAReader_ttbar_recoBdt_bLoose_->BookMVA("BDTG method", ttbar_recoBdt_bLoose_weights);
@@ -157,7 +157,7 @@ class signalExtractionTreeMaker
 	TMVAReader_ttbar_recoBdt_bTight_->AddVariable( "reco_score", &reco_score_branch );
 	//	TMVAReader_ttbar_recoBdt_bTight_->AddVariable( "hadTop_bdt.M()", &hadtop_mass_branch );
 	//TString ttbar_recoBdt_bTight_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withRecoBdt_btight.xml";
-	TString ttbar_recoBdt_bTight_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt_btight.xml";
+	TString ttbar_recoBdt_bTight_weights = "../../simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG.weights_ichepTraining_withFactorizedRecoBdt_btight.xml";
 	//TString ttbar_recoBdt_bTight_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_jan25_v1_btight.weights.xml";
 	//TString ttbar_recoBdt_bTight_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/weights/TMVAClassification_BDTG_jan25_ICHEP_reco_bTight.weights.xml";
 	TMVAReader_ttbar_recoBdt_bTight_->BookMVA("BDTG method", ttbar_recoBdt_bTight_weights);
@@ -174,7 +174,7 @@ class signalExtractionTreeMaker
 	TMVAReader_ttV_->AddSpectator( "iLepFO_Recl[0]", &spec0_var );
 	TMVAReader_ttV_->AddSpectator( "iLepFO_Recl[1]", &spec1_var );
 	TMVAReader_ttV_->AddSpectator( "iLepFO_Recl[2]", &spec2_var );
-	TString ttV_weights = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/simpleweights/moriond17_signalExtraction/2lss_ttV_withHj_BDTG.weights.xml";
+	TString ttV_weights = "../../simpleweights/moriond17_signalExtraction/2lss_ttV_withHj_BDTG.weights.xml";
 	TMVAReader_ttV_->BookMVA("BDTG method", ttV_weights);	
       }
     
@@ -219,6 +219,7 @@ class signalExtractionTreeMaker
     ttH::Lepton lep1;
     ttH::Lepton lep2;
     //if ((*leptons_in)[0].obj.pt() > (*leptons_in)[1].obj.pt())
+
     if ((*leptons_in)[0].correctedPt > (*leptons_in)[1].correctedPt)
       {
 	lep1 = (*leptons_in)[0];
@@ -230,9 +231,6 @@ class signalExtractionTreeMaker
 	lep2 = (*leptons_in)[0];
       }
 
-    ///SHOULD PROBABLY USE CORRECTED PT HERE
-    /* l1_pt_branch = lep1.obj.pt(); */
-    /* l2_pt_branch = lep2.obj.pt(); */
     l1_pt_branch = lep1.correctedPt;
     l2_pt_branch = lep2.correctedPt;
     
@@ -248,7 +246,6 @@ class signalExtractionTreeMaker
     TLorentzVector lep1_t_tlv = setTlv( lep1 );
     
     mt_lep1_met_branch = sqrt(2*lep1.correctedPt*met_branch*(1-cos(lep1.obj.phi()- met_in.obj.phi() )));
-    //mt_lep1_met_branch = sqrt(2*lep1.obj.pt()*met_branch*(1-cos(lep1.obj.phi()- met_in.obj.phi() )));
 
     //calculate avg dr jets
     int jet1_counter = 0;
