@@ -13,21 +13,20 @@ options.register("skim", False,
 options.register("hip",True,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Run hip safe muID.")
+options.register("globalTag", "80X_mcRun2_asymptotic_2016_TrancheIV_v8",
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.string, "Global tag to use") #80X_dataRun2_2016SeptRepro_v7
 options.parseArguments()
 
 process = cms.Process("Demo")
 
 ####### IS THIS DATA YES OR NO ######
-isData = False
+isData = True
 #####################################
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
-if isData:
-    process.GlobalTag.globaltag = '80X_dataRun2_Prompt_ICHEP16JEC_v0'
-else:    
-    process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v6'
-
+process.GlobalTag.globaltag = options.globalTag
 
 process.prefer("GlobalTag")
 
@@ -56,10 +55,10 @@ process.source = cms.Source("PoolSource",
 #    '199812:70-199812:80'
 #)
 ### or, using json file:
-if isData:
-   cmsswbase = os.environ['CMSSW_BASE']
-   import FWCore.PythonUtilities.LumiList as LumiList
-   process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt').getVLuminosityBlockRange()
+# if isData:
+#    cmsswbase = os.environ['CMSSW_BASE']
+#    import FWCore.PythonUtilities.LumiList as LumiList
+#    process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt').getVLuminosityBlockRange()
 
 
 ######################################
