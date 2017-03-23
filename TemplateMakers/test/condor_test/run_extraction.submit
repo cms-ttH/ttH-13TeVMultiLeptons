@@ -1,0 +1,21 @@
+events_per_job = 9000
+
+sample = ttbar_semiLep_madgraph
+N = 1
+
++IsExpressJob = True
+universe = vanilla
+executable = run_extraction.sh
+getenv = True
+arguments = $(sample) $(events_per_job) $(Process) 
+output = condor_logs/$(sample)_bdtReco.stdout.$(Process)
+error = condor_logs/$(sample)_bdtReco.stderr.$(Process)
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+log = condor_logs/simple.logfile
+#on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
+requirements = (machine != "skynet007.crc.nd.edu" && machine != "d12chas551.crc.nd.edu")
+requestMemory=40000
+queue $(N)
+
+

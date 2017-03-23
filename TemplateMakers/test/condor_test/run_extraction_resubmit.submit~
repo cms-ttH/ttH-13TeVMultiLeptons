@@ -1,0 +1,21 @@
+events_per_job = 9000
+
+sample = tth_qgid
+job_no = 23
+
++IsExpressJob = True
+universe = vanilla
+executable = bdt_reco.sh
+getenv = True
+arguments = $(sample) $(events_per_job) $(job_no) 
+output = condor_logs/$(sample)_bdtReco.stdout.$(job_no)
+error = condor_logs/$(sample)_bdtReco.stderr.$(job_no)
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+log = condor_logs/simple.logfile
+#on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
+requirements = (machine != "skynet005.crc.nd.edu" )
+requestMemory=40000
+queue 1
+
+
