@@ -111,33 +111,43 @@ bool passesTrigger(std::vector<std::string> trg_vector, vector<ttH::Lepton> leps
   
   //mumu
   pass_trigger_vec_mumu.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-  pass_trigger_vec_mumu.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"); 	
-  pass_trigger_vec_mumu.push_back("HLT_IsoMu22_v"); 					
-  pass_trigger_vec_mumu.push_back("HLT_IsoTkMu22_v"); 				
+  pass_trigger_vec_mumu.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");  
+  pass_trigger_vec_mumu.push_back("HLT_IsoMu22_v");
+  pass_trigger_vec_mumu.push_back("HLT_IsoTkMu22_v");
+  pass_trigger_vec_mumu.push_back("HLT_IsoMu22_eta2p1_v"); //new
+  pass_trigger_vec_mumu.push_back("HLT_IsoTkMu22_eta2p1_v"); //new
+  pass_trigger_vec_mumu.push_back("HLT_IsoMu24_v"); //new
+  pass_trigger_vec_mumu.push_back("HLT_IsoTkMu24_v"); //new
+
   //ee
-  pass_trigger_vec_ee.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"); 
-  pass_trigger_vec_ee.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v"); 
+  pass_trigger_vec_ee.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+  pass_trigger_vec_ee.push_back("HLT_Ele27_WPTight_Gsf_v"); //new
+  pass_trigger_vec_ee.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v"); //new
+  pass_trigger_vec_ee.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
+
   //emu
-  pass_trigger_vec_emu.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"); 
-  pass_trigger_vec_emu.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v"); 
-  pass_trigger_vec_emu.push_back("HLT_IsoMu22_v"); 
-  pass_trigger_vec_emu.push_back("HLT_IsoTkMu22_v"); 
-  pass_trigger_vec_emu.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v"); 
-  pass_trigger_vec_emu.push_back("HLT_Ele25_eta2p1_WPLoose_Gsf_v"); 
+  pass_trigger_vec_emu.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");  
+  pass_trigger_vec_emu.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v"); //new  
+  pass_trigger_vec_emu.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
+  pass_trigger_vec_emu.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"); //new
+
+  pass_trigger_vec_emu.push_back("HLT_Ele27_WPTight_Gsf_v");
+  pass_trigger_vec_emu.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v");
+  pass_trigger_vec_emu.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
+
+  pass_trigger_vec_emu.push_back("HLT_IsoMu22_v");
+  pass_trigger_vec_emu.push_back("HLT_IsoTkMu22_v");
+  pass_trigger_vec_emu.push_back("HLT_IsoMu22_eta2p1_v");
+  pass_trigger_vec_emu.push_back("HLT_IsoTkMu22_eta2p1_v");
+  pass_trigger_vec_emu.push_back("HLT_IsoMu24_v");
+  pass_trigger_vec_emu.push_back("HLT_IsoTkMu24_v");
 
   //ge3l
-  pass_trigger_vec_3l.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v"); 
-  pass_trigger_vec_3l.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v"); 
-  pass_trigger_vec_3l.push_back("HLT_TripleMu_12_10_5_v"); 
-  pass_trigger_vec_3l.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v"); 
-  pass_trigger_vec_3l.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v"); 
-  pass_trigger_vec_3l.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v"); 
-  pass_trigger_vec_3l.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"); 
-  pass_trigger_vec_3l.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v"); 
-  pass_trigger_vec_3l.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"); 
-  pass_trigger_vec_3l.push_back("HLT_IsoMu22_v"); 
-  pass_trigger_vec_3l.push_back("HLT_IsoTkMu22_v"); 
-  pass_trigger_vec_3l.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v"); 
+  pass_trigger_vec_3l.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v");
+  pass_trigger_vec_3l.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v");  
+  pass_trigger_vec_3l.push_back("HLT_TripleMu_12_10_5_v");
+  pass_trigger_vec_3l.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");
+
   
   for (const auto & trigger : trg_vector)
     {
