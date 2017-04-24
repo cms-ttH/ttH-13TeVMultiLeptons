@@ -21,6 +21,7 @@
 #include "treeTools.h"
 #include "GenParticleHelper.h"
 #include "FakeRateEvaluator.h"
+#include "CSVReweight.h"
 
 /////////////////////////////////////////
 ///
@@ -30,11 +31,11 @@
 
 void run_it(TString sample_name, TString selection, TString output_file, int job_no)
 {
-    FileLoader myLoader(sample_name, job_no);
-    TChain *chain = myLoader.chain;
+  FileLoader myLoader(sample_name, job_no);
+  TChain *chain = myLoader.chain;
 
-    //TFile* file = new TFile("output_tree.root","READONLY");
-    //TTree *chain = (TTree*)file->Get("OSTwoLepAna/summaryTree");  
+  // TFile* file = new TFile("jsonSkimmed_data_notaus_muFix.root","READONLY");
+  // TTree *chain = (TTree*)file->Get("ss2l_tree");  
 
     int chainentries = chain->GetEntries();   
     int last_entry = chainentries;
@@ -63,6 +64,8 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     vector<ttH::Electron> *tight_electrons_intree=0;
     vector<ttH::Muon> *tight_muons_intree=0;
     vector<ttH::GenParticle> *pruned_genParticles_intree=0;
+    vector<ttH::Tau> *preselected_taus_intree=0;
+    vector<ttH::Tau> *selected_taus_intree=0;
     //adding these
     vector<ttH::Jet> *bTight_jets_intree=0;  
     vector<ttH::Jet> *bLoose_jets_intree=0;  
@@ -84,12 +87,15 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
     chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
     chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
+    chain->SetBranchAddress("preselected_taus", &preselected_taus_intree);
+    chain->SetBranchAddress("selected_taus", &selected_taus_intree);
     chain->SetBranchAddress("met", &met_intree);
     chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
     chain->SetBranchAddress("passTrigger", &passTrigger_intree);
 
     FakeRateEvaluator lepFakeRateObject;
-  
+
+    
     TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
     if (job_no == -1 || job_no == 0) {
         TH1D* event_hist = myLoader.hist_sum;
@@ -100,6 +106,10 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     ss2l_tree->SetName("ss2l_tree");
     if (sample_name == "data") ss2l_tree->Branch("mcwgt",&mcwgt_intree);
 
+
+    CSVReweight csvReweighter;
+    csvReweighter.initializeTree(ss2l_tree);
+
     GenParticleHelper myGenParticleHelper;
     myGenParticleHelper.initializeTree(ss2l_tree);
 
@@ -108,7 +118,6 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     ss2l_tree->Branch("bLoose_jets", &bLoose_jets_intree);
 
     Int_t cachesize = 250000000;   //500 MBytes
-    //  Int_t cachesize = 1024000000;   //1 GBytes
     chain->SetCacheSize(cachesize);
 
     double starttime = get_wall_time();
@@ -124,23 +133,26 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
         }
 
         printProgress(i,last_entry);
-
+	
         clock_t startTime = clock();
         chain->GetEntry(i);
-
+	
         //////////////////////////
         ////
         //// selection, vetos etc
         ////
         //////////////////////////
-
+	
         bool passesCommon = passCommon(*preselected_electrons_intree, *preselected_muons_intree, *preselected_jets_intree);
         if (!passesCommon) {
             continue;
         }
+	
+	if (selected_taus_intree->size() > 0) continue; //veto any and all taus
+
 
         if (selection == "analysis") {
-            //////////////////////////
+	  //////////////////////////
             ////
             //// normal selection
             ////
@@ -156,6 +168,7 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
                    *preselected_jets_intree,
                    *met_intree
             );
+
 
             // bool passes2lss_lepMVA_AR = pass2lss_lepMVA_AR(
             //         *tight_electrons_intree,
@@ -201,14 +214,15 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
             //     *met_intree
             // );
 
-	    bool passed_trigger = passesTrigger(*passTrigger_intree,*tight_leptons_intree);
+            if (passes2lss and passesTrigger(*passTrigger_intree,*fakeable_leptons_intree))
+	      {
+		//mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
+		//double csv_weight = csvReweighter.weight(*preselected_jets_intree);
+		//cout << csv_weight << endl;
+		csvReweighter.applySFs(*preselected_jets_intree);
+		ss2l_tree->Fill();
+	      }
 
-            if (passes2lss && passed_trigger) {
-	      //if (sample_name == "data") mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
-	      if (sample_name == "data") mcwgt_intree = lepFakeRateObject.flipProb(*tight_leptons_intree);
-	      ss2l_tree->Fill();
-
-            }
         } 
 
 
@@ -223,10 +237,10 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     copiedfile->Close();
 }
 
-void makeSelectionTree(TString sample="data", TString selection="analysis", int job_no=-1)
+void makeSelectionTree(TString sample="tth_powheg", TString selection="analysis", int job_no=1)
 {
-  TString output_dir = "/scratch365/cmuelle2/selection_trees/march14_moriond17_flips_v2/";
-  //TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
+  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
+  //TString output_dir = "/scratch365/cmuelle2/selection_trees/april18_moriond17_fakes_notaus_muFix/";
   
   TString postfix;
   if (selection == "analysis") postfix = "_selection_tree_2lss.root";
