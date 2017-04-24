@@ -1,20 +1,21 @@
 from lobster import cmssw
 from lobster.core import *
-from lobster.monitor.elk.interface import ElkInterface
+#from lobster.monitor.elk.interface import ElkInterface
 
 version = '_Moriond17_data_march22_v0'
 projname = 'data'
 
-lumimask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
+#lumimask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
+lumimask = '/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
 
 storage = StorageConfiguration(
         output=[
             "hdfs://eddie.crc.nd.edu:19000/store/user/muell149/lobster_test_" + version,
-            #"file:///hadoop/store/user/muell149/lobster_test_" + version,
+            "file:///hadoop/store/user/muell149/lobster_test_" + version,
             # ND is not in the XrootD redirector, thus hardcode server.
             # Note the double-slash after the hostname!
             "root://deepthought.crc.nd.edu//store/user/muell149/lobster_test_" + version,
-            "chirp://eddie.crc.nd.edu:9094/store/user/muell149/lobster_test_" + version,
+            #"chirp://eddie.crc.nd.edu:9094/store/user/muell149/lobster_test_" + version,
             "gsiftp://T3_US_NotreDame/store/user/muell149/lobster_test_" + version,
             "srm://T3_US_NotreDame/store/user/muell149/lobster_test_" + version
         ]
@@ -30,6 +31,7 @@ processing = Category(
 workflows = []
 
 ###2016B
+#dbs_instance='phys03'
 
 SingleMu2016B = Workflow(
     label='singleMu2016B',
