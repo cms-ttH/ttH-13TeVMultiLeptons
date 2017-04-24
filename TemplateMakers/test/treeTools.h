@@ -159,11 +159,22 @@ bool passesTrigger(std::vector<std::string> trg_vector, vector<ttH::Lepton> leps
       
     }
 
-  /* if (abs(leps[0].pdgID) == 11 && abs(leps[1].pdgID)== 11) return pass_trigger_ee; */
-  /* if (abs(leps[0].pdgID) == 13 && abs(leps[1].pdgID)== 13) return pass_trigger_mumu; */
-  /* else return pass_trigger_emu; */
 
-  return (pass_trigger_ee || pass_trigger_mumu || pass_trigger_emu);
+  
+  if (abs(leps[0].pdgID) == 11 && abs(leps[1].pdgID)== 11)
+    {
+      return pass_trigger_ee;
+    }
+  else if (abs(leps[0].pdgID) == 13 && abs(leps[1].pdgID)== 13)
+    {
+      return pass_trigger_mumu;
+    }
+  else
+    {
+      return pass_trigger_emu;
+    }
+
+  //return (pass_trigger_ee || pass_trigger_mumu || pass_trigger_emu);
   
 }
 
