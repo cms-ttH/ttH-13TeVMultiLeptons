@@ -93,16 +93,14 @@ void run_it(TChain* chain, TString output_file)
       ////
       //////////////////////////
 
-      if ( abs((*tight_leptons_intree)[0].pdgID) == 13 && abs((*tight_leptons_intree)[1].pdgID) == 13 ) continue;
-      
-      bool passed_trigger = passesTrigger(*passTrigger_intree,*tight_leptons_intree);
       bool no_duplicate = (std::find(events.begin(),events.end(),eventnum_intree) == events.end());
       bool golden_json = my_json_filter.isValid(runNumber_intree,lumiBlock_intree);
 
-      if (no_duplicate and golden_json and passed_trigger)
+      if (no_duplicate and golden_json)
 	{
 	  events.push_back(eventnum_intree);
 	  mcwgt_intree = lepFakeRateObject.flipProb(*tight_leptons_intree);
+	  //mcwgt_intree = 1.;
 	  signal_tree->Fill();
 	}
     }
@@ -118,8 +116,8 @@ void run_it(TChain* chain, TString output_file)
 
 void jsonDataSkimmer(void)
 {
-  TString output_file = "jsonSkimmed_data.root";
+  TString output_file = "jsonSkimmed_data_notaus_muFix.root";
   TChain *chain = new TChain("ss2l_tree");
-  chain->Add("/scratch365/cmuelle2/selection_trees/march14_moriond17_flips_v2/data_2lss_selection.root");
+  chain->Add("/scratch365/cmuelle2/selection_trees/april18_moriond17_fakes_notaus_muFix/data_2lss_selection.root");
   run_it(chain,output_file);
 }

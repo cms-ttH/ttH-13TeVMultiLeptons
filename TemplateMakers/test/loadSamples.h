@@ -78,19 +78,14 @@ public:
       // lobster_test_nov18_ICHEP_attempt2 == old
       // lobster_test_feb2_ICHEP == new
      
-      if (sample == "tth_powheg_new")
-	{
-	  loadFile( {"muell149/lobster_test__marchGenFilterStudies_noGenFilter/tth_nonbb_powheg/"} , file_index);//30
-	}
-
-      else if (sample == "tth_powheg")
+      if (sample == "tth_powheg")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/tth_nonbb_powheg_/"} , file_index); //8
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/tth_nonbb_powheg_/"} , file_index); //8
       	}
 
       else if (sample == "tth_aMC_new")
 	{
-	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/tth_nonbb_aMCatNLO_/"} , file_index); //22
+	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/tth_nonbb_aMCatNLO_/"} , file_index); //21
 	}
       
       else if (sample == "tth_aMC_old")
@@ -137,95 +132,95 @@ public:
       else if (sample == "ttW_aMCatNLO")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/ttW/"); //6
-      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/ttW_extn/"); //9
+      	  sample_vec.push_back("muell149/lobster_test_march22_Moriond17_MC/ttW/"); //6
+      	  sample_vec.push_back("muell149/lobster_test_march22_Moriond17_MC/ttW_extn/"); //9
 	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "ttZ_aMCatNLO")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/ttZ/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_march22_Moriond17_MC/ttZ/"); //7
 	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "ttGammaStar")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/ttZ_M1_10/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_march22_Moriond17_MC/ttZ_M1_10/"); //7
 	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "wGamma")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/wPlusJets/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_march22_Moriond17_MC/wPlusJets/"); //1
 	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "zGamma")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/zPlusJets/"); //35
+      	  sample_vec.push_back("muell149/lobster_test_march22_Moriond17_MC/zPlusJets/"); //35
 	  loadFile( sample_vec, file_index);
       	}
       
       else if ( sample == "WW_diboson")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0_pt2/WW_2l2nu/"}, file_index); //5
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/WW_2l2nu/"}, file_index); //5
       	}
 
       else if ( sample == "ZZ_diboson")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0_pt2/ZZ_to4l/"}, file_index);//19
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/ZZ_to4l/"}, file_index);//19
       	}
       else if ( sample == "WZ_diboson")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0_pt3/WZ_to3lnu/"}, file_index);//5
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/WZ_to3lnu/"}, file_index);//5
       	}
 
       else if (sample == "convs_sT")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/convs_sT/"); //1
-      	  sample_vec.push_back("muell149/lobster_test_march8_Moriond17_MCv0/convs_sT_extn/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_march22_Moriond17_MC/convs_sT/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_march22_Moriond17_MC/convs_sT_extn/"); //1
       	  loadFile( sample_vec, file_index);
       	}
       else if ( sample == "convs_ttbar")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/convs_ttbar/"}, file_index); //4
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/convs_ttbar/"}, file_index); //4
       	}
       else if ( sample == "tttt")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/tttt/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/tttt/"}, file_index); //1
       	}
       else if ( sample == "tZq")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/tZq/"}, file_index); //74
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/tZq/"}, file_index); //77
       	}
       else if ( sample == "WWqq_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WWqq_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/WWqq_rares/"}, file_index); //1
       	}
       else if ( sample == "WW_doublescatering_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WW_DoubleScattering_rares/"}, file_index); //2
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/WW_DoubleScattering_rares/"}, file_index); //2
       	}
       else if ( sample == "WWZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WWZ_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/WWZ_rares/"}, file_index); //1
       	}
       else if ( sample == "WWW_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WWW_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/WWW_rares/"}, file_index); //1
       	}
       else if ( sample == "WZZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/WZZ_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/WZZ_rares/"}, file_index); //1
       	}
       else if ( sample == "ZZZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_march8_Moriond17_MCv0/ZZZ_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/ZZZ_rares/"}, file_index); //1
       	}
       else if (sample == "tth_powheg_genFilter")
       	{
@@ -254,52 +249,52 @@ public:
 
       else if (sample == "data")
 	{
-      	  vector<TString> sample_vec; //209 TOTAL
+      	  vector<TString> sample_vec; //286 TOTAL
 
-	  //67 total
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016B/"); //11
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016C/"); //5
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016D/"); //8
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016E/"); //7
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016F/"); //6
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016G/"); //14
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleMu2016H_pr2/"); //16
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleMu2016B/"); //20
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleMu2016C/"); //12
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleMu2016D/"); //13
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleMu2016E/"); //13
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleMu2016F/"); //
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleMu2016G/"); //
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleMu2016H_pr2/"); //
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleMu2016H_pr3/"); //
 
-	  //64 total
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016B/"); //11
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016C/"); //5
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016D/"); //7
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016E/"); //7
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016F/"); //6
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016G/"); //13
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleMu2016H_pr2/"); //15
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleMu2016B/"); //11
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleMu2016C/"); //5
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleMu2016D/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleMu2016E/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleMu2016F/"); //6
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleMu2016G/"); //13
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleMu2016H_pr2/"); //15
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleMu2016H_pr3/"); //15
 
-	  //10 total
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016B/"); //2
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016C/"); //1
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016D/"); //1
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016E/"); //1
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016F/"); //1
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016G/"); //2
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/MuonEg2016H_pr2/"); //2
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/MuonEg2016B/"); //2
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/MuonEg2016C/"); //1
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/MuonEg2016D/"); //1
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/MuonEg2016E/"); //1
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/MuonEg2016F/"); //1
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/MuonEg2016G/"); //2
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/MuonEg2016H_pr2/"); //2
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/MuonEg2016H_pr3/"); //2
 
-	  //34 total
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016B/"); //6
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016C/"); //3
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016D/"); //4
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016E/"); //4
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016F/"); //3
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016G/"); //7
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/doubleEg2016H_pr2/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleEg2016B/"); //6
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleEg2016C/"); //3
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleEg2016D/"); //4
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleEg2016E/"); //4
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleEg2016F/"); //3
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleEg2016G/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleEg2016H_pr2/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/doubleEg2016H_pr3/"); //7
 
-	  //34 total
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016B/"); //6
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016C/"); //3
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016D/"); //4
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016E/"); //4
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016F/"); //3
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016G/"); //7
-      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march3_v0/singleEle2016H_pr2/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleEle2016B/"); //6
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleEle2016C/"); //3
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleEle2016D/"); //4
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleEle2016E/"); //4
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleEle2016F/"); //3
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleEle2016G/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleEle2016H_pr2/"); //7
+      	  sample_vec.push_back("muell149/lobster_test__Moriond17_data_march22_v0/singleEle2016H_pr3/"); //7
       	  loadFile( sample_vec, file_index);
 	} 
 

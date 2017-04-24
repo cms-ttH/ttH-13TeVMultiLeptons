@@ -4,7 +4,7 @@
 
 prefix=$1
 
-target_dir="/scratch365/cmuelle2/selection_trees/march14_moriond17_flips_v2/"
+target_dir="/scratch365/cmuelle2/selection_trees/april18_moriond17_fakes_notaus_muFix/"
 
 files="$target_dir/$prefix*.root" 
 
