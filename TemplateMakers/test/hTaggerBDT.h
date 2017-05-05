@@ -57,6 +57,28 @@ private:
     return TMVAReader_internal_;
   }
 
+public:
+  hTagger(void)
+  {
+    hj_mva = bookHJMVA("/src/ttH-13TeVMultiLeptons/simpleweights/higgs_tagger/Hj_csv_BDTG.weights.xml");
+    hjj_mva = bookHJJMVA("/src/ttH-13TeVMultiLeptons/simpleweights/higgs_tagger/Hjj_csv_BDTG.weights.xml");
+  }
+
+  ~hTagger(){}
+  
+  vector<ttH::Jet> *hj_bdt_jets_intree=0;    // Both of these vectors are of length 2
+  vector<double> *hj_bdt_scores_intree=0;    // Both of these vectors are of length 2
+  vector<ttH::Jet> *hjj_bdt_jets_intree=0;
+  vector<double> *hjj_bdt_scores_intree=0;
+
+  void clear(void)
+  {
+    hj_bdt_jets_intree->clear();
+    hj_bdt_scores_intree->clear();
+    hjj_bdt_jets_intree->clear();
+    hjj_bdt_scores_intree->clear();
+  }
+
   double getHJBDTOutput(
     ttH::Jet target_jet,
     const vector<ttH::Lepton> *tight_leptons
@@ -84,6 +106,8 @@ private:
 
     return output;
   }
+
+
 
   double getHJJBDTOutput(
     ttH::Jet target_jet_1,
@@ -153,27 +177,9 @@ private:
 
 
 
-public:
-  hTagger(void)
-  {
-    hj_mva = bookHJMVA("/src/ttH-13TeVMultiLeptons/simpleweights/higgs_tagger/Hj_csv_BDTG.weights.xml");
-    hjj_mva = bookHJJMVA("/src/ttH-13TeVMultiLeptons/simpleweights/higgs_tagger/Hjj_csv_BDTG.weights.xml");
-  }
 
-  ~hTagger(){}
-  
-  vector<ttH::Jet> *hj_bdt_jets_intree=0;    // Both of these vectors are of length 2
-  vector<double> *hj_bdt_scores_intree=0;    // Both of these vectors are of length 2
-  vector<ttH::Jet> *hjj_bdt_jets_intree=0;
-  vector<double> *hjj_bdt_scores_intree=0;
 
-  void clear(void)
-  {
-    hj_bdt_jets_intree->clear();
-    hj_bdt_scores_intree->clear();
-    hjj_bdt_jets_intree->clear();
-    hjj_bdt_scores_intree->clear();
-  }
+
 
   void initializeTree(TTree *input_tree)
   {

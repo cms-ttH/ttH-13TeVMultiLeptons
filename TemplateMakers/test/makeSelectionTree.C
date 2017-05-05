@@ -29,13 +29,25 @@
 ///
 /////////////////////////////////////////
 
-void run_it(TString sample_name, TString selection, TString output_file, int job_no)
+void run_it(TString sample_name, TString selection, TString output_dir, int job_no, bool batch_run)
 {
-  FileLoader myLoader(sample_name, job_no);
-  TChain *chain = myLoader.chain;
+  TString postfix = selection+"_tree";
+  TString output_file = output_dir + sample_name + postfix + ".root";
+  if (job_no != -1) output_file = output_dir + sample_name + postfix + std::to_string(job_no)+".root";
 
-  // TFile* file = new TFile("jsonSkimmed_data_notaus_muFix.root","READONLY");
-  // TTree *chain = (TTree*)file->Get("ss2l_tree");  
+  TChain *chain;
+  FileLoader myLoader;
+  if (batch_run)
+    {
+      myLoader.loadFiles(sample_name, job_no);
+      chain = myLoader.chain;
+    }
+  else
+    {
+      TFile* file = new TFile("output_M17_sync_tree_muonConePt.root","READONLY");
+      // TTree *chain = (TTree*)file->Get("ss2l_tree");  
+      chain = (TChain*)file->Get("OSTwoLepAna/summaryTree");  
+    }
 
     int chainentries = chain->GetEntries();   
     int last_entry = chainentries;
@@ -70,12 +82,9 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     vector<ttH::Jet> *bTight_jets_intree=0;  
     vector<ttH::Jet> *bLoose_jets_intree=0;  
 
-    if (sample_name == "data") {
-      chain->SetBranchStatus("mcwgt",0);      
+    if (sample_name == "data") chain->SetBranchStatus("mcwgt",0);      
+    else        chain->SetBranchAddress("mcwgt", &mcwgt_intree);
 
-    } else {
-        chain->SetBranchAddress("mcwgt", &mcwgt_intree);
-    }
     chain->SetBranchAddress("eventnum", &eventnum_intree);
     chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
     chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
@@ -94,18 +103,20 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
     chain->SetBranchAddress("passTrigger", &passTrigger_intree);
 
     FakeRateEvaluator lepFakeRateObject;
+    if (selection=="2lss_lepMVA_ar") lepFakeRateObject.loadWeights(); //only load this when necessary, must be loaded before output file is created. 
 
-    
     TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
-    if (job_no == -1 || job_no == 0) {
+
+    if (batch_run && (job_no == -1 || job_no == 0))
+      {
         TH1D* event_hist = myLoader.hist_sum;
         event_hist->Write();
-    }
+	delete event_hist;
+      }    
 
     TTree *ss2l_tree = (TTree*)chain->CloneTree(0);
     ss2l_tree->SetName("ss2l_tree");
     if (sample_name == "data") ss2l_tree->Branch("mcwgt",&mcwgt_intree);
-
 
     CSVReweight csvReweighter;
     csvReweighter.initializeTree(ss2l_tree);
@@ -122,133 +133,173 @@ void run_it(TString sample_name, TString selection, TString output_file, int job
 
     double starttime = get_wall_time();
     for (int i=first_entry; i<=last_entry; i++) {
-        bTight_jets_intree->clear();
-        bLoose_jets_intree->clear();
-        for (const auto & jet : *preselected_jets_intree) {
-            if (jet.csv >= 0.8484 ) {
-                bTight_jets_intree->push_back(jet);
-            } else if (jet.csv >= 0.5426 ) {
-                bLoose_jets_intree->push_back(jet);
-            }
-        }
+      
+      bTight_jets_intree->clear();
+      bLoose_jets_intree->clear();
+      for (const auto & jet : *preselected_jets_intree) {
+	if (jet.csv >= 0.8484 ) {
+	  bTight_jets_intree->push_back(jet);
+	} else if (jet.csv >= 0.5426 ) {
+	  bLoose_jets_intree->push_back(jet);
+	}
+      }
+      clock_t startTime = clock();
+      chain->GetEntry(i);
+      printProgress(i,last_entry);
 
-        printProgress(i,last_entry);
-	
-        clock_t startTime = clock();
-        chain->GetEntry(i);
-	
-        //////////////////////////
-        ////
-        //// selection, vetos etc
-        ////
-        //////////////////////////
-	
-        bool passesCommon = passCommon(*preselected_electrons_intree, *preselected_muons_intree, *preselected_jets_intree);
-        if (!passesCommon) {
-            continue;
-        }
-	
-	if (selected_taus_intree->size() > 0) continue; //veto any and all taus
+      //if (eventnum_intree != 1658366) continue;
+      
+      //////////////////////////
+      ////
+      //// selection, vetos etc
+      ////
+      //////////////////////////
+      
+      //cout << "--" << endl;
+      bool passesCommon = passCommon(*preselected_electrons_intree, *preselected_muons_intree, *preselected_jets_intree);
+      if (!passesCommon) continue;
+      //cout << "---" << endl;
+      if (selected_taus_intree->size() > 0) continue; //veto any and all taus
+      //cout << "----" << endl;
+      //////////////////////////
+      ////
+      //// normal selection
+      ////
+      //////////////////////////
 
+      bool passes = false;
+      bool passes_trig = false;
+      
 
-        if (selection == "analysis") {
-	  //////////////////////////
-            ////
-            //// normal selection
-            ////
-            //////////////////////////
+      if ( selection=="2lss_sr" )
+	{
+	  passes =  pass2lss(
+			     *tight_electrons_intree,
+			     *fakeable_electrons_intree,
+			     *preselected_electrons_intree,
+			     *tight_muons_intree,
+			     *fakeable_muons_intree,
+			     *preselected_muons_intree,
+			     *preselected_jets_intree,
+			     *met_intree
+			     );
+	  passes_trig = passesTrigger(*passTrigger_intree, *tight_leptons_intree);
+	}
+      else if (selection=="2lss_lepMVA_ar")
+	{
+	  passes = pass2lss_lepMVA_AR(	  
+				      *tight_electrons_intree,
+				      *fakeable_electrons_intree,
+				      *preselected_electrons_intree,
+				      *tight_muons_intree,
+				      *fakeable_muons_intree,
+				      *preselected_muons_intree,
+				      *preselected_jets_intree,
+				      *met_intree
+				      ); 
+	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	}
+      else if (selection=="2los_ar")
+	{
+	  passes = pass2los(
+			    *tight_electrons_intree,
+			    *fakeable_electrons_intree,
+			    *preselected_electrons_intree,
+			    *tight_muons_intree,
+			    *fakeable_muons_intree,
+			    *preselected_muons_intree,
+			    *preselected_jets_intree,
+			    *met_intree
+			    );
+	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	}
+      else if (selection=="3l_sr")
+	{
+	  passes = pass3l(
+			  *tight_electrons_intree,
+			  *fakeable_electrons_intree,
+			  *preselected_electrons_intree,
+			  *tight_muons_intree,
+			  *fakeable_muons_intree,
+			  *preselected_muons_intree,
+			  *preselected_jets_intree,
+			  *met_intree
+			  );
+	  passes_trig = passesTrigger(*passTrigger_intree, *tight_leptons_intree);
+	}
+      else if (selection=="3l_lepMVA_ar")
+	{
+	  passes = pass3l_lepMVA_AR(
+				    *tight_electrons_intree,
+				    *fakeable_electrons_intree,
+				    *preselected_electrons_intree,
+				    *tight_muons_intree,
+				    *fakeable_muons_intree,
+				    *preselected_muons_intree,
+				    *preselected_jets_intree,
+				    *met_intree
+				    );
+	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	}
+      else if (selection=="2lss_training_loose")
+	{
+	  passes = pass2lss_bdtTraining(
+					*preselected_electrons_intree,
+					*preselected_muons_intree,
+					*preselected_jets_intree);
+	  passes_trig = passesTrigger(*passTrigger_intree, *preselected_leptons_intree);
+	}
+      else if (selection=="2lss_training_fo")
+	{
+	  passes = pass2lss_bdtTraining(
+					*fakeable_electrons_intree,
+					*fakeable_muons_intree,
+					*preselected_jets_intree);
+	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	}
 
-            bool passes2lss = pass2lss(
-                   *tight_electrons_intree,
-                   *fakeable_electrons_intree,
-                   *preselected_electrons_intree,
-                   *tight_muons_intree,
-                   *fakeable_muons_intree,
-                   *preselected_muons_intree,
-                   *preselected_jets_intree,
-                   *met_intree
-            );
-
-
-            // bool passes2lss_lepMVA_AR = pass2lss_lepMVA_AR(
-            //         *tight_electrons_intree,
-            //         *fakeable_electrons_intree,
-            //         *preselected_electrons_intree,
-            //         *tight_muons_intree,
-            //         *fakeable_muons_intree,
-            //         *preselected_muons_intree,
-            //         *preselected_jets_intree,
-            //         *met_intree
-            // );
-
-            // bool passes2los = pass2los(
-            //     *tight_electrons_intree,
-            //     *fakeable_electrons_intree,
-            //     *preselected_electrons_intree,
-            //     *tight_muons_intree,
-            //     *fakeable_muons_intree,
-            //     *preselected_muons_intree,
-            //     *preselected_jets_intree,
-            //     *met_intree
-            // );
-
-            // bool passes3l = pass3l(
-            //     *tight_electrons_intree,
-            //     *fakeable_electrons_intree,
-            //     *preselected_electrons_intree,
-            //     *tight_muons_intree,
-            //     *fakeable_muons_intree,
-            //     *preselected_muons_intree,
-            //     *preselected_jets_intree,
-            //     *met_intree
-            // );
-
-            // bool passes3l_lepMVA_AR = pass3l_lepMVA_AR(
-            //     *tight_electrons_intree,
-            //     *fakeable_electrons_intree,
-            //     *preselected_electrons_intree,
-            //     *tight_muons_intree,
-            //     *fakeable_muons_intree,
-            //     *preselected_muons_intree,
-            //     *preselected_jets_intree,
-            //     *met_intree
-            // );
-
-            if (passes2lss and passesTrigger(*passTrigger_intree,*fakeable_leptons_intree))
-	      {
-		//mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
-		//double csv_weight = csvReweighter.weight(*preselected_jets_intree);
-		//cout << csv_weight << endl;
-		csvReweighter.applySFs(*preselected_jets_intree);
-		ss2l_tree->Fill();
-	      }
-
-        } 
-
-
+      if ( passes && passes_trig)
+	{	  
+	  if (selection=="2lss_lepMVA_ar") mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
+	  
+	  //double csv_weight = csvReweighter.weight(*preselected_jets_intree);
+	  //csvReweighter.applySFs(*preselected_jets_intree);
+	  
+	  //only for gen-matching studies//
+	  // myGenParticleHelper.clear();
+	  // myGenParticleHelper.matchReco2Gen(*tight_leptons_intree, *preselected_jets_intree, *pruned_genParticles_intree);
+	  
+	  ss2l_tree->Fill();
+	}
+      
     }
-
+    
 
     double endtime = get_wall_time();
     cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
     if ( (last_entry - first_entry) >0) cout << "an average of " << (endtime - starttime) / (last_entry - first_entry) << " per event." << endl;
-
+    
     ss2l_tree->Write();
     copiedfile->Close();
 }
 
-void makeSelectionTree(TString sample="tth_powheg", TString selection="analysis", int job_no=1)
+void makeSelectionTree(TString sample="sync", TString selection="2lss_sr", int job_no=-1)
 {
-  TString output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
-  //TString output_dir = "/scratch365/cmuelle2/selection_trees/april18_moriond17_fakes_notaus_muFix/";
-  
-  TString postfix;
-  if (selection == "analysis") postfix = "_selection_tree_2lss.root";
-  else  postfix = "_training_tree_2lss.root";
-  
-  TString output_file = output_dir + sample + postfix;
-  if (job_no != -1) output_file = output_dir + sample + "_2lss_"+std::to_string(job_no)+".root";
-  
-  run_it(sample, selection, output_file, job_no);
+  TString output_dir;
+  bool batch_run = false; //switch for batch vs. local commandline running
+
+  if (batch_run) output_dir = "/scratch365/cmuelle2/selection_trees/may2_genFilterStudies/";
+  else output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
+
+  //////////// available selections //////////////
+  // run_it(sample, selection, output_dir, job_no, batch_run);
+  // run_it(sample, "2lss_sr", output_dir, job_no, batch_run);
+  // run_it(sample, "2lss_lepMVA_ar", output_dir, job_no, batch_run);
+  // run_it(sample, "2los_ar", output_dir, job_no, batch_run);
+  //  run_it(sample, "3l_sr", output_dir, job_no, batch_run);
+  run_it(sample, "3l_lepMVA_ar", output_dir, job_no, batch_run);
+  // run_it(sample, "2lss_training_loose", output_dir, job_no, batch_run);
+  // run_it(sample, "2lss_training_fo", output_dir, job_no, batch_run);
+  // run_it(sample, "4l_sr", output_dir, job_no, batch_run);
 }
 

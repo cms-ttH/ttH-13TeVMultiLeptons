@@ -70,7 +70,13 @@ class FileLoader
       }
   }
 public:
-  FileLoader(TString sample, int file_index=-1)
+  FileLoader(void){};//default constructor
+
+  //public members
+  TChain *chain;
+  TH1D* hist_sum;
+  
+  void loadFiles(TString sample, int file_index=-1)
     {
       chain = new TChain("OSTwoLepAna/summaryTree");
       hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);      
@@ -222,14 +228,22 @@ public:
       	{
       	  loadFile( {"muell149/lobster_test_march22_Moriond17_MC/ZZZ_rares/"}, file_index); //1
       	}
+
+
       else if (sample == "tth_powheg_genFilter")
       	{
 	  loadFile( {"muell149/lobster_test__marchGenFilterStudies/tth_nonbb_powheg_v1_part2_genFilter/"}, file_index); //44
       	}
-      else if (sample == "tth_powheg_jetClean_test")
+      else if (sample == "tth_powheg_noGenFilter")
+	{
+	  loadFile( {"muell149/lobster_test__marchGenFilterStudies_noGenFilter/tth_nonbb_powheg/"}, file_index); //30
+	}
+      else if (sample == "tth_powheg_genFilter_looseLepJetClean")
       	{
-	  loadFile( {"muell149/lobster_test__nov18_genFilter_altJetClean/tth_nonbb_powheg/"}, file_index);
+	  loadFile( {"muell149/lobster_test__nov18_genFilter_altJetClean/tth_nonbb_powheg/"}, file_index); //27
       	}
+      
+
       else if (sample == "ttbar_semiLep_jetClean_test")
       	{
       	  vector<TString> sample_vec;
@@ -310,12 +324,9 @@ public:
       
       cout << "Weighted number of events in sample " << sample << " = " << setprecision(10) << hist_sum->GetBinContent(1) << endl;
       //  hist_sum->Draw();
-    }//default constructor
+      
+    }
 
-  //public members
-  TChain *chain;
-  TH1D* hist_sum;
-  
   virtual ~FileLoader(){}
 };
  

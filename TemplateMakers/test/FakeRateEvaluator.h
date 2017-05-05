@@ -7,7 +7,9 @@ class FakeRateEvaluator
   TH2F *ele_fr_data;
   TH2F *flip_data;
  public:
-  FakeRateEvaluator(){
+  FakeRateEvaluator(void){};//default constructor
+
+  void loadWeights(void){
     
     TFile *lepMVA_fr_file = new TFile("../data/CERN/fakerate/FR_data_ttH_mva.root","READONLY");
     mu_fr_data = (TH2F*)lepMVA_fr_file->Get("FR_mva090_mu_data_comb");
@@ -20,8 +22,7 @@ class FakeRateEvaluator
     flip_data = (TH2F*)flips_file->Get("chargeMisId");
     flip_data->SetDirectory(0);//
     flips_file->Close();
-
-  };//default constructor
+  }
 
   double get_fr(vector<ttH::Lepton> fakeableLeps)
   {

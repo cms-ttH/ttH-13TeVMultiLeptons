@@ -98,6 +98,7 @@ template <typename particleType> ttH::Jet getClosestJet(const std::vector<ttH::J
 
 bool passesTrigger(std::vector<std::string> trg_vector, vector<ttH::Lepton> leps)
 {
+  if (leps.size() <=1) return false;
     
   bool pass_trigger_ee = false;
   bool pass_trigger_emu = false;
@@ -159,9 +160,11 @@ bool passesTrigger(std::vector<std::string> trg_vector, vector<ttH::Lepton> leps
       
     }
 
-
-  
-  if (abs(leps[0].pdgID) == 11 && abs(leps[1].pdgID)== 11)
+  if (leps.size() >=3)
+    {
+      return (pass_trigger_ee || pass_trigger_mumu || pass_trigger_emu || pass_trigger_3l);
+    }
+  else if (abs(leps[0].pdgID) == 11 && abs(leps[1].pdgID)== 11)
     {
       return pass_trigger_ee;
     }
@@ -169,11 +172,12 @@ bool passesTrigger(std::vector<std::string> trg_vector, vector<ttH::Lepton> leps
     {
       return pass_trigger_mumu;
     }
-  else
+  else if (abs(leps[0].pdgID)+abs(leps[1].pdgID)==24)
     {
       return pass_trigger_emu;
     }
-
+  else  return false;
+  
   //return (pass_trigger_ee || pass_trigger_mumu || pass_trigger_emu);
   
 }
