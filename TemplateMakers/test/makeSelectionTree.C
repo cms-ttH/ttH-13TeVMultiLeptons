@@ -22,6 +22,7 @@
 #include "GenParticleHelper.h"
 #include "FakeRateEvaluator.h"
 #include "CSVReweight.h"
+#include "Fertilizer.h"
 
 /////////////////////////////////////////
 ///
@@ -78,9 +79,7 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
     vector<ttH::GenParticle> *pruned_genParticles_intree=0;
     vector<ttH::Tau> *preselected_taus_intree=0;
     vector<ttH::Tau> *selected_taus_intree=0;
-    //adding these
-    vector<ttH::Jet> *bTight_jets_intree=0;  
-    vector<ttH::Jet> *bLoose_jets_intree=0;  
+
 
     if (sample_name == "data") chain->SetBranchStatus("mcwgt",0);      
     else        chain->SetBranchAddress("mcwgt", &mcwgt_intree);
@@ -119,14 +118,13 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
     if (sample_name == "data") ss2l_tree->Branch("mcwgt",&mcwgt_intree);
 
     CSVReweight csvReweighter;
+    Fertilizer fertilizer;
+
     csvReweighter.initializeTree(ss2l_tree);
+    fertilizer.initializeTree(ss2l_tree);
 
     GenParticleHelper myGenParticleHelper;
     myGenParticleHelper.initializeTree(ss2l_tree);
-
-    //add new branches
-    ss2l_tree->Branch("bTight_jets", &bTight_jets_intree);  
-    ss2l_tree->Branch("bLoose_jets", &bLoose_jets_intree);
 
     Int_t cachesize = 250000000;   //500 MBytes
     chain->SetCacheSize(cachesize);
@@ -134,15 +132,6 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
     double starttime = get_wall_time();
     for (int i=first_entry; i<=last_entry; i++) {
       
-      bTight_jets_intree->clear();
-      bLoose_jets_intree->clear();
-      for (const auto & jet : *preselected_jets_intree) {
-	if (jet.csv >= 0.8484 ) {
-	  bTight_jets_intree->push_back(jet);
-	} else if (jet.csv >= 0.5426 ) {
-	  bLoose_jets_intree->push_back(jet);
-	}
-      }
       clock_t startTime = clock();
       chain->GetEntry(i);
       printProgress(i,last_entry);
@@ -260,7 +249,10 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 
       if ( passes && passes_trig)
 	{	  
-	  if (selection=="2lss_lepMVA_ar") mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree);
+
+	  fertilizer.growTreeBranches(*fakeable_leptons_intree,*preselected_jets_intree,*preselected_leptons_intree,*met_intree);
+	  
+	  if (selection=="2lss_lepMVA_ar") mcwgt_intree = 1.;//lepFakeRateObject.get_fr(*fakeable_leptons_intree);
 	  
 	  //double csv_weight = csvReweighter.weight(*preselected_jets_intree);
 	  //csvReweighter.applySFs(*preselected_jets_intree);
@@ -288,16 +280,16 @@ void makeSelectionTree(TString sample="sync", TString selection="2lss_sr", int j
   TString output_dir;
   bool batch_run = false; //switch for batch vs. local commandline running
 
-  if (batch_run) output_dir = "/scratch365/cmuelle2/selection_trees/may2_genFilterStudies/";
+  if (batch_run) output_dir = "/scratch365/cmuelle2/selection_trees/may10_flipTests/";
   else output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
 
   //////////// available selections //////////////
-  // run_it(sample, selection, output_dir, job_no, batch_run);
+  run_it(sample, selection, output_dir, job_no, batch_run);
   // run_it(sample, "2lss_sr", output_dir, job_no, batch_run);
   // run_it(sample, "2lss_lepMVA_ar", output_dir, job_no, batch_run);
   // run_it(sample, "2los_ar", output_dir, job_no, batch_run);
-  //  run_it(sample, "3l_sr", output_dir, job_no, batch_run);
-  run_it(sample, "3l_lepMVA_ar", output_dir, job_no, batch_run);
+  // run_it(sample, "3l_sr", output_dir, job_no, batch_run);
+  // run_it(sample, "3l_lepMVA_ar", output_dir, job_no, batch_run);
   // run_it(sample, "2lss_training_loose", output_dir, job_no, batch_run);
   // run_it(sample, "2lss_training_fo", output_dir, job_no, batch_run);
   // run_it(sample, "4l_sr", output_dir, job_no, batch_run);
