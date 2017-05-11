@@ -60,12 +60,9 @@ bool pass2lss(
     {
       auto ee_obj = tightEles[0].obj + tightEles[1].obj;
       double vetoZmass = ee_obj.M();
-      //double vetoZmass = pickFromSortedTwoObjKine(tightEles,"mass",1,91.2);
       if ( fabs(vetoZmass-91.2) <= 10. ) return false;
       
-      auto objs_for_mht = getsumTLV(psLeps,psJets);
-      double MHT_handle = objs_for_mht.Pt();
-      double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+      double metLD_handle = getMetLd(met,psLeps,psJets);
       if ( !(metLD_handle > 0.2) ) return false;
     }
   return true;
@@ -96,11 +93,8 @@ bool pass2l(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vecto
       double vetoZmass = pickFromSortedTwoObjKine(tightEles,"mass",1,91.2);
       if ( !(fabs(vetoZmass-91.2)>10) ) return false;                     
 
-      auto objs_for_mht = getsumTLV(psLeps,psJets);
-      double MHT_handle = objs_for_mht.Pt();
-      double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
-      if ( !(metLD_handle> 0.2) ) return false;
-
+      double metLD_handle = getMetLd(met,psLeps,psJets);
+      if ( !(metLD_handle > 0.2) ) return false;
     }
   return true;
 }
@@ -187,9 +181,7 @@ bool pass2lss_lepMVA_AR(
         double vetoZmass = ee_obj.M();
         if ( fabs(vetoZmass-91.2) <= 10. ) return false;
       
-        auto objs_for_mht = getsumTLV(psLeps,psJets);
-        double MHT_handle = objs_for_mht.Pt();
-        double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+        double metLD_handle = getMetLd(met,psLeps,psJets);
         if ( !(metLD_handle > 0.2) ) return false;
     }
 
@@ -231,9 +223,7 @@ bool pass2los(
       double vetoZmass = ee_obj.M();
       if ( fabs(vetoZmass-91.2) <= 10. ) return false;
       
-      auto objs_for_mht = getsumTLV(psLeps,psJets);
-      double MHT_handle = objs_for_mht.Pt();
-      double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+      double metLD_handle = getMetLd(met,psLeps,psJets);
       if ( !(metLD_handle > 0.2) ) return false;
     }
   return true;
@@ -287,9 +277,7 @@ bool pass3l(
     }
     
     if (psJets.size() < 4) {//Only check metLD if < 4 jets
-        auto objs_for_mht = getsumTLV(psLeps,psJets);
-        double MHT_handle = objs_for_mht.Pt();
-        double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+      double metLD_handle = getMetLd(met,psLeps,psJets);
         if (!has_SFOS && metLD_handle < 0.2) {//metLD check
             return false;
         } else if (has_SFOS && metLD_handle < 0.3) {//metLD check for SFOS
@@ -399,9 +387,7 @@ bool pass3l_lepMVA_AR(
     }
 
     if (psJets.size() < 4) {//Only check metLD if < 4 jets
-        auto objs_for_mht = getsumTLV(psLeps,psJets);
-        double MHT_handle = objs_for_mht.Pt();
-        double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+      double metLD_handle = getMetLd(met,psLeps,psJets);
         if (!has_SFOS && metLD_handle < 0.2) {//metLD check
             return false;
         } else if (has_SFOS && metLD_handle < 0.3) {//metLD check for SFOS
@@ -506,9 +492,7 @@ bool pass4l(
     }
 
     if (psJets.size() < 4) {//Only check metLD if < 4 jets
-        auto objs_for_mht = getsumTLV(psLeps,psJets);
-        double MHT_handle = objs_for_mht.Pt();
-        double metLD_handle = 0.00397*(met[0].obj.Pt()) + 0.00265*MHT_handle;
+	double metLD_handle = getMetLd(met,psLeps,psJets);
         if (!has_SFOS && metLD_handle < 0.2) {//metLD check
             return false;
         } else if (has_SFOS && metLD_handle < 0.3) {//metLD check for SFOS

@@ -46,8 +46,6 @@ template<typename T, typename U> bool isSame(T type1, U type2)
     return false;
 }
 
-
-
 /////////////////// examples of what works, what doesn't: ///////////////////
 
 // works without incident:
@@ -560,6 +558,17 @@ template <typename coll1type> int getNumTwoObjKineInRange( coll1type collection1
     return samecollectionitem;
 }
 
+
+double getHt(vector<ttH::Lepton> leps, vector<ttH::Jet> jets)
+{
+  auto objs_for_mht = getsumTLV(leps,jets);
+  return objs_for_mht.Pt();
+}
+
+double getMetLd(vector<ttH::MET> met,vector<ttH::Lepton> leps, vector<ttH::Jet> jets)
+{
+  return 0.00397*(met[0].obj.Pt()) + 0.00265*getHt(leps,jets);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////
