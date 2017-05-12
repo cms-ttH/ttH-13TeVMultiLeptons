@@ -19,6 +19,7 @@
 #include "selection.h"
 #include "loadSamples.h"
 #include "treeTools.h"
+#include "ScaleFactorApplicator.h"
 #include "GenParticleHelper.h"
 #include "FakeRateEvaluator.h"
 #include "CSVReweight.h"
@@ -104,7 +105,7 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
     FakeRateEvaluator lepFakeRateObject;
     if (selection=="2lss_lepMVA_ar") lepFakeRateObject.loadWeights(); //only load this when necessary, must be loaded before output file is created. 
 
-    TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
+    TFile *outputfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
     if (batch_run && (job_no == -1 || job_no == 0))
       {
@@ -119,9 +120,11 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 
     CSVReweight csvReweighter;
     Fertilizer fertilizer;
+    LeptonSF lepSFs;
 
     csvReweighter.initializeTree(ss2l_tree);
     fertilizer.initializeTree(ss2l_tree);
+    lepSFs.initializeTree(ss2l_tree);
 
     GenParticleHelper myGenParticleHelper;
     myGenParticleHelper.initializeTree(ss2l_tree);
@@ -157,8 +160,8 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
       //////////////////////////
 
       bool passes = false;
-      bool passes_trig = false;
-      
+      //bool passes_trig = false;
+      vector<ttH::Lepton> *lep_collection=0;
 
       if ( selection=="2lss_sr" )
 	{
@@ -172,7 +175,8 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 			     *preselected_jets_intree,
 			     *met_intree
 			     );
-	  passes_trig = passesTrigger(*passTrigger_intree, *tight_leptons_intree);
+	  //	  passes_trig = passesTrigger(*passTrigger_intree, *tight_leptons_intree);
+	  lep_collection = tight_leptons_intree;
 	}
       else if (selection=="2lss_lepMVA_ar")
 	{
@@ -186,7 +190,8 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 				      *preselected_jets_intree,
 				      *met_intree
 				      ); 
-	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	  //	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	  lep_collection = fakeable_leptons_intree;
 	}
       else if (selection=="2los_ar")
 	{
@@ -200,7 +205,8 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 			    *preselected_jets_intree,
 			    *met_intree
 			    );
-	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	  //passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	  lep_collection = tight_leptons_intree;
 	}
       else if (selection=="3l_sr")
 	{
@@ -214,7 +220,8 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 			  *preselected_jets_intree,
 			  *met_intree
 			  );
-	  passes_trig = passesTrigger(*passTrigger_intree, *tight_leptons_intree);
+	  //passes_trig = passesTrigger(*passTrigger_intree, *tight_leptons_intree);
+	  lep_collection = tight_leptons_intree;
 	}
       else if (selection=="3l_lepMVA_ar")
 	{
@@ -228,7 +235,8 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 				    *preselected_jets_intree,
 				    *met_intree
 				    );
-	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	  //	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	  lep_collection = fakeable_leptons_intree;
 	}
       else if (selection=="2lss_training_loose")
 	{
@@ -237,6 +245,7 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 					*preselected_muons_intree,
 					*preselected_jets_intree);
 	  passes_trig = passesTrigger(*passTrigger_intree, *preselected_leptons_intree);
+	  lep_collection = preselected_leptons_intree;
 	}
       else if (selection=="2lss_training_fo")
 	{
@@ -244,14 +253,18 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 					*fakeable_electrons_intree,
 					*fakeable_muons_intree,
 					*preselected_jets_intree);
-	  passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	  //passes_trig = passesTrigger(*passTrigger_intree, *fakeable_leptons_intree);
+	  lep_collection = fakeable_leptons_intree;
 	}
+
+      bool passes_trig = passesTrigger(*passTrigger_intree, *lep_collection);
 
       if ( passes && passes_trig)
 	{	  
 
-	  fertilizer.growTreeBranches(*fakeable_leptons_intree,*preselected_jets_intree,*preselected_leptons_intree,*met_intree);
-	  
+	  fertilizer.growTreeBranches(*lep_collection,*preselected_jets_intree,*preselected_leptons_intree,*met_intree);
+	  lepSFs.addTriggerSF(lep_collection);
+	  lepSFs.addLeptonSF(lep_collection);
 	  if (selection=="2lss_lepMVA_ar") mcwgt_intree = 1.;//lepFakeRateObject.get_fr(*fakeable_leptons_intree);
 	  
 	  //double csv_weight = csvReweighter.weight(*preselected_jets_intree);
@@ -271,8 +284,9 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
     cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
     if ( (last_entry - first_entry) >0) cout << "an average of " << (endtime - starttime) / (last_entry - first_entry) << " per event." << endl;
     
+    outputfile->cd();
     ss2l_tree->Write();
-    copiedfile->Close();
+    outputfile->Close();
 }
 
 void makeSelectionTree(TString sample="sync", TString selection="2lss_sr", int job_no=-1)
