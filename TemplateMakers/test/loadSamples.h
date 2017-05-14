@@ -21,6 +21,7 @@ class FileLoader
     int file_count = 0;
     for (const auto & path_str : path_strs)
       {
+	int file_count2 = 0; //reset for each path. 
 	TString base_dir = pre_fix + path_str;    
 	TSystemDirectory dir(base_dir, base_dir);
 	TList *files = dir.GetListOfFiles();
@@ -42,7 +43,7 @@ class FileLoader
 			cout << "loading file: " << fname << endl;      
 		      }
 
-		    if ( file_index == -1 || file_index == 0 )
+		    if ( file_index == -1 || file_index == 0 || file_count2 == 0 )
 		      {
 			TFile* file = TFile::Open(fname,"READONLY");
 			if ( file )
@@ -55,6 +56,7 @@ class FileLoader
 		      }
 		    
 		    file_count +=1;
+		    file_count2 +=1;
 		  }
 	      }
 	  }
