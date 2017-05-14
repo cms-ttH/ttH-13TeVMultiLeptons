@@ -1,6 +1,6 @@
 #include "TSystemDirectory.h"
 #include "TSystemFile.h"
-#include "TString.h"
+#include "TColor.h"
 
 ///////////////////////////
 ////
@@ -381,3 +381,219 @@ TString getSelectionFile(TString sample_name)
 
   return input_file_name;
 }
+
+class Sample
+{
+private:
+public:
+  Sample(TString sample_name)
+  {
+    TString prefix = "/scratch365/cmuelle2/selection_trees/may10_m17/";
+    TString input_file_name = prefix;
+    
+    if (sample_name == "ttH")
+      {
+	input_file_name += "tth_powheg.root";
+	legend_name = "ttH";
+	fill_color = kOrange+10;
+	fill_style = 1001;
+	xsec = 0.5071*0.418;
+      }
+    else if (sample_name == "ttW")
+      {
+	input_file_name += "ttW_aMCatNLO.root";
+	legend_name = "TTW";
+	fill_color = kGreen-5;
+	fill_style = 1001;
+	xsec = 0.196;
+      }
+    else if (sample_name == "ttZ")
+      {
+	input_file_name += "ttZ_aMCatNLO.root";
+	legend_name = "TTZ";
+	fill_color = kSpring+2;
+	fill_style = 1001;
+	xsec = 0.2728;
+      }
+    else if (sample_name == "ttZ_M1to10")
+      {
+	input_file_name += "ttZ_XXX.root";
+	legend_name = "TTZ";
+	fill_color = kSpring+2;
+	fill_style = 1001;
+	xsec = 0.0493;
+      }
+    else if (sample_name == "TTGJets")
+      {
+	input_file_name += "cons_ttbar.root";
+	legend_name = "convs";
+	fill_color = kOrange;
+	fill_style = 1001;
+	xsec = 3.70;
+      }
+    else if (sample_name == "TGJets")
+      {
+	input_file_name += "convs_sT.root";
+	legend_name = "convs";
+	fill_color = kOrange;
+	fill_style = 1001;
+	xsec = 2.97;
+      }
+    else if (sample_name == "WGToLNuG")
+      {
+	input_file_name += "wGamma.root";
+	legend_name = "convs";
+	fill_color = kOrange;
+	fill_style = 1001;
+	xsec = 585.8;
+      }
+    else if (sample_name == "ZGTo2LG")
+      {
+	input_file_name += "zGamma.root";
+	legend_name = "convs";
+	fill_color = kOrange;
+	fill_style = 1001;
+	xsec = 131.3;
+      }
+    else if (sample_name == "WWqq_rares")
+      {
+	input_file_name += "WWqq_rares.root";
+	legend_name = "WWss";
+	fill_color = kOrange-3;
+	fill_style = 1001;
+	xsec = 0.03711;
+      }
+    else if (sample_name == "WW_doublescatering_rares")
+      {
+	input_file_name += "WW_doublescatering_rares.root";
+	legend_name = "Rares";
+	fill_color = kAzure-9;
+	fill_style = 1001;
+	xsec = 0.1729;
+      }
+    else if (sample_name == "WWW_rares")
+      {
+	input_file_name += "WWW_rares.root";
+	legend_name = "Rares";
+	fill_color = kAzure-9;
+	fill_style = 1001;
+	xsec = 0.2086;
+      }
+    else if (sample_name == "WWZ_rares")
+      {
+	input_file_name += "WWZ_rares.root";
+	legend_name = "Rares";
+	fill_color = kAzure-9;
+	fill_style = 1001;
+	xsec = 0.1651;
+      }
+    else if (sample_name == "WZZ_rares")
+      {
+	input_file_name += "WZZ_rares.root";
+	legend_name = "Rares";
+	fill_color = kAzure-9;
+	fill_style = 1001;
+	xsec = 0.05565;
+      }
+    else if (sample_name == "ZZZ_rares")
+      {
+	input_file_name += "ZZZ_rares.root";
+	legend_name = "Rares";
+	fill_color = kAzure-9;
+	fill_style = 1001;
+	xsec = 0.01398;
+      }
+    else if (sample_name == "tZq")
+      {
+	input_file_name += "tZq.root";
+	legend_name = "Rares";
+	fill_color = kAzure-9;
+	fill_style = 1001;
+	xsec = 0.0758;
+      }
+    else if (sample_name == "tttt")
+      {
+	input_file_name += "tttt.root";
+	legend_name = "Rares";
+	fill_color = kAzure-9;
+	fill_style = 1001;
+	xsec = 0.009103;
+      }
+    else if (sample_name == "WW_diboson") 
+      {
+	//this might not be used.....
+	input_file_name += "WW_diboson.root";
+	legend_name = "ttH";
+	fill_color = kOrange+10;
+	fill_style = 1001;
+	xsec = 10.481;
+      }
+    else if (sample_name == "ZZ_diboson")
+      {
+	input_file_name += "ZZ_diboson.root";
+	legend_name = "ttH";
+	fill_color = kAzure-9;
+	fill_style = 1001;
+	xsec = 1.256;
+      }
+    else if (sample_name == "WZ_diboson")
+      {
+	input_file_name += "WZ_diboson.root";
+	legend_name = "WZ";
+	fill_color = kViolet-4;
+	fill_style = 1001;
+	xsec = 4.429;
+      }
+    else if (sample_name == "fakes")
+      {
+	input_file_name = "fakes.root";
+	legend_name = "fakes";
+	fill_color = kBlack;
+	fill_style = 3005;
+	xsec = 1.;
+      }
+    else if (sample_name == "flips")
+      {
+	input_file_name = "flips.root";
+	legend_name = "flips";
+	fill_color = kBlack;
+	fill_style = 3006;
+	xsec = 1.;
+      }
+    else if (sample_name == "data")
+      {
+	input_file_name = "data.root";
+	legend_name = "data";
+	fill_color = kBlack;
+	fill_style = 3005;
+	xsec = 1.;
+      }
+    else
+      {
+	input_file_name = "data.root";
+	legend_name = "TEST";
+	fill_color = kBlack;
+	fill_style = 1001;
+	xsec = 1.;
+      }
+    
+    file_name = input_file_name;
+    TFile* input_file_ = new TFile(input_file_name,"READONLY");
+    tree = (TTree*)input_file_->Get("ss2l_tree");
+    TH1D* sum_hist = (TH1D*)input_file_->Get("numInitialWeightedMCevents");
+    double total_events = sum_hist->GetBinContent(1);
+    
+    double integrated_lumi = 35900.; //integrated lumi in pb
+    if (legend_name != "data" && legend_name != "fakes" && legend_name != "flips" ) xsec = xsec * integrated_lumi / total_events; //scale the xsec to #of events
+
+  } //default constructor
+
+  TTree* tree;
+  TString legend_name;
+  int fill_color;
+  int fill_style;
+  double xsec; //13 TeV xsec in pb
+
+  virtual ~Sample(){}
+};
+
