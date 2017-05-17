@@ -50,18 +50,38 @@ void plotMaker_signalRegion(void)
   stacks[lep1Pt.hist_name] = l1Pt_stack;
   plots.push_back(lep1Pt);
 
+  PlotObject lep2Pt("l2_pt","Subleading lepton corrected p_{T} [GeV]",10,0,100,"min(fakeable_leptons[1].correctedPt,99)");
+  StackObject l2Pt_stack("l2_pt","Subleading lepton corrected p_{T} [GeV]"); 
+  stacks[lep2Pt.hist_name] = l2Pt_stack;
+  plots.push_back(lep2Pt);
+
+  PlotObject mll("mll","m(ll) [GeV]",10,0,400,"min(mll,399)");
+  StackObject mll_stack("mll","m(ll) [GeV]"); 
+  stacks[mll.hist_name] = mll_stack;
+  plots.push_back(mll);
+
+  PlotObject qSum("qSum","q(l_{1})",2,-2,2,"fakeable_leptons[1].charge");
+  StackObject qSum_stack("qSum","q(l_{1})"); 
+  stacks[qSum.hist_name] = qSum_stack;
+  plots.push_back(qSum);
+
+  PlotObject nJets("nJets","N(jet, p_{T} > 25 GeV)",4,4,8,"min(@preselected_jets.size(),7.9)");
+  StackObject nJets_stack("nJets","N(jet, p_{T} > 25 GeV)"); 
+  stacks[nJets.hist_name] = nJets_stack;
+  plots.push_back(nJets);
+  
+
   for (const auto & sample : samples)
     {
 
-      cout << "sample: " << sample.legend_name << endl;
+      //cout << "sample: " << sample.legend_name << endl;
       for (auto & plot : plots)
        	{
        	  plot.fill(sample, outputfile);
-	  cout << "total 2lss: " << plot.template_hist->Integral() << endl;
-	  cout << "2lss ee: " << plot.ee_hist->Integral() << endl;
-	  cout << "2lss em: " << plot.em_hist->Integral() << endl;
-	  cout << "2lss mm: " << plot.mm_hist->Integral() << endl;
-
+	  // cout << "total 2lss: " << plot.template_hist->Integral() << endl;
+	  // cout << "2lss ee: " << plot.ee_hist->Integral() << endl;
+	  // cout << "2lss em: " << plot.em_hist->Integral() << endl;
+	  // cout << "2lss mm: " << plot.mm_hist->Integral() << endl;
        	  stacks[plot.hist_name].Add(plot);
        	}
     }
