@@ -21,47 +21,43 @@ class FileLoader
     int file_count = 0;
     for (const auto & path_str : path_strs)
       {
-	int file_count2 = 0; //reset for each path. 
 	TString base_dir = pre_fix + path_str;    
 	TSystemDirectory dir(base_dir, base_dir);
 	TList *files = dir.GetListOfFiles();
-	if (files) 
+	if (!files) continue; 
+	TSystemFile *sys_file;
+	TString fname;
+	TIter next(files);
+	while ((sys_file=(TSystemFile*)next()))
 	  {
-	    TSystemFile *sys_file;
-	    TString fname;
-	    TIter next(files);
-	    while ((sys_file=(TSystemFile*)next()))
+	    
+	    fname = base_dir + sys_file->GetName();
+	    if (!sys_file->IsDirectory() && fname.EndsWith(".root")) 
 	      {
 		
-		fname = base_dir + sys_file->GetName();
-		if (!sys_file->IsDirectory() && fname.EndsWith(".root")) 
+		if (file_index == -1 || file_count == file_index)
 		  {
-		    
-		    if (file_index == -1 || file_count == file_index)
-		      {
-			chain->Add(fname);
-			cout << "loading file: " << fname << endl;      
-		      }
-
-		    if ( file_index == -1 || file_index == 0 || file_count2 == 0 )
-		      {
-			TFile* file = TFile::Open(fname,"READONLY");
-			if ( file )
-			  {
-			    TH1D* hist = (TH1D*)file->Get("OSTwoLepAna/numInitialWeightedMCevents");
-			    hist_sum->Add(hist);
-			    file->Close();
-			  }	
-			delete file;
-		      }
-		    
-		    file_count +=1;
-		    file_count2 +=1;
+		    chain->Add(fname);
+		    cout << "loading file: " << fname << endl;      
 		  }
+		
+		if ( file_index == -1 || file_index == 0)
+		  {
+		    TFile* file = TFile::Open(fname,"READONLY");
+		    if ( file )
+		      {
+			TH1D* hist = (TH1D*)file->Get("OSTwoLepAna/numInitialWeightedMCevents");
+			hist_sum->Add(hist);
+			file->Close();
+		      }	
+		    delete file;
+		  }
+		
+		file_count +=1;
 	      }
 	  }
       }
-
+    
     if (file_index >= file_count)
       {
 	//NOTE: the file_index is 0-indexed!
@@ -388,7 +384,8 @@ class Sample
 {
 private:
 public:
-  Sample(TString sample_name)
+ Sample(TString sample_name_="name"):
+  sample_name(sample_name_)
   {
     TString prefix = "/scratch365/cmuelle2/selection_trees/may10_m17/";
     TString input_file_name = prefix;
@@ -525,7 +522,7 @@ public:
       {
 	//this might not be used.....
 	input_file_name += "WW_diboson.root";
-	legend_name = "ttH";
+	legend_name = "WW";
 	fill_color = kOrange+10;
 	fill_style = 1001;
 	xsec = 10.481;
@@ -533,7 +530,7 @@ public:
     else if (sample_name == "ZZ_diboson")
       {
 	input_file_name += "ZZ_diboson.root";
-	legend_name = "ttH";
+	legend_name = "ZZ";
 	fill_color = kAzure-9;
 	fill_style = 1001;
 	xsec = 1.256;
@@ -548,7 +545,7 @@ public:
       }
     else if (sample_name == "fakes")
       {
-	input_file_name = "fakes.root";
+	input_file_name += "fakes.root";
 	legend_name = "fakes";
 	fill_color = kBlack;
 	fill_style = 3005;
@@ -556,7 +553,7 @@ public:
       }
     else if (sample_name == "flips")
       {
-	input_file_name = "flips.root";
+	input_file_name += "flips.root";
 	legend_name = "flips";
 	fill_color = kBlack;
 	fill_style = 3006;
@@ -564,7 +561,7 @@ public:
       }
     else if (sample_name == "data")
       {
-	input_file_name = "data.root";
+	input_file_name += "data.root";
 	legend_name = "data";
 	fill_color = kBlack;
 	fill_style = 3005;
@@ -582,15 +579,19 @@ public:
     file_name = input_file_name;
     TFile* input_file_ = new TFile(input_file_name,"READONLY");
     tree = (TTree*)input_file_->Get("ss2l_tree");
-    TH1D* sum_hist = (TH1D*)input_file_->Get("numInitialWeightedMCevents");
-    double total_events = sum_hist->GetBinContent(1);
     
-    double integrated_lumi = 35900.; //integrated lumi in pb
-    if (legend_name != "data" && legend_name != "fakes" && legend_name != "flips" ) xsec = xsec * integrated_lumi / total_events; //scale the xsec to #of events
+    if (legend_name != "data" && legend_name != "fakes" && legend_name != "flips" )
+      {
+	double integrated_lumi = 35900.; //integrated lumi in pb
+	TH1D* sum_hist = (TH1D*)input_file_->Get("numInitialWeightedMCevents");
+	double total_events = sum_hist->GetBinContent(1);
+	xsec = xsec * integrated_lumi / total_events; //scale the xsec to #of events
+      }
 
   } //default constructor
 
   TTree* tree;
+  TString sample_name;
   TString legend_name;
   int fill_color;
   int fill_style;

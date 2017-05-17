@@ -3,7 +3,6 @@
 #include <string>
 #include <algorithm>
 #include <functional>
-//#include <type_traits>
 #include <typeinfo>
 #include "TObject.h"
 #include "TVector.h"

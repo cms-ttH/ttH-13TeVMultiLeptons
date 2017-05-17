@@ -21,7 +21,8 @@ public:
 
   TString hist_name;
   TString hist_title;
-
+  TString legend_name;
+  TString sample_name;
   TH1D* template_hist;
   TH1D* ee_hist;
   TH1D* mm_hist;
@@ -29,13 +30,24 @@ public:
 
   void fill(Sample sample, TFile* fout=0)
   {
-   
-    TString template_name = hist_name+"_"+sample.legend_name;
+    legend_name = sample.sample_name;
+    TString template_name = hist_name+"_"+legend_name;
     template_hist = new TH1D(template_name,hist_title,bins,xmin,xmax);
-    template_hist->SetFillColor(sample.fill_color);
-    template_hist->SetFillStyle(sample.fill_style);
     template_hist->SetLineColor(1);
     template_hist->SetMarkerColor(sample.fill_color);
+
+    
+    if (legend_name != "data")
+      {
+	template_hist->SetFillColor(sample.fill_color);
+	template_hist->SetFillStyle(sample.fill_style);
+      }
+    else
+      {
+    	template_hist->SetMarkerStyle(20);
+    	//template_hist->SetMarkerSize(markerSize);
+      }
+
 
     TString ee_name = template_name+"_ee";
     TString em_name = template_name+"_em";
@@ -51,11 +63,11 @@ public:
     TString drawCommand_mm = drawCommand + " >> "+mm_name;
 
     TCut weight = "";
-    if (sample.legend_name != "data" && sample.legend_name != "fakes" && sample.legend_name != "flips" )
+    if (legend_name != "data" && legend_name != "fakes" && legend_name != "flips" )
       {
-	weight = "(mcwgt/mcwgt)*btag_weight*trigger_SF*lepton_SF";
+	weight = "mcwgt*btag_weight*trigger_SF*lepton_SF";
       }
-    else if (sample.legend_name == "fakes" || sample.legend_name == "flips")
+    else if (legend_name == "fakes" || legend_name == "flips")
       {
 	weight = "mcwgt";
       }
@@ -68,11 +80,13 @@ public:
     ee_hist->SetDirectory(gDirectory);
     em_hist->SetDirectory(gDirectory);
     mm_hist->SetDirectory(gDirectory);
+    
+    TString drawOption = "goff";
 
-    tree->Draw(drawCommand_template,weight,"goff");
-    tree->Draw(drawCommand_ee,weight_ee,"goff");
-    tree->Draw(drawCommand_em,weight_em,"goff");
-    tree->Draw(drawCommand_mm,weight_mm,"goff");
+    tree->Draw(drawCommand_template,weight,drawOption);
+    tree->Draw(drawCommand_ee,weight_ee,drawOption);
+    tree->Draw(drawCommand_em,weight_em,drawOption);
+    tree->Draw(drawCommand_mm,weight_mm,drawOption);
     
     template_hist->Scale( sample.xsec );
     ee_hist->Scale( sample.xsec );
@@ -99,7 +113,7 @@ private:
   TString stack_name;
   TString stack_title;
   
-  void drawSingle(THStack* stack)
+  void drawSingle(THStack* stack, TH1* data_hist)
   {
     TString stack_name = stack->GetName();
     TString can_name = stack_name + "_can";
@@ -107,9 +121,18 @@ private:
     TCanvas* can = new TCanvas(can_name, can_name,10,32,530,580);
     
     stack->Draw("hist");
-    //stack->SetMaximum(179);//125
-    stack->GetXaxis()->SetTitle("test_stack");
+    stack->SetMaximum(data_hist->GetMaximum()*1.5);//125
+    stack->GetXaxis()->SetTitle(stack->GetTitle());
     stack->Draw("hist");
+
+    data_hist->SetMarkerStyle(20);
+    //data_hist->SetLineColor(0);
+    data_hist->Draw("epsame");
+    //TPaveText *pave = new TPaveText(-3.78,500,-1.2,750);
+    //  auto cms = new TLatex(0.4,0.75,"#scale[0.8]{CMS Preliminary}");
+    //cms.SetNDC();
+    
+
     //gPad->BuildLegend(0.4410646,0.7296544,0.8536122,0.8690078);
     //gPad->SetTicky();
     can->SaveAs(save_name);
@@ -132,21 +155,42 @@ public:
   THStack* ee_stack;
   THStack* mm_stack;
   THStack* em_stack;
+ 
+  TH1D* template_hist_data = NULL;
+  TH1D* ee_hist_data = NULL;
+  TH1D* mm_hist_data = NULL;
+  TH1D* em_hist_data = NULL;
   
+ 
   void Add(PlotObject plot, Sample sample)
   {
-    template_stack->Add(plot.template_hist);
-    ee_stack->Add(plot.ee_hist);
-    em_stack->Add(plot.em_hist);
-    mm_stack->Add(plot.mm_hist);
+    if (plot.legend_name == "data")
+      {
+    	template_hist_data = (TH1D*)plot.template_hist->Clone();
+    	ee_hist_data = (TH1D*)plot.ee_hist->Clone();
+    	mm_hist_data = (TH1D*)plot.mm_hist->Clone();
+    	em_hist_data = (TH1D*)plot.em_hist->Clone();
+      }
+    else
+      {
+	template_stack->Add(plot.template_hist);
+	template_stack->SetName(plot.template_hist->GetName());
+	ee_stack->Add(plot.ee_hist);
+	ee_stack->SetName(plot.ee_hist->GetName());
+	em_stack->Add(plot.em_hist);
+	em_stack->SetName(plot.em_hist->GetName());
+	mm_stack->Add(plot.mm_hist);
+	mm_stack->SetName(plot.mm_hist->GetName());
+      }
+    
   }
-
+  
   void draw(void)
   {
-    drawSingle(template_stack);
-    drawSingle(ee_stack);
-    drawSingle(em_stack);
-    drawSingle(mm_stack);
+    drawSingle(template_stack, template_hist_data);
+    drawSingle(ee_stack, ee_hist_data);
+    drawSingle(em_stack, em_hist_data);
+    drawSingle(mm_stack, mm_hist_data);
   }
   virtual ~StackObject(){}
 };

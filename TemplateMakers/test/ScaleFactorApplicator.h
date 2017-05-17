@@ -1,21 +1,7 @@
 #ifndef _ScaleFactorApplicator_h
 #define _ScaleFactorApplicator_h
 
-#include <vector>
 #include "TObject.h"
-#include <iostream>
-#include "TSystem.h"
-#include <vector>
-#include "TH1.h"
-#include "TChain.h"
-#include <string>
-#include <algorithm>
-#include "TString.h"
-#include "TH1D.h"
-#include "TFile.h"
-#include <cmath>
-#include "TLorentzVector.h"
-//#include "treeTools.h"
 #include "TH2Poly.h"
 #include "TGraphAsymmErrors.h"
 
@@ -24,7 +10,6 @@ class LeptonSF
  private:
   double triggerSF_intree;
   double leptonSF_intree;
-  double btagSF_intree;
   
   TFile *_file_recoToLoose_leptonSF_mu1 = NULL;
   TFile *_file_recoToLoose_leptonSF_mu2 = NULL;
@@ -46,9 +31,11 @@ class LeptonSF
   TFile *_file_looseToTight_leptonSF_el_2lss = NULL;
   TH2F *_histo_looseToTight_leptonSF_el_2lss = NULL;
 
-  double _get_recoToLoose_leptonSF_ttH(int pdgid, float pt, float eta)
+  double _get_recoToLoose_leptonSF_ttH(int pdgid, float pt, float eta, float var=0.)
   {
     
+    //var = 0. (no systs)
+
     if (abs(pdgid) == 13)
       {  
 	double out = 1;
@@ -129,25 +116,30 @@ class LeptonSF
       _histo_recoToLoose_leptonSF_mu2 = (TH2F*)(_file_recoToLoose_leptonSF_mu2->Get("SF"));
       _histo_recoToLoose_leptonSF_mu3 = (TH2F*)(_file_recoToLoose_leptonSF_mu3->Get("SF"));
       _histo_recoToLoose_leptonSF_mu4 = (TGraphAsymmErrors*)(_file_recoToLoose_leptonSF_mu4->Get("ratio_eff_eta3_dr030e030_corr"));
+      
+      /* _histo_recoToLoose_leptonSF_mu1->SetDirectory(0); */
+      /* _file_recoToLoose_leptonSF_mu1->Close(); */
+
+
     }
     if (!_histo_recoToLoose_leptonSF_el1) {
-      _file_recoToLoose_leptonSF_el = new TFile("../data/CERN/leptonSF/el_scaleFactors_Moriond17.root","read");
+      _file_recoToLoose_leptonSF_el = new TFile("../data/CERN/leptonSF/el_scaleFactors_Moriond17.root","readonly");
       _histo_recoToLoose_leptonSF_el1 = (TH2F*)(_file_recoToLoose_leptonSF_el->Get("GsfElectronToMVAVLooseFOIDEmuTightIP2D"));
       _histo_recoToLoose_leptonSF_el2 = (TH2F*)(_file_recoToLoose_leptonSF_el->Get("MVAVLooseElectronToMini4"));
       _histo_recoToLoose_leptonSF_el3 = (TH2F*)(_file_recoToLoose_leptonSF_el->Get("MVAVLooseElectronToConvVetoIHit1"));
     }
     if (!_histo_recoToLoose_leptonSF_gsf) {
-      _file_recoToLoose_leptonSF_gsf = new TFile("../data/CERN/leptonSF/egammaEffi.txt_EGM2D.root","read");
+      _file_recoToLoose_leptonSF_gsf = new TFile("../data/CERN/leptonSF/egammaEffi.txt_EGM2D.root","readonly");
       _histo_recoToLoose_leptonSF_gsf = (TH2F*)(_file_recoToLoose_leptonSF_gsf->Get("EGamma_SF2D"));
     }
     
     //tight eff
     if (!_histo_looseToTight_leptonSF_mu_2lss) {
-      _file_looseToTight_leptonSF_mu_2lss = new TFile("../data/CERN/leptonSF/lepMVAEffSF_m_2lss.root","read");
+      _file_looseToTight_leptonSF_mu_2lss = new TFile("../data/CERN/leptonSF/lepMVAEffSF_m_2lss.root","readonly");
       _histo_looseToTight_leptonSF_mu_2lss = (TH2F*)(_file_looseToTight_leptonSF_mu_2lss->Get("sf"));
     }
     if (!_histo_looseToTight_leptonSF_el_2lss) {
-      _file_looseToTight_leptonSF_el_2lss = new TFile("../data/CERN/leptonSF/lepMVAEffSF_e_2lss.root","read");
+      _file_looseToTight_leptonSF_el_2lss = new TFile("../data/CERN/leptonSF/lepMVAEffSF_e_2lss.root","readonly");
       _histo_looseToTight_leptonSF_el_2lss = (TH2F*)(_file_looseToTight_leptonSF_el_2lss->Get("sf"));
     }
     
@@ -158,7 +150,6 @@ class LeptonSF
   {
     input_tree->Branch("trigger_SF", &triggerSF_intree);
     input_tree->Branch("lepton_SF", &leptonSF_intree);
-    input_tree->Branch("btag_SF", &btagSF_intree);    
   }
 
 
@@ -185,7 +176,7 @@ class LeptonSF
   }
   
 
-  //  virtual ~LeptonSF(){};
+  virtual ~LeptonSF(){};
 };
 
 #endif // _ScaleFactorApplicator_h

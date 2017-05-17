@@ -2,11 +2,7 @@
 #define TREETOOLS_H_
 
 //Tools for working with TTrees
-#include "TLorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
-
-
 
 void printProgress(int current_index, int total_entries)
 {
