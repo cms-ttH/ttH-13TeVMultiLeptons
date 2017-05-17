@@ -17,10 +17,8 @@ void plotMaker_signalRegion(void)
   samples.push_back(Sample("fakes"));  
   samples.push_back(Sample("tttt"));
   samples.push_back(Sample("tZq"));
-
   samples.push_back(Sample("WGToLNuG"));
   samples.push_back(Sample("ZGTo2LG"));
-
   samples.push_back(Sample("WWqq_rares"));
   samples.push_back(Sample("WW_doublescatering_rares"));
   samples.push_back(Sample("WWW_rares"));
@@ -47,7 +45,7 @@ void plotMaker_signalRegion(void)
   std::vector<PlotObject> plots;
   
   //TString drawCommand;
-  PlotObject lep1Pt("l1_pt","leading lepton corrected p_{T} [GeV]",10,0,200,"fakeable_leptons[0].correctedPt");
+  PlotObject lep1Pt("l1_pt","Leading lepton corrected p_{T} [GeV]",10,0,200,"min(fakeable_leptons[0].correctedPt,199)");
   StackObject l1Pt_stack("l1_pt","leading lepton corrected p_{T} [GeV]"); 
   stacks[lep1Pt.hist_name] = l1Pt_stack;
   plots.push_back(lep1Pt);
@@ -64,7 +62,7 @@ void plotMaker_signalRegion(void)
 	  cout << "2lss em: " << plot.em_hist->Integral() << endl;
 	  cout << "2lss mm: " << plot.mm_hist->Integral() << endl;
 
-       	  stacks[plot.hist_name].Add(plot,sample);
+       	  stacks[plot.hist_name].Add(plot);
        	}
     }
 

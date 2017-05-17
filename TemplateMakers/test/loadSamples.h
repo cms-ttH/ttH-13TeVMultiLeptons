@@ -425,7 +425,7 @@ public:
     else if (sample_name == "TTGJets")
       {
 	input_file_name += "cons_ttbar.root";
-	legend_name = "convs";
+	legend_name = "Convs";
 	fill_color = kOrange;
 	fill_style = 1001;
 	xsec = 3.70;
@@ -433,7 +433,7 @@ public:
     else if (sample_name == "TGJets")
       {
 	input_file_name += "convs_sT.root";
-	legend_name = "convs";
+	legend_name = "Convs";
 	fill_color = kOrange;
 	fill_style = 1001;
 	xsec = 2.97;
@@ -441,7 +441,7 @@ public:
     else if (sample_name == "WGToLNuG")
       {
 	input_file_name += "wGamma.root";
-	legend_name = "convs";
+	legend_name = "Convs";
 	fill_color = kOrange;
 	fill_style = 1001;
 	xsec = 585.8;
@@ -449,7 +449,7 @@ public:
     else if (sample_name == "ZGTo2LG")
       {
 	input_file_name += "zGamma.root";
-	legend_name = "convs";
+	legend_name = "Convs";
 	fill_color = kOrange;
 	fill_style = 1001;
 	xsec = 131.3;
@@ -457,7 +457,7 @@ public:
     else if (sample_name == "WWqq_rares")
       {
 	input_file_name += "WWqq_rares.root";
-	legend_name = "WWss";
+	legend_name = "Rares";
 	fill_color = kOrange-3;
 	fill_style = 1001;
 	xsec = 0.03711;
@@ -522,7 +522,7 @@ public:
       {
 	//this might not be used.....
 	input_file_name += "WW_diboson.root";
-	legend_name = "WW";
+	legend_name = "Rares";
 	fill_color = kOrange+10;
 	fill_style = 1001;
 	xsec = 10.481;
@@ -530,7 +530,7 @@ public:
     else if (sample_name == "ZZ_diboson")
       {
 	input_file_name += "ZZ_diboson.root";
-	legend_name = "ZZ";
+	legend_name = "Rares";
 	fill_color = kAzure-9;
 	fill_style = 1001;
 	xsec = 1.256;
@@ -546,15 +546,15 @@ public:
     else if (sample_name == "fakes")
       {
 	input_file_name += "fakes.root";
-	legend_name = "fakes";
+	legend_name = "Fakes";
 	fill_color = kBlack;
-	fill_style = 3005;
+	fill_style = 3345;
 	xsec = 1.;
       }
     else if (sample_name == "flips")
       {
 	input_file_name += "flips.root";
-	legend_name = "flips";
+	legend_name = "Flips";
 	fill_color = kBlack;
 	fill_style = 3006;
 	xsec = 1.;
@@ -562,7 +562,7 @@ public:
     else if (sample_name == "data")
       {
 	input_file_name += "data.root";
-	legend_name = "data";
+	legend_name = "Data";
 	fill_color = kBlack;
 	fill_style = 3005;
 	xsec = 1.;
@@ -580,7 +580,7 @@ public:
     TFile* input_file_ = new TFile(input_file_name,"READONLY");
     tree = (TTree*)input_file_->Get("ss2l_tree");
     
-    if (legend_name != "data" && legend_name != "fakes" && legend_name != "flips" )
+    if (sample_name != "data" && sample_name != "fakes" && sample_name != "flips" )
       {
 	double integrated_lumi = 35900.; //integrated lumi in pb
 	TH1D* sum_hist = (TH1D*)input_file_->Get("numInitialWeightedMCevents");
