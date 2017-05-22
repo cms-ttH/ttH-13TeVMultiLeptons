@@ -25,7 +25,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   vertex_token_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices")); // ,"","RECO"));
   genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
   genJet_token_ = consumes< std::vector<reco::GenJet> >(edm::InputTag("slimmedGenJets")); 
-
+  badmu_token_ = consumes<int>(edm::InputTag("removeBadAndCloneGlobalMuons"));
 
 }
 
@@ -101,6 +101,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     genjets = get_collection(event, genJet_token_);
   }
 
+  ///////////////////
+  ////////
+  //////// bad muons
+  ////////
+  ///////////////////
+  int numBadMu = (*get_collection(event, badmu_token_));
+
   /////////////////////
   /////////
   ///////// Setting up JECs
@@ -171,15 +178,15 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   /// Cleaning 
   ///
   ////////
-  
+
   //remove electrons that are close (dR <=0.05) to muons
   selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05);    
 
-  //remove taus that are close (dR <=0.4) to muons
-  selectedTaus_preselected = cleanObjects<pat::Tau,pat::Muon>(selectedTaus_preselected,selectedMuons_preselected,0.4);
+  //remove taus that are close (dR <=0.3) to muons
+  selectedTaus_preselected = cleanObjects<pat::Tau,pat::Muon>(selectedTaus_preselected,selectedMuons_preselected,0.3);
 
-  //remove taus that are close (dR <=0.4) to electrons
-  selectedTaus_preselected = cleanObjects<pat::Tau,pat::Electron>(selectedTaus_preselected,selectedElectrons_preselected,0.4);
+  //remove taus that are close (dR <=0.3) to electrons
+  selectedTaus_preselected = cleanObjects<pat::Tau,pat::Electron>(selectedTaus_preselected,selectedElectrons_preselected,0.3);
 
   vecPatTau selectedTaus_selected = GetSelectedTaus( selectedTaus_preselected, 20., tauID::tauMedium );
   
@@ -435,6 +442,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
       packed_genParticles_intree = packed_genParticles;
       genJets_intree = gen_jets;
     }
+
+    numBadMuons_intree = numBadMu;
+
     
     wgt_intree = weight;
 

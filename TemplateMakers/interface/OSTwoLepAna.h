@@ -52,6 +52,8 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int lumiBlock_intree;
 		int runNumber_intree;
 		
+		int numBadMuons_intree;
+
 		vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> fakeable_leptons_intree;
 		vector<ttH::Lepton> tight_leptons_intree;
@@ -136,6 +138,8 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
   summaryTree->Branch("packed_genParticles", &packed_genParticles_intree);
   summaryTree->Branch("genJets", &genJets_intree);
+  summaryTree->Branch("numBadMuons", &numBadMuons_intree);
+
 }
 
 void OSTwoLepAna::initialize_variables()
@@ -147,6 +151,7 @@ void OSTwoLepAna::initialize_variables()
   eventnum_intree = -99;
   lumiBlock_intree = -99;
   runNumber_intree = -99;
+  numBadMuons_intree = -99;
   //passTrigger_intree = false;
   passTrigger_intree.clear();
   preselected_leptons_intree.clear();

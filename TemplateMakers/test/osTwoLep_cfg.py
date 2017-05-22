@@ -43,10 +43,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.source = cms.Source("PoolSource",
 #    	fileNames = cms.untracked.vstring( infile ),        
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
-    	fileNames = cms.untracked.vstring( "/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/161C938B-99BE-E611-A0DF-002590FD5A3A.root"),
+    	fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/3C70EB0A-6BBE-E611-B094-0025905A606A.root"),
 #    	fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/23Sep2016-v1/70000/081A803C-8B8A-E611-86A7-008CFA110C90.root" ),
-#    	fileNames = cms.untracked.vstring( "file:singleMu2016B.root" ),
-#        eventsToProcess = cms.untracked.VEventRange('1:4493:892573','1:4493:892573'),
+       #eventsToProcess = cms.untracked.VEventRange('1:23725:3368878','1:23725:3368878'),
 
 )
 
@@ -77,6 +76,36 @@ process.patJetsReapplyJEC = updatedPatJets.clone(
  jetSource = cms.InputTag("slimmedJets"),
  jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
  )
+
+# ---------
+# Bad Muons
+# ---------
+
+process.badGlobalMuonTagger = cms.EDFilter(
+    "BadGlobalMuonTagger",
+    muons=cms.InputTag("slimmedMuons"),
+    vtx=cms.InputTag("offlineSlimmedPrimaryVertices"),
+    muonPtCut=cms.double(20),
+    selectClones=cms.bool(False),
+    taggingMode=cms.bool(True),
+    verbose=cms.untracked.bool(False)
+)
+process.cloneGlobalMuonTagger = process.badGlobalMuonTagger.clone(
+    selectClones=cms.bool(True)
+)
+
+process.removeBadAndCloneGlobalMuons = cms.EDProducer(
+    "MuonRefPruner",
+    input=cms.InputTag("slimmedMuons"),
+    toremove=cms.InputTag("badGlobalMuonTagger", "bad"),
+    toremove2=cms.InputTag("cloneGlobalMuonTagger", "bad")
+)
+
+process.noBadGlobalMuons = cms.Sequence(
+    process.cloneGlobalMuonTagger +
+    process.badGlobalMuonTagger +
+    process.removeBadAndCloneGlobalMuons
+)  # in tagging mode, these modules return always "true"
 
 ######################################
 
@@ -113,7 +142,7 @@ process.OSTwoLepAna.skim = cms.bool( options.skim )
 ######################################
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("output_tree.root")
+                                   fileName = cms.string("output_M17_sync_tree_muonConePt.root")
                                    )
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
@@ -125,9 +154,10 @@ process.load('RecoJets.JetProducers.QGTagger_cfi')
 process.QGTagger.srcJets          = cms.InputTag('slimmedJets')
 process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
 
-#process.p = cms.Path(process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
-process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna)
-#process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.electronMVAValueMapProducer * process.ttHLeptons * process.OSTwoLepAna)
+
+
+
+process.p = cms.Path( process.patJetCorrFactorsReapplyJEC + process.patJetsReapplyJEC + process.noBadGlobalMuons * process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna)
 
 
 # summary
