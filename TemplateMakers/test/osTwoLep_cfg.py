@@ -7,6 +7,9 @@ from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
 options = VarParsing.VarParsing('analysis')
 options.maxEvents = -1
+options.register("data", False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool, "Data or MC.")
 options.register("skim", False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Produce skimmed trees.")
@@ -21,7 +24,7 @@ options.parseArguments()
 process = cms.Process("Demo")
 
 ####### IS THIS DATA YES OR NO ######
-isData = True
+isData = options.data
 #####################################
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
