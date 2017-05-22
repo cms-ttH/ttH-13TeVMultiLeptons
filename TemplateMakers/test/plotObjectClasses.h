@@ -169,7 +169,7 @@ class StackObject
   {
     TString stack_name = stack->GetName();
     TString can_name = stack_name + "_can";
-    TString save_name = stack_name + ".root";
+    //TString save_name = stack_name + ".root";
 
     TString title = stack->GetTitle();
     stack->SetTitle("");
@@ -259,7 +259,8 @@ class StackObject
 
     can->cd();
 
-    can->SaveAs(save_name);
+    //can->SaveAs(stack_name+".root");
+    can->Print(stack_name+"_stackPlot_SR.pdf",".pdf");
   }
 
 public:

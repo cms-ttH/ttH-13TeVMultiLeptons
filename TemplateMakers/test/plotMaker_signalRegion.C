@@ -69,7 +69,32 @@ void plotMaker_signalRegion(void)
   StackObject nJets_stack("nJets","N(jet, p_{T} > 25 GeV)"); 
   stacks[nJets.hist_name] = nJets_stack;
   plots.push_back(nJets);
+
+  PlotObject nJets_CSVL("nJets_CSVL","N(jet, p_{T} > 25 GeV, CSVL)",6,0,6,"min(@bLoose_jets.size(),5.9)");
+  StackObject nJets_CSVL_stack("nJets_CSVL","N(jet, p_{T} > 25 GeV, CSVL)"); 
+  stacks[nJets_CSVL.hist_name] = nJets_CSVL_stack;
+  plots.push_back(nJets_CSVL);
+
+  PlotObject nJets_CSVM("nJets_CSVM","N(jet, p_{T} > 25 GeV, CSVM)",6,0,6,"min(@bLoose_jets.size(),5.9)");
+  StackObject nJets_CSVM_stack("nJets_CSVM","N(jet, p_{T} > 25 GeV, CSVM)"); 
+  stacks[nJets_CSVM.hist_name] = nJets_CSVM_stack;
+  plots.push_back(nJets_CSVM);
   
+  PlotObject ht("ht","H_{T} (jet p_{T} > 25) [GeV]",10,0,1000,"min(ht,999)");
+  StackObject ht_stack("ht","H_{T} (jet p_{T} > 25) [GeV]"); 
+  stacks[ht.hist_name] = ht_stack;
+  plots.push_back(ht);
+
+  PlotObject met("met","E^{miss}_{T} [GeV]",10,0,400,"min(met[0].obj.pt(),399)");
+  StackObject met_stack("met","E^{miss}_{T} [GeV]"); 
+  stacks[met.hist_name] = met_stack;
+  plots.push_back(met);
+
+  PlotObject metLD("metLD","MET LD",10,0,2,"min(metLD,1.99)");
+  StackObject metLD_stack("metLD","MET LD"); 
+  stacks[metLD.hist_name] = metLD_stack;
+  plots.push_back(metLD);
+
 
   for (const auto & sample : samples)
     {
