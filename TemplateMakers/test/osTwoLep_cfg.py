@@ -142,7 +142,7 @@ process.OSTwoLepAna.skim = cms.bool( options.skim )
 ######################################
 
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("output_M17_sync_tree_muonConePt.root")
+                                   fileName = cms.string("output_tree.root")
                                    )
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
