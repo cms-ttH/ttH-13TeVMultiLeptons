@@ -2,7 +2,7 @@ from lobster import cmssw
 from lobster.core import *
 from lobster.monitor.elk.interface import ElkInterface
 
-version = 'march22_Moriond17_MC'
+version = 'may22_Moriond17'
 
 storage = StorageConfiguration(
         output=[
@@ -11,7 +11,7 @@ storage = StorageConfiguration(
             # ND is not in the XrootD redirector, thus hardcode server.
             # Note the double-slash after the hostname!
             "root://deepthought.crc.nd.edu//store/user/muell149/lobster_test_" + version,
-            "chirp://eddie.crc.nd.edu:9094/store/user/muell149/lobster_test_" + version,
+            #"chirp://eddie.crc.nd.edu:9094/store/user/muell149/lobster_test_" + version,
             "gsiftp://T3_US_NotreDame/store/user/muell149/lobster_test_" + version,
             "srm://T3_US_NotreDame/store/user/muell149/lobster_test_" + version
         ]
@@ -26,6 +26,8 @@ processing = Category(
 
 workflows = []
 
+#lumimask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
+lumimask = '/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
 
 #######################################################
 #######################################################
@@ -35,8 +37,8 @@ workflows = []
 #######################################################
 #######################################################
 
-tth_nonbb_powheg_ = Workflow(
-    label='tth_nonbb_powheg_',
+ttH_nonbb_powheg = Workflow(
+    label='ttH_nonbb_powheg',
     dataset=cmssw.Dataset(
         dataset='/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
         events_per_task=20000
@@ -46,10 +48,10 @@ tth_nonbb_powheg_ = Workflow(
     arguments=['skim=True'],
     merge_size='2.0G',
     )
-workflows.append(tth_nonbb_powheg_)
+workflows.append(ttH_nonbb_powheg)
 
-tth_nonbb_aMCatNLO_ = Workflow(
-    label='tth_nonbb_aMCatNLO_',
+ttH_nonbb_mWcutfix = Workflow(
+    label='ttH_nonbb_mWcutfix',
     dataset=cmssw.Dataset(
         dataset='/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
         events_per_task=20000
@@ -59,13 +61,9 @@ tth_nonbb_aMCatNLO_ = Workflow(
     arguments=['skim=True'],
     merge_size='2.0G',
     )
-workflows.append(tth_nonbb_aMCatNLO_)
-
-
+workflows.append(ttH_nonbb_mWcutfix)
 
 ############# major backgrounds
-
-
 
 ttW = Workflow(
     label='ttW',
@@ -106,10 +104,10 @@ ttZ = Workflow(
     )
 workflows.append(ttZ)
 
-ttZ_lowMass = Workflow(
-    label='ttZ_M1_10',
+ttZ_M1to10 = Workflow(
+    label='ttZ_M1to10',
     dataset=cmssw.Dataset(
-        dataset='/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        dataset='/TTZToLL_M-1to10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
         events_per_task=20000
         ),
     category=processing,
@@ -117,10 +115,10 @@ ttZ_lowMass = Workflow(
     merge_size='2.0G',
     arguments=['skim=True'],
     )
-workflows.append(ttZ_lowMass)
+workflows.append(ttZ_M1to10)
 
-wPlusJets = Workflow(
-    label='wPlusJets',
+WGToLNuG = Workflow(
+    label='WGToLNuG',
     dataset=cmssw.Dataset(
         dataset='/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
         events_per_task=20000
@@ -130,10 +128,24 @@ wPlusJets = Workflow(
     merge_size='2.0G',
     arguments=['skim=True'],
     )
-workflows.append(wPlusJets)
+workflows.append(WGToLNuG)
 
-zPlusJets = Workflow(
-    label='zPlusJets',
+WGToLNuG_extn = Workflow(
+    label='WGToLNuG_extn',
+    dataset=cmssw.Dataset(
+        dataset='/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(WGToLNuG_extn)
+
+
+ZGTo2LG = Workflow(
+    label='ZGTo2LG',
     dataset=cmssw.Dataset(
         dataset='/ZGTo2LG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
         events_per_task=20000
@@ -143,10 +155,10 @@ zPlusJets = Workflow(
     merge_size='2.0G',
     arguments=['skim=True'],
     )
-workflows.append(zPlusJets)
+workflows.append(ZGTo2LG)
 
-convs_sT = Workflow(
-    label='convs_sT',
+TGJets = Workflow(
+    label='TGJets',
     dataset=cmssw.Dataset(
         dataset='/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
         events_per_task=20000
@@ -156,10 +168,10 @@ convs_sT = Workflow(
     merge_size='2.0G',
     arguments=['skim=True'],
     )
-workflows.append(convs_sT)
+workflows.append(TGJets)
 
-convs_sT_extn = Workflow(
-    label='convs_sT_extn',
+TGJets_ext = Workflow(
+    label='TGJets_extn',
     dataset=cmssw.Dataset(
         dataset='/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
         events_per_task=20000
@@ -169,10 +181,10 @@ convs_sT_extn = Workflow(
     merge_size='2.0G',
     arguments=['skim=True'],
     )
-workflows.append(convs_sT_extn)
+workflows.append(TGJets_ext)
 
-convs_ttbar = Workflow(
-    label='convs_ttbar',
+TTGJets = Workflow(
+    label='TTGJets',
     dataset=cmssw.Dataset(
         dataset='/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
         events_per_task=20000
@@ -182,8 +194,20 @@ convs_ttbar = Workflow(
     merge_size='2.0G',
     arguments=['skim=True'],
     )
-workflows.append(convs_ttbar)
+workflows.append(TTGJets)
 
+TTGJets_extn = Workflow(
+    label='TTGJets_extn',
+    dataset=cmssw.Dataset(
+        dataset='/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(TTGJets_extn)
 
 
 #######################################################
@@ -307,98 +331,223 @@ workflows.append(tttt)
 # #######################################################
 # #######################################################
 
-# ttbar_semilep_fromTop_mg = Workflow(
-#     label='ttbar_semilep_fromTop_mg',
-#     dataset=cmssw.Dataset(
-#         dataset='/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
-#         events_per_task=20000
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     merge_size='2.0G',
-#     arguments=['skim=True'],
-#     )
-# workflows.append(ttbar_semilep_fromTop_mg)
+ttjets_semilep_antitop = Workflow(
+    label='ttjets_semilep_antitop',
+    dataset=cmssw.Dataset(
+        dataset='/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ttjets_semilep_antitop)
 
-# ttbar_semilep_fromTop_mg_extn = Workflow(
-#     label='ttbar_semilep_fromTop_mg_extn',
-#     dataset=cmssw.Dataset(
-#         dataset='/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
-#         events_per_task=20000
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     merge_size='2.0G',
-#     arguments=['skim=True'],
-#     )
-# workflows.append(ttbar_semilep_fromTop_mg_extn)
-
-# ttbar_semilep_fromAntitop_mg = Workflow(
-#     label='ttbar_semilep_fromAntitop_mg',
-#     dataset=cmssw.Dataset(
-#         dataset='/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
-#         events_per_task=20000
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     merge_size='2.0G',
-#     arguments=['skim=True'],
-#     )
-# workflows.append(ttbar_semilep_fromAntitop_mg)
+ttjets_semilep_antitop_extn = Workflow(
+    label='ttjets_semilep_antitop_extn',
+    dataset=cmssw.Dataset(
+        dataset='/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ttjets_semilep_antitop_extn)
 
 
-# ttbar_semilep_fromAntitop_mg_extn = Workflow(
-#     label='ttbar_semilep_fromAntitop_mg_extn',
-#     dataset=cmssw.Dataset(
-#         dataset='/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
-#         events_per_task=20000
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     merge_size='2.0G',
-#     arguments=['skim=True'],
-#     )
-# workflows.append(ttbar_semilep_fromAntitop_mg_extn)
+ttjets_semilep_top = Workflow(
+    label='ttjets_semilep_top',
+    dataset=cmssw.Dataset(
+        dataset='/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ttjets_semilep_top)
 
 
-# ttbar_semilep_powheg = Workflow(
-#     label='ttbar_semilep_powheg',
-#     dataset=cmssw.Dataset(
-#         dataset='/TTToSemiLeptonic_13TeV-powheg/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v2/MINIAODSIM',
-#         events_per_task=20000
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     merge_size='2.0G',
-#     arguments=['skim=True'],
-#     )
-# workflows.append(ttbar_semilep_powheg)
+ttjets_semilep_top_extn = Workflow(
+    label='ttjets_semilep_top_extn',
+    dataset=cmssw.Dataset(
+        dataset='/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ttjets_semilep_top_extn)
 
-# ttbar_dilep_mg = Workflow(
-#     label='ttbar_dilep_mg',
-#     dataset=cmssw.Dataset(
-#         dataset='/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v4/MINIAODSIM',
-#         events_per_task=20000
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     merge_size='2.0G',
-#     arguments=['skim=True'],
-#     )
-# workflows.append(ttbar_dilep_mg)
 
-# ttbar_dilep_mg_extn = Workflow(
-#     label='ttbar_dilep_mg_extn',
-#     dataset=cmssw.Dataset(
-#         dataset='/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM',
-#         events_per_task=20000
-#         ),
-#     category=processing,
-#     pset='osTwoLep_cfg.py',
-#     merge_size='2.0G',
-#     arguments=['skim=True'],
-#     )
-# workflows.append(ttbar_dilep_mg_extn)
+ttjets_dilep = Workflow(
+    label='ttjets_dilep',
+    dataset=cmssw.Dataset(
+        dataset='/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ttjets_dilep)
+
+
+ttjets_dilep_extn = Workflow(
+    label='ttjets_dilep_extn',
+    dataset=cmssw.Dataset(
+        dataset='/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ttjets_dilep_extn)
+
+tWll = Workflow(
+    label='tWll',
+    dataset=cmssw.Dataset(
+        dataset='/ST_tWll_5f_LO_13TeV-MadGraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(tWll)
+#0.01123 = twll xsec
+
+
+ST_tW_top = Workflow(
+    label='ST_tW_top',
+    dataset=cmssw.Dataset(
+        dataset='/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ST_tW_top)
+
+
+ST_tW_antitop = Workflow(
+    label='ST_tW_antitop',
+    dataset=cmssw.Dataset(
+        dataset='/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ST_tW_antitop)
+
+ST_tChan_top = Workflow(
+    label='ST_tChan_top',
+    dataset=cmssw.Dataset(
+        dataset='/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ST_tChan_top)
+
+ST_tChan_antitop = Workflow(
+    label='ST_tChan_antitop',
+    dataset=cmssw.Dataset(
+        dataset='/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ST_tChan_antitop)
+
+ST_sChan = Workflow(
+    label='ST_sChan',
+    dataset=cmssw.Dataset(
+        dataset='/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(ST_sChan)
+
+DY_M10_50 = Workflow(
+    label='DY_M10_50',
+    dataset=cmssw.Dataset(
+        dataset='/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(DY_M10_50)
+
+
+DY_M50_LO = Workflow(
+    label='DY_M50_LO',
+    dataset=cmssw.Dataset(
+        dataset='/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(DY_M50_LO)
+
+DY_M50 = Workflow(
+    label='DY_M50',
+    dataset=cmssw.Dataset(
+        dataset='/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_HCALDebug_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(DY_M50)
+
+
+Wjets = Workflow(
+    label='Wjets',
+    dataset=cmssw.Dataset(
+        dataset='/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM',
+        events_per_task=20000
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['skim=True'],
+    )
+workflows.append(Wjets)
+
 
 WZ_3lnu = Workflow(
     label='WZ_to3lnu',
@@ -438,6 +587,594 @@ WW_2l2nu = Workflow(
     arguments=['skim=True'],
     )
 workflows.append(WW_2l2nu)
+
+
+
+
+############################
+##########
+########## Data
+##########
+############################
+
+
+SingleMu2016B = Workflow(
+    label='singleMu2016B',
+    dataset=cmssw.Dataset(
+        dataset='/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleMu2016B)
+
+DoubleMu2016B = Workflow(
+    label='doubleMu2016B',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleMuon/Run2016B-23Sep2016-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleMu2016B)
+
+SingleEle2016B = Workflow(
+    label='singleEle2016B',
+    dataset=cmssw.Dataset(
+        dataset='/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleEle2016B)
+
+DoubleEG2016B = Workflow(
+    label='doubleEg2016B',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleEG/Run2016B-23Sep2016-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleEG2016B)
+
+MuonEG2016B = Workflow(
+    label='MuonEg2016B',
+    dataset=cmssw.Dataset(
+        dataset='/MuonEG/Run2016B-23Sep2016-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(MuonEG2016B)
+
+###2016C
+
+SingleMu2016C = Workflow(
+    label='singleMu2016C',
+    dataset=cmssw.Dataset(
+        dataset='/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleMu2016C)
+
+DoubleMu2016C = Workflow(
+    label='doubleMu2016C',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleMuon/Run2016C-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleMu2016C)
+
+SingleEle2016C = Workflow(
+    label='singleEle2016C',
+    dataset=cmssw.Dataset(
+        dataset='/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleEle2016C)
+
+DoubleEG2016C = Workflow(
+    label='doubleEg2016C',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleEG/Run2016C-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleEG2016C)
+
+MuonEG2016C = Workflow(
+    label='MuonEg2016C',
+    dataset=cmssw.Dataset(
+        dataset='/MuonEG/Run2016C-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,        
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(MuonEG2016C)
+
+
+###2016D
+
+SingleMu2016D = Workflow(
+    label='singleMu2016D',
+    dataset=cmssw.Dataset(
+        dataset='/SingleMuon/Run2016D-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleMu2016D)
+
+DoubleMu2016D = Workflow(
+    label='doubleMu2016D',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleMuon/Run2016D-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleMu2016D)
+
+SingleEle2016D = Workflow(
+    label='singleEle2016D',
+    dataset=cmssw.Dataset(
+        dataset='/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleEle2016D)
+
+DoubleEG2016D = Workflow(
+    label='doubleEg2016D',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleEG/Run2016D-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleEG2016D)
+
+MuonEG2016D = Workflow(
+    label='MuonEg2016D',
+    dataset=cmssw.Dataset(
+        dataset='/MuonEG/Run2016D-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(MuonEG2016D)
+
+
+###2016E
+
+SingleMu2016E = Workflow(
+    label='singleMu2016E',
+    dataset=cmssw.Dataset(
+        dataset='/SingleMuon/Run2016E-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleMu2016E)
+
+DoubleMu2016E = Workflow(
+    label='doubleMu2016E',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleMuon/Run2016E-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleMu2016E)
+
+SingleEle2016E = Workflow(
+    label='singleEle2016E',
+    dataset=cmssw.Dataset(
+        dataset='/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleEle2016E)
+
+DoubleEG2016E = Workflow(
+    label='doubleEg2016E',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleEG/Run2016E-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleEG2016E)
+
+MuonEG2016E = Workflow(
+    label='MuonEg2016E',
+    dataset=cmssw.Dataset(
+        dataset='/MuonEG/Run2016E-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(MuonEG2016E)
+
+###2016F
+
+SingleMu2016F = Workflow(
+    label='singleMu2016F',
+    dataset=cmssw.Dataset(
+        dataset='/SingleMuon/Run2016F-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleMu2016F)
+
+DoubleMu2016F = Workflow(
+    label='doubleMu2016F',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleMuon/Run2016F-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleMu2016F)
+
+SingleEle2016F = Workflow(
+    label='singleEle2016F',
+    dataset=cmssw.Dataset(
+        dataset='/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleEle2016F)
+
+DoubleEG2016F = Workflow(
+    label='doubleEg2016F',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleEG/Run2016F-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleEG2016F)
+
+MuonEG2016F = Workflow(
+    label='MuonEg2016F',
+    dataset=cmssw.Dataset(
+        dataset='/MuonEG/Run2016F-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(MuonEG2016F)
+
+###2016G
+
+SingleMu2016G = Workflow(
+    label='singleMu2016G',
+    dataset=cmssw.Dataset(
+        dataset='/SingleMuon/Run2016G-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleMu2016G)
+
+DoubleMu2016G = Workflow(
+    label='doubleMu2016G',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleMuon/Run2016G-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleMu2016G)
+
+SingleEle2016G = Workflow(
+    label='singleEle2016G',
+    dataset=cmssw.Dataset(
+        dataset='/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(SingleEle2016G)
+
+DoubleEG2016G = Workflow(
+    label='doubleEg2016G',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleEG/Run2016G-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(DoubleEG2016G)
+
+MuonEG2016G = Workflow(
+    label='MuonEg2016G',
+    dataset=cmssw.Dataset(
+        dataset='/MuonEG/Run2016G-23Sep2016-v1/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_2016SeptRepro_v7'],
+    )
+workflows.append(MuonEG2016G)
+
+###2016H_pr2
+
+SingleMu2016H_pr2 = Workflow(
+    label='singleMu2016H_pr2',
+    dataset=cmssw.Dataset(
+        dataset='/SingleMuon/Run2016H-PromptReco-v2/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(SingleMu2016H_pr2)
+
+DoubleMu2016H_pr2 = Workflow(
+    label='doubleMu2016H_pr2',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleMuon/Run2016H-PromptReco-v2/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(DoubleMu2016H_pr2)
+
+SingleEle2016H_pr2 = Workflow(
+    label='singleEle2016H_pr2',
+    dataset=cmssw.Dataset(
+        dataset='/SingleElectron/Run2016H-PromptReco-v2/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(SingleEle2016H_pr2)
+
+DoubleEG2016H_pr2 = Workflow(
+    label='doubleEg2016H_pr2',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleEG/Run2016H-PromptReco-v2/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(DoubleEG2016H_pr2)
+
+MuonEG2016H_pr2 = Workflow(
+    label='MuonEg2016H_pr2',
+    dataset=cmssw.Dataset(
+        dataset='/MuonEG/Run2016H-PromptReco-v2/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(MuonEG2016H_pr2)
+
+
+###2016H_pr3
+
+SingleMu2016H_pr3 = Workflow(
+    label='singleMu2016H_pr3',
+    dataset=cmssw.Dataset(
+        dataset='/SingleMuon/Run2016H-PromptReco-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(SingleMu2016H_pr3)
+
+DoubleMu2016H_pr3 = Workflow(
+    label='doubleMu2016H_pr3',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleMuon/Run2016H-PromptReco-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(DoubleMu2016H_pr3)
+
+SingleEle2016H_pr3 = Workflow(
+    label='singleEle2016H_pr3',
+    dataset=cmssw.Dataset(
+        dataset='/SingleElectron/Run2016H-PromptReco-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(SingleEle2016H_pr3)
+
+DoubleEG2016H_pr3 = Workflow(
+    label='doubleEg2016H_pr3',
+    dataset=cmssw.Dataset(
+        dataset='/DoubleEG/Run2016H-PromptReco-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(DoubleEG2016H_pr3)
+
+MuonEG2016H_pr3 = Workflow(
+    label='MuonEg2016H_pr3',
+    dataset=cmssw.Dataset(
+        dataset='/MuonEG/Run2016H-PromptReco-v3/MINIAOD',
+        events_per_task=150000,
+        lumi_mask=lumimask
+        ),
+    category=processing,
+    pset='osTwoLep_cfg.py',
+    merge_size='2.0G',
+    arguments=['data=True','skim=True','hip=false','globalTag=80X_dataRun2_Prompt_v16'],
+    )
+workflows.append(MuonEG2016H_pr3)
+
 
 config = Config(
     workdir='/tmpscratch/users/cmuelle2/lobster_test_' + version,
