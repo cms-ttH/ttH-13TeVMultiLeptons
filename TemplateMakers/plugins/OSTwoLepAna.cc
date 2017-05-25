@@ -6,6 +6,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   hltPrescaleProvider_(constructparams, consumesCollector(), *this){ //Anything that needs to be done at creation time
   
   debug = constructparams.getParameter<bool> ("debug");
+  jetCleanFakeable = constructparams.getParameter<bool> ("jetCleanFakeable");
   skim = constructparams.getParameter<bool> ("skim");
   entire_pset = constructparams;
   parse_params();
@@ -271,17 +272,22 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
     vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
 
-    selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
-    selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
+    if ( jetCleanFakeable )
+      {
+	selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
+	selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
+      }
+    else
+      {
+	//This cleaning for gen-filtered MC samples ONLY!
+	selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
+	selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
+      }
 
     selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECup_preselected,selectedMuons_fakeable,0.4);
     selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected,selectedElectrons_fakeable,0.4);
     selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECdown_preselected,selectedMuons_fakeable,0.4);
     selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECdown_preselected,selectedElectrons_fakeable,0.4);
-
-    //This cleaning for gen-filtered MC samples ONLY!
-    // selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
-    // selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
 
     /////////
     ///

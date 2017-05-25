@@ -7,6 +7,9 @@ from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
 options = VarParsing.VarParsing('analysis')
 options.maxEvents = -1
+options.register("jetCleanFakeable", True,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool, "lepton selecton for jet cleaning")
 options.register("data", False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Data or MC.")
@@ -39,7 +42,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
-
+"jetCleanFakeable"
 ## set up to take input file as command line argument.
 #infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
 
@@ -139,7 +142,7 @@ process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTa
 process.OSTwoLepAna.triggers.hltlabel = "HLT"
 
 process.OSTwoLepAna.debug = False
-
+process.OSTwoLepAna.jetCleanFakeable = cms.bool( options.jetCleanFakeable )
 process.OSTwoLepAna.skim = cms.bool( options.skim )
 
 ######################################

@@ -16,7 +16,7 @@ import FWCore.ParameterSet.Config as cms
 OSTwoLepAna = cms.EDAnalyzer("OSTwoLepAna",
 
 	debug = cms.bool(False),
-		
+	jetCleanFakeable = cms.bool(True),	
         skim = cms.bool(False),
 
 	## anything to do at the beginning of the job:

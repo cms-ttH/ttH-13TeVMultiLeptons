@@ -138,6 +138,7 @@ class MultileptonAna: public MiniAODHelper
   string sampleName;
   int sampleNumber;
   bool debug;
+  bool jetCleanFakeable;
   bool skim;
   int eventcount;
   
