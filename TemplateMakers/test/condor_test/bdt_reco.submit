@@ -1,4 +1,4 @@
-events_per_job = 9000
+events_per_job = 10000
 
 sample = ttbar_semiLep_madgraph
 N = 1

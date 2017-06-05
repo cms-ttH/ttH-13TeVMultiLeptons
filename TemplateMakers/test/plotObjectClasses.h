@@ -74,12 +74,27 @@ public:
   TH1D* ee_hist;
   TH1D* mm_hist;
   TH1D* em_hist;
+  TH1D* ee_p_hist;
+  TH1D* ee_m_hist;
+  TH1D* mm_bt_m_hist;
+  TH1D* mm_bt_p_hist;
+  TH1D* mm_bl_m_hist;
+  TH1D* mm_bl_p_hist;
+  TH1D* em_bt_m_hist;
+  TH1D* em_bt_p_hist;
+  TH1D* em_bl_m_hist;
+  TH1D* em_bl_p_hist;
+
 
   void fill(Sample sample, TFile* fout=0)
   {
     sample_name = sample.sample_name;
     legend_name = sample.legend_name;
-    TString template_name = hist_name+"_"+sample_name;
+
+    TString hist_save_name = sample_name;
+    if (sample_name == "data") hist_save_name = "data_obs";
+
+    TString template_name = hist_name+"_"+hist_save_name;
     template_hist = new TH1D(template_name,hist_title,bins,xmin,xmax);
     template_hist->Sumw2();
     template_hist->SetLineColor(1);
@@ -101,35 +116,94 @@ public:
     TString ee_name = template_name+"_ee";
     TString em_name = template_name+"_em";
     TString mm_name = template_name+"_mm";
+    TString ee_p_name = template_name+"_ee_p";
+    TString ee_m_name = template_name+"_ee_m";
+    TString em_bt_p_name = template_name+"_em_bt_p";
+    TString em_bt_m_name = template_name+"_em_bt_m";
+    TString em_bl_p_name = template_name+"_em_bl_p";
+    TString em_bl_m_name = template_name+"_em_bl_m";
+    TString mm_bt_p_name = template_name+"_mm_bt_p";
+    TString mm_bt_m_name = template_name+"_mm_bt_m";
+    TString mm_bl_p_name = template_name+"_mm_bl_p";
+    TString mm_bl_m_name = template_name+"_mm_bl_m";
 
     ee_hist = (TH1D*)template_hist->Clone(ee_name); ee_hist->Sumw2();   
     em_hist = (TH1D*)template_hist->Clone(em_name); em_hist->Sumw2();   
     mm_hist = (TH1D*)template_hist->Clone(mm_name); mm_hist->Sumw2();       
-    
+    ee_p_hist = (TH1D*)template_hist->Clone(ee_p_name); ee_p_hist->Sumw2();   
+    ee_m_hist = (TH1D*)template_hist->Clone(ee_m_name); ee_m_hist->Sumw2();
+    em_bt_p_hist = (TH1D*)template_hist->Clone(em_bt_p_name); em_bt_p_hist->Sumw2();   
+    em_bt_m_hist = (TH1D*)template_hist->Clone(em_bt_m_name); em_bt_m_hist->Sumw2();
+    em_bl_p_hist = (TH1D*)template_hist->Clone(em_bl_p_name); em_bl_p_hist->Sumw2();  
+    em_bl_m_hist = (TH1D*)template_hist->Clone(em_bl_m_name); em_bl_m_hist->Sumw2();
+    mm_bt_p_hist = (TH1D*)template_hist->Clone(mm_bt_p_name); mm_bt_p_hist->Sumw2();       
+    mm_bt_m_hist = (TH1D*)template_hist->Clone(mm_bt_m_name); mm_bt_m_hist->Sumw2();       
+    mm_bl_p_hist = (TH1D*)template_hist->Clone(mm_bl_p_name); mm_bl_p_hist->Sumw2();       
+    mm_bl_m_hist = (TH1D*)template_hist->Clone(mm_bl_m_name); mm_bl_m_hist->Sumw2();       
 
     TString drawCommand_template = drawCommand + " >> "+template_name;
     TString drawCommand_ee = drawCommand + " >> "+ee_name;
     TString drawCommand_em = drawCommand + " >> "+em_name;
     TString drawCommand_mm = drawCommand + " >> "+mm_name;
+    TString drawCommand_ee_p = drawCommand + " >> "+ee_p_name;
+    TString drawCommand_ee_m = drawCommand + " >> "+ee_m_name;
+    TString drawCommand_em_bt_p = drawCommand + " >> "+em_bt_p_name;
+    TString drawCommand_em_bt_m = drawCommand + " >> "+em_bt_m_name;
+    TString drawCommand_em_bl_p = drawCommand + " >> "+em_bl_p_name;
+    TString drawCommand_em_bl_m = drawCommand + " >> "+em_bl_m_name;
+    TString drawCommand_mm_bt_p = drawCommand + " >> "+mm_bt_p_name;
+    TString drawCommand_mm_bt_m = drawCommand + " >> "+mm_bt_m_name;
+    TString drawCommand_mm_bl_p = drawCommand + " >> "+mm_bl_p_name;
+    TString drawCommand_mm_bl_m = drawCommand + " >> "+mm_bl_m_name;
+
 
     TCut weight = "";
+    TCut sim_weight = "mcwgt*btag_weight*trigger_SF*lepton_SF";
+    TCut prompt = "((tight_leptons[0].isPromptFinalState || tight_leptons[0].isDirectPromptTauDecayProductFinalState) && (tight_leptons[1].isPromptFinalState || tight_leptons[1].isDirectPromptTauDecayProductFinalState))";
     if (sample_name != "data" && sample_name != "fakes" && sample_name != "flips" )
       {
-	weight = "mcwgt*btag_weight*trigger_SF*lepton_SF";
+	weight= sim_weight*prompt;
       }
     else if (sample_name == "fakes" || sample_name == "flips")
       {
-	weight = "mcwgt";
+	weight= "mcwgt";
       }
+    if (legend_name == "Convs")//sample_name == "TTGJets" || sample_name == "TGJets")
+      {
+    	TCut conv_cut = "(tight_leptons[0].genMotherPdgID == 22 || tight_leptons[1].genMotherPdgID == 22)";
+    	weight = conv_cut*sim_weight;
+      }
+
     TCut weight_ee = "(flavor_category==\"ee\")"*weight;
     TCut weight_em = "(flavor_category==\"em\")"*weight;
     TCut weight_mm = "(flavor_category==\"mm\")"*weight;
+    TCut weight_ee_p = "(flavor_category==\"ee\" && plus_category == 1)"*weight;
+    TCut weight_ee_m = "(flavor_category==\"ee\" && plus_category == 0)"*weight;
+    TCut weight_em_bt_p = "(flavor_category==\"em\" && plus_category == 1 && bTight_category ==1)"*weight;
+    TCut weight_em_bt_m = "(flavor_category==\"em\" && plus_category == 0 && bTight_category ==1)"*weight;
+    TCut weight_em_bl_p = "(flavor_category==\"em\" && plus_category == 1 && bTight_category ==0)"*weight;
+    TCut weight_em_bl_m = "(flavor_category==\"em\" && plus_category == 0 && bTight_category ==0)"*weight;
+    TCut weight_mm_bt_p = "(flavor_category==\"mm\" && plus_category == 1 && bTight_category ==1)"*weight;
+    TCut weight_mm_bt_m = "(flavor_category==\"mm\" && plus_category == 0 && bTight_category ==1)"*weight;
+    TCut weight_mm_bl_p = "(flavor_category==\"mm\" && plus_category == 1 && bTight_category ==0)"*weight;
+    TCut weight_mm_bl_m = "(flavor_category==\"mm\" && plus_category == 0 && bTight_category ==0)"*weight;
+
     
     auto tree = sample.tree;
     template_hist->SetDirectory(gDirectory);
     ee_hist->SetDirectory(gDirectory);
     em_hist->SetDirectory(gDirectory);
     mm_hist->SetDirectory(gDirectory);
+    ee_p_hist->SetDirectory(gDirectory);
+    ee_m_hist->SetDirectory(gDirectory);
+    em_bt_p_hist->SetDirectory(gDirectory);
+    em_bt_m_hist->SetDirectory(gDirectory);
+    em_bl_p_hist->SetDirectory(gDirectory);
+    em_bl_m_hist->SetDirectory(gDirectory);
+    mm_bt_p_hist->SetDirectory(gDirectory);
+    mm_bt_m_hist->SetDirectory(gDirectory);
+    mm_bl_p_hist->SetDirectory(gDirectory);
+    mm_bl_m_hist->SetDirectory(gDirectory);
     
     TString drawOption = "goff";
 
@@ -137,11 +211,31 @@ public:
     tree->Draw(drawCommand_ee,weight_ee,drawOption);
     tree->Draw(drawCommand_em,weight_em,drawOption);
     tree->Draw(drawCommand_mm,weight_mm,drawOption);
+    tree->Draw(drawCommand_ee_p,weight_ee_p,drawOption);
+    tree->Draw(drawCommand_ee_m,weight_ee_m,drawOption);
+    tree->Draw(drawCommand_em_bt_p,weight_em_bt_p,drawOption);
+    tree->Draw(drawCommand_em_bt_m,weight_em_bt_m,drawOption);
+    tree->Draw(drawCommand_em_bl_p,weight_em_bl_p,drawOption);
+    tree->Draw(drawCommand_em_bl_m,weight_em_bl_m,drawOption);
+    tree->Draw(drawCommand_mm_bt_p,weight_mm_bt_p,drawOption);
+    tree->Draw(drawCommand_mm_bt_m,weight_mm_bt_m,drawOption);
+    tree->Draw(drawCommand_mm_bl_p,weight_mm_bl_p,drawOption);
+    tree->Draw(drawCommand_mm_bl_m,weight_mm_bl_m,drawOption);
     
     template_hist->Scale( sample.xsec );
     ee_hist->Scale( sample.xsec );
     em_hist->Scale( sample.xsec );
     mm_hist->Scale( sample.xsec );
+    ee_p_hist->Scale( sample.xsec );
+    ee_m_hist->Scale( sample.xsec );
+    em_bt_p_hist->Scale( sample.xsec );
+    em_bt_m_hist->Scale( sample.xsec );
+    em_bl_p_hist->Scale( sample.xsec );
+    em_bl_m_hist->Scale( sample.xsec );
+    mm_bt_p_hist->Scale( sample.xsec );
+    mm_bt_m_hist->Scale( sample.xsec );
+    mm_bl_p_hist->Scale( sample.xsec );
+    mm_bl_m_hist->Scale( sample.xsec );
     
     if (fout)
       {
@@ -150,12 +244,23 @@ public:
 	ee_hist->Write();
 	em_hist->Write();
 	mm_hist->Write();
+	ee_p_hist->Write();
+	ee_m_hist->Write();
+	em_bt_p_hist->Write();
+	em_bt_m_hist->Write();
+	em_bl_p_hist->Write();
+	em_bl_m_hist->Write();
+	mm_bt_p_hist->Write();
+	mm_bt_m_hist->Write();
+	mm_bl_p_hist->Write();
+	mm_bl_m_hist->Write();
       }
 
   }
   
   virtual ~PlotObject(){}
 };
+
 
 class StackObject
 {
@@ -280,16 +385,35 @@ public:
   THStack* ee_stack;
   THStack* mm_stack;
   THStack* em_stack;
+  /* THStack* ee_p_stack; */
+  /* THStack* ee_m_stack; */
+  /* THStack* mm_bt_p_stack; */
+  /* THStack* mm_bt_m_stack; */
+  /* THStack* mm_bl_p_stack; */
+  /* THStack* mm_bl_m_stack; */
+  /* THStack* em_bt_p_stack; */
+  /* THStack* em_bt_m_stack; */
+  /* THStack* em_bl_p_stack; */
+  /* THStack* em_bl_m_stack; */
  
   TH1D* template_hist_data = NULL;
   TH1D* ee_hist_data = NULL;
   TH1D* mm_hist_data = NULL;
   TH1D* em_hist_data = NULL;
-  
+  /* TH1D* ee_p_hist_data = NULL; */
+  /* TH1D* ee_m_hist_data = NULL; */
+  /* TH1D* mm_bt_p_hist_data = NULL; */
+  /* TH1D* mm_bt_m_hist_data = NULL; */
+  /* TH1D* mm_bl_p_hist_data = NULL; */
+  /* TH1D* mm_bl_m_hist_data = NULL; */
+  /* TH1D* em_bt_p_hist_data = NULL; */
+  /* TH1D* em_bt_m_hist_data = NULL; */
+  /* TH1D* em_bl_p_hist_data = NULL; */
+  /* TH1D* em_bl_m_hist_data = NULL; */
  
   void Add(PlotObject plot)
   {
-        
+    
     if (plot.legend_name == "Data")
       {
 	if (std::find(legend_list.begin(),legend_list.end(), plot.legend_name) == legend_list.end())
@@ -301,6 +425,16 @@ public:
     	ee_hist_data = (TH1D*)plot.ee_hist->Clone();
     	mm_hist_data = (TH1D*)plot.mm_hist->Clone();
     	em_hist_data = (TH1D*)plot.em_hist->Clone();
+   	/* ee_p_hist_data = (TH1D*)plot.ee_p_hist->Clone(); */
+   	/* ee_m_hist_data = (TH1D*)plot.ee_m_hist->Clone(); */
+    	/* mm_bt_p_hist_data = (TH1D*)plot.mm_bt_p_hist->Clone(); */
+    	/* mm_bt_m_hist_data = (TH1D*)plot.mm_bt_m_hist->Clone(); */
+    	/* mm_bl_p_hist_data = (TH1D*)plot.mm_bl_p_hist->Clone(); */
+    	/* mm_bl_m_hist_data = (TH1D*)plot.mm_bl_m_hist->Clone(); */
+    	/* em_bt_p_hist_data = (TH1D*)plot.em_bt_p_hist->Clone(); */
+    	/* em_bt_m_hist_data = (TH1D*)plot.em_bt_m_hist->Clone(); */
+    	/* em_bl_p_hist_data = (TH1D*)plot.em_bl_p_hist->Clone(); */
+    	/* em_bl_m_hist_data = (TH1D*)plot.em_bl_m_hist->Clone(); */
       }
     else
       {
@@ -317,6 +451,32 @@ public:
 	em_stack->SetName(plot.em_hist->GetName());
 	mm_stack->Add(plot.mm_hist);
 	mm_stack->SetName(plot.mm_hist->GetName());
+	/* cout << __LINE__ << endl; */
+	/* ee_p_stack->Add(plot.ee_p_hist); */
+	/* cout << __LINE__ << endl; */
+	/* ee_p_stack->SetName(plot.ee_p_hist->GetName()); */
+	/* cout << __LINE__ << endl; */
+	/* ee_m_stack->Add(plot.ee_m_hist); */
+	/* ee_m_stack->SetName(plot.ee_m_hist->GetName()); */
+	/* cout << __LINE__ << endl; */
+	/* em_bt_p_stack->Add(plot.em_bt_p_hist); */
+	/* em_bt_p_stack->SetName(plot.em_bt_p_hist->GetName()); */
+	/* em_bt_m_stack->Add(plot.em_bt_m_hist); */
+	/* em_bt_m_stack->SetName(plot.em_bt_m_hist->GetName()); */
+	/* em_bl_p_stack->Add(plot.em_bl_p_hist); */
+	/* em_bl_p_stack->SetName(plot.em_bl_p_hist->GetName()); */
+	/* em_bl_m_stack->Add(plot.em_bl_m_hist); */
+	/* em_bl_m_stack->SetName(plot.em_bl_m_hist->GetName()); */
+	/* cout << __LINE__ << endl; */
+	/* mm_bt_p_stack->Add(plot.mm_bt_p_hist); */
+	/* mm_bt_p_stack->SetName(plot.mm_bt_p_hist->GetName()); */
+	/* mm_bt_m_stack->Add(plot.mm_bt_m_hist); */
+	/* mm_bt_m_stack->SetName(plot.mm_bt_m_hist->GetName()); */
+	/* mm_bl_p_stack->Add(plot.mm_bl_p_hist); */
+	/* mm_bl_p_stack->SetName(plot.mm_bl_p_hist->GetName()); */
+	/* mm_bl_m_stack->Add(plot.mm_bl_m_hist);	 */
+	/* mm_bl_m_stack->SetName(plot.mm_bl_m_hist->GetName()); */
+	/* cout << __LINE__ << endl; */
       }
 
   }
@@ -327,6 +487,7 @@ public:
     drawSingle(ee_stack, ee_hist_data);
     drawSingle(em_stack, em_hist_data);
     drawSingle(mm_stack, mm_hist_data);
+    //don't bother drawing all the specific category stacks for now. 
   }
   virtual ~StackObject(){}
 };

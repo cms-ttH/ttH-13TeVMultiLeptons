@@ -1,6 +1,6 @@
 #!/bin/sh
 
-samples=('tZq:54,75,77' 'ZZ_diboson:18' 'ttZ_aMCatNLO:4')
+samples=('ttW:6')
 
 # Loop over samples
 for sample in ${samples[@]}

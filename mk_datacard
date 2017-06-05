@@ -10,9 +10,13 @@ parser.add_argument('-d', '--discriminant', type=str, default='BDT',
         help="discriminant to use")
 args = parser.parse_args()
 
-cats = [(1, 'ee_p'), (2,'ee_m'), (3,'em_bt_p'), (4,'em_bt_m'), (5,'em_bl_p'), (6,'em_bl_m'), (7,'mm_bt_p'), (8,'mm_bt_m'), (9,'mm_bl_p'), (10,'mm_bl_m'), (11, 'tau')]
+cats = [(1, 'ee_p'), (2,'ee_m'), (3,'em_bt_p'), (4,'em_bt_m'), (5,'em_bl_p'), (6,'em_bl_m'), (7,'mm_bt_p'), (8,'mm_bt_m'), (9,'mm_bl_p'), (10,'mm_bl_m')]
 sigs = ['ttH']
-bkgs = ['fakes','ttW','ttZ','flips']
+bkgs = ['fakes', 'flips', 'tttt', 'tWll', 'tZq','WGToLNuG', 'ZGTo2LG', 'TTGJets', 'TGJets', 'Wjets', 'WWqq_rares', 'WW_doublescatering_rares', 'WWW_rares', 'WWZ_rares', 'WZZ_rares', 'ZZZ_rares', 'WW_2l2nu', 'WZ_to3lnu', 'ZZ_to4l', 'ttZ', 'ttZ_M1to10', 'ttjets_semilep', 'ttjets_dilep', 'ttW' ]
+
+convs = ['TTGJets', 'TGJets', 'WGToLNuG', 'ZGTo2LG']
+mc_bkg = [x for x in bkgs if x != 'fakes' and x !='flips']
+mc = sigs + mc_bkg
 
 cb = ch.CombineHarvester()
 # cb.SetVerbosity(2)
@@ -23,42 +27,51 @@ cb.AddObservations(['*'], ['ttH'], ['13TeV'], ['ttl'], cats)
 cb.AddProcesses(['*'], ['ttH'], ['13TeV'], ['ttl'], bkgs, cats, False)
 cb.AddProcesses(masses, ['ttH'], ['13TeV'], ['ttl'], sigs, cats, True)
 
-cb.cp().AddSyst(cb, 'lumi_13TeV', 'lnN', ch.SystMap()(1.027))
-cb.cp().AddSyst(cb, 'QCDscale_ttH', 'lnN', ch.SystMap("process")(["ttH"], 0.915/1.058) )
 cb.cp().AddSyst(cb, 'QCDscale_ttW', 'lnN', ch.SystMap("process")(["ttW"], 1.12) )
-cb.cp().AddSyst(cb, 'QCDscale_ttZ', 'lnN', ch.SystMap("process")(["ttZ"], 1.11) )
-cb.cp().AddSyst(cb, 'CMS_ttHl_QF', 'lnN', ch.SystMap("process")(["flips"], 1.3) )
-cb.cp().AddSyst(cb, 'CMS_FRe_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["ee_p","ee_m"], 1.4) )
-cb.cp().AddSyst(cb, 'CMS_FRe_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.2) )
-cb.cp().AddSyst(cb, 'CMS_FRe_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau"], 1.2) )
-cb.cp().AddSyst(cb, 'CMS_FRm_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.4) )
-cb.cp().AddSyst(cb, 'CMS_FRm_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.5) )
-cb.cp().AddSyst(cb, 'CMS_FRm_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau"], 1.2) )
-cb.cp().AddSyst(cb, 'CMS_ttHl_tauID', 'lnN', ch.SystMap("process","bin")(["ttH","ttW","ttZ"],["tau"], 1.06) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_WZ_4j', 'lnN', ch.SystMap("process")(["WZ_to3lnu"], 2.0) )
 cb.cp().AddSyst(cb, 'pdf_Higgs_ttH', 'lnN', ch.SystMap("process")(["ttH"], 1.036) )
-cb.cp().AddSyst(cb, 'pdf_gg', 'lnN', ch.SystMap("process")(["ttZ"], 0.966) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_e_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["ee_p","ee_m"], 1.2) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_e_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.1) )
 cb.cp().AddSyst(cb, 'pdf_qqbar', 'lnN', ch.SystMap("process")(["ttW"], 1.04) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_lepEff_eltight', 'lnN', ch.SystMap("process","bin")(mc, ["ee_p","ee_m"], 1.06) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_lepEff_eltight', 'lnN', ch.SystMap("process","bin")(mc, ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.03) )
+cb.cp().AddSyst(cb, 'br_hbb', 'lnN', ch.SystMap("process")(["ttH"], 1.0126) )
+cb.cp().AddSyst(cb, 'QCDscale_ttZ', 'lnN', ch.SystMap("process")(["ttZ"], 1.11) )
+cb.cp().AddSyst(cb, 'lumi_13TeV', 'lnN', ch.SystMap("process") (mc, 1.026))
+cb.cp().AddSyst(cb, 'pdf_gg', 'lnN', ch.SystMap("process")(["ttZ","ttZ_M1to10"], 0.966) )
+cb.cp().AddSyst(cb, 'CMS_ttHl16_trigger_ee', 'lnN', ch.SystMap("process","bin")(mc, ["ee_p","ee_m"], 1.02) )
+cb.cp().AddSyst(cb, 'CMS_ttHl16_trigger_em', 'lnN', ch.SystMap("process","bin")(mc, ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.01) )
+cb.cp().AddSyst(cb, 'CMS_ttHl16_trigger_mm', 'lnN', ch.SystMap("process","bin")(mc, ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.01) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_m_norm', 'lnN', ch.SystMap("process", "bin")(["flips"], ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.1) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_m_norm', 'lnN', ch.SystMap("process", "bin")(["flips"], ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.2) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_lepEff_muloose', 'lnN', ch.SystMap("process","bin")(mc, ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.02) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_lepEff_mutight', 'lnN', ch.SystMap("process","bin")(mc, ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.03) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_lepEff_muloose', 'lnN', ch.SystMap("process","bin")(mc, ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.04) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_lepEff_mutight', 'lnN', ch.SystMap("process","bin")(mc, ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.06) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_Convs', 'lnN', ch.SystMap("process","bin")(convs, ["ee_p","ee_m", "em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.3) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_QF', 'lnN', ch.SystMap("process")(["flips"], 1.3) )
+cb.cp().AddSyst(cb, 'CMS_ttHl_Rares', 'lnN', ch.SystMap("process")(["flips"], 1.5) )
+cb.cp().AddSyst(cb, 'QCDscale_ttH', 'lnN', ch.SystMap("process") (["ttH"], 0.915/1.058) )
 
-#cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_e_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau","ee_p","ee_m","em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 0.96) )
+# cb.cp().AddSyst(cb, 'CMS_FRe_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["ee_p","ee_m"], 1.4) )
+# cb.cp().AddSyst(cb, 'CMS_FRe_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.2) )
+# cb.cp().AddSyst(cb, 'CMS_FRm_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.4) )
+# cb.cp().AddSyst(cb, 'CMS_FRm_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.5) )
 #cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_m_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["tau","em_bt_p","em_bt_m","em_bl_p","em_bl_m"], 1.04) )
 #cb.cp().AddSyst(cb, 'CMS_ttHl_Clos_m_norm', 'lnN', ch.SystMap("process", "bin")(["fakes"], ["mm_bt_p","mm_bt_m","mm_bl_p","mm_bl_m"], 1.11) )
-# cb.cp().AddSyst(cb, 'CMS_scale_j', 'shape', ch.SystMap()(1.0))
-# cb.cp().AddSyst(cb, 'CMS_res_j', 'shape', ch.SystMap()(1.0))
-# cb.cp().AddSyst(cb, 'jetTauFake', 'shape', ch.SystMap()(1.0))
-
 
 
 cb.cp().backgrounds().ExtractShapes(
         args.input[0],
-        "bdt_output__$PROCESS_$BIN".format(args.discriminant),
-        "bdt_output__$PROCESS_$BIN_$SYSTEMATIC".format(args.discriminant)
+        "final_shape_$PROCESS_$BIN".format(args.discriminant),
+        "final_shape_$PROCESS_$BIN_$SYSTEMATIC".format(args.discriminant)
 #        "$PROCESS_{0}_$BIN".format(args.discriminant),
 #        "$PROCESS_{0}_$BIN_$SYSTEMATIC".format(args.discriminant)
 )
 cb.cp().signals().ExtractShapes(
         args.input[0],
-        "bdt_output__$PROCESS_$BIN".format(args.discriminant),
-        "bdt_output__$PROCESS_$BIN_$SYSTEMATIC".format(args.discriminant)
+        "final_shape_$PROCESS_$BIN".format(args.discriminant),
+        "final_shape_$PROCESS_$BIN_$SYSTEMATIC".format(args.discriminant)
 #        "$PROCESS$MASS_{0}_$BIN".format(args.discriminant),
 #        "$PROCESS$MASS_{0}_$BIN_$SYSTEMATIC".format(args.discriminant)
 )

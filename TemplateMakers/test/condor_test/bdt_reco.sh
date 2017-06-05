@@ -6,7 +6,7 @@ job_no=$2
 
 
 
-cd /afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/
+cd /afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/
 export SCRAM_ARCH=slc6_amd64_gcc530
 #printenv
 #which scramv1

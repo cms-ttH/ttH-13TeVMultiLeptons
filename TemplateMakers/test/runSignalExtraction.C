@@ -16,10 +16,6 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor_factorized.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/hTaggerBDT.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/signalExtractionTreeMaker.h"
-#include "TMVA/Config.h"
-#include "TMVA/Tools.h"
-#include "TMVA/Reader.h"
-#include "TMVA/MethodCuts.h"
 #include "selection.h"
 #include "loadSamples.h"
 
@@ -31,7 +27,7 @@
 /////////////////////////////////////////
 
 
-void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_per_job, int job_no)
+void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_per_job, int job_no)
 {
 
   int total_entries = chain->GetEntries();
@@ -51,7 +47,6 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
       max_tree_entry = total_entries;   
     }
   cout << "# events in tree: "<< max_tree_entry - min_tree_entry << endl;  
-
 
   double mcwgt_intree = -999.;
   int eventnum_intree = -999;  
@@ -78,41 +73,32 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   TString *higgs_final_state_intree=0;
   TString *ttbar_final_state_intree=0;
   
-  chain->SetBranchStatus("*",0);
-  chain->SetBranchStatus("mcwgt",1);
-  chain->SetBranchStatus("eventnum",1);
-  chain->SetBranchStatus("preselected_electrons.*",1);
-  chain->SetBranchStatus("preselected_muons.*",1);
-  chain->SetBranchStatus("preselected_leptons.*",1);
-  chain->SetBranchStatus("preselected_jets.*",1);
+  // chain->SetBranchStatus("*",0);
+  // chain->SetBranchStatus("mcwgt",1);
+  // chain->SetBranchStatus("eventnum",1);
+  // chain->SetBranchStatus("preselected_electrons.*",1);
+  // chain->SetBranchStatus("preselected_muons.*",1);
+  // chain->SetBranchStatus("preselected_leptons.*",1);
+  // chain->SetBranchStatus("preselected_jets.*",1);
+  // chain->SetBranchStatus("fakeable_leptons.*",1);
+  // chain->SetBranchStatus("fakeable_electrons.*",1);
+  // chain->SetBranchStatus("fakeable_muons.*",1);
+  // chain->SetBranchStatus("tight_leptons.*",1);
+  // chain->SetBranchStatus("tight_electrons.*",1);
+  // chain->SetBranchStatus("tight_muons.*",1);
+  // chain->SetBranchStatus("met.*",1);
+  // chain->SetBranchStatus("higgs_decay",1);
 
-  chain->SetBranchStatus("fakeable_leptons.*",1);
-  chain->SetBranchStatus("fakeable_electrons.*",1);
-  chain->SetBranchStatus("fakeable_muons.*",1);
-  chain->SetBranchStatus("tight_leptons.*",1);
-  chain->SetBranchStatus("tight_electrons.*",1);
-  chain->SetBranchStatus("tight_muons.*",1);
-
-  // chain->SetBranchStatus("looseMvaBased_leptons.*",1);
-  // chain->SetBranchStatus("looseMvaBased_electrons.*",1);
-  // chain->SetBranchStatus("looseMvaBased_muons.*",1);
-  // chain->SetBranchStatus("tightMvaBased_leptons.*",1);
-  // chain->SetBranchStatus("tightMvaBased_electrons.*",1);
-  // chain->SetBranchStatus("tightMvaBased_muons.*",1);
-
-  chain->SetBranchStatus("selected_taus.*",1);
-  chain->SetBranchStatus("met.*",1);
-  chain->SetBranchStatus("higgs_final_state",1);
-  chain->SetBranchStatus("ttbar_final_state",1);
-  chain->SetBranchStatus("higgs_decay",1);
-  chain->SetBranchStatus("lep_from_higgs_reco_truth*",1);
-  chain->SetBranchStatus("lep_from_leptop_reco_truth*",1);
-  chain->SetBranchStatus("b_from_leptop_reco_truth*",1);
-  chain->SetBranchStatus("b_from_hadtop_reco_truth*",1);
-  chain->SetBranchStatus("q1_from_hadtop_reco_truth*",1);
-  chain->SetBranchStatus("q2_from_hadtop_reco_truth*",1);
-  chain->SetBranchStatus("q1_from_higgs_reco_truth*",1);
-  chain->SetBranchStatus("q2_from_higgs_reco_truth*",1);
+  // chain->SetBranchStatus("higgs_final_state",1);
+  // chain->SetBranchStatus("ttbar_final_state",1);
+  // chain->SetBranchStatus("lep_from_higgs_reco_truth*",1);
+  // chain->SetBranchStatus("lep_from_leptop_reco_truth*",1);
+  // chain->SetBranchStatus("b_from_leptop_reco_truth*",1);
+  // chain->SetBranchStatus("b_from_hadtop_reco_truth*",1);
+  // chain->SetBranchStatus("q1_from_hadtop_reco_truth*",1);
+  // chain->SetBranchStatus("q2_from_hadtop_reco_truth*",1);
+  // chain->SetBranchStatus("q1_from_higgs_reco_truth*",1);
+  // chain->SetBranchStatus("q2_from_higgs_reco_truth*",1);
 
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
@@ -125,26 +111,18 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
   chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
-
-  // chain->SetBranchAddress("looseMvaBased_leptons", &fakeable_leptons_intree);
-  // chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
-  // chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
-  // chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
-
   chain->SetBranchAddress("met", &met_intree);
-  chain->SetBranchAddress("selected_taus", &selected_taus_intree);
 
-  chain->SetBranchAddress("higgs_final_state", &higgs_final_state_intree);
-  chain->SetBranchAddress("ttbar_final_state", &ttbar_final_state_intree);
-
-  chain->SetBranchAddress("lep_from_higgs_reco_truth.", &lep_from_higgs_truth_intree);
-  chain->SetBranchAddress("lep_from_leptop_reco_truth.", &lep_from_leptop_truth_intree);
-  chain->SetBranchAddress("b_from_leptop_reco_truth.", &b_from_leptop_truth_intree);
-  chain->SetBranchAddress("b_from_hadtop_reco_truth.", &b_from_hadtop_truth_intree);
-  chain->SetBranchAddress("q1_from_hadtop_reco_truth.", &q1_from_hadtop_truth_intree);
-  chain->SetBranchAddress("q2_from_hadtop_reco_truth.", &q2_from_hadtop_truth_intree);
-  chain->SetBranchAddress("q1_from_higgs_reco_truth.", &q1_from_higgs_truth_intree);
-  chain->SetBranchAddress("q2_from_higgs_reco_truth.", &q2_from_higgs_truth_intree);
+  // chain->SetBranchAddress("higgs_final_state", &higgs_final_state_intree);
+  // chain->SetBranchAddress("ttbar_final_state", &ttbar_final_state_intree);
+  // chain->SetBranchAddress("lep_from_higgs_reco_truth.", &lep_from_higgs_truth_intree);
+  // chain->SetBranchAddress("lep_from_leptop_reco_truth.", &lep_from_leptop_truth_intree);
+  // chain->SetBranchAddress("b_from_leptop_reco_truth.", &b_from_leptop_truth_intree);
+  // chain->SetBranchAddress("b_from_hadtop_reco_truth.", &b_from_hadtop_truth_intree);
+  // chain->SetBranchAddress("q1_from_hadtop_reco_truth.", &q1_from_hadtop_truth_intree);
+  // chain->SetBranchAddress("q2_from_hadtop_reco_truth.", &q2_from_hadtop_truth_intree);
+  // chain->SetBranchAddress("q1_from_higgs_reco_truth.", &q1_from_higgs_truth_intree);
+  // chain->SetBranchAddress("q2_from_higgs_reco_truth.", &q2_from_higgs_truth_intree);
 
   eventReconstructor bdtReconstructor;
   hTagger higgsJetTagger;
@@ -156,18 +134,13 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
 
   TTree *ss2l_tree = (TTree*)chain->CloneTree(0);
   ss2l_tree->SetName("ss2l_tree");
-  ss2l_tree->Branch("time_per_event", &time_per_event_intree);
+  ss2l_tree->Branch("time_per_event_signalExtraction", &time_per_event_intree);
 
   bdtReconstructor.initializeTree(ss2l_tree);
   higgsJetTagger.initializeTree(ss2l_tree);
-
-  //new stuff for bdt trainin/evaluation. 
-  TTree *ttH_vs_ttbar_tree = new TTree("tth_vs_ttbar_tree","tth_vs_ttbar_tree");
-  TTree *ttH_vs_ttV_tree = new TTree("tth_vs_ttv_tree","tth_vs_ttv_tree");
-
-  bool evaluateSignalExtraction = true;
-  signalExtractionTreeMaker mySigExtrTreeMaker(ttH_vs_ttbar_tree, ttH_vs_ttV_tree, ss2l_tree, evaluateSignalExtraction);
   
+  signalExtractionTreeMaker mySigExtrTreeMaker(ss2l_tree);
+
   Int_t cachesize = 250000000;   //250 MBytes
   chain->SetCacheSize(cachesize);
   double starttime = get_wall_time();
@@ -185,16 +158,16 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
       /////
       /////////////////////
       
-      TLorentzVector b_from_hadtop_tlv = setTlv(*b_from_hadtop_truth_intree);
-      TLorentzVector q1_from_hadtop_tlv = setTlv(*q1_from_hadtop_truth_intree);
-      TLorentzVector q2_from_hadtop_tlv = setTlv(*q2_from_hadtop_truth_intree);
-      TLorentzVector q1_from_higgs_tlv = setTlv(*q1_from_higgs_truth_intree);
-      TLorentzVector q2_from_higgs_tlv = setTlv(*q2_from_higgs_truth_intree);
-      TLorentzVector lep_from_higgs_tlv = setTlv(*lep_from_higgs_truth_intree);
+      // TLorentzVector b_from_hadtop_tlv = setTlv(*b_from_hadtop_truth_intree);
+      // TLorentzVector q1_from_hadtop_tlv = setTlv(*q1_from_hadtop_truth_intree);
+      // TLorentzVector q2_from_hadtop_tlv = setTlv(*q2_from_hadtop_truth_intree);
+      // TLorentzVector q1_from_higgs_tlv = setTlv(*q1_from_higgs_truth_intree);
+      // TLorentzVector q2_from_higgs_tlv = setTlv(*q2_from_higgs_truth_intree);
+      // TLorentzVector lep_from_higgs_tlv = setTlv(*lep_from_higgs_truth_intree);
 
-      w_hadtop_tlv_intree = q1_from_hadtop_tlv + q2_from_hadtop_tlv;
-      hadtop_tlv_intree = w_hadtop_tlv_intree + b_from_hadtop_tlv;
-      higgs_tlv_intree = q1_from_higgs_tlv + q2_from_higgs_tlv + lep_from_higgs_tlv;
+      // w_hadtop_tlv_intree = q1_from_hadtop_tlv + q2_from_hadtop_tlv;
+      // hadtop_tlv_intree = w_hadtop_tlv_intree + b_from_hadtop_tlv;
+      // higgs_tlv_intree = q1_from_higgs_tlv + q2_from_higgs_tlv + lep_from_higgs_tlv;
 
       // auto lep_collection = preselected_leptons_intree;
       vector<ttH::Lepton> *lep_collection;
@@ -202,16 +175,17 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
       else lep_collection = tight_leptons_intree;
 
       std::sort(lep_collection->begin(), lep_collection->end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.correctedPt > b.correctedPt;});
-
+      
       bdtReconstructor.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
-      bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
-					   lep_from_higgs_truth_intree,
-					   b_from_leptop_truth_intree,
-					   b_from_hadtop_truth_intree,
-					   q1_from_hadtop_truth_intree,
-					   q2_from_hadtop_truth_intree,
-					   q1_from_higgs_truth_intree,
-					   q2_from_higgs_truth_intree ); //order of arguments matters here..
+
+      // bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
+      // 					   lep_from_higgs_truth_intree,
+      // 					   b_from_leptop_truth_intree,
+      // 					   b_from_hadtop_truth_intree,
+      // 					   q1_from_hadtop_truth_intree,
+      // 					   q2_from_hadtop_truth_intree,
+      // 					   q1_from_higgs_truth_intree,
+      // 					   q2_from_higgs_truth_intree ); //order of arguments matters here..
       
       //////////////////////////////
       ///
@@ -221,21 +195,17 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
       
       vector<ttH::Jet> jets_for_higgsTagger;
       for (const auto & jet : *preselected_jets_intree)
-	{
-	  if (jet.obj.pt() == bdtReconstructor.b_from_hadtop_bdt_intree->obj.pt()) continue;
-	  else if (jet.obj.pt() == bdtReconstructor.q1_from_hadtop_bdt_intree->obj.pt()) continue;
-	  else if (jet.obj.pt() == bdtReconstructor.q2_from_hadtop_bdt_intree->obj.pt()) continue;
-	  else jets_for_higgsTagger.push_back(jet);
-	}	  
+      	{
+      	  if (jet.obj.pt() == bdtReconstructor.b_from_hadtop_bdt_intree->obj.pt()) continue;
+      	  else if (jet.obj.pt() == bdtReconstructor.q1_from_hadtop_bdt_intree->obj.pt()) continue;
+      	  else if (jet.obj.pt() == bdtReconstructor.q2_from_hadtop_bdt_intree->obj.pt()) continue;
+      	  else jets_for_higgsTagger.push_back(jet);
+      	}	  
       higgsJetTagger.initialize(&jets_for_higgsTagger, lep_collection, (*met_intree)[0]);
-      
-
-      mySigExtrTreeMaker.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0], selected_taus_intree, bdtReconstructor, higgsJetTagger);
+      mySigExtrTreeMaker.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0], bdtReconstructor, higgsJetTagger);
       
       time_per_event_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
       ss2l_tree->Fill();
-      ttH_vs_ttbar_tree->Fill();
-      ttH_vs_ttV_tree->Fill();
     }
     
   double endtime = get_wall_time();
@@ -243,36 +213,30 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   if (max_tree_entry>0) cout << "an average of " << (endtime - starttime) / (max_tree_entry-min_tree_entry) << " per event." << endl;
 
   ss2l_tree->Write();
-  ttH_vs_ttbar_tree->Write();
-  ttH_vs_ttV_tree->Write();
-  output_file_->Close();
-  
+  output_file_->Close();  
 }
 
-void runSignalExtraction(string sample_name="tth_powheg", int events_per_job=-1, int job_no=-1)
+void runSignalExtraction(string sample_name="ttH", int events_per_job=-1, int job_no=-1)
 {
-  //sample_name = "output_tree_2lss_SR_sync";
-
-  TString input_file_name = getSelectionFile(sample_name);
-  
+  Sample sample(sample_name);
+    
   if (sample_name == "") sample_name = "output_test";
-  TString output_dir = "/scratch365/cmuelle2/extraction_trees/feb24_se_test_SelectivehTopRemoval/";
+  TString output_dir = "/scratch365/cmuelle2/extraction_trees/may31_extractionTest/";
   TString output_file_name = output_dir+sample_name;
-  if (events_per_job > -1 && job_no > -1) output_file_name +=std::to_string(job_no);
+  if (events_per_job > -1 && job_no > -1) output_file_name += "_" + std::to_string(job_no);
   output_file_name += ".root";
-
-
   TFile *output_file = new TFile(output_file_name, "RECREATE"); //"UPDATE");
 
-  // if (job_no < 1)
-  //   {
-  //     TH1D* event_hist = (TH1D*)input_file->Get("numInitialWeightedMCevents");
-  //     event_hist->Write();
-  //   }
+  if (job_no < 1 && sample_name != "fakes" && sample_name != "flips" && sample_name != "data")
+    {
+      TFile* input_file = new TFile(sample.input_file_name,"READONLY");
+      TH1D* event_hist = (TH1D*)input_file->Get("numInitialWeightedMCevents");
+      output_file->cd();
+      event_hist->Write();
+      input_file->Close();
+    }
 
-  TChain *chain_ = new TChain("ss2l_tree");
-  chain_->Add(input_file_name);
-
-  run_it(sample_name,chain_,output_file,events_per_job,job_no);
+  TTree *tree = sample.tree; 
+  run_it(sample_name,tree,output_file,events_per_job,job_no);
 }
 

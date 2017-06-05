@@ -1,5 +1,5 @@
-sample = data
-N = 207
+sample = WWW_rares
+N = 1
 
 +IsExpressJob = True
 universe = vanilla

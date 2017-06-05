@@ -16,20 +16,26 @@ void plotMaker_signalRegion(void)
   samples.push_back(Sample("flips"));
   samples.push_back(Sample("fakes"));  
   samples.push_back(Sample("tttt"));
+  samples.push_back(Sample("tWll"));
   samples.push_back(Sample("tZq"));
   samples.push_back(Sample("WGToLNuG"));
   samples.push_back(Sample("ZGTo2LG"));
+  samples.push_back(Sample("TTGJets"));
+  samples.push_back(Sample("TGJets"));
+  samples.push_back(Sample("Wjets"));
   samples.push_back(Sample("WWqq_rares"));
   samples.push_back(Sample("WW_doublescatering_rares"));
   samples.push_back(Sample("WWW_rares"));
   samples.push_back(Sample("WWZ_rares"));
   samples.push_back(Sample("WZZ_rares"));
   samples.push_back(Sample("ZZZ_rares"));
-  //  samples.push_back(Sample("WW_diboson"));
-  samples.push_back(Sample("WZ_diboson"));
-  samples.push_back(Sample("ZZ_diboson"));
-  // samples.push_back(ttGammaStar);
+  samples.push_back(Sample("WW_2l2nu"));
+  samples.push_back(Sample("WZ_to3lnu"));
+  samples.push_back(Sample("ZZ_to4l"));
   samples.push_back(Sample("ttZ"));
+  samples.push_back(Sample("ttZ_M1to10"));
+  samples.push_back(Sample("ttjets_semilep"));
+  samples.push_back(Sample("ttjets_dilep"));
   samples.push_back(Sample("ttW"));
   samples.push_back(Sample("ttH"));
   samples.push_back(Sample("data"));
@@ -103,10 +109,10 @@ void plotMaker_signalRegion(void)
       for (auto & plot : plots)
        	{
        	  plot.fill(sample, outputfile);
-	  // cout << "total 2lss: " << plot.template_hist->Integral() << endl;
-	  // cout << "2lss ee: " << plot.ee_hist->Integral() << endl;
-	  // cout << "2lss em: " << plot.em_hist->Integral() << endl;
-	  // cout << "2lss mm: " << plot.mm_hist->Integral() << endl;
+	  cout << "total 2lss: " << plot.template_hist->Integral() << endl;
+	  cout << "2lss ee: " << plot.ee_hist->Integral() << endl;
+	  cout << "2lss em: " << plot.em_hist->Integral() << endl;
+	  cout << "2lss mm: " << plot.mm_hist->Integral() << endl;
        	  stacks[plot.hist_name].Add(plot);
        	}
     }

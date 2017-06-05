@@ -146,6 +146,8 @@ bool pass2lss_lepMVA_AR(
     if (fakeableLeps[0].charge != fakeableLeps[1].charge) return false; //same sign
     if ( psJets.size() < 4 )      return false; //jet requirement
 
+    if ( !(fakeableLeps[0].correctedPt>25. && fakeableLeps[1].correctedPt>15.) ) return false; //pt requirement
+    
     for (int i = 0; i <=1; i++) {
         if (abs(fakeableLeps[i].pdgID) == 11) {
             for (auto & ele : fakeableEles) {
@@ -164,18 +166,17 @@ bool pass2lss_lepMVA_AR(
                     break;
                 }
             }
-        } else if (abs(fakeableLeps[i].pdgID) == 13) {
-	  for (auto & mu : tightMus) { //fakeableMus
-                if (fakeableLeps[i].obj.pt() == mu.obj.pt()) {
-                    if (mu.chargeFlip > 0.2) return false;
-                    break;
-                }
-            }
-        }
+        } 
+	/* else if (abs(fakeableLeps[i].pdgID) == 13) { */
+	/*   for (auto & mu : tightMus) { //fakeableMus */
+	/*     if (fakeableLeps[i].obj.pt() == mu.obj.pt()) { */
+	/*       if (mu.chargeFlip > 0.2) return false; */
+	/*       break; */
+	/*     } */
+	/*   } */
+        /* } */
     }
-
-    if ( !(fakeableLeps[0].correctedPt>25. && fakeableLeps[1].correctedPt>15.) ) return false; //pt requirement
-
+    
     if (fakeableEles.size() == 2 ) {
         auto ee_obj = fakeableEles[0].obj + fakeableEles[1].obj;
         double vetoZmass = ee_obj.M();

@@ -1,6 +1,6 @@
-events_per_job = 9000
+events_per_job = 10000
 
-sample = ttbar_semiLep_madgraph
+sample = fakes
 N = 1
 
 +IsExpressJob = True
@@ -8,8 +8,8 @@ universe = vanilla
 executable = run_extraction.sh
 getenv = True
 arguments = $(sample) $(events_per_job) $(Process) 
-output = condor_logs/$(sample)_bdtReco.stdout.$(Process)
-error = condor_logs/$(sample)_bdtReco.stderr.$(Process)
+output = condor_logs/$(sample)_extraction.stdout.$(Process)
+error = condor_logs/$(sample)_extraction.stderr.$(Process)
 should_transfer_files = yes
 when_to_transfer_output = on_exit
 log = condor_logs/simple.logfile

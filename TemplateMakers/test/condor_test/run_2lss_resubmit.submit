@@ -1,6 +1,6 @@
-sample = data
+sample = ttW
 N = 1
-job_no = 132
+job_no = 6
 
 +IsExpressJob = True
 universe = vanilla

@@ -235,19 +235,16 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
 	}
 
       bool passes_trig = passesTrigger(*passTrigger_intree, *lep_collection);
-
       if ( passes && passes_trig)
 	{	  
-
 	  fertilizer.growTreeBranches(*lep_collection,*preselected_jets_intree,*preselected_leptons_intree,*met_intree);
-	  // lepSFs.addTriggerSF(lep_collection);
-	  // lepSFs.addLeptonSF(lep_collection);
-	  // csvReweighter.applySFs(*preselected_jets_intree);
+	  lepSFs.addTriggerSF(lep_collection);
+	  lepSFs.addLeptonSF(lep_collection);
+	  csvReweighter.applySFs(*preselected_jets_intree);
 	  
 	  //only for gen-matching studies//
 	  //myGenParticleHelper.clear();
 	  //myGenParticleHelper.matchReco2Gen(*lep_collection, *preselected_jets_intree, *pruned_genParticles_intree);
-	  
 	  ss2l_tree->Fill();
 	}
       
@@ -268,18 +265,18 @@ void makeSelectionTree(TString sample="sync", TString selection="2lss_sr", int j
   TString output_dir;
   bool batch_run = true; //switch for batch vs. local commandline running
 
-  if (batch_run) output_dir = "/scratch365/cmuelle2/selection_trees/may22_kaitlinRemake/";
+  if (batch_run) output_dir = "/scratch365/cmuelle2/selection_trees/may30_test/";
   else output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
 
   //////////// available selections //////////////
-  run_it(sample, selection, output_dir, job_no, batch_run);
-  //run_it(sample, "2lss_sr", output_dir, job_no, batch_run);
+  //run_it(sample, selection, output_dir, job_no, batch_run);
+  run_it(sample, "2lss_sr", output_dir, job_no, batch_run);
   //run_it(sample, "2lss_lepMVA_ar", output_dir, job_no, batch_run);
   //run_it(sample, "2los_ar", output_dir, job_no, batch_run);
   // run_it(sample, "3l_sr", output_dir, job_no, batch_run);
   // run_it(sample, "3l_lepMVA_ar", output_dir, job_no, batch_run);
   //run_it(sample, "2lss_training_loose", output_dir, job_no, batch_run);
-  // run_it(sample, "2lss_training_fo", output_dir, job_no, batch_run);
+  //run_it(sample, "2lss_training_fo", output_dir, job_no, batch_run);
   // run_it(sample, "4l_sr", output_dir, job_no, batch_run);
 }
 

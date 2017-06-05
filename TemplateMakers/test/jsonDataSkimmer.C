@@ -105,13 +105,14 @@ void run_it(TChain* chain, TString output_file)
       bool no_duplicate = (std::find(events.begin(),events.end(),eventnum_intree) == events.end());
       bool golden_json = my_json_filter.isValid(runNumber_intree,lumiBlock_intree);
 
+
       //if (no_duplicate and golden_json and abs((*tight_leptons_intree)[0].pdgID)+abs((*tight_leptons_intree)[1].pdgID)!=26 )
       if (no_duplicate and golden_json )
 	{
 	  events.push_back(eventnum_intree);
 	  //mcwgt_intree = lepFakeRateObject.flipProb(*tight_leptons_intree);
-	  //mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree,*fakeable_electrons_intree, *fakeable_muons_intree);
-	  mcwgt_intree = 1.;
+	  mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree,*fakeable_electrons_intree, *fakeable_muons_intree);
+	  //mcwgt_intree = 1.;
 	  signal_tree->Fill();
 	}
     }
@@ -127,8 +128,8 @@ void run_it(TChain* chain, TString output_file)
 
 void jsonDataSkimmer(void)
 {
-  TString output_file = "data.root";
+  TString output_file = "fakes_noMuTightCharge.root";
   TChain *chain = new TChain("ss2l_tree");
-  chain->Add("/scratch365/cmuelle2/selection_trees/may10_mc/data.root");
+  chain->Add("/scratch365/cmuelle2/selection_trees/may10_fakeTests/data2lss_lepMVA_ar.root");
   run_it(chain,output_file);
 }

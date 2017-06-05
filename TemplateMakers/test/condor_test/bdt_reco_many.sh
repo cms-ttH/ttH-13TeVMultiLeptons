@@ -1,12 +1,7 @@
 #!/bin/sh
 
 declare -A samples
-#samples=( ["tth_powheg_old"]=81 ["ttbar_semiLep_madgraph"]=122 )
-#samples=( ["tth_sigExtr_training_2lss"]=9 ["ttbar_sigExtr_training_2lss"]=14 )
-#samples=( ["tth_powheg_genFilterTraining"]=250 ["ttbar_semiLep_genFilterTraining"]=80 ["ttw_genFilterTraining"]=125 )
-#samples=( ["tth_aMC_old"]=214 ["ttbar_semiLep_powheg"]=2 ["ttbar_diLep_mg"]=1 ["ttW_aMCatNLO"]=7 ["ttZ_aMCatNLO"]=3 ["ttGammaStar"]=4 ["tttt"]=20 ["tZq"]=6 ["WW_diboson"]=1 ["ZZ_diboson"]=1 ["WZ_diboson"]=1 ["WWqq_rares"]=1 ["WW_doublescatering_rares"]=1 ["WWZ_rares"]=1 ["WZZ_rares"]=1 ["ZZZ_rares"]=1 )
-#samples=( ["tth_qgid"]=24 ["ttw_qgid"]=1 ["ttz_qgid"]=1 )
-samples=( ["tth_aMC"]=13 ["ttW_aMCatNLO"]=16 ["ttZ_aMCatNLO"]=7 ["ttbar_semiLep_madgraph"]=1 )
+samples=( ["tth_powheg"]=3 ["ttW"]=11 ["ttZ"]=2 ["ttZ_M1to10"]=1 ["WGToLNuG"]=1 ["ZGTo2LG"]=1 ["TGJets"]=1 ["TTGJets"]=1 ["WWqq_rares"]=1 ["WW_doublescatering_rares"]=1 ["WWW_rares"]=1 ["WWZ_rares"]=1 ["WZZ_rares"]=1 ["ZZZ_rares"]=1 ["tZq"]=4 ["tttt"]=1 ["WW_2l2nu"]=1 ["ZZ_to4l"]=1 ["WZ_to3lnu"]=1 ["ST_sChan"]=1 ["ST_tChan_top"]=1 ["ST_tChan_antitop"]=1 ["ST_tW"]=1 ["tWll"]=1 ["ttjets_dilep"]=1 ["ttjets_semilep"]=1 ["Wjets"]=1 ["DY_M10_50"]=1 ["DY_M50_LO"]=1 ["DY_M50"]=1 )
 
 
 rm -rf condor_logs/*
