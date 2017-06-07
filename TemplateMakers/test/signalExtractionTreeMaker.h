@@ -28,8 +28,6 @@ class signalExtractionTreeMaker
   Float_t njets_branch;
   Float_t dR_l1_j_branch;
   Float_t dR_l2_j_branch;
-  Float_t met_branch;
-  Float_t avg_dr_jets_branch;
   Float_t mt_lep1_met_branch;
   Float_t l1_pt_branch;
   Float_t l2_pt_branch;
@@ -60,8 +58,6 @@ class signalExtractionTreeMaker
     ss2l_tree->Branch("numJets_float", &njets_branch);
     ss2l_tree->Branch("mindr_lep1_jet", &dR_l1_j_branch);
     ss2l_tree->Branch("mindr_lep2_jet", &dR_l2_j_branch);
-    ss2l_tree->Branch("met_double", &met_branch);  
-    ss2l_tree->Branch("avg_dr_jet", &avg_dr_jets_branch);
     ss2l_tree->Branch("MT_met_lep1", &mt_lep1_met_branch);
     ss2l_tree->Branch("l1_pt", &l1_pt_branch);
     ss2l_tree->Branch("l2_pt", &l2_pt_branch);
@@ -117,8 +113,6 @@ class signalExtractionTreeMaker
     njets_branch = -99.;
     dR_l1_j_branch = -99.;
     dR_l2_j_branch = -99.;
-    met_branch = -99.;
-    avg_dr_jets_branch = -99.;
     mt_lep1_met_branch = -99.;
     l1_pt_branch = -99.;
     l2_pt_branch = -99.;
@@ -166,34 +160,10 @@ class signalExtractionTreeMaker
     dR_l1_j_branch = getDeltaR(lep1_closest_jet, lep1);
     dR_l2_j_branch = getDeltaR(lep2_closest_jet, lep2);
     
-    // met
-    met_branch = min(met_in.obj.Pt(),400.);
-
     TLorentzVector met_tlv = setTlv( met_in );
     TLorentzVector lep1_t_tlv = setTlv( lep1 );
     
     mt_lep1_met_branch = sqrt(2*lep1.correctedPt*met_branch*(1-cos(lep1.obj.phi()- met_in.obj.phi() )));
-
-    //calculate avg dr jets
-    int jet1_counter = 0;
-    double dr_sum = 0.;
-    int dr_denom = 0;
-    int num_tight = 0;
-    for (const auto & jet1 : *jets_input)
-      {
-	if ( jet1.csv >= 0.8 ) num_tight +=1;
-	int jet2_counter = -1;
-	for (const auto & jet2 : *jets_input)
-	  {
-	    jet2_counter +=1;
-	    if ( jet2_counter <= jet1_counter ) continue;
-	    double delta_r = getDeltaR(jet1, jet2);
-	    dr_sum += delta_r;
-	    dr_denom +=1;
-	  }
-	jet1_counter +=1;
-      }
-    avg_dr_jets_branch = dr_sum/double(dr_denom);
 
     reco_score_branch = bdtReconstructor.reco_score_intree;
     hadtop_mass_branch = bdtReconstructor.hadTop_tlv_bdt_intree.M();
