@@ -156,13 +156,13 @@ public:
     TString drawCommand_mm_bl_p = drawCommand + " >> "+mm_bl_p_name;
     TString drawCommand_mm_bl_m = drawCommand + " >> "+mm_bl_m_name;
 
-
     TCut weight = "";
     TCut sim_weight = "mcwgt*btag_weight*trigger_SF*lepton_SF";
     TCut prompt = "((tight_leptons[0].isPromptFinalState || tight_leptons[0].isDirectPromptTauDecayProductFinalState) && (tight_leptons[1].isPromptFinalState || tight_leptons[1].isDirectPromptTauDecayProductFinalState))";
+    TCut matchRightCharge = "tight_leptons[0].pdgID == tight_leptons[0].genPdgID && tight_leptons[1].pdgID == tight_leptons[1].genPdgID";
     if (sample_name != "data" && sample_name != "fakes" && sample_name != "flips" )
       {
-	weight= sim_weight*prompt;
+	weight= sim_weight*prompt*matchRightCharge;
       }
     else if (sample_name == "fakes" || sample_name == "flips")
       {
@@ -171,7 +171,7 @@ public:
     if (legend_name == "Convs")//sample_name == "TTGJets" || sample_name == "TGJets")
       {
     	TCut conv_cut = "(tight_leptons[0].genMotherPdgID == 22 || tight_leptons[1].genMotherPdgID == 22)";
-    	weight = conv_cut*sim_weight;
+    	weight = conv_cut*sim_weight*matchRightCharge;
       }
 
     TCut weight_ee = "(flavor_category==\"ee\")"*weight;

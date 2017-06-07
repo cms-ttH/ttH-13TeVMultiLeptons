@@ -117,10 +117,6 @@ class LeptonSF
       _histo_recoToLoose_leptonSF_mu3 = (TH2F*)(_file_recoToLoose_leptonSF_mu3->Get("SF"));
       _histo_recoToLoose_leptonSF_mu4 = (TGraphAsymmErrors*)(_file_recoToLoose_leptonSF_mu4->Get("ratio_eff_eta3_dr030e030_corr"));
       
-      /* _histo_recoToLoose_leptonSF_mu1->SetDirectory(0); */
-      /* _file_recoToLoose_leptonSF_mu1->Close(); */
-
-
     }
     if (!_histo_recoToLoose_leptonSF_el1) {
       _file_recoToLoose_leptonSF_el = new TFile("../data/CERN/leptonSF/el_scaleFactors_Moriond17.root","readonly");
