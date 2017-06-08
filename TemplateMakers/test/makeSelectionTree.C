@@ -134,8 +134,6 @@ void run_it(TString sample_name, TString selection, TString output_dir, int job_
       ////
       //////////////////////////
       
-      bool passesCommon = passCommon(*preselected_electrons_intree, *preselected_muons_intree, *preselected_jets_intree);
-      if (!passesCommon) continue;
       if (selected_taus_intree->size() > 0) continue; //veto any and all taus
 
       //////////////////////////
