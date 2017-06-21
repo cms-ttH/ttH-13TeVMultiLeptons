@@ -27,7 +27,7 @@
 /////////////////////////////////////////
 
 
-void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_per_job, int job_no)
+void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_per_job, int job_no, TString systematic="")
 {
 
   int total_entries = chain->GetEntries();
@@ -55,6 +55,8 @@ void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_p
   vector<ttH::Lepton> *preselected_leptons_intree=0;
   vector<ttH::Lepton> *fakeable_leptons_intree=0;
   vector<ttH::Jet> *preselected_jets_intree=0;
+  vector<ttH::Jet> *preselected_jets_jecUp_intree=0;
+  vector<ttH::Jet> *preselected_jets_jecDown_intree=0;
   vector<ttH::MET> *met_intree=0;
   vector<ttH::Lepton> *tight_leptons_intree=0;
   vector<ttH::Electron> *tight_electrons_intree=0;
@@ -73,40 +75,14 @@ void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_p
   TString *higgs_final_state_intree=0;
   TString *ttbar_final_state_intree=0;
   
-  // chain->SetBranchStatus("*",0);
-  // chain->SetBranchStatus("mcwgt",1);
-  // chain->SetBranchStatus("eventnum",1);
-  // chain->SetBranchStatus("preselected_electrons.*",1);
-  // chain->SetBranchStatus("preselected_muons.*",1);
-  // chain->SetBranchStatus("preselected_leptons.*",1);
-  // chain->SetBranchStatus("preselected_jets.*",1);
-  // chain->SetBranchStatus("fakeable_leptons.*",1);
-  // chain->SetBranchStatus("fakeable_electrons.*",1);
-  // chain->SetBranchStatus("fakeable_muons.*",1);
-  // chain->SetBranchStatus("tight_leptons.*",1);
-  // chain->SetBranchStatus("tight_electrons.*",1);
-  // chain->SetBranchStatus("tight_muons.*",1);
-  // chain->SetBranchStatus("met.*",1);
-  // chain->SetBranchStatus("higgs_decay",1);
-
-  // chain->SetBranchStatus("higgs_final_state",1);
-  // chain->SetBranchStatus("ttbar_final_state",1);
-  // chain->SetBranchStatus("lep_from_higgs_reco_truth*",1);
-  // chain->SetBranchStatus("lep_from_leptop_reco_truth*",1);
-  // chain->SetBranchStatus("b_from_leptop_reco_truth*",1);
-  // chain->SetBranchStatus("b_from_hadtop_reco_truth*",1);
-  // chain->SetBranchStatus("q1_from_hadtop_reco_truth*",1);
-  // chain->SetBranchStatus("q2_from_hadtop_reco_truth*",1);
-  // chain->SetBranchStatus("q1_from_higgs_reco_truth*",1);
-  // chain->SetBranchStatus("q2_from_higgs_reco_truth*",1);
-
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
   chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
   chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-
+  chain->SetBranchAddress("preselected_jets_JECup", &preselected_jets_jecUp_intree);
+  chain->SetBranchAddress("preselected_jets_JECdown", &preselected_jets_jecDown_intree);
   chain->SetBranchAddress("fakeable_leptons", &fakeable_leptons_intree);
   chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
@@ -133,7 +109,11 @@ void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_p
   TLorentzVector higgs_tlv_intree;
 
   TTree *ss2l_tree = (TTree*)chain->CloneTree(0);
-  ss2l_tree->SetName("ss2l_tree");
+  TString tree_name = "ss2l_tree";
+  if (systematic != "") tree_name += "_"+systematic;
+  ss2l_tree->SetName(tree_name);
+  ss2l_tree->SetDirectory(output_file_);
+
   ss2l_tree->Branch("time_per_event_signalExtraction", &time_per_event_intree);
 
   bdtReconstructor.initializeTree(ss2l_tree);
@@ -173,10 +153,14 @@ void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_p
       vector<ttH::Lepton> *lep_collection;
       if (sample_name == "fakes") lep_collection = fakeable_leptons_intree;
       else lep_collection = tight_leptons_intree;
-
       std::sort(lep_collection->begin(), lep_collection->end(), [] (ttH::Lepton a, ttH::Lepton b) { return a.correctedPt > b.correctedPt;});
       
-      bdtReconstructor.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0]);
+
+      vector<ttH::Jet> *jet_collection=0; jet_collection = preselected_jets_intree;
+      if (systematic == "jes_up") jet_collection = preselected_jets_jecUp_intree;
+      else if (systematic == "jes_down") jet_collection = preselected_jets_jecDown_intree;
+
+      bdtReconstructor.initialize(jet_collection, lep_collection, (*met_intree)[0]);
 
       // bdtReconstructor.evaluateBdtMatching(lep_from_leptop_truth_intree,
       // 					   lep_from_higgs_truth_intree,
@@ -194,7 +178,7 @@ void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_p
       //////////////////////////////
       
       vector<ttH::Jet> jets_for_higgsTagger;
-      for (const auto & jet : *preselected_jets_intree)
+      for (const auto & jet : *jet_collection)
       	{
       	  if (jet.obj.pt() == bdtReconstructor.b_from_hadtop_bdt_intree->obj.pt()) continue;
       	  else if (jet.obj.pt() == bdtReconstructor.q1_from_hadtop_bdt_intree->obj.pt()) continue;
@@ -202,26 +186,26 @@ void run_it(TString sample_name, TTree* chain, TFile *output_file_, int events_p
       	  else jets_for_higgsTagger.push_back(jet);
       	}	  
       higgsJetTagger.initialize(&jets_for_higgsTagger, lep_collection, (*met_intree)[0]);
-      mySigExtrTreeMaker.initialize(preselected_jets_intree, lep_collection, (*met_intree)[0], bdtReconstructor, higgsJetTagger);
+      mySigExtrTreeMaker.initialize(jet_collection, lep_collection, (*met_intree)[0], bdtReconstructor, higgsJetTagger);
       
       time_per_event_intree = double( clock() - startTime ) / (double)CLOCKS_PER_SEC;
       ss2l_tree->Fill();
     }
-    
+  
   double endtime = get_wall_time();
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
   if (max_tree_entry>0) cout << "an average of " << (endtime - starttime) / (max_tree_entry-min_tree_entry) << " per event." << endl;
-
+  
   ss2l_tree->Write();
-  output_file_->Close();  
 }
 
-void runSignalExtraction(string sample_name="ttH", int events_per_job=-1, int job_no=-1)
+void runSignalExtraction(string sample_name="ttZ_M10", int events_per_job=-1, int job_no=-1)
 {
   Sample sample(sample_name);
     
-  if (sample_name == "") sample_name = "output_test";
-  TString output_dir = "/scratch365/cmuelle2/extraction_trees/may31_extractionTest/";
+  //if (sample_name == "") sample_name = "output_test";
+  TString output_dir = "/scratch365/cmuelle2/extraction_trees/june14_test/";
+  //  TString output_dir = "";
   TString output_file_name = output_dir+sample_name;
   if (events_per_job > -1 && job_no > -1) output_file_name += "_" + std::to_string(job_no);
   output_file_name += ".root";
@@ -236,7 +220,16 @@ void runSignalExtraction(string sample_name="ttH", int events_per_job=-1, int jo
       input_file->Close();
     }
 
-  TTree *tree = sample.tree; 
-  run_it(sample_name,tree,output_file,events_per_job,job_no);
+  run_it(sample_name,sample.getTree(),output_file,events_per_job,job_no);
+
+  bool systs = true;
+  if (systs && sample_name != "fakes" && sample_name != "flips" && sample_name != "data")
+    {
+      run_it(sample_name,sample.getTree("ss2l_tree_jes_up"),output_file,events_per_job,job_no, "jes_up");
+      run_it(sample_name,sample.getTree("ss2l_tree_jes_down"),output_file,events_per_job,job_no, "jes_down");
+    }
+  
+  gDirectory->Purge();
+  output_file->Close();  
 }
 

@@ -16,10 +16,15 @@
 //#include "GenParticleHelper.h"
 #include "CSVReweight.h"
 #include "Fertilizer.h"
+//for signal extraction piece
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor_factorized.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/hTaggerBDT.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/signalExtractionTreeMaker.h"
+
 
 /////////////////////////////////////////
 ///
-/// usage: root -l makeSelectionTree.C+
+/// usage: root -l runChain.C+
 ///
 /////////////////////////////////////////
 class EventSelector
@@ -51,7 +56,7 @@ class EventSelector
   vector<ttH::Tau> *preselected_taus_intree=0;
   vector<ttH::Tau> *selected_taus_intree=0;
 
-  void select(TString selection, TTree *tree, vector<ttH::Jet> *jet_collection, CSVReweight& csvReweighter_, Fertilizer& fertilizer_, LeptonSF& lepSFs_)
+  void select(TString selection, TTree *tree, vector<ttH::Jet> *jet_collection, CSVReweight& csvReweighter_, Fertilizer& fertilizer_, LeptonSF& lepSFs_, signalExtractionTreeMaker& sigExtractionMaker_, eventReconstructor& bdtReconstructor_, hTagger& higgsJetTagger_)
   {
     bool passes = false;
     vector<ttH::Lepton> *lep_collection=0;
@@ -154,10 +159,30 @@ class EventSelector
 	//only for gen-matching studies//
 	//myGenParticleHelper.clear();
 	//myGenParticleHelper.matchReco2Gen(*lep_collection, jet_collection, *pruned_genParticles_intree);
+
+	//////////////////////////////
+	///
+	/// apply hadtop jet removal for higgs tagger:
+	///
+	//////////////////////////////
+
+	bdtReconstructor_.initialize(jet_collection, lep_collection, (*met_intree)[0]);	
+	
+	vector<ttH::Jet> jets_for_higgsTagger;
+	for (const auto & jet : *jet_collection)
+	  {
+	    if (jet.obj.pt() == bdtReconstructor_.b_from_hadtop_bdt_intree->obj.pt()) continue;
+	    else if (jet.obj.pt() == bdtReconstructor_.q1_from_hadtop_bdt_intree->obj.pt()) continue;
+	    else if (jet.obj.pt() == bdtReconstructor_.q2_from_hadtop_bdt_intree->obj.pt()) continue;
+	    else jets_for_higgsTagger.push_back(jet);
+	  }	  
+	higgsJetTagger_.initialize(&jets_for_higgsTagger, lep_collection, (*met_intree)[0]);
+	sigExtractionMaker_.initialize(jet_collection, lep_collection, (*met_intree)[0], bdtReconstructor_, higgsJetTagger_);
+	
 	tree->Fill();
       }
   }
-
+  
 
  public:
   EventSelector(TString sample_name, TString selection, TString output_dir, int job_no, bool batch_run)
@@ -219,12 +244,17 @@ class EventSelector
       LeptonSF lepSFs_jes_up;
       LeptonSF lepSFs_jes_down;
       //GenParticleHelper myGenParticleHelper;
-      
+      eventReconstructor bdtReconstructor;
+      eventReconstructor bdtReconstructor_jes_up;
+      eventReconstructor bdtReconstructor_jes_down;
+      hTagger higgsJetTagger;
+      hTagger higgsJetTagger_jes_up;
+      hTagger higgsJetTagger_jes_down;
+
       outputfile->cd();
       if (batch_run && (job_no == -1 || job_no == 0))
 	{
 	  TH1D* event_hist = myLoader.hist_sum;
-	  //outputfile->cd();
 	  event_hist->Write();
 	  delete event_hist;
 	}    
@@ -232,6 +262,9 @@ class EventSelector
       TTree *ss2l_tree = (TTree*)chain->CloneTree(0);
       ss2l_tree->SetName("ss2l_tree");
       ss2l_tree->SetDirectory(outputfile);
+      bdtReconstructor.initializeTree(ss2l_tree);
+      higgsJetTagger.initializeTree(ss2l_tree);
+      signalExtractionTreeMaker mySigExtrTreeMaker(ss2l_tree);
       csvReweighter.initializeTree(ss2l_tree);
       fertilizer.initializeTree(ss2l_tree);
       lepSFs.initializeTree(ss2l_tree);
@@ -240,6 +273,9 @@ class EventSelector
       TTree *ss2l_tree_jes_up = (TTree*)chain->CloneTree(0);
       ss2l_tree_jes_up->SetName("ss2l_tree_jes_up");
       ss2l_tree_jes_up->SetDirectory(outputfile);
+      bdtReconstructor_jes_up.initializeTree(ss2l_tree_jes_up);
+      higgsJetTagger_jes_up.initializeTree(ss2l_tree_jes_up);
+      signalExtractionTreeMaker mySigExtrTreeMaker_jes_up(ss2l_tree_jes_up);
       csvReweighter_jes_up.initializeTree(ss2l_tree_jes_up);
       fertilizer_jes_up.initializeTree(ss2l_tree_jes_up);
       lepSFs_jes_up.initializeTree(ss2l_tree_jes_up);
@@ -247,6 +283,9 @@ class EventSelector
       TTree *ss2l_tree_jes_down = (TTree*)chain->CloneTree(0);
       ss2l_tree_jes_down->SetName("ss2l_tree_jes_down");
       ss2l_tree_jes_down->SetDirectory(outputfile);
+      bdtReconstructor_jes_down.initializeTree(ss2l_tree_jes_down);
+      higgsJetTagger_jes_down.initializeTree(ss2l_tree_jes_down);
+      signalExtractionTreeMaker mySigExtrTreeMaker_jes_down(ss2l_tree_jes_down);
       csvReweighter_jes_down.initializeTree(ss2l_tree_jes_down);
       fertilizer_jes_down.initializeTree(ss2l_tree_jes_down);
       lepSFs_jes_down.initializeTree(ss2l_tree_jes_down);
@@ -278,9 +317,14 @@ class EventSelector
 	  ////
 	  //////////////////////////
 	  
-	  select(selection, ss2l_tree, preselected_jets_intree, csvReweighter, fertilizer, lepSFs);
-	  select(selection, ss2l_tree_jes_up, preselected_jets_jecUp_intree, csvReweighter_jes_up, fertilizer_jes_up, lepSFs_jes_up);
-	  select(selection, ss2l_tree_jes_down, preselected_jets_jecDown_intree, csvReweighter_jes_down, fertilizer_jes_down, lepSFs_jes_down);
+	  select(selection, ss2l_tree, preselected_jets_intree, csvReweighter, fertilizer, lepSFs,mySigExtrTreeMaker,bdtReconstructor,higgsJetTagger);
+
+
+	  // if (sample_name != "fakes" and sample_name != "flips" and sample_name != "data")
+	  //   {
+	  //     select(selection, ss2l_tree_jes_up, preselected_jets_jecUp_intree, csvReweighter_jes_up, fertilizer_jes_up, lepSFs_jes_up,mySigExtrTreeMaker_jes_up,bdtReconstructor_jes_up,higgsJetTagger_jes_up);
+	  //     select(selection, ss2l_tree_jes_down, preselected_jets_jecDown_intree, csvReweighter_jes_down, fertilizer_jes_down, lepSFs_jes_down,mySigExtrTreeMaker_jes_down,bdtReconstructor_jes_down,higgsJetTagger_jes_down);
+	  //   }
 	  
 	}
       
@@ -289,31 +333,40 @@ class EventSelector
       cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
       if ( (last_entry - first_entry) >0) cout << "an average of " << (endtime - starttime) / (last_entry - first_entry) << " per event." << endl;
       
-      //    outputfile->cd();
       ss2l_tree->Write();
-      ss2l_tree_jes_up->Write();      
-      ss2l_tree_jes_down->Write();
-
+      if (sample_name != "fakes" and sample_name != "flips" and sample_name != "data")
+	{
+	  ss2l_tree_jes_up->Write();      
+	  ss2l_tree_jes_down->Write();
+	}
       gDirectory->Purge();
+      outputfile->Write();
       outputfile->Close();    
     }
 
   virtual ~EventSelector(){};
 };
 
-void makeSelectionTree(TString sample="ttZ_M10", TString selection="2lss_sr", int job_no=-1)
+void runChain(TString sample="ttZ_M10", TString selection="2lss_sr", int job_no=-1)
 {
   TString output_dir;
-  bool batch_run = false; //switch for batch vs. local commandline running
+  bool batch_run = true; //switch for batch vs. local commandline running
 
-  if (batch_run) output_dir = "/scratch365/cmuelle2/selection_trees/june12_test/";
-  else output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
+  if (batch_run) output_dir = "/scratch365/cmuelle2/extraction_trees/june14_test/";
+  else output_dir = "";
+  //  else output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
 
   //////////// available selections //////////////
   //EventSelector run_it0(sample, selection, output_dir, job_no, batch_run);
-  EventSelector run_it1(sample, "2lss_sr", output_dir, job_no, batch_run);
-  //EventSelector run_it2(sample, "2lss_lepMVA_ar", output_dir, job_no, batch_run);
-  //EventSelector run_it3(sample, "2los_ar", output_dir, job_no, batch_run);
+  EventSelector run_it1(sample, "2lss_sr", output_dir, job_no, batch_run);  
+
+  if (sample == "data")
+    {
+      EventSelector run_it2(sample, "2lss_lepMVA_ar", output_dir, job_no, batch_run);
+      EventSelector run_it3(sample, "2los_ar", output_dir, job_no, batch_run);
+    }
+  
+
   //EventSelector run_it4(sample, "3l_sr", output_dir, job_no, batch_run);
   //EventSelector run_it5(sample, "3l_lepMVA_ar", output_dir, job_no, batch_run);
   //EventSelector run_it6(sample, "2lss_training_loose", output_dir, job_no, batch_run);

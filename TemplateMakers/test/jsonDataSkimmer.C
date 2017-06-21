@@ -18,7 +18,6 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "selection.h"
-#include "loadSamples.h"
 #include "treeTools.h"
 #include "JsonFilter.h"
 #include "FakeRateEvaluator.h"
@@ -29,11 +28,11 @@
 ///
 /////////////////////////////////////////
 
-void run_it(TChain* chain, TString output_file)
+void run_it(TTree* tree, TString output_file)
 {
 
-  int chainentries = chain->GetEntries();   
-  cout << "# events in tree: "<< chainentries << endl;  
+  int treeentries = tree->GetEntries();   
+  cout << "# events in tree: "<< treeentries << endl;  
   
   double mcwgt_intree = -999.;
   double wallTimePerEvent_intree = -99.;  
@@ -57,44 +56,45 @@ void run_it(TChain* chain, TString output_file)
   vector<ttH::Electron> *fakeable_electrons_intree=0;
   vector<ttH::Muon> *tight_muons_intree=0;
   vector<ttH::Muon> *fakeable_muons_intree=0;
-  ttH::Jet *b_from_leptop_intree=0;
+  //vector<ttH::Jet> *bTight_jets_intree=0;  
+  //vector<ttH::Jet> *bLoose_jets_intree=0;   
+
+  //tree->SetBranchStatus("bTight_jets.*",1);
+  //tree->SetBranchStatus("bLoose_jets.*",1);
+  // tree->SetBranchStatus("eventnum",1);  
+  tree->SetBranchAddress("eventnum", &eventnum_intree);
+  tree->SetBranchAddress("runNumber", &runNumber_intree);
+  tree->SetBranchAddress("lumiBlock", &lumiBlock_intree);
+  tree->SetBranchAddress("passTrigger", &passTrigger_intree);
+  tree->SetBranchAddress("tight_leptons",&tight_leptons_intree);
+  tree->SetBranchAddress("tight_muons",&tight_muons_intree);
+  tree->SetBranchAddress("fakeable_leptons",&fakeable_leptons_intree);
+  tree->SetBranchAddress("fakeable_muons",&fakeable_muons_intree);
+  tree->SetBranchAddress("fakeable_electrons",&fakeable_electrons_intree);
+  tree->SetBranchAddress("preselected_jets", &preselected_jets_intree);
+  //tree->SetBranchAddress("bTight_jets", &bTight_jets_intree);  
+  //tree->SetBranchAddress("bLoose_jets", &bLoose_jets_intree);
 
 
-  chain->SetBranchStatus("mcwgt",0);
-  // chain->SetBranchStatus("eventnum",1);
+  FakeRateEvaluator fakeRateHelper;
   
-  chain->SetBranchAddress("eventnum", &eventnum_intree);
-  chain->SetBranchAddress("runNumber", &runNumber_intree);
-  chain->SetBranchAddress("lumiBlock", &lumiBlock_intree);
-  chain->SetBranchAddress("passTrigger", &passTrigger_intree);
-  chain->SetBranchAddress("tight_leptons",&tight_leptons_intree);
-  chain->SetBranchAddress("tight_muons",&tight_muons_intree);
-  chain->SetBranchAddress("fakeable_leptons",&fakeable_leptons_intree);
-  chain->SetBranchAddress("fakeable_muons",&fakeable_muons_intree);
-  chain->SetBranchAddress("fakeable_electrons",&fakeable_electrons_intree);
-  chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
+  TFile *copiedfile = new TFile(output_file+".root", "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
 
-  FakeRateEvaluator lepFakeRateObject;
-  lepFakeRateObject.loadWeights();
+  TTree *signal_tree = (TTree*)tree->CloneTree(0);
+  fakeRateHelper.initializeTree(signal_tree);
   
-  TFile *copiedfile = new TFile(output_file, "RECREATE"); //"UPDATE"); // #, 'test' ) // "RECREATE");
-
-  TTree *signal_tree = (TTree*)chain->CloneTree(0);
-  signal_tree->Branch("mcwgt", &mcwgt_intree);  
-
-  Int_t cachesize = 250000000;   //250 MBytes
-  chain->SetCacheSize(cachesize);
-  chain->SetCacheLearnEntries(20); 
+  //Int_t cachesize = 250000000;   //250 MBytes
+  //tree->SetCacheSize(cachesize);
+  //tree->SetCacheLearnEntries(20); 
   
   JsonFilter my_json_filter;
   vector<double> events;
   double starttime = get_wall_time();
-  //  chainentries = 10000;
-  for (int i=0; i<chainentries; i++)
+  for (int i=0; i<treeentries; i++)
     {
       
-      printProgress(i,chainentries);
-      chain->GetEntry(i);
+      printProgress(i,treeentries);
+      tree->GetEntry(i);
       
       //////////////////////////
       ////
@@ -105,31 +105,53 @@ void run_it(TChain* chain, TString output_file)
       bool no_duplicate = (std::find(events.begin(),events.end(),eventnum_intree) == events.end());
       bool golden_json = my_json_filter.isValid(runNumber_intree,lumiBlock_intree);
 
-
-      //if (no_duplicate and golden_json and abs((*tight_leptons_intree)[0].pdgID)+abs((*tight_leptons_intree)[1].pdgID)!=26 )
-      if (no_duplicate and golden_json )
+      if (output_file == "data" and no_duplicate and golden_json)
 	{
 	  events.push_back(eventnum_intree);
-	  //mcwgt_intree = lepFakeRateObject.flipProb(*tight_leptons_intree);
-	  mcwgt_intree = lepFakeRateObject.get_fr(*fakeable_leptons_intree,*fakeable_electrons_intree, *fakeable_muons_intree);
-	  //mcwgt_intree = 1.;
 	  signal_tree->Fill();
 	}
+      else if (output_file == "fakes" and no_duplicate and golden_json )
+	{
+	  events.push_back(eventnum_intree);
+	  fakeRateHelper.addFakeRates(*fakeable_leptons_intree);
+	  signal_tree->Fill();
+	}
+
+      else if (output_file =="flips" and no_duplicate and golden_json and abs((*tight_leptons_intree)[0].pdgID)+abs((*tight_leptons_intree)[1].pdgID)!=26 )
+	{
+	  events.push_back(eventnum_intree);
+	  fakeRateHelper.addFlipRates(*tight_leptons_intree);
+	  signal_tree->Fill();
+	}
+
     }
   
   
   double endtime = get_wall_time();
   cout << "Elapsed time: " << endtime - starttime << " seconds, " << endl;
-  if (chainentries>0) cout << "an average of " << (endtime - starttime) / chainentries << " per event." << endl;
+  if (treeentries>0) cout << "an average of " << (endtime - starttime) / treeentries << " per event." << endl;
   
   signal_tree->Write();
+  gDirectory->Purge();
+  copiedfile->Write();
   copiedfile->Close();  
 }
 
 void jsonDataSkimmer(void)
 {
-  TString output_file = "fakes_noMuTightCharge.root";
-  TChain *chain = new TChain("ss2l_tree");
-  chain->Add("/scratch365/cmuelle2/selection_trees/may10_fakeTests/data2lss_lepMVA_ar.root");
-  run_it(chain,output_file);
+  TString output_file_prefix_data = "data";
+  TFile* input_file = new TFile("/scratch365/cmuelle2/extraction_trees/june14_test/data2lss_sr.root","READONLY");
+  TTree* tree_data = (TTree*)input_file->Get("ss2l_tree");
+  run_it(tree_data,output_file_prefix_data);
+  
+  TString output_file_prefix_fakes = "fakes";
+  TFile* input_file_fakes = new TFile("/scratch365/cmuelle2/extraction_trees/june14_test/data2lss_lepMVA_ar.root","READONLY");
+  TTree* tree_fakes = (TTree*)input_file_fakes->Get("ss2l_tree");
+  run_it(tree_fakes,output_file_prefix_fakes);
+
+  TString output_file_prefix_flips = "flips";
+  TFile* input_file_flips = new TFile("/scratch365/cmuelle2/extraction_trees/june14_test/data2los_ar.root","READONLY");
+  TTree* tree_flips = (TTree*)input_file_flips->Get("ss2l_tree");
+  run_it(tree_flips,output_file_prefix_flips);
+
 }

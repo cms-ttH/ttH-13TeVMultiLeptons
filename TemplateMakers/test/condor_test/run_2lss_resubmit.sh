@@ -1,6 +1,7 @@
 #!/bin/sh
 
-samples=('ttW:6')
+#samples=('TTGJets:9' 'ttjets_semilep:3,13,28' 'ttjets_dilep:84,102,1,16,26,27,31,35,37,40,51,56,67,85,89,94,117,118,3,121,122,70,105,60' 'ST_tW:1,6' 'ST_tChan_top:1,2' 'DY_M50_LO:53,18,39,20,50,58,65,70,78,86,10' 'DY_M50:8,19,20,27,35,50,52,54' 'WW_doublescatering_rares:0' 'tZq:7,30,32,48,49,56,23,64,75' 'ZGTo2LG:8,17,19,33,34' 'ZZ_to4l:10,12' 'WWqq_rares:0')
+samples=( 'ttW:1' 'tZq:27' 'ttjets_semilep:26,31'  )
 
 # Loop over samples
 for sample in ${samples[@]}

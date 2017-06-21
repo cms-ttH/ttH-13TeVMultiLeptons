@@ -1,10 +1,10 @@
-sample = ttjets_semilep
+sample = tth_powheg
 N = 1
-job_no = 31
+job_no = 4
 
 +IsExpressJob = True
 universe = vanilla
-executable = run_2lss.sh
+executable = run_chain.sh
 arguments = $(sample) $(job_no)
 output = condor_logs/$(sample).stdout.$(job_no)
 error = condor_logs/$(sample).stderr.$(job_no)

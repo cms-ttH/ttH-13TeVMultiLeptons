@@ -1,6 +1,6 @@
 events_per_job = 10000
 
-sample = fakes
+sample = WWW_rares
 N = 1
 
 +IsExpressJob = True

@@ -97,7 +97,7 @@ public:
 	  loadFile( sample_vec, file_index);
       	}
 
-      else if (sample == "ttZ")
+      else if (sample == "ttZ_M10")
       	{
       	  vector<TString> sample_vec;
       	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttZ/");
@@ -403,17 +403,19 @@ TString getSelectionFile(TString sample_name)
 class Sample
 {
 private:
+  TFile* input_file_;
 public:
  Sample(TString sample_name_="name"):
   sample_name(sample_name_)
   {
     //TString prefix = "/scratch365/cmuelle2/selection_trees/may30_m17/";
-    TString prefix = "/scratch365/cmuelle2/extraction_trees/may31_extractionTest/";
+    //TString prefix = "/scratch365/cmuelle2/selection_trees/june12_test/";
+    TString prefix = "/scratch365/cmuelle2/extraction_trees/june14_test/";
     input_file_name = prefix;
     
     if (sample_name == "ttH")
       {
-	input_file_name += "ttH.root";
+	input_file_name += "tth_powheg.root";
 	legend_name = "ttH";
 	fill_color = kOrange+10;
 	fill_style = 1001;
@@ -427,9 +429,9 @@ public:
 	fill_style = 1001;
 	xsec = 0.196;
       }
-    else if (sample_name == "ttZ")
+    else if (sample_name == "ttZ_M10")
       {
-	input_file_name += "ttZ.root";
+	input_file_name += "ttZ_M10.root";
 	legend_name = "TTZ";
 	fill_color = kSpring+2;
 	fill_style = 1001;
@@ -676,8 +678,8 @@ public:
 	xsec = 1.;
       }
     
-    TFile* input_file_ = new TFile(input_file_name,"READONLY");
-    tree = (TTree*)input_file_->Get("ss2l_tree");
+    input_file_ = new TFile(input_file_name,"READONLY");
+
     
     if (sample_name != "data" && sample_name != "fakes" && sample_name != "flips" )
       {
@@ -689,13 +691,18 @@ public:
 
   } //default constructor
 
-  TTree* tree;
   TString input_file_name;
   TString sample_name;
   TString legend_name;
   int fill_color;
   int fill_style;
   double xsec; //13 TeV xsec in pb
+
+  TTree* getTree(TString tree_name_="ss2l_tree")
+  {
+    TTree* tree = (TTree*)input_file_->Get(tree_name_);
+    return tree;
+  }
 
   virtual ~Sample(){}
 };

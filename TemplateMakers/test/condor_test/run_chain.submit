@@ -1,0 +1,23 @@
+sample = data
+N = 207
+
++IsExpressJob = True
+universe = vanilla
+executable = run_chain.sh
+arguments = $(sample) $(Process)
+output = condor_logs/$(sample).stdout.$(Process)
+error = condor_logs/$(sample).stderr.$(Process)
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+log = condor_logs/logfile.log
+
+#on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
+#noop_job = !( stringListMember("$(Process)","0,4,9,14") )
+
+requirements = (machine != "skynet007.crc.nd.edu" )
+requestMemory=4400
+queue $(N)
+
+
+
+

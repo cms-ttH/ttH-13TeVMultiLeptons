@@ -3,6 +3,7 @@
 #include "loadSamples.h"
 #include "treeTools.h"
 #include "plotObjectClasses.h"
+#include "systematics.h"
 
 void plotMaker_signalExtraction(void)
 {
@@ -33,7 +34,7 @@ void plotMaker_signalExtraction(void)
   samples.push_back(Sample("WW_2l2nu"));
   samples.push_back(Sample("WZ_to3lnu"));
   samples.push_back(Sample("ZZ_to4l"));
-  samples.push_back(Sample("ttZ"));
+  samples.push_back(Sample("ttZ_M10"));
   samples.push_back(Sample("ttZ_M1to10"));
   samples.push_back(Sample("ttjets_semilep"));
   samples.push_back(Sample("ttjets_dilep"));
@@ -41,7 +42,6 @@ void plotMaker_signalExtraction(void)
   samples.push_back(Sample("ttH"));
   samples.push_back(Sample("data"));
 
-  
   //////////////////////////
   ///
   /// choose plots
@@ -71,14 +71,26 @@ void plotMaker_signalExtraction(void)
   StackObject finalShape_stack("final_shape_","BDT (ttH,tt/ttV) bin"); 
   stacks[finalShape.hist_name] = finalShape_stack;
   plots.push_back(finalShape);
-
+  
   PlotObject finalShape_cards("final_shape","BDT (ttH,tt/ttV) bin",8,0.5,8.5,"final_shape");
 
-
+  auto mcSysts = getMcSystShapes(finalShape_cards);
+  auto frSysts = getFrSystShapes(finalShape_cards);
+  
   for (const auto & sample : samples)
     {
       finalShape_cards.fill(sample,outputfile_cards);
       //cout << "sample: " << sample.legend_name << endl;
+      
+      if (sample.sample_name != "data" and sample.sample_name != "fakes" and sample.sample_name != "flips")
+	{
+	  for (auto & plot : mcSysts) plot.fill(sample, outputfile_cards);
+	}
+      else if (sample.sample_name == "fakes")
+	{
+	  for (auto & plot : frSysts) plot.fill(sample, outputfile_cards);
+	}
+
       for (auto & plot : plots)
        	{
        	  plot.fill(sample, outputfile);

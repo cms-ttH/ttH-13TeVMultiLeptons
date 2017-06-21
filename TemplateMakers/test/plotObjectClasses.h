@@ -85,7 +85,10 @@ public:
   TH1D* em_bl_m_hist;
   TH1D* em_bl_p_hist;
 
-
+  TCut btag_weight="btag_weight";
+  TCut fr_weight="fr_mva090";
+  TString tree_name="ss2l_tree";
+  
   void fill(Sample sample, TFile* fout=0)
   {
     sample_name = sample.sample_name;
@@ -157,17 +160,26 @@ public:
     TString drawCommand_mm_bl_m = drawCommand + " >> "+mm_bl_m_name;
 
     TCut weight = "";
-    TCut sim_weight = "mcwgt*btag_weight*trigger_SF*lepton_SF";
+
+    TCut trigger_SF="trigger_SF";
+    TCut lepton_SF="lepton_SF";
+    TCut sim_weight = "mcwgt"*btag_weight*trigger_SF*lepton_SF;
     TCut prompt = "((tight_leptons[0].isPromptFinalState || tight_leptons[0].isDirectPromptTauDecayProductFinalState) && (tight_leptons[1].isPromptFinalState || tight_leptons[1].isDirectPromptTauDecayProductFinalState))";
     TCut matchRightCharge = "tight_leptons[0].pdgID == tight_leptons[0].genPdgID && tight_leptons[1].pdgID == tight_leptons[1].genPdgID";
+
     if (sample_name != "data" && sample_name != "fakes" && sample_name != "flips" )
       {
 	weight= sim_weight*prompt*matchRightCharge;
       }
-    else if (sample_name == "fakes" || sample_name == "flips")
+    else if (sample_name == "fakes")
       {
-	weight= "mcwgt";
+	weight = fr_weight;
       }
+    else if (sample_name == "flips")
+      {
+	weight = "chargeMisId";
+      }
+
     if (legend_name == "Convs")//sample_name == "TTGJets" || sample_name == "TGJets")
       {
     	TCut conv_cut = "(tight_leptons[0].genMotherPdgID == 22 || tight_leptons[1].genMotherPdgID == 22)";
@@ -189,7 +201,7 @@ public:
     TCut weight_mm_bl_m = "(flavor_category==\"mm\" && plus_category == 0 && bTight_category ==0)"*weight;
 
     
-    auto tree = sample.tree;
+    auto tree = sample.getTree(tree_name);
     template_hist->SetDirectory(gDirectory);
     ee_hist->SetDirectory(gDirectory);
     em_hist->SetDirectory(gDirectory);
@@ -221,7 +233,7 @@ public:
     tree->Draw(drawCommand_mm_bt_m,weight_mm_bt_m,drawOption);
     tree->Draw(drawCommand_mm_bl_p,weight_mm_bl_p,drawOption);
     tree->Draw(drawCommand_mm_bl_m,weight_mm_bl_m,drawOption);
-    
+
     template_hist->Scale( sample.xsec );
     ee_hist->Scale( sample.xsec );
     em_hist->Scale( sample.xsec );
@@ -275,13 +287,10 @@ class StackObject
     TString stack_name = stack->GetName();
     TString can_name = stack_name + "_can";
     //TString save_name = stack_name + ".root";
-
     TString title = stack->GetTitle();
     stack->SetTitle("");
     data_hist->SetTitle("");
-
     TCanvas* can = new TCanvas(can_name, can_name,10,32,430,590);
-
     TPad* pad1 = new TPad("pad1","pad1",0,0.24,1,1);//
     pad1->SetBottomMargin(0);
     pad1->SetTicks();
@@ -303,7 +312,6 @@ class StackObject
 	legend_list.push_back("Unc.");
       }
 
-    
     data_hist->SetMarkerStyle(20);
     data_hist->Draw("epsame");
     

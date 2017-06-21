@@ -108,7 +108,7 @@ bool pass2l(vector<ttH::Electron> tightEles, vector<ttH::Electron> psEles, vecto
 bool pass2lss_bdtTraining(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets)
 {
 
-  if ( !passCommon(psEles,psMus,psJets) ) return false;
+  if ( !passCommon(looseEles,looseMus,psJets) ) return false;
 
   vector<ttH::Lepton> looseLeps = get_collection(looseMus,looseEles);
 

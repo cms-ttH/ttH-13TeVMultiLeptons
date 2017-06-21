@@ -163,7 +163,9 @@ class signalExtractionTreeMaker
     TLorentzVector met_tlv = setTlv( met_in );
     TLorentzVector lep1_t_tlv = setTlv( lep1 );
     
-    mt_lep1_met_branch = sqrt(2*lep1.correctedPt*met_branch*(1-cos(lep1.obj.phi()- met_in.obj.phi() )));
+    double met_ = std::min(met_tlv.Pt(), 400.);
+
+    mt_lep1_met_branch = sqrt(2*lep1.correctedPt*met_*(1-cos(lep1.obj.phi()- met_in.obj.phi() )));
 
     reco_score_branch = bdtReconstructor.reco_score_intree;
     hadtop_mass_branch = bdtReconstructor.hadTop_tlv_bdt_intree.M();

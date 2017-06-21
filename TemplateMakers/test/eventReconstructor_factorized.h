@@ -76,8 +76,6 @@ class eventReconstructor
   vector<double> all_combo_vec_intree;
   vector<ttH::Jet> *unmatched_jets_bdt_intree=0;
   vector<ttH::Jet> *matched_jets_bdt_intree=0;
-  vector<ttH::Jet> *btight_jets_intree=0;
-  vector<ttH::Jet> *bloose_jets_intree=0;
   ttH::Lepton *lep_from_higgs_bdt_intree=0;  
   ttH::Lepton *lep_from_leptop_bdt_intree=0;
   ttH::Jet *b_from_leptop_bdt_intree=0;
@@ -135,9 +133,6 @@ class eventReconstructor
     b_from_leptop_matching_intree = -1;
     W_from_hadtop_matching_intree = -1;
    
-    btight_jets_intree->clear();
-    bloose_jets_intree->clear();
-
     reco_score_intree = -2.;
     best_combo_vec_intree.clear();
     all_combo_vec_intree.clear();
@@ -170,8 +165,6 @@ class eventReconstructor
     input_tree->Branch("all_score_vec", &all_combo_vec_intree);
     input_tree->Branch("unmatched_jets_bdt", &unmatched_jets_bdt_intree);
     input_tree->Branch("matched_jets_bdt", &matched_jets_bdt_intree);
-    input_tree->Branch("bTight_jets", &btight_jets_intree);
-    input_tree->Branch("bLoose_jets", &bloose_jets_intree);
     input_tree->Branch("lep_from_leptop_bdt.", &lep_from_leptop_bdt_intree);
     input_tree->Branch("lep_from_higgs_bdt.", &lep_from_higgs_bdt_intree);
     input_tree->Branch("b_from_hadtop_bdt.", &b_from_hadtop_bdt_intree);
@@ -205,15 +198,14 @@ class eventReconstructor
     vector<ttH::Jet> jets_in = *jets_input;
 
     //determine which weights file to use...
+    int btight_count = 0;
     for (const auto & jet : jets_in)
     {
-      if (jet.csv >= 0.8) btight_jets_intree->push_back(jet);
-      else if (jet.csv >= 0.46) bloose_jets_intree->push_back(jet);
+      if (jet.csv >= 0.8) btight_count +=1;
     }
     
-    bool is_bTight = false;
-    if ( btight_jets_intree->size() > 1 ) is_bTight = true;
-
+    bool is_bTight = (btight_count >1);
+    
     if ( is_bTight ) TMVAReader_ = TMVAReader_bTight_;
     else             TMVAReader_ = TMVAReader_bLoose_;
 

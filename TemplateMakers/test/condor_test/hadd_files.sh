@@ -4,14 +4,15 @@
 
 prefix=$1
 
-target_dir="/scratch365/cmuelle2/selection_trees/april18_moriond17_fakes_notaus_muFix/"
+target_dir="/scratch365/cmuelle2/extraction_trees/june14_test"
 
 files="$target_dir/$prefix*.root" 
 
 #postfix="_genFilterTraining_2lss.root"
 #postfix="_2lss_extraction.root"
-postfix="_2lss_selection.root"
+#postfix="_2lss_selection.root"
 #postfix="_training_2lss.root"
+postfix=".root"
 output="$target_dir/../$prefix$postfix"
 
 export SCRAM_ARCH=slc6_amd64_gcc530
