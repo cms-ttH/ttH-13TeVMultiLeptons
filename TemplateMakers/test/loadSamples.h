@@ -297,6 +297,13 @@ public:
 	{
 	  loadFile( {"muell149/lobster_test__may25NoFilter/ttbar_SL_tranche3_looseLepJetClean/"}, file_index); //40
 	}
+
+      else if (sample == "ttjets_semilep_noFilter_1lepSkim")
+	{
+	  loadFile( {"muell149/lobster_test__june20_ttbarPhotonSelection/ttbar_SL_tranche3/"}, file_index); //1022
+	}
+      
+      
       
       
       else if (sample == "data")

@@ -13,7 +13,7 @@
 #include "loadSamples.h"
 #include "treeTools.h"
 #include "ScaleFactorApplicator.h"
-//#include "GenParticleHelper.h"
+#include "GenParticleHelper.h"
 #include "CSVReweight.h"
 #include "Fertilizer.h"
 
@@ -142,14 +142,22 @@ class EventSelector
 				      *jet_collection);
 	lep_collection = fakeable_leptons_intree;
       }
+    else if (selection=="ttbar_gamma")
+      {
+	passes = passttbarGamma(
+				*fakeable_electrons_intree,
+				*fakeable_muons_intree,
+				*jet_collection, *pruned_genParticles_intree);
+	lep_collection = fakeable_leptons_intree;
+      }
     
     bool passes_trig = passesTrigger(*passTrigger_intree, *lep_collection);
-    if ( passes && passes_trig)
+    if ( passes )//&& passes_trig)
       {	  
-	fertilizer_.growTreeBranches(*lep_collection,*jet_collection,*preselected_leptons_intree,*met_intree);
-	lepSFs_.addTriggerSF(lep_collection);
-	lepSFs_.addLeptonSF(lep_collection);
-	csvReweighter_.applySFs(*jet_collection);
+	//fertilizer_.growTreeBranches(*lep_collection,*jet_collection,*preselected_leptons_intree,*met_intree);
+	//lepSFs_.addTriggerSF(lep_collection);
+	//lepSFs_.addLeptonSF(lep_collection);
+	//csvReweighter_.applySFs(*jet_collection);
 	
 	//only for gen-matching studies//
 	//myGenParticleHelper.clear();
@@ -218,7 +226,7 @@ class EventSelector
       LeptonSF lepSFs;
       LeptonSF lepSFs_jes_up;
       LeptonSF lepSFs_jes_down;
-      //GenParticleHelper myGenParticleHelper;
+      GenParticleHelper myGenParticleHelper;
       
       outputfile->cd();
       if (batch_run && (job_no == -1 || job_no == 0))
@@ -235,7 +243,7 @@ class EventSelector
       csvReweighter.initializeTree(ss2l_tree);
       fertilizer.initializeTree(ss2l_tree);
       lepSFs.initializeTree(ss2l_tree);
-      //myGenParticleHelper.initializeTree(ss2l_tree);
+      myGenParticleHelper.initializeTree(ss2l_tree);
 
       TTree *ss2l_tree_jes_up = (TTree*)chain->CloneTree(0);
       ss2l_tree_jes_up->SetName("ss2l_tree_jes_up");
@@ -279,8 +287,8 @@ class EventSelector
 	  //////////////////////////
 	  
 	  select(selection, ss2l_tree, preselected_jets_intree, csvReweighter, fertilizer, lepSFs);
-	  select(selection, ss2l_tree_jes_up, preselected_jets_jecUp_intree, csvReweighter_jes_up, fertilizer_jes_up, lepSFs_jes_up);
-	  select(selection, ss2l_tree_jes_down, preselected_jets_jecDown_intree, csvReweighter_jes_down, fertilizer_jes_down, lepSFs_jes_down);
+	  //select(selection, ss2l_tree_jes_up, preselected_jets_jecUp_intree, csvReweighter_jes_up, fertilizer_jes_up, lepSFs_jes_up);
+	  //select(selection, ss2l_tree_jes_down, preselected_jets_jecDown_intree, csvReweighter_jes_down, fertilizer_jes_down, lepSFs_jes_down);
 	  
 	}
       
@@ -291,8 +299,8 @@ class EventSelector
       
       //    outputfile->cd();
       ss2l_tree->Write();
-      ss2l_tree_jes_up->Write();      
-      ss2l_tree_jes_down->Write();
+      //      ss2l_tree_jes_up->Write();      
+      //      ss2l_tree_jes_down->Write();
 
       gDirectory->Purge();
       outputfile->Close();    
@@ -301,17 +309,17 @@ class EventSelector
   virtual ~EventSelector(){};
 };
 
-void makeSelectionTree(TString sample="ttZ_M10", TString selection="2lss_sr", int job_no=-1)
+void makeSelectionTree(TString sample="ttjets_semilep_noFilter_1lepSkim", TString selection="2lss_sr", int job_no=-1)
 {
   TString output_dir;
-  bool batch_run = false; //switch for batch vs. local commandline running
+  bool batch_run = true; //switch for batch vs. local commandline running
 
-  if (batch_run) output_dir = "/scratch365/cmuelle2/selection_trees/june12_test/";
+  if (batch_run) output_dir = "/scratch365/cmuelle2/selection_trees/june23_ttbarPlusGamma/";
   else output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
 
   //////////// available selections //////////////
   //EventSelector run_it0(sample, selection, output_dir, job_no, batch_run);
-  EventSelector run_it1(sample, "2lss_sr", output_dir, job_no, batch_run);
+  //EventSelector run_it1(sample, "2lss_sr", output_dir, job_no, batch_run);
   //EventSelector run_it2(sample, "2lss_lepMVA_ar", output_dir, job_no, batch_run);
   //EventSelector run_it3(sample, "2los_ar", output_dir, job_no, batch_run);
   //EventSelector run_it4(sample, "3l_sr", output_dir, job_no, batch_run);
@@ -319,6 +327,7 @@ void makeSelectionTree(TString sample="ttZ_M10", TString selection="2lss_sr", in
   //EventSelector run_it6(sample, "2lss_training_loose", output_dir, job_no, batch_run);
   //EventSelector run_it7(sample, "2lss_training_fo", output_dir, job_no, batch_run);
   //EventSelector run_it8(sample, "4l_sr", output_dir, job_no, batch_run);
+  EventSelector run_it9(sample, "ttbar_gamma", output_dir, job_no, batch_run);
   
 }
 

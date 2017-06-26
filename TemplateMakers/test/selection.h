@@ -542,3 +542,31 @@ bool pass4l(
     return true;
 }
 
+bool passttbarGamma(vector<ttH::Electron> looseEles, vector<ttH::Muon> looseMus, vector<ttH::Jet> psJets, vector<ttH::GenParticle> genParticles)
+{
+
+  //if ( !passCommon(looseEles,looseMus,psJets) ) return false;
+
+  vector<ttH::Lepton> looseLeps = get_collection(looseMus,looseEles);
+  
+  int num_goodLeps = 0;
+  for (const auto & lep : looseLeps)
+    {
+      if (lep.genMotherPdgID != -9999) num_goodLeps +=1;
+    }
+  if (num_goodLeps != 1) return false; 
+
+  bool hasGamma = false;
+  for (const auto & particle : genParticles)
+    {
+      if (particle.status ==1 && particle.pdgID ==22 && particle.obj.pt() > 15 && abs(particle.obj.eta()) < 2.5)
+	{
+	  hasGamma = true;
+	  break;
+	}
+    }
+
+  if (!hasGamma) return false;
+  return true;
+}
+
