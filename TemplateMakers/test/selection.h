@@ -55,8 +55,7 @@ bool pass2lss(
   for (auto &ele: tightEles) if ( !(ele.passConversioVeto) ) return false;//conv veto ele
 
   if ( psJets.size() < 4 )      return false; //jet requirement
-  if ( !(tightLeps[0].obj.Pt()>25. && tightLeps[1].obj.Pt()>10.) ) return false; //pt requirement
-  if ( abs(tightLeps[1].pdgID) == 11 && tightLeps[1].obj.Pt() <= 15. ) return false; //pt2 cut for ele
+  if ( !(tightLeps[0].obj.Pt()>25. && tightLeps[1].obj.Pt()>15.) ) return false; //pt requirement
 
   if (tightEles.size() == 2 )
     {
@@ -163,28 +162,12 @@ bool pass2lss_lepMVA_AR(
             for (auto & ele : fakeableEles) {
                 if (fakeableLeps[i].obj.pt() == ele.obj.pt()) {
                     if (ele.numMissingInnerHits != 0) return false;
-                    //if (!ele.isGsfCtfScPixChargeConsistent) return false;
-                    break;
-                }
-            }
-
-            for (auto & ele : tightEles) {
-                if (fakeableLeps[i].obj.pt() == ele.obj.pt()) {
-                    if (ele.numMissingInnerHits != 0) return false;
                     if (!ele.isGsfCtfScPixChargeConsistent) return false;
-                    if (!ele.passConversioVeto) return false;
+		    if (!ele.passConversioVeto) return false;
                     break;
                 }
             }
         } 
-	/* else if (abs(fakeableLeps[i].pdgID) == 13) { */
-	/*   for (auto & mu : tightMus) { //fakeableMus */
-	/*     if (fakeableLeps[i].obj.pt() == mu.obj.pt()) { */
-	/*       if (mu.chargeFlip > 0.2) return false; */
-	/*       break; */
-	/*     } */
-	/*   } */
-        /* } */
     }
     
     if (fakeableEles.size() == 2 ) {
