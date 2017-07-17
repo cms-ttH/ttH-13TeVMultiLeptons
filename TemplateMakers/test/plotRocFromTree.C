@@ -45,7 +45,7 @@ private:
     return roc_curve;
   }
 
-  TGraph* getRoc(bool reverse=false)
+  TGraph* getRoc(bool reverse=false, TCut cuts_sig, TCut cuts_bkg)
   {
     
     TChain *chain_sig = new TChain(tree_name);
@@ -56,9 +56,6 @@ private:
     
     TH1D* sig_h = new TH1D("sig_h","sig_h",num_bins,xmin,xmax);
     TH1D* bkg_h = new TH1D("bkg_h","bkg_h",num_bins,xmin,xmax);
-
-    TCut cuts_sig = "mcwgt*(1.)";
-    TCut cuts_bkg = "mcwgt*(1.)";
 
     TString draw_variable_signal = variable_name + " >> sig_h";
     TString draw_variable_background = variable_name + " >> bkg_h";
@@ -71,7 +68,7 @@ private:
   }
 
 public:
-  RocObject(TString sig_file_str_="sfile", TString bkg_file_str_="bfile", TString tree_name_="ss2l_tree", TString legend_str_="leg", TString var_name_="var", int num_bins_=1, double xmin_=-1., double xmax_=1., int color=1)
+  RocObject(TString sig_file_str_="sfile", TString bkg_file_str_="bfile", TString tree_name_="ss2l_tree", TString legend_str_="leg", TString var_name_="var", int num_bins_=1, double xmin_=-1., double xmax_=1., int color=1, TCut weight_s="mcwgt",TCut weight_b="mcwgt")
   {
     bkg_file_str = bkg_file_str_;
     sig_file_str = sig_file_str_;
@@ -81,7 +78,7 @@ public:
     tree_name = tree_name_;
     variable_name = var_name_;
 
-    roc_curve = getRoc(true);
+    roc_curve = getRoc(true,weight_s,weight_b);
     roc_curve->SetLineColor(color);
     double roc_integral = roc_curve->Integral()+0.5;
     legend_str = legend_str_+ " ROC: "+ std::to_string(roc_integral);
@@ -121,33 +118,30 @@ void drawRocs(vector<RocObject> roc_vec)
 void plotRocFromTree(void)
 {
   vector<RocObject> roc_vector;
-  TString variable_name = "vs_ttbar_score";
+  TString variable_name = "reco_score";
   int num_bins = 30;
   double xmin = -1.;
   double xmax = 1.05;
   TString tree_name = "ss2l_tree";
   
-  TString signal_file1 = "/scratch365/cmuelle2/extraction_trees/jan13_ICHEP_trees_withFactorizedRecoBdt_fastPermutations_noHiggsLoop/tth_aMC_old_2lss_extraction.root";
-  TString background_file1 = "/scratch365/cmuelle2/extraction_trees/jan13_ICHEP_trees_withFactorizedRecoBdt_fastPermutations_noHiggsLoop/ttbar_semiLep_powheg_2lss_extraction.root";
+  TString signal_file1 = "ttH_incl.root";
+  TString background_file1 = "ttjets_incl.root";
+  TString background_file2 = "fakes_incl.root";
 
-  TString signal_file2 = "/scratch365/cmuelle2/extraction_trees/jan14_ICHEP_trees_withFactorizedRecoBdt_fastPerm_noHiggsLoop_genFilterWeights/tth_aMC_old_2lss_extraction.root";
-  TString background_file2 = "/scratch365/cmuelle2/extraction_trees/jan14_ICHEP_trees_withFactorizedRecoBdt_fastPerm_noHiggsLoop_genFilterWeights/ttbar_semiLep_powheg_2lss_extraction.root";
+  TString signal_file2 = "ttH_bTbL.root";
+  TString background_file3 = "ttjets_bTbL.root";
+  TString background_file4 = "fakes_bTbL.root";
 
-  TString background_file3 = "/scratch365/cmuelle2/extraction_trees/jan23_ichep_data/data.root";
-
-  RocObject Roc1(signal_file1, background_file1, tree_name, "weights for marco, MC bkg standard", variable_name, num_bins, xmin, xmax, 419);
+  RocObject Roc1(signal_file1, background_file1, tree_name, "ttjets v ttH incl", variable_name, num_bins, xmin, xmax, 419);
   roc_vector.push_back(Roc1);
 
-  RocObject Roc2(signal_file1, background_file1, tree_name, "weights for marco, MC bkg w/ recoBDT", "vs_ttbar_withRecoBdt_bti_blbl_score", num_bins, xmin, xmax, 1);
+  RocObject Roc2(signal_file1, background_file2, tree_name, "fake v ttH incl", variable_name, num_bins, xmin, xmax, 1,"mcwgt","fr_mva090");
   roc_vector.push_back(Roc2);
 
-  // RocObject Roc2(signal_file2, background_file2, tree_name, "gen filter", variable_name, num_bins, xmin, xmax, 6);
-  // roc_vector.push_back(Roc2);
-
-  RocObject Roc3(signal_file1, background_file3, tree_name, "weights for marco, data driven bkg, standard", variable_name, num_bins, xmin, xmax, 4);
+  RocObject Roc3(signal_file2, background_file3, tree_name, "ttjets v ttH bTbL", variable_name, num_bins, xmin, xmax, 4);
   roc_vector.push_back(Roc3);
 
-  RocObject Roc4(signal_file1, background_file3, tree_name, "weights for marco, data driven bkg, w/ reco bdt", "vs_ttbar_withRecoBdt_bti_blbl_score", num_bins, xmin, xmax, 6);
+  RocObject Roc4(signal_file2, background_file4, tree_name, "fake v ttH bTbL", variable_name, num_bins, xmin, xmax, 6,"mcwgt","fr_mva090");
   roc_vector.push_back(Roc4);
 
   drawRocs(roc_vector);
