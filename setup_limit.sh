@@ -12,6 +12,7 @@ EOF
    set -e
    set -o xtrace
    dcard="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/mk_datacard"
+   impact_script="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/makeImpactPlot.sh"
    cd ~/
    export SCRAM_ARCH=slc6_amd64_gcc491
    scramv1 project -n CMSSW_7_4_16_patch2_combine CMSSW CMSSW_7_4_16_patch2
@@ -25,7 +26,8 @@ EOF
    git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
 
    cp -r $dcard .
-
+   cp -r $impact_script .
+   
    scram b -j 8
 ) > setup_limit.log
 

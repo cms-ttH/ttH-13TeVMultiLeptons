@@ -20,7 +20,7 @@ mc = sigs + mc_bkg
 mc_syst = sigs + ['tWll','WW_2l2nu', 'WZ_to3lnu', 'ttZ_M10', 'ttZ_M1to10', 'ttW' ]
 
 cb = ch.CombineHarvester()
-# cb.SetVerbosity(2)
+cb.SetVerbosity(2)
 
 #masses = ch.ValsFromRange('120:130|5')
 masses = ['125']
@@ -67,6 +67,24 @@ cb.cp().AddSyst(cb, 'fr_mva090_', 'shape', ch.SystMap("process")(["fakes"],1.0))
 cb.cp().AddSyst(cb, 'fr_mva090_pt', 'shape', ch.SystMap("process")(["fakes"],1.0))
 cb.cp().AddSyst(cb, 'fr_mva090_be', 'shape', ch.SystMap("process")(["fakes"],1.0))
 
+
+# cb.cp().AddSyst(cb, 'bin1_', 'shape', ch.SystMap("process")(mc_syst,1.0))
+# cb.cp().AddSyst(cb, 'bin2_', 'shape', ch.SystMap("process")(mc_syst,1.0))
+# cb.cp().AddSyst(cb, 'bin3_', 'shape', ch.SystMap("process")(mc_syst,1.0))
+# cb.cp().AddSyst(cb, 'bin4_', 'shape', ch.SystMap("process")(mc_syst,1.0))
+# cb.cp().AddSyst(cb, 'bin5_', 'shape', ch.SystMap("process")(mc_syst,1.0))
+# cb.cp().AddSyst(cb, 'bin6_', 'shape', ch.SystMap("process")(mc_syst,1.0))
+# cb.cp().AddSyst(cb, 'bin7_', 'shape', ch.SystMap("process")(mc_syst,1.0))
+# cb.cp().AddSyst(cb, 'bin8_', 'shape', ch.SystMap("process")(mc_syst,1.0))
+# cb.cp().AddSyst(cb, 'bin1_', 'shape', ch.SystMap("process")(["fakes"],1.0))
+# cb.cp().AddSyst(cb, 'bin2_', 'shape', ch.SystMap("process")(["fakes"],1.0))
+# cb.cp().AddSyst(cb, 'bin3_', 'shape', ch.SystMap("process")(["fakes"],1.0))
+# cb.cp().AddSyst(cb, 'bin4_', 'shape', ch.SystMap("process")(["fakes"],1.0))
+# cb.cp().AddSyst(cb, 'bin5_', 'shape', ch.SystMap("process")(["fakes"],1.0))
+# cb.cp().AddSyst(cb, 'bin6_', 'shape', ch.SystMap("process")(["fakes"],1.0))
+# cb.cp().AddSyst(cb, 'bin7_', 'shape', ch.SystMap("process")(["fakes"],1.0))
+# cb.cp().AddSyst(cb, 'bin8_', 'shape', ch.SystMap("process")(["fakes"],1.0))
+
 cb.cp().backgrounds().ExtractShapes(
         args.input[0],
         "final_shape_$PROCESS_$BIN".format(args.discriminant),
@@ -80,7 +98,16 @@ cb.cp().signals().ExtractShapes(
 #        "final_shape_$PROCESS_$BIN_$SYSTEMATIC".format(args.discriminant)
 )
 
-cb.PrintObs().PrintProcs().PrintSysts()
+
+#add shape nuisances for bin-by-bin uncertainties 
+bbb = ch.BinByBinFactory()
+bbb.SetAddThreshold(0.14).SetMergeThreshold(0.4).SetFixNorm(False)
+bbb.MergeBinErrors(cb.cp().backgrounds())
+bbb.AddBinByBin(cb.cp().backgrounds(), cb)
+bbb.AddBinByBin(cb.cp().signals(), cb)
+
+
+#cb.PrintObs().PrintProcs().PrintSysts()
 
 cb.WriteDatacard("card.txt", "file.root")
 writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL.txt',
