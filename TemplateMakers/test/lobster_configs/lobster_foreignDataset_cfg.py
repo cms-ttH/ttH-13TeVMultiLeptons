@@ -2,7 +2,7 @@ from lobster import cmssw
 from lobster.core import *
 from lobster.monitor.elk.interface import ElkInterface
 
-version = '_may25NoFilter'
+version = '_june20_ttbarPhotonSelection'
 
 storage = StorageConfiguration(
         output=[
@@ -54,31 +54,31 @@ ttbar_DL_tranche3 = Workflow(
 workflows.append(ttbar_DL_tranche3)
 
 
-ttbar_SL_tranche3_looseLepJetClean = Workflow(
-    label='ttbar_SL_tranche3_looseLepJetClean',
-    dataset=cmssw.Dataset(
-        dataset='/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM',
-        events_per_task=20000
-        ),
-    category=processing,
-    pset='osTwoLep_cfg.py',
-    arguments=['skim=True','jetCleanFakeable=True'],
-    merge_size='2.0G'
-    )
-workflows.append(ttbar_SL_tranche3_looseLepJetClean)
+# ttbar_SL_tranche3_looseLepJetClean = Workflow(
+#     label='ttbar_SL_tranche3_looseLepJetClean',
+#     dataset=cmssw.Dataset(
+#         dataset='/TTToSemilepton_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM',
+#         events_per_task=20000
+#         ),
+#     category=processing,
+#     pset='osTwoLep_cfg.py',
+#     arguments=['skim=True','jetCleanFakeable=True'],
+#     merge_size='2.0G'
+#     )
+# workflows.append(ttbar_SL_tranche3_looseLepJetClean)
 
-ttbar_DL_tranche3_looseLepJetClean = Workflow(
-    label='ttbar_DL_tranche3_looseLepJetClean',
-    dataset=cmssw.Dataset(
-        dataset='/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM',
-        events_per_task=20000
-        ),
-    category=processing,
-    pset='osTwoLep_cfg.py',
-    arguments=['skim=True','jetCleanFakeable=True'],
-    merge_size='2.0G'
-    )
-workflows.append(ttbar_DL_tranche3_looseLepJetClean)
+# ttbar_DL_tranche3_looseLepJetClean = Workflow(
+#     label='ttbar_DL_tranche3_looseLepJetClean',
+#     dataset=cmssw.Dataset(
+#         dataset='/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISpring16MiniAODv2-premix_withHLT_80X_mcRun2_asymptotic_v14-v1/MINIAODSIM',
+#         events_per_task=20000
+#         ),
+#     category=processing,
+#     pset='osTwoLep_cfg.py',
+#     arguments=['skim=True','jetCleanFakeable=True'],
+#     merge_size='2.0G'
+#     )
+# workflows.append(ttbar_DL_tranche3_looseLepJetClean)
 
 
 config = Config(

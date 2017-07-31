@@ -2,7 +2,7 @@ from lobster import cmssw
 from lobster.core import *
 from lobster.monitor.elk.interface import ElkInterface
 
-version = 'may22_Moriond17'
+version = 'june21_Moriond17'
 
 storage = StorageConfiguration(
         output=[
