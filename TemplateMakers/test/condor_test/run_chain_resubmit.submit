@@ -1,6 +1,6 @@
-sample = tth_powheg
+sample = tth__powheg_mWcutfix
 N = 1
-job_no = 4
+job_no = 16
 
 +IsExpressJob = True
 universe = vanilla

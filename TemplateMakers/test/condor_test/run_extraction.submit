@@ -1,4 +1,4 @@
-events_per_job = 10000
+events_per_job = 5000
 
 sample = WWW_rares
 N = 1

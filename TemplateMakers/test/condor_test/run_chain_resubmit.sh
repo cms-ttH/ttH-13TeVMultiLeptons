@@ -1,6 +1,7 @@
 #!/bin/sh
 
-samples=( 'tth_powheg:4' )
+#samples=( 'ZZ_to4l:0,4' 'DY_M50_LO:6,44,55,30,93,79' 'DY_M50:26,20,37,57' 'tZq:65,13,54,16,39' 'ttjets_dilep:24,4,62,97,113,40,78,121,13' 'ZZZ_rares:0' 'ZGTo2LG:34' 'WGToLNuG:0' 'ST_tW:6' 'ttjets_semilep:29' 'ttW:6' 'tth__powheg_mWcutfix:12,16')
+samples=( 'tth__powheg_mWcutfix:16')
 
 # Loop over samples
 for sample in ${samples[@]}

@@ -1,5 +1,5 @@
-sample = data
-N = 207
+sample = tth__powheg_mWcutfix
+N = 21
 
 +IsExpressJob = True
 universe = vanilla

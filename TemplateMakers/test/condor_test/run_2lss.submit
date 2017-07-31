@@ -1,5 +1,5 @@
-sample = WWW_rares
-N = 1
+sample = ttjets_semilep_noFilter_1lepSkim
+N = 25
 
 +IsExpressJob = True
 universe = vanilla

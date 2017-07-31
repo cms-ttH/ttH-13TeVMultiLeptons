@@ -1,15 +1,15 @@
-events_per_job = 9000
+events_per_job = 10000
 
-sample = tth_qgid
-job_no = 23
+sample = ttH
+job_no = 6
 
 +IsExpressJob = True
 universe = vanilla
 executable = run_extraction.sh
 getenv = True
 arguments = $(sample) $(events_per_job) $(job_no) 
-output = condor_logs/$(sample)_bdtReco.stdout.$(job_no)
-error = condor_logs/$(sample)_bdtReco.stderr.$(job_no)
+output = condor_logs/$(sample)_extraction.stdout.$(job_no)
+error = condor_logs/$(sample)_extraction.stderr.$(job_no)
 should_transfer_files = yes
 when_to_transfer_output = on_exit
 log = condor_logs/simple.logfile
