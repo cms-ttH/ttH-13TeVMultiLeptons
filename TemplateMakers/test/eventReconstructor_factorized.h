@@ -20,6 +20,7 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 #include "treeTools.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/test/hTaggerBDT.h"
 
 class eventReconstructor
 {
@@ -110,12 +111,15 @@ class eventReconstructor
     //Feb14 only hadtop objs test
     //TMVAReader_bTight_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/feb14_weights_recoBdt_weights_factorized/TMVAClassification_inclusive_BDTG.weights.xml");
     //TMVAReader_bLoose_ = bookMVA("/src/ttH-13TeVMultiLeptons/simpleweights/reconstruction_bdt_weights/feb14_weights_recoBdt_weights_factorized/TMVAClassification_inclusive_BDTG.weights.xml");
-    
+
   } // default constructor
 
 
+  hTagger higgsJetTagger;
+
   vector<int> *match_results_bdt_intree=0;
   double reco_score_intree;
+  double hj_score_intree;
   TLorentzVector hadTop_tlv_bdt_intree;
   ttH::Jet *b_from_hadtop_bdt_intree=0;
   ttH::Jet *q1_from_hadtop_bdt_intree=0;
@@ -134,6 +138,7 @@ class eventReconstructor
     W_from_hadtop_matching_intree = -1;
    
     reco_score_intree = -2.;
+    hj_score_intree = -2.;
     best_combo_vec_intree.clear();
     all_combo_vec_intree.clear();
     lep_from_higgs_bdt_intree->clear();  
@@ -187,6 +192,9 @@ class eventReconstructor
     input_tree->Branch("b_from_hadtop_matching", &b_from_hadtop_matching_intree);
     input_tree->Branch("b_from_leptop_matching", &b_from_leptop_matching_intree);
     input_tree->Branch("W_from_hadtop_matching", &W_from_hadtop_matching_intree);
+    input_tree->Branch("hj_score_best", &hj_score_intree);
+
+    higgsJetTagger.initializeTree(input_tree);
 
   }
 
@@ -201,7 +209,7 @@ class eventReconstructor
     int btight_count = 0;
     for (const auto & jet : jets_in)
     {
-      if (jet.csv >= 0.8) btight_count +=1;
+      if (jet.csv >= 0.8484) btight_count +=1;
     }
     
     bool is_bTight = (btight_count >1);
@@ -275,6 +283,7 @@ class eventReconstructor
     int bjet_fromHadTop_count;
     int wjet1_fromHadTop_count;             
     int wjet2_fromHadTop_count;
+    int jet_fromHiggs_count;
     int lep_fromTop_count;
     int lep_fromHiggs_count;
 
@@ -287,9 +296,9 @@ class eventReconstructor
     for (const auto & bjet_fromHadTop : jets_in)
     {
       bjet_fromHadTop_count +=1;
-      if (bjet_fromHadTop.obj.pt()==0 && jets_in[bjet_fromHadTop_count-1].obj.pt()==0) continue; //skip useless empty b-jet iterations (skip all perms with 2 null bjets)
-      if ( is_bTight && bjet_fromHadTop.csv < 0.8) continue; //speed improvement
-      if ( bjet_fromHadTop.csv > 0 && bjet_fromHadTop.csv < 0.46 ) continue; //speed improvement
+      //if (bjet_fromHadTop.obj.pt()==0 && jets_in[bjet_fromHadTop_count-1].obj.pt()==0) continue; //skip useless empty b-jet iterations (skip all perms with 2 null bjets)
+      if ( is_bTight && bjet_fromHadTop.csv < 0.8484) continue; //speed improvement
+      if ( bjet_fromHadTop.csv > 0 && bjet_fromHadTop.csv < 0.5426 ) continue; //speed improvement
 
       bjet_fromLepTop_count = -1;
       for (const auto & bjet_fromLepTop : jets_in)
@@ -297,11 +306,11 @@ class eventReconstructor
         bjet_fromLepTop_count +=1;
       
         if (bjet_fromHadTop_count == bjet_fromLepTop_count) continue;
-        if (bjet_fromLepTop.obj.pt()==0 && jets_in[bjet_fromLepTop_count-1].obj.pt()==0) continue; //skip useless empty b-jet iterations (skip all perms with 2 null bjets)
-        if ( is_bTight && bjet_fromLepTop.csv < 0.8) continue; //speed improvement
-        if ( bjet_fromLepTop.csv > 0 && bjet_fromLepTop.csv < 0.46 ) continue; //speed improvement
+	if (bjet_fromHadTop.obj.pt()==0 && bjet_fromLepTop.obj.pt()==0) continue;
+        if ( is_bTight && bjet_fromLepTop.csv < 0.8484) continue; //speed improvement
+        if ( bjet_fromLepTop.csv > 0 && bjet_fromLepTop.csv < 0.5426 ) continue; //speed improvement
+	if (max(bjet_fromHadTop.csv,bjet_fromLepTop.csv) < 0.8484 && min(bjet_fromHadTop.csv,bjet_fromLepTop.csv) < 0.5426) continue;
 
-        if ( !( (bjet_fromHadTop.csv > 0.8 || bjet_fromLepTop.csv > 0.8) || (bjet_fromHadTop.csv > 0.46 && bjet_fromLepTop.csv > 0.46) ) ) continue;
       
         wjet1_fromHadTop_count = -1;        
         for (const auto & wjet1_fromHadTop : jets_in)
@@ -343,8 +352,10 @@ class eventReconstructor
                 lep_fromHiggs_count +=1;  
                 if (lep_fromTop_count == lep_fromHiggs_count) continue;
                 
-                lep_fromTop_tlv = setTlv(lep_fromTop);
-                lep_fromHiggs_tlv = setTlv(lep_fromHiggs);
+                /* lep_fromTop_tlv = setTlv(lep_fromTop); */
+                /* lep_fromHiggs_tlv = setTlv(lep_fromHiggs); */
+                lep_fromTop_tlv = setLepTlv(lep_fromTop);
+                lep_fromHiggs_tlv = setLepTlv(lep_fromHiggs);
                 lepTop_tlv = lep_fromTop_tlv + bjet_fromLepTop_tlv;
           
                 if ( lepTop_tlv.M() > 180 ) continue;
@@ -362,6 +373,7 @@ class eventReconstructor
                 lep_fromHiggs_pT_var = lep_fromHiggs.correctedPt;
                 //lep_pt_ratio_var = (lep_fromTop.correctedPt-lep_fromHiggs.correctedPt)/(lep_fromTop.correctedPt+lep_fromHiggs.correctedPt);
                 lep_pt_ratio_var = lep_fromTop.correctedPt/lep_fromHiggs.correctedPt;
+                //lep_pt_ratio_var = lep_fromTop.obj.pt()/lep_fromHiggs.obj.pt();
                 lep_fromTop_pT_var = lep_fromTop.correctedPt;
           
                 lep_from_leptop_T_tlv = setTlv_T(lep_fromTop);
@@ -403,6 +415,29 @@ class eventReconstructor
                   hadTop_tlv_bdt_intree = hadTop_tlv;
                   lepTop_tlv_bdt_intree = lepTop_tlv;
                 }
+
+		//////////////////////////
+		///
+		/// htagger stuff goes here
+		///
+		//////////////////////////
+		jet_fromHiggs_count = -1;
+		for (const auto & jet_fromHiggs : jets_in)
+		  {
+		    jet_fromHiggs_count +=1;
+		    
+		    if (jet_fromHiggs.obj.pt() ==0) continue; //don't bother evaluting for nulls
+		    if (jet_fromHiggs_count == bjet_fromHadTop_count) continue;
+		    if (jet_fromHiggs_count == wjet1_fromHadTop_count) continue;
+		    if (jet_fromHiggs_count == wjet2_fromHadTop_count) continue; //skip exclude hadronic top
+
+		    higgsJetTagger.clear();
+		    double hj_ = higgsJetTagger.getHJBDTOutput(jet_fromHiggs, leptons_in);
+
+		    if (hj_ > hj_score_intree) hj_score_intree = hj_;
+		  }
+
+
               }
             }
           }

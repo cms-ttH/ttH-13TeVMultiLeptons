@@ -81,163 +81,168 @@ public:
  
       if (sample == "tth_powheg")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/ttH_nonbb_powheg/"} , file_index); //8
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/ttH_nonbb_powheg/"} , file_index); //8
+      	}
+
+      else if (sample == "tth__powheg_mWcutfix")
+      	{
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/ttH_nonbb_mWcutfix/"} , file_index); //21
       	}
 
       else if (sample == "tth_aMC")
 	{
-	  loadFile( {"muell149/lobster_test_may22_Moriond17/ttH_nonbb_mWcutfix/"} , file_index); //20
+	  loadFile( {"muell149/lobster_test_june21_Moriond17/ttH_nonbb_mWcutfix/"} , file_index); //20
 	}
       
       else if (sample == "ttW")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttW/"); //7
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttW_extn/"); //9
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttW/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttW_extn/"); //9
 	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "ttZ_M10")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttZ/");
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttZ/");
 	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "ttZ_M1to10")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttZ_M1to10/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttZ_M1to10/"); //7
 	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "WGToLNuG")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/WGToLNuG/"); //1
-      	  //sample_vec.push_back("muell149/lobster_test_may22_Moriond17/WGToLNuG_extn/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/WGToLNuG/"); //1
+      	  //sample_vec.push_back("muell149/lobster_test_june21_Moriond17/WGToLNuG_extn/"); //1
 	  loadFile( sample_vec, file_index);
       	}
 
       else if (sample == "ZGTo2LG")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ZGTo2LG/"); //35
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ZGTo2LG/"); //35
 	  loadFile( sample_vec, file_index);
       	}
      
       else if ( sample == "WW_2l2nu")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/WW_2l2nu/"}, file_index); //5
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/WW_2l2nu/"}, file_index); //5
       	}
       else if ( sample == "ZZ_to4l")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/ZZ_to4l/"}, file_index);//18
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/ZZ_to4l/"}, file_index);//18
       	}
       else if ( sample == "WZ_to3lnu")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/WZ_to3lnu/"}, file_index);//5
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/WZ_to3lnu/"}, file_index);//5
       	}
       else if ( sample == "tWll")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/tWll/"}, file_index);//1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/tWll/"}, file_index);//1
       	}
       else if ( sample == "ST_sChan")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/ST_sChan/"}, file_index);//1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/ST_sChan/"}, file_index);//1
       	}
       else if ( sample == "ST_tW")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ST_tW_top/"); //4
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ST_tW_antitop/"); //4
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ST_tW_top/"); //4
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ST_tW_antitop/"); //4
       	  loadFile( sample_vec, file_index);
       	}
       else if ( sample == "ST_tChan_top")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/ST_tChan_top/"}, file_index);//5
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/ST_tChan_top/"}, file_index);//5
       	}
       else if ( sample == "ST_tChan_antitop")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/ST_tChan_antitop/"}, file_index);//3
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/ST_tChan_antitop/"}, file_index);//3
       	}
       else if ( sample == "ttjets_dilep")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttjets_dilep/"); //26
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttjets_dilep_extn/"); //101
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttjets_dilep/"); //26
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttjets_dilep_extn/"); //101
       	  loadFile( sample_vec, file_index);
       	}
       else if ( sample == "ttjets_semilep")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttjets_semilep_antitop/"); //4
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttjets_semilep_antitop_extn/"); //12
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttjets_semilep_top/"); //3
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/ttjets_semilep_top_extn/"); //13
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttjets_semilep_antitop/"); //4
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttjets_semilep_antitop_extn/"); //12
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttjets_semilep_top/"); //3
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/ttjets_semilep_top_extn/"); //13
       	  loadFile( sample_vec, file_index);
       	}
       else if ( sample == "Wjets")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/Wjets/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/Wjets/"}, file_index); //1
       	}
       else if ( sample == "DY_M10_50")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/DY_M10_50/"}, file_index); //9
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/DY_M10_50/"}, file_index); //9
       	}
       else if ( sample == "DY_M50")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/DY_M50/"}, file_index); //63
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/DY_M50/"}, file_index); //63
       	}
       else if ( sample == "DY_M50_LO")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/DY_M50_LO/"}, file_index); //96
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/DY_M50_LO/"}, file_index); //96
       	}
       else if (sample == "TGJets")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/TGJets/"); //1
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/TGJets_extn/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/TGJets/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/TGJets_extn/"); //1
       	  loadFile( sample_vec, file_index);
       	}
       else if ( sample == "TTGJets")
       	{
       	  vector<TString> sample_vec;
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/TTGJets/"); //4
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/TTGJets_extn/"); //8
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/TTGJets/"); //4
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/TTGJets_extn/"); //8
       	  loadFile( sample_vec, file_index);
       	}
       else if ( sample == "tttt")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/tttt/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/tttt/"}, file_index); //1
       	}
       else if ( sample == "tZq")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/tZq/"}, file_index); //77
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/tZq/"}, file_index); //77
       	}
       else if ( sample == "WWqq_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/WWqq_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/WWqq_rares/"}, file_index); //1
       	}
       else if ( sample == "WW_doublescatering_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/WW_DoubleScattering_rares/"}, file_index); //2
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/WW_DoubleScattering_rares/"}, file_index); //2
       	}
       else if ( sample == "WWZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/WWZ_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/WWZ_rares/"}, file_index); //1
       	}
       else if ( sample == "WWW_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/WWW_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/WWW_rares/"}, file_index); //1
       	}
       else if ( sample == "WZZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/WZZ_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/WZZ_rares/"}, file_index); //1
       	}
       else if ( sample == "ZZZ_rares")
       	{
-      	  loadFile( {"muell149/lobster_test_may22_Moriond17/ZZZ_rares/"}, file_index); //1
+      	  loadFile( {"muell149/lobster_test_june21_Moriond17/ZZZ_rares/"}, file_index); //1
       	}
 
 
@@ -310,50 +315,50 @@ public:
 	{
       	  vector<TString> sample_vec; //207 total
 
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleMu2016B/"); //20
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleMu2016C/"); //12
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleMu2016D/"); //13
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleMu2016E/"); //13
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleMu2016F/"); //
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleMu2016G/"); //
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleMu2016H_pr2/"); //
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleMu2016H_pr3/"); //
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleMu2016B/"); //20
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleMu2016C/"); //12
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleMu2016D/"); //13
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleMu2016E/"); //13
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleMu2016F/"); //
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleMu2016G/"); //
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleMu2016H_pr2/"); //
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleMu2016H_pr3/"); //
 
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleMu2016B/"); //11
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleMu2016C/"); //5
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleMu2016D/"); //7
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleMu2016E/"); //7
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleMu2016F/"); //6
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleMu2016G/"); //13
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleMu2016H_pr2/"); //15
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleMu2016H_pr3/"); //15
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleMu2016B/"); //11
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleMu2016C/"); //5
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleMu2016D/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleMu2016E/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleMu2016F/"); //6
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleMu2016G/"); //13
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleMu2016H_pr2/"); //15
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleMu2016H_pr3/"); //15
 
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/MuonEg2016B/"); //2
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/MuonEg2016C/"); //1
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/MuonEg2016D/"); //1
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/MuonEg2016E/"); //1
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/MuonEg2016F/"); //1
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/MuonEg2016G/"); //2
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/MuonEg2016H_pr2/"); //2
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/MuonEg2016H_pr3/"); //2
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/MuonEg2016B/"); //2
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/MuonEg2016C/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/MuonEg2016D/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/MuonEg2016E/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/MuonEg2016F/"); //1
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/MuonEg2016G/"); //2
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/MuonEg2016H_pr2/"); //2
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/MuonEg2016H_pr3/"); //2
 
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleEg2016B/"); //6
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleEg2016C/"); //3
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleEg2016D/"); //4
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleEg2016E/"); //4
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleEg2016F/"); //3
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleEg2016G/"); //7
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleEg2016H_pr2/"); //7
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/doubleEg2016H_pr3/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleEg2016B/"); //6
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleEg2016C/"); //3
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleEg2016D/"); //4
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleEg2016E/"); //4
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleEg2016F/"); //3
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleEg2016G/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleEg2016H_pr2/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/doubleEg2016H_pr3/"); //7
 
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleEle2016B/"); //6
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleEle2016C/"); //3
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleEle2016D/"); //4
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleEle2016E/"); //4
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleEle2016F/"); //3
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleEle2016G/"); //7
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleEle2016H_pr2/"); //7
-      	  sample_vec.push_back("muell149/lobster_test_may22_Moriond17/singleEle2016H_pr3/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleEle2016B/"); //6
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleEle2016C/"); //3
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleEle2016D/"); //4
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleEle2016E/"); //4
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleEle2016F/"); //3
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleEle2016G/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleEle2016H_pr2/"); //7
+      	  sample_vec.push_back("muell149/lobster_test_june21_Moriond17/singleEle2016H_pr3/"); //7
       	  loadFile( sample_vec, file_index);
 	} 
 
@@ -415,14 +420,17 @@ public:
  Sample(TString sample_name_="name"):
   sample_name(sample_name_)
   {
-    //TString prefix = "/scratch365/cmuelle2/selection_trees/may30_m17/";
-    //TString prefix = "/scratch365/cmuelle2/selection_trees/june12_test/";
-    TString prefix = "/scratch365/cmuelle2/extraction_trees/june14_test/";
+    //TString prefix = "/scratch365/cmuelle2/extraction_trees/june14_test/";
+    //TString prefix = "/scratch365/cmuelle2/extraction_trees/june26_moriond2017/";
+    //TString prefix = "/scratch365/cmuelle2/extraction_trees/july26_test/";
+    TString prefix = "/scratch365/cmuelle2/extraction_trees/july29_test/";
     input_file_name = prefix;
     
     if (sample_name == "ttH")
       {
-	input_file_name += "tth_powheg.root";
+	//input_file_name += "tth_powheg.root";
+	//input_file_name += "tth__powheg_mWcutfix.root";
+	input_file_name += "ttH.root";
 	legend_name = "ttH";
 	fill_color = kOrange+10;
 	fill_style = 1001;
@@ -570,7 +578,7 @@ public:
 	legend_name = "WZ";
 	fill_color = kViolet-4;
 	fill_style = 1001;
-	xsec = 4.429;
+	xsec = 4.42965;
       }
     else if (sample_name=="Wjets")
       {
@@ -634,7 +642,8 @@ public:
 	legend_name = "TTZ";
 	fill_color = kSpring+2;
 	fill_style = 1001;
-	xsec = 182.18;
+	//xsec = 182.18;
+	xsec = 364.36;
       }
     else if (sample_name=="ttjets_dilep")
       {

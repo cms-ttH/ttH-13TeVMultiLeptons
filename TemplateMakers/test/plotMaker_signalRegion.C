@@ -32,7 +32,7 @@ void plotMaker_signalRegion(void)
   samples.push_back(Sample("WW_2l2nu"));
   samples.push_back(Sample("WZ_to3lnu"));
   samples.push_back(Sample("ZZ_to4l"));
-  samples.push_back(Sample("ttZ"));
+  samples.push_back(Sample("ttZ_M10"));
   samples.push_back(Sample("ttZ_M1to10"));
   samples.push_back(Sample("ttjets_semilep"));
   samples.push_back(Sample("ttjets_dilep"));
@@ -108,11 +108,13 @@ void plotMaker_signalRegion(void)
       //cout << "sample: " << sample.legend_name << endl;
       for (auto & plot : plots)
        	{
+
        	  plot.fill(sample, outputfile);
-	  cout << "total 2lss: " << plot.template_hist->Integral() << endl;
-	  cout << "2lss ee: " << plot.ee_hist->Integral() << endl;
-	  cout << "2lss em: " << plot.em_hist->Integral() << endl;
-	  cout << "2lss mm: " << plot.mm_hist->Integral() << endl;
+	  // cout << "total 2lss: " << plot.template_hist->Integral() << endl;
+	  // cout << "2lss ee: " << plot.ee_hist->Integral() << endl;
+	  // cout << "2lss em: " << plot.em_hist->Integral() << endl;
+	  // cout << "2lss mm: " << plot.mm_hist->Integral() << endl;
+	  
        	  stacks[plot.hist_name].Add(plot);
        	}
     }

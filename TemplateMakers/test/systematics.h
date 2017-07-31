@@ -144,3 +144,89 @@ std::vector<PlotObject> getFrSystShapes(PlotObject shape_template)
   return plots;
 }
 
+std::vector<PlotObject> getTemplateStatSystShapes(PlotObject shape_template)
+{  
+  std::vector<PlotObject> plots;
+
+  PlotObject finalShape_bin1_up = shape_template;
+  finalShape_bin1_up.hist_name += "_bin1_Up";
+  finalShape_bin1_up.template_stat_bin = 1;
+  plots.push_back(finalShape_bin1_up);
+
+  PlotObject finalShape_bin1_down = shape_template;
+  finalShape_bin1_down.hist_name += "_bin1_Down";
+  finalShape_bin1_down.template_stat_bin = -1;
+  plots.push_back(finalShape_bin1_down);
+
+  PlotObject finalShape_bin2_up = shape_template;
+  finalShape_bin2_up.hist_name += "_bin2_Up";
+  finalShape_bin2_up.template_stat_bin = 2;
+  plots.push_back(finalShape_bin2_up);
+
+  PlotObject finalShape_bin2_down = shape_template;
+  finalShape_bin2_down.hist_name += "_bin2_Down";
+  finalShape_bin2_down.template_stat_bin = -2;
+  plots.push_back(finalShape_bin2_down);
+
+  PlotObject finalShape_bin3_up = shape_template;
+  finalShape_bin3_up.hist_name += "_bin3_Up";
+  finalShape_bin3_up.template_stat_bin = 3;
+  plots.push_back(finalShape_bin3_up);
+
+  PlotObject finalShape_bin3_down = shape_template;
+  finalShape_bin3_down.hist_name += "_bin3_Down";
+  finalShape_bin3_down.template_stat_bin = -3;
+  plots.push_back(finalShape_bin3_down);
+
+  PlotObject finalShape_bin4_up = shape_template;
+  finalShape_bin4_up.hist_name += "_bin4_Up";
+  finalShape_bin4_up.template_stat_bin = 4;
+  plots.push_back(finalShape_bin4_up);
+
+  PlotObject finalShape_bin4_down = shape_template;
+  finalShape_bin4_down.hist_name += "_bin4_Down";
+  finalShape_bin4_down.template_stat_bin = -4;
+  plots.push_back(finalShape_bin4_down);
+
+  PlotObject finalShape_bin5_up = shape_template;
+  finalShape_bin5_up.hist_name += "_bin5_Up";
+  finalShape_bin5_up.template_stat_bin = 5;
+  plots.push_back(finalShape_bin5_up);
+
+  PlotObject finalShape_bin5_down = shape_template;
+  finalShape_bin5_down.hist_name += "_bin5_Down";
+  finalShape_bin5_down.template_stat_bin = -5;
+  plots.push_back(finalShape_bin5_down);
+
+  PlotObject finalShape_bin6_up = shape_template;
+  finalShape_bin6_up.hist_name += "_bin6_Up";
+  finalShape_bin6_up.template_stat_bin = 6;
+  plots.push_back(finalShape_bin6_up);
+
+  PlotObject finalShape_bin6_down = shape_template;
+  finalShape_bin6_down.hist_name += "_bin6_Down";
+  finalShape_bin6_down.template_stat_bin = -6;
+  plots.push_back(finalShape_bin6_down);
+
+  PlotObject finalShape_bin7_up = shape_template;
+  finalShape_bin7_up.hist_name += "_bin7_Up";
+  finalShape_bin7_up.template_stat_bin = 7;
+  plots.push_back(finalShape_bin7_up);
+
+  PlotObject finalShape_bin7_down = shape_template;
+  finalShape_bin7_down.hist_name += "_bin7_Down";
+  finalShape_bin7_down.template_stat_bin = -7;
+  plots.push_back(finalShape_bin7_down);
+
+  PlotObject finalShape_bin8_up = shape_template;
+  finalShape_bin8_up.hist_name += "_bin8_Up";
+  finalShape_bin8_up.template_stat_bin = 8;
+  plots.push_back(finalShape_bin8_up);
+
+  PlotObject finalShape_bin8_down = shape_template;
+  finalShape_bin8_down.hist_name += "_bin8_Down";
+  finalShape_bin8_down.template_stat_bin = -8;
+  plots.push_back(finalShape_bin8_down);
+
+  return plots;
+}

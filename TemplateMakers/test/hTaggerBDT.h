@@ -51,10 +51,7 @@ public:
     hj_bdt_scores_intree->clear();
   }
 
-  double getHJBDTOutput(
-    ttH::Jet target_jet,
-    const vector<ttH::Lepton> *tight_leptons
-  )
+  double getHJBDTOutput(ttH::Jet target_jet, const vector<ttH::Lepton> *tight_leptons)
   {
     double min_dr_jet = getDeltaR(target_jet,tight_leptons->at(0));
     double max_dr_jet = getDeltaR(target_jet,tight_leptons->at(0));

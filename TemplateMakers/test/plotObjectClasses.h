@@ -54,6 +54,18 @@ private:
   double xmax;
   TString drawCommand;
 
+  void varyBinStat(TH1D* hist_, int bin_)
+  {
+    int bin = abs(bin_);
+    float content_ = hist_->GetBinContent(bin);
+    float error_ = hist_->GetBinError(bin);
+    if (error_ < 0.1*sqrt(content_+0.04)) return; //don't bother varying bins with negligible errors
+    float up = content_ + error_;
+    float down = content_ * content_ / up;
+    if (bin_ > 0 && up > 0.) hist_->SetBinContent(bin,up);
+    else if ( down > 0.) hist_->SetBinContent(bin,down); 
+  }
+
 public:
  PlotObject(TString hist_name_="name", TString hist_title_="hist_title", int bins_=10, double xmin_=0., double xmax_ =100., TString drawCommand_="mcwgt"):
   hist_name(hist_name_),
@@ -64,6 +76,10 @@ public:
     drawCommand(drawCommand_)      
   {
     
+    btag_weight="btag_weight";
+    fr_weight="fr_mva090";
+    tree_name="ss2l_tree";
+    template_stat_bin=0;
   }//default constructor
 
   TString hist_name;
@@ -85,9 +101,10 @@ public:
   TH1D* em_bl_m_hist;
   TH1D* em_bl_p_hist;
 
-  TCut btag_weight="btag_weight";
-  TCut fr_weight="fr_mva090";
-  TString tree_name="ss2l_tree";
+  TCut btag_weight;
+  TCut fr_weight;
+  TString tree_name;
+  Int_t template_stat_bin;
   
   void fill(Sample sample, TFile* fout=0)
   {
@@ -99,7 +116,7 @@ public:
 
     TString template_name = hist_name+"_"+hist_save_name;
     template_hist = new TH1D(template_name,hist_title,bins,xmin,xmax);
-    template_hist->Sumw2();
+    //template_hist->Sumw2();
     template_hist->SetLineColor(1);
     template_hist->SetMarkerColor(sample.fill_color);
 
@@ -166,10 +183,12 @@ public:
     TCut sim_weight = "mcwgt"*btag_weight*trigger_SF*lepton_SF;
     TCut prompt = "((tight_leptons[0].isPromptFinalState || tight_leptons[0].isDirectPromptTauDecayProductFinalState) && (tight_leptons[1].isPromptFinalState || tight_leptons[1].isDirectPromptTauDecayProductFinalState))";
     TCut matchRightCharge = "tight_leptons[0].pdgID == tight_leptons[0].genPdgID && tight_leptons[1].pdgID == tight_leptons[1].genPdgID";
+    TCut numBadMu = "numBadMuons == 0";
 
     if (sample_name != "data" && sample_name != "fakes" && sample_name != "flips" )
       {
 	weight= sim_weight*prompt*matchRightCharge;
+	//weight= sim_weight*matchRightCharge;
       }
     else if (sample_name == "fakes")
       {
@@ -182,24 +201,30 @@ public:
 
     if (legend_name == "Convs")//sample_name == "TTGJets" || sample_name == "TGJets")
       {
-    	TCut conv_cut = "(tight_leptons[0].genMotherPdgID == 22 || tight_leptons[1].genMotherPdgID == 22)";
-    	weight = conv_cut*sim_weight*matchRightCharge;
+    	//TCut conv_cut = "(tight_leptons[0].genMotherPdgID == 22 || tight_leptons[1].genMotherPdgID == 22) && ( abs(tight_leptons[0].pdgID)==11 || abs(tight_leptons[1].pdgID)==11 )";
+    	TCut conv_cut = "(abs(tight_leptons[0].genPdgID) >9000 && abs(tight_leptons[0].pdgID)==11 ) || (abs(tight_leptons[1].genPdgID) >9000 && abs(tight_leptons[1].pdgID)==11 )";
+    	//TCut conv_cut = "(tight_leptons[0].genPdgID >9000 && abs(tight_leptons[0].pdgID)==11 && (tight_leptons[1].isPromptFinalState || tight_leptons[1].isDirectPromptTauDecayProductFinalState)) || (tight_leptons[1].genPdgID >9000 && abs(tight_leptons[1].pdgID)==11 && (tight_leptons[0].isPromptFinalState || tight_leptons[0].isDirectPromptTauDecayProductFinalState) )";
+    	weight = conv_cut*sim_weight;
       }
+
+    weight *= numBadMu;
 
     TCut weight_ee = "(flavor_category==\"ee\")"*weight;
     TCut weight_em = "(flavor_category==\"em\")"*weight;
     TCut weight_mm = "(flavor_category==\"mm\")"*weight;
+
     TCut weight_ee_p = "(flavor_category==\"ee\" && plus_category == 1)"*weight;
     TCut weight_ee_m = "(flavor_category==\"ee\" && plus_category == 0)"*weight;
+
     TCut weight_em_bt_p = "(flavor_category==\"em\" && plus_category == 1 && bTight_category ==1)"*weight;
     TCut weight_em_bt_m = "(flavor_category==\"em\" && plus_category == 0 && bTight_category ==1)"*weight;
     TCut weight_em_bl_p = "(flavor_category==\"em\" && plus_category == 1 && bTight_category ==0)"*weight;
     TCut weight_em_bl_m = "(flavor_category==\"em\" && plus_category == 0 && bTight_category ==0)"*weight;
+
     TCut weight_mm_bt_p = "(flavor_category==\"mm\" && plus_category == 1 && bTight_category ==1)"*weight;
     TCut weight_mm_bt_m = "(flavor_category==\"mm\" && plus_category == 0 && bTight_category ==1)"*weight;
     TCut weight_mm_bl_p = "(flavor_category==\"mm\" && plus_category == 1 && bTight_category ==0)"*weight;
     TCut weight_mm_bl_m = "(flavor_category==\"mm\" && plus_category == 0 && bTight_category ==0)"*weight;
-
     
     auto tree = sample.getTree(tree_name);
     template_hist->SetDirectory(gDirectory);
@@ -248,6 +273,26 @@ public:
     mm_bt_m_hist->Scale( sample.xsec );
     mm_bl_p_hist->Scale( sample.xsec );
     mm_bl_m_hist->Scale( sample.xsec );
+
+
+    if (template_stat_bin !=0)
+      {
+	varyBinStat(template_hist,template_stat_bin);
+	varyBinStat(ee_hist,template_stat_bin);
+	varyBinStat(em_hist,template_stat_bin);
+	varyBinStat(mm_hist,template_stat_bin);
+	varyBinStat(ee_p_hist,template_stat_bin);
+	varyBinStat(ee_m_hist,template_stat_bin);
+	varyBinStat(em_bt_p_hist,template_stat_bin);
+	varyBinStat(em_bt_m_hist,template_stat_bin);
+	varyBinStat(em_bl_p_hist,template_stat_bin);
+	varyBinStat(em_bl_m_hist,template_stat_bin);
+	varyBinStat(mm_bt_p_hist,template_stat_bin);
+	varyBinStat(mm_bt_m_hist,template_stat_bin);
+	varyBinStat(mm_bl_p_hist,template_stat_bin);
+	varyBinStat(mm_bl_m_hist,template_stat_bin);
+      }
+
     
     if (fout)
       {
@@ -270,6 +315,7 @@ public:
 
   }
   
+
   virtual ~PlotObject(){}
 };
 
@@ -374,6 +420,7 @@ class StackObject
 
     //can->SaveAs(stack_name+".root");
     can->Print(stack_name+"_stackPlot_SR.pdf",".pdf");
+    can->Print(stack_name+"_stackPlot_SR.root",".root");
   }
 
 public:

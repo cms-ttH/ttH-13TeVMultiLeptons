@@ -195,7 +195,7 @@ class EventSelector
 	}
       else
 	{
-	  TFile* file = new TFile("/hadoop/store/user/muell149/lobster_test_may22_Moriond17/ttH_nonbb_powheg/output_tree_38039.root","READONLY");
+	  TFile* file = new TFile("/hadoop/store/user/muell149/lobster_test_june21_Moriond17/ttH_nonbb_powheg/output_tree_29337.root","READONLY");
 	  // TTree *chain = (TTree*)file->Get("ss2l_tree");  
 	  chain = (TChain*)file->Get("OSTwoLepAna/summaryTree");  
 	}
@@ -320,11 +320,11 @@ class EventSelector
 	  select(selection, ss2l_tree, preselected_jets_intree, csvReweighter, fertilizer, lepSFs,mySigExtrTreeMaker,bdtReconstructor,higgsJetTagger);
 
 
-	  // if (sample_name != "fakes" and sample_name != "flips" and sample_name != "data")
-	  //   {
-	  //     select(selection, ss2l_tree_jes_up, preselected_jets_jecUp_intree, csvReweighter_jes_up, fertilizer_jes_up, lepSFs_jes_up,mySigExtrTreeMaker_jes_up,bdtReconstructor_jes_up,higgsJetTagger_jes_up);
-	  //     select(selection, ss2l_tree_jes_down, preselected_jets_jecDown_intree, csvReweighter_jes_down, fertilizer_jes_down, lepSFs_jes_down,mySigExtrTreeMaker_jes_down,bdtReconstructor_jes_down,higgsJetTagger_jes_down);
-	  //   }
+	  if (sample_name != "fakes" and sample_name != "flips" and sample_name != "data")
+	    {
+	      select(selection, ss2l_tree_jes_up, preselected_jets_jecUp_intree, csvReweighter_jes_up, fertilizer_jes_up, lepSFs_jes_up,mySigExtrTreeMaker_jes_up,bdtReconstructor_jes_up,higgsJetTagger_jes_up);
+	      select(selection, ss2l_tree_jes_down, preselected_jets_jecDown_intree, csvReweighter_jes_down, fertilizer_jes_down, lepSFs_jes_down,mySigExtrTreeMaker_jes_down,bdtReconstructor_jes_down,higgsJetTagger_jes_down);
+	    }
 	  
 	}
       
@@ -335,10 +335,10 @@ class EventSelector
       
       ss2l_tree->Write();
       if (sample_name != "fakes" and sample_name != "flips" and sample_name != "data")
-	{
-	  ss2l_tree_jes_up->Write();      
-	  ss2l_tree_jes_down->Write();
-	}
+      	{
+      	  ss2l_tree_jes_up->Write();      
+      	  ss2l_tree_jes_down->Write();
+      	}
       gDirectory->Purge();
       outputfile->Write();
       outputfile->Close();    
@@ -352,7 +352,7 @@ void runChain(TString sample="ttZ_M10", TString selection="2lss_sr", int job_no=
   TString output_dir;
   bool batch_run = true; //switch for batch vs. local commandline running
 
-  if (batch_run) output_dir = "/scratch365/cmuelle2/extraction_trees/june14_test/";
+  if (batch_run) output_dir = "/scratch365/cmuelle2/extraction_trees/july22_mtMetL1ReRun/";
   else output_dir = "";
   //  else output_dir = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_26_patch1/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
 
@@ -360,13 +360,11 @@ void runChain(TString sample="ttZ_M10", TString selection="2lss_sr", int job_no=
   //EventSelector run_it0(sample, selection, output_dir, job_no, batch_run);
   EventSelector run_it1(sample, "2lss_sr", output_dir, job_no, batch_run);  
 
-  if (sample == "data")
-    {
-      EventSelector run_it2(sample, "2lss_lepMVA_ar", output_dir, job_no, batch_run);
-      EventSelector run_it3(sample, "2los_ar", output_dir, job_no, batch_run);
-    }
-  
-
+  // if (sample == "data")
+  //   {
+  //  EventSelector run_it2(sample, "2lss_lepMVA_ar", output_dir, job_no, batch_run);
+  //EventSelector run_it3(sample, "2los_ar", output_dir, job_no, batch_run);
+  //   }
   //EventSelector run_it4(sample, "3l_sr", output_dir, job_no, batch_run);
   //EventSelector run_it5(sample, "3l_lepMVA_ar", output_dir, job_no, batch_run);
   //EventSelector run_it6(sample, "2lss_training_loose", output_dir, job_no, batch_run);

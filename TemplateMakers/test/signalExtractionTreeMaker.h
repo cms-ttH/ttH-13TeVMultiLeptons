@@ -119,7 +119,9 @@ class signalExtractionTreeMaker
     hj_branch = -2.;
   }
 
-  void initialize(vector<ttH::Jet> *jets_input, const vector<ttH::Lepton> *leptons_in, const ttH::MET met_in, eventReconstructor bdtReconstructor, hTagger higgsJetTagger)
+
+  //  void initialize(vector<ttH::Jet> *jets_input, const vector<ttH::Lepton> *leptons_in, const ttH::MET met_in, eventReconstructor bdtReconstructor, hTagger higgsJetTagger)
+  void initialize(vector<ttH::Jet> *jets_input, const vector<ttH::Lepton> *leptons_in, const ttH::MET met_in, eventReconstructor bdtReconstructor)
   {
     clear(); //reset all output vars
 
@@ -174,7 +176,8 @@ class signalExtractionTreeMaker
     
     vs_ttbar_score = max(-1.1,TMVAReader_ttbar_->EvaluateMVA( "BDTG method" ));
     vs_ttbar_bdtReco_score = TMVAReader_ttbar_recoBdt_->EvaluateMVA( "BDTG method" ); 
-    hj_branch = max(-1.1, higgsJetTagger.hj_bdt_scores_intree->at(0));
+    //hj_branch = max(-1.1, higgsJetTagger.hj_bdt_scores_intree->at(0));
+    hj_branch = max(-1.1, bdtReconstructor.hj_score_intree);
     vs_ttv_score = TMVAReader_ttV_->EvaluateMVA( "BDTG method" );
     final_shape = OurBin2l(vs_ttbar_score,vs_ttv_score);
     final_shape_BDTv8 = OurBin2l(vs_ttbar_bdtReco_score,vs_ttv_score);
