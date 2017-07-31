@@ -97,28 +97,8 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   chain->SetBranchStatus("tight_electrons.*",1);
   chain->SetBranchStatus("tight_muons.*",1);
 
-  // chain->SetBranchStatus("looseMvaBased_leptons.*",1);
-  // chain->SetBranchStatus("looseMvaBased_electrons.*",1);
-  // chain->SetBranchStatus("looseMvaBased_muons.*",1);
-  // chain->SetBranchStatus("tightMvaBased_leptons.*",1);
-  // chain->SetBranchStatus("tightMvaBased_electrons.*",1);
-  // chain->SetBranchStatus("tightMvaBased_muons.*",1);
-
-  chain->SetBranchStatus("selected_taus.*",1);
   chain->SetBranchStatus("met.*",1);
-  chain->SetBranchStatus("higgs_final_state",1);
-  chain->SetBranchStatus("ttbar_final_state",1);
   chain->SetBranchStatus("higgs_decay",1);
-  chain->SetBranchStatus("matched_reco_jets.*",1);
-  chain->SetBranchStatus("unmatched_reco_jets.*",1);
-  chain->SetBranchStatus("lep_from_higgs_reco_truth*",1);
-  chain->SetBranchStatus("lep_from_leptop_reco_truth*",1);
-  chain->SetBranchStatus("b_from_leptop_reco_truth*",1);
-  chain->SetBranchStatus("b_from_hadtop_reco_truth*",1);
-  chain->SetBranchStatus("q1_from_hadtop_reco_truth*",1);
-  chain->SetBranchStatus("q2_from_hadtop_reco_truth*",1);
-  chain->SetBranchStatus("q1_from_higgs_reco_truth*",1);
-  chain->SetBranchStatus("q2_from_higgs_reco_truth*",1);
 
   chain->SetBranchAddress("mcwgt", &mcwgt_intree);
   chain->SetBranchAddress("eventnum", &eventnum_intree);
@@ -126,33 +106,12 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
   chain->SetBranchAddress("preselected_muons", &preselected_muons_intree);
   chain->SetBranchAddress("preselected_leptons", &preselected_leptons_intree);
   chain->SetBranchAddress("preselected_jets", &preselected_jets_intree);
-
   chain->SetBranchAddress("fakeable_leptons", &fakeable_leptons_intree);
   chain->SetBranchAddress("tight_leptons", &tight_leptons_intree);
   chain->SetBranchAddress("tight_electrons", &tight_electrons_intree);
   chain->SetBranchAddress("tight_muons", &tight_muons_intree);    
-
-  // chain->SetBranchAddress("looseMvaBased_leptons", &fakeable_leptons_intree);
-  // chain->SetBranchAddress("tightMvaBased_leptons", &tight_leptons_intree);
-  // chain->SetBranchAddress("tightMvaBased_electrons", &tight_electrons_intree);
-  // chain->SetBranchAddress("tightMvaBased_muons", &tight_muons_intree);    
-
   chain->SetBranchAddress("met", &met_intree);
-  chain->SetBranchAddress("selected_taus", &selected_taus_intree);
 
-  chain->SetBranchAddress("higgs_final_state", &higgs_final_state_intree);
-  chain->SetBranchAddress("ttbar_final_state", &ttbar_final_state_intree);
-  chain->SetBranchAddress("matched_reco_jets", &matched_reco_jets_intree);
-  chain->SetBranchAddress("unmatched_reco_jets", &unmatched_reco_jets_intree);
-
-  chain->SetBranchAddress("lep_from_higgs_reco_truth.", &lep_from_higgs_truth_intree);
-  chain->SetBranchAddress("lep_from_leptop_reco_truth.", &lep_from_leptop_truth_intree);
-  chain->SetBranchAddress("b_from_leptop_reco_truth.", &b_from_leptop_truth_intree);
-  chain->SetBranchAddress("b_from_hadtop_reco_truth.", &b_from_hadtop_truth_intree);
-  chain->SetBranchAddress("q1_from_hadtop_reco_truth.", &q1_from_hadtop_truth_intree);
-  chain->SetBranchAddress("q2_from_hadtop_reco_truth.", &q2_from_hadtop_truth_intree);
-  chain->SetBranchAddress("q1_from_higgs_reco_truth.", &q1_from_higgs_truth_intree);
-  chain->SetBranchAddress("q2_from_higgs_reco_truth.", &q2_from_higgs_truth_intree);
 
   TH1D* match_eff_hist = new TH1D("Matching efficiency","matchingEff",7,0,7);
   match_eff_hist->GetXaxis()->SetBinLabel(1,"leptons");
@@ -280,23 +239,12 @@ void run_it(TString sample_name, TChain* chain, TFile *output_file_, int events_
 
 void evaluateRecoBdt(string sample_name="tth_aMC", int events_per_job=-1, int job_no=-1)
 {
-  //sample_name = "output_tree_2lss_SR_sync";
-  //sample_name = "tagger_compare_tree_background_modified_score";
-  //sample_name = "tagger_compare_tree_signal_modified_score";
   //sample_name = "";
 
-  TString input_file_name = getSelectionFile(sample_name);
-  
-  //Sync file
-  //TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/sync_2lss_SR_selection_tree_2lss.root";
-
   //Signal file (make sure to reduce max_events)
-  //TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/ttH_root_files/tth_powheg_old_2lss_selection.root";
-
+  TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/ttH_root_files/tth_powheg_old_2lss_selection.root";
   //Background file
   //TString input_file_name = "/afs/cern.ch/user/a/awightma/workspace/ttH_root_files/ttbar_semiLep_powheg_2lss_selection.root";
-
-  //TFile *input_file = new TFile(input_file_name, "READONLY");
 
   if (sample_name == "") sample_name = "output_test";
   //TString output_dir = "/afs/cern.ch/user/a/awightma/workspace/CMSSW_8_0_20/src/ttH-13TeVMultiLeptons/TemplateMakers/test/";
