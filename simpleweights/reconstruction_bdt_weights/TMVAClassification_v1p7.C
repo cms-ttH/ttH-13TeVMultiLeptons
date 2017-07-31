@@ -135,7 +135,7 @@ int TMVAClassification_v1p7( TString input_string = "" )
    // (please check "src/Config.h" to see all available global options)
    //    (TMVA::gConfig().GetVariablePlotting()).fTimesRMS = 8.0;
 
-   (TMVA::gConfig().GetIONames()).fWeightFileDir = "jan28_conePt_fr_recoBdt_weights_factorized";
+   (TMVA::gConfig().GetIONames()).fWeightFileDir = "jan25_recoBdt";
 
    // Define the input variables that shall be used for the MVA training
    // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
@@ -175,8 +175,8 @@ int TMVAClassification_v1p7( TString input_string = "" )
    //TString fname_bkg = "/scratch365/cmuelle2/training_trees/reco_bdt_factorized/ttbar_genFilter_bdtTraining_2lss.root";
    
    TString fname_sig = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttH_powheg_relaxed_2lssos.root";
-   //   TString fname_bkg = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttbar_semilep_madgraph_recoBdtTraining.root";
-   TString fname_bkg = "/scratch365/cmuelle2/training_trees/jan28_bkg_conePt_fr/ttbar_bdtReco_training.root";
+   TString fname_bkg = "/afs/crc.nd.edu/user/c/cmuelle2/CMSSW_8_0_14/src/ttH-13TeVMultiLeptons/TemplateMakers/test/reco_bdt/training/ttbar_semilep_madgraph_recoBdtTraining.root";
+   //   TString fname_bkg = "/scratch365/cmuelle2/training_trees/jan28_bkg_conePt_fr/ttbar_bdtReco_training.root";
    
    if (gSystem->AccessPathName( fname_sig ))  // file does not exist in local directory
       gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");
