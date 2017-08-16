@@ -20,11 +20,11 @@
 
 # ****** user params ************
 myusername='gesmith'
-joblabel='try1_ttWkevin_mAODV2'									# label for these batch jobs	
-ndpc="ndpc5"                                                                            # ndpc to push output to
-ndpcDisk="/mnt/ndpc5disk1"		                                                # ndpc disk to push output to
-interjobspacing=3 #5 									# seconds to wait before submitting next job
-intersamplespacing=120 									# seconds to wait before submitting jobs for next sample
+joblabel='Moriond17_samps_for_EFT_tests_skim'									# label for these batch jobs	
+ndpc="ndpc6"                                                                            # ndpc to push output to
+ndpcDisk="/mnt/ndpc6disk1"		                                                # ndpc disk to push output to
+interjobspacing=5 #5 									# seconds to wait before submitting next job
+intersamplespacing=30 									# seconds to wait before submitting jobs for next sample
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'TTJets' 'ZJets' 'WJets' 'WZJets') 	# samples to run over (has to match array names in sampleLists.sh)
 #declare -a samples=('ttH125' 'TTZJets' 'TTWJets' 'ZJets' 'WJets' 'WZJets')
 #declare -a samples=('ttH125powheg')
@@ -32,12 +32,17 @@ intersamplespacing=120 									# seconds to wait before submitting jobs for nex
 #declare -a samples=('ttWkevin')
 #declare -a samples=('TTJets')
 #declare -a samples=('TTJets_split_2lep')
-declare -a samples=('TTJets_split_1lepFromTBar') # 'TTJets_split_1lepFromTBar') # TTJets_split_1lepFromT
+#declare -a samples=('TTJets_split_1lepFromT' 'TTJets_split_1lepFromTBar') # 'TTJets_split_1lepFromTBar') # TTJets_split_1lepFromT
+declare -a samples=('ttHToNonbb_M125_ttHtranche3_powheg_Moriond17' 'TTJets_split_1lepFromT' 'TTJets_split_1lepFromTBar')
+#declare -a samples=('data2016DMET_ReReco_BthroughG')
+#declare -a samples=('data2016DMET_Prompt_H')
+
 # *******************************
 
 
-pfx='root://cms-xrd-global.cern.ch/' # which xroot rederict to use (if any)
+#pfx='root://cms-xrd-global.cern.ch/' # which xroot rederict to use (if any)
 #pfx='root://ndcms.crc.nd.edu/'
+pfx='root://xrootd.ba.infn.it/'
 
 #source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
 logdir='crawlog'

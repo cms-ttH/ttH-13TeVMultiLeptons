@@ -31,12 +31,15 @@ void makegoodplot()
 //	samples.push_back(5); // TTJets
 //	samples.push_back(6); // ZJets
 //	samples.push_back(7); // WJets
-	samples.push_back(8); // TTWJets
+//	samples.push_back(8); // TTWJets
 //	samples.push_back(9); // TTZJets
 //	samples.push_back(10); // diboson (WZ)
 //        samples.push_back(11); // diboson (ZZ)
         
 //        samples.push_back(12); // old ttH
+        
+//        samples.push_back(14); // TTbar (1l from top)
+//        samples.push_back(15); // ttbar: 1l from anti-top
         
         // done with setup..
         
@@ -44,12 +47,12 @@ void makegoodplot()
 
 /////// Do whatever you want here (just modify or make new member function in MakeGoodPlot.cc as appropriate). /////////
 		
-	newplot->draw_simple_curves_normalized(samples);	// <- draws all samples in vector
+	//newplot->draw_simple_curves_normalized(samples);	// <- draws all samples in vector
 
 //	newplot->draw_nice_stack(samples);			// <- draws all samples in vector
 	
-//	int signal = 1; // tth
-//	newplot->draw_ROC_curves(samples,signal);		// <- draws all samples in vector, with specified sample as signal
+	//int signal = 1; // tth
+//	newplot->draw_ROC_curves(samples,1);		// <- draws all samples in vector, with specified sample as signal
 	
  //	newplot->make_eff_vs_var_separation_plot(samples);
 
@@ -69,6 +72,7 @@ void makegoodplot()
 
 	    //newplot->draw_ROC_iso(signal);
 
+        newplot->draw_eff_curves(samples);
 
         //newplot->draw_several_comparisons(samples);
         

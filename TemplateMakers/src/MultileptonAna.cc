@@ -202,6 +202,9 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.miniIsoR = iEle.userFloat("miniIsoR");
       ele.miniAbsIsoNeutralcorr = iEle.userFloat("miniAbsIsoNeutralcorr");      
       
+      // trying stuff out:
+      ele.idTightPOG = iEle.userFloat("idTightLJ");      
+      
       if (iEle.genParticle())
       {
         ele.genPdgID = iEle.genParticle()->pdgId();
@@ -269,7 +272,9 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs)
       mu.effArea = iMu.userFloat("effArea");
       mu.miniIsoR = iMu.userFloat("miniIsoR");
       mu.miniAbsIsoNeutralcorr = iMu.userFloat("miniAbsIsoNeutralcorr");
-
+      
+      // trying stuff out:
+      mu.idTightPOG = iMu.userFloat("idTightLJ");
       
 
       if (iMu.genParticle())

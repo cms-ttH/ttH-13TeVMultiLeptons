@@ -16,6 +16,14 @@ void MakeGoodPlot::initialize()
 	ch[10] = new TChain(treename);
         ch[11] = new TChain(treename);
         ch[12] = new TChain(treename);
+	ch[13] = new TChain(treename);
+	ch[14] = new TChain(treename);
+	ch[15] = new TChain(treename);
+	ch[16] = new TChain(treename);
+        ch[17] = new TChain(treename);
+        ch[18] = new TChain(treename);        
+        ch[19] = new TChain(treename);
+        
 	
 	sample_names[0] = "data"; //"data (mu)";
 	sample_names[1] = "t#bar{t}H (H->non-bb)"; //"t#bar{t}H(125)";
@@ -30,6 +38,14 @@ void MakeGoodPlot::initialize()
 	sample_names[10] = "WZ"; // "data (ele)";
 	sample_names[11] = "ZZ"; // "data (ele)";
         sample_names[12] = "t#bar{t}H PHYS14";
+        sample_names[13] = "t#bar{t}H PHYS14";
+        sample_names[14] = "t#bar{t} (1l from t)";
+        sample_names[15] = "t#bar{t} (1l from #bar{t})";
+        sample_names[16] = "t#bar{t}H PHYS14";
+        sample_names[17] = "t#bar{t}H PHYS14";
+        sample_names[18] = "t#bar{t}H PHYS14";
+        sample_names[19] = "t#bar{t}H PHYS14";
+        
         
         sample_names_std[0]  = sample_names[0]; 
         sample_names_std[1]  = sample_names[1]; 
@@ -43,7 +59,16 @@ void MakeGoodPlot::initialize()
         sample_names_std[9]  = sample_names[9]; 
         sample_names_std[10] = sample_names[10];
         sample_names_std[11] = sample_names[11];
-        sample_names_std[12] = sample_names[12];
+        sample_names_std[12] = sample_names[12];        
+        sample_names_std[13]  = sample_names[13];
+        sample_names_std[14]  = sample_names[14];
+        sample_names_std[15]  = sample_names[15]; 
+        sample_names_std[16]  = sample_names[16]; 
+        sample_names_std[17] =  sample_names[17];
+        sample_names_std[18] =  sample_names[18];
+        sample_names_std[19] =  sample_names[19];
+                   
+        
         
         Int_t cachesize = 100000000;   //100 MBytes
         
@@ -88,6 +113,14 @@ void MakeGoodPlot::initialize()
         xsecs[10]=-999.;
         xsecs[11]=-999.;
         xsecs[12]=-999.;
+        xsecs[13]=-999.;
+        xsecs[14]=-999.;
+        xsecs[15]=-999.;
+        xsecs[16]=-999.;
+        xsecs[17]=-999.;
+        xsecs[18]=-999.;
+        xsecs[19]=-999.;
+
               
         numgen[0]=-999.;
         numgen[1]=-999.;
@@ -102,6 +135,13 @@ void MakeGoodPlot::initialize()
         numgen[10]=-999.;
         numgen[11]=-999.;
         numgen[12]=-999.;
+        numgen[13]=-999.;
+        numgen[14]=-999.;
+        numgen[15]=-999.;
+        numgen[16]=-999.;
+        numgen[17]=-999.;
+        numgen[18]=-999.;
+        numgen[19]=-999.;
         
         
         mcwgt_intree = -9999.;

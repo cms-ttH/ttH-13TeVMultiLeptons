@@ -8,7 +8,7 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
         //TString eosprfx = "";        
         //TString basedir = "/tmp/gesmith/ttjetstemp/";
         
-        TString basedir = "/mnt/ndpc5disk2/gesmith/sshjobs/updateObjClassesAndSummer2016syncV1skim/";
+        TString basedir = "/mnt/ndpc6disk1/gesmith/sshjobs/Moriond17_samps_for_EFT_tests_skim/";
         
 	TString thesample = "";
 	TString basedir_plus = "";
@@ -26,7 +26,9 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 	{
 //		sample_raw_evts[10];
 //		sample_weighted_evts[10];
-
+                
+                cout << samps[i] << endl;
+                
 		if (samps[i]==0)
 		{
                         // prob. will just be all data ..
@@ -40,12 +42,15 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 			//basedir_plus = "test2ttH/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/crab_ttH125/150612_095852/0000/";
                         //thesample = basedir + basedir_plus + "multileptree_2_1_yTv.root";
                         //thesample = thesample + " " + basedir + basedir_plus + "multileptree_7_1_AwJ.root";
-			
-                        basedir_plus = "ttH125powheg/";
+                        //basedir_plus = "ttH125powheg/";
+                        
+                        basedir_plus = "ttHToNonbb_M125_ttHtranche3_powheg_Moriond17/";
                         thesample = basedir + basedir_plus + "*.root";
                         ch[1]->Add(thesample);
                         xsecs[1]=0.5085;
 			numgen[1]=2600389.15887; // 2576712 unweighted events, 765270.5 weighted (+/-1) events
+                        
+                        cout << "tth" << endl;
 		}
 		if (samps[i]==2)
 		{
@@ -204,7 +209,9 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 			ch[14]->Add(thesample);
 			xsecs[14]=178.71; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.219024 (BR)
 			numgen[14]=25446993.0;
-                        if (useNumInitialWeightedMCevents) numgen[14] = getNumInitialMCevents(14);
+                        //if (useNumInitialWeightedMCevents) numgen[14] = getNumInitialMCevents(14);
+                        
+                        cout << "ttbar1" << endl;
                 }
                 
                 if (samps[i]==15)
@@ -216,10 +223,14 @@ void MakeGoodPlot::load_samples(std::vector<int> samps)
 			ch[15]->Add(thesample);
 			xsecs[15]=178.71; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.219024 (BR)
 			numgen[15]=25446993.0;
-                        if (useNumInitialWeightedMCevents) numgen[15] = getNumInitialMCevents(15);
+                        //if (useNumInitialWeightedMCevents) numgen[15] = getNumInitialMCevents(15);
+                        
+                        cout << "ttbar2" << endl;
                 }
                 
 	}
+        
+        cout << "loaded" << endl;
 }
 
 double MakeGoodPlot::getNumInitialMCevents (int sample)

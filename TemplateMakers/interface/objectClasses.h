@@ -49,6 +49,10 @@ namespace ttH
     double effArea;
     double miniIsoR;
     double miniAbsIsoNeutralcorr;    
+    
+    // trying stuff out:
+    float idTightPOG;
+    
     void clear(void)
     {
       obj.SetPxPyPzE(0.,0.,0.,0.);
@@ -79,6 +83,8 @@ namespace ttH
       effArea = -99.;
       miniIsoR = -99.;
       miniAbsIsoNeutralcorr = -99.;    
+      
+      idTightPOG = -999.;
 
     }
     

@@ -109,21 +109,21 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("runNumber", &runNumber_intree);
   summaryTree->Branch("higgs_decay", &higgs_decay_intree);
   
-  summaryTree->Branch("passTrigger", &passTrigger_intree);
+//  summaryTree->Branch("passTrigger", &passTrigger_intree);
   
   summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
   summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
   summaryTree->Branch("preselected_muons", &preselected_muons_intree);
-  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
-  summaryTree->Branch("selected_taus", &selected_taus_intree);
+//  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
+//  summaryTree->Branch("selected_taus", &selected_taus_intree);
   
-  summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
-  summaryTree->Branch("fakeable_electrons", &fakeable_electrons_intree);
-  summaryTree->Branch("fakeable_muons", &fakeable_muons_intree);
+//  summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
+//  summaryTree->Branch("fakeable_electrons", &fakeable_electrons_intree);
+//  summaryTree->Branch("fakeable_muons", &fakeable_muons_intree);
   
-  summaryTree->Branch("tight_leptons", &tight_leptons_intree);
-  summaryTree->Branch("tight_electrons", &tight_electrons_intree);
-  summaryTree->Branch("tight_muons", &tight_muons_intree);
+//  summaryTree->Branch("tight_leptons", &tight_leptons_intree);
+//  summaryTree->Branch("tight_electrons", &tight_electrons_intree);
+//  summaryTree->Branch("tight_muons", &tight_muons_intree);
   
   summaryTree->Branch("raw_electrons", &raw_electrons_intree);
   summaryTree->Branch("raw_muons", &raw_muons_intree);

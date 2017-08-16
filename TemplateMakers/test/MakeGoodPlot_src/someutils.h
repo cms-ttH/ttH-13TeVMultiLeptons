@@ -41,7 +41,7 @@ void MakeGoodPlot::get_roc_curve(TH1F *sig, TH1F *bkgd, int roc_curve_index) //i
 		intHist1->SetBinContent(i,intval);	    
 		InvIntHist1->SetBinContent(i,1.-intval);
 		effS[i] = 1.0 - intval;
-		std::cout << "sig interval: " << effS[i] << std::endl;
+		//std::cout << "sig interval: " << effS[i] << std::endl;
 	  	//effS[i] = intval;
 	  	npts++;
 	}
@@ -62,7 +62,7 @@ void MakeGoodPlot::get_roc_curve(TH1F *sig, TH1F *bkgd, int roc_curve_index) //i
 		intHist2->SetBinContent(j,intval);
 		InvIntHist2->SetBinContent(j,1.-intval);	
 		bckR[j] = intval;    
-		std::cout << "bckg interval: " << intval << std::endl;
+		//std::cout << "bckg interval: " << intval << std::endl;
 		//bckR[j] = 1.0 - intval;    
 	}
 	
@@ -353,13 +353,13 @@ void MakeGoodPlot::compareplots(std::vector<int> samps, std::vector<TString> tem
 
 void  MakeGoodPlot::setBranchAddresses(int sample_number)
 {
-    ch[sample_number]->SetBranchAddress( "passTrigger", &passTrigger_intree );
+    //ch[sample_number]->SetBranchAddress( "passTrigger", &passTrigger_intree );
     ch[sample_number]->SetBranchAddress( "preselected_leptons", &preselected_leptons_intree );
     ch[sample_number]->SetBranchAddress( "preselected_electrons", &preselected_electrons_intree );
     ch[sample_number]->SetBranchAddress( "preselected_muons", &preselected_muons_intree );
-    ch[sample_number]->SetBranchAddress( "tightMvaBased_leptons", &tightMvaBased_leptons_intree );
-    ch[sample_number]->SetBranchAddress( "tightMvaBased_muons", &tightMvaBased_muons_intree );
-    ch[sample_number]->SetBranchAddress( "tightMvaBased_electrons", &tightMvaBased_electrons_intree );
+    //ch[sample_number]->SetBranchAddress( "tightMvaBased_leptons", &tightMvaBased_leptons_intree );
+    //ch[sample_number]->SetBranchAddress( "tightMvaBased_muons", &tightMvaBased_muons_intree );
+    //ch[sample_number]->SetBranchAddress( "tightMvaBased_electrons", &tightMvaBased_electrons_intree );
     ch[sample_number]->SetBranchAddress( "met", &met_intree );
     ch[sample_number]->SetBranchAddress( "preselected_jets", &preselected_jets_intree );
     ch[sample_number]->SetBranchAddress( "pruned_genParticles", &pruned_genParticles_intree );

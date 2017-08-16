@@ -13,7 +13,7 @@ options.register("jetCleanFakeable", True,
 options.register("data", False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Data or MC.")
-options.register("skim", False,
+options.register("skim", True,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Produce skimmed trees.")
 options.register("hip",True,
@@ -22,7 +22,7 @@ options.register("hip",True,
 options.register("globalTag", "80X_mcRun2_asymptotic_2016_TrancheIV_v8",
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string, "Global tag to use") #80X_dataRun2_2016SeptRepro_v7
-options.parseArguments()
+#options.parseArguments()
 
 process = cms.Process("Demo")
 
@@ -42,14 +42,14 @@ process.maxEvents = cms.untracked.PSet(
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
-"jetCleanFakeable"
+#"jetCleanFakeable"
 ## set up to take input file as command line argument.
-#infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
+infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
 
 process.source = cms.Source("PoolSource",
-#    	fileNames = cms.untracked.vstring( infile ),        
+    	fileNames = cms.untracked.vstring( infile ),        
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
-    	fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/3C70EB0A-6BBE-E611-B094-0025905A606A.root"),
+#    	fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/3C70EB0A-6BBE-E611-B094-0025905A606A.root"),
 #    	fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/23Sep2016-v1/70000/081A803C-8B8A-E611-86A7-008CFA110C90.root" ),
        #eventsToProcess = cms.untracked.VEventRange('1:23725:3368878','1:23725:3368878'),
 
@@ -150,6 +150,14 @@ process.OSTwoLepAna.skim = cms.bool( options.skim )
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output_tree.root")
                                    )
+
+if len(sys.argv)>3:
+    outfile = sys.argv[3]
+    process.TFileService = cms.Service("TFileService",
+        fileName = cms.string(outfile)
+)
+
+
 
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
 my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring15_25ns_nonTrig_V1_cff']

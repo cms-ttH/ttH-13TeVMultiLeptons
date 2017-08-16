@@ -1,3 +1,44 @@
+bool MakeGoodPlot::passes_2lSS_Andrew(int sample_number)
+{
+    auto taggedjets = keepTagged(*preselected_jets_intree,"M");
+    
+    if (!((*preselected_jets_intree).size()>5)) return false;
+    if (!(taggedjets.size()>1)) return false;
+    if ((*preselected_leptons_intree).size()!=2) return false;
+    if ((*preselected_leptons_intree)[0].charge!=(*preselected_leptons_intree)[1].charge) return false;
+    
+    if (!((*preselected_leptons_intree)[0].isPromptFinalState || (*preselected_leptons_intree)[0].isDirectPromptTauDecayProductFinalState)) return false;
+    
+    
+    if (abs((*preselected_leptons_intree)[0].obj.Eta())>2.1 || abs((*preselected_leptons_intree)[1].obj.Eta())>2.1) return false;
+        
+    //if ((*preselected_leptons_intree)[0].obj.Pt()<30.) return false;
+    //if ((*preselected_leptons_intree)[1].obj.Pt()<30.) return false;  // || (*preselected_leptons_intree)[1].obj.Pt()>30.) return false;
+
+    return true;
+}
+bool MakeGoodPlot::passes_2muSS_Andrew(int sample_number)
+{
+    auto taggedjets = keepTagged(*preselected_jets_intree,"M");
+    
+    if (!((*preselected_jets_intree).size()>5)) return false;
+    if (!(taggedjets.size()>1)) return false;
+    if ((*preselected_leptons_intree).size()!=2) return false;
+    if ((*preselected_muons_intree).size()!=2) return false;
+    if ((*preselected_electrons_intree).size()!=0) return false;
+    
+    if ((*preselected_leptons_intree)[0].charge!=(*preselected_leptons_intree)[1].charge) return false;    
+    
+    if (!((*preselected_leptons_intree)[0].isPromptFinalState || (*preselected_leptons_intree)[0].isDirectPromptTauDecayProductFinalState)) return false;
+    
+    
+    if (abs((*preselected_leptons_intree)[0].obj.Eta())>2.1 || abs((*preselected_leptons_intree)[1].obj.Eta())>2.1) return false; // this was applied already, should have no effect..
+        
+    //if ((*preselected_leptons_intree)[0].obj.Pt()<30.) return false;
+    //if ((*preselected_leptons_intree)[1].obj.Pt()<30.) return false;  // || (*preselected_leptons_intree)[1].obj.Pt()>30.) return false;
+
+    return true;
+}
 bool MakeGoodPlot::passes_common(int sample_number)
 {
     

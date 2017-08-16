@@ -61,6 +61,8 @@
 #include "TMVA/Reader.h"
 #include "TMVA/MethodCuts.h"
 
+#pragma omp parallel for
+
 #endif
 
 using namespace std;
@@ -345,6 +347,8 @@ class MakeGoodPlot
                 bool passes_3l(int sample_number);
                 bool passes_geq3l(int sample_number);
                 bool passes_4l(int sample_number);
+                bool passes_2lSS_Andrew(int sample_number);
+                bool passes_2muSS_Andrew(int sample_number);
                 
                 template <typename almostTLVtype> TLorentzVector makeTLV( almostTLVtype thing );
                 double getNumInitialMCevents (int sample);
@@ -374,6 +378,7 @@ class MakeGoodPlot
 		void draw_several_comparisons(std::vector<int> samps);
                 void draw_2D_plot(std::vector<int> samps);
                 void addvarstotree(std::vector<int> samps);
+                void draw_eff_curves(std::vector<int> samps);
 		
                 MakeGoodPlot();
 		MakeGoodPlot(std::vector<int> samps);
@@ -408,16 +413,17 @@ MakeGoodPlot::~MakeGoodPlot() {}
 #include "initialize.h"  // <- required
 #include "loadsamplesNDPCs.h"  // <- required
 //#include "drawROCiso.h"
+#include "drawROCcurvesold.h"
 //#include "printcutflow.h"
 #include "someutils.h"
 #include "categories.h"
-#include "addvarstotree.h"
+//#include "addvarstotree.h"
 //#include "trigger_studies.h"
 //#include "lepstudies.h"
 //#include "4lstudies.h"
 //#include "3lstudies.h"
 //#include "lepptstudies.h"
-#include "matchtest.h"
+//#include "matchtest.h"
 //_______________________________________________________________
 
 // what is left (mainly drawing-specific functions):
@@ -686,7 +692,83 @@ void MakeGoodPlot::draw_several_comparisons(std::vector<int> samps)
        
     
 }
+void MakeGoodPlot::draw_eff_curves(std::vector<int> samps)
+{
+	
+	
+	int numsamples = samps.size();
+	
+	TH1F *sample_hist[numsamples]; //[5]; //second one is different pt ranges
+        TH1F *sample_hist2[numsamples]; //[5]; //second one is different pt ranges
+//	TGraph *roc_curve[10];
+	
+        cout << "hey" << endl;
+	load_samples(samps);
+        cout << "hey1" << endl;
+	
+	//TLegend* leg = new TLegend(0.55,0.7,0.9,0.9);  /// (0.3,0.77,0.7,0.88)
+	//TLegend* leg = new TLegend(0.12,0.12,0.3,0.4);  /// bottom left
+        
+	//TLegend* leg = new TLegend(0.14,0.75,0.94,0.89); // Darren format
+	TLegend* leg = new TLegend(0.11,0.91,0.89,0.99); // above the plot
+	
+	leg->SetFillColor(kWhite);
+	leg->SetLineColor(kWhite);
+	leg->SetShadowColor(kWhite);
+	leg->SetTextFont(42);
+	leg->SetTextSize(0.035);
+	leg->SetNColumns(5);
+	
+	int sig_hist_index = 1;
+	
+        Float_t bins[7] = {0,15,20,25,30,50,100};
+        
+	for (int i=0; i<numsamples; i++)
+	{
+		
+		int samp_int = samps[i];
+		
+		cout << "doing " << sample_names[samp_int] << endl;
 
+		//sample_hist[samp_int] = new TH1F("BDT response, ss2l+6j " + sample_names[samp_int],"",6,bins);
+                sample_hist[samp_int] = new TH1F("BDT response, ss2l+6j " + sample_names[samp_int],"",10,-3.0,3.0);
+                sample_hist[samp_int]->Sumw2();                
+                //sample_hist2[samp_int] = new TH1F("cut, ss2l+6j " + sample_names[samp_int],"",6,bins);
+                sample_hist2[samp_int] = new TH1F("cut, ss2l+6j " + sample_names[samp_int],"",10,-3.0,3.0);
+                sample_hist2[samp_int]->Sumw2();
+                
+		get_hist_of_simple_variable(sample_hist[samp_int],samp_int,sample_hist2[samp_int]);                                
+                
+                //sample_hist[i]->Divide(sample_hist2[i]);
+                
+                leg->AddEntry(sample_hist[samp_int],sample_names[samp_int],"l");
+        }
+	
+	int j = 0;
+        
+	cout << "hey2" << endl;
+        
+	TCanvas *can1 = new TCanvas("can1","canvas1",150,10,990,660);
+	can1->SetGridx();
+	can1->SetGridy();
+        cout << "hey3" << endl;
+        //->GetXaxis()->SetTitle
+        sample_hist[1]->Divide(sample_hist2[1]);
+        cout << "hey4" << endl;
+        
+        sample_hist[1]->SetStats(0);
+        sample_hist[1]->SetLineWidth(2);
+        sample_hist[1]->SetLineColor(2);
+	sample_hist[1]->Draw("E");
+        //sample_hist[1]->GetXaxis()->SetTitle("lep1 Pt");
+        sample_hist[1]->GetXaxis()->SetTitle("lep2 Eta");
+        sample_hist[1]->GetYaxis()->SetTitle("Eff");
+        
+	leg->SetFillColor(0);
+	leg->Draw();
+	
+
+}
 
 /// name says it all (uses get_hist_of_simple_variable)
 void MakeGoodPlot::draw_simple_curves_normalized(std::vector<int> samps)
@@ -939,131 +1021,44 @@ void MakeGoodPlot::get_hist_of_simple_variable(TH1 *plot, int sample_number, TH1
         
 	cout << sample_number << endl;
 	cout << ch[sample_number]->GetEntries() << endl;
-	
+        
+	//#pragma omp parallel for
 	for (Int_t i=0;i<ch[sample_number]->GetEntries();i++)
 	{
-		//if (i==10000) break;
+		//if (i==50000) break;
                 
                 ch[sample_number]->GetEntry(i);
 					
 		weight = wgt_intree;
 		
-                int gpsize = (*pruned_genParticles_intree).size();
-                
-                //for (int j=0; j<gpsize; j++)
-                //{
-                    //int chil0 = (int)(*pruned_genParticles_intree)[j].child0;
-                    ////if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize)) plot->Fill( (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0].pdgID, weight);
-                    //if ((*pruned_genParticles_intree)[j].pdgID==25 && (chil0<gpsize)) plot->Fill( (*pruned_genParticles_intree)[j].status, weight);
-                                        
-                    //chil0 = gpsize - chil0;
-                    //if ((*pruned_genParticles_intree)[j].pdgID==25) plot->Fill( chil0, weight );
-                                        
-                //}
-        
-                //for (unsigned int j=0; j<(*preselected_leptons_intree).size(); j++)
-                //{
-                //    plot->Fill((*preselected_leptons_intree)[j].genMotherPdgID);
-                //}
-                
-                if (passes_common(sample_number))
+                //int gpsize = (*pruned_genParticles_intree).size();
+                                
+
+                if (passes_2lSS_Andrew(sample_number))
                 {
-                    if (passes_2lss(sample_number))
-                    {
-                        double miniIsoDiff = abs((*tightMvaBased_leptons_intree)[0].miniIso + (*tightMvaBased_leptons_intree)[1].miniIso);
-                        //plot->Fill(min(miniIsoDiff,0.5), wgt_intree);
-                        
-                        double sumpt = getsumpt(*preselected_jets_intree,*tightMvaBased_leptons_intree,*met_intree);
-                        double sumE = getsumEnergy(*preselected_jets_intree,*tightMvaBased_leptons_intree,*met_intree);
-                        
-                        double ratio = (sumE==0) ? -1 : sumpt / sumE;
-                        
-                        //plot->Fill(sumE);
-                        
-                        double minpt = ((*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt() < (*preselected_jets_intree)[((*preselected_jets_intree).size()-1)].obj.Pt()) ?
-                            (*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt() : (*preselected_jets_intree)[((*preselected_jets_intree).size()-1)].obj.Pt();
-                        
-                        //plot->Fill(minpt);
-                        
-                        double aplanarity, sphericity;
-                        
-                        getSp(*tightMvaBased_leptons_intree, *met_intree, *preselected_jets_intree, aplanarity, sphericity);
-                        
-                        //plot->Fill(sphericity);
-                        
-                        auto sumTLVpre = getsumTLV(*tightMvaBased_leptons_intree, *preselected_jets_intree, *met_intree);
-                        TLorentzVector sumTLV = makeRealTLV(sumTLVpre);
-                        
-                        //plot->Fill((*tightMvaBased_leptons_intree)[0].obj.Eta());
-                        //plot->Fill((*tightMvaBased_leptons_intree)[1].obj.Eta());
-                        
-                        //plot->Fill(sumTLV.Mt());
-                        
-                        // for (int j=0; j<gpsize; j++)
-//                         {
-//                             // if (abs((*pruned_genParticles_intree)[j].pdgID)==24 )
-// //                             {
-// //                                 plot->Fill( (*pruned_genParticles_intree)[j].obj.Pt());
-// // 
-// //                             }
-//                             
-//                             if ( ((*pruned_genParticles_intree)[j].status>19) && ((*pruned_genParticles_intree)[j].status<30) )
-//                             {
-//                             
-//                                 if (abs((*pruned_genParticles_intree)[j].pdgID)==24 )
-//                                 {
-//                                     auto genChild0 = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child0];
-//                                     auto genChild1 = (*pruned_genParticles_intree)[(*pruned_genParticles_intree)[j].child1];
-//                                     
-//                                     if (abs(genChild0.pdgID)>=11 && abs(genChild0.pdgID)<=14 && abs(genChild1.pdgID)>=11 && abs(genChild1.pdgID)<=14)
-//                                     {
-//                                 
-//                                         double theDR = getdR(genChild0, genChild1);
-//                                 
-//                                         plot->Fill(theDR);
-//                                     }
-//                             
-//                                 }
-//                             }
-//                             
-//                             
-// 
-//                         }
 
+                    if ( ( sample_number==1 && ((*preselected_leptons_intree)[1].isPromptFinalState || (*preselected_leptons_intree)[1].isDirectPromptTauDecayProductFinalState) )
+                      || ( sample_number!=1 && (!((*preselected_leptons_intree)[1].isPromptFinalState || (*preselected_leptons_intree)[1].isDirectPromptTauDecayProductFinalState)) ) )
+                    {
+                    
+                        //plot2->Fill( (*preselected_leptons_intree)[1].idTightPOG);
+                        //plot->Fill( (*preselected_leptons_intree)[1].lepMVA);
                         
-                        vector<double> drjetvect = getTwoObjKineRawCollection( *preselected_jets_intree, *preselected_jets_intree, "dR", true);
-                        int numpairs = drjetvect.size();
-                        double avgdrjets=0.;
-                        for (int i=0; i<numpairs; i++)
+                        if ((*preselected_leptons_intree)[1].idTightPOG>-500)
                         {
-                            avgdrjets += drjetvect[i];
+                            //plot->Fill(min((*preselected_leptons_intree)[1].obj.Pt(),99.9));
+                            plot->Fill((*preselected_leptons_intree)[1].obj.Eta());
                         }
-                        avgdrjets /= numpairs;
-                        plot->Fill(avgdrjets);
-                        
-                        
 
-                    }
-                    
-                    
-                    if (passes_geq3l(sample_number))
-                    {
-                    
-                        double miniIsoDiff = abs((*tightMvaBased_leptons_intree)[0].miniIso + (*tightMvaBased_leptons_intree)[1].miniIso + (*tightMvaBased_leptons_intree)[2].miniIso);
-                        //plot->Fill(min(miniIsoDiff,0.5), wgt_intree);
-                        
-                        //double minpt = ((*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt() < (*preselected_jets_intree)[((*preselected_jets_intree).size()-1)].obj.Pt()) ?
-                        //    (*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt() : (*preselected_jets_intree)[((*preselected_jets_intree).size()-1)].obj.Pt();
-                        double minpt = (*tightMvaBased_leptons_intree)[0].obj.Pt() - (*tightMvaBased_leptons_intree)[((*tightMvaBased_leptons_intree).size()-1)].obj.Pt();
-                        //plot->Fill(minpt);                                    
-                        //plot->Fill((*met_intree)[0].obj.Pt());
-                        //plot->Fill((*tightMvaBased_leptons_intree)[0].obj.Pt()); 
-                    }
-                    
-                }
-                
-                               
+                        //plot2->Fill(min((*preselected_leptons_intree)[1].obj.Pt(),99.9));
+                        plot2->Fill((*preselected_leptons_intree)[1].obj.Eta());
 
+                        
+                        
+                    }
+
+                }                                                            
+                                            
 	}
 
 }
