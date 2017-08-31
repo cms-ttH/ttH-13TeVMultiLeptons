@@ -133,24 +133,22 @@ void run_it(TChain* tree, TString csv_file_str, double weight, int evt_class)
       ////
       //////////////////////////
 
-      //////////////////////////
-      //////////////////////////      
-      //////////////////////////      
-      //////////////////////////      
-
       //write csv files
       csv_file << eventnum_intree <<", ";  
       
+      int lepcount = 0;
       for (const auto & lep : *fakeable_leptons_intree)
 	{
+	  if (lepcount >=2) break;
 	  csv_file << lep.obj.pt() << ", " << lep.obj.eta() <<", "<< lep.obj.phi() <<", "<< lep.charge <<", " << lep.pdgID <<", ";
+	  lepcount +=1;
 	}  
       
       int jet_count=0;
       for (const auto & jet : *preselected_jets_intree)
 	{
-	  if (jet_count > 8) break;
-	  csv_file << jet.obj.pt() << ", " << jet.obj.eta() <<", "<< jet.obj.phi() <<", "<< jet.obj.M() <<", " << jet.csv <<", " << jet.qgid <<", ";      
+	  if (jet_count >= 8) break;
+	  csv_file << jet.obj.pt() << ", " << jet.obj.eta() <<", "<< jet.obj.phi() <<", " <<  jet.obj.M() <<", " << jet.csv <<", " << jet.qgid <<", ";      
 	  jet_count +=1;
 	}
       while (jet_count < 8)
@@ -161,7 +159,6 @@ void run_it(TChain* tree, TString csv_file_str, double weight, int evt_class)
 
       csv_file << (*met_intree)[0].pt_forSync << ", " << (*met_intree)[0].phi_forSync <<", ";  
       
-
       //engineered vars
       csv_file << hj_score_input << ", " << hadtop_score_input << ", " << max_lep_eta_input << ", " << njets_input << ", " << min_dr_l1j_input << ", " << min_dr_l2j_input << ", " << mt_met_l1_input << ", " << l1pt << ", " << l2pt << ", ";
       csv_file << vs_ttbar_output << ", " << vs_ttv_output << ", " << final_output << ", "; 
@@ -227,9 +224,9 @@ void makeFlatTreesForKevin(TString sample="")
 
   TString input_file = "/scratch365/cmuelle2/bdt_test/aug28_deep_learning/tth_powheg.root";
   //TString input_file = "/scratch365/cmuelle2/bdt_test/aug28_deep_learning/ttW_LO.root";
-  // TString input_file = "/scratch365/cmuelle2/bdt_test/aug28_deep_learning/ttZ_LO.root";
-  // TString input_file = "/scratch365/cmuelle2/bdt_test/aug28_deep_learning/ttjets_semilep.root";
-  // TString input_file = "/scratch365/cmuelle2/bdt_test/aug28_deep_learning/ttjets_dilep.root";
+  //TString input_file = "/scratch365/cmuelle2/bdt_test/aug28_deep_learning/ttZ_LO.root";
+  //TString input_file = "/scratch365/cmuelle2/bdt_test/aug28_deep_learning/ttjets_semilep.root";
+  //TString input_file = "/scratch365/cmuelle2/bdt_test/aug28_deep_learning/ttjets_dilep.root";
   
   TChain *tth_chain = new TChain("ss2l_tree");    
   tth_chain->Add(input_file);
@@ -248,9 +245,10 @@ void makeFlatTreesForKevin(TString sample="")
   double weight_ttbar_sl = 831.76*(3*0.108)*(1-3*0.108)/11643834.5;
 
   run_it(tth_chain,csv_file_str_tth, weight_tth, 0);
-  // run_it(tth_chain,csv_file_str_ttw, weight_ttw, 1);
-  // run_it(tth_chain,csv_file_str_ttz, weight_ttz, 1);
-  // run_it(tth_chain,csv_file_str_ttbar_dl, weight_ttbar_dl, 2);
-  // run_it(tth_chain,csv_file_str_ttbar_dl, weight_ttbar_sl, 2);
+  //run_it(tth_chain,csv_file_str_ttw, weight_ttw, 1);
+  //run_it(tth_chain,csv_file_str_ttz, weight_ttz, 1);
+  //run_it(tth_chain,csv_file_str_ttbar_sl, weight_ttbar_sl, 2);
+  //run_it(tth_chain,csv_file_str_ttbar_dl, weight_ttbar_dl, 2);
+
 
 }
