@@ -2,15 +2,48 @@
 #define HELPERTOOLSEFT_H_
 
 #include <vector>
+#include <typeinfo>
+
+#include "genToolsEFT.h"
 
 #include "TLorentzVector.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
-vector<ttH::GenParticle> sortGenParticles(vector<ttH::GenParticle> gen_particles) {
-    vector<ttH::GenParticle> gen_list(gen_particles.begin(),gen_particles.end());
-    std::sort(gen_list.begin(), gen_list.end(), [] (ttH::GenParticle a, ttH::GenParticle b) {return a.obj.Pt() > b.obj.Pt();});
-    return gen_list;
+TString padLeft(TString str,char pad_char,int pad_num=0) {
+    int length = str.Length();
+    if (length >= pad_num) {
+        return str;
+    }
+    TString padded_str(pad_char,pad_num - length);
+    padded_str = padded_str + str;
+    return padded_str;
+}
+
+TString padRight(TString str,char pad_char,int pad_num=0) {
+    int length = str.Length();
+    if (length >= pad_num) {
+        return str;
+    }
+    TString padded_str(pad_char,pad_num - length);
+    padded_str = str + padded_str;
+    return padded_str;
+}
+
+//vector<ttH::GenParticle> sortGenParticles(vector<ttH::GenParticle> gen_particles) {
+//    vector<ttH::GenParticle> gen_list(gen_particles.begin(),gen_particles.end());
+//    std::sort(gen_list.begin(), gen_list.end(), [] (ttH::GenParticle a, ttH::GenParticle b) {return a.obj.Pt() > b.obj.Pt();});
+//    return gen_list;
+//}
+
+template <typename T> vector<T> sortParticles(vector<T> particles) {
+    vector<T> sorted_particles(particles.begin(),particles.end());
+    std::sort(sorted_particles.begin(),sorted_particles.end(), [] (T a, T b) {return a.obj.Pt() > b.obj.Pt();});
+    return sorted_particles;
+}
+
+template <typename T> int getSign(T val) {
+    return (T(0) < val) - (val < T(0));
 }
 
 template <typename inObj> TLorentzVector setTlv(const inObj inputObj ) {
@@ -22,7 +55,6 @@ template <typename inObj> TLorentzVector setTlv(const inObj inputObj ) {
 template <typename inObj1, typename inObj2> double getDeltaR(const inObj1 obj1, const inObj2 obj2) {
     TLorentzVector obj1_tlv = setTlv(obj1);
     TLorentzVector obj2_tlv = setTlv(obj2);
-    //cout << "Pt result: " << obj1_tlv.Pt()*obj2_tlv.Pt() << endl;
     if (obj1_tlv.Pt()*obj2_tlv.Pt() <= 1e-10) {
         return -1.;
     }
@@ -30,18 +62,10 @@ template <typename inObj1, typename inObj2> double getDeltaR(const inObj1 obj1, 
     return obj1_tlv.DeltaR( obj2_tlv );
 }
 
-vector<ttH::GenParticle> getLeptons(vector<ttH::GenParticle> gen_particles) {
+vector<ttH::GenParticle> getGenLeptons(vector<ttH::GenParticle> gen_particles) {
     vector<ttH::GenParticle> leptons;
     for (auto &gen_particle: gen_particles) {
         // Must be prompt lepton
-        //if (!gen_particle.isPromptFinalState) {
-        //    continue;
-        //}
-
-        //if (!gen_particle.isDirectPromptTauDecayProductFinalState) {
-        //    continue;
-        //}
-
         if (gen_particle.isPromptFinalState || gen_particle.isDirectPromptTauDecayProductFinalState) {        
             int pdg_ID = fabs(gen_particle.pdgID);
 
@@ -53,60 +77,71 @@ vector<ttH::GenParticle> getLeptons(vector<ttH::GenParticle> gen_particles) {
             leptons.push_back(gen_particle);
         }
     }
+
+    leptons = sortParticles(leptons);
+    
     return leptons;
 }
 
-vector<ttH::GenParticle> getJets(vector<ttH::GenParticle> gen_particles) {
-    vector<ttH::GenParticle> jets;
-    for (auto &gen_particle: gen_particles) {
-        jets.push_back(gen_particle);
-    }
-    return jets;
+template <typename inObj1, typename inObj2> vector<ttH::Lepton> getRecoLeptons(const vector<inObj1> collection_1, const vector<inObj2> collection_2) {
+    vector<ttH::Lepton> lep_collection(collection_1.begin(),collection_1.end());
+    lep_collection.insert(lep_collection.end(),collection_2.begin(),collection_2.end());
+    lep_collection = sortParticles(lep_collection);
+    return lep_collection;
+    //std::sort(lep_collection.begin(), lep_collection.end(), [] (ttH::Lepton a, ttH::Lepton b) {
+    //    return a.obj.Pt() > b.obj.Pt();
+    //});
+    //return lep_collection;
 }
 
-vector<ttH::GenParticle> applyPtCut(vector<ttH::GenParticle> gen_particles, double pt_cut) {
-    vector<ttH::GenParticle> selected_particles;
-    for (auto &gen_particle: gen_particles) {
-        if (gen_particle.obj.Pt() < pt_cut) {
-            continue;
-        }
-        selected_particles.push_back(gen_particle);
-    }
-    return selected_particles;
-}
+// Returns objects from the dirty collection that ARE NOT in the scrub collection
+template <typename T1, typename T2> vector<T1> cleanCollection(const vector<T1> dirty_collection, const vector<T2> scrub_collection, double deltaR_cut) {
+    vector<T1> cleaned_collection;
 
-vector<ttH::GenParticle> applyEtaCut(vector<ttH::GenParticle> gen_particles, double eta_cut) {
-    vector<ttH::GenParticle> selected_particles;
-    for (auto &gen_particle: gen_particles) {
-        if (fabs(gen_particle.obj.Eta()) > eta_cut) {
-            continue;
-        }
-        selected_particles.push_back(gen_particle);
-    }
-    return selected_particles;
-}
-
-vector<ttH::GenParticle> applyPtVeto(vector<ttH::GenParticle> gen_particles, uint veto_index, double veto_cut) {
-    if (veto_index >= gen_particles.size()) {
-        // Selected veto_index out of range!
-        return gen_particles;
-    }
-
-    vector<ttH::GenParticle> selected_particles;
-    for (uint i = 0; i < gen_particles.size(); i++) {
-        ttH::GenParticle gen_particle = gen_particles.at(i);
-        if (i == veto_index) {
-            if (gen_particle.obj.Pt() > veto_cut) {
-                // Veto particles that are above the veto_cut
+    for (auto &dirty_obj: dirty_collection) {
+        bool is_clean = true;
+        for (auto &scrub_obj: scrub_collection) {
+            double dr = getDeltaR(dirty_obj,scrub_obj);
+            if (dr < 0) {
                 continue;
             }
+
+            if (dr < deltaR_cut) {
+                is_clean = false;
+                break;
+            }
         }
-        selected_particles.push_back(gen_particle);
+
+        if (is_clean) {
+            cleaned_collection.push_back(dirty_obj);
+        }
+    }
+
+    return cleaned_collection;
+}
+
+template <typename inObj> vector<inObj> applyPtCut(const vector<inObj> particles, double pt_cut) {
+    vector<inObj> selected_particles;
+    for (auto &particle: particles) {
+        if (particle.obj.Pt() < pt_cut) {
+            continue;
+        }
+        selected_particles.push_back(particle);
     }
     return selected_particles;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename inObj> vector<inObj> applyEtaCut(const vector<inObj> particles, double eta_cut) {
+    vector<inObj> selected_particles;
+    for (auto &particle: particles) {
+        if (fabs(particle.obj.Eta()) > eta_cut) {
+            continue;
+        }
+        selected_particles.push_back(particle);
+    }
+    return selected_particles;
+}
+
 vector<ttH::GenParticle> getPromptParticles(vector<ttH::GenParticle> gen_particles) {
     vector<ttH::GenParticle> prompt_particles;
     for (auto &gen_particle: gen_particles) {
@@ -118,122 +153,54 @@ vector<ttH::GenParticle> getPromptParticles(vector<ttH::GenParticle> gen_particl
     return prompt_particles;
 }
 
-TString getParticleName(ttH::GenParticle particle) {
-    int pdg_id = abs(particle.pdgID);
-    if (pdg_id == 11) {
-        return TString("Electron");
-    } else if (pdg_id == 12) {
-        return TString("Neutrino (e)");
-    } else if (pdg_id == 13) {
-        return TString("Muon");
-    } else if (pdg_id == 14) {
-        return TString("Neutrino (m)");
-    } else if (pdg_id == 15) {
-        return TString("Tau");
-    } else if (pdg_id == 16) {
-        return TString("Neutrino (t)");
-    } else if (pdg_id == 21) {
-        return TString("Gluon");
-    } else if (pdg_id == 22) {
-        return TString("Photon");
-    } else if (pdg_id == 24) {
-        return TString("W");
-    } else if (pdg_id == 1) {
-        return TString("d Quark");
-    } else if (pdg_id == 2) {
-        return TString("u Quark");
-    } else if (pdg_id == 3) {
-        return TString("s Quark");
-    } else if (pdg_id == 4) {
-        return TString("c Quark");
-    } else if (pdg_id == 5) {
-        return TString("b Quark");
-    } else if (pdg_id == 6) {
-        return TString("t Quark");
-    } else if (pdg_id == 111) {
-        return TString("Pi0 Meson");
-    } else if (pdg_id == 211) {
-        return TString("Pi+ Meson");
-    } else if (pdg_id == 310) {
-        return TString("K0_S Meson");
-    } else if (pdg_id == 413) {
-        return TString("D*(2010)+ Meson");
-    } else if (pdg_id == 421) {
-        return TString("D0 Meson");
-    } else if (pdg_id == 423) {
-        return TString("D*(2007)0 Meson");
-    } else if (pdg_id == 511) {
-        return TString("B0 Meson");
-    } else if (pdg_id == 523) {
-        return TString("B+ Meson");
-    } else if (pdg_id == 2212) {
-        return TString("Proton");
-    } else {
-        return TString(std::to_string(pdg_id));
-    }
-}
-
-vector<ttH::GenParticle> getParticlesByID(int id,vector<ttH::GenParticle> gen_particles) {
-    vector<ttH::GenParticle> particles;
+// Attempts to match the jet object to its corresponding gen object
+template <typename T> ttH::GenParticle matchGenObject(T jet, vector<ttH::GenParticle> gen_particles) {
+    double min_dr = 999.;
+    ttH::GenParticle best_gen_object = gen_particles.at(0);
     for (auto &gen_particle: gen_particles) {
-        int pdg_ID = abs(gen_particle.pdgID);
-        if (pdg_ID != id) {
+        double dr = getDeltaR(gen_particle,jet);
+        if (dr < 0) {
             continue;
+        } else if (dr < min_dr) {
+            min_dr = dr;
+            best_gen_object = gen_particle;
         }
-        particles.push_back(gen_particle);
     }
-    return particles;
-}
 
-ttH::GenParticle getMotherParticle(ttH::GenParticle gen_particle, vector<ttH::GenParticle> gen_particles) {
-    ttH::GenParticle mother_particle = gen_particles.at(gen_particle.mother);
-    return mother_particle;
-}
-
-ttH::GenParticle getChildParticle(ttH::GenParticle gen_particle, vector<ttH::GenParticle> gen_particles, int child_choice = 0) {
-    ttH::GenParticle child_particle;
-    if (child_choice == 0) {
-        child_particle = gen_particles.at(gen_particle.child0);
-    } else {
-        child_particle = gen_particles.at(gen_particle.child1);
+    if (min_dr == 999.) {
+        cout << "WARNING: Unable to match gen object!" << endl;
     }
-    return child_particle;
+
+    return best_gen_object;
 }
 
-TString getIndentString(int depth = 0) {
-    TString indent = "";
-    for (int i = 0; i < depth; i++) {
-        indent += "\t";
+// Attempts to match an object to some object in the specified collection
+template <typename T1, typename T2> T2* matchObject(T1 target_particle, vector<T2> matching_collection) {
+    double min_dr = 999.;
+    T2 best_match = matching_collection.at(0);
+    for (auto &match_obj: matching_collection) {
+        double dr = getDeltaR(match_obj,target_particle);
+        if (dr < 0) {
+            continue;
+        } else if (dr < min_dr) {
+            min_dr = dr;
+            best_match = match_obj;
+        }
     }
-    return indent;
+
+    if (min_dr == 999.) {
+        cout << "WARNING: Unable to match object!" << endl;
+        return nullptr;
+    }
+
+    return &best_match;
 }
 
-void readParticleInfo(ttH::GenParticle gen_particle, int particle_index, int depth = 0) {
-    TString indent = getIndentString(depth);
-
-    TString particle_name = getParticleName(gen_particle);
-
-    cout << indent << "Particle: " << particle_name << endl;
-    cout << indent << "\tIndex:   " << particle_index << endl;
-    cout << indent << "\tpdgID:   " << gen_particle.pdgID << endl;
-    cout << indent << "\tCharge:  " << gen_particle.charge << endl;
-    cout << indent << "\tStatus:  " << gen_particle.status << endl;
-    cout << indent << "\tPrompt:  " << gen_particle.isPromptFinalState << endl;
-    cout << indent << "\tObj:     " << gen_particle.obj << endl;
-    cout << indent << "\tM():     " << gen_particle.obj.M() << endl;
-    cout << indent << "\tPt():    " << gen_particle.obj.Pt() << endl;
-    cout << indent << "\tP():     " << gen_particle.obj.P() << endl;
-    cout << indent << "\tE():     " << gen_particle.obj.E() << endl;
-    cout << indent << "\tMother:  " << gen_particle.mother << endl;
-    cout << indent << "\tGMother: " << gen_particle.grandmother << endl;
-    cout << indent << "\tChild0:  " << gen_particle.child0 << endl;
-    cout << indent << "\tChild1:  " << gen_particle.child1 << endl;
-}
-
-vector<ttH::GenParticle> getBJets(vector<ttH::GenParticle> gen_particles, vector<ttH::GenParticle> gen_jets) {
+// Returns b-jets matched to their gen_particle counterparts
+template <typename T> vector<T> getBJets(vector<ttH::GenParticle> gen_particles, vector<T> jets) {
     double deltaR_cut = 0.4;
-    vector<ttH::GenParticle> b_jets;
-    for (auto &gen_jet: gen_jets) {
+    vector<T> b_jets;
+    for (auto &gen_jet: jets) {
         int index = 0;
         for (auto &gen_particle: gen_particles) {
             double delta_r = getDeltaR(gen_jet,gen_particle);
@@ -242,14 +209,7 @@ vector<ttH::GenParticle> getBJets(vector<ttH::GenParticle> gen_particles, vector
                 continue;
             }
 
-            //if (!gen_particle.isPromptFinalState) {
-            //    index += 1;
-            //    continue;
-            //}
-
             if (fabs(gen_particle.pdgID) == 5) {
-                //readParticleInfo(gen_particle,index,1);
-                //cout << "\t\tDeltaR: " << delta_r << endl;
                 b_jets.push_back(gen_jet);
                 break;
             }
@@ -259,47 +219,17 @@ vector<ttH::GenParticle> getBJets(vector<ttH::GenParticle> gen_particles, vector
     return b_jets;
 }
 
-// Determines if the given particle (index) corresponds directly to the mother's children
-bool isOriginal(int particle_index, ttH::GenParticle mother_particle) {
-    if (particle_index == mother_particle.child0 || particle_index == mother_particle.child1) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// Returns the calculated invariant W mass of the event (if possible)
 double getInvWMass(vector<ttH::GenParticle> gen_particles) {
     double inv_w_mass = -999.;
-    vector<ttH::GenParticle> prompt_particles = getPromptParticles(gen_particles);
     for (uint i = 0; i < gen_particles.size(); i++) {
-        //if (i != 0 && i != 1 && i != 3 && i != 4 && i != 5 && i != 17 && i != 90) {
-        //    // Look at specific particles in the event
-        //    continue;
-        //}
-
         uint particle_index = i;
         ttH::GenParticle gen_particle = gen_particles.at(i);
-
-        //if (!gen_particle.isPromptFinalState) {
-        //    continue;
-        //}
-
-        //if (fabs(gen_particle.pdgID) != 2212) {
-        //    continue;
-        //}
-
-        //if (fabs(gen_particle.pdgID) == 2212 && gen_particle.mother == 9999 && gen_particle.child0 == 9999 && gen_particle.child1 == 9999) {
-        //    // Ignore 'observing' protons
-        //    continue;
-        //}
 
         if (fabs(gen_particle.pdgID) != 24) {
             // Only look at W's
             continue;
         }
-
 
         if (gen_particle.mother == 9999) {
             // The particle has no mother
@@ -318,70 +248,48 @@ double getInvWMass(vector<ttH::GenParticle> gen_particles) {
             continue;
         }
 
-        //readParticleInfo(gen_particle,i,0);
-        //readParticleInfo(mother_particle,gen_particle.mother,1);
-
-        /*
-        if (mother_particle.child0 != 9999 && mother_particle.child1 != 9999) {
-            // Print info for children of mother particle
-            ttH::GenParticle child_0 = getChildParticle(mother_particle,gen_particles,0);
-            ttH::GenParticle child_1 = getChildParticle(mother_particle,gen_particles,1);
-
-            readParticleInfo(child_0,mother_particle.child0,2);
-            readParticleInfo(child_1,mother_particle.child1,2);
-        }
-        */
-
-
         inv_w_mass = gen_particle.obj.M();
         break;
-
-
-        /*
-        if (gen_particle.mother != 9999) {
-            int depth = 2;
-            TString indent = getIndentString(depth);
-            int original_index = i;
-            int particle_index = gen_particle.mother;
-            ttH::GenParticle mother_particle = getMotherParticle(gen_particle,gen_particles);
-            readParticleInfo(mother_particle,particle_index,depth);
-            int child0_index = mother_particle.child0;
-            int child1_index = mother_particle.child1;
-            original_index = particle_index;
-            while (mother_particle.mother != 9999) {
-                depth += 2;
-                particle_index = mother_particle.mother;
-                mother_particle = getMotherParticle(mother_particle,gen_particles);
-                readParticleInfo(mother_particle,particle_index,depth);
-                child0_index = mother_particle.child0;
-                child1_index = mother_particle.child1;
-                original_index =  particle_index;
-            }
-
-            indent = getIndentString(depth+2);
-            cout << indent << "Particle: None" << endl;
-        } else {
-            cout << "\t\tParticle: None" << endl;
-        }
-        */
-        /*
-        if (gen_particle.mother != 9999) {
-            ttH::GenParticle mother_particle = getMotherParticle(gen_particle,gen_particles);
-            readParticleInfo(gen_particle,2);
-        } else {
-            cout << "\t\tParticle: None" << endl;
-        }
-        */
     }
 
     return inv_w_mass;
 }
 
-double getNJets(vector<ttH::GenParticle> gen_jets, double jet_pt_cut, double jet_eta_cut) {
-    vector<ttH::GenParticle> selected_jets = applyPtCut(gen_jets,jet_pt_cut);
-    selected_jets = applyEtaCut(selected_jets,jet_eta_cut);
+// Returns jets from base_collection that have been matched to a jet in matching_collection
+template <typename T1, typename T2> vector<T1> getMatchedJets(
+    vector<T1> base_collection,
+    vector<T2> matching_collection,
+    double min_dr_cut
+) {
+    vector<T1> matched_jets;
 
-    return selected_jets.size();
+    if (base_collection.size() < 1) {
+        return matched_jets;
+    } else if (matching_collection.size() < 1) {
+        return matched_jets;
+    }
+
+    for (auto &base_jet: base_collection) {
+        double min_dr = 999.;
+        T2 best_matched_jet = matching_collection.at(0);
+        for (auto &matching_jet: matching_collection) {
+            double delta_r = getDeltaR(base_jet,matching_jet);
+            if (delta_r < 0) {
+                continue;
+            } else if (delta_r < min_dr) {
+                min_dr = delta_r;
+                best_matched_jet = matching_jet;
+            }
+        }
+
+        if (min_dr > min_dr_cut) {
+            continue;
+        }
+
+        matched_jets.push_back(base_jet);
+    }
+
+    return matched_jets;
 }
 
 #endif
