@@ -28,7 +28,7 @@ EOF
 
    git clone -b multilep_m17 git@github.com:cms-ttH/MiniAOD.git
    git clone -b multilep_m17 git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
-   git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
+   git clone -b EFT_code git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
    
    sed -i 's|Math/include|Math/interface|' CommonTools/Utils/interface/normalizedPhi.h
 
@@ -42,7 +42,7 @@ EOF
 <use name="DataFormats/PatCandidates"/>
 EOB
 
-   scram b -j 32
+   scram b -j 8
 
    cd $CMSSW_BASE/external/$SCRAM_ARCH/
    git clone -b egm_id_80X_v1 https://github.com/ikrav/RecoEgamma-ElectronIdentification.git data/RecoEgamma/ElectronIdentification/data
