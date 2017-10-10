@@ -203,7 +203,8 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.miniAbsIsoNeutralcorr = iEle.userFloat("miniAbsIsoNeutralcorr");      
       
       // trying stuff out:
-      ele.idTightPOG = iEle.userFloat("idTightLJ");      
+      ele.idTightPOG = iEle.userFloat("idTightLJ");                             // <- fix
+      ele.idMediumPOG = 1.;                                                     // <- fix
       
       if (iEle.genParticle())
       {
@@ -274,8 +275,16 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs)
       mu.miniAbsIsoNeutralcorr = iMu.userFloat("miniAbsIsoNeutralcorr");
       
       // trying stuff out:
-      mu.idTightPOG = iMu.userFloat("idTightLJ");
+      //mu.idTightPOG = iMu.userFloat("idTightLJ");
+      mu.idTightPOG = iMu.isTightMuon(vertex);      // <-- from PAT
+      mu.idMediumPOG = iMu.isMediumMuon();          // <-- from PAT
+      mu.idLoosePOG = iMu.isLooseMuon();            // <-- from PAT
       
+      // Loose muon POG ID is really loose. Basically
+      // anything you're likely to make a collection out of (besides
+      // some of "raw" muons) should pass it.
+      
+      mu.isPreselected = iMu.userFloat("idPreselection")>0.5;
 
       if (iMu.genParticle())
 	{
@@ -417,6 +426,9 @@ MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const
 	case muonID::muonRaw: 
             passSelection = true;
             break;
+        case muonID::muonLoose: 
+            passSelection = mu.isLooseMuon() && passPt;
+            break;
 	case muonID::muonPreselection: 
             passSelection = (mu.userFloat("idPreselection") > 0.5 && passPt);
             break;
@@ -487,6 +499,9 @@ MultileptonAna::GetSelectedTaus(const std::vector<pat::Tau>& inputTaus, const fl
       bool passPt = (tau.pt() >= iMinPt);
       switch(iTauID)
       {
+        case tauID::tauRaw: 
+          passSelection = true;
+          break;        
         case tauID::tauLoose:
 	  passSelection = ((tau.userFloat("idPreselection")>0.5) && passPt);
 	  break;

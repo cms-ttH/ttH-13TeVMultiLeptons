@@ -13,7 +13,7 @@ options.register("jetCleanFakeable", True,
 options.register("data", False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Data or MC.")
-options.register("skim", True,
+options.register("skim", False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Produce skimmed trees.")
 options.register("hip",True,
@@ -44,12 +44,13 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 #"jetCleanFakeable"
 ## set up to take input file as command line argument.
-infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
+if len(sys.argv)>2:
+    infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
 
 process.source = cms.Source("PoolSource",
-    	fileNames = cms.untracked.vstring( infile ),        
+#    	fileNames = cms.untracked.vstring( infile ),        
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
-#    	fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/3C70EB0A-6BBE-E611-B094-0025905A606A.root"),
+    	fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/3C70EB0A-6BBE-E611-B094-0025905A606A.root"),
 #    	fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/23Sep2016-v1/70000/081A803C-8B8A-E611-86A7-008CFA110C90.root" ),
        #eventsToProcess = cms.untracked.VEventRange('1:23725:3368878','1:23725:3368878'),
 

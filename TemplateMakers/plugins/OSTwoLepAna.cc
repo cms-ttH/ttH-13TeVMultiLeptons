@@ -13,6 +13,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   
   alltriggerstostudy = HLTInfo();
   
+  // these are all the pat collections...
   muons_token_ = consumes<pat::MuonCollection>(constructparams.getParameter<edm::InputTag>("muons"));
   electrons_token_ = consumes<pat::ElectronCollection>(constructparams.getParameter<edm::InputTag>("electrons"));
   taus_token_ = consumes<pat::TauCollection>(constructparams.getParameter<edm::InputTag>("taus"));
@@ -107,7 +108,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   //////// bad muons
   ////////
   ///////////////////
-  int numBadMu = (*get_collection(event, badmu_token_));
+  int numBadMu = (*get_collection(event, badmu_token_));                                            // <------ ?
 
   /////////////////////
   /////////
@@ -154,6 +155,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   double min_ele_pt = 7.; // lowered for studies
 
   vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronPreselection );    //miniAODhelper.
+//  vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronLoose ); //miniAODhelper. // doesn't exist yet
   vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronRaw ); //miniAODhelper.
 
   /////////
@@ -165,6 +167,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   double min_mu_pt = 5.; // lowered for studies
 
   vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, min_mu_pt, muonID::muonPreselection );
+  vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, min_mu_pt, muonID::muonLoose );
   vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, min_mu_pt, muonID::muonRaw );
 
   /////////
@@ -173,7 +176,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   ///
   ////////        
 
-  vecPatTau selectedTaus_preselected = GetSelectedTaus( *taus, 20., tauID::tauLoose );
+  
+  double min_tau_pt = 10.; // lowered for studies
+  
+  vecPatTau selectedTaus_raw = GetSelectedTaus( *taus, min_tau_pt, tauID::tauRaw );
+  vecPatTau selectedTaus_preselected = GetSelectedTaus( *taus, min_tau_pt, tauID::tauLoose );
 
   /////////
   ///
@@ -190,6 +197,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   //remove taus that are close (dR <=0.4) to electrons
   selectedTaus_preselected = cleanObjects<pat::Tau,pat::Electron>(selectedTaus_preselected,selectedElectrons_preselected,0.4);
 
+  
+  
   vecPatTau selectedTaus_selected = GetSelectedTaus( selectedTaus_preselected, 20., tauID::tauMedium );
   
   /////////
@@ -257,6 +266,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     vecPatJet cleaned_rawJets  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets,selectedTaus_preselected,0.4);
     vecPatJet cleaned_rawJets_JECup  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets_JECup,selectedTaus_preselected,0.4);
     vecPatJet cleaned_rawJets_JECdown  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets_JECdown,selectedTaus_preselected,0.4);
+    
+    /// the jet selection:
     vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
     vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 25., 2.4, jetID::jetPU, '-' );
     vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 25., 2.4, jetID::jetPU, '-' );
@@ -346,11 +357,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     /////////////////////////
     
     vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw);
+    
     vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected);
     vector<ttH::Electron> fakeable_electrons = GetCollection(selectedElectrons_fakeable);
     vector<ttH::Electron> tight_electrons = GetCollection(selectedElectrons_tight);
 
     vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw);
+    vector<ttH::Muon> loose_muons = GetCollection(selectedMuons_loose);
     vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected);
     vector<ttH::Muon> fakeable_muons = GetCollection(selectedMuons_fakeable);
     vector<ttH::Muon> tight_muons = GetCollection(selectedMuons_tight);
@@ -420,6 +433,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     raw_electrons_intree = raw_electrons;
     raw_muons_intree = raw_muons;
     raw_jets_intree = raw_jets;
+    //raw_taus_intree = raw_taus;
+    //raw_leptons_intree = raw_leptons;
       
     preselected_leptons_intree = preselected_leptons;
     preselected_electrons_intree = preselected_electrons;
@@ -428,6 +443,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     fakeable_leptons_intree = fakeable_leptons;
     fakeable_muons_intree = fakeable_muons;
     fakeable_electrons_intree = fakeable_electrons;
+
+    //loose_leptons_intree = loose_leptons;
+    loose_muons_intree = loose_muons;
+    //loose_electrons_intree = loose_electrons;
 
     tight_leptons_intree = tight_leptons;
     tight_muons_intree = tight_muons;

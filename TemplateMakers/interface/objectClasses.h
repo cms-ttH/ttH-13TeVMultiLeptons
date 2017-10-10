@@ -50,8 +50,12 @@ namespace ttH
     double miniIsoR;
     double miniAbsIsoNeutralcorr;    
     
-    // trying stuff out:
-    float idTightPOG;
+    // POG IDs:
+    bool idTightPOG;
+    bool idMediumPOG;
+    bool idLoosePOG;
+    
+    bool isPreselected;
     
     void clear(void)
     {
@@ -82,10 +86,7 @@ namespace ttH
       rho = -99.;
       effArea = -99.;
       miniIsoR = -99.;
-      miniAbsIsoNeutralcorr = -99.;    
-      
-      idTightPOG = -999.;
-
+      miniAbsIsoNeutralcorr = -99.;          
     }
     
     

@@ -54,20 +54,25 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
 		int numBadMuons_intree;
 
-		vector<ttH::Lepton> preselected_leptons_intree;
+		vector<ttH::Lepton> raw_leptons_intree;
+                vector<ttH::Lepton> loose_leptons_intree;
+                vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> fakeable_leptons_intree;
 		vector<ttH::Lepton> tight_leptons_intree;
  
-		vector<ttH::Electron> raw_electrons_intree;               
+		vector<ttH::Electron> raw_electrons_intree; 
+                vector<ttH::Electron> loose_electrons_intree;            
 		vector<ttH::Electron> preselected_electrons_intree;
 		vector<ttH::Electron> fakeable_electrons_intree;
 		vector<ttH::Electron> tight_electrons_intree;
 
 		vector<ttH::Muon> raw_muons_intree;
+                vector<ttH::Muon> loose_muons_intree;
 		vector<ttH::Muon> preselected_muons_intree;
 		vector<ttH::Muon> fakeable_muons_intree;
 		vector<ttH::Muon> tight_muons_intree;
                 
+                vector<ttH::Tau> raw_taus_intree;
                 vector<ttH::Tau> preselected_taus_intree;
                 vector<ttH::Tau> selected_taus_intree;
 
@@ -87,7 +92,6 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		edm::EDGetTokenT<pat::TauCollection> taus_token_;
 		
 		std::auto_ptr<JetCorrectionUncertainty> junc_;//charlie
-
 
 
                 int singleEleCount;
@@ -111,34 +115,40 @@ void OSTwoLepAna::tree_add_branches()
   
 //  summaryTree->Branch("passTrigger", &passTrigger_intree);
   
-  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
-  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
-  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
+//  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
+//  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
+//  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
 //  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
 //  summaryTree->Branch("selected_taus", &selected_taus_intree);
   
 //  summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
 //  summaryTree->Branch("fakeable_electrons", &fakeable_electrons_intree);
 //  summaryTree->Branch("fakeable_muons", &fakeable_muons_intree);
-  
+
+//  summaryTree->Branch("loose_leptons", &loose_leptons_intree);
+//  summaryTree->Branch("loose_electrons", &loose_electrons_intree);
+//  summaryTree->Branch("loose_muons", &loose_muons_intree);
+
 //  summaryTree->Branch("tight_leptons", &tight_leptons_intree);
 //  summaryTree->Branch("tight_electrons", &tight_electrons_intree);
 //  summaryTree->Branch("tight_muons", &tight_muons_intree);
   
   summaryTree->Branch("raw_electrons", &raw_electrons_intree);
   summaryTree->Branch("raw_muons", &raw_muons_intree);
-  summaryTree->Branch("raw_jets", &raw_jets_intree);
+  summaryTree->Branch("raw_leptons", &raw_leptons_intree);
+  summaryTree->Branch("raw_taus", &raw_taus_intree);
+//  summaryTree->Branch("raw_jets", &raw_jets_intree);
   
   summaryTree->Branch("preselected_jets", &preselected_jets_intree);
-  summaryTree->Branch("preselected_jets_JECup", &preselected_jets_JECup_intree);
-  summaryTree->Branch("preselected_jets_JECdown", &preselected_jets_JECdown_intree);
-  summaryTree->Branch("preselected_jets_uncor", &preselected_jets_uncor_intree);
+  //summaryTree->Branch("preselected_jets_JECup", &preselected_jets_JECup_intree);
+  //summaryTree->Branch("preselected_jets_JECdown", &preselected_jets_JECdown_intree);
+  //summaryTree->Branch("preselected_jets_uncor", &preselected_jets_uncor_intree);
   
   summaryTree->Branch("met", &met_intree);
   summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
-  summaryTree->Branch("packed_genParticles", &packed_genParticles_intree);
-  summaryTree->Branch("genJets", &genJets_intree);
-  summaryTree->Branch("numBadMuons", &numBadMuons_intree);
+  //summaryTree->Branch("packed_genParticles", &packed_genParticles_intree);
+  //summaryTree->Branch("genJets", &genJets_intree);
+  //summaryTree->Branch("numBadMuons", &numBadMuons_intree);
 
 }
 
@@ -168,8 +178,10 @@ void OSTwoLepAna::initialize_variables()
   tight_electrons_intree.clear();
   tight_muons_intree.clear();
   
+  raw_leptons_intree.clear();
   raw_electrons_intree.clear();
   raw_muons_intree.clear();
+  raw_taus_intree.clear();
   raw_jets_intree.clear();
   
   preselected_jets_intree.clear();

@@ -14,7 +14,8 @@ dbs = DbsApi('https://cmsweb.cern.ch/dbs/prod/global/DBSReader')
 
 ## format is ['some label you want to give','string of dataset in DAS']
 dataset_list = []
-dataset_list.append(['ttH125','/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'])
+#dataset_list.append(['ttH125','/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'])
+dataset_list.append(['ttH125','/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'])
 #dataset_list.append(['ttbar','.....'])
 #etc...
 

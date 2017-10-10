@@ -75,6 +75,7 @@
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+#include "DataFormats/MuonReco/interface/MuonSelectors.h"
 
 //JEC
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
