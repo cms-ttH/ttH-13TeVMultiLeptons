@@ -268,9 +268,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     vecPatJet cleaned_rawJets_JECdown  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets_JECdown,selectedTaus_preselected,0.4);
     
     /// the jet selection:
-    vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );
-    vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 25., 2.4, jetID::jetPU, '-' );
-    vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 25., 2.4, jetID::jetPU, '-' );
+    vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 10., 2.4, jetID::jetPU, '-' );                    // 25., 2.4, jetID::jetPU, '-'
+    vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 10., 2.4, jetID::jetPU, '-' );        // 25., 2.4, jetID::jetPU, '-'
+    vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 10., 2.4, jetID::jetPU, '-' );    // 25., 2.4, jetID::jetPU, '-'
 
     /////////
     ///
@@ -356,8 +356,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     //////
     /////////////////////////
     
-    vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw);
-    
+    vector<ttH::Electron> raw_electrons = GetCollection(selectedElectrons_raw);    
     vector<ttH::Electron> preselected_electrons = GetCollection(selectedElectrons_preselected);
     vector<ttH::Electron> fakeable_electrons = GetCollection(selectedElectrons_fakeable);
     vector<ttH::Electron> tight_electrons = GetCollection(selectedElectrons_tight);
@@ -445,7 +444,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     fakeable_electrons_intree = fakeable_electrons;
 
     //loose_leptons_intree = loose_leptons;
-    loose_muons_intree = loose_muons;
+    //loose_muons_intree = loose_muons;
     //loose_electrons_intree = loose_electrons;
 
     tight_leptons_intree = tight_leptons;

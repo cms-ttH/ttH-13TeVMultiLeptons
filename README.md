@@ -1,5 +1,6 @@
 #Notre Dame EFT multi-lepton framework (currently based on ttH framework)
 
+The locations of the latest trees are [here](https://twiki.cern.ch/twiki/bin/view/CMS/NotreDameTrees).
 
 ## Installation
 

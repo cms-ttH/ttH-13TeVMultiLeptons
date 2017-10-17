@@ -203,8 +203,11 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.miniAbsIsoNeutralcorr = iEle.userFloat("miniAbsIsoNeutralcorr");      
       
       // trying stuff out:
-      ele.idTightPOG = iEle.userFloat("idTightLJ");                             // <- fix
-      ele.idMediumPOG = 1.;                                                     // <- fix
+
+      ele.idTightPOG = PassElectron80XId(iEle,electronID::electron80XCutBasedT);
+      ele.idMediumPOG = PassElectron80XId(iEle,electronID::electron80XCutBasedM); 
+      ele.idLoosePOG = PassElectron80XId(iEle,electronID::electron80XCutBasedL);    
+      ele.isPreselected = iEle.userFloat("idPreselection")>0.5;
       
       if (iEle.genParticle())
       {

@@ -9,8 +9,8 @@ cmsenvdir=$4
 thisdir=$5
 finaloutfile=$6
 
-export SCRAM_ARCH=slc6_amd64_gcc493
-source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
+export SCRAM_ARCH=slc6_amd64_gcc530
+#source /afs/cern.ch/project/eos/installation/cms/etc/setup.sh
 cd $cmsenvdir
 eval `scramv1 runtime -sh`
 cd $thisdir
