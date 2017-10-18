@@ -1,10 +1,11 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-jobID = 'ttH_test_9_10_17'
+jobID = 'ttH_test_18_10_17'
+
 
 config.General.requestName = jobID
-config.General.workArea = jobID
+config.General.workArea = 'crab_project_dir'
 config.General.transferLogs=True
 
 config.JobType.pluginName = 'Analysis'
