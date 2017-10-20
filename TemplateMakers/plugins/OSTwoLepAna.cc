@@ -30,7 +30,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
 
 }
 
-OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
+OSTwoLepAna::~OSTwoLepAna() noexcept{} //Anything that needs to be done at destruction time
 
 void OSTwoLepAna::beginJob()
 {
