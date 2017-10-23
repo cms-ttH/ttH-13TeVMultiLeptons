@@ -115,10 +115,10 @@ void OSTwoLepAna::tree_add_branches()
   
 //  summaryTree->Branch("passTrigger", &passTrigger_intree);
   
-//  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
-//  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
-//  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
-//  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
+  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
+  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
+  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
+  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
 //  summaryTree->Branch("selected_taus", &selected_taus_intree);
   
 //  summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
@@ -147,7 +147,7 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("met", &met_intree);
   summaryTree->Branch("pruned_genParticles", &pruned_genParticles_intree);
   //summaryTree->Branch("packed_genParticles", &packed_genParticles_intree);
-  //summaryTree->Branch("genJets", &genJets_intree);
+  summaryTree->Branch("genJets", &genJets_intree);
   //summaryTree->Branch("numBadMuons", &numBadMuons_intree);
 
 }

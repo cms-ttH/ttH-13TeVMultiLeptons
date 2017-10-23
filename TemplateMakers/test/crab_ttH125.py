@@ -1,7 +1,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-jobID = 'ttH_test_18_10_17'
+jobID = 'ttH_test_23_10_17'
 
 
 config.General.requestName = jobID
@@ -17,9 +17,12 @@ config.Data.unitsPerJob = 1 # 50000
 #config.Data.totalUnits = 1
 config.Data.outLFNDirBase = '/store/user/gesmith/crab/'+jobID
 config.Data.publication = False
-config.Data.ignoreLocality = True
 
-config.Site.ignoreGlobalBlacklist = True
-config.Site.whitelist = ['T3_US_NotreDame']
+## force to run at ND
+#config.Data.ignoreLocality = True
+#config.Site.ignoreGlobalBlacklist = True
+#config.Site.whitelist = ['T3_US_NotreDame']
+
+## output to ND
 config.Site.storageSite = 'T3_US_NotreDame'
 

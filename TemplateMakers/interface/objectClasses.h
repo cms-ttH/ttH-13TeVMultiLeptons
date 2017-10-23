@@ -110,7 +110,8 @@ namespace ttH
     double full5x5_sigmaIetaIeta;
     double hadronicOverEm;
     double mvaID;
-
+    bool passesEtaDepCuts;
+    
     virtual ~Electron(){};
     //ClassDef(Electron, 1); 
 
@@ -135,8 +136,6 @@ namespace ttH
     double trKink;
     double validFrac;
     double segCompatibility;
-
-
 
     virtual ~Muon(){};
     //ClassDef(Muon, 1); 

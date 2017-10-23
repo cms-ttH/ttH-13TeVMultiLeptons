@@ -166,7 +166,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
   vector<ttH::Electron> eleCollection;
 
   for (const auto & iEle: theobjs)
-    {
+  {
       ele.obj = iEle.p4();
       ele.SCeta = iEle.userFloat("superClusterEta");
       ele.pdgID = iEle.pdgId();
@@ -209,6 +209,41 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.idLoosePOG = PassElectron80XId(iEle,electronID::electron80XCutBasedL);    
       ele.isPreselected = iEle.userFloat("idPreselection")>0.5;
       
+      
+      /////// set of eta-dep. cuts: ///////
+      bool passesEtaDepCuts = false;
+      
+      if (fabs(iEle.eta()) < 0.8) {
+         passesEtaDepCuts = iEle.full5x5_sigmaIetaIeta() < 0.011 &&
+            iEle.hcalOverEcal() < 0.10 &&
+            fabs(iEle.deltaEtaSuperClusterTrackAtVtx()) < 0.01 &&
+            fabs(iEle.deltaPhiSuperClusterTrackAtVtx()) < 0.04 &&
+            1.0/iEle.ecalEnergy() - iEle.eSuperClusterOverP()/iEle.ecalEnergy() > -0.05 &&
+            1.0/iEle.ecalEnergy() - iEle.eSuperClusterOverP()/iEle.ecalEnergy() < 0.010;
+      }
+      else if (fabs(iEle.eta()) < 1.479) {
+         passesEtaDepCuts = iEle.full5x5_sigmaIetaIeta() < 0.011 &&
+            iEle.hcalOverEcal() < 0.10 &&
+            fabs(iEle.deltaEtaSuperClusterTrackAtVtx()) < 0.01 &&
+            fabs(iEle.deltaPhiSuperClusterTrackAtVtx()) < 0.04 &&
+            1.0/iEle.ecalEnergy() - iEle.eSuperClusterOverP()/iEle.ecalEnergy() > -0.05 &&
+            1.0/iEle.ecalEnergy() - iEle.eSuperClusterOverP()/iEle.ecalEnergy() < 0.010;
+      }
+      else if (fabs(iEle.eta()) < 2.5) {
+         passesEtaDepCuts = iEle.full5x5_sigmaIetaIeta() < 0.030 &&
+            iEle.hcalOverEcal() < 0.07 &&
+            fabs(iEle.deltaEtaSuperClusterTrackAtVtx()) < 0.008 &&
+            fabs(iEle.deltaPhiSuperClusterTrackAtVtx()) < 0.07 &&
+            1.0/iEle.ecalEnergy() - iEle.eSuperClusterOverP()/iEle.ecalEnergy() > -0.05 &&
+            1.0/iEle.ecalEnergy() - iEle.eSuperClusterOverP()/iEle.ecalEnergy() < 0.005;
+      }
+                
+      //if (ele.obj.Pt()<30.) passespt30Cuts = true; // note: usually the corrected pt + a lepMVA cut is used here
+      
+      ele.passesEtaDepCuts = passesEtaDepCuts;
+      
+      
+      //// gen stuff ////
       if (iEle.genParticle())
       {
         ele.genPdgID = iEle.genParticle()->pdgId();
@@ -228,7 +263,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
         ele.genGrandMotherPdgID = 9999;
       }
       eleCollection.push_back(ele);
-    }
+  }
   std::sort(eleCollection.begin(), eleCollection.end(), [] (ttH::Electron a, ttH::Electron b) { return a.obj.Pt() > b.obj.Pt();});
   return eleCollection;
 }
