@@ -6,8 +6,8 @@
 user="gesmith"                                      # your user name
 ndpc="ndpc5"                                        # the ndpc you are saving to
 disk="disk1"                                        # disk on the ndpc
-outputSubDir="crab/test"                            # subdirectory to save output to on ndpc disk. crab will create these if they don't exist.
-crabDir="ttH_test_9_10_17/crab_ttH_test_9_10_17"    # crab project directory
+outputSubDir="crab/ttH_test_1_11_17"               # subdirectory to save output to on ndpc disk. crab will create these if they don't exist. Note: this is the end of the path; i.e. crab will not create any other sub-directories).
+crabDir="crab_project_dir/crab_ttH_test_1_11_17"   # crab project directory for these jobs
 
 
 ## commands - only edit if you know what you are doing ##

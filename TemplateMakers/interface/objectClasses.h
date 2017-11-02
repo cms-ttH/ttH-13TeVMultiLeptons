@@ -110,6 +110,7 @@ namespace ttH
     double full5x5_sigmaIetaIeta;
     double hadronicOverEm;
     double mvaID;
+    double mvaIDGP;
     bool passesEtaDepCuts;
     
     virtual ~Electron(){};

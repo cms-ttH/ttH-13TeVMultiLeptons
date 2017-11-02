@@ -1,7 +1,7 @@
 from CRABClient.UserUtilities import config
 config = config()
 
-jobID = 'ttH_test_23_10_17'
+jobID = 'ttH_test_1_11_17'
 
 
 config.General.requestName = jobID

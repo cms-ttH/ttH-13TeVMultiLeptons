@@ -374,7 +374,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     vector<ttH::Lepton> fakeable_leptons = GetCollection(fakeable_muons,fakeable_electrons);
     vector<ttH::Lepton> tight_leptons = GetCollection(tight_muons,tight_electrons);
 
-    vector<ttH::Jet> raw_jets = GetCollection(rawJets);
+    //vector<ttH::Jet> raw_jets = GetCollection(rawJets);
+    vector<ttH::Jet> raw_jets = GetCollection(correctedRawJets); // jets straight from PAT (with JEC)
     vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
     vector<ttH::Jet> preselected_jets_JECup = GetCollection(selectedJets_JECup_preselected);
     vector<ttH::Jet> preselected_jets_JECdown = GetCollection(selectedJets_JECdown_preselected);

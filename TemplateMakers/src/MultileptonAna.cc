@@ -190,7 +190,8 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.jetPtRel = iEle.userFloat("nearestJetPtRel");
       ele.csv = iEle.userFloat("nearestJetCsv");
       ele.sip3D = iEle.userFloat("sip3D");
-      ele.mvaID = iEle.userFloat("eleMvaId");
+      ele.mvaID = iEle.userFloat("eleMvaIdHZZ");
+      ele.mvaIDGP = iEle.userFloat("eleMvaId");
       ele.jet_nCharged_tracks = iEle.userFloat("nearestJetNDauCharged");
       ele.correctedPt = iEle.userFloat("correctedPt");
 
