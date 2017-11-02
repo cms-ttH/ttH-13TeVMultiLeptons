@@ -1,0 +1,32 @@
+my_condor_path = /afs/crc.nd.edu/user/a/awightma/Public/condor_output
+sample = tth_nonbb_aMCatNLO_
+N = 300
+
++IsExpressJob = True
+universe      = vanilla
+executable    = run_EFTSelection.sh
+arguments     = $(sample) $(Process) $(N)
+output        = $(my_condor_path)/out/$(sample).stdout.$(Process)
+error         = $(my_condor_path)/err/$(sample).stderr.$(Process)
+log           = $(my_condor_path)/$(sample).logfile.log
+
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+requestMemory = 1024
+
+expected_runtime_minutes = 10
+
+job_machine_attrs = Machine
+job_machine_attrs_history_length = 4
+requirements = (machine != "skynet005.crc.nd.edu" && machine != "skynet007.crc.nd.edu") && \
+   target.machine =!= MachineAttrMachine1 && \
+   target.machine =!= MachineAttrMachine2 && \
+   target.machine =!= MachineAttrMachine3
+periodic_hold = JobStatus == 2 && \
+   CurrentTime - EnteredCurrentStatus > 60 * $(expected_runtime_minutes)
+periodic_hold_subcode = 1
+periodic_release = HoldReasonCode == 3 && HoldReasonSubCode == 1 && \
+   JobRunCount < 3
+periodic_hold_reason = ifthenelse(JobRunCount<3,"Ran too long, will retry","Ran too long")
+
+queue $(N)

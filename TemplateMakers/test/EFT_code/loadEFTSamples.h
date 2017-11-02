@@ -53,6 +53,7 @@ public:
     FileLoader(TString sample, int file_index=-1) {
         chain = new TChain("OSTwoLepAna/summaryTree");
         hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
+        /*
         if (sample == "ttW") {
             vector<TString> sample_vec;
             files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/ttW/";
@@ -76,6 +77,7 @@ public:
         } else if (sample == "tth_nonbb_aMCatNLO_") {
             vector<TString> sample_vec;
             files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/tth_nonbb_aMCatNLO_/";
+            //files_dir = "/hadoop/store/user/gesmith/crab/ttH_test_23_10_17/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/crab_ttH_test_23_10_17/171023_160131/0000/";
             sample_vec.push_back(files_dir);
             loadFile(sample_vec , file_index);
         } else if (sample == "WZ_to3lnu") {
@@ -93,6 +95,35 @@ public:
             files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/WW_2l2nu/";
             sample_vec.push_back(files_dir);
             loadFile(sample_vec , file_index);
+        }
+        */
+
+        TString base_path = "/hadoop/store/user/muell149/lobster_test_june21_Moriond17/";
+        if (sample == "tth_aMC") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"ttH_nonbb_mWcutfix/");
+            loadFile(sample_vec,file_index);
+        } else if (sample == "tth_powheg") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"ttH_nonbb_powheg/");
+            loadFile(sample_vec,file_index);
+        } else if (sample == "ttW") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"ttW/");
+            loadFile(sample_vec,file_index);
+        } else if (sample == "ttZ") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"ttZ/");
+            loadFile(sample_vec,file_index);
+        } else if (sample == "ttjets_dilep") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"ttjets_dilep/");
+            loadFile(sample_vec,file_index);
+        } else if (sample == "ttjets_semilep") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"ttjets_semilep_antitop/");
+            sample_vec.push_back(base_path+"ttjets_semilep_top/");
+            loadFile(sample_vec,file_index);
         }
 
         //cout << "Weighted number of events in sample " << sample << " = " << setprecision(10) << hist_sum->GetBinContent(1) << endl;

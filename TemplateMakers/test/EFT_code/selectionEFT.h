@@ -25,12 +25,6 @@ template <typename T1, typename T2> bool pass_selection(
     vector<T1> selected_leptons = applyPtCut(input_leptons,params.lep_pt);
     selected_leptons = applyEtaCut(selected_leptons,params.lep_eta);
 
-    vector<T2> selected_jets = applyPtCut(input_jets,params.jet_pt);
-    selected_jets = applyEtaCut(selected_jets,params.jet_eta);
-
-    vector<ttH::GenParticle> cleaned_particles = applyPtCut(gen_particles,1.0);
-    vector<T2> matched_b_jets = getBJets(cleaned_particles,selected_jets);
-
     if (params.req_exact_lep) {
         if (selected_leptons.size() != params.lep_req) {
             // Exact number of leptons
@@ -39,24 +33,12 @@ template <typename T1, typename T2> bool pass_selection(
 
         vector<T1> lepton_veto_selection = applyPtCut(input_leptons,params.lep_pt_veto);
         lepton_veto_selection = applyEtaCut(lepton_veto_selection,params.lep_eta);
-
         if (lepton_veto_selection.size() != params.lep_req) {
             // We picked up extra leptons with the looser veto cut
             return false;
         }
     } else {
         if (selected_leptons.size() < params.lep_req) {
-            return false;
-        }
-    }
-
-    if (params.req_exact_jet) {
-        if (selected_jets.size() != params.jet_req) {
-            // Exact number of jets
-            return false;
-        }
-    } else {
-        if (selected_jets.size() < params.jet_req) {
             return false;
         }
     }
@@ -75,41 +57,59 @@ template <typename T1, typename T2> bool pass_selection(
         }
     }
 
-    if (matched_b_jets.size() < params.b_jet_req) {
-        return false;
+    vector<T2> selected_jets = applyPtCut(input_jets,params.jet_pt);
+    selected_jets = applyEtaCut(selected_jets,params.jet_eta);
+
+    if (params.req_exact_jet) {
+        if (selected_jets.size() != params.jet_req) {
+            // Exact number of jets
+            return false;
+        }
+    } else {
+        if (selected_jets.size() < params.jet_req) {
+            return false;
+        }
+    }
+
+    if (params.b_jet_req > 0 && params.jet_req >= params.b_jet_req) {
+        // Only check for b-jets when we allow for at least that number of jets in the event
+        vector<ttH::GenParticle> cleaned_particles = applyPtCut(gen_particles,1.0);
+        vector<T2> matched_b_jets = getBJets(cleaned_particles,selected_jets);
+
+        if (matched_b_jets.size() < params.b_jet_req) {
+            return false;
+        }
     }
 
     return true;
 }
 
+//NOTE: This function assumes any particular event can only ever pass ONE selection
 vector<uint> mapEventFeedDirections(
     vector<ttH::GenParticle> gen_leptons,
     vector<ttH::GenParticle> gen_jets,
     vector<ttH::Lepton> reco_leptons,
     vector<ttH::Jet> reco_jets,
     vector<ttH::GenParticle> gen_particles,
+    vector<TString> bin_names,
     std::map<TString,SelectionParameters> &selection_map
 ) {
-    vector<TString> bin_names {
-        "null",
-        "2los_6jets",
-        "2lss_p_6jets",
-        "2lss_m_6jets",
-        "3l_ppm_4jets",
-        "3l_mmp_4jets",
-        "4l_2jets",
-    };
-
-    vector<bool> gen_passes;
-    vector<bool> reco_passes;
+    //vector<bool> gen_passes;
+    //vector<bool> reco_passes;
 
     std::map<TString,uint> bin_map;
     for (uint i = 0; i < bin_names.size(); i++) {
         bin_map[bin_names.at(i)] = i;
 
-        gen_passes.push_back(0);
-        reco_passes.push_back(0);
+        //gen_passes.push_back(0);
+        //reco_passes.push_back(0);
     }
+
+    uint gen_bin_pass  = bin_map["null"];   //Defaults to null bin
+    uint reco_bin_pass = bin_map["null"];   //Defaults to null bin
+
+    //uint gen_bin_pass  = 0;
+    //uint reco_bin_pass = 0;
 
     bool null_pass;
 
@@ -120,15 +120,8 @@ vector<uint> mapEventFeedDirections(
             continue;
         }
 
-        if (selection_map.find(bin) == selection_map.end()) {
-            cout << "ERROR: Unknown key in selection_map -- " << bin << endl;
-            continue;
-        } else if (bin_map.find(bin) == bin_map.end()) {
-            cout << "ERROR: Unknown key in bin_map -- " << bin << endl;
-            continue;
-        }
-
         selection_map[bin].jet_pt = 30.0;
+        selection_map[bin].b_jet_req = 0;
 
         bool passes = pass_selection(
             gen_leptons,
@@ -137,15 +130,18 @@ vector<uint> mapEventFeedDirections(
             selection_map[bin]
         );
 
-        gen_passes.at(bin_map[bin]) = passes;
-
-        if (null_pass && passes) {
-            null_pass = !passes;
+        if (passes) {
+            gen_bin_pass = bin_map[bin];
+            break;
         }
+
+        //gen_passes.at(bin_map[bin]) = passes;
+        //if (null_pass && passes) {
+        //    null_pass = false;
+        //}
     }
 
-    gen_passes.at(bin_map["null"]) = null_pass;
-
+    //gen_passes.at(bin_map["null"]) = null_pass;
 
     // Reco-Level
     null_pass = true;
@@ -154,15 +150,8 @@ vector<uint> mapEventFeedDirections(
             continue;
         }
 
-        if (selection_map.find(bin) == selection_map.end()) {
-            cout << "ERROR: Unknown key in selection_map -- " << bin << endl;
-            continue;
-        } else if (bin_map.find(bin) == bin_map.end()) {
-            cout << "ERROR: Unknown key in bin_map -- " << bin << endl;
-            continue;
-        }
-
-        selection_map[bin].jet_pt = 20.0;
+        selection_map[bin].jet_pt = 30.0;
+        selection_map[bin].b_jet_req = 1;
 
         bool passes = pass_selection(
             reco_leptons,
@@ -171,26 +160,61 @@ vector<uint> mapEventFeedDirections(
             selection_map[bin]
         );
 
-        reco_passes.at(bin_map[bin]) = passes;
-
-        if (null_pass && passes) {
-            null_pass = !passes;
+        if (passes) {
+            reco_bin_pass = bin_map[bin];
+            break;
         }
+
+        //reco_passes.at(bin_map[bin]) = passes;
+        //if (null_pass && passes) {
+        //    null_pass = false;
+        //}
     }
 
-    reco_passes.at(bin_map["null"]) = null_pass;
+    //reco_passes.at(bin_map["null"]) = null_pass;
 
-    uint gen_bin_pass  = 0;
-    uint reco_bin_pass = 0;
+    /*
     for (uint i = 0; i < bin_names.size(); i++) {
         if (gen_passes.at(i)) {
             gen_bin_pass = i;
         }
-
         if (reco_passes.at(i)) {
             reco_bin_pass = i;
         }
     }
+
+    uint counter = 0;
+    for (auto bin_pass: gen_passes) {
+        if (bin_pass) {
+            counter++;
+        }
+    }
+    if (counter > 1) {
+        cout << "#####################################" << endl;
+        cout << "Event passed multiple GEN selections!" << endl;
+        cout << "Event passed multiple GEN selections!" << endl;
+        cout << "Event passed multiple GEN selections!" << endl;
+        cout << "Event passed multiple GEN selections!" << endl;
+        cout << "Event passed multiple GEN selections!" << endl;
+        cout << "Event passed multiple GEN selections!" << endl;
+        cout << "#####################################" << endl;
+    }
+    counter = 0;
+    for (auto bin_pass: reco_passes) {
+        if (bin_pass) {
+            counter++;
+        }
+    }
+    if (counter > 1) {
+        cout << "######################################" << endl;
+        cout << "Event passed multiple RECO selections!" << endl;
+        cout << "Event passed multiple RECO selections!" << endl;
+        cout << "Event passed multiple RECO selections!" << endl;
+        cout << "Event passed multiple RECO selections!" << endl;
+        cout << "Event passed multiple RECO selections!" << endl;
+        cout << "######################################" << endl;
+    }
+    */
 
     //if (gen_bin_pass > 0 || reco_bin_pass > 0) {    
     //    cout << "GEN Selection:" << endl;

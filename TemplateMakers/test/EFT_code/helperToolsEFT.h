@@ -4,7 +4,7 @@
 #include <vector>
 #include <typeinfo>
 
-#include "genToolsEFT.h"
+//#include "genToolsEFT.h"
 
 #include "TLorentzVector.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
@@ -236,14 +236,15 @@ double getInvWMass(vector<ttH::GenParticle> gen_particles) {
             continue;
         }
 
-        ttH::GenParticle mother_particle = getMotherParticle(gen_particle,gen_particles);
+        //ttH::GenParticle mother_particle = getMotherParticle(gen_particle,gen_particles);
+        ttH::GenParticle mother_particle = gen_particles.at(gen_particle.mother);
         
         if (fabs(mother_particle.pdgID) == 6) {
             // Ignore W's from decaying top
             continue;
         }
 
-        if (!isOriginal(particle_index,mother_particle)) {
+        if (!(particle_index == mother_particle.child0 || particle_index == mother_particle.child1)) {
             // This particle wasn't the original one spawned from the mother
             continue;
         }

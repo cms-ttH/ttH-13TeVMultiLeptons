@@ -32,10 +32,10 @@ public:
     void updateTimer(std::string timer_name);
 
     void readLap(std::string timer_name);
-    void readTimer(std::string timer_name);
-    void readAvgTimer(std::string timer_name);
+    void readTimer(std::string timer_name,double norm=1.0);
+    void readAvgTimer(std::string timer_name,double norm=1.0);
 
-    void readAllTimers(bool use_avg=0);
+    void readAllTimers(bool use_avg=0,std::string norm_name="");
 };
 
 Stopwatch::Stopwatch()
@@ -109,7 +109,7 @@ void Stopwatch::readLap(std::string timer_name)
     return;
 }
 
-void Stopwatch::readTimer(std::string timer_name)
+void Stopwatch::readTimer(std::string timer_name,double norm)
 {
     if (tracked_timers.find(timer_name) != tracked_timers.end()) {
         std::string format_str = "(" + timer_name + "):";
@@ -118,7 +118,7 @@ void Stopwatch::readTimer(std::string timer_name)
         //std::string t_elapsed = std::to_string(tracked_timers[timer_name].total);
 
         std::ostringstream strs;
-        strs << std::fixed << std::setprecision(2) << tracked_timers[timer_name].total;
+        strs << std::fixed << std::setprecision(2) << tracked_timers[timer_name].total/norm;
         std::string t_elapsed = strs.str();
         t_elapsed = padRight(t_elapsed,' ',9);
 
@@ -129,14 +129,14 @@ void Stopwatch::readTimer(std::string timer_name)
     return;
 }
 
-void Stopwatch::readAvgTimer(std::string timer_name)
+void Stopwatch::readAvgTimer(std::string timer_name,double norm)
 {
     if (tracked_timers.find(timer_name) != tracked_timers.end()) {
         std::string format_str = "(" + timer_name + "):";
         format_str = padRight(format_str,' ',20);
 
         std::ostringstream strs;
-        strs << std::fixed << std::setprecision(2) << tracked_timers[timer_name].total/tracked_timers[timer_name].counter;
+        strs << std::fixed << std::setprecision(2) << tracked_timers[timer_name].total/(norm*tracked_timers[timer_name].counter);
         std::string t_elapsed = strs.str();
         t_elapsed = padRight(t_elapsed,' ',9);
 
@@ -147,13 +147,22 @@ void Stopwatch::readAvgTimer(std::string timer_name)
     return;
 }
 
-void Stopwatch::readAllTimers(bool use_avg)
+void Stopwatch::readAllTimers(bool use_avg,std::string norm_name)
 {
+    double norm = 1.0;
+    if (tracked_timers.find(norm_name) != tracked_timers.end()) {
+        if (use_avg) {
+            norm = tracked_timers[norm_name].total/tracked_timers[norm_name].counter;
+        } else {
+            norm = tracked_timers[norm_name].total;
+        }
+    }
+
     for (auto it = tracked_timers.begin(); it != tracked_timers.end(); ++it) {
         if (use_avg) {
-            readAvgTimer(it->first);
+            readAvgTimer(it->first,norm);
         } else {
-            readTimer(it->first);
+            readTimer(it->first,norm);
         }
     }
 
