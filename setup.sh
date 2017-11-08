@@ -30,7 +30,7 @@ EOF
 
    git clone -b multilep_m17 git@github.com:cms-ttH/MiniAOD.git
    git clone -b cmssw9xx git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
-   git clone -b cmssw9xx git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
+   git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
    
 #   sed -i 's|Math/include|Math/interface|' CommonTools/Utils/interface/normalizedPhi.h
 
