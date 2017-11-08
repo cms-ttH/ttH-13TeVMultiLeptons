@@ -24,7 +24,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		vstring hlt_alltrigs;
 	public:
 		explicit OSTwoLepAna(const edm::ParameterSet&);
-		~OSTwoLepAna();
+		~OSTwoLepAna() noexcept;
 		
 		ofstream fout;
                 FILE * ffout;
