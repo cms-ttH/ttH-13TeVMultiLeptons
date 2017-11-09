@@ -12,11 +12,11 @@ EOF
    set -e
    set -o xtrace
 
-   export SCRAM_ARCH=slc6_amd64_gcc530
+   export SCRAM_ARCH=slc6_amd64_gcc630
 #   scramv1 project CMSSW CMSSW_8_0_26_patch1
 #   cd CMSSW_8_0_26_patch1/src
-   scramv1 project CMSSW CMSSW_9_2_10
-   cd CMSSW_9_2_10/src
+   scramv1 project CMSSW CMSSW_9_4_0_pre3
+   cd CMSSW_9_4_0_pre3/src
    set +o xtrace
    eval $(scramv1 runtime -sh)
    set -o xtrace
@@ -28,8 +28,8 @@ EOF
 #   git cms-merge-topic ikrav:egm_id_80X_v2
 #   git cms-merge-topic gpetruc:badMuonFilters_80X_v2
 
-   git clone -b multilep_m17 git@github.com:cms-ttH/MiniAOD.git
-   git clone -b cmssw9xx git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
+   git clone -b cmssw940pre3 git@github.com:cms-ttH/MiniAOD.git
+   git clone -b cmssw940pre3 git@github.com:cms-ttH/ttH-LeptonID.git ttH/LeptonID
    git clone git@github.com:cms-ttH/ttH-13TeVMultiLeptons.git
    
 #   sed -i 's|Math/include|Math/interface|' CommonTools/Utils/interface/normalizedPhi.h
