@@ -123,18 +123,18 @@ void PlotHelper::lepton_eff_studies()
             //if (ele.miniIso<0.4 && ele.sip3D<8 && (fabs(ele.dxy)<0.05) && (fabs(ele.dz)<0.1) && (ele.numMissingInnerHits<=1) && ele.passConversioVeto && testcut)
             if (ele.isPreselected && testcut)
             {
-                th1d["lepMVA sig"+detregion]->Fill(ele.lepMVA,weight);
-                if (ele.obj.Pt()<pt1) th1d["lepMVA sig1"+detregion]->Fill(ele.lepMVA,weight);              // ele.mvaIDGP    ele.lepMVA     //std::max(-10.,1.0-ele.miniIso)
-                else if (ele.obj.Pt()<pt2) th1d["lepMVA sig2"+detregion]->Fill(ele.lepMVA,weight);
-                else th1d["lepMVA sig3"+detregion]->Fill(ele.lepMVA,weight);
+                th1d["electron lepMVA sig"+detregion]->Fill(ele.lepMVA,weight);
+                if (ele.obj.Pt()<pt1) th1d["electron lepMVA sig1"+detregion]->Fill(ele.lepMVA,weight);              // ele.mvaIDGP    ele.lepMVA     //std::max(-10.,1.0-ele.miniIso)
+                else if (ele.obj.Pt()<pt2) th1d["electron lepMVA sig2"+detregion]->Fill(ele.lepMVA,weight);
+                else th1d["electron lepMVA sig3"+detregion]->Fill(ele.lepMVA,weight);
 
             }
             else
             {
-                th1d["lepMVA sig"+detregion]->Fill(-1,weight);
-                if (ele.obj.Pt()<pt1) th1d["lepMVA sig1"+detregion]->Fill(-1,weight);                      // -1 // 
-                else if (ele.obj.Pt()<pt2) th1d["lepMVA sig2"+detregion]->Fill(-1,weight);
-                else th1d["lepMVA sig3"+detregion]->Fill(-1,weight);
+                th1d["electron lepMVA sig"+detregion]->Fill(-1,weight);
+                if (ele.obj.Pt()<pt1) th1d["electron lepMVA sig1"+detregion]->Fill(-1,weight);                      // -1 // 
+                else if (ele.obj.Pt()<pt2) th1d["electron lepMVA sig2"+detregion]->Fill(-1,weight);
+                else th1d["electron lepMVA sig3"+detregion]->Fill(-1,weight);
 
             }
 
@@ -202,18 +202,18 @@ void PlotHelper::lepton_eff_studies()
             //if (ele.miniIso<0.4 && ele.sip3D<8 && (fabs(ele.dxy)<0.05) && (fabs(ele.dz)<0.1) && (ele.numMissingInnerHits<=1) && ele.passConversioVeto && testcut)
             if (ele.isPreselected && testcut)
             {
-                th1d["lepMVA bkd"+detregion]->Fill(ele.lepMVA,weight);
-                if (ele.obj.Pt()<pt1) th1d["lepMVA bkd1"+detregion]->Fill(ele.lepMVA,weight);              // ele.mvaIDGP    ele.lepMVA     //std::max(-10.,1.0-ele.miniIso)
-                else if (ele.obj.Pt()<pt2) th1d["lepMVA bkd2"+detregion]->Fill(ele.lepMVA,weight);
-                else th1d["lepMVA bkd3"+detregion]->Fill(ele.lepMVA,weight);
+                th1d["electron lepMVA bkd"+detregion]->Fill(ele.lepMVA,weight);
+                if (ele.obj.Pt()<pt1) th1d["electron lepMVA bkd1"+detregion]->Fill(ele.lepMVA,weight);              // ele.mvaIDGP    ele.lepMVA     //std::max(-10.,1.0-ele.miniIso)
+                else if (ele.obj.Pt()<pt2) th1d["electron lepMVA bkd2"+detregion]->Fill(ele.lepMVA,weight);
+                else th1d["electron lepMVA bkd3"+detregion]->Fill(ele.lepMVA,weight);
 
             }
             else
             {
-                th1d["lepMVA bkd"+detregion]->Fill(-1,weight);
-                if (ele.obj.Pt()<pt1) th1d["lepMVA bkd1"+detregion]->Fill(-1,weight);                      // -1 // 
-                else if (ele.obj.Pt()<pt2) th1d["lepMVA bkd2"+detregion]->Fill(-1,weight);
-                else th1d["lepMVA bkd3"+detregion]->Fill(-1,weight);
+                th1d["electron lepMVA bkd"+detregion]->Fill(-1,weight);
+                if (ele.obj.Pt()<pt1) th1d["electron lepMVA bkd1"+detregion]->Fill(-1,weight);                      // -1 // 
+                else if (ele.obj.Pt()<pt2) th1d["electron lepMVA bkd2"+detregion]->Fill(-1,weight);
+                else th1d["electron lepMVA bkd3"+detregion]->Fill(-1,weight);
 
             }                        
 
@@ -306,10 +306,163 @@ void PlotHelper::lepton_eff_studies()
                 
                 
                 
-                //// muons
-                
-                // for (const auto & mu : *raw_muons_intree)
-//                 {
+    //// muons
+
+    for (const auto & mu : *raw_muons_intree)
+    {
+
+        //cout << "here1" << endl;
+        
+        string detregion = " barrel";                    
+        if (abs(mu.obj.Eta())>1.4) detregion = " endcap";                                        
+        if ( (abs(mu.obj.Eta())>2.5) ) continue; // max eta
+        if (mu.obj.Pt()<10) continue;
+
+        float pt1 = 20.; // 20.
+        float pt2 = 35.; // 35.
+
+
+        //bool testcut = true;
+        bool testcut = mu.miniIso < 0.25; // && mu.csv < 0.9;
+
+
+        if ( mu.isPromptFinalState || mu.isDirectPromptTauDecayProductFinalState )
+        {
+
+            if (mu.miniIso<0.4 && mu.sip3D<8 && (fabs(mu.dxy)<0.05) && (fabs(mu.dz)<0.1) && testcut)
+            {
+
+                th1d["muon POG loose ID sig"+detregion]->Fill(mu.idLoosePOG-1.,weight);
+
+                if (mu.obj.Pt()<pt1) 
+                {
+
+                    th1d["muon POG loose ID sig1"+detregion]->Fill(mu.idLoosePOG-1.,weight);
+
+                }
+                else if (mu.obj.Pt()<pt2)
+                {
+
+                    th1d["muon POG loose ID sig2"+detregion]->Fill(mu.idLoosePOG-1.,weight);
+
+                }
+                else
+                {
+
+                    th1d["muon POG loose ID sig3"+detregion]->Fill(mu.idLoosePOG-1.,weight);
+                }
+            }
+            else
+            {
+
+                th1d["muon POG loose ID sig"+detregion]->Fill(-1,weight);                           
+
+                if (mu.obj.Pt()<pt1)
+                {
+                    th1d["muon POG loose ID sig1"+detregion]->Fill(-1,weight);
+                }
+                else if (mu.obj.Pt()<pt2)
+                {
+                    th1d["muon POG loose ID sig2"+detregion]->Fill(-1,weight);
+                }
+                else 
+                {
+                    th1d["muon POG loose ID sig3"+detregion]->Fill(-1,weight);        
+                }
+            }
+
+
+
+            if (mu.isPreselected && testcut)
+            {
+                th1d["muon lepMVA sig"+detregion]->Fill(mu.lepMVA,weight);
+                if (mu.obj.Pt()<pt1) th1d["muon lepMVA sig1"+detregion]->Fill(mu.lepMVA,weight);              // mu.mvaIDGP    mu.lepMVA     //std::max(-10.,1.0-mu.miniIso)
+                else if (mu.obj.Pt()<pt2) th1d["muon lepMVA sig2"+detregion]->Fill(mu.lepMVA,weight);
+                else th1d["muon lepMVA sig3"+detregion]->Fill(mu.lepMVA,weight);
+
+            }
+            else
+            {
+                th1d["muon lepMVA sig"+detregion]->Fill(-1,weight);
+                if (mu.obj.Pt()<pt1) th1d["muon lepMVA sig1"+detregion]->Fill(-1,weight);                      // -1 // 
+                else if (mu.obj.Pt()<pt2) th1d["muon lepMVA sig2"+detregion]->Fill(-1,weight);
+                else th1d["muon lepMVA sig3"+detregion]->Fill(-1,weight);
+
+            }
+
+
+
+        }
+
+
+        if ( !( mu.isPromptFinalState || mu.isDirectPromptTauDecayProductFinalState ) )
+        {
+
+            if (mu.miniIso<0.4 && mu.sip3D<8 && (fabs(mu.dxy)<0.05) && (fabs(mu.dz)<0.1) && testcut)
+            {
+                th1d["muon POG loose ID bkd"+detregion]->Fill(mu.idLoosePOG-1.,weight);
+
+                if (mu.obj.Pt()<pt1)
+                { 
+                    th1d["muon POG loose ID bkd1"+detregion]->Fill(mu.idLoosePOG-1.,weight);
+
+                }                       
+                else if (mu.obj.Pt()<pt2) 
+                {
+                    th1d["muon POG loose ID bkd2"+detregion]->Fill(mu.idLoosePOG-1.,weight);
+
+                }
+                else 
+                {
+                    th1d["muon POG loose ID bkd3"+detregion]->Fill(mu.idLoosePOG-1.,weight);
+
+                }
+            }
+            else
+            {
+                th1d["muon POG loose ID bkd"+detregion]->Fill(-1,weight);
+
+                if (mu.obj.Pt()<pt1)
+                {
+                    th1d["muon POG loose ID bkd1"+detregion]->Fill(-1,weight);
+                }
+                else if (mu.obj.Pt()<pt2)
+                {
+                    th1d["muon POG loose ID bkd2"+detregion]->Fill(-1,weight);
+                }
+                else 
+                {
+                    th1d["muon POG loose ID bkd3"+detregion]->Fill(-1,weight);        
+                }                      
+            }
+
+            if (mu.isPreselected && testcut)
+            {
+                th1d["muon lepMVA bkd"+detregion]->Fill(mu.lepMVA,weight);
+                if (mu.obj.Pt()<pt1) th1d["muon lepMVA bkd1"+detregion]->Fill(mu.lepMVA,weight);              // mu.mvaIDGP    mu.lepMVA     //std::max(-10.,1.0-mu.miniIso)
+                else if (mu.obj.Pt()<pt2) th1d["muon lepMVA bkd2"+detregion]->Fill(mu.lepMVA,weight);
+                else th1d["muon lepMVA bkd3"+detregion]->Fill(mu.lepMVA,weight);
+
+            }
+            else
+            {
+                th1d["muon lepMVA bkd"+detregion]->Fill(-1,weight);
+                if (mu.obj.Pt()<pt1) th1d["muon lepMVA bkd1"+detregion]->Fill(-1,weight);                      // -1 // 
+                else if (mu.obj.Pt()<pt2) th1d["muon lepMVA bkd2"+detregion]->Fill(-1,weight);
+                else th1d["muon lepMVA bkd3"+detregion]->Fill(-1,weight);
+
+            }                        
+
+        }        
+        
+        
+        
+        
+        
+        
+        
+        
+
 //                     
 //                     if (abs(mu.obj.Eta())>2.1) continue; // in eta plateau to measure pt eff.
 //                     
@@ -420,7 +573,7 @@ void PlotHelper::lepton_eff_studies()
 // 
 //                 }                                                            
                                             
-//	}
+    }
 
 
 
