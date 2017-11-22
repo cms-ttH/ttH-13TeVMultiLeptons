@@ -1,5 +1,6 @@
 //#include "proofofconcept.h"
-#include "gethistofsimplevariable.h"
+#include "lepeff_hists.h"
+#include "jetcleaningstudies_hists.h"
 
 void PlotHelper::doOneEvent()
 {
@@ -11,4 +12,5 @@ void PlotHelper::doOneEvent()
     //proof_of_concept();
     
     lepton_eff_studies();
+    jet_cleaning_studies();
 }

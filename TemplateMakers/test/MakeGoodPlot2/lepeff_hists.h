@@ -1,34 +1,3 @@
-float POG_cut_on_HZZ_mva(float eta) // for pt>10 electrons
-{
-    if (fabs(eta)>1.479) return -0.763;
-    else
-    {
-        if (fabs(eta)<0.8) return -0.870;
-        else return -0.838;
-    }
-}
-
-float POG_cut_on_GP_mva80(float eta) // for pt>10 electrons
-{
-    if (fabs(eta)>1.479) return 0.758;
-    else
-    {
-        if (fabs(eta)<0.8) return 0.941;
-        else return 0.899;
-    }
-}
-
-float POG_cut_on_GP_mva90(float eta) // for pt>10 electrons
-{
-    if (fabs(eta)>1.479) return 0.357;
-    else
-    {
-        if (fabs(eta)<0.8) return 0.837;
-        else return 0.715;
-    }
-}
-
-
 void PlotHelper::lepton_eff_studies()
 {
 	                					

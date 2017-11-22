@@ -1,6 +1,6 @@
 void PlotHelper::collectResults()
 {
-    cout << "Collecting results..." << endl;
+    //cout << "Collecting results..." << endl;
     
     objArray = new TObjArray();
     

@@ -86,7 +86,7 @@ void MakeGoodPlot::lepeff_plots()
     
         
         
-    TCanvas *can1 = new TCanvas("can1","canvas1",150,10,960,660); // 150,10,990,660 // 972,600
+    TCanvas *can1 = new TCanvas("eleMVA_ROC_and_GPWP90_barrel","canvas1",150,10,960,660); // 150,10,990,660 // 972,600
     
     
     eleMVAGPWP90barrel->SetTitle("");
@@ -114,7 +114,7 @@ void MakeGoodPlot::lepeff_plots()
     canvas.Add(can1);
     
         
-    TCanvas *can2 = new TCanvas("can2","canvas2",150,10,960,660); // 150,10,990,660 // 972,600
+    TCanvas *can2 = new TCanvas("eleMVA_ROC_and_GPWP90_endcap","canvas2",150,10,960,660); // 150,10,990,660 // 972,600
     
     
     eleMVAGPWP90endcap->SetTitle("");

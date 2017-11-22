@@ -7,9 +7,10 @@ class MakeGoodPlot
         std::vector<int> samples;
         vector<TFile*> files;
         TString sample_names[20];
+        TString sample_names_reg[20];
         string sample_names_std[20];
-        double xsecs[20];
-        double numgen[20];		
+        //double xsecs[20];
+        //double numgen[20];		
 
         // CMS info stuff
         std::string cmsinfo;
@@ -17,13 +18,15 @@ class MakeGoodPlot
         TPaveText *pt[50];
         TPaveText *pt0;
         TPaveText *pt1; 
+        double lumi = 90.; // fb^-1
+        double scale[20];
         
         std::vector<TObjArray> hist;
         TObjArray canvas;
         
         void setup();        
         void lepeff_plots();
-           
+        void jetcleaning_plots();
     
         MakeGoodPlot(std::vector<int> thesamps);
         MakeGoodPlot(std::vector<int> thesamps, std::vector<TObjArray> exthists);
@@ -72,7 +75,6 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps, std::vector<TObjArray> ext
 {
     numsamples = thesamps.size();
     samples = thesamps;    
-    setup();
     
     // pass the hists directly to MakeGoodPlot without saving:    
     hist = exthists;

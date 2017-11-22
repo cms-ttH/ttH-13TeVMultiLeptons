@@ -38,6 +38,7 @@ class PlotHelper
         TTreeReaderValue<vector<ttH::Muon>> looseMvaBased_muons_intree;
         TTreeReaderValue<vector<ttH::Muon>> tightMvaBased_muons_intree;
 
+        TTreeReaderValue<vector<ttH::Jet>> raw_jets_intree;
         TTreeReaderValue<vector<ttH::Jet>> preselected_jets_intree;
         TTreeReaderValue<vector<ttH::Jet>> loose_bJets_intree;
         TTreeReaderValue<vector<ttH::Jet>> tight_bJets_intree;
@@ -58,5 +59,8 @@ class PlotHelper
         void proof_of_concept();
         void lepton_eff_studies();
         void get_hist_of_simple_variable_2D();
-    
+        void jet_cleaning_studies();
+        
+        bool ele_tight(ttH::Electron ele);
+        bool mu_tight(ttH::Muon mu);
 };

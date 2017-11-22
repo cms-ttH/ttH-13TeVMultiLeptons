@@ -1,5 +1,5 @@
 #include "lepeff_plots.h" // include whatever plots you want here (can be multiple functions)
-
+#include "jetcleaningstudies_plots.h"
 
 void MakeGoodPlot::drawAll()
 {
@@ -7,16 +7,12 @@ void MakeGoodPlot::drawAll()
     // whatever plots you want to make, actually
     // run the code that draws them here:
     
-    lepeff_plots();
-
-
+    //lepeff_plots();
+    jetcleaning_plots();
 
 
 
 }
-
-
-
 
 
 
@@ -44,7 +40,7 @@ void MakeGoodPlot::drawAllToFile(string plotfile, string plotoption)
         for (int i=0; i<canvas.GetEntries(); i++)
         {
             auto tmpcan = (TCanvas*)canvas[i];
-            TString plotfilename = plotfile+"_"+int2ss(i)+"."+plotoption;
+            TString plotfilename = plotfile+"_"+tmpcan->GetName()+"."+plotoption;
             tmpcan->SaveAs(plotfilename);
         }
     }    
