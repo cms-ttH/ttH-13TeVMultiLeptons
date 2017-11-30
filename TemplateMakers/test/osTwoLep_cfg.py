@@ -3,6 +3,7 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 import sys
 import os
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
 
 
 options = VarParsing.VarParsing('analysis')
@@ -10,18 +11,18 @@ options.maxEvents = -1
 options.register("jetCleanFakeable", True,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "lepton selecton for jet cleaning")
-options.register("data", False,
+options.register("data", True,                                                  # <---------
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Data or MC.")
-options.register("skim", False,
+options.register("skim", True,                                                  # <---------
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Produce skimmed trees.")
 options.register("hip",True,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Run hip safe muID.")
-options.register("globalTag", "80X_mcRun2_asymptotic_2016_TrancheIV_v8",
+options.register("globalTag", "80X_mcRun2_asymptotic_2016_TrancheIV_v8",        # ref: Moriond17 was 80X_mcRun2_asymptotic_2016_TrancheIV_v8, 80X_dataRun2_2016SeptRepro_v7
                  VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.string, "Global tag to use") #80X_dataRun2_2016SeptRepro_v7
+                 VarParsing.VarParsing.varType.string, "Global tag to use")
 options.parseArguments()
 
 process = cms.Process("Demo")
@@ -32,8 +33,10 @@ isData = options.data
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
-process.GlobalTag.globaltag = options.globalTag
 
+process.GlobalTag.globaltag = options.globalTag
+if isData:
+    process.GlobalTag = customiseGlobalTag(None, globaltag = 'auto:run2_data')
 process.prefer("GlobalTag")
 
 process.maxEvents = cms.untracked.PSet(
@@ -49,8 +52,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.source = cms.Source("PoolSource",
 #    	fileNames = cms.untracked.vstring( infile ),        
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
-    	fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/3C70EB0A-6BBE-E611-B094-0025905A606A.root"),
+#    	fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/3C70EB0A-6BBE-E611-B094-0025905A606A.root"),
 #    	fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/23Sep2016-v1/70000/081A803C-8B8A-E611-86A7-008CFA110C90.root" ),
+        fileNames = cms.untracked.vstring( "/store/data/Run2017B/MET/MINIAOD/PromptReco-v1/000/297/675/00000/4A6289A7-715E-E711-920B-02163E014781.root"),
        #eventsToProcess = cms.untracked.VEventRange('1:23725:3368878','1:23725:3368878'),
 
 )
@@ -59,12 +63,13 @@ process.source = cms.Source("PoolSource",
 #process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(
 #    '199812:70-199812:80'
 #)
-### or, using json file:
-# if isData:
-#    cmsswbase = os.environ['CMSSW_BASE']
-#    import FWCore.PythonUtilities.LumiList as LumiList
-#    process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt').getVLuminosityBlockRange()
 
+## or, using json file:
+if isData:
+    cmsswbase = os.environ['CMSSW_BASE']
+    import FWCore.PythonUtilities.LumiList as LumiList
+    #process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt').getVLuminosityBlockRange()
+    process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_294927-306126_13TeV_PromptReco_Collisions17_JSON.txt').getVLuminosityBlockRange()
 
 ######################################
 #JEC
