@@ -475,7 +475,8 @@ MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const
             passSelection = (mu.userFloat("idFakeable") > 0.5 && passPt);
             break;
 	case muonID::muonTight: 
-            passSelection = (mu.userFloat("idMVABased") > 0.5 && passPt);
+            //passSelection = (mu.userFloat("idMVABased") > 0.5 && passPt);
+            passSelection = (mu.userFloat("idTight") > 0.5 && passPt);
             break;
         default:
             cout << "GetSelectedMuons-> no such muonID!" << endl;
@@ -511,7 +512,8 @@ MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElec
             passSelection = (ele.userFloat("idFakeable") > 0.5 && passPt);
             break;
 	case electronID::electronTight: 
-            passSelection = (ele.userFloat("idMVABased") > 0.5 && passPt);
+            //passSelection = (ele.userFloat("idMVABased") > 0.5 && passPt);
+            passSelection = (ele.userFloat("idTight") > 0.5 && passPt);
             break;
         default:
             cout << "GetSelectedElectrons-> no such electronID!" << endl;

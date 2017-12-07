@@ -16,6 +16,7 @@
 #include "MakeGoodPlot.h"
 #include "nicepalette.h"
 #include "setup.h"
+#include "GoodPlot.h"
 #include "getroccurve.h"
 #include "drawall.h"
 
@@ -83,6 +84,6 @@ void wrapper(std::vector<int> samples, bool plotsonly=true) // (int/string/whate
     // then, pick one of these:
     //newplot->drawAllToScreen();
     //newplot->drawAllToFile("plttest","pdf");
-    newplot->drawAllToWebArea("jetclean_test1","png");
+    newplot->drawAllToWebArea("jetclean_test3_pt25","png");
     
 }

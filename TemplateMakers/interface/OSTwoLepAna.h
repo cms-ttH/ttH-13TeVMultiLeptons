@@ -77,6 +77,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
                 vector<ttH::Tau> selected_taus_intree;
 
 		vector<ttH::Jet> raw_jets_intree;
+                vector<ttH::Jet> loose_jets_intree;
 		vector<ttH::Jet> preselected_jets_intree;
 		vector<ttH::Jet> preselected_jets_JECup_intree;
 		vector<ttH::Jet> preselected_jets_JECdown_intree;
@@ -113,12 +114,12 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("runNumber", &runNumber_intree);
   summaryTree->Branch("higgs_decay", &higgs_decay_intree);
   
-//  summaryTree->Branch("passTrigger", &passTrigger_intree);
+  summaryTree->Branch("passTrigger", &passTrigger_intree);
   
-  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
-  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
-  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
-  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
+//  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
+//  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
+//  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
+//  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
 //  summaryTree->Branch("selected_taus", &selected_taus_intree);
   
 //  summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
@@ -129,9 +130,11 @@ void OSTwoLepAna::tree_add_branches()
 //  summaryTree->Branch("loose_electrons", &loose_electrons_intree);
 //  summaryTree->Branch("loose_muons", &loose_muons_intree);
 
-//  summaryTree->Branch("tight_leptons", &tight_leptons_intree);
-//  summaryTree->Branch("tight_electrons", &tight_electrons_intree);
-//  summaryTree->Branch("tight_muons", &tight_muons_intree);
+  summaryTree->Branch("tight_leptons", &tight_leptons_intree);
+  summaryTree->Branch("tight_electrons", &tight_electrons_intree);
+  summaryTree->Branch("tight_muons", &tight_muons_intree);
+
+  summaryTree->Branch("loose_jets", &loose_jets_intree);
   
   summaryTree->Branch("raw_electrons", &raw_electrons_intree);
   summaryTree->Branch("raw_muons", &raw_muons_intree);
@@ -139,7 +142,7 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("raw_taus", &raw_taus_intree);
   summaryTree->Branch("raw_jets", &raw_jets_intree);
   
-  summaryTree->Branch("preselected_jets", &preselected_jets_intree);
+//  summaryTree->Branch("preselected_jets", &preselected_jets_intree);
   //summaryTree->Branch("preselected_jets_JECup", &preselected_jets_JECup_intree);
   //summaryTree->Branch("preselected_jets_JECdown", &preselected_jets_JECdown_intree);
   //summaryTree->Branch("preselected_jets_uncor", &preselected_jets_uncor_intree);
@@ -154,8 +157,8 @@ void OSTwoLepAna::tree_add_branches()
 
 void OSTwoLepAna::initialize_variables()
 {
-  mcwgt_intree = -9999.;
-  wgt_intree = -9999.;
+  mcwgt_intree = 1.;
+  wgt_intree = 1.;
   wallTimePerEvent_intree = -9999.;
   
   eventnum_intree = -99;

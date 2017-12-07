@@ -16,6 +16,10 @@ void MakeGoodPlot::jetcleaning_plots()
         auto electron_numjets_vs_dR_prompt_zoomin = (TH1D*)hist[i].FindObject("electron_numjets_vs_dR_prompt_zoomin"); 
         auto electron_numjets_vs_dR_nonprompt_zoomin = (TH1D*)hist[i].FindObject("electron_numjets_vs_dR_nonprompt_zoomin");
         
+
+        auto jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt = (TH1D*)hist[i].FindObject("jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt");       
+        auto jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt = (TH1D*)hist[i].FindObject("jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt");    
+        
         TCanvas *can1 = new TCanvas("muon_numjets_vs_dR"+sample_names_reg[samples[i]],"canvas1",150,10,960,660); // 150,10,990,660 // 972,600
         
         muon_numjets_vs_dR->SetTitle("");
@@ -124,7 +128,42 @@ void MakeGoodPlot::jetcleaning_plots()
         electron_numjets_vs_dR_nonprompt_zoomin->GetYaxis()->SetTitle("nJets");
         electron_numjets_vs_dR_nonprompt_zoomin->Draw("COLZ");
         
-        canvas.Add(can12);      
+        canvas.Add(can12);
+        
+        
+        
+        
+        // example of using GoodPlot class
+        GoodPlot *can13 = new GoodPlot("jet_pt_minus_electron_pt_one_jet_in_dR0p4"+sample_names_reg[samples[i]],"tr");
+        can13->addPlotNorm(*this,"jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt",i,"Prompt");
+        can13->addPlotNorm(*this,"jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt",i,"Non-prompt");
+        
+        canvas.Add((TCanvas*)can13);        
+        
+        
+        // compare the above to doing it by hand:
+        TCanvas *can14 = new TCanvas("jet_pt_minus_muon_pt_one_jet_in_dR0p4"+sample_names_reg[samples[i]],"canvas2",150,10,960,660); // 150,10,990,660 // 972,600
+        TLegend *leggg = new TLegend(getleg("tr"));
+        
+        jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->GetXaxis()->SetTitle("jet p_{T} - muon p_{T}");
+        jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->GetYaxis()->SetTitle("a. u.");
+        jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->SetLineWidth(2);
+        jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->Scale(1./jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->Integral());
+        jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->Draw("hist,PLC");
+        
+        jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt->SetLineWidth(2);
+        jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt->Scale(1./jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt->Integral());
+        jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt->Draw("hist,PLC,same");  
+                
+        leggg->AddEntry(jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt,"Prompt","L");  
+        leggg->AddEntry(jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt,"Non-prompt","L");
+        
+        leggg->Draw();
+        
+        canvas.Add(can14);        
+        
+        
+        
         
     }
 }      

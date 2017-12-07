@@ -16,7 +16,7 @@ TLegend getleg(string format)
         leg.SetTextFont(42);                        
         return leg;
     }
-    else if (format=="ul")
+    else if (format=="ul" || format=="tl")
     {        
         TLegend leg(0.3,0.77,0.7,0.88); // not sure about this one..
         leg.SetLineColor(kWhite);
@@ -24,10 +24,17 @@ TLegend getleg(string format)
         leg.SetTextFont(42);                        
         return leg;      
     }
-//   else if (format=="br")               
-    else if (format=="ur")
+    else if (format=="br")     
+    {
+        TLegend leg(0.55,0.12,0.89,0.4);
+        leg.SetLineColor(kWhite);
+        leg.SetShadowColor(kWhite);            
+        leg.SetTextFont(42);
+        return leg;
+    }          
+    else if (format=="ur" || format=="tr")
     {     
-        TLegend leg(0.55,0.7,0.9,0.9);
+        TLegend leg(0.55,0.7,0.89,0.89);
         leg.SetLineColor(kWhite);
         leg.SetShadowColor(kWhite);            
         leg.SetTextFont(42);                        

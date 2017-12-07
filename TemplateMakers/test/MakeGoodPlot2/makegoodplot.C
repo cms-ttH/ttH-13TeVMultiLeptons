@@ -1,6 +1,6 @@
 #include "wrapper.h"
 
-void makegoodplot()
+void makegoodplot(bool plotsonly=true) // true: make plots from existing hists. false: remake hists before making plots.
 {     
     // vector of samples to include in the plot:
     std::vector<int> samples; // <- example
@@ -13,8 +13,5 @@ void makegoodplot()
     cout << "about to start"  << endl;
     
     // then, simply:
-    
-    bool plotsonly = true;      // true: make plots from existing hists. false: remake hists before making plots.
     wrapper(samples,plotsonly);
-    
 }

@@ -9,6 +9,8 @@
 
 void makegoodplot()
 {
+        //ROOT::EnableImplicitMT();
+        
         // declare new instance:
         MakeGoodPlot *newplot = new MakeGoodPlot();
         set_plot_style();
@@ -54,8 +56,8 @@ void makegoodplot()
         //newplot->print_cutflow(samples);
 
 
-        newplot->draw_eff_curves(samples);
-
+        //newplot->draw_eff_curves(samples);
+        //newplot->draw_ROC_curves();
 
         //newplot->draw_several_comparisons(samples);
         
@@ -74,8 +76,11 @@ void makegoodplot()
         //newplot->fourlstudies(samples);
 	//newplot->threelstudies(samples);
 	//newplot->MatchTester_ttW_SS(samples);
-
-
+        
+        // test
+        Int_t blah = mp102_readNtuplesFillHistosAndFit();
+        //Int_t blah = mp101_fillNtuples();
+        cout << blah << endl;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

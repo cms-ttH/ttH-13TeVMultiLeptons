@@ -186,6 +186,7 @@ class MultileptonAna: public MiniAODHelper
  public:
   
   MultileptonAna();
+  //virtual ~MultileptonAna() noexcept (false);
   ~MultileptonAna();
   
   string analysisYear = "2015_72x"; // "2015_73x, 2015_74x ..."
@@ -221,7 +222,6 @@ class MultileptonAna: public MiniAODHelper
   template <typename obj1, typename obj2> std::vector<obj1> cleanObjects(const std::vector<obj1>&, const std::vector<obj2>&, const double);
   template <typename particleType> pat::Jet getClosestJet(const std::vector<pat::Jet>&, const particleType&);
 
- private:
   
 };
 

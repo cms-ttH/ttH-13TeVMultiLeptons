@@ -157,7 +157,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronPreselection );    //miniAODhelper.
 //  vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronLoose ); //miniAODhelper. // doesn't exist yet
   vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronRaw ); //miniAODhelper.
-
+  vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, 10., electronID::electronTight );
+  
   /////////
   ///
   /// Muons
@@ -169,7 +170,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, min_mu_pt, muonID::muonPreselection );
   vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, min_mu_pt, muonID::muonLoose );
   vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, min_mu_pt, muonID::muonRaw );
-
+  vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, 10., muonID::muonTight );
+  
   /////////
   ///
   /// Taus
@@ -190,6 +192,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
   //remove electrons that are close (dR <=0.05) to muons
   selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05);    
+  selectedElectrons_tight = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_tight,selectedMuons_tight,0.05); 
+
 
   //remove taus that are close (dR <=0.4) to muons
   selectedTaus_preselected = cleanObjects<pat::Tau,pat::Muon>(selectedTaus_preselected,selectedMuons_preselected,0.4);
@@ -208,7 +212,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   ////////    
   
   bool skim_statement = true;
-  if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
+  if (skim) skim_statement = (selectedElectrons_tight.size()+selectedMuons_tight.size() >= 2);
 
   if ( skim_statement )
   {
@@ -225,10 +229,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
     vecPatJet rawJets = GetUncorrectedJets(*pfjets);
     vecPatJet correctedRawJets = (*pfjets);
-
+    
     vecPatJet correctedRawJets_JECdown;
     vecPatJet correctedRawJets_JECup;
-
+    
 
     for (auto j: correctedRawJets)
       {
@@ -281,8 +285,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     vecPatElectron selectedElectrons_fakeable = GetSelectedElectrons( selectedElectrons_preselected, 10, electronID::electronFakeable );
     vecPatMuon selectedMuons_fakeable = GetSelectedMuons( selectedMuons_preselected, 10,muonID::muonFakeable);
 
-    vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
-    vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
+    //vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
+    //vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
 
     if ( jetCleanFakeable )
       {
@@ -300,6 +304,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected,selectedElectrons_fakeable,0.4);
     selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECdown_preselected,selectedMuons_fakeable,0.4);
     selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECdown_preselected,selectedElectrons_fakeable,0.4);
+
+    vecPatJet selectedJets_loose = cleanObjects<pat::Jet,pat::Muon>(correctedRawJets,selectedMuons_tight,0.4);
+    selectedJets_loose = cleanObjects<pat::Jet,pat::Electron>(selectedJets_loose,selectedElectrons_tight,0.4);
 
     /////////
     ///
@@ -376,6 +383,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
     //vector<ttH::Jet> raw_jets = GetCollection(rawJets);
     vector<ttH::Jet> raw_jets = GetCollection(correctedRawJets); // jets straight from PAT (with JEC)
+    vector<ttH::Jet> loose_jets = GetCollection(selectedJets_loose);
     vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
     vector<ttH::Jet> preselected_jets_JECup = GetCollection(selectedJets_JECup_preselected);
     vector<ttH::Jet> preselected_jets_JECdown = GetCollection(selectedJets_JECdown_preselected);
@@ -454,7 +462,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
     preselected_taus_intree = preselected_taus;
     selected_taus_intree = selected_taus;
-      
+    
+    loose_jets_intree = loose_jets;
     preselected_jets_intree = preselected_jets;
     preselected_jets_JECup_intree = preselected_jets_JECup;
     preselected_jets_JECdown_intree = preselected_jets_JECdown;
@@ -503,58 +512,53 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
   hlt_alltrigs.clear();
   
 
+    // To Do: add back explicitly the MET paths..
+
   //same-sign 2mu
   hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
   hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");  
   hlt_trigstofind.push_back("HLT_IsoMu22_v");
   hlt_trigstofind.push_back("HLT_IsoTkMu22_v");
-  hlt_trigstofind.push_back("HLT_IsoMu22_eta2p1_v"); //new
-  hlt_trigstofind.push_back("HLT_IsoTkMu22_eta2p1_v"); //new
-  hlt_trigstofind.push_back("HLT_IsoMu24_v"); //new
-  hlt_trigstofind.push_back("HLT_IsoTkMu24_v"); //new
+  hlt_trigstofind.push_back("HLT_IsoMu22_eta2p1_v");
+  hlt_trigstofind.push_back("HLT_IsoTkMu22_eta2p1_v");
+  hlt_trigstofind.push_back("HLT_IsoMu24_v");
+  hlt_trigstofind.push_back("HLT_IsoTkMu24_v");
+  hlt_trigstofind.push_back("HLT_IsoMu27_v"); // new 2017 (there aren't any single mu "Tk" paths this time)
+  hlt_trigstofind.push_back("HLT_DoubleIsoMu24_eta2p1_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_DoubleIsoMu20_eta2p1_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu18_Mu9_SameSign_DZ_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu18_Mu9_SameSign_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu37_TkMu27_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL_DZ_Mass8_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu19_TrkIsoVVL_Mu9_TrkIsoVVL_DZ_Mass3p8_v"); // new 2017
 
   //same-sign 2e
   hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-  hlt_trigstofind.push_back("HLT_Ele27_WPTight_Gsf_v"); //new
-  hlt_trigstofind.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v"); //new
+  hlt_trigstofind.push_back("HLT_Ele27_WPTight_Gsf_v");
+  hlt_trigstofind.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v");
   hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
+  hlt_trigstofind.push_back("HLT_Ele32_WPTight_Gsf_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"); // new 2017  
 
   //same-sign mu e
   hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");  
-  hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v"); //new  
+  hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v");
   hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-  hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"); //new
-  // hlt_trigstofind.push_back("HLT_IsoMu22_v");
-  // hlt_trigstofind.push_back("HLT_IsoTkMu22_v");
-  // hlt_trigstofind.push_back("HLT_IsoMu22_eta2p1_v"); //new
-  // hlt_trigstofind.push_back("HLT_IsoTkMu22_eta2p1_v"); //new
-  // hlt_trigstofind.push_back("HLT_IsoMu24_v"); //new
-  // hlt_trigstofind.push_back("HLT_IsoTkMu24_v"); //new
-  // hlt_trigstofind.push_back("HLT_Ele27_WPTight_Gsf_v"); //new
-  // hlt_trigstofind.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v"); //new
-  // hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
+  hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v");
+  hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"); // new 2017
 
   //three & four lepton
   hlt_trigstofind.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_v");
   hlt_trigstofind.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_v");  
   hlt_trigstofind.push_back("HLT_TripleMu_12_10_5_v");
   hlt_trigstofind.push_back("HLT_Ele16_Ele12_Ele8_CaloIdL_TrackIdL_v");
-  // hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");  
-  // hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_DZ_v"); //new  
-  // hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v");
-  // hlt_trigstofind.push_back("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v"); //new
-  // hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
-  // hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v");
-  // hlt_trigstofind.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v");  
-  // hlt_trigstofind.push_back("HLT_IsoMu22_v");
-  // hlt_trigstofind.push_back("HLT_IsoTkMu22_v");
-  // hlt_trigstofind.push_back("HLT_IsoMu22_eta2p1_v"); //new
-  // hlt_trigstofind.push_back("HLT_IsoTkMu22_eta2p1_v"); //new
-  // hlt_trigstofind.push_back("HLT_IsoMu24_v"); //new
-  // hlt_trigstofind.push_back("HLT_IsoTkMu24_v"); //new
-  // hlt_trigstofind.push_back("HLT_Ele27_WPTight_Gsf_v"); //new
-  // hlt_trigstofind.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v"); //new
-  // hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
+  hlt_trigstofind.push_back("HLT_Mu8_DiEle12_CaloIdL_TrackIdL_DZ_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v"); // new 2017
+  hlt_trigstofind.push_back("HLT_TripleMu_10_5_5_DZ_v"); // new 2017
 
   
   for (int trigit=0; trigit<triggersize; trigit++)

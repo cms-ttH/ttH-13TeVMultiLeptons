@@ -10,8 +10,8 @@ void PlotHelper::bookHistos()
        
     for (int i=0; i<(int)arrsize; i++)
     {
-        th1ds[i] = new TH1D("blah"+int2ss(i),"blah"+int2ss(i),10,0,1);
-        th2ds[i] = new TH2D("blah2D"+int2ss(i),"blah2D"+int2ss(i),10,0,1,10,0,1);
+        th1ds[i] = new TH1D("blah"+int2ss(i),"",10,0,1);
+        th2ds[i] = new TH2D("blah2D"+int2ss(i),"",10,0,1,10,0,1);
     }
     /////////////////////////////////////////////////////////////////////////
     // Actually book them here. The histos each need to be uniquely named
@@ -157,7 +157,11 @@ void PlotHelper::bookHistos()
     th2ds[j]->SetName("electron_numjets_vs_dR_prompt_zoomin");         th2ds[j]->SetBins(50,0.,0.2,10,0,10);    j++;
     th2ds[j]->SetName("electron_numjets_vs_dR_nonprompt_zoomin");      th2ds[j]->SetBins(50,0.,0.2,10,0,10);    j++;  
 
-
+    th1ds[i]->SetNameTitle("jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt",";jet p_{T} - electron p_{T}");      th1ds[i]->SetBins(200,-100,200);    i++;
+    th1ds[i]->SetNameTitle("jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt",";jet p_{T} - electron p_{T}");   th1ds[i]->SetBins(200,-100,200);    i++;
+    th1ds[i]->SetNameTitle("jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt",";jet p_{T} - muon p_{T}");          th1ds[i]->SetBins(200,-100,200);    i++;
+    th1ds[i]->SetNameTitle("jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt",";jet p_{T} - muon p_{T}");       th1ds[i]->SetBins(200,-100,200);    i++;
+    
 //    th1ds[12]->SetNameTitle("","");                 = new TH1F("sigmaIeatIeta var1 sig","",100,0,1);  //0.04
 //    th1ds[13]->SetNameTitle("","");                 = new TH1F("sigmaIeatIeta var2 sig","",100,0,1);  //0.04
 //    th1ds[14]->SetNameTitle("","");                 = new TH1F("sigmaIeatIeta var3 sig","",100,0,1);  //0.04

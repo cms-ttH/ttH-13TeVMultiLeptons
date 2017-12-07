@@ -1,7 +1,5 @@
 void MakeGoodPlot::setup()
-{
-    cout << "wtf" << endl;
-    
+{   
     sample_names[0] = "data"; //"data (mu)";
     sample_names[1] = "t#bar{t}H (H->non-bb)"; //"t#bar{t}H(125)";
     sample_names[2] = "(none)"; 
@@ -74,7 +72,7 @@ void MakeGoodPlot::setup()
         scale[i] *= lumi;
     }
 
-    cmsinfo = "CMS Preliminary  #sqrt{s} = 13 TeV, L = 999 fb^{-1}";
+    cmsinfo = "CMS Preliminary  #sqrt{s} = 13 TeV, L = 90 fb^{-1}";
     CMSInfoLatex = new TLatex(0.48, 0.91, cmsinfo.c_str());
     CMSInfoLatex->SetNDC();
     CMSInfoLatex->SetTextFont(42);
@@ -101,7 +99,7 @@ void MakeGoodPlot::setup()
     gStyle->SetPadGridX(true);
     gStyle->SetPadGridY(true);
     
-
+    gStyle->SetOptStat(0);
     
     set_plot_style(); // see nicepalette.h
     
