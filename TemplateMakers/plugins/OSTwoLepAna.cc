@@ -212,32 +212,8 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   ////////    
   
   bool skim_statement = true;
-<<<<<<< HEAD
-  if (skim) skim_statement = (selectedElectrons_tight.size()+selectedMuons_tight.size() >= 2);
-=======
-  //if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size() >= 2);
-  
-  if (skim) 
-  {
-    skim_statement = false;
-    int numrawleps = 0;
-    
-    for(const auto & iMu: selectedMuons_raw)
-    {
-        if (iMu.userFloat("idPreselection")>0.5) numrawleps++;
-    }
-    for(const auto & iEle: selectedElectrons_raw)
-    {
-        if (iEle.userFloat("idPreselection")>0.5) numrawleps++;
-    }
-    
-    if (numrawleps>=2) skim_statement = true;
-    
-  }  
-  
-  
 
->>>>>>> 1ee20b23c461fb3eacbf757bc17b0065b8d44120
+  if (skim) skim_statement = (selectedElectrons_tight.size()+selectedMuons_tight.size() >= 2);
 
   if ( skim_statement )
   {
