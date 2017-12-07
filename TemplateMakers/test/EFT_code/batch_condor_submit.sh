@@ -1,39 +1,9 @@
 #!/bin/sh
 set subFile="run_EFTSelection.submit"
 
-#sed -i 's/^sample = .*/sample = ttW/' $subFile
-##condor_submit $subFile
-##head $subFile
-#echo ""
-#
-#sed -i 's/^sample = .*/sample = ttZ/' $subFile
-##condor_submit $subFile
-##head $subFile
-#echo ""
-#
-#sed -i 's/^sample = .*/sample = tth_nonbb_aMCatNLO_/' $subFile
-##condor_submit $subFile
-##head $subFile
-#echo ""
-#
-#sed -i 's/^sample = .*/sample = tth_aMC/' $subFile
-##condor_submit $subFile
-##head $subFile
-#echo ""
-#
-#sed -i 's/^sample = .*/sample = ttjets_dilep/' $subFile
-##condor_submit $subFile
-##head $subFile
-#echo ""
-#
-#sed -i 's/^sample = .*/sample = ttjets_semilep/' $subFile
-##condor_submit $subFile
-##head $subFile
-#echo ""
-
-#set samples = ("tth_aMC" "ttW" "ttZ")
-#set samples = ("tth_aMC")
-set samples = ("tth_aMC" "ttjets_dilep" "ttjets_semilep")
+#set samples = ("ttH_nonbb" "ttZ" "ttW" "ttjets_inclusive" "ttjets_semilep" "ttjets_dilep")
+set samples = ("ttH_nonbb" "ttZ" "ttW" "ttjets_semilep" "ttjets_dilep")
+#set samples = ("ttjets_semilep")
 
 foreach sample ($samples)
     sed -i "s/^sample = .*/sample = ${sample}/" $subFile
@@ -41,3 +11,5 @@ foreach sample ($samples)
     condor_submit $subFile
     echo ""
 end
+
+condor_q

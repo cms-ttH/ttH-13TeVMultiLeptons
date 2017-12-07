@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <typeinfo>
+//#include <string>
 
 //#include "genToolsEFT.h"
 
@@ -29,12 +30,6 @@ TString padRight(TString str,char pad_char,int pad_num=0) {
     padded_str = str + padded_str;
     return padded_str;
 }
-
-//vector<ttH::GenParticle> sortGenParticles(vector<ttH::GenParticle> gen_particles) {
-//    vector<ttH::GenParticle> gen_list(gen_particles.begin(),gen_particles.end());
-//    std::sort(gen_list.begin(), gen_list.end(), [] (ttH::GenParticle a, ttH::GenParticle b) {return a.obj.Pt() > b.obj.Pt();});
-//    return gen_list;
-//}
 
 template <typename T> vector<T> sortParticles(vector<T> particles) {
     vector<T> sorted_particles(particles.begin(),particles.end());
@@ -142,18 +137,8 @@ template <typename inObj> vector<inObj> applyEtaCut(const vector<inObj> particle
     return selected_particles;
 }
 
-vector<ttH::GenParticle> getPromptParticles(vector<ttH::GenParticle> gen_particles) {
-    vector<ttH::GenParticle> prompt_particles;
-    for (auto &gen_particle: gen_particles) {
-        if (!gen_particle.isPromptFinalState) {
-            continue;
-        }
-        prompt_particles.push_back(gen_particle);
-    }
-    return prompt_particles;
-}
-
 // Attempts to match the jet object to its corresponding gen object
+/*
 template <typename T> ttH::GenParticle matchGenObject(T jet, vector<ttH::GenParticle> gen_particles) {
     double min_dr = 999.;
     ttH::GenParticle best_gen_object = gen_particles.at(0);
@@ -173,8 +158,10 @@ template <typename T> ttH::GenParticle matchGenObject(T jet, vector<ttH::GenPart
 
     return best_gen_object;
 }
+*/
 
 // Attempts to match an object to some object in the specified collection
+/*
 template <typename T1, typename T2> T2* matchObject(T1 target_particle, vector<T2> matching_collection) {
     double min_dr = 999.;
     T2 best_match = matching_collection.at(0);
@@ -195,6 +182,7 @@ template <typename T1, typename T2> T2* matchObject(T1 target_particle, vector<T
 
     return &best_match;
 }
+*/
 
 // Returns b-jets matched to their gen_particle counterparts
 template <typename T> vector<T> getBJets(vector<ttH::GenParticle> gen_particles, vector<T> jets) {
@@ -220,6 +208,7 @@ template <typename T> vector<T> getBJets(vector<ttH::GenParticle> gen_particles,
 }
 
 // Returns the calculated invariant W mass of the event (if possible)
+/*
 double getInvWMass(vector<ttH::GenParticle> gen_particles) {
     double inv_w_mass = -999.;
     for (uint i = 0; i < gen_particles.size(); i++) {
@@ -255,8 +244,10 @@ double getInvWMass(vector<ttH::GenParticle> gen_particles) {
 
     return inv_w_mass;
 }
+*/
 
 // Returns jets from base_collection that have been matched to a jet in matching_collection
+/*
 template <typename T1, typename T2> vector<T1> getMatchedJets(
     vector<T1> base_collection,
     vector<T2> matching_collection,
@@ -291,6 +282,138 @@ template <typename T1, typename T2> vector<T1> getMatchedJets(
     }
 
     return matched_jets;
+}
+*/
+
+// Returns the smallest invariant mass between all objects in the collection
+template <typename T> double getMinInvMass(T col) {
+    double min_val = 999999.;
+    double max_val = 0.;
+    for (auto obj1 = col.begin(); obj1 != col.end(); ++obj1) {
+        for (auto obj2 = col.begin(); obj2 != col.end(); ++obj2) {
+            bool same = ((*obj1).obj == (*obj2).obj);
+            if (same) {
+                continue;
+            }
+            auto tmp_obj = (*obj1).obj + (*obj2).obj;
+            double tmp_val = tmp_obj.M();
+            if (tmp_val < min_val) {
+                min_val = tmp_val;
+            }
+        }
+    }
+    return min_val;
+}
+
+// Returns true if the collection has ANY two same-flavor leptons inside the z-mass window
+template <typename T> bool hasSFZLeptons(vector<T> col,double z_window) {
+    for (auto obj1 = col.begin(); obj1 != col.end(); ++obj1) {
+        int pdg_ID1 = fabs(obj1->pdgID);
+        for (auto obj2 = col.begin(); obj2 != col.end(); ++obj2) {
+            bool same = (obj1->obj == obj2->obj);
+            if (same) {
+                continue;
+            }
+
+            int pdg_ID2 = fabs(obj2->pdgID);
+            if (pdg_ID1 != pdg_ID2) {
+                continue;
+            }
+            auto tmp_obj = obj1->obj + obj2->obj;
+            if (fabs(tmp_obj.M() - 91.2) < z_window) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+float POG_cut_on_GP_mva90(float eta) {// For pt>10 electrons
+    if (fabs(eta) > 1.479) {
+        return 0.357;
+    } else {
+        if (fabs(eta) < 0.8) {
+            return 0.837;
+        } else {
+            return 0.715;
+        }
+    }
+}
+
+vector<ttH::Electron> applyGeoffCuts(vector<ttH::Electron> electrons) {
+    vector<ttH::Electron> selected_electrons;
+    for (const auto &ele: electrons) {
+        float pt      = 10.0;
+        float eta     = 2.4;
+        float miniIso = 0.25;
+        float sip3D   = 8.0;
+        float dxy     = 0.05;
+        float dz      = 0.1;
+
+        int missInnerHits = 1;
+        float eleMVA = POG_cut_on_GP_mva90(ele.obj.Eta());
+
+        if (ele.obj.Pt() <= pt) {
+            continue;
+        } else if (fabs(ele.obj.Eta()) >= eta) {
+            continue;
+        } else if (!(ele.isPromptFinalState || ele.isDirectPromptTauDecayProductFinalState)) {
+            continue;
+        } else if (ele.miniIso >= miniIso) {
+            continue;
+        } else if (ele.sip3D >= sip3D) {
+            continue;
+        } else if (fabs(ele.dxy) >= dxy) {
+            continue;
+        } else if (fabs(ele.dz) >= dz) {
+            continue;
+        } else if (ele.numMissingInnerHits > missInnerHits) {
+            continue;
+        } else if (ele.mvaIDGP <= eleMVA) {
+            continue;
+        } else if (!ele.passConversioVeto) {
+            continue;
+        }
+
+        selected_electrons.push_back(ele);
+    }
+
+    return selected_electrons;
+}
+
+vector<ttH::Muon> applyGeoffCuts(vector<ttH::Muon> muons) {
+    vector<ttH::Muon> selected_muons;
+    for (const auto &mu: muons) {
+
+        float pt      = 10.0;
+        float eta     = 2.4;
+        float miniIso = 0.25;
+        float sip3D   = 8.0;
+        float dxy     = 0.05;
+        float dz      = 0.1;
+
+        if (mu.obj.Pt() < pt) {
+            continue;
+        } else if (fabs(mu.obj.Eta()) > eta) {
+            continue;
+        } else if (!(mu.isPromptFinalState || mu.isDirectPromptTauDecayProductFinalState)) {
+            continue;
+        } else if (mu.miniIso > miniIso) {
+            continue;
+        } else if (mu.sip3D > sip3D) {
+            continue;
+        } else if (fabs(mu.dxy) > dxy) {
+            continue;
+        } else if (fabs(mu.dz) > dz) {
+            continue;
+        } else if (!mu.idLoosePOG) {
+            continue;
+        }
+
+        selected_muons.push_back(mu);
+    }
+
+    return selected_muons;
 }
 
 #endif

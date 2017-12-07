@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <map>
+#include <string>
 
 #include <chrono>
 
@@ -31,12 +32,13 @@
 
 Stopwatch my_stopwatch;
 
-const bool USE_STOPWATCH = false;
+const bool USE_STOPWATCH = true;
 
 void printProgress(int current_index, int total_entries) {
-    if (current_index % max(int(total_entries/100.),1) == 0) {
+    int interval = 5;
+    if (current_index % max(int(total_entries*interval/100.),interval) == 0) {
         float fraction = 100.*current_index/total_entries;
-        cout << int(fraction) << " % processed" << endl;
+        cout << int(fraction) << " % processed " << endl;
     }
 }
 
@@ -59,79 +61,28 @@ template <typename H> void createOutputRootFile(
     return;
 }
 
-//NOTE: Some of these settings get overriden in the mapEventFeedDirections() function
 std::map<TString,SelectionParameters> getSelectionParameters() {
     std::map<TString,SelectionParameters> selection_map;
 
     SelectionParameters base_selection;
     base_selection.type          = "base_selection";
     base_selection.lep_req       = 2;
-    base_selection.jet_req       = 6;
-    base_selection.b_jet_req     = 1;
-    base_selection.lep_pt        = 20.0;
-    base_selection.lep_eta       = 2.4;
-    base_selection.jet_pt        = 20.0;
-    base_selection.jet_eta       = 2.4;
-    base_selection.lep_pt_veto   = 10.0;
-    base_selection.sign          = 0;
-    base_selection.req_exact_lep = true;
-    base_selection.req_exact_jet = false;
-
-    SelectionParameters new_selection = base_selection;
-
-    new_selection = base_selection;
-    new_selection.type = "2los_6jets";
-    selection_map[new_selection.type] = new_selection;
-
-    new_selection = base_selection;
-    new_selection.type = "2lss_p_6jets";
-    new_selection.sign = 1;
-    selection_map[new_selection.type] = new_selection;
-
-    new_selection = base_selection;
-    new_selection.type = "2lss_m_6jets";
-    new_selection.sign = -1;
-    selection_map[new_selection.type] = new_selection;
-
-    new_selection = base_selection;
-    new_selection.type    = "3l_ppm_4jets";
-    new_selection.lep_req = 3;
-    new_selection.jet_req = 4;
-    new_selection.sign    = 1;
-    selection_map[new_selection.type] = new_selection;
-
-    new_selection = base_selection;
-    new_selection.type    = "3l_mmp_4jets";
-    new_selection.lep_req = 3;
-    new_selection.jet_req = 4;
-    new_selection.sign    = -1;
-    selection_map[new_selection.type] = new_selection;
-
-    new_selection = base_selection;
-    new_selection.type    = "4l_2jets";
-    new_selection.lep_req = 4;
-    new_selection.jet_req = 2;
-    selection_map[new_selection.type] = new_selection;
-
-    return selection_map;
-}
-
-std::map<TString,SelectionParameters> getSelectionParameters2() {
-    std::map<TString,SelectionParameters> selection_map;
-
-    SelectionParameters base_selection;
-    base_selection.type          = "base_selection";
-    base_selection.lep_req       = 2;
     base_selection.jet_req       = 0;
-    base_selection.b_jet_req     = 1;       // Base: 0
-    base_selection.lep_pt        = 20.0;    // Base: 20.0
+    base_selection.b_jet_req     = 1;       // Base: 1
     base_selection.lep_eta       = 2.4;     // Base: 2.4
-    base_selection.jet_pt        = 30.0;
     base_selection.jet_eta       = 2.4;     // Base: 2.4
-    base_selection.lep_pt_veto   = 20.0;    // Base: 10.0
+    base_selection.lep_pt_veto   = 20.0;    // Base: 10.0 --> removed this check in pass_selection()
+    base_selection.dilep_m_veto  = -1;
     base_selection.sign          = 0;
+    base_selection.z_window      = 10.0;
     base_selection.req_exact_lep = true;
     base_selection.req_exact_jet = true;
+    base_selection.req_zmass     = false;
+
+    base_selection.lep_pt_gen    = 20.0;
+    base_selection.lep_pt_reco   = 20.0;
+    base_selection.jet_pt_gen    = 30.0;
+    base_selection.jet_pt_reco   = 30.0;
 
     SelectionParameters new_selection = base_selection;
 
@@ -185,8 +136,48 @@ std::map<TString,SelectionParameters> getSelectionParameters2() {
     new_selection.req_exact_jet = false;
     selection_map[new_selection.type] = new_selection;
 
+    // 2los_sfz
+    base_selection.req_zmass = true;
+
+    new_selection = base_selection;
+    new_selection.type          = "2los_sfz_0jets";
+    new_selection.jet_req       = 0;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type          = "2los_sfz_1jets";
+    new_selection.jet_req       = 1;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type          = "2los_sfz_2jets";
+    new_selection.jet_req       = 2;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type          = "2los_sfz_3jets";
+    new_selection.jet_req       = 3;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type          = "2los_sfz_4jets";
+    new_selection.jet_req       = 4;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type          = "2los_sfz_5jets";
+    new_selection.jet_req       = 5;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type          = "2los_sfz_6jets";
+    new_selection.jet_req       = 6;
+    new_selection.req_exact_jet = false;
+    selection_map[new_selection.type] = new_selection;
+
     // 2lss_p
     base_selection.sign = 1;
+    base_selection.req_zmass = false;
 
     new_selection = base_selection;
     new_selection.type    = "2lss_p_0jets";
@@ -291,9 +282,40 @@ std::map<TString,SelectionParameters> getSelectionParameters2() {
     new_selection.req_exact_jet = false;
     selection_map[new_selection.type] = new_selection;
 
+    // 3l_ppm_sfz
+    base_selection.req_zmass = true;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_ppm_sfz_0jets";
+    new_selection.jet_req = 0;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_ppm_sfz_1jets";
+    new_selection.jet_req = 1;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_ppm_sfz_2jets";
+    new_selection.jet_req = 2;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_ppm_sfz_3jets";
+    new_selection.jet_req = 3;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_ppm_sfz_4jets";
+    new_selection.jet_req = 4;
+    new_selection.req_exact_jet = false;
+    selection_map[new_selection.type] = new_selection;
+
+
     // 3l_mmp
     base_selection.lep_req = 3;
     base_selection.sign = -1;
+    base_selection.req_zmass = false;
 
     new_selection = base_selection;
     new_selection.type = "3l_mmp_0jets";
@@ -321,9 +343,40 @@ std::map<TString,SelectionParameters> getSelectionParameters2() {
     new_selection.req_exact_jet = false;
     selection_map[new_selection.type] = new_selection;
 
+    // 3l_mmp_sfz
+    base_selection.req_zmass = true;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_mmp_sfz_0jets";
+    new_selection.jet_req = 0;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_mmp_sfz_1jets";
+    new_selection.jet_req = 1;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_mmp_sfz_2jets";
+    new_selection.jet_req = 2;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_mmp_sfz_3jets";
+    new_selection.jet_req = 3;
+    selection_map[new_selection.type] = new_selection;
+
+    new_selection = base_selection;
+    new_selection.type = "3l_mmp_sfz_4jets";
+    new_selection.jet_req = 4;
+    new_selection.req_exact_jet = false;
+    selection_map[new_selection.type] = new_selection;
+
+
     // 4l
     base_selection.lep_req = 4;
     base_selection.sign = 0;
+    base_selection.req_zmass = false;
 
     new_selection = base_selection;
     new_selection.type = "4l_0jets";
@@ -379,8 +432,11 @@ void run_it(
 
     cout << "Sample: " << sample_name << endl;
 
+    if (USE_STOPWATCH) my_stopwatch.startTimer("load_files");
     FileLoader file_loader(sample_name,-1);
     TChain* chain = file_loader.chain;
+    if (USE_STOPWATCH) my_stopwatch.updateTimer("load_files");
+
 
     int total_count = file_loader.total_count;
     int chainentries = chain->GetEntries();   
@@ -392,6 +448,7 @@ void run_it(
     }
 
     if (job_no > -1) {
+        // Break the number of entries up for batch running
         int entries_per_job = ceil(float(chainentries)/float(total_jobs));
         first_entry = job_no*entries_per_job;
         last_entry = (job_no+1)*entries_per_job;
@@ -410,62 +467,31 @@ void run_it(
 
     vector<ttH::Electron> *tight_electrons_intree = 0;
     vector<ttH::Muon>     *tight_muons_intree = 0;
-    vector<ttH::Electron> *fakeable_electrons_intree = 0;
-    vector<ttH::Muon>     *fakeable_muons_intree = 0;
-    vector<ttH::Lepton>   *preselected_leptons_intree = 0;
-    vector<ttH::Electron> *preselected_electrons_intree = 0;
-    vector<ttH::Muon>     *preselected_muons_intree = 0;
-    vector<ttH::Jet>      *preselected_jets_intree = 0;
+    vector<ttH::Jet>      *loose_jets_intree = 0;
     vector<ttH::Electron> *raw_electrons_intree = 0;
     vector<ttH::Muon>     *raw_muons_intree = 0;
     vector<ttH::Jet>      *raw_jets_intree = 0;
-    vector<ttH::Lepton>   *raw_leptons_intree = 0;
 
     double mcwgt_intree = -999.;
 
     bool skim = false;
-
-    // Charlie's trees
-    chain->SetBranchAddress("mcwgt",                 &mcwgt_intree);
-    chain->SetBranchAddress("pruned_genParticles",   &pruned_genParticles_intree);
-    chain->SetBranchAddress("genJets",               &genJets_intree);
-    chain->SetBranchAddress("tight_electrons",       &tight_electrons_intree);
-    chain->SetBranchAddress("tight_muons",           &tight_muons_intree);
-    chain->SetBranchAddress("fakeable_electrons",    &fakeable_electrons_intree);
-    chain->SetBranchAddress("fakeable_muons",        &fakeable_muons_intree);
-    chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
-    chain->SetBranchAddress("preselected_muons",     &preselected_muons_intree);
-    chain->SetBranchAddress("preselected_jets",      &preselected_jets_intree);
-    chain->SetBranchAddress("raw_electrons",         &raw_electrons_intree);
-    chain->SetBranchAddress("raw_muons",             &raw_muons_intree);
-    chain->SetBranchAddress("raw_jets",              &raw_jets_intree);
-
+    bool reclean = false;
     
     // Geoff's trees
-    /*
-    skim = true;
-    chain->SetBranchAddress("mcwgt",                 &mcwgt_intree);
-    chain->SetBranchAddress("pruned_genParticles",   &pruned_genParticles_intree);
-    chain->SetBranchAddress("genJets",               &genJets_intree);
-    chain->SetBranchAddress("preselected_jets",      &preselected_jets_intree);
-    chain->SetBranchAddress("preselected_leptons",   &preselected_leptons_intree);
-    chain->SetBranchAddress("preselected_electrons", &preselected_electrons_intree);
-    chain->SetBranchAddress("preselected_muons",     &preselected_muons_intree);
-    */
+    //skim = true;
+    chain->SetBranchAddress("mcwgt",               &mcwgt_intree);
+    chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
+    chain->SetBranchAddress("genJets",             &genJets_intree);
+    chain->SetBranchAddress("loose_jets",          &loose_jets_intree);
+    chain->SetBranchAddress("tight_electrons",     &tight_electrons_intree);
+    chain->SetBranchAddress("tight_muons",         &tight_muons_intree);
+    chain->SetBranchAddress("raw_electrons",       &raw_electrons_intree);
+    chain->SetBranchAddress("raw_muons",           &raw_muons_intree);
+    chain->SetBranchAddress("raw_jets",            &raw_jets_intree);
 
     Int_t cachesize = 250000000;   //500 MBytes
     //  Int_t cachesize = 1024000000;   //1 GBytes
     chain->SetCacheSize(cachesize);
-
-    //vector<TString> bin_name_map = {
-    //    "null",
-    //    "2los_6jets",
-    //    "2lss_p_6jets",
-    //    "2lss_m_6jets",
-    //    "3l_ppm_4jets",
-    //    "3l_mmp_4jets",
-    //    "4l_2jets"
-    //};
 
     vector<TString> bin_name_map = {
         "null",
@@ -480,6 +506,14 @@ void run_it(
         "2los_4jets",
         "2los_5jets",
         "2los_6jets",
+
+        "2los_sfz_0jets",
+        "2los_sfz_1jets",
+        "2los_sfz_2jets",
+        "2los_sfz_3jets",
+        "2los_sfz_4jets",
+        "2los_sfz_5jets",
+        "2los_sfz_6jets",
 
         "2lss_p_0jets",
         "2lss_p_1jets",
@@ -503,11 +537,23 @@ void run_it(
         "3l_ppm_3jets",
         "3l_ppm_4jets",
 
+        "3l_ppm_sfz_0jets",
+        "3l_ppm_sfz_1jets",
+        "3l_ppm_sfz_2jets",
+        "3l_ppm_sfz_3jets",
+        "3l_ppm_sfz_4jets",
+
         "3l_mmp_0jets",
         "3l_mmp_1jets",
         "3l_mmp_2jets",
         "3l_mmp_3jets",
         "3l_mmp_4jets",
+
+        "3l_mmp_sfz_0jets",
+        "3l_mmp_sfz_1jets",
+        "3l_mmp_sfz_2jets",
+        "3l_mmp_sfz_3jets",
+        "3l_mmp_sfz_4jets",
 
         "4l_0jets",
         "4l_1jets",
@@ -526,8 +572,7 @@ void run_it(
         bin_name_map.size(),0 - bin_offset,bin_name_map.size() - bin_offset
     );
 
-    //std::map<TString,SelectionParameters> selection_map = getSelectionParameters();
-    std::map<TString,SelectionParameters> selection_map = getSelectionParameters2();
+    std::map<TString,SelectionParameters> selection_map = getSelectionParameters();
 
     for (auto bin: bin_name_map) {
         if (bin == "null") {
@@ -543,50 +588,63 @@ void run_it(
     //return;
 
     //first_entry = 0;
-    //last_entry = 15000;
+    //last_entry = 1000;
+    //last_entry = 100000;
+    //last_entry = chainentries;
 
     if (USE_STOPWATCH) my_stopwatch.updateTimer("code_setup");
 
     for (int i = first_entry; i <= last_entry; i++) {
         if (USE_STOPWATCH) my_stopwatch.startTimer("event_loop");
-
         printProgress(i - first_entry,last_entry - first_entry);
         if (USE_STOPWATCH) my_stopwatch.startTimer("get_entry");
         chain->GetEntry(i);
         if (USE_STOPWATCH) my_stopwatch.updateTimer("get_entry");
 
-        if (skim) {        
-            if (preselected_leptons_intree->size() < 2) {
-                continue;
-            }
+
+        //if (USE_STOPWATCH) my_stopwatch.startTimer("get_objects");
+
+        vector<ttH::Jet> cleaned_reco_jets   = *loose_jets_intree;
+        vector<ttH::Electron> reco_electrons = *tight_electrons_intree;
+        vector<ttH::Muon> reco_muons         = *tight_muons_intree;
+
+        //////////////////////////////
+        // Re-clean (raw) collections
+        //////////////////////////////
+        if (reclean) {
+            cleaned_reco_jets  = *raw_jets_intree;
+            reco_electrons     = *raw_electrons_intree;
+            reco_muons         = *raw_muons_intree;
+
+            reco_electrons = applyGeoffCuts(reco_electrons);
+            reco_muons     = applyGeoffCuts(reco_muons);
+
+            reco_electrons = cleanCollection(reco_electrons,reco_muons,0.05);
+
+            cleaned_reco_jets = cleanCollection(cleaned_reco_jets,reco_muons,0.4);
+            cleaned_reco_jets = cleanCollection(cleaned_reco_jets,reco_electrons,0.4);
         }
 
-        if (USE_STOPWATCH) my_stopwatch.startTimer("get_objects");
-
-        //vector<ttH::Electron> cleaned_electrons = {};
-        //for (auto &ele: *preselected_electrons_intree) {
-        //    if (ele.passConversioVeto) {
-        //        cleaned_electrons.push_back(ele);
-        //    }
-        //}
-
+        //////////////////////////////
         // Get Event Objects
-        vector<ttH::GenParticle> gen_leptons   = getGenLeptons(*pruned_genParticles_intree);
-        //vector<ttH::Lepton> reco_leptons = getRecoLeptons(*raw_electrons_intree,*raw_muons_intree);
-        vector<ttH::Lepton> reco_leptons = getRecoLeptons(*preselected_electrons_intree,*preselected_muons_intree);
-        //vector<ttH::Lepton> reco_leptons = getRecoLeptons(*fakeable_electrons_intree,*fakeable_muons_intree);
-        //vector<ttH::Lepton> reco_leptons = getRecoLeptons(*tight_electrons_intree,*tight_muons_intree);
-        if (USE_STOPWATCH) my_stopwatch.updateTimer("get_objects");
+        //////////////////////////////
+        vector<ttH::GenParticle> gen_leptons = getGenLeptons(*pruned_genParticles_intree);
+        vector<ttH::Lepton> reco_leptons     = getRecoLeptons(reco_electrons,reco_muons);
+        //if (USE_STOPWATCH) my_stopwatch.updateTimer("get_objects"); 
 
-        if (USE_STOPWATCH) my_stopwatch.startTimer("clean_objects");
+        //////////////////////////////
         // Clean Objects
+        //////////////////////////////
+        //if (USE_STOPWATCH) my_stopwatch.startTimer("clean_objects");
         vector<ttH::GenParticle> cleaned_gen_jets = cleanCollection(*genJets_intree,gen_leptons,0.01);        
-        vector<ttH::Jet> cleaned_reco_jets = cleanCollection(*preselected_jets_intree,reco_leptons,0.4);
-        //vector<ttH::Jet> cleaned_reco_jets = cleanCollection(*raw_jets_intree,reco_leptons,0.1);
-        if (USE_STOPWATCH) my_stopwatch.updateTimer("clean_objects");
+        //cleaned_reco_jets = cleanCollection(*preselected_jets_intree,reco_leptons,-0.4);
+        //cleaned_reco_jets = cleanCollection(*raw_jets_intree,reco_leptons,0.1);
+        //if (USE_STOPWATCH) my_stopwatch.updateTimer("clean_objects");
 
-        if (USE_STOPWATCH) my_stopwatch.startTimer("map_events");
+        //////////////////////////////
         // Run GEN-->RECO Event Mapping
+        //////////////////////////////
+        if (USE_STOPWATCH) my_stopwatch.startTimer("map_events");
         vector<uint> bin_mapping_result = mapEventFeedDirections(
             gen_leptons,
             cleaned_gen_jets,
@@ -598,23 +656,51 @@ void run_it(
         );
         if (USE_STOPWATCH) my_stopwatch.updateTimer("map_events");
 
-        //if (bin_mapping_result[0] > 0 || bin_mapping_result[1] > 0) {
-        //    bin_mapping_hist->Fill(bin_mapping_result[0],bin_mapping_result[1],1*mcwgt_intree);
-        //}
+        //////////////////////////////
+        // Customized low-level checking code
+        //////////////////////////////
+        /*
+        if (bin_mapping_result[0] == 2 && bin_mapping_result[1] > 2) {
+            gen_leptons  = applyPtCut(gen_leptons,20);
+            gen_leptons  = applyEtaCut(gen_leptons,2.4);
+            reco_leptons = applyPtCut(reco_leptons,20);
+            reco_leptons = applyEtaCut(reco_leptons,2.4);
+
+            cout << "Event: " << i+first_entry << endl;
+            cout << "#### GEN ####" << endl;
+            for (auto lep: gen_leptons) {
+                cout << "\tLepton: " << lep.pdgID << endl;
+                cout << "\t\tMass:   " << lep.obj.M() << endl;
+                cout << "\t\tPt():   " << lep.obj.Pt() << endl;
+                cout << "\t\tCharge: " << lep.charge << endl;
+            }
+            cout << "#### RECO ####" << endl;
+            for (auto lep: reco_leptons) {
+                cout << "\tLepton: " << lep.pdgID << endl;
+                cout << "\t\tMass:    " << lep.obj.M() << endl;
+                cout << "\t\tPt():    " << lep.obj.Pt() << endl;
+                cout << "\t\tCharge:  " << lep.charge << endl;
+                cout << "\t\tIDLoose: " << lep.idLoosePOG << endl;
+            }
+        }
+        */
         bin_mapping_hist->Fill(bin_mapping_result[0],bin_mapping_result[1],1*mcwgt_intree);
 
         //cout << "Mapping: " << bin_mapping_result[0] << " --> " << bin_mapping_result[1] << endl;
         if (USE_STOPWATCH) my_stopwatch.updateTimer("event_loop");
     }
 
+    double scale_factor = 1.0/float(total_count);
+    bin_mapping_hist->Scale(scale_factor);
+
     cout << "Total Counts: " << total_count << endl;
+    cout << "Scale Factor: " << scale_factor << endl;
 
-    //return;
 
-    if (USE_STOPWATCH) my_stopwatch.startTimer("write_files");
+    //if (USE_STOPWATCH) my_stopwatch.startTimer("write_files");
     // Create event map files
     createOutputRootFile(bin_mapping_hist,"event_map",sample_name,output_dir,job_no);
-    if (USE_STOPWATCH) my_stopwatch.updateTimer("write_files");
+    //if (USE_STOPWATCH) my_stopwatch.updateTimer("write_files");
 
     if (USE_STOPWATCH) my_stopwatch.readAllTimers();
     if (USE_STOPWATCH) cout << endl;

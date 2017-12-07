@@ -1,6 +1,6 @@
 my_condor_path = /afs/crc.nd.edu/user/a/awightma/Public/condor_output
 sample = tth_nonbb_aMCatNLO_
-N = 300
+N = 25
 
 +IsExpressJob = True
 universe      = vanilla
@@ -13,11 +13,12 @@ log           = $(my_condor_path)/$(sample).logfile.log
 should_transfer_files = yes
 when_to_transfer_output = on_exit
 requestMemory = 1024
+request_disk = 1024
 
 expected_runtime_minutes = 10
 
 job_machine_attrs = Machine
-job_machine_attrs_history_length = 4
+job_machine_attrs_history_length = 5
 requirements = (machine != "skynet005.crc.nd.edu" && machine != "skynet007.crc.nd.edu") && \
    target.machine =!= MachineAttrMachine1 && \
    target.machine =!= MachineAttrMachine2 && \
@@ -26,7 +27,7 @@ periodic_hold = JobStatus == 2 && \
    CurrentTime - EnteredCurrentStatus > 60 * $(expected_runtime_minutes)
 periodic_hold_subcode = 1
 periodic_release = HoldReasonCode == 3 && HoldReasonSubCode == 1 && \
-   JobRunCount < 3
-periodic_hold_reason = ifthenelse(JobRunCount<3,"Ran too long, will retry","Ran too long")
+   JobRunCount < 5
+periodic_hold_reason = ifthenelse(JobRunCount<5,"Ran too long $(JobRunCount), will retry","Ran too long")
 
 queue $(N)

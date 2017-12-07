@@ -4,13 +4,20 @@
 struct SelectionParameters {
     TString type;
     double lep_pt;
+    double lep_pt_gen;
+    double lep_pt_reco;
     double lep_eta;
+    double jet_pt_gen;
+    double jet_pt_reco;
     double jet_pt;
     double jet_eta;
     double lep_pt_veto;
+    double dilep_m_veto;
+    double z_window;
     int sign;               //NOTE: SS+ --> +1, SS- --> -1, OS --> 0
     bool req_exact_lep;
     bool req_exact_jet;
+    bool req_zmass;
     uint lep_req;
     uint jet_req;
     uint b_jet_req;
@@ -31,12 +38,20 @@ template <typename T1, typename T2> bool pass_selection(
             return false;
         }
 
-        vector<T1> lepton_veto_selection = applyPtCut(input_leptons,params.lep_pt_veto);
-        lepton_veto_selection = applyEtaCut(lepton_veto_selection,params.lep_eta);
-        if (lepton_veto_selection.size() != params.lep_req) {
-            // We picked up extra leptons with the looser veto cut
-            return false;
+        if (params.lep_req == 2) {
+            // Veto leptons with invariant mass below threshold
+            double dilep_mass = getMinInvMass(selected_leptons);
+            if (dilep_mass < params.dilep_m_veto) {
+                return false;
+            }
         }
+
+        //vector<T1> lepton_veto_selection = applyPtCut(input_leptons,params.lep_pt_veto);
+        //lepton_veto_selection = applyEtaCut(lepton_veto_selection,params.lep_eta);
+        //if (lepton_veto_selection.size() != params.lep_req) {
+        //    // We picked up extra leptons with the looser veto cut
+        //    return false;
+        //}
     } else {
         if (selected_leptons.size() < params.lep_req) {
             return false;
@@ -49,10 +64,33 @@ template <typename T1, typename T2> bool pass_selection(
         if (sum_sign != params.sign) {
             return false;
         }
+
+        if (params.sign == 0) {
+            // We are in OS category
+            bool z_mass_res = hasSFZLeptons(selected_leptons,params.z_window);
+            if (params.req_zmass && !z_mass_res) {
+                // This event req. zmass check, but fails the SFZ check
+                return false;
+            }
+            if (!params.req_zmass && z_mass_res) {
+                // This event excludes zmass check, but passes the SFZ check
+                return false;
+            }
+        }
     } else if (params.lep_req == 3) {
         // We are in the 3l category
         int sum_sign = getSign(selected_leptons[0].charge + selected_leptons[1].charge + selected_leptons[2].charge);
         if (sum_sign != params.sign) {
+            return false;
+        }
+        
+        bool z_mass_res = hasSFZLeptons(selected_leptons,params.z_window);
+        if (params.req_zmass && !z_mass_res) {
+            // This event req. zmass check, but fails the SFZ check
+            return false;
+        }
+        if (!params.req_zmass && z_mass_res) {
+            // This event excludes zmass check, but passes the SFZ check
             return false;
         }
     }
@@ -94,23 +132,13 @@ vector<uint> mapEventFeedDirections(
     vector<TString> bin_names,
     std::map<TString,SelectionParameters> &selection_map
 ) {
-    //vector<bool> gen_passes;
-    //vector<bool> reco_passes;
-
     std::map<TString,uint> bin_map;
     for (uint i = 0; i < bin_names.size(); i++) {
         bin_map[bin_names.at(i)] = i;
-
-        //gen_passes.push_back(0);
-        //reco_passes.push_back(0);
     }
 
     uint gen_bin_pass  = bin_map["null"];   //Defaults to null bin
     uint reco_bin_pass = bin_map["null"];   //Defaults to null bin
-
-    //uint gen_bin_pass  = 0;
-    //uint reco_bin_pass = 0;
-
     bool null_pass;
 
     // Gen-Level
@@ -120,7 +148,9 @@ vector<uint> mapEventFeedDirections(
             continue;
         }
 
-        selection_map[bin].jet_pt = 30.0;
+        // Set asym cuts
+        selection_map[bin].lep_pt = selection_map[bin].lep_pt_gen;
+        selection_map[bin].jet_pt = selection_map[bin].jet_pt_gen;
         selection_map[bin].b_jet_req = 0;
 
         bool passes = pass_selection(
@@ -134,14 +164,7 @@ vector<uint> mapEventFeedDirections(
             gen_bin_pass = bin_map[bin];
             break;
         }
-
-        //gen_passes.at(bin_map[bin]) = passes;
-        //if (null_pass && passes) {
-        //    null_pass = false;
-        //}
     }
-
-    //gen_passes.at(bin_map["null"]) = null_pass;
 
     // Reco-Level
     null_pass = true;
@@ -150,7 +173,9 @@ vector<uint> mapEventFeedDirections(
             continue;
         }
 
-        selection_map[bin].jet_pt = 30.0;
+        // Set asym cuts
+        selection_map[bin].lep_pt = selection_map[bin].lep_pt_reco;
+        selection_map[bin].jet_pt = selection_map[bin].jet_pt_reco;
         selection_map[bin].b_jet_req = 1;
 
         bool passes = pass_selection(
@@ -164,70 +189,7 @@ vector<uint> mapEventFeedDirections(
             reco_bin_pass = bin_map[bin];
             break;
         }
-
-        //reco_passes.at(bin_map[bin]) = passes;
-        //if (null_pass && passes) {
-        //    null_pass = false;
-        //}
     }
-
-    //reco_passes.at(bin_map["null"]) = null_pass;
-
-    /*
-    for (uint i = 0; i < bin_names.size(); i++) {
-        if (gen_passes.at(i)) {
-            gen_bin_pass = i;
-        }
-        if (reco_passes.at(i)) {
-            reco_bin_pass = i;
-        }
-    }
-
-    uint counter = 0;
-    for (auto bin_pass: gen_passes) {
-        if (bin_pass) {
-            counter++;
-        }
-    }
-    if (counter > 1) {
-        cout << "#####################################" << endl;
-        cout << "Event passed multiple GEN selections!" << endl;
-        cout << "Event passed multiple GEN selections!" << endl;
-        cout << "Event passed multiple GEN selections!" << endl;
-        cout << "Event passed multiple GEN selections!" << endl;
-        cout << "Event passed multiple GEN selections!" << endl;
-        cout << "Event passed multiple GEN selections!" << endl;
-        cout << "#####################################" << endl;
-    }
-    counter = 0;
-    for (auto bin_pass: reco_passes) {
-        if (bin_pass) {
-            counter++;
-        }
-    }
-    if (counter > 1) {
-        cout << "######################################" << endl;
-        cout << "Event passed multiple RECO selections!" << endl;
-        cout << "Event passed multiple RECO selections!" << endl;
-        cout << "Event passed multiple RECO selections!" << endl;
-        cout << "Event passed multiple RECO selections!" << endl;
-        cout << "Event passed multiple RECO selections!" << endl;
-        cout << "######################################" << endl;
-    }
-    */
-
-    //if (gen_bin_pass > 0 || reco_bin_pass > 0) {    
-    //    cout << "GEN Selection:" << endl;
-    //    cout << "\tBin pass: " << gen_bin_pass << endl;
-    //    for (uint i = 0; i < bin_names.size(); i++) {
-    //        cout << "\t" << bin_names.at(i) << ": " << gen_passes.at(i) << endl;
-    //    }
-    //    cout << "RECO Selection:" << endl;
-    //    cout << "\tBin pass: " << reco_bin_pass << endl;
-    //    for (uint i = 0; i < bin_names.size(); i++) {
-    //        cout << "\t" << bin_names.at(i) << ": " << reco_passes.at(i) << endl;
-    //    }
-    //}
 
     vector<uint> bin_mapping {gen_bin_pass,reco_bin_pass};
 

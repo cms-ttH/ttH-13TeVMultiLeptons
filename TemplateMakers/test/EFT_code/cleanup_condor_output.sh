@@ -16,7 +16,10 @@ rm ${condorDir}/*${logFile}
 
 # tth_nonbb_aMCatNLO_ tth_aMC ttZ ttW
 # ttjets_dilep ttjets_semilep
-set samples = ("tth_aMC" "ttZ" "ttW" "ttjets_dilep" "ttjets_semilep")
+#set samples = ("tth_aMC" "ttZ" "ttW" "ttjets_inclusive")
+
+set samples = ("ttH_nonbb" "ttZ" "ttW" "ttjets_semilep" "ttjets_dilep")
+#set samples = ("ttH_nonbb" "ttZ")
 
 foreach sample ($samples)
     echo "Removing ${sample} segments..."

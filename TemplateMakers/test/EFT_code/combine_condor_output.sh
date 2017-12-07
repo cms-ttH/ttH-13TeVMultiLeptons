@@ -8,7 +8,12 @@ set logFile=".logfile.log"
 
 # tth_nonbb_aMCatNLO_ tth_aMC ttZ ttW
 # ttjets_dilep ttjets_semilep
-set samples = ("tth_aMC" "ttZ" "ttW" "ttjets_dilep" "ttjets_semilep")
+#set samples = ("tth_aMC" "ttZ" "ttW" "ttjets_inclusive" "ttjets_dilep" "ttjets_semilep")
+#set samples = ("ttH_nonbb" "ttZ" "ttW" "ttjets_inclusive")
+
+
+set samples = ("ttH_nonbb" "ttZ" "ttW" "ttjets_semilep" "ttjets_dilep")
+#set samples = ("ttH_nonbb" "ttZ")
 
 set eventMapSource="_event_map_"
 set eventMapTarget="_event_map.root"

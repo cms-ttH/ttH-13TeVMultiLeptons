@@ -27,7 +27,7 @@ private:
                     if (!sys_file->IsDirectory() && fname.EndsWith(".root")) {
                         if (file_index == -1 || file_count == file_index) {
                             chain->Add(fname);
-                            cout << "loading file: " << fname << endl;
+                            //cout << "loading file: " << fname << endl;
                         }
 
                         if (file_index == -1 || file_index == 0) {
@@ -53,51 +53,45 @@ public:
     FileLoader(TString sample, int file_index=-1) {
         chain = new TChain("OSTwoLepAna/summaryTree");
         hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
+
         /*
+        TString base_path = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/";
         if (sample == "ttW") {
             vector<TString> sample_vec;
-            files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/ttW/";
-            sample_vec.push_back(files_dir);
+            sample_vec.push_back(base_path+"ttW/");
             loadFile(sample_vec , file_index);
         } else if (sample == "ttW_extn") {
             vector<TString> sample_vec;
-            files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/ttW_extn/";
-            sample_vec.push_back(files_dir);
+            sample_vec.push_back(base_path+"ttW_extn/");
             loadFile(sample_vec , file_index);
         } else if (sample == "ttZ") {
             vector<TString> sample_vec;
-            files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/ttZ/";
-            sample_vec.push_back(files_dir);
+            sample_vec.push_back(base_path+"ttZ/");
             loadFile(sample_vec , file_index);
         } else if (sample == "ttZ_M1_10") {
             vector<TString> sample_vec;
-            files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/ttZ_M1_10/";
-            sample_vec.push_back(files_dir);
+            sample_vec.push_back(base_path+"ttZ_M1_10/");
             loadFile(sample_vec , file_index);
         } else if (sample == "tth_nonbb_aMCatNLO_") {
             vector<TString> sample_vec;
-            files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/tth_nonbb_aMCatNLO_/";
-            //files_dir = "/hadoop/store/user/gesmith/crab/ttH_test_23_10_17/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/crab_ttH_test_23_10_17/171023_160131/0000/";
-            sample_vec.push_back(files_dir);
+            sample_vec.push_back(base_path+"tth_nonbb_aMCatNLO_/");
             loadFile(sample_vec , file_index);
         } else if (sample == "WZ_to3lnu") {
             vector<TString> sample_vec;
-            files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/WZ_to3lnu/";
-            sample_vec.push_back(files_dir);
+            sample_vec.push_back(base_path+"WZ_to3lnu/");
             loadFile(sample_vec , file_index);
         } else if (sample == "ZZ_to4l") {
             vector<TString> sample_vec;
-            files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/ZZ_to4l/";
-            sample_vec.push_back(files_dir);
+            sample_vec.push_back(base_path+"ZZ_to4l/");
             loadFile(sample_vec , file_index);
         } else if (sample == "WW_2l2nu") {
             vector<TString> sample_vec;
-            files_dir = "/hadoop/store/user/muell149/lobster_test_march22_Moriond17_MC/WW_2l2nu/";
-            sample_vec.push_back(files_dir);
+            sample_vec.push_back(base_path+"WW_2l2nu/");
             loadFile(sample_vec , file_index);
         }
         */
 
+        /*
         TString base_path = "/hadoop/store/user/muell149/lobster_test_june21_Moriond17/";
         if (sample == "tth_aMC") {
             vector<TString> sample_vec;
@@ -124,6 +118,66 @@ public:
             sample_vec.push_back(base_path+"ttjets_semilep_antitop/");
             sample_vec.push_back(base_path+"ttjets_semilep_top/");
             loadFile(sample_vec,file_index);
+        }
+        */
+
+        /*
+        TString base_path = "/hadoop/store/user/gesmith/crab/EFT_test_14_11_17/";
+        if (sample == "ttW") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_EFT_test_14_11_17__ttW/171114_154301/0000/");
+            loadFile(sample_vec,file_index);
+        } else if (sample == "ttZ") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/crab_EFT_test_14_11_17__ttZ/171114_154357/0000/");
+            loadFile(sample_vec,file_index);
+        } else if (sample == "ttH_nonbb") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/crab_EFT_test_14_11_17__ttH/171114_154156/0000/");
+            loadFile(sample_vec,file_index);
+        } else if (sample == "ttjets_inclusive") {
+            vector<TString> sample_vec;
+            sample_vec.push_back(base_path+"TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_EFT_test_14_11_17__ttJets/171114_154452/0000/");
+            loadFile(sample_vec,file_index);
+        }
+        */
+
+        TString bpath = "/hadoop/store/user/gesmith/crab/EFT_test_6_12_17/";
+        if (sample == "ttW") {
+            vector<TString> vec;
+            vec.push_back(bpath+"TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/crab_EFT_test_6_12_17__ttW/171206_191938/0000/");
+            loadFile(vec,file_index);
+        } else if (sample == "ttZ") {
+            vector<TString> vec;
+            vec.push_back(bpath+"TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/crab_EFT_test_6_12_17__ttZ/171206_192028/0000/");
+            loadFile(vec,file_index);
+        } else if (sample == "ttH_nonbb") {
+            vector<TString> vec;
+            vec.push_back(bpath+"ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/crab_EFT_test_6_12_17__ttH/171206_191851/0000/");
+            loadFile(vec,file_index);
+        } else if (sample == "ttjets_inclusive") {
+            vector<TString> vec;
+            //vec.push_back(bpath+"TTJets_SingleLeptFromT_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromT/171206_192127/0000/");
+            //vec.push_back(bpath+"TTJets_SingleLeptFromT_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromT/171206_192127/0001/");
+            //vec.push_back(bpath+"TTJets_SingleLeptFromT_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromT/171206_192127/0002/");
+            //vec.push_back(bpath+"TTJets_SingleLeptFromTbar_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromTbar/171206_192224/0000/");
+            //vec.push_back(bpath+"TTJets_SingleLeptFromTbar_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromTbar/171206_192224/0001/");
+            //vec.push_back(bpath+"TTJets_SingleLeptFromTbar_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromTbar/171206_192224/0002/");
+            //vec.push_back(bpath+"TTJets_Dilept_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_Dilept/171207_104152/0000/");
+            loadFile(vec,file_index);
+        } else if (sample == "ttjets_semilep") {
+            vector<TString> vec;
+            vec.push_back(bpath+"TTJets_SingleLeptFromT_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromT/171206_192127/0000/");
+            vec.push_back(bpath+"TTJets_SingleLeptFromT_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromT/171206_192127/0001/");
+            vec.push_back(bpath+"TTJets_SingleLeptFromT_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromT/171206_192127/0002/");
+            vec.push_back(bpath+"TTJets_SingleLeptFromTbar_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromTbar/171206_192224/0000/");
+            vec.push_back(bpath+"TTJets_SingleLeptFromTbar_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromTbar/171206_192224/0001/");
+            vec.push_back(bpath+"TTJets_SingleLeptFromTbar_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_SingleLeptFromTbar/171206_192224/0002/");
+            loadFile(vec,file_index);
+        } else if (sample == "ttjets_dilep") {
+            vector<TString> vec;
+            vec.push_back(bpath+"TTJets_Dilept_TuneCUETP8M2T4_13TeV-amcatnloFXFX-pythia8/crab_EFT_test_6_12_17__ttJets_Dilept/171207_104152/0000/");
+            loadFile(vec,file_index);
         }
 
         //cout << "Weighted number of events in sample " << sample << " = " << setprecision(10) << hist_sum->GetBinContent(1) << endl;

@@ -1,4 +1,5 @@
 #!/bin/sh
+date
 
 sample=$1
 job_no=$2
