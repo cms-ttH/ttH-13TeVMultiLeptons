@@ -59,11 +59,12 @@ void PlotHelper::jet_cleaning_studies()
             {
                 if (getdR(ele,jet)<=testcone)
                 {
+                    auto vectdiff = jet.obj - ele.obj;
                     if (ele.isPromptFinalState || ele.isDirectPromptTauDecayProductFinalState) 
-                    {                                            
-                        th1d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt"]->Fill(jet.obj.Pt()-ele.obj.Pt(),weight);
+                    {                                                                    
+                        th1d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt"]->Fill(vectdiff.Pt(),weight); // was jet.obj.Pt()-ele.obj.Pt()
                     }
-                    else th1d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt"]->Fill(jet.obj.Pt()-ele.obj.Pt(),weight);
+                    else th1d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt"]->Fill(vectdiff.Pt(),weight);
                 }
             }           
             
@@ -119,11 +120,12 @@ void PlotHelper::jet_cleaning_studies()
             {
                 if (getdR(mu,jet)<=testcone)
                 {
+                    auto vectdiff = jet.obj - mu.obj;                    
                     if (mu.isPromptFinalState || mu.isDirectPromptTauDecayProductFinalState) 
                     {                                            
-                        th1d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt"]->Fill(jet.obj.Pt()-mu.obj.Pt(),weight);
+                        th1d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt"]->Fill(vectdiff.Pt(),weight); // was jet.obj.Pt()-mu.obj.Pt()
                     }
-                    else th1d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt"]->Fill(jet.obj.Pt()-mu.obj.Pt(),weight);
+                    else th1d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt"]->Fill(vectdiff.Pt(),weight);
                 }
             }           
 

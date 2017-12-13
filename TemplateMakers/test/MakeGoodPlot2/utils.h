@@ -46,7 +46,7 @@ TLegend getleg(string format)
         leg.SetLineColor(kWhite);
         leg.SetShadowColor(kWhite);            
         leg.SetTextFont(42);
-        leg.SetNColumns(5);
+        leg.SetNColumns(3);
         return leg;
     }  
     else if (format=="darren")
@@ -67,3 +67,19 @@ TLegend getleg(string format)
         return leg;
     }
 }
+
+void clean_neg_bins(TH1 &negBinHist)
+{
+    int numbins = negBinHist.GetNbinsX();
+    for (int i=1; i<=numbins; i++)
+    {
+        double bincont = negBinHist.GetBinContent(i);
+        if (bincont<0.) 
+        {
+            negBinHist.SetBinContent(i,0.);
+            negBinHist.SetBinError(i,0.);
+        }
+        
+    }
+}
+

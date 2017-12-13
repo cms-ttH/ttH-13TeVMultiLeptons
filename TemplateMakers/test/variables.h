@@ -284,6 +284,25 @@ template <typename ob1type, typename ob2type> double getdR(ob1type object1, ob2t
 
 ////////////////////////////////////////////////////////////////////////////
 
+template <typename coll1type> coll1type simpleCut(coll1type collection1, string cutvar, double value)
+{
+    coll1type keptobjs;
+    for (const auto & it : collection1)
+    {    
+        if (cutvar=="pt" || cutvar=="Pt")
+        {
+            if (it.obj.Pt()>value) keptobjs.push_back(it);
+        }
+        else if  (cutvar=="eta" || cutvar=="Eta")
+        {
+            if (abs(it.obj.Eta())>value) keptobjs.push_back(it);
+        }
+    }
+    return keptobjs;
+}            
+////////////////////////////////////////////////////////////////////////////
+
+
 template <typename coll1type, typename coll2type> double getTwoObjKineExtreme( coll1type collection1, coll2type collection2, string extremetype, string quantity )
 {
     double minvalue = 999999.;

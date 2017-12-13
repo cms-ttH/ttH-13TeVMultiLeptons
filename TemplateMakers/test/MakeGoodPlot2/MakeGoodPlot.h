@@ -9,8 +9,8 @@ class MakeGoodPlot
         TString sample_names[20];
         TString sample_names_reg[20];
         string sample_names_std[20];
-        //double xsecs[20];
-        //double numgen[20];		
+        Color_t color[20];
+        double numgen[20];		
 
         // CMS info stuff
         std::string cmsinfo;
@@ -18,16 +18,24 @@ class MakeGoodPlot
         TPaveText *pt[50];
         TPaveText *pt0;
         TPaveText *pt1; 
-        double lumi = 90.; // fb^-1
-        double scale[20];
+        double lumi = 90000.; // fb^-1
+        //double scale[20];
         
         std::vector<TObjArray> hist;
         TObjArray canvas;
         
+        double xsec[20];
+        double q2up[20];
+        double q2down[20];
+        double pdfup[20];
+        double pdfdown[20]; 
+        
+        void get_rate_info();        
         void setup();        
         void lepeff_plots();
         void jetcleaning_plots();
-    
+        void standard_plots();
+
         MakeGoodPlot(std::vector<int> thesamps);
         MakeGoodPlot(std::vector<int> thesamps, std::vector<TObjArray> exthists);
         
@@ -43,6 +51,8 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps)
 {    
     numsamples = thesamps.size();
     samples = thesamps;
+    
+    cout << "hey1" << endl;
     
     for (int i=0; i<numsamples; i++)
     {
@@ -65,6 +75,9 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps)
         hist.push_back(dummyArray);
     }
     
+    
+    cout << "hey2" << endl; 
+       
     //auto thing = hist[0].FindObject("lepMVA sig1 endcap"); // will be a pointer
     //thing->Draw();
     

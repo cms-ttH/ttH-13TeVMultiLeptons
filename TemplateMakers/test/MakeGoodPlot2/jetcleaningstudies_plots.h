@@ -145,7 +145,7 @@ void MakeGoodPlot::jetcleaning_plots()
         TCanvas *can14 = new TCanvas("jet_pt_minus_muon_pt_one_jet_in_dR0p4"+sample_names_reg[samples[i]],"canvas2",150,10,960,660); // 150,10,990,660 // 972,600
         TLegend *leggg = new TLegend(getleg("tr"));
         
-        jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->GetXaxis()->SetTitle("jet p_{T} - muon p_{T}");
+        //jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->GetXaxis()->SetTitle("jet p_{T} - muon p_{T}");
         jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->GetYaxis()->SetTitle("a. u.");
         jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->SetLineWidth(2);
         jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->Scale(1./jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt->Integral());

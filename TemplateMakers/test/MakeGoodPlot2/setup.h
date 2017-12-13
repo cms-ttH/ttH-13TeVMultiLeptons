@@ -43,33 +43,49 @@ void MakeGoodPlot::setup()
     sample_names_reg[18] = "";
     sample_names_reg[19] = "";  
 
+    color[0] = kBlack;
+    color[1] = kRed+1;
+    color[2] = kGray;
+    color[3] = kGray;
+    color[4] = kGray;
+    color[5] = kOrange;
+    color[6] = kGray;   
+    color[7] = kGray;    
+    color[8] = kBlue;
+    color[9] = kGreen+1;
+    color[10] = kGray;
+    color[11] = kGray;
+    color[12] = kGray;
+    color[13] = kOrange;
+    color[14] = kOrange+1;
+    color[15] = kOrange+2;
+    color[16] = kGray;   
+    color[17] = kGray;  
+    color[18] = kGray;  
+    color[19] = kGray; 
+ 
+    
+    
+    
+    
+    for (int i=0; i<20; i++)
+    {
 
+        sample_names_std[i]  = sample_names[i]; 
+        xsec[i] = 1.;
+        q2up[i] = 0.;
+        q2down[i] = 0.;
+        pdfup[i] = 0.;
+        pdfdown[i] = 0.;     
 
-    sample_names_std[0]  = sample_names[0]; 
-    sample_names_std[1]  = sample_names[1]; 
-    sample_names_std[2]  = sample_names[2]; 
-    sample_names_std[3]  = sample_names[3]; 
-    sample_names_std[4]  = sample_names[4]; 
-    sample_names_std[5]  = sample_names[5]; 
-    sample_names_std[6]  = sample_names[6];
-    sample_names_std[7]  = sample_names[7];
-    sample_names_std[8]  = sample_names[8]; 
-    sample_names_std[9]  = sample_names[9]; 
-    sample_names_std[10] = sample_names[10];
-    sample_names_std[11] = sample_names[11];
-    sample_names_std[12] = sample_names[12];        
-    sample_names_std[13]  = sample_names[13];
-    sample_names_std[14]  = sample_names[14];
-    sample_names_std[15]  = sample_names[15]; 
-    sample_names_std[16]  = sample_names[16]; 
-    sample_names_std[17] =  sample_names[17];
-    sample_names_std[18] =  sample_names[18];
-    sample_names_std[19] =  sample_names[19];
+    }  
+    
+
     
     for (int i=0; i<numsamples; i++)
     {    
-        scale[i] = ((TH1D*)hist[i].FindObject("scale"))->Integral();
-        scale[i] *= lumi;
+        numgen[samples[i]] = ((TH1D*)hist[i].FindObject("NumInitialWeightedMCevents"))->Integral();        
+        //scale[i] *= lumi;
     }
 
     cmsinfo = "CMS Preliminary  #sqrt{s} = 13 TeV, L = 90 fb^{-1}";
@@ -91,16 +107,19 @@ void MakeGoodPlot::setup()
 //         }    
 //     
 //     }
-    
+    //gPad->SetLogy(true);
     
     gStyle->SetLegendFillColor(kWhite);
     gStyle->SetLegendTextSize(0.035);
     
     gStyle->SetPadGridX(true);
     gStyle->SetPadGridY(true);
-    
+    gStyle->SetHistLineWidth(2);
+    //gStyle->SetHistMinimumZero();
+    //gStyle->SetHistTopMargin();
     gStyle->SetOptStat(0);
     
     set_plot_style(); // see nicepalette.h
+    get_rate_info();
     
 }

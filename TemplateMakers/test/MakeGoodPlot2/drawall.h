@@ -1,5 +1,6 @@
 #include "lepeff_plots.h" // include whatever plots you want here (can be multiple functions)
 #include "jetcleaningstudies_plots.h"
+#include "standard_plots.h"
 
 void MakeGoodPlot::drawAll()
 {
@@ -8,8 +9,8 @@ void MakeGoodPlot::drawAll()
     // run the code that draws them here:
     
     //lepeff_plots();
-    jetcleaning_plots();
-
+    //jetcleaning_plots();
+    standard_plots();
 
 
 }
@@ -51,6 +52,7 @@ void MakeGoodPlot::drawAllToFile(string plotfile, string plotoption)
 
 void MakeGoodPlot::drawAllToWebArea(string plotfile, string plotoption)
 {
+    cout << "here2" << endl;
     if (plotoption=="root")
     {
         cout << "You're trying to write many root files to your web area;" << endl;

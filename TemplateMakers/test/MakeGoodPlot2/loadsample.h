@@ -30,7 +30,7 @@ double loadsample(const int samp, TChain &ch)
     double xsec = 1.;
     double numgen = 1.;
     
-    TString basedir = "/store/ndpc5disk1/gesmith/crab/";     // The directory on ndpc disk where your samples are located.
+    TString basedir = "/store/ndpc5disk2/gesmith/crab/";     // The directory on ndpc disk where your samples are located.
 
                 
     if (samp==0) // data
@@ -40,19 +40,24 @@ double loadsample(const int samp, TChain &ch)
     }
     else if (samp==1) // ttH
     {                        
-            TString basedir_plus = "EFT_test_14_11_17__ttH/";                        // subdirectory for this sample
+            TString basedir_plus = "EFT_test_6_12_17__ttH/";                        // subdirectory for this sample
             TString thesample = basedir + basedir_plus + "*.root";
             ch.Add(thesample);
-            xsec=0.5085;                                                            // cross section for this process (needs to be set manually).
-            numgen = getNumInitialMCevents(1,ch);    // use this instead to get numgen
+            xsec=0.5085*(1-0.577); // https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
+                                   // this is signal for us     
+            numgen = getNumInitialMCevents(1,ch);    // use this to get numgen
     }    
     
     else if (samp==5) // TTJets
     {
-	    TString basedir_plus = "EFT_test_14_11_17__ttJets/";                                              // <-- to update
+	    TString basedir_plus = "EFT_test_6_12_17__ttJets/";                                              // <-- to update
 	    TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-	    xsec = 815.96; // at 173.2 GeV (top group twiki)
+	    xsec = 831.76; // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
+            //q2up=19.77;
+            //q2down=-29.20;
+            //pdfup=35.06;
+            //pdfdown=-35.06;               
             numgen = getNumInitialMCevents(5,ch);
     }
     else if (samp==6) // ZJets
@@ -73,18 +78,20 @@ double loadsample(const int samp, TChain &ch)
     }
     else if (samp==8) // TTWJets
     {                        
-            TString basedir_plus = "EFT_test_14_11_17__ttW/";                                                                 // <-- to update
+            TString basedir_plus = "EFT_test_6_12_17__ttW_take2/";                                                                 // <-- to update
             TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-	    xsec=0.6647;
+	    xsec=0.2043;    // https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
+                            // this is signal for us     
             numgen = getNumInitialMCevents(8,ch);
     }
     else if (samp==9) // TTZJets
     {
-            TString basedir_plus = "EFT_test_14_11_17__ttZ/";     // <-- to update
+            TString basedir_plus = "EFT_test_6_12_17__ttZ/";     // <-- to update
             TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-            xsec=0.8565;
+            xsec=0.2529;    // https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
+                            // this is signal for us
             numgen = getNumInitialMCevents(9,ch);
     }
     else if (samp==10) // diboson (WZ)
@@ -112,28 +119,40 @@ double loadsample(const int samp, TChain &ch)
 
     else if (samp==13) // dilepton ttbar
     {
-	    TString basedir_plus = "TTJets_split_2lep/";                                                        // <-- to update
+	    TString basedir_plus = "EFT_test_6_12_17__ttJets_Dilept/";                                                        // <-- to update
 	    TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-	    xsec=85.656; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.104976 (BR)
+	    xsec=831.76*(3*0.108)*(3*0.108); // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
+            //q2up=19.77;
+            //q2down=-29.20;
+            //pdfup=35.06;
+            //pdfdown=-35.06;
             numgen = getNumInitialMCevents(13,ch);
     }
 
     else if (samp==14) // ttbar: 1l from top
     {
-	    TString basedir_plus = "TTJets_split_1lepFromT/";                                                   // <-- to update
+	    TString basedir_plus = "EFT_test_6_12_17__ttJets_SingleLeptFromT/";                                                   // <-- to update
 	    TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-	    xsec=178.71; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.219024 (BR)
+	    xsec=831.76*2*(3*0.108)*(0.676);
+            //q2up=19.77;
+            //q2down=-29.20;
+            //pdfup=35.06;
+            //pdfdown=-35.06;            
             numgen = getNumInitialMCevents(14,ch);
     }
 
     else if (samp==15) // ttbar: 1l from anti-top
     {
-	    TString basedir_plus = "TTJets_split_1lepFromTBar/";                                                // <-- to update
+	    TString basedir_plus = "EFT_test_6_12_17__ttJets_SingleLeptFromTbar/";                                                // <-- to update
 	    TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-	    xsec=178.71; // at 173.2 GeV (top group twiki). == 815.96 (xsec) * 0.219024 (BR)
+	    xsec=831.76*2*(3*0.108)*(0.676);
+            //q2up=19.77;
+            //q2down=-29.20;
+            //pdfup=35.06;
+            //pdfdown=-35.06;            
             numgen = getNumInitialMCevents(15,ch);
     }
 
@@ -142,5 +161,5 @@ double loadsample(const int samp, TChain &ch)
     else cout << "This sample has not been specified. See loadsample." << endl;
     
     
-    return xsec/numgen;
+    return numgen;
 }
