@@ -402,12 +402,14 @@ void readSelectionMap(std::map<TString,SelectionParameters> s_map) {
     }
 }
 
-void makeEFTSelectionTree(TString output_filename, std::vector<TString> input_filenames) {
+void makeEFTSelectionTree(TString output_filename, TString input_filenames_spec) {
     if (USE_STOPWATCH) my_stopwatch.startTimer("load_files");
     TChain chain("OSTwoLepAna/summaryTree");
     TH1D hsum("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
 
-    for (const auto& fname: input_filenames) {
+    TString fname;
+    ifstream input_filenames(input_filenames_spec);
+    while (input_filenames >> fname) {
         chain.Add(fname);
 
         auto file = TFile::Open(fname,"READONLY");

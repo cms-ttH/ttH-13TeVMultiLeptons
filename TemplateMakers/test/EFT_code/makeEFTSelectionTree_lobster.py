@@ -53,7 +53,8 @@ for label, dirs in data:
         label=label,
         dataset=Dataset(
             files=dirs,
-            files_per_task=100
+            files_per_task=100,
+            extensions=[".root"]
         ),
         category=processing,
         command='python makeEFTSelectionTree.py @inputfiles',
