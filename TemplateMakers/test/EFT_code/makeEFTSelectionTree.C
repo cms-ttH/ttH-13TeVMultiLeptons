@@ -410,12 +410,13 @@ void makeEFTSelectionTree(TString output_filename, std::vector<TString> input_fi
     for (const auto& fname: input_filenames) {
         chain.Add(fname);
 
-        TFile file(fname,"READONLY");
-        if (file.IsOpen()) {
+        auto file = TFile::Open(fname,"READONLY");
+        if (file->IsOpen()) {
             TH1D *hist;
-            file.GetObject("OSTwoLepAna/numInitialWeightedMCevents", hist);
+            file->GetObject("OSTwoLepAna/numInitialWeightedMCevents", hist);
             hsum.Add(hist);
         }
+        delete file;
     }
     if (USE_STOPWATCH) my_stopwatch.updateTimer("load_files");
 
