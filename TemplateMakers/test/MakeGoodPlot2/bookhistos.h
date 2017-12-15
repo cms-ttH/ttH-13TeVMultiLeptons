@@ -164,6 +164,22 @@ void PlotHelper::bookHistos()
     th1ds[i]->SetNameTitle("jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt",";(#vec{p}_{jet}-#vec{p}_{mu})_{T}");       th1ds[i]->SetBins(200,-100,200);    i++;
     
 
+    th2ds[j]->SetNameTitle("jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt_vs_lep_pt",";ele p_{T};(#vec{p}_{jet}-#vec{p}_{ele})_{T}");      th2ds[j]->SetBins(200,0,200,200,-100,200);    j++;
+    th2ds[j]->SetNameTitle("jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt_vs_lep_pt",";ele p_{T};(#vec{p}_{jet}-#vec{p}_{ele})_{T}");   th2ds[j]->SetBins(200,0,200,200,-100,200);    j++;
+    th2ds[j]->SetNameTitle("jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt_vs_lep_pt",";mu p_{T};(#vec{p}_{jet}-#vec{p}_{mu})_{T}");          th2ds[j]->SetBins(200,0,200,200,-100,200);    j++;
+    th2ds[j]->SetNameTitle("jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt_vs_lep_pt",";mu p_{T};(#vec{p}_{jet}-#vec{p}_{mu})_{T}");       th2ds[j]->SetBins(200,0,200,200,-100,200);    j++;
+    
+    th2ds[j]->SetNameTitle("jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt_vs_lep_jet_pt_ratio",";ele p_{T} / jet p_{T};(#vec{p}_{jet}-#vec{p}_{ele})_{T}");      th2ds[j]->SetBins(200,0.,1.5,200,-100,200);    j++;
+    th2ds[j]->SetNameTitle("jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt_vs_lep_jet_pt_ratio",";ele p_{T} / jet p_{T};(#vec{p}_{jet}-#vec{p}_{ele})_{T}");   th2ds[j]->SetBins(200,0.,1.5,200,-100,200);    j++;
+    th2ds[j]->SetNameTitle("jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt_vs_lep_jet_pt_ratio",";mu p_{T} / jet p_{T};(#vec{p}_{jet}-#vec{p}_{mu})_{T}");          th2ds[j]->SetBins(200,0.,1.5,200,-100,200);    j++;
+    th2ds[j]->SetNameTitle("jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt_vs_lep_jet_pt_ratio",";mu p_{T} / jet p_{T};(#vec{p}_{jet}-#vec{p}_{mu})_{T}");       th2ds[j]->SetBins(200,0.,1.5,200,-100,200);    j++;    
+    
+    
+    
+    
+    
+    
+    
 
 
 

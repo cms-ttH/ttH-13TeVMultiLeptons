@@ -167,7 +167,7 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     
     //myhist->SetMinimum(0.1);
     thestack->Add(myhist);  
-    thestack->SetMinimum(0.1);
+    //thestack->SetMinimum(0.1);
     thestack->Draw("hist");
     
     thestack->GetYaxis()->SetTitle("Events");
@@ -187,5 +187,12 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
         theleg->Draw();
     }
     
-    if (i==(numsamps-1)) this->SetLogy(true); 
+    //if (i==(numsamps-1)) this->SetLogy(true); 
+}
+
+void makeAndAdd2DPlot1Sample(MakeGoodPlot &thisMGP, int i, TString thehist)
+{
+    GoodPlot *dummyplot = new GoodPlot(thehist+thisMGP.sample_names_reg[thisMGP.samples[i]]);
+    dummyplot->addPlot2D(thisMGP,i,thehist);
+    thisMGP.canvas.Add(dummyplot);
 }
