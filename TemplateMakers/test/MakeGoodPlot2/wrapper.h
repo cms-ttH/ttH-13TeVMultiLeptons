@@ -46,8 +46,6 @@ void wrapper(std::vector<int> samples, bool plotsonly=true) // (int/string/whate
     };
 
     
-    std::vector<TObjArray> objarray_vect;
-    
     if (!plotsonly)
     {    
         for (const auto sample : samples)
@@ -59,8 +57,7 @@ void wrapper(std::vector<int> samples, bool plotsonly=true) // (int/string/whate
             cout << "Doing sample " << sample << ", " << ch.GetEntries() << " events." << endl;
             
             // This actually runs the hist maker and grabs the output in the form of a TObjArray:
-            auto sumObjArray = workers.Process(ch, workItem, "OSTwoLepAna/summaryTree");            
-            objarray_vect.push_back(*sumObjArray);        
+            auto sumObjArray = workers.Process(ch, workItem, "OSTwoLepAna/summaryTree");                    
 
             //// Dump the hists to a file:
             TFile tempfile("temp_"+int2ss(sample)+".root","RECREATE");
