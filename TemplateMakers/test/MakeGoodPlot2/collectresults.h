@@ -1,4 +1,4 @@
-void PlotHelper::collectResults()
+void HistMaker::collectResults()
 {
     //cout << "Collecting results..." << endl;
     

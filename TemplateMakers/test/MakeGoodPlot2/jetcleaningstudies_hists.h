@@ -1,4 +1,4 @@
-void PlotHelper::jet_cleaning_studies()
+void HistMaker::jet_cleaning_studies()
 {
     double weight = *wgt_intree;
     
@@ -8,9 +8,10 @@ void PlotHelper::jet_cleaning_studies()
     
     double testcone = 0.4;
     
-    for (const auto & ele : *raw_electrons_intree)
+    //for (const auto & ele : *raw_electrons_intree)
+    for (const auto & ele : *tight_electrons_intree)
     {
-        if (ele_tight(ele) && ele.obj.Pt()>25.)
+        //if (ele.obj.Pt()>40.)        
         {            
             int bins = 50;
             double interval = 2./bins;            
@@ -59,21 +60,31 @@ void PlotHelper::jet_cleaning_studies()
             {
                 if (getdR(ele,jet)<=testcone)
                 {
-                    auto vectdiff = jet.obj - ele.obj;
+                    TLorentzVector eleTLV = makeRealTLV(ele.obj);
+                    TLorentzVector jetTLV = makeRealTLV(jet.obj);
+                    auto vectdiff = jetTLV - eleTLV;
                     if (ele.isPromptFinalState || ele.isDirectPromptTauDecayProductFinalState) 
                     {                                                                    
-                        th1d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt"]->Fill(vectdiff.Pt(),weight); // was jet.obj.Pt()-ele.obj.Pt()
+                        th1d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt"]->Fill(vectdiff.Pt(),weight); // was jet.obj.Pt()-ele.obj.Pt(), or vectdiff.Pt(), or eleTLV.Perp(vectdiff.Vect())
+                        th2d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_prompt_vs_lep_pt"]->Fill(ele.obj.Pt(),vectdiff.Pt(),weight);
+                        
                     }
-                    else th1d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt"]->Fill(vectdiff.Pt(),weight);
+                    else
+                    {
+                        th1d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt"]->Fill(vectdiff.Pt(),weight);
+                        th2d["jet_pt_minus_electron_pt_one_jet_in_dR0p4_nonprompt_vs_lep_pt"]->Fill(ele.obj.Pt(),vectdiff.Pt(),weight);
+                        
+                    }
                 }
             }           
             
         }
             
     }
-    for (const auto & mu : *raw_muons_intree)
+    //for (const auto & mu : *raw_muons_intree)
+    for (const auto & mu : *tight_muons_intree)
     {    
-        if (mu_tight(mu) && mu.obj.Pt()>25.)
+        //if (mu.obj.Pt()>40.)
         {            
             int bins = 50;
             double interval = 2./bins;
@@ -120,12 +131,21 @@ void PlotHelper::jet_cleaning_studies()
             {
                 if (getdR(mu,jet)<=testcone)
                 {
-                    auto vectdiff = jet.obj - mu.obj;                    
+                    TLorentzVector muTLV = makeRealTLV(mu.obj);      
+                    TLorentzVector jetTLV = makeRealTLV(jet.obj);  
+                    auto vectdiff = jetTLV - muTLV;
                     if (mu.isPromptFinalState || mu.isDirectPromptTauDecayProductFinalState) 
                     {                                            
                         th1d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt"]->Fill(vectdiff.Pt(),weight); // was jet.obj.Pt()-mu.obj.Pt()
+                        th2d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_prompt_vs_lep_pt"]->Fill(mu.obj.Pt(),vectdiff.Pt(),weight);
+                        
                     }
-                    else th1d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt"]->Fill(vectdiff.Pt(),weight);
+                    else 
+                    {
+                        th1d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt"]->Fill(vectdiff.Pt(),weight);
+                        th2d["jet_pt_minus_muon_pt_one_jet_in_dR0p4_nonprompt_vs_lep_pt"]->Fill(mu.obj.Pt(),vectdiff.Pt(),weight);
+                    }
+                    
                 }
             }           
 

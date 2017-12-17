@@ -9,8 +9,8 @@ void MakeGoodPlot::drawAll()
     // run the code that draws them here:
     
     //lepeff_plots();
-    //jetcleaning_plots();
-    standard_plots();
+    jetcleaning_plots();
+    //standard_plots();
 
 
 }

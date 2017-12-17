@@ -1,4 +1,4 @@
-void PlotHelper::proof_of_concept()
+void HistMaker::proof_of_concept()
 {
     // everything is already set up. You're in the event loop.
     int asdf = 0;

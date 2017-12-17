@@ -28,7 +28,7 @@ float POG_cut_on_GP_mva90(float eta) // for pt>10 electrons
     }
 }
 
-bool PlotHelper::ele_tight(ttH::Electron ele)
+bool HistMaker::ele_tight(ttH::Electron ele)
 {
     if (ele.obj.Pt()>10. 
         && abs(ele.obj.Eta())<2.4 
@@ -43,7 +43,7 @@ bool PlotHelper::ele_tight(ttH::Electron ele)
     else return false;
 }
 
-bool PlotHelper::mu_tight(ttH::Muon mu)
+bool HistMaker::mu_tight(ttH::Muon mu)
 {
     if (mu.obj.Pt()>10. 
         && abs(mu.obj.Eta())<2.4 

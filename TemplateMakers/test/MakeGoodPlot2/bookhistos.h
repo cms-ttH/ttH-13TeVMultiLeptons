@@ -1,4 +1,4 @@
-void PlotHelper::bookHistos()
+void HistMaker::bookHistos()
 {
     // this function is ONLY for booking the histo/tgraph arrays!
     

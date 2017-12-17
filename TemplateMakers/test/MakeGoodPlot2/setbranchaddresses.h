@@ -1,6 +1,6 @@
-void PlotHelper::setBranchAddresses( TTreeReader & newreader )
+void HistMaker::setBranchAddresses( TTreeReader & newreader )
 {
-    // all the branches are aliased to member variables of Plothelper
+    // all the branches are aliased to member variables of HistMaker
     
     //cout << "Getting tree branches..." << endl;
     

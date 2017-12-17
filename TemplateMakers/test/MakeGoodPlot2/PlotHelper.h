@@ -1,11 +1,11 @@
-class PlotHelper
+class HistMaker
 {
     // don't inherit anything
     // don't even bother defining const./destr.
         
     public:
         
-        PlotHelper() { TH1::SetDefaultSumw2(); }
+        HistMaker() { TH1::SetDefaultSumw2(); }
         
         const unsigned int arrsize = 500;
         
@@ -63,7 +63,7 @@ class PlotHelper
         string eventselection();
         //void get_rate_info(int samp);
         
-        //PlotHelper(TTreeReader & newreader);
+        //HistMaker(TTreeReader & newreader);
 
         void proof_of_concept();
         void lepton_eff_studies();

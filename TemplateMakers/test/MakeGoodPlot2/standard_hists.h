@@ -1,4 +1,4 @@
-void PlotHelper::standard_hists()
+void HistMaker::standard_hists()
 {
     double weight = *wgt_intree;
     

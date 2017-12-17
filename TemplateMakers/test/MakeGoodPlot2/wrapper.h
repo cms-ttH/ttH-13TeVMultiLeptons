@@ -2,9 +2,9 @@
 #include "includes.h"
 #include "utils.h"
 
-// Stuff used by PlotHelper
+// Stuff used by HistMaker
 #include "loadsample.h"
-#include "PlotHelper.h"
+#include "HistMaker.h"
 #include "bookhistos.h"
 #include "setbranchaddresses.h"
 #include "lep_selection.h"
@@ -28,21 +28,21 @@ void wrapper(std::vector<int> samples, bool plotsonly=true) // (int/string/whate
     /////////////// histo making half /////////////
     
     // See https://root.cern.ch/doc/v608/mp102__readNtuplesFillHistosAndFit_8C.html
-    Int_t njobs = 8;                        
-    ROOT::TTreeProcessorMP workers(njobs);   
-           
+    Int_t njobs = 12;   // The ndpcs have 8 cores x 2 threads/core = max ~16 threads/machine.
+                        // Remains to be seen what is the optimal number of threads (using
+                        // a guess of 12 for now).
+    
+    ROOT::TTreeProcessorMP workers(njobs);              
 
     auto workItem = [](TTreeReader & reader)    // c++ lambda
     {      
-        //TTree *dummy = reader.GetTree();
-        //cout << dummy->GetCurrentFile()->GetName() << endl;
         //instantiate class here!
-        PlotHelper *plothelper = new PlotHelper();
-        plothelper->setBranchAddresses(reader);
-        plothelper->bookHistos();
-        plothelper->run(reader); // contains the while loop
-        plothelper->collectResults();
-        return plothelper->objArray;
+        HistMaker *histmaker = new HistMaker();
+        histmaker->setBranchAddresses(reader);
+        histmaker->bookHistos();
+        histmaker->run(reader); // contains the while loop
+        histmaker->collectResults();
+        return histmaker->objArray;
     };
 
     
@@ -56,11 +56,13 @@ void wrapper(std::vector<int> samples, bool plotsonly=true) // (int/string/whate
             ch.SetCacheSize(200000000);             // 100000000
             ch.SetCacheLearnEntries(100);            // 20
             double scale = loadsample(sample,ch);
-            cout << ch.GetEntries() << endl;        
-            auto sumObjArray = workers.Process(ch, workItem, "OSTwoLepAna/summaryTree");
+            cout << "Doing sample " << sample << ", " << ch.GetEntries() << " events." << endl;
+            
+            // This actually runs the hist maker and grabs the output in the form of a TObjArray:
+            auto sumObjArray = workers.Process(ch, workItem, "OSTwoLepAna/summaryTree");            
             objarray_vect.push_back(*sumObjArray);        
 
-            //// If you want to dump the hists to a file:
+            //// Dump the hists to a file:
             TFile tempfile("temp_"+int2ss(sample)+".root","RECREATE");
             sumObjArray->Write();
             TH1D *scalehist = new TH1D("NumInitialWeightedMCevents","NumInitialWeightedMCevents",1,1,2);
@@ -70,23 +72,23 @@ void wrapper(std::vector<int> samples, bool plotsonly=true) // (int/string/whate
         }    
     }
     
-    //// This is how you access the hists from objarray_vect:
+    //// This is an example of how you access the hists from objarray_vect:
     //auto trytogethist = (TH1D*)objarray_vect[0].FindObject("lepMVA sig1 barrel");    
     //trytogethist->Draw();
     
     
     /////////////// drawing half ////////////////
-    cout << "ehere" << endl;
 
-    // do something with the hists (draw 'em, etc.)
-    //MakeGoodPlot *newplot = new MakeGoodPlot(samples,objarray_vect);
+    // Now do something with the hists (draw 'em, etc.)
 
-    // or different constructor to load hists from file..
-    MakeGoodPlot *newplot = new MakeGoodPlot(samples);
+    // This loads the hists from file and prepares to make the plots:
+    MakeGoodPlot *newplots = new MakeGoodPlot(samples);
 
-    // then, pick one of these:
-    //newplot->drawAllToScreen();
-    //newplot->drawAllToFile("plttest","pdf");
-    newplot->drawAllToWebArea("EFTcategory_njets_nbjets_geq0__log__and_nbjet_vs_njet_2D_plots_trying_to_add_all_cuts__default_cut_on_jets_bjets","png");
+    // Then, picking one of these will run the "drawall" function (see drawall.h), and save resulting plots to
+    // file/web area, or plot directly to screen (in x-windows):
+    
+    //newplots->drawAllToScreen();
+    //newplots->drawAllToFile("plttest","pdf");
+    newplots->drawAllToWebArea("jetclean_scalar_momentum_subtraction_not_norm__tryingsomething","png");
     
 }

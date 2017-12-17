@@ -52,7 +52,7 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps)
     numsamples = thesamps.size();
     samples = thesamps;
     
-    cout << "hey1" << endl;
+    //cout << "In MakeGoodPlot constructor." << endl;
     
     for (int i=0; i<numsamples; i++)
     {
@@ -73,11 +73,9 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps)
         
         numtotalhists = dummyArray.GetEntriesFast();
         hist.push_back(dummyArray);
-    }
-    
-    
-    cout << "hey2" << endl; 
+    } 
        
+    // Example usage of hist TObjArray vector:
     //auto thing = hist[0].FindObject("lepMVA sig1 endcap"); // will be a pointer
     //thing->Draw();
     
@@ -86,14 +84,15 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps)
 
 MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps, std::vector<TObjArray> exthists)
 {
+    // If for some reason you want to use this constructor, you need to have a 
+    // std::vector<TObjArray> in the wrapper function that gets passed to
+    // MakeGoodPlot.
+    
     numsamples = thesamps.size();
     samples = thesamps;    
     
-    // pass the hists directly to MakeGoodPlot without saving:    
+    // Get the hists directly instead of reading from file:    
     hist = exthists;
-    
-    //auto thing = hist[0].FindObject("lepMVA sig1 endcap"); // will be a pointer
-    //thing->Draw();
     
     setup();
 }

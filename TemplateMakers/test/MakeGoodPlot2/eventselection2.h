@@ -1,4 +1,4 @@
-string PlotHelper::eventselection()
+string HistMaker::eventselection()
 {
     //int numbjets = 0;
     

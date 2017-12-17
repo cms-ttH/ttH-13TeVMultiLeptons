@@ -1,4 +1,4 @@
-void PlotHelper::lepton_eff_studies()
+void HistMaker::lepton_eff_studies()
 {
 	                					
     double weight = *wgt_intree;		
@@ -549,7 +549,7 @@ void PlotHelper::lepton_eff_studies()
 }
 
 
-void PlotHelper::get_hist_of_simple_variable_2D()
+void HistMaker::get_hist_of_simple_variable_2D()
 {
 
     double weight = *wgt_intree;		
