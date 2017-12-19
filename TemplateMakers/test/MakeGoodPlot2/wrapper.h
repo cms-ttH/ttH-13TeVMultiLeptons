@@ -86,6 +86,6 @@ void wrapper(std::vector<int> samples, bool plotsonly=true) // (int/string/whate
     
     //newplots->drawAllToScreen();
     //newplots->drawAllToFile("plttest","pdf");
-    newplots->drawAllToWebArea("jetclean_scalar_momentum_subtraction_not_norm__tryingsomething","png");
+    newplots->drawAllToWebArea("makegoodplot_dummytest","png");
     
 }

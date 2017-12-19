@@ -18,8 +18,17 @@ class MakeGoodPlot
         TPaveText *pt[50];
         TPaveText *pt0;
         TPaveText *pt1; 
-        double lumi = 90000.; // fb^-1
-        //double scale[20];
+	double lumi2016 = 36814.; // 2.5%, pb^-1, https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
+	double lumi2016up = (1.+0.025)*lumi2016;
+	double lumi2016down = (1.-0.025)*lumi2016;
+	double lumi2017 = 42710.; // 5% with normtag
+	double lumi2017up = (1.+0.05)*lumi2017;
+	double lumi2017down = (1.-0.05)*lumi2017;
+        double lumi = lumi2016+lumi2017;
+	double lumiup = lumi2016up+lumi2017up; // or lumi*(1.+sqrt(0.025*0.025+0.05*0.05)) ?
+	double lumidown = lumi2016down+lumi2017down;
+	// double lumi = 90000.; // pb^-1 // a rough guess
+	//double scale[20];
         
         std::vector<TObjArray> hist;
         TObjArray canvas;

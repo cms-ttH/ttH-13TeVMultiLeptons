@@ -13,6 +13,6 @@ void HistMaker::doOneEvent()
     //proof_of_concept();
     
     //lepton_eff_studies();
-    jet_cleaning_studies();
-    //standard_hists();
+    //jet_cleaning_studies();
+    standard_hists();
 }

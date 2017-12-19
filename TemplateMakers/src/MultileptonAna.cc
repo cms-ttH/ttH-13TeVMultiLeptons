@@ -457,7 +457,7 @@ MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const
   std::vector<pat::Muon> selectedMuons;
 
   for( const auto& mu: inputMuons)
-    {
+  {
       bool passSelection = false;
       bool passPt = (mu.pt() >= iMinPt);
       switch(iMuonID)
@@ -475,8 +475,10 @@ MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const
             passSelection = (mu.userFloat("idFakeable") > 0.5 && passPt);
             break;
 	case muonID::muonTight: 
-            //passSelection = (mu.userFloat("idMVABased") > 0.5 && passPt);
             passSelection = (mu.userFloat("idTight") > 0.5 && passPt);
+            break;    
+        case muonID::muonTightMvaBased:
+            passSelection = (mu.userFloat("idMVABased") > 0.5 && passPt);
             break;
         default:
             cout << "GetSelectedMuons-> no such muonID!" << endl;
@@ -486,7 +488,7 @@ MultileptonAna::GetSelectedMuons(const std::vector<pat::Muon>& inputMuons, const
       if( passSelection ) selectedMuons.push_back(mu);
       else if (iMuonID == muonID::muonLooseMvaBased || iMuonID == muonID::muonTightMvaBased) break;
 
-    }
+  }
   return selectedMuons;
 }
 
@@ -497,7 +499,8 @@ MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElec
 
   std::vector<pat::Electron> selectedElectrons;
 
-  for(const auto& ele: inputElectrons){
+  for(const auto& ele: inputElectrons)
+  {
       bool passSelection = false;
       bool passPt = (ele.pt() >= iMinPt);
       switch(iElectronID)
@@ -512,9 +515,11 @@ MultileptonAna::GetSelectedElectrons(const std::vector<pat::Electron>& inputElec
             passSelection = (ele.userFloat("idFakeable") > 0.5 && passPt);
             break;
 	case electronID::electronTight: 
-            //passSelection = (ele.userFloat("idMVABased") > 0.5 && passPt);
             passSelection = (ele.userFloat("idTight") > 0.5 && passPt);
             break;
+	case electronID::electronTightMvaBased: 
+            passSelection = (ele.userFloat("idMVABased") > 0.5 && passPt);     
+            break;                  
         default:
             cout << "GetSelectedElectrons-> no such electronID!" << endl;
             break;

@@ -157,7 +157,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronPreselection );    //miniAODhelper.
 //  vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronLoose ); //miniAODhelper. // doesn't exist yet
   vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronRaw ); //miniAODhelper.
-  vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, 10., electronID::electronTight );
+//  vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, 10., electronID::electronTight );
   
   /////////
   ///
@@ -168,9 +168,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   double min_mu_pt = 5.; // lowered for studies
 
   vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, min_mu_pt, muonID::muonPreselection );
-  vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, min_mu_pt, muonID::muonLoose );
+//  vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, min_mu_pt, muonID::muonLoose );
   vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, min_mu_pt, muonID::muonRaw );
-  vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, 10., muonID::muonTight );
+//  vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, 10., muonID::muonTight );
   
   /////////
   ///
@@ -192,7 +192,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
   //remove electrons that are close (dR <=0.05) to muons
   selectedElectrons_preselected = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_preselected,selectedMuons_preselected,0.05);    
-  selectedElectrons_tight = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_tight,selectedMuons_tight,0.05); 
+//  selectedElectrons_tight = cleanObjects<pat::Electron,pat::Muon>(selectedElectrons_tight,selectedMuons_tight,0.05); 
 
 
   //remove taus that are close (dR <=0.4) to muons
@@ -212,8 +212,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   ////////    
   
   bool skim_statement = true;
-
-  if (skim) skim_statement = (selectedElectrons_tight.size()+selectedMuons_tight.size() >= 2);
+  if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size())>=2;
 
   if ( skim_statement )
   {
@@ -273,9 +272,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     vecPatJet cleaned_rawJets_JECdown  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets_JECdown,selectedTaus_preselected,0.4);
     
     /// the jet selection:
-    vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 10., 2.4, jetID::jetPU, '-' );                    // 25., 2.4, jetID::jetPU, '-'
-    vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 10., 2.4, jetID::jetPU, '-' );        // 25., 2.4, jetID::jetPU, '-'
-    vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 10., 2.4, jetID::jetPU, '-' );    // 25., 2.4, jetID::jetPU, '-'
+    vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );                    // 25., 2.4, jetID::jetPU, '-'
+    vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 25., 2.4, jetID::jetPU, '-' );        // 25., 2.4, jetID::jetPU, '-'
+    vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 25., 2.4, jetID::jetPU, '-' );    // 25., 2.4, jetID::jetPU, '-'
 
     /////////
     ///
@@ -288,6 +287,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
     //vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
     //vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
+
+    vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_preselected, 10, muonID::muonTightMvaBased);
+    vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_preselected, 15, electronID::electronTightMvaBased );
 
     if ( jetCleanFakeable )
       {
@@ -370,7 +372,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     vector<ttH::Electron> tight_electrons = GetCollection(selectedElectrons_tight);
 
     vector<ttH::Muon> raw_muons = GetCollection(selectedMuons_raw);
-    vector<ttH::Muon> loose_muons = GetCollection(selectedMuons_loose);
+    //vector<ttH::Muon> loose_muons = GetCollection(selectedMuons_loose);
     vector<ttH::Muon> preselected_muons = GetCollection(selectedMuons_preselected);
     vector<ttH::Muon> fakeable_muons = GetCollection(selectedMuons_fakeable);
     vector<ttH::Muon> tight_muons = GetCollection(selectedMuons_tight);
@@ -464,7 +466,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     preselected_taus_intree = preselected_taus;
     selected_taus_intree = selected_taus;
     
-    loose_jets_intree = loose_jets;
+    //loose_jets_intree = loose_jets;
     preselected_jets_intree = preselected_jets;
     preselected_jets_JECup_intree = preselected_jets_JECup;
     preselected_jets_JECdown_intree = preselected_jets_JECdown;

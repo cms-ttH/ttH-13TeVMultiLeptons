@@ -116,12 +116,12 @@ void OSTwoLepAna::tree_add_branches()
   
   summaryTree->Branch("passTrigger", &passTrigger_intree);
   
-//  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
-//  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
-//  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
-//  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
-//  summaryTree->Branch("selected_taus", &selected_taus_intree);
-  
+  summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
+  summaryTree->Branch("preselected_electrons", &preselected_electrons_intree);
+  summaryTree->Branch("preselected_muons", &preselected_muons_intree);
+  summaryTree->Branch("preselected_taus", &preselected_taus_intree);
+  summaryTree->Branch("selected_taus", &selected_taus_intree);
+
 //  summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
 //  summaryTree->Branch("fakeable_electrons", &fakeable_electrons_intree);
 //  summaryTree->Branch("fakeable_muons", &fakeable_muons_intree);
@@ -134,17 +134,17 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("tight_electrons", &tight_electrons_intree);
   summaryTree->Branch("tight_muons", &tight_muons_intree);
 
-  summaryTree->Branch("loose_jets", &loose_jets_intree);
+//  summaryTree->Branch("loose_jets", &loose_jets_intree);
   
   summaryTree->Branch("raw_electrons", &raw_electrons_intree);
   summaryTree->Branch("raw_muons", &raw_muons_intree);
-  summaryTree->Branch("raw_leptons", &raw_leptons_intree);
-  summaryTree->Branch("raw_taus", &raw_taus_intree);
+//  summaryTree->Branch("raw_leptons", &raw_leptons_intree);
+//  summaryTree->Branch("raw_taus", &raw_taus_intree);
   summaryTree->Branch("raw_jets", &raw_jets_intree);
   
-//  summaryTree->Branch("preselected_jets", &preselected_jets_intree);
-  //summaryTree->Branch("preselected_jets_JECup", &preselected_jets_JECup_intree);
-  //summaryTree->Branch("preselected_jets_JECdown", &preselected_jets_JECdown_intree);
+  summaryTree->Branch("preselected_jets", &preselected_jets_intree);
+  summaryTree->Branch("preselected_jets_JECup", &preselected_jets_JECup_intree);
+  summaryTree->Branch("preselected_jets_JECdown", &preselected_jets_JECdown_intree);
   //summaryTree->Branch("preselected_jets_uncor", &preselected_jets_uncor_intree);
   
   summaryTree->Branch("met", &met_intree);

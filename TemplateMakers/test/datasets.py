@@ -7,15 +7,18 @@ dbs = DbsApi('https://cmsweb.cern.ch/dbs/prod/global/DBSReader')
 
 ### discover datasets:
 #thing = dbs.listDatasets(dataset = '/tt*H*ToNonbb*/*/MINIAODSIM')   
-thing = dbs.listDatasets(dataset = '/TTJets*/*/MINIAODSIM',detail=True)
+#thing = dbs.listDatasets(dataset = '/TTJets*/*/MINIAODSIM',detail=True)
 #thing2 = dbs.listBlockSummaries_doc(dataset = '/TTJets*/*/MINIAODSIM',detail=True)
 #thing = dbs.listDatasets(dataset = '/*T*T*Bar*/*/MINIAODSIM',detail=True)
 #thing = dbs.listDatasets(dataset = '/TTZ*/*/MINIAODSIM',detail=True)
+#thing = dbs.listDatasets(dataset = '/ST_s*/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV*/MINIAODSIM',detail=True)
+#thing = dbs.listDatasets(dataset = '/WJetsToLNu*/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV*/MINIAODSIM',detail=True)
+#thing = dbs.listDatasets(dataset = '/DYJetsToLL_M*/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV*/MINIAODSIM',detail=True)
+thing = dbs.listDatasets(dataset = '/ZZ*/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV*/MINIAODSIM',detail=True)
 
-
-for item in sorted(thing,key=lambda date: date['last_modification_date']):
+for item in sorted(thing,key=lambda date: date['creation_date']): # last_modification_date
     #print item
-    print datetime.datetime.fromtimestamp(int(item['last_modification_date'])).strftime('%Y-%m-%d %H:%M:%S'),item['dataset']
+    print datetime.datetime.fromtimestamp(int(item['creation_date'])).strftime('%Y-%m-%d %H:%M:%S'),item['dataset']
 
 
 

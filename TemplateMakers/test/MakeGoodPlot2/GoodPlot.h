@@ -4,6 +4,8 @@ class GoodPlot : public TCanvas
         GoodPlot(TString name, string legopt="none");
         TLegend *theleg;
         THStack *thestack;
+        std::vector<TString> stacksamps;
+        std::vector<int> stacksampints;
         int globalfont=42;
         bool exists = false;
         double maxsofar = 0.;
@@ -21,6 +23,7 @@ class GoodPlot : public TCanvas
                                     // on the lower pad (with a given y axis label)
         
         void addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none");
+        void printStackContents(); // in progress
         //void addErrorBand(... // To Do;
         void addCMSText(MakeGoodPlot &thisMGP);
 };
@@ -148,14 +151,16 @@ void GoodPlot::addPlot2D(MakeGoodPlot &thisMGP, int i, TString thehist)
 void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext)
 {
     this->cd();
-
+    
+    bool logplot = false;
+    
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
-    clean_neg_bins(*myhist);  
-    //myhist->GetXaxis()->SetTitleFont(globalfont);
-    //myhist->GetYaxis()->SetTitleFont(globalfont);     
+    clean_neg_bins(*myhist);       
     
     int thisSamp = thisMGP.samples[i];
     int numsamps = thisMGP.numsamples;
+    stacksamps.push_back(thisMGP.sample_names[thisSamp]);
+    stacksampints.push_back(thisSamp);
     
     myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
     myhist->SetLineColor(thisMGP.color[thisSamp]);
@@ -165,9 +170,9 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     myhist->SetFillColor(thisMGP.color[thisSamp]);
     //if (isSig) myhist->SetLineWidth(2);
     
-    //myhist->SetMinimum(0.1);
+    if (logplot) myhist->SetMinimum(0.1);
     thestack->Add(myhist);  
-    //thestack->SetMinimum(0.1);
+    if (logplot) thestack->SetMinimum(0.1);
     thestack->Draw("hist");
     
     thestack->GetYaxis()->SetTitle("Events");
@@ -187,8 +192,99 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
         theleg->Draw();
     }
     
-    //if (i==(numsamps-1)) this->SetLogy(true); 
+    if (logplot && i==(numsamps-1)) this->SetLogy(true); 
 }
+void GoodPlot::printStackContents()
+{
+    // prints a latex-formatted table summarizing the stack contents
+    
+    cout << " " << endl;
+    cout << "Printing contents of " << this->GetName() << " stack:" << endl;
+    cout << " " << endl;
+    
+    auto hlist = thestack->GetHists();
+    int numhists = hlist->GetEntries();
+
+    if (numhists<1)
+    {
+        cout << "Empty stack. Skipping the rest of printStackContents..." << endl;
+        return;
+    }
+    
+    TH1D *backsum = (TH1D*)hlist->At(0)->Clone();
+    TH1D *sigsum = (TH1D*)hlist->At(0)->Clone();
+    backsum->Reset();
+    sigsum->Reset();    
+
+
+    // bin labels -> names of columns in table
+    cout << "\\hline \\\\" << endl;
+    for (int j=1; j<=backsum->GetNbinsX(); j++)
+    {
+        if (thestack->GetXaxis()->GetBinLabel(j)!="") cout << " & " << thestack->GetXaxis()->GetBinLabel(j);
+        else cout << " & " << j;
+    }
+    cout << " \\\\" << endl;     
+    cout << "\\hline \\\\" << endl;
+
+    for (int i=0; i<numhists; i++)
+    {
+        cout << stacksamps[i] << "  ";
+        for (int j=1; j<=((TH1*)hlist->At(i))->GetNbinsX(); j++)
+        {
+            cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlist->At(i))->GetBinContent(j);
+        }
+        cout << " \\\\" << endl; // this will actually print two backslashes
+        if (stacksampints[i]==1 || stacksampints[i]==8 || stacksampints[i]==9) sigsum->Add((TH1*)hlist->At(i));
+        else backsum->Add((TH1*)hlist->At(i));
+    }            
+    auto stackarray = thestack->GetStack();
+    auto sumhist = (TH1*)stackarray->Last();
+    
+    cout << "\\hline \\\\" << endl;
+    cout << "Sum Background  ";    
+    for (int j=1; j<=backsum->GetNbinsX(); j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << backsum->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; 
+    
+    cout << "\\hline \\\\" << endl;
+    cout << "Sum Signal  ";    
+    for (int j=1; j<=sigsum->GetNbinsX(); j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << sigsum->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; 
+    
+    cout << "\\hline \\\\" << endl;
+    cout << "S+B  ";    
+    for (int j=1; j<=sumhist->GetNbinsX(); j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << sumhist->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; 
+    
+    cout << "\\hline \\\\" << endl;
+    cout << "$S/\\sqrt{B}$  ";    
+    for (int j=1; j<=sigsum->GetNbinsX(); j++)
+    {
+        if (backsum->GetBinContent(j)>0)
+        {
+            cout << std::fixed << std::setprecision(1) << " & " << (sigsum->GetBinContent(j)/sqrt(backsum->GetBinContent(j)));
+        }
+        else cout << " & " << "(inf)";
+    }
+    cout << " \\\\" << endl;     
+    cout << "\\hline \\\\" << endl;
+    
+    
+    cout << " " << endl;
+    cout << " " << endl;
+}
+
+
+
 
 void makeAndAdd2DPlot1Sample(MakeGoodPlot &thisMGP, int i, TString thehist)
 {

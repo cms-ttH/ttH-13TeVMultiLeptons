@@ -109,13 +109,13 @@ void MakeGoodPlot::standard_plots()
         makeAndAdd2DPlot1Sample(*this,i,"3l_mix__nbjets_vs_njets");       
         makeAndAdd2DPlot1Sample(*this,i,"3l_mix_sfz__nbjets_vs_njets");   
         makeAndAdd2DPlot1Sample(*this,i,"ge4l__nbjets_vs_njets");                 
-        
-        
-                 
+                
         
     }
   
-    
+    can1->printStackContents();
+        
+               
     // these do need to be manually added
     canvas.Add((TCanvas*)can1);
     canvas.Add((TCanvas*)can2);
