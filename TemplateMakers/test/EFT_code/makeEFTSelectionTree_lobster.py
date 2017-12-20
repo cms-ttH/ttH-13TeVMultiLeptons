@@ -54,7 +54,7 @@ for label, dirs in data:
         dataset=Dataset(
             files=dirs,
             files_per_task=100,
-            extensions=[".root"]
+            patterns=["*.root"]
         ),
         category=processing,
         command='python makeEFTSelectionTree.py @inputfiles',
