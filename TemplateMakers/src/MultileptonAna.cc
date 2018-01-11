@@ -406,8 +406,13 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
         jet.genGrandMotherPdgID = 9999;
       }
       jet.charge = iJet.jetCharge();
+
       string thedisc = btagparams.getParameter<string> ("btagdisc");
-      jet.csv = iJet.bDiscriminator(thedisc);
+      if(thedisc=="DeepCSV") jet.csv =  iJet.bDiscriminator("pfDeepCSVJetTags:probb") + iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
+      else jet.csv = iJet.bDiscriminator(thedisc);
+      jet.CSVv2 = iJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+      jet.DeepCSVprobb = iJet.bDiscriminator("pfDeepCSVJetTags:probb");
+      jet.DeepCSVprobbb = iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
       //jet.qgid = -99.;//iJet.userFloat("qgid");
       jet.qgid = iJet.userFloat("qgid");
       jet.pdgID = iJet.pdgId();
