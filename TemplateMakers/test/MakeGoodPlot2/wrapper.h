@@ -86,6 +86,6 @@ void wrapper(std::vector<int> samples, bool plotsonly=true) // (int/string/whate
     
     //newplots->drawAllToScreen();
     //newplots->drawAllToFile("plttest","pdf");
-    newplots->drawAllToWebArea("makegoodplot_dummytest","png");
+    newplots->drawAllToWebArea("EFT_category_plots_22_12_17_fewerbins","png");
     
 }

@@ -27,10 +27,9 @@ double getNumInitialMCevents (int sample, TChain &ch)
 
 double loadsample(const int samp, TChain &ch)
 {
-    double xsec = 1.;
     double numgen = 1.;
     
-    TString basedir = "/store/ndpc5disk2/gesmith/crab/";     // The directory on ndpc disk where your samples are located.
+    TString basedir = "/store/ndpc6disk2/gesmith/crab/";     // The directory on ndpc disk where your samples are located.
 
                 
     if (samp==0) // data
@@ -40,126 +39,117 @@ double loadsample(const int samp, TChain &ch)
     }
     else if (samp==1) // ttH
     {                        
-            TString basedir_plus = "EFT_test_6_12_17__ttH/";                        // subdirectory for this sample
+            TString basedir_plus = "EFT_test_19_12_17__ttH/";                        // subdirectory for this sample
             TString thesample = basedir + basedir_plus + "*.root";
             ch.Add(thesample);
-            xsec=0.5085*(1-0.577); // https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
-                                   // this is signal for us     
-            numgen = getNumInitialMCevents(1,ch);    // use this to get numgen
-    }    
-    
+    }        
     else if (samp==5) // TTJets
     {
-	    TString basedir_plus = "EFT_test_6_12_17__ttJets/";                                              // <-- to update
+	    TString basedir_plus = "EFT_test_19_12_17__ttJets/";
+	    TString thesample = basedir + basedir_plus + "*.root";
+	    ch.Add(thesample);             
+    }
+    else if (samp==6) // ZJets (aka Drell Yan)
+    {
+            TString basedir_plus = "EFT_test_19_12_17__DYJets_M50/";
 	    TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-	    xsec = 831.76; // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
-            //q2up=19.77;
-            //q2down=-29.20;
-            //pdfup=35.06;
-            //pdfdown=-35.06;               
-            numgen = getNumInitialMCevents(5,ch);
-    }
-    else if (samp==6) // ZJets
-    {
-            TString basedir_plus = "DYJetsToLL_M-50_13TeV-madgraph-pythia8/crab_zJets/150519_150537/0000/";     // <-- to update
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);    
-            xsec=2008.4;
-            numgen = getNumInitialMCevents(6,ch);
     }
     else if (samp==7) // WJets
     {
-            TString basedir_plus = "WJetsToLNu_13TeV-madgraph-pythia8-tauola/crab_wJets/150519_150558/0000/";   // <-- to update
+            TString basedir_plus = "EFT_test_19_12_17__WJets/";
 	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
-            xsec=20508.9;            
-            numgen = getNumInitialMCevents(7,ch);
+	    ch.Add(thesample);        
     }
     else if (samp==8) // TTWJets
     {                        
-            TString basedir_plus = "EFT_test_6_12_17__ttW_take2/";                                                                 // <-- to update
+            TString basedir_plus = "EFT_test_19_12_17__ttW/";
             TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
-	    xsec=0.2043;    // https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
-                            // this is signal for us     
-            numgen = getNumInitialMCevents(8,ch);
+	    ch.Add(thesample); 
     }
     else if (samp==9) // TTZJets
     {
-            TString basedir_plus = "EFT_test_6_12_17__ttZ/";     // <-- to update
+            TString basedir_plus = "EFT_test_19_12_17__ttZ/";
             TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-            xsec=0.2529;    // https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
-                            // this is signal for us
-            numgen = getNumInitialMCevents(9,ch);
     }
     else if (samp==10) // diboson (WZ)
     {
-            TString basedir_plus = "WZJetsTo3LNu_Tune4C_13TeV-madgraph-tauola/crab_wzJets/150519_150616/0000/"; // <-- to update
+            TString basedir_plus = "EFT_test_19_12_17__WZ/";
             TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
-            xsec=2.165;
-            numgen = getNumInitialMCevents(10,ch);
+            ch.Add(thesample);
     }
-
     else if (samp==11) // diboson (ZZ)
     {
-            TString basedir_plus = "ZZTo4L_Tune4C_13TeV-powheg-pythia8/crab_zzJets/150519_150636/0000/";        // <-- to update
+            TString basedir_plus = "EFT_test_19_12_17__ZZ/";
             TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-            xsec=0.325;
-            numgen = getNumInitialMCevents(11,ch);
     }
-
-    else if (samp==12) // (unused)
+    else if (samp==12) // diboson (WW)
     {
-            cout << "This sample has not been specified. See load_samples function." << endl;
+            TString basedir_plus = "EFT_test_19_12_17__WW/";
+            TString thesample = basedir + basedir_plus + "*.root";
+	    ch.Add(thesample);
     }
-
     else if (samp==13) // dilepton ttbar
     {
-	    TString basedir_plus = "EFT_test_6_12_17__ttJets_Dilept/";                                                        // <-- to update
+	    TString basedir_plus = "EFT_test_19_12_17__ttJets_Dilept/";
 	    TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-	    xsec=831.76*(3*0.108)*(3*0.108); // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
-            //q2up=19.77;
-            //q2down=-29.20;
-            //pdfup=35.06;
-            //pdfdown=-35.06;
-            numgen = getNumInitialMCevents(13,ch);
     }
-
     else if (samp==14) // ttbar: 1l from top
     {
-	    TString basedir_plus = "EFT_test_6_12_17__ttJets_SingleLeptFromT/";                                                   // <-- to update
+	    TString basedir_plus = "EFT_test_19_12_17__ttJets_SingleLeptFromT/";
 	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
-	    xsec=831.76*2*(3*0.108)*(0.676);
-            //q2up=19.77;
-            //q2down=-29.20;
-            //pdfup=35.06;
-            //pdfdown=-35.06;            
-            numgen = getNumInitialMCevents(14,ch);
+	    ch.Add(thesample);       
     }
-
     else if (samp==15) // ttbar: 1l from anti-top
     {
-	    TString basedir_plus = "EFT_test_6_12_17__ttJets_SingleLeptFromTbar/";                                                // <-- to update
+	    TString basedir_plus = "EFT_test_19_12_17__ttJets_SingleLeptFromTbar/";
+	    TString thesample = basedir + basedir_plus + "*.root";
+	    ch.Add(thesample);    
+    }
+    else if (samp==16) // Drell Yan (low mass)
+    {
+	    TString basedir_plus = "EFT_test_19_12_17__DYJets_M10to50/";                                                // <-- to update
+	    TString thesample = basedir + basedir_plus + "*.root";
+	    ch.Add(thesample);         
+    }
+    else if (samp==17) // SingleTop_tWchan_top
+    {
+	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_tWchan_top/";                                                // <-- to update
+	    TString thesample = basedir + basedir_plus + "*.root";
+	    ch.Add(thesample);        
+    }
+    else if (samp==18) // SingleTop_tWchan_antitop
+    {
+	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_tWchan_antitop/";                                                // <-- to update
+	    TString thesample = basedir + basedir_plus + "*.root";
+	    ch.Add(thesample);          
+    }
+    else if (samp==19) // SingleTop_tchan_top
+    {
+	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_tchan_top/";                                                // <-- to update
+	    TString thesample = basedir + basedir_plus + "*.root";
+	    ch.Add(thesample);      
+    }
+    else if (samp==20) // SingleTop_tchan_antitop
+    {
+	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_tchan_antitop/";                                                // <-- to update
+	    TString thesample = basedir + basedir_plus + "*.root";
+	    ch.Add(thesample);     
+    }
+    else if (samp==21) // SingleTop_schan
+    {
+	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_schan/";                                                // <-- to update
 	    TString thesample = basedir + basedir_plus + "*.root";
 	    ch.Add(thesample);
-	    xsec=831.76*2*(3*0.108)*(0.676);
-            //q2up=19.77;
-            //q2down=-29.20;
-            //pdfup=35.06;
-            //pdfdown=-35.06;            
-            numgen = getNumInitialMCevents(15,ch);
     }
-
     
     
     else cout << "This sample has not been specified. See loadsample." << endl;
     
     
+    numgen = getNumInitialMCevents(samp,ch); // use this to get numgen
     return numgen;
 }

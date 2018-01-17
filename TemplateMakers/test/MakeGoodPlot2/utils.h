@@ -5,7 +5,14 @@ TString int2ss(int theint)
 	TString string_out = thess.str();
 	return string_out;
 }
-
+string d2ss(double dbl,int prec=-1)
+{
+    std::ostringstream thess;
+    if (prec>0) thess << fixed << setprecision(prec) << dbl;
+    else thess << dbl;
+    std::string thestr = thess.str();
+    return thestr;
+}
 TLegend getleg(string format)
 {
     if (format=="bl") 
@@ -51,7 +58,7 @@ TLegend getleg(string format)
     }  
     else if (format=="darren")
     {        
-        TLegend leg(0.14,0.75,0.94,0.89);
+        TLegend leg(0.14,0.75,0.89,0.89);
         leg.SetLineColor(kWhite);
         leg.SetShadowColor(kWhite);            
         leg.SetTextFont(42);

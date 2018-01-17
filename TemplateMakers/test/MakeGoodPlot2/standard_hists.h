@@ -7,12 +7,16 @@ void HistMaker::standard_hists()
     if (category!="null") 
     {
                 
-        std::vector<ttH::Jet> cutjets = simpleCut<std::vector<ttH::Jet> >(*loose_jets_intree,"pt",25.0); // need to be careful with this (problem if type not explicitly specified)
+        //std::vector<ttH::Jet> cutjets = simpleCut<std::vector<ttH::Jet> >(*loose_jets_intree,"pt",25.0); // need to be careful with this (problem if type not explicitly specified)
         
-        auto taggedjetsmedium = keepTagged(cutjets,"M");        
-        auto taggedjetsloose = keepTagged(cutjets,"L");
-
-        double jetsize = cutjets.size();                
+        //auto taggedjetsmedium = keepTagged(cutjets,"M");        
+        //auto taggedjetsloose = keepTagged(cutjets,"L");
+        auto taggedjetsmedium = keepTagged(*preselected_jets_intree,"M");
+        auto taggedjetsloose = keepTagged(*preselected_jets_intree,"L");
+        
+        
+        //double jetsize = cutjets.size();                
+        double jetsize = preselected_jets_intree->size();
         double taggedjetssize = taggedjetsmedium.size();
         double taggedjetsloosesize = taggedjetsloose.size();
         
@@ -27,6 +31,26 @@ void HistMaker::standard_hists()
         th1d[category+"__njets"]->Fill(jetsize,weight);               
         th1d[category+"__nbjets"]->Fill(taggedjetssize,weight);        
         th2d[category+"__nbjets_vs_njets"]->Fill(jetsize,taggedjetssize,weight);
+         
+         
+        for (const auto & jet : *preselected_jets_intree)
+        {
+            
+            th1d[category+"__jetpt"]->Fill(jet.obj.Pt(),weight);
+            th1d[category+"__jeteta"]->Fill(jet.obj.Eta(),weight);
+            th1d[category+"__jetcsv"]->Fill(jet.csv,weight);
+            
+        }
+        
+        for (const auto & lep : *tight_leptons_intree)
+        {
+            th1d[category+"__leppt"]->Fill(lep.obj.Pt(),weight);
+            th1d[category+"__lepeta"]->Fill(lep.obj.Eta(),weight);    
+        }
+        
+        th1d[category+"__met"]->Fill((*met_intree)[0].obj.Pt(),weight);
+        th1d[category+"__metphi"]->Fill((*met_intree)[0].obj.Phi(),weight);
+         
          
         int thisbin = th1d["category_yields"]->GetXaxis()->FindBin(category.c_str());
         th1d["category_yields"]->Fill(thisbin,weight);

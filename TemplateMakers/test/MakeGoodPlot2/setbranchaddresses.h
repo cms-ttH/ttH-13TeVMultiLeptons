@@ -8,19 +8,24 @@ void HistMaker::setBranchAddresses( TTreeReader & newreader )
     
     
     raw_electrons_intree = TTreeReaderValue<vector<ttH::Electron>>(newreader, "raw_electrons");    
-    raw_leptons_intree = TTreeReaderValue<vector<ttH::Lepton>>(newreader, "raw_leptons");
-    raw_muons_intree = TTreeReaderValue<vector<ttH::Muon>>(newreader, "raw_muons");
-    raw_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "raw_jets");
+    //raw_leptons_intree = TTreeReaderValue<vector<ttH::Lepton>>(newreader, "raw_leptons");
+    raw_muons_intree = TTreeReaderValue<vector<ttH::Muon>>(newreader, "raw_muons");    
     
-    loose_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "loose_jets");
+    preselected_electrons_intree = TTreeReaderValue<vector<ttH::Electron>>(newreader, "preselected_electrons");    
+    preselected_leptons_intree = TTreeReaderValue<vector<ttH::Lepton>>(newreader, "preselected_leptons");
+    preselected_muons_intree = TTreeReaderValue<vector<ttH::Muon>>(newreader, "preselected_muons");    
     
     tight_electrons_intree = TTreeReaderValue<vector<ttH::Electron>>(newreader, "tight_electrons");    
     tight_leptons_intree = TTreeReaderValue<vector<ttH::Lepton>>(newreader, "tight_leptons");
-    tight_muons_intree = TTreeReaderValue<vector<ttH::Muon>>(newreader, "tight_muons");    
+    tight_muons_intree = TTreeReaderValue<vector<ttH::Muon>>(newreader, "tight_muons");
+    
+    raw_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "raw_jets");
+    //loose_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "loose_jets");
+    preselected_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "preselected_jets");
     
      
     met_intree = TTreeReaderValue<vector<ttH::MET>>(newreader, "met");
-    //preselected_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "preselected_jets");
+    
     pruned_genParticles_intree = TTreeReaderValue<vector<ttH::GenParticle>>(newreader, "pruned_genParticles");
 
     // and the rest ....

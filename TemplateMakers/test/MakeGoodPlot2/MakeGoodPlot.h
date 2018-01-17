@@ -6,11 +6,11 @@ class MakeGoodPlot
         int numtotalhists = 0;
         std::vector<int> samples;
         vector<TFile*> files;
-        TString sample_names[20];
-        TString sample_names_reg[20];
-        string sample_names_std[20];
-        Color_t color[20];
-        double numgen[20];		
+        TString sample_names[200];
+        TString sample_names_reg[200];
+        string sample_names_std[200];
+        Color_t color[200];
+        double numgen[200];		
 
         // CMS info stuff
         std::string cmsinfo;
@@ -18,26 +18,26 @@ class MakeGoodPlot
         TPaveText *pt[50];
         TPaveText *pt0;
         TPaveText *pt1; 
-	double lumi2016 = 36814.; // 2.5%, pb^-1, https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
-	double lumi2016up = (1.+0.025)*lumi2016;
-	double lumi2016down = (1.-0.025)*lumi2016;
-	double lumi2017 = 42710.; // 5% with normtag
-	double lumi2017up = (1.+0.05)*lumi2017;
-	double lumi2017down = (1.-0.05)*lumi2017;
-        double lumi = lumi2016+lumi2017;
-	double lumiup = lumi2016up+lumi2017up; // or lumi*(1.+sqrt(0.025*0.025+0.05*0.05)) ?
-	double lumidown = lumi2016down+lumi2017down;
-	// double lumi = 90000.; // pb^-1 // a rough guess
+	const double lumi2016 = 36814.; // 2.5%, pb^-1, https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
+	const double lumi2016up = (1.+0.025)*lumi2016;
+	const double lumi2016down = (1.-0.025)*lumi2016;
+	const double lumi2017 = 42710.; // 5% with normtag
+	const double lumi2017up = (1.+0.05)*lumi2017;
+	const double lumi2017down = (1.-0.05)*lumi2017;
+        const double lumi = lumi2016+lumi2017;
+	const double lumiup = lumi2016up+lumi2017up; // note: for 2016+2017, this is not lumi*(1.+sqrt(0.025*0.025+0.05*0.05)).
+	const double lumidown = lumi2016down+lumi2017down;
+	// double lumi = 80000.; // pb^-1 // a rough guess
 	//double scale[20];
         
         std::vector<TObjArray> hist;
         TObjArray canvas;
         
-        double xsec[20];
-        double q2up[20];
-        double q2down[20];
-        double pdfup[20];
-        double pdfdown[20]; 
+        double xsec[200];
+        double q2up[200];
+        double q2down[200];
+        double pdfup[200];
+        double pdfdown[200]; 
         
         void get_rate_info();        
         void setup();        

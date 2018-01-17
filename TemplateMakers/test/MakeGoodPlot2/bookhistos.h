@@ -267,15 +267,125 @@ void HistMaker::bookHistos()
     th2ds[j]->SetNameTitle("3l_mix_sfz__nbjets_vs_njets",";njets;nbjets");         th2ds[j]->SetBins(15,0,15,10,0,10);    j++;
     th2ds[j]->SetNameTitle("ge4l__nbjets_vs_njets",";njets;nbjets");         th2ds[j]->SetBins(15,0,15,10,0,10);    j++;
     
+    th1ds[i]->SetNameTitle("2los_ee__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_emu__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_mumu__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_ee__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_mumu__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_ee__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_emu__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_mumu__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_ee__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_emu__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_mumu__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_ppp__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mmm__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mix__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mix_sfz__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("ge4l__jetpt",";jet p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    
+    th1ds[i]->SetNameTitle("2los_ee__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2los_emu__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2los_mumu__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_ee__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_mumu__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_ee__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_emu__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_mumu__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_ee__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_emu__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_mumu__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("3l_ppp__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("3l_mmm__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("3l_mix__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("3l_mix_sfz__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("ge4l__jeteta",";jet #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;    
+    
+    th1ds[i]->SetNameTitle("2los_ee__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2los_emu__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2los_mumu__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_ee__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_mumu__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_ee__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_emu__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_mumu__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_ee__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_emu__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_mumu__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("3l_ppp__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("3l_mmm__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("3l_mix__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("3l_mix_sfz__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;
+    th1ds[i]->SetNameTitle("ge4l__jetcsv",";jet CSV");  th1ds[i]->SetBins(50,0,1);    i++;           
     
     
+    th1ds[i]->SetNameTitle("2los_ee__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_emu__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_mumu__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_ee__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_mumu__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_ee__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_emu__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_mumu__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_ee__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_emu__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_mumu__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_ppp__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mmm__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mix__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mix_sfz__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("ge4l__leppt",";lep p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
     
+    th1ds[i]->SetNameTitle("2los_ee__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2los_emu__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2los_mumu__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_ee__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_mumu__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_ee__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_emu__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_mumu__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_ee__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_emu__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_mumu__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("3l_ppp__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("3l_mmm__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("3l_mix__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("3l_mix_sfz__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;
+    th1ds[i]->SetNameTitle("ge4l__lepeta",";lep #eta");  th1ds[i]->SetBins(50,-3.0,3.0);    i++;    
     
+    th1ds[i]->SetNameTitle("2los_ee__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_emu__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_mumu__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_ee__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_mumu__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_ee__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_emu__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_mumu__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_ee__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_emu__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_mumu__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_ppp__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mmm__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mix__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("3l_mix_sfz__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;
+    th1ds[i]->SetNameTitle("ge4l__met",";MET p_{T}");  th1ds[i]->SetBins(50,0,200);    i++;    
     
-    
-    
-    
-    
+    th1ds[i]->SetNameTitle("2los_ee__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2los_emu__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2los_mumu__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_ee__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2los_sfz_mumu__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_ee__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_emu__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2lss_p_mumu__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_ee__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_emu__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("2lss_m_mumu__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("3l_ppp__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("3l_mmm__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("3l_mix__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("3l_mix_sfz__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;
+    th1ds[i]->SetNameTitle("ge4l__metphi",";MET #phi");  th1ds[i]->SetBins(50,-3.3,3.3);    i++;    
 
 
 //    th1ds[12]->SetNameTitle("","");                 = new TH1F("sigmaIeatIeta var1 sig","",100,0,1);  //0.04

@@ -4,6 +4,8 @@ class GoodPlot : public TCanvas
         GoodPlot(TString name, string legopt="none");
         TLegend *theleg;
         THStack *thestack;
+        THStack *thebackstack;
+        TGraphAsymmErrors *sumMCbandNoStat;
         std::vector<TString> stacksamps;
         std::vector<int> stacksampints;
         int globalfont=42;
@@ -22,7 +24,8 @@ class GoodPlot : public TCanvas
                                     // do the usual division of the cavas into two pads, plotting the comparison
                                     // on the lower pad (with a given y axis label)
         
-        void addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none");
+        void addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1);
+        void addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1);
         void printStackContents(); // in progress
         //void addErrorBand(... // To Do;
         void addCMSText(MakeGoodPlot &thisMGP);
@@ -32,6 +35,7 @@ GoodPlot::GoodPlot(TString name, string legopt) : TCanvas(name,"can",150,10,960,
 {
     theleg = new TLegend(getleg(legopt));
     thestack = new THStack("stack","");
+    thebackstack = new THStack("backstack","");
     if (legopt!="none") drawleg = true;
     //gPad->SetLogy();
 }
@@ -148,13 +152,14 @@ void GoodPlot::addPlot2D(MakeGoodPlot &thisMGP, int i, TString thehist)
     myhist->Draw("COLZ");
 }
     
-void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext)
+void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin)
 {
     this->cd();
     
     bool logplot = false;
     
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
+    if (rebin>0) myhist->Rebin(rebin);
     clean_neg_bins(*myhist);       
     
     int thisSamp = thisMGP.samples[i];
@@ -162,16 +167,16 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     stacksamps.push_back(thisMGP.sample_names[thisSamp]);
     stacksampints.push_back(thisSamp);
     
-    myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
+    myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);    
     myhist->SetLineColor(thisMGP.color[thisSamp]);
     
     bool isSig = (thisSamp==1 || thisSamp==8 || thisSamp==9) ? true : false;
-    //if (!isSig) myhist->SetFillColor(thisMGP.color[thisSamp]);
-    myhist->SetFillColor(thisMGP.color[thisSamp]);
-    //if (isSig) myhist->SetLineWidth(2);
-    
+    if (!isSig) myhist->SetFillColor(thisMGP.color[thisSamp]);
+    myhist->SetLineWidth(0);
+    if (isSig) myhist->SetLineWidth(2);
     if (logplot) myhist->SetMinimum(0.1);
     thestack->Add(myhist);  
+    if (!isSig) thebackstack->Add(myhist);
     if (logplot) thestack->SetMinimum(0.1);
     thestack->Draw("hist");
     
@@ -193,6 +198,96 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     }
     
     if (logplot && i==(numsamps-1)) this->SetLogy(true); 
+}
+
+void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin)
+{    
+    // If you get plots with non-translucent error bands, try uncommenting this:
+    //gStyle->SetCanvasPreferGL(1);
+    this->SetGrid(0,0);
+    
+    addStack(thisMGP, thehist, i, legtext, rebin); // <- this should already have scaled the hist, cleaned neg bins, rebinned etc.
+    auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
+    
+    auto stackarray = thebackstack->GetStack();    
+    auto sumhist = (TH1*)stackarray->Last();
+    TGraphAsymmErrors *sumMCband = new TGraphAsymmErrors(sumhist);
+    if (!exists) sumMCbandNoStat = new TGraphAsymmErrors(sumhist);
+    
+    
+    int thisSamp = thisMGP.samples[i];
+    int numsamps = thisMGP.numsamples;
+    
+    for (int j=0; j<myhist->GetNbinsX(); j++) // <- The numbering system for TGraph points starts at 0.
+    {
+        if (!exists)
+        {
+            sumMCbandNoStat->SetPointEYhigh(j,0.); // Removing the stat error here.
+            sumMCbandNoStat->SetPointEYlow(j,0.); // Removing the stat error here.
+        }
+        
+        // all the syst uncertainties for this sample (maybe move to separate function when the list gets longer):        
+        double thisbincontent = myhist->GetBinContent(j+1);        
+        double thisbinerrorup = thisbincontent*sqrt(thisMGP.q2up[thisSamp]*thisMGP.q2up[thisSamp] + thisMGP.pdfup[thisSamp]*thisMGP.pdfup[thisSamp])/thisMGP.xsec[thisSamp];
+        double thisbinerrordown = thisbincontent*sqrt(thisMGP.q2down[thisSamp]*thisMGP.q2down[thisSamp] + thisMGP.pdfdown[thisSamp]*thisMGP.pdfdown[thisSamp])/thisMGP.xsec[thisSamp];
+                
+        // append to syst-only uncertainties from the other samples:
+        double currentsystup = sumMCbandNoStat->GetErrorYhigh(j);
+        double currentsystdown = sumMCbandNoStat->GetErrorYlow(j);                
+        sumMCbandNoStat->SetPointEYhigh(j,sqrt(currentsystup*currentsystup + thisbinerrorup*thisbinerrorup));
+        sumMCbandNoStat->SetPointEYlow(j,sqrt(currentsystdown*currentsystdown + thisbinerrordown*thisbinerrordown));
+        
+        // Now combine with the mc stat error from the stack:
+        double sumerrorup = sqrt(sumMCband->GetErrorYhigh(j)*sumMCband->GetErrorYhigh(j) + sumMCbandNoStat->GetErrorYhigh(j)*sumMCbandNoStat->GetErrorYhigh(j));
+        double sumerrordown = sqrt(sumMCband->GetErrorYlow(j)*sumMCband->GetErrorYlow(j) + sumMCbandNoStat->GetErrorYlow(j)*sumMCbandNoStat->GetErrorYlow(j));
+        
+        sumMCband->SetPointEYhigh(j,sumerrorup);
+        sumMCband->SetPointEYlow(j,sumerrordown);
+        
+    }
+    
+    cout << "  " << endl;
+    cout << "  " << endl;
+    double dummyxpoint;
+    double dummyypoint;
+    int dummyint = sumMCband->GetPoint(sumhist->GetMaximumBin()-1,dummyxpoint,dummyypoint);
+    //cout << maxamount << " " << dummyxpoint << "  " << dummyypoint << endl;
+    double maxamount = dummyypoint + sumMCband->GetErrorYhigh(sumhist->GetMaximumBin()-1);
+    cout << maxamount << endl;
+    maxamount = std::max(maxamount,thestack->GetMaximum());    
+    cout << maxamount << thestack->GetMaximum() << endl;
+    thestack->SetMaximum(1.3*maxamount); // sumhist
+    this->Update();
+    
+    exists = true;    
+    
+    if (i==(numsamps-1))
+    {
+        // at the end, add the overall lumi uncertainty:
+        
+        for (int j=0; j<sumhist->GetNbinsX(); j++)
+        {
+            double lumierrorup = sumhist->GetBinContent(j+1)*(thisMGP.lumiup-thisMGP.lumi)/thisMGP.lumi;
+            double lumierrordown = sumhist->GetBinContent(j+1)*(thisMGP.lumi-thisMGP.lumidown)/thisMGP.lumi;
+
+            sumMCband->SetPointEYhigh(j,sqrt(sumMCband->GetErrorYhigh(j)*sumMCband->GetErrorYhigh(j) + lumierrorup*lumierrorup));
+            sumMCband->SetPointEYlow(j,sqrt(sumMCband->GetErrorYlow(j)*sumMCband->GetErrorYlow(j) + lumierrordown*lumierrordown));        
+        }
+    
+        //sumMCband->SetMarkerStyle(21);
+        sumMCband->SetLineColor(kWhite);
+        sumMCband->SetFillColorAlpha(kBlack, 0.25); // <- need OpenGL enabled for this to work
+        sumMCband->Draw("2");    
+
+        if (drawleg)
+        {
+            theleg->AddEntry(sumMCband,"Sum Bkgd","F");
+            theleg->Draw();
+        }      
+        thisMGP.CMSInfoLatex->Draw();
+        thisMGP.canvas.Add(this);
+    }    
+       
 }
 void GoodPlot::printStackContents()
 {
