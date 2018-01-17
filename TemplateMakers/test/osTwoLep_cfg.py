@@ -76,83 +76,25 @@ if isData:
     process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt').getVLuminosityBlockRange()
 
 #################################################
-## Reclustering for DeepCSV (MC only)
-#################################################
-
-if isData == False:
-    ## Filter out neutrinos from packed GenParticles
-    process.packedGenParticlesForJetsNoNu = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedGenParticles"), cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16"))
-
-    ## Define GenJets
-    from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
-    process.ak4GenJetsNoNu = ak4GenJets.clone(src = 'packedGenParticlesForJetsNoNu')
-
-    ## Select charged hadron subtracted packed PF candidates
-    process.pfCHS = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV"))
-    from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
-
-    ## Define PFJetsCHS
-    process.ak4PFJetsCHS = ak4PFJets.clone(src = 'pfCHS', doAreaFastjet = True)
-
-    from PhysicsTools.PatAlgos.tools.jetTools import switchJetCollection
-
-    ## b-tag discriminators
-    bTagDiscriminators = [
-        'pfCombinedInclusiveSecondaryVertexV2BJetTags',
-        'pfCombinedMVAV2BJetTags',
-        'pfDeepCSVJetTags:probb',
-        'pfDeepCSVJetTags:probc',
-        'pfDeepCSVJetTags:probudsg',
-        'pfDeepCSVJetTags:probbb',
-    ]
-
-    ## Switch the default PAT jet collection to the above-defined ak4PFJetsCHS
-    switchJetCollection(
-        process,
-        jetSource = cms.InputTag('ak4PFJetsCHS'),
-        pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
-        pfCandidates = cms.InputTag('packedPFCandidates'),
-        svSource = cms.InputTag('slimmedSecondaryVertices'),
-        muSource = cms.InputTag('slimmedMuons'),
-        elSource = cms.InputTag('slimmedElectrons'),
-        btagDiscriminators = bTagDiscriminators,
-        jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
-        genJetCollection = cms.InputTag('ak4GenJetsNoNu'),
-        genParticles = cms.InputTag('prunedGenParticles')
-    )
-    getattr(process,'selectedPatJets').cut = cms.string('pt > 10')   # to match the selection for slimmedJets in MiniAOD
-
-    ## Adapt primary vertex collection
-    from PhysicsTools.PatAlgos.tools.pfTools import adaptPVs
-    adaptPVs(process, pvCollection=cms.InputTag('offlineSlimmedPrimaryVertices'))
-
-#################################################
-## JEC
+## JEC & Redo BTagging
 #################################################
 
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-if isData == False:
-    updateJetCollection(
-        process,
-        jetSource = cms.InputTag('selectedPatJets'),
-        labelName = 'Tagged',
-        jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
-    )
-else:
-#    updateJetCollection(
-#        process,
-#        jetSource = cms.InputTag('slimmedJets'),
-#        labelName = 'Tmp',
-#        jetCorrections = ('AK4PFchs', cms.vstring([]), 'None'),
-##        jetCorrections = None,
-#        btagDiscriminators = ['pfDeepCSVJetTags:probb', 'pfDeepCSVJetTags:probbb', 'pfCombinedInclusiveSecondaryVertexV2BJetTags'],
-#    )
-    updateJetCollection(
-        process,
-        jetSource = cms.InputTag('slimmedJets'),
-        labelName = 'Tagged',
-        jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
-    )
+
+bTagDiscriminators = [
+    'pfCombinedInclusiveSecondaryVertexV2BJetTags',
+    'pfDeepCSVJetTags:probb',
+    'pfDeepCSVJetTags:probc',
+    'pfDeepCSVJetTags:probudsg',
+    'pfDeepCSVJetTags:probbb',
+]
+updateJetCollection(
+    process,
+    jetSource = cms.InputTag('slimmedJets'),
+    labelName = 'Tagged',
+    btagDiscriminators = bTagDiscriminators, # Uncommenting this will skip btagging, but jet collections will wrong further down.
+    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
+)
 
 #################################################
 ## Bad Muons
@@ -203,12 +145,12 @@ process.ttHLeptons.LooseCSVWP = cms.double(0.1522) # DeepCSV 2017 preliminary
 process.ttHLeptons.MediumCSVWP = cms.double(0.4941) # DeepCSV 2017 preliminary
 process.ttHLeptons.IsHIPSafe = cms.bool(options.hip)
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
-process.ttHLeptons.jets = cms.InputTag("updatedPatJetsTagged") #use JEC's from tag
-process.ttHLeptons.JECTag = "patJetCorrFactorsTagged"
+process.ttHLeptons.jets = cms.InputTag("updatedPatJetsTransientCorrectedTagged") #use JEC's from tag
+process.ttHLeptons.JECTag = "patJetCorrFactorsTransientCorrectedTagged"
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
-process.OSTwoLepAna.jets.jetCollection = cms.string('updatedPatJetsTagged') #use JEC's from tag
+process.OSTwoLepAna.jets.jetCollection = cms.string('updatedPatJetsTransientCorrectedTagged') #use JEC's from global tag
 
 if isData:
     process.OSTwoLepAna.setupoptions.isdata = True
@@ -225,18 +167,12 @@ process.OSTwoLepAna.jetCleanFakeable = cms.bool( options.jetCleanFakeable )
 process.OSTwoLepAna.skim = cms.bool( options.skim )
 
 #process.SkeletonAnalysis = cms.EDAnalyzer('SkeletonAnalysis',
-#    jets = cms.InputTag('updatedPatJetsTagged'), # input jet collection name
+#    jets = cms.InputTag('updatedPatJetsTransientCorrectedTagged'), # input jet collection name
 #    bDiscriminators = cms.vstring(          # list of b-tag discriminators to access
-#        'pfTrackCountingHighEffBJetTags',
-#        'pfTrackCountingHighPurBJetTags',
-#        'pfJetProbabilityBJetTags',
-#        'pfJetBProbabilityBJetTags',
-#        'pfSimpleSecondaryVertexHighEffBJetTags',
-#        'pfSimpleSecondaryVertexHighPurBJetTags',
-#        'pfCombinedSecondaryVertexV2BJetTags',
 #        'pfCombinedInclusiveSecondaryVertexV2BJetTags',
-#        'pfCombinedMVAV2BJetTags',
 #        'pfDeepCSVJetTags:probb',
+#        'pfDeepCSVJetTags:probc',
+#        'pfDeepCSVJetTags:probudsg',
 #        'pfDeepCSVJetTags:probbb',
 #    )
 #)
@@ -262,7 +198,7 @@ for idmod in my_id_modules: setupAllVIDIdsInModule(process,idmod,setupVIDElectro
 
 
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-process.QGTagger.srcJets          = cms.InputTag('updatedPatJetsTagged')
+process.QGTagger.srcJets          = cms.InputTag('updatedPatJetsTransientCorrectedTagged')
 process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
 
 ######################################
