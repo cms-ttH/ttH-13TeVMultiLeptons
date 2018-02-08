@@ -27,11 +27,11 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		~OSTwoLepAna();
 		
 		ofstream fout;
-                FILE * ffout;
+        FILE * ffout;
 		
 		vstring alltriggerstostudy;
 		
-                TH1D *numInitialWeightedMCevents; // <- easily keep track of num (weighted) mc events we started with
+        TH1D *numInitialWeightedMCevents; // <- easily keep track of num (weighted) mc events we started with
                 
 		// declare the tree
 		TTree * summaryTree;
@@ -53,6 +53,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		int runNumber_intree;
 		
 		int numBadMuons_intree;
+		int numPVs_intree;
 
 		vector<ttH::Lepton> raw_leptons_intree;
                 vector<ttH::Lepton> loose_leptons_intree;
@@ -113,7 +114,7 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("lumiBlock", &lumiBlock_intree);
   summaryTree->Branch("runNumber", &runNumber_intree);
   summaryTree->Branch("higgs_decay", &higgs_decay_intree);
-  
+  summaryTree->Branch("numPVs", &numPVs_intree);
   summaryTree->Branch("passTrigger", &passTrigger_intree);
   
   summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);

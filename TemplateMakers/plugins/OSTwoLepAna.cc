@@ -125,10 +125,6 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 
   SetRho(rho);
-
-  int numpvs =                GetVertices(event);
-  if (numpvs<1) return; // skips event?
-  if (debug) cout << "numpvs: " << numpvs << endl;
   
   edm::Handle<GenEventInfoProduct> GenInfo;
   if (!isData) event.getByToken(genInfo_token_,GenInfo);
@@ -145,6 +141,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
   // count number of weighted mc events we started with:
   numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+
+  int numpvs =                GetVertices(event);
+  if (numpvs<1) return; // skips event
+  if (debug) cout << "numpvs: " << numpvs << endl;
+
 
   /////////
   ///
@@ -211,8 +212,21 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   ///
   ////////    
   
+  
+    vecPatElectron selectedElectrons_fakeable = GetSelectedElectrons( selectedElectrons_preselected, 10, electronID::electronFakeable );
+    vecPatMuon selectedMuons_fakeable = GetSelectedMuons( selectedMuons_preselected, 10,muonID::muonFakeable);
+
+    //vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
+    //vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
+
+    vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_preselected, 10, muonID::muonTightMvaBased);
+    vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_preselected, 15, electronID::electronTightMvaBased );
+  
+  
+  
   bool skim_statement = true;
-  if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size())>=2;
+  //if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size())>=2;
+  if (skim) skim_statement = (selectedElectrons_tight.size()+selectedMuons_tight.size())>0;
 
   if ( skim_statement )
   {
@@ -282,26 +296,19 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     ///
     ////////
 
-    vecPatElectron selectedElectrons_fakeable = GetSelectedElectrons( selectedElectrons_preselected, 10, electronID::electronFakeable );
-    vecPatMuon selectedMuons_fakeable = GetSelectedMuons( selectedMuons_preselected, 10,muonID::muonFakeable);
 
-    //vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_fakeable, 10, muonID::muonTight);
-    //vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_fakeable, 10, electronID::electronTight );
-
-    vecPatMuon selectedMuons_tight = GetSelectedMuons( selectedMuons_preselected, 10, muonID::muonTightMvaBased);
-    vecPatElectron selectedElectrons_tight = GetSelectedElectrons( selectedElectrons_preselected, 15, electronID::electronTightMvaBased );
 
     if ( jetCleanFakeable )
-      {
-	selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
-	selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
-      }
+    {
+	    // do we really need/want this option?
+	    selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
+	    selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
+    }
     else
-      {
-	//This cleaning for gen-filtered MC samples ONLY!
-	selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
-	selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
-      }
+    {
+	    selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
+	    selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
+    }
 
     selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECup_preselected,selectedMuons_fakeable,0.4);
     selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected,selectedElectrons_fakeable,0.4);
@@ -482,7 +489,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     }
 
     numBadMuons_intree = numBadMu;
-
+    numPVs_intree = numpvs;
     
     wgt_intree = weight;
 

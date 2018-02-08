@@ -184,10 +184,11 @@ namespace ttH
     int genGrandMotherPdgID;
     int flavor;
     double csv;
-    double CSVv2;
+    double DeepCSV;
     double DeepCSVprobb;
     double DeepCSVprobbb;
     double qgid;
+    //bool passPUID;
     int pdgID; //place holder for Geoff's templated functions
     
     void clear(void)

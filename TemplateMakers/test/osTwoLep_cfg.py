@@ -6,8 +6,8 @@ from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
 
 options = VarParsing.VarParsing('analysis')
-options.maxEvents = 200
-options.register("jetCleanFakeable", True,
+options.maxEvents = -1
+options.register("jetCleanFakeable", False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "lepton selecton for jet cleaning")
 options.register("data", True,                                                 # <---------
@@ -33,7 +33,7 @@ isData = options.data
 
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load('FWCore.MessageService.MessageLogger_cfi')
-process.load("Configuration.StandardSequences.MagneticField_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff") # why is this here?
 
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
 
@@ -100,6 +100,8 @@ updateJetCollection(
 ## Bad Muons
 #################################################
 
+# Not clear if this is still needed. For the 
+# moment keep for 80X miniAOD:
 process.badGlobalMuonTagger = cms.EDFilter(
     "BadGlobalMuonTagger",
     muons=cms.InputTag("slimmedMuons"),
@@ -137,12 +139,12 @@ process.load("ttH-13TeVMultiLeptons.TemplateMakers.OSTwoLepAna_cfi")
 
 ### You can re-define the parameters in OSTwoLepAna_cfi.py here (without having to re-compile)
 
-#process.ttHLeptons.LooseCSVWP = cms.double(0.5426) # CSVv2 2016
-#process.ttHLeptons.MediumCSVWP = cms.double(0.8484) # CSVv2 2016
-#process.ttHLeptons.LooseCSVWP = cms.double(0.2219) # DeepCSV 2016
-#process.ttHLeptons.MediumCSVWP = cms.double(0.6324) # DeepCSV 2016
-process.ttHLeptons.LooseCSVWP = cms.double(0.1522) # DeepCSV 2017 preliminary
-process.ttHLeptons.MediumCSVWP = cms.double(0.4941) # DeepCSV 2017 preliminary
+process.ttHLeptons.LooseCSVWP = cms.double(0.5426) # CSVv2 2016 # LepID plugin currently uses pfCombinedInclusiveSecondaryVertexV2BJetTags
+process.ttHLeptons.MediumCSVWP = cms.double(0.8484) # CSVv2 2016 # LepID plugin currently uses pfCombinedInclusiveSecondaryVertexV2BJetTags
+#process.ttHLeptons.LooseCSVWP = cms.double(0.2219) # DeepCSV 2016 # probably won't ever use this (?)
+#process.ttHLeptons.MediumCSVWP = cms.double(0.6324) # DeepCSV 2016 # probably won't ever use this (?)
+#process.ttHLeptons.LooseCSVWP = cms.double(0.1522) # DeepCSV 2017 preliminary # will eventually need this when lepMVA switches to DeepCSV for 2017 data
+#process.ttHLeptons.MediumCSVWP = cms.double(0.4941) # DeepCSV 2017 preliminary # will eventually need this when lepMVA switches to DeepCSV for 2017 data
 process.ttHLeptons.IsHIPSafe = cms.bool(options.hip)
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
 process.ttHLeptons.jets = cms.InputTag("updatedPatJetsTransientCorrectedTagged") #use JEC's from tag
@@ -158,8 +160,8 @@ else:
     process.OSTwoLepAna.setupoptions.isdata = False
     
 process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral"
-#process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags"
-process.OSTwoLepAna.btags.btagdisc = "DeepCSV" # "DeepCSV" adds probb+probbb, otherwise full disc required
+process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags" # DeepCSV still saved (see MultileptonAna.cc)
+#process.OSTwoLepAna.btags.btagdisc = "DeepCSV" # "DeepCSV" adds probb+probbb, otherwise full disc required
 process.OSTwoLepAna.triggers.hltlabel = "HLT"
 
 process.OSTwoLepAna.debug = False
@@ -211,7 +213,7 @@ for mod in process.filters_().itervalues():
     process.ProducersAndFiltersTask.add(mod)
 
 #process.p = cms.Path( process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna * process.SkeletonAnalysis, process.ProducersAndFiltersTask)
-process.p = cms.Path( process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna, process.ProducersAndFiltersTask)
+process.p = cms.Path( process.noBadGlobalMuons * process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna, process.ProducersAndFiltersTask)
 
 # summary
 process.options = cms.untracked.PSet(

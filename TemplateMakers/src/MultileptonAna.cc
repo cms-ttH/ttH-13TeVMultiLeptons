@@ -408,16 +408,19 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       jet.charge = iJet.jetCharge();
 
       string thedisc = btagparams.getParameter<string> ("btagdisc");
-      if(thedisc=="DeepCSV") jet.csv =  iJet.bDiscriminator("pfDeepCSVJetTags:probb") + iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
-      else jet.csv = iJet.bDiscriminator(thedisc);
-      jet.CSVv2 = iJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-      jet.DeepCSVprobb = iJet.bDiscriminator("pfDeepCSVJetTags:probb");
-      jet.DeepCSVprobbb = iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
+      if (!isData)
+      {
+        jet.DeepCSV =  iJet.bDiscriminator("pfDeepCSVJetTags:probb") + iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
+        jet.DeepCSVprobb = iJet.bDiscriminator("pfDeepCSVJetTags:probb");
+        jet.DeepCSVprobbb = iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
+      }
+      jet.csv = iJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
       //jet.qgid = -99.;//iJet.userFloat("qgid");
       jet.qgid = iJet.userFloat("qgid");
       jet.pdgID = iJet.pdgId();
       jet.flavor = iJet.hadronFlavour();
       jetCollection.push_back(jet);
+      //jet.passPUID = PileupJetIdentifier::passJetId( iJet.userInt("pileupJetId:fullId"), PileupJetIdentifier::kLoose ); // apparently only in >90X MINIAOD
 
   }
   std::sort(jetCollection.begin(), jetCollection.end(), [] (ttH::Jet a, ttH::Jet b) { return a.obj.Pt() > b.obj.Pt();});
