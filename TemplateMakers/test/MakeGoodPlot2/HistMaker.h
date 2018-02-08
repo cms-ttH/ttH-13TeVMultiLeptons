@@ -1,13 +1,17 @@
+// HistMaker histogram-making class
+// Created by Geoff Smith, 2017
+
 class HistMaker
 {
     // don't inherit anything
-    // don't even bother defining const./destr.
-        
     public:
+        // everything is public
         
-        HistMaker() { TH1::SetDefaultSumw2(); }
+        HistMaker();
         
         const unsigned int arrsize = 500;
+        
+        int sample = -1;
         
         // you DO need these here!
         TH1D *th1ds[500]; 
@@ -19,6 +23,7 @@ class HistMaker
         TObjArray *objArray;
         
         TTreeReaderValue<double> wgt_intree;
+        TTreeReaderValue<vector<string>> passTrigger_intree;
         
         TTreeReaderValue<vector<ttH::Lepton>> raw_leptons_intree;
         TTreeReaderValue<vector<ttH::Lepton>> preselected_leptons_intree;
@@ -62,6 +67,9 @@ class HistMaker
         void collectResults();
         string eventselection();
         //void get_rate_info(int samp);
+        bool removeDatasetOverlaps();
+        bool passesDatasetDependentTriggers(int mysample);
+        bool passesAnyTrigger();
         
         //HistMaker(TTreeReader & newreader);
 
@@ -74,3 +82,21 @@ class HistMaker
         bool ele_tight(ttH::Electron ele);
         bool mu_tight(ttH::Muon mu);
 };
+
+HistMaker::HistMaker()
+{
+    TH1::SetDefaultSumw2();  
+    
+    // Getting the sample number this way due to limitations of TTreeProcessorMP   
+    ifstream passedSample;
+    passedSample.open("current_samp.txt");
+    passedSample >> sample;
+    passedSample.close();
+    
+    // doing it this way instead when using condor/batch:
+//     auto samp_env_var = getenv("SAMPLE");
+//     string samp_env_var_string = samp_env_var;
+//     stringstream samp_env_var_ss(samp_env_var_string);
+//     samp_env_var_ss >> sample;
+    
+}

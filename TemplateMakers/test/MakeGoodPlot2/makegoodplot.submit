@@ -1,0 +1,32 @@
+thisdir = $ENV(PWD)
+
+my_condor_path = /afs/crc.nd.edu/user/g/gsmith15/Public/condor_output
+
+universe      = vanilla
+executable    = makegoodplot.sh
+arguments     = $(Process) $(thisdir)
+output        = $(my_condor_path)/out/$(Process).stdout
+error         = $(my_condor_path)/err/$(Process).stderr
+log           = $(my_condor_path)/$(Process).log
+
+should_transfer_files = yes
+when_to_transfer_output = on_exit
+request_memory = 30000
+request_disk = 1024
+request_cpus = 12
+expected_runtime_minutes = 20
+
+job_machine_attrs = Machine
+job_machine_attrs_history_length = 5
+requirements = target.machine =!= MachineAttrMachine1 && \
+   target.machine =!= MachineAttrMachine2 && \
+   target.machine =!= MachineAttrMachine3
+periodic_hold = JobStatus == 2 && \
+   CurrentTime - EnteredCurrentStatus > 60 * $(expected_runtime_minutes)
+periodic_hold_subcode = 1
+periodic_release = HoldReasonCode == 3 && HoldReasonSubCode == 1 && \
+   JobRunCount < 5
+periodic_hold_reason = ifthenelse(JobRunCount<5,"Ran too long $(JobRunCount), will retry","Ran too long")
+
+# this is size of array in makegoodplot.sh:
+queue 57

@@ -1,8 +1,8 @@
-// Basic c++ and ROOT includes, and other external code goes here. 
-// For new histograms, code should be included at the top of 
-// dooneevent.h. For new plots, code should be included at the
-// top of drawall.h. Everything else should be included at the
-// top of wrapper.h.
+// Basic c++ and ROOT includes, and other external code goes here, as 
+// well as some basic header files for the Histmaker and MakeGoodPlot
+// classes. However, new code for filling histograms should be 
+// included at the top of dooneevent.h. For new plots, code 
+// should be included at the top of drawall.h. 
 
 // c++
 #include <iostream>
@@ -53,6 +53,7 @@
 
 // Other stuff...
 #include "../variables.h"
+#include "../functionsTTH.cc" // should relocate this
 // #include "../sample_lists.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
@@ -71,3 +72,31 @@
 // #pragma omp parallel for // <- never got this to work
 
 #endif
+
+// end external includes
+
+// --------- Header files in the this (MakeGoodPlot2) directory ---------
+
+#include "utils.h"
+
+// Stuff used by HistMaker
+#include "loadsample.h"
+#include "HistMaker.h"
+#include "datasets.h"
+#include "bookhistos.h"
+#include "setbranchaddresses.h"
+#include "lep_selection.h"
+#include "dooneevent.h" // <-- functions for filling hists are included inside this file
+#include "run.h"
+#include "collectresults.h"
+#include "triggerselection.h"
+#include "eventselection2.h"
+
+// Stuff used by MakeGoodPlot
+#include "MakeGoodPlot.h"
+#include "nicepalette.h"
+#include "rateinfo.h"
+#include "setup.h"
+#include "GoodPlot.h"
+#include "getroccurve.h"
+#include "drawall.h" // <-- functions for making plots are included inside this file

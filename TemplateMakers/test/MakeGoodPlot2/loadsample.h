@@ -25,131 +25,185 @@ double getNumInitialMCevents (int sample, TChain &ch)
     return returnedEvents;
 }
 
-double loadsample(const int samp, TChain &ch)
+//double loadsample(const int samp, TChain &ch)
+TString loadsample(const int samp)
 {
-    double numgen = 1.;
+    bool atND = true; // Choose whether files are located at ND or at CERN (on an ndpc).
+    TString thisround = "EFT_test_19_12_17";
     
-    TString basedir = "/store/ndpc6disk2/gesmith/crab/";     // The directory on ndpc disk where your samples are located.
+    TString basedir = "/hadoop/store/user/gesmith/crab/"+thisround+"/";     // The directory on hadoop where your samples are located.
+    if (!atND) TString basedir = "/store/ndpc6disk2/gesmith/crab/";         // The directory on ndpc disk where your samples are located.
 
-                
+    
+    TString thissample = "none";
+    TString thissubsample = "";
+    
     if (samp==0) // data
     {
-            cout << "This sample has not been specified. See loadsample." << endl;
-
+        //thissample = "__SingleMuon"; // temp
+        cout << "Using sample=0 for data is deprecated. Use 100-104 instead. See loadsample.h." << endl;
     }
     else if (samp==1) // ttH
     {                        
-            TString basedir_plus = "EFT_test_19_12_17__ttH/";                        // subdirectory for this sample
-            TString thesample = basedir + basedir_plus + "*.root";
-            ch.Add(thesample);
+        thissample = "ttH";
     }        
     else if (samp==5) // TTJets
     {
-	    TString basedir_plus = "EFT_test_19_12_17__ttJets/";
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);             
+	    thissample = "ttJets";
     }
     else if (samp==6) // ZJets (aka Drell Yan)
     {
-            TString basedir_plus = "EFT_test_19_12_17__DYJets_M50/";
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
+        thissample = "DYJets_M50";
     }
     else if (samp==7) // WJets
     {
-            TString basedir_plus = "EFT_test_19_12_17__WJets/";
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);        
+        thissample = "WJets";
     }
     else if (samp==8) // TTWJets
     {                        
-            TString basedir_plus = "EFT_test_19_12_17__ttW/";
-            TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample); 
+        thissample = "ttW";
     }
     else if (samp==9) // TTZJets
     {
-            TString basedir_plus = "EFT_test_19_12_17__ttZ/";
-            TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
+        thissample = "ttZ";
     }
     else if (samp==10) // diboson (WZ)
     {
-            TString basedir_plus = "EFT_test_19_12_17__WZ/";
-            TString thesample = basedir + basedir_plus + "*.root";
-            ch.Add(thesample);
+        thissample = "WZ";
     }
     else if (samp==11) // diboson (ZZ)
     {
-            TString basedir_plus = "EFT_test_19_12_17__ZZ/";
-            TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
+        thissample = "ZZ";
     }
     else if (samp==12) // diboson (WW)
     {
-            TString basedir_plus = "EFT_test_19_12_17__WW/";
-            TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
+        thissample = "WW";
     }
     else if (samp==13) // dilepton ttbar
     {
-	    TString basedir_plus = "EFT_test_19_12_17__ttJets_Dilept/";
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
+	    thissample = "ttJets_Dilept";
     }
     else if (samp==14) // ttbar: 1l from top
     {
-	    TString basedir_plus = "EFT_test_19_12_17__ttJets_SingleLeptFromT/";
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);       
+	    thissample = "ttJets_SingleLeptFromT";
     }
     else if (samp==15) // ttbar: 1l from anti-top
     {
-	    TString basedir_plus = "EFT_test_19_12_17__ttJets_SingleLeptFromTbar/";
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);    
+	    thissample = "ttJets_SingleLeptFromTbar";  
     }
     else if (samp==16) // Drell Yan (low mass)
     {
-	    TString basedir_plus = "EFT_test_19_12_17__DYJets_M10to50/";                                                // <-- to update
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);         
+	    thissample = "DYJets_M10to50";                                                // <-- to update     
     }
     else if (samp==17) // SingleTop_tWchan_top
     {
-	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_tWchan_top/";                                                // <-- to update
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);        
+	    thissample = "SingleTop_tWchan_top";                                                // <-- to update     
     }
     else if (samp==18) // SingleTop_tWchan_antitop
     {
-	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_tWchan_antitop/";                                                // <-- to update
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);          
+	    thissample = "SingleTop_tWchan_antitop";                                                // <-- to update      
     }
     else if (samp==19) // SingleTop_tchan_top
     {
-	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_tchan_top/";                                                // <-- to update
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);      
+	    thissample = "SingleTop_tchan_top";                                                // <-- to update     
     }
     else if (samp==20) // SingleTop_tchan_antitop
     {
-	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_tchan_antitop/";                                                // <-- to update
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);     
+	    thissample = "SingleTop_tchan_antitop";                                                // <-- to update  
     }
     else if (samp==21) // SingleTop_schan
     {
-	    TString basedir_plus = "EFT_test_19_12_17__SingleTop_schan/";                                                // <-- to update
-	    TString thesample = basedir + basedir_plus + "*.root";
-	    ch.Add(thesample);
+	    thissample = "SingleTop_schan";                                                // <-- to update
+    }
+    
+    // data
+    else if (samp==100 || (samp>=1000 && samp<1010)) // SingleMu data
+    {
+	    thissample = "SingleMuon";
+    }    
+    else if (samp==101 || (samp>=1010 && samp<1020)) // SingleElectron data
+    {
+	    thissample = "SingleElectron";
+    }
+    else if (samp==102 || (samp>=1020 && samp<1030)) // DoubleMu data
+    {
+	    thissample = "DoubleMuon";
+    }    
+    else if (samp==103 || (samp>=1030 && samp<1040)) // DoubleElectron data
+    {
+	    thissample = "DoubleEG";
+    }    
+    else if (samp==104 || (samp>=1040)) // Muon+Electron data
+    {
+	    thissample = "MuonEG";
+    }     
+        
+    else cout << "This sample has not been specified. See loadsample." << endl;
+    
+    if (samp>=1000)
+    {
+        if ((samp%10)==0)
+        {
+            thissubsample = "_Run2016Bv1";
+        }
+        else if ((samp%10)==1)
+        {
+            thissubsample = "_Run2016Bv2";
+        }    
+        else if ((samp%10)==2)
+        {
+            thissubsample = "_Run2016C";
+        }    
+        else if ((samp%10)==3)
+        {
+            thissubsample = "_Run2016D";
+        }    
+        else if ((samp%10)==4)
+        {
+            thissubsample = "_Run2016E";
+        }    
+        else if ((samp%10)==5)
+        {
+            thissubsample = "_Run2016F";
+        }    
+        else if ((samp%10)==6)
+        {
+            thissubsample = "_Run2016G";
+        }    
+        else if ((samp%10)==7)
+        {
+            thissubsample = "_Run2016H";
+        }    
+    
+        else cout << "This sub-sample has not been specified. See loadsample." << endl;
     }
     
     
-    else cout << "This sample has not been specified. See loadsample." << endl;
+    // now actually add the files to the chain:
+    if (!atND)
+    {
+        TString basedir_plus = thisround+"/"+thissample+"/";
+        TString thesample = basedir + basedir_plus + "*.root";
+        //ch.Add(thesample);
+    }
+    else
+    {
+        // Need to do it this way because crab creates multiple sub-dirs per sample and TChain isn't smart enough to handle that without some help:
+        TString lsstring = "ls -d "+basedir+"*/crab_"+thisround+"__"+thissample+"*/*/*/*.root > inputfiles__"+thissample+".txt"; // .!
+        if (samp>99 && samp<1000) lsstring = "find "+basedir+thissample+"/ -name \"*.root\" | grep -v \"failed\" > inputfiles__"+thissample+".txt";
+        if (samp>999) lsstring = "find "+basedir+thissample+"/crab_"+thisround+"__"+thissample+thissubsample+" -name \"*.root\" | grep -v \"failed\" > inputfiles__"+thissample+thissubsample+".txt";
+        // or, add " | sed 's#/hadoop/#root://deepthought.crc.nd.edu//#'" before the ">" if you want to use xrootd instead of fuse.
+        //gROOT->ProcessLine(lsstring);
+        system(lsstring);
+        
+        
+        //TFileCollection fc("dum","","inputfiles__"+thissample+thissubsample+".txt");
+        //ch.AddFileInfoList(fc.GetList());
+    }
     
+    //double numgen = 1.;
+    //if (samp<100) numgen = getNumInitialMCevents(samp,ch); // use this to get numgen
+    //return numgen;
     
-    numgen = getNumInitialMCevents(samp,ch); // use this to get numgen
-    return numgen;
+    return thissample+thissubsample;
 }

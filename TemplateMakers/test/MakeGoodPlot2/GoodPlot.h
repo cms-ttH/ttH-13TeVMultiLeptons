@@ -1,8 +1,11 @@
+// Created by Geoff Smith, 2017.
+
 class GoodPlot : public TCanvas
 {
     public:
         GoodPlot(TString name, string legopt="none");
         TLegend *theleg;
+        TH1D *sumdata=0;
         THStack *thestack;
         THStack *thebackstack;
         TGraphAsymmErrors *sumMCbandNoStat;
@@ -15,7 +18,8 @@ class GoodPlot : public TCanvas
         void addTGraphAsErrors(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i, TString ylabel="Efficiency", double ymin=0., double ymax=1.05);
         void addEfficiencyPlot(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i);
         //void addROC(... // To Do
-        void addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", TString drawopt="hist,PLC");
+        void addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
+        void addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="E");
         void addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", TString drawopt="hist,PLC");
         void addPlot2D(MakeGoodPlot &thisMGP, int i, TString thehist="same");
         
@@ -101,11 +105,13 @@ void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
         theleg->Draw();
     }    
 }
-void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, TString drawopt)
+void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt)
 {
     this->cd();
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
-    myhist->SetLineWidth(2);   
+    if (rebin>0) myhist->Rebin(rebin);
+    myhist->SetLineWidth(2);
+    //myhist->SetLineColor(1);
     myhist->GetXaxis()->SetTitleFont(globalfont);
     myhist->GetYaxis()->SetTitleFont(globalfont);     
     if (strcmp(myhist->GetYaxis()->GetTitle(),"")==0) myhist->GetYaxis()->SetTitle("Events");
@@ -131,9 +137,54 @@ void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString le
         if (legtext=="samp") theleg->AddEntry(myhist,thisMGP.sample_names[thisMGP.samples[i]],"L");
         else theleg->AddEntry(myhist,legtext,"L");
         theleg->Draw();
-    }    
+    } 
+    
+    if (i==(thisMGP.numsamples-1)) thisMGP.canvas.Add(this);
 }
+void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt)
+{
+    this->cd();
+    auto myhist = (TH1D*)thisMGP.hist[i].FindObject(thehist);
 
+    if (rebin>0) myhist->Rebin(rebin);
+    myhist->SetLineWidth(2);
+    myhist->SetLineColor(1); // should already be this but whatever
+    myhist->GetXaxis()->SetTitleFont(globalfont);
+    myhist->GetYaxis()->SetTitleFont(globalfont);     
+    if (strcmp(myhist->GetYaxis()->GetTitle(),"")==0) myhist->GetYaxis()->SetTitle("Events");       
+    //cout << "asdf" << endl;
+    if (sumdata==0) 
+    {
+        //cout << "asdf0.1" << endl;
+        sumdata = (TH1D*)myhist->Clone();
+    }
+    else sumdata->Add(myhist);
+    //cout << "asdf2" << endl;
+    if (maxsofar<sumdata->GetMaximum()) maxsofar = sumdata->GetMaximum();
+    
+    if (exists) 
+    {
+        drawopt=drawopt+",same";
+        //TIter iter(this->GetListOfPrimitives());
+        //TH1D *h = (TH1D*)iter.Next();
+        //h->SetAxisRange(0.,1.1*maxsofar,"Y");
+    }
+    
+    if (i==(thisMGP.numsamples-1))
+    {    
+        sumdata->Draw(drawopt);
+        exists = true;
+    
+        if (drawleg)
+        {
+            if (legtext=="samp") theleg->AddEntry(sumdata,"data","L");
+            else theleg->AddEntry(sumdata,legtext,"L");
+            theleg->Draw();
+        } 
+    
+        thisMGP.canvas.Add(this);
+    }
+}
 void GoodPlot::addPlot2D(MakeGoodPlot &thisMGP, int i, TString thehist)
 {        
     this->cd();
@@ -154,8 +205,8 @@ void GoodPlot::addPlot2D(MakeGoodPlot &thisMGP, int i, TString thehist)
     
 void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin)
 {
+    //cout << "inside00" << endl;
     this->cd();
-    
     bool logplot = false;
     
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
@@ -163,6 +214,7 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     clean_neg_bins(*myhist);       
     
     int thisSamp = thisMGP.samples[i];
+    if (thisSamp>99) cout << "Trying to add a data sample to the stack. Fix your code..." << endl;
     int numsamps = thisMGP.numsamples;
     stacksamps.push_back(thisMGP.sample_names[thisSamp]);
     stacksampints.push_back(thisSamp);
@@ -208,12 +260,15 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
     
     addStack(thisMGP, thehist, i, legtext, rebin); // <- this should already have scaled the hist, cleaned neg bins, rebinned etc.
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
-    
-    auto stackarray = thebackstack->GetStack();    
+    auto stackarray = thebackstack->GetStack();   
+    if (stackarray->GetEntries()<1)
+    {
+        cout << "Empty background stack. Doing nothing..." << endl; 
+        return;
+    }
     auto sumhist = (TH1*)stackarray->Last();
     TGraphAsymmErrors *sumMCband = new TGraphAsymmErrors(sumhist);
     if (!exists) sumMCbandNoStat = new TGraphAsymmErrors(sumhist);
-    
     
     int thisSamp = thisMGP.samples[i];
     int numsamps = thisMGP.numsamples;
@@ -246,22 +301,23 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
         
     }
     
-    cout << "  " << endl;
-    cout << "  " << endl;
+    //cout << "  " << endl;
+    //cout << "  " << endl;
     double dummyxpoint;
     double dummyypoint;
     int dummyint = sumMCband->GetPoint(sumhist->GetMaximumBin()-1,dummyxpoint,dummyypoint);
     //cout << maxamount << " " << dummyxpoint << "  " << dummyypoint << endl;
     double maxamount = dummyypoint + sumMCband->GetErrorYhigh(sumhist->GetMaximumBin()-1);
-    cout << maxamount << endl;
+    //cout << maxamount << endl;
     maxamount = std::max(maxamount,thestack->GetMaximum());    
-    cout << maxamount << thestack->GetMaximum() << endl;
+    //cout << maxamount << thestack->GetMaximum() << endl;
     thestack->SetMaximum(1.3*maxamount); // sumhist
+    maxsofar = 1.3*maxamount;
     this->Update();
     
     exists = true;    
     
-    if (i==(numsamps-1))
+    if ( (!thisMGP.hasdata && i==(numsamps-1)) || (thisMGP.hasdata && i==(numsamps-(thisMGP.numdatasamples+1))) )
     {
         // at the end, add the overall lumi uncertainty:
         
@@ -285,7 +341,7 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
             theleg->Draw();
         }      
         thisMGP.CMSInfoLatex->Draw();
-        thisMGP.canvas.Add(this);
+        if (!thisMGP.hasdata) thisMGP.canvas.Add(this);
     }    
        
 }

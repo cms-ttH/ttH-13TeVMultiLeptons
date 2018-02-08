@@ -21,7 +21,7 @@ string HistMaker::eventselection()
         {            
             if ((*tight_leptons_intree)[0].obj.Pt()>25 && (*tight_leptons_intree)[1].obj.Pt()>20)
             {
-                for (const auto & ele : *tight_electrons_intree) 
+                for (const auto & ele : *tight_electrons_intree)
                 {
                     if (!ele.isGsfCtfScPixChargeConsistent) return "null";
                     if (ele.lepMVA<0.5) return "null";
@@ -30,6 +30,7 @@ string HistMaker::eventselection()
                 {
                     if (!(mu.chargeFlip<0.2)) return "null";
                     if (mu.lepMVA<0.5) return "null";
+                    if (mu.idMediumPOG==false) return "null";
                 }
                 
                 if (numleps==2)
@@ -133,6 +134,28 @@ string HistMaker::eventselection()
             } // end lep pt req
         } // end dilep mass cut
     } // end ge2 leps
-    
+    else if (numleps==1)
+    {
+        if ((*tight_leptons_intree)[0].obj.Pt()>25)
+        {
+            bool isfake=false;
+            
+            // "poor man's" single lep
+            for (const auto & lep : *preselected_leptons_intree) 
+            {
+                if (lep.lepMVA<0.5) isfake=true;
+            }
+            if (!isfake) return "null";
+            
+            if (nummuons==1)
+            {   
+                return "1l_mu";
+            }
+            else if (numeles==1)
+            {
+                return "1l_e";
+            }
+        }
+    }
     return "null"; // <-- definitely can get here, especially if sample isn't a skim
 } //end function

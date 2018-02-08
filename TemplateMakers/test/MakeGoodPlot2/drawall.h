@@ -38,12 +38,23 @@ void MakeGoodPlot::drawAllToFile(string plotfile, string plotoption)
     
     else if (plotoption=="png" || plotoption=="pdf")
     {        
+        
+        ofstream htmlfile;
+        string plotsfile = plotfile+"plots.html";
+        htmlfile.open(plotsfile);
+        
         for (int i=0; i<canvas.GetEntries(); i++)
         {
             auto tmpcan = (TCanvas*)canvas[i];
-            TString plotfilename = plotfile+"_"+tmpcan->GetName()+"."+plotoption;
+            TString plotfilename = plotfile+"output_"+tmpcan->GetName()+"."+plotoption;
             tmpcan->SaveAs(plotfilename);
+            plotfilename = "output_";
+            plotfilename = plotfilename+tmpcan->GetName()+"."+plotoption;
+            TString htmlvoodoo = "<div class=\"pic photo-link smoothbox\" id=\""+plotfilename+"\"><a href=\""+plotfilename+"\" rel=\"gallery\"><img src=\""+plotfilename+"\" class=\"pic\"/></a><div class=\"desc\">"+tmpcan->GetName()+"</div></div>";
+            htmlfile << htmlvoodoo << "\n";
         }
+        
+        htmlfile.close();
     }    
     
     else cout << "Invalid option for saving plots. Choose from png, pdf or root" << endl;
@@ -62,19 +73,20 @@ void MakeGoodPlot::drawAllToWebArea(string plotfile, string plotoption)
         return;
     }
     
-    plotfile = "~/www/"+plotfile;
+    plotfile = "/afs/crc.nd.edu/user/g/gsmith15/www/"+plotfile; // the "~" doesn't seem to work with ofstream files
     
     string syscmd = "mkdir "+plotfile;
     system(syscmd.c_str());
     
-    syscmd = "cp index.php "+plotfile+"/.";
+    syscmd = "cp index.html "+plotfile+"/.";
     system(syscmd.c_str());
+         
+    //plotfile = plotfile+"/images";
+    //syscmd = "mkdir "+plotfile;
+    //system(syscmd.c_str());
     
-    plotfile = plotfile+"/images";
-    syscmd = "mkdir "+plotfile;
-    system(syscmd.c_str());
-    
-    plotfile = plotfile+"/output";
+    //plotfile = plotfile+"/output";
+    plotfile = plotfile+"/";
     drawAllToFile(plotfile,plotoption);
     
 }

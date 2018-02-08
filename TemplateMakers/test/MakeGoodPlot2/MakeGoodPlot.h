@@ -1,8 +1,18 @@
+// MakeGoodPlot plot-making class.
+// Created by Geoff Smith, 2017. 
+//   Re-written from previous 2012-2017 version, 
+//   with some functionality moved to HistMaker 
+//   class and various helper functions/scripts.
+// See github.com/cms-ttH/ttH-13TeVMultiLeptons/tree/EFT_code/TemplateMakers/test/MakeGoodPlot2.
+// 
+
 class MakeGoodPlot
 {
     public:
     
         int numsamples = 1;
+        int numdatasamples = 0;
+        bool hasdata = false;
         int numtotalhists = 0;
         std::vector<int> samples;
         vector<TFile*> files;
@@ -18,17 +28,19 @@ class MakeGoodPlot
         TPaveText *pt[50];
         TPaveText *pt0;
         TPaveText *pt1; 
-	const double lumi2016 = 36814.; // 2.5%, pb^-1, https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
-	const double lumi2016up = (1.+0.025)*lumi2016;
-	const double lumi2016down = (1.-0.025)*lumi2016;
-	const double lumi2017 = 42710.; // 5% with normtag
-	const double lumi2017up = (1.+0.05)*lumi2017;
-	const double lumi2017down = (1.-0.05)*lumi2017;
-        const double lumi = lumi2016+lumi2017;
-	const double lumiup = lumi2016up+lumi2017up; // note: for 2016+2017, this is not lumi*(1.+sqrt(0.025*0.025+0.05*0.05)).
-	const double lumidown = lumi2016down+lumi2017down;
-	// double lumi = 80000.; // pb^-1 // a rough guess
-	//double scale[20];
+	    const double lumi2016 = 36814.; // 2.5%, pb^-1, https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
+	    const double lumi2016up = (1.+0.025)*lumi2016;
+	    const double lumi2016down = (1.-0.025)*lumi2016;
+	    const double lumi2017 = 42710.; // 5% with normtag
+	    const double lumi2017up = (1.+0.05)*lumi2017;
+	    const double lumi2017down = (1.-0.05)*lumi2017;
+        //const double lumi = lumi2016+lumi2017;
+	    //const double lumiup = lumi2016up+lumi2017up; // note: for 2016+2017, this is not lumi*(1.+sqrt(0.025*0.025+0.05*0.05)).
+	    //const double lumidown = lumi2016down+lumi2017down;
+        const double lumi = lumi2016;
+	    const double lumiup = lumi2016up;
+	    const double lumidown = lumi2016down;	    
+	    
         
         std::vector<TObjArray> hist;
         TObjArray canvas;
@@ -44,7 +56,8 @@ class MakeGoodPlot
         void lepeff_plots();
         void jetcleaning_plots();
         void standard_plots();
-
+        
+        MakeGoodPlot() { cout << "Default constructor of MakeGoodPlot doesn't do anything. Use a different constructor." << endl; }
         MakeGoodPlot(std::vector<int> thesamps);
         MakeGoodPlot(std::vector<int> thesamps, std::vector<TObjArray> exthists);
         
