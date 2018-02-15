@@ -9,6 +9,7 @@
 
 #include <chrono>
 
+#include "TApplication.h"
 #include "TSystem.h"
 #include "TH1.h"
 #include "TChain.h"
@@ -19,7 +20,7 @@
 #include "TLorentzVector.h"
 
 #include "helperToolsEFT.h"
-#include "loadEFTSamples.h"
+// #include "loadEFTSamples.h"
 #include "selectionEFT.h"
 
 #include "stopwatch.h"
@@ -40,25 +41,6 @@ void printProgress(int current_index, int total_entries) {
         float fraction = 100.*current_index/total_entries;
         cout << int(fraction) << " % processed " << endl;
     }
-}
-
-template <typename H> void createOutputRootFile(
-    H output_histogram,
-    TString file_suffix_name,
-    TString sample_name,
-    TString output_dir,
-    int job_no
-) {
-    TString output_root_file = sample_name + "_" + file_suffix_name + ".root";
-    if (job_no > -1) {
-        output_root_file = sample_name + "_" + file_suffix_name + "_" + std::to_string(job_no) + ".root";
-    }
-    cout << "Output File: " << output_dir + output_root_file << endl;
-    TFile* out_f = new TFile(output_dir + output_root_file,"RECREATE");
-    output_histogram->Write();
-    out_f->Close();
-
-    return;
 }
 
 std::map<TString,SelectionParameters> getSelectionParameters() {
@@ -420,26 +402,29 @@ void readSelectionMap(std::map<TString,SelectionParameters> s_map) {
     }
 }
 
-void run_it(
-    TString sample_name,
-    vector<TString> bin_names,
-    TString output_dir,
-    TString output_file_name,
-    int job_no,
-    int total_jobs
-) {
-    if (USE_STOPWATCH) my_stopwatch.startTimer("code_setup");
-
-    cout << "Sample: " << sample_name << endl;
-
+void makeEFTSelectionTree(TString output_filename, TString input_filenames_spec) {
     if (USE_STOPWATCH) my_stopwatch.startTimer("load_files");
-    FileLoader file_loader(sample_name,-1);
-    TChain* chain = file_loader.chain;
+    TChain chain("OSTwoLepAna/summaryTree");
+    TH1D hsum("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
+
+    TString fname;
+    ifstream input_filenames(input_filenames_spec);
+    while (input_filenames >> fname) {
+        chain.Add(fname);
+
+        auto file = TFile::Open(fname,"READONLY");
+        if (file->IsOpen()) {
+            TH1D *hist;
+            file->GetObject("OSTwoLepAna/numInitialWeightedMCevents", hist);
+            hsum.Add(hist);
+        }
+        delete file;
+    }
     if (USE_STOPWATCH) my_stopwatch.updateTimer("load_files");
 
 
-    int total_count = file_loader.total_count;
-    int chainentries = chain->GetEntries();   
+    int total_count = hsum.GetBinContent(1);
+    int chainentries = chain.GetEntries();
     int last_entry = chainentries;
     int first_entry = 0;
 
@@ -447,17 +432,6 @@ void run_it(
         return;
     }
 
-    if (job_no > -1) {
-        // Break the number of entries up for batch running
-        int entries_per_job = ceil(float(chainentries)/float(total_jobs));
-        first_entry = job_no*entries_per_job;
-        last_entry = (job_no+1)*entries_per_job;
-        if (last_entry > chainentries) {
-            last_entry = chainentries;
-        }
-    }
-
-    cout << "job_no: " << job_no << endl;
     cout << "chainentries: " << chainentries << endl;
     cout << "first entry: " << first_entry << endl;
     cout << "last entry: " << last_entry << endl;
@@ -479,19 +453,19 @@ void run_it(
     
     // Geoff's trees
     //skim = true;
-    chain->SetBranchAddress("mcwgt",               &mcwgt_intree);
-    chain->SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
-    chain->SetBranchAddress("genJets",             &genJets_intree);
-    chain->SetBranchAddress("loose_jets",          &loose_jets_intree);
-    chain->SetBranchAddress("tight_electrons",     &tight_electrons_intree);
-    chain->SetBranchAddress("tight_muons",         &tight_muons_intree);
-    chain->SetBranchAddress("raw_electrons",       &raw_electrons_intree);
-    chain->SetBranchAddress("raw_muons",           &raw_muons_intree);
-    chain->SetBranchAddress("raw_jets",            &raw_jets_intree);
+    chain.SetBranchAddress("mcwgt",               &mcwgt_intree);
+    chain.SetBranchAddress("pruned_genParticles", &pruned_genParticles_intree);
+    chain.SetBranchAddress("genJets",             &genJets_intree);
+    chain.SetBranchAddress("loose_jets",          &loose_jets_intree);
+    chain.SetBranchAddress("tight_electrons",     &tight_electrons_intree);
+    chain.SetBranchAddress("tight_muons",         &tight_muons_intree);
+    chain.SetBranchAddress("raw_electrons",       &raw_electrons_intree);
+    chain.SetBranchAddress("raw_muons",           &raw_muons_intree);
+    chain.SetBranchAddress("raw_jets",            &raw_jets_intree);
 
     Int_t cachesize = 250000000;   //500 MBytes
     //  Int_t cachesize = 1024000000;   //1 GBytes
-    chain->SetCacheSize(cachesize);
+    chain.SetCacheSize(cachesize);
 
     vector<TString> bin_name_map = {
         "null",
@@ -566,7 +540,7 @@ void run_it(
 
     // Event map histograms
     TH2D* bin_mapping_hist = new TH2D(
-        "Event Pass Mapping",
+        "event_map",
         "Event Pass Mapping",
         bin_name_map.size(),0 - bin_offset,bin_name_map.size() - bin_offset,
         bin_name_map.size(),0 - bin_offset,bin_name_map.size() - bin_offset
@@ -598,7 +572,7 @@ void run_it(
         if (USE_STOPWATCH) my_stopwatch.startTimer("event_loop");
         printProgress(i - first_entry,last_entry - first_entry);
         if (USE_STOPWATCH) my_stopwatch.startTimer("get_entry");
-        chain->GetEntry(i);
+        chain.GetEntry(i);
         if (USE_STOPWATCH) my_stopwatch.updateTimer("get_entry");
 
 
@@ -699,7 +673,11 @@ void run_it(
 
     //if (USE_STOPWATCH) my_stopwatch.startTimer("write_files");
     // Create event map files
-    createOutputRootFile(bin_mapping_hist,"event_map",sample_name,output_dir,job_no);
+    {
+        TFile out(output_filename, "NEW");
+        assert(out.IsOpen());
+        bin_mapping_hist->Write();
+    }
     //if (USE_STOPWATCH) my_stopwatch.updateTimer("write_files");
 
     if (USE_STOPWATCH) my_stopwatch.readAllTimers();
@@ -719,17 +697,3 @@ void run_it(
     5l_m_0bjets
     6l_0bjets
 */
-
-void makeEFTSelectionTree(TString sample_name="ttW",int job_no=-1,int total_jobs=0) {
-    TString output_dir = "/afs/crc.nd.edu/user/a/awightma/Public/";
-    TString output_file_name = output_dir + sample_name + "_acceptance_table.txt";
-    if (job_no > -1) {
-        output_dir = "/afs/crc.nd.edu/user/a/awightma/Public/condor_output/";
-        output_file_name = output_dir + sample_name + "_acceptance_table_" + std::to_string(job_no) + ".txt";
-    }
-
-    vector<TString> bin_names {};
-    //vector<TString> bin_names {"2los_6jets","2lss_p_6jets","2lss_m_6jets","3l_ppm_4jets","3l_mmp_4jets","4l_2jets"};
-
-    run_it(sample_name,bin_names,output_dir,output_file_name,job_no,total_jobs);
-}

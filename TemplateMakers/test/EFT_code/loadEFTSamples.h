@@ -50,6 +50,23 @@ private:
         }
     }
 public:
+    FileLoader(const std::vector<std::string>& filenames) {
+        chain = new TChain("OSTwoLepAna/summaryTree");
+        hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
+        for (const auto& fn: filenames) {
+           auto fname = fn.c_str();
+           chain->Add(fname);
+
+           TFile file(fname,"READONLY");
+           if (file.IsOpen()) {
+              TH1D *hist;
+              file.GetObject("OSTwoLepAna/numInitialWeightedMCevents", hist);
+              hist_sum->Add(hist);
+           }
+        }
+        total_count = hist_sum->GetBinContent(1);
+    };
+
     FileLoader(TString sample, int file_index=-1) {
         chain = new TChain("OSTwoLepAna/summaryTree");
         hist_sum = new TH1D("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
