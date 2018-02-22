@@ -407,13 +407,10 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       }
       jet.charge = iJet.jetCharge();
 
-      string thedisc = btagparams.getParameter<string> ("btagdisc");
-      if (!isData)
-      {
-        jet.DeepCSV =  iJet.bDiscriminator("pfDeepCSVJetTags:probb") + iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
-        jet.DeepCSVprobb = iJet.bDiscriminator("pfDeepCSVJetTags:probb");
-        jet.DeepCSVprobbb = iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
-      }
+      //string thedisc = btagparams.getParameter<string> ("btagdisc"); // <- is this still used/needed elsewhere?
+      jet.DeepCSV =  iJet.bDiscriminator("pfDeepCSVJetTags:probb") + iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
+      jet.DeepCSVprobb = iJet.bDiscriminator("pfDeepCSVJetTags:probb");
+      jet.DeepCSVprobbb = iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
       jet.csv = iJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
       //jet.qgid = -99.;//iJet.userFloat("qgid");
       jet.qgid = iJet.userFloat("qgid");
