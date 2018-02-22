@@ -6,6 +6,7 @@ void HistMaker::setBranchAddresses( TTreeReader & newreader )
     
     wgt_intree = TTreeReaderValue<double>(newreader, "wgt");       
     passTrigger_intree = TTreeReaderValue<vector<string>>(newreader, "passTrigger");
+    numPVs_intree = TTreeReaderValue<int>(newreader, "numPVs");
     
     raw_electrons_intree = TTreeReaderValue<vector<ttH::Electron>>(newreader, "raw_electrons");    
     //raw_leptons_intree = TTreeReaderValue<vector<ttH::Lepton>>(newreader, "raw_leptons");

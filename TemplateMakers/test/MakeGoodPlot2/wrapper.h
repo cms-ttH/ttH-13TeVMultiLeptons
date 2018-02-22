@@ -97,13 +97,13 @@ void wrapper(std::vector<int> samples, int mode=2)
         // Now do something with the hists (draw 'em, etc.)
 
         // This loads the hists from file and prepares to make the plots:
-        MakeGoodPlot *newplots = new MakeGoodPlot(samples);
+        MakeGoodPlot *newplots = new MakeGoodPlot(samples,"/hadoop/store/user/gesmith/lobster_test_20180220_1204");
 
         // Then, picking one of these will run the "drawall" function (see drawall.h), and save resulting plots to
         // file/web area, or plot directly to screen (in x-windows):
     
         //newplots->drawAllToScreen();
         //newplots->drawAllToFile("plttest","pdf");
-        newplots->drawAllToWebArea("EFT_all_plots_1_2_18_no_jet_btag_req__test_apply_lepSFs__explicit_idMediumPOG_muons__geq3jetsTest","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
+        newplots->drawAllToWebArea("EFT_all_plots_20_2_18_no_jet_btag_req__test_apply_lepSFs__explicit_idMediumPOG_muons__firstlobstertest","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
     }
 }

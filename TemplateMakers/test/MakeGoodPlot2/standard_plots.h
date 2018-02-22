@@ -184,7 +184,24 @@ void MakeGoodPlot::standard_plots()
     GoodPlot *can1l_mu__metphi     = new GoodPlot("1l_mu__metphi","darren");
     GoodPlot *can1l_e__metphi     = new GoodPlot("1l_e__metphi","darren");
 
-
+    GoodPlot *can2los_ee__numPVs     = new GoodPlot("2los_ee__numPVs","darren");
+    GoodPlot *can2los_emu__numPVs     = new GoodPlot("2los_emu__numPVs","darren");
+    GoodPlot *can2los_mumu__numPVs     = new GoodPlot("2los_mumu__numPVs","darren");
+    GoodPlot *can2los_sfz_ee__numPVs     = new GoodPlot("2los_sfz_ee__numPVs","darren");
+    GoodPlot *can2los_sfz_mumu__numPVs     = new GoodPlot("2los_sfz_mumu__numPVs","darren");
+    GoodPlot *can2lss_p_ee__numPVs     = new GoodPlot("2lss_p_ee__numPVs","darren");
+    GoodPlot *can2lss_p_emu__numPVs     = new GoodPlot("2lss_p_emu__numPVs","darren");
+    GoodPlot *can2lss_p_mumu__numPVs     = new GoodPlot("2lss_p_mumu__numPVs","darren");
+    GoodPlot *can2lss_m_ee__numPVs     = new GoodPlot("2lss_m_ee__numPVs","darren");
+    GoodPlot *can2lss_m_emu__numPVs     = new GoodPlot("2lss_m_emu__numPVs","darren");
+    GoodPlot *can2lss_m_mumu__numPVs     = new GoodPlot("2lss_m_mumu__numPVs","darren");
+    GoodPlot *can3l_ppp__numPVs     = new GoodPlot("3l_ppp__numPVs","darren");
+    GoodPlot *can3l_mmm__numPVs     = new GoodPlot("3l_mmm__numPVs","darren");
+    GoodPlot *can3l_mix__numPVs     = new GoodPlot("3l_mix__numPVs","darren");
+    GoodPlot *can3l_mix_sfz__numPVs     = new GoodPlot("3l_mix_sfz__numPVs","darren");
+    GoodPlot *cange4l__numPVs     = new GoodPlot("ge4l__numPVs","darren");
+    GoodPlot *can1l_mu__numPVs     = new GoodPlot("1l_mu__numPVs","darren");
+    GoodPlot *can1l_e__numPVs     = new GoodPlot("1l_e__numPVs","darren");
    
 
     for (int i=0; i<numsamples; i++)
@@ -200,17 +217,17 @@ void MakeGoodPlot::standard_plots()
             can4->addPlotData(*this,"2los_mumu__njets",i,"samp",-1,"E");
             can5->addPlotData(*this,"2los_sfz_ee__njets",i,"samp",-1,"E");
             can7->addPlotData(*this,"2los_sfz_mumu__njets",i,"samp",-1,"E");
-            can8->addPlotData(*this,"2lss_p_ee__njets",i,"samp",-1,"E");
-            can9->addPlotData(*this,"2lss_p_emu__njets",i,"samp",-1,"E");
-            can10->addPlotData(*this,"2lss_p_mumu__njets",i,"samp",-1,"E");
-            can11->addPlotData(*this,"2lss_m_ee__njets",i,"samp",-1,"E");
-            can12->addPlotData(*this,"2lss_m_emu__njets",i,"samp",-1,"E");
-            can13->addPlotData(*this,"2lss_m_mumu__njets",i,"samp",-1,"E");
-            can14->addPlotData(*this,"3l_ppp__njets",i,"samp",-1,"E");
-            can15->addPlotData(*this,"3l_mmm__njets",i,"samp",-1,"E");
-            can16->addPlotData(*this,"3l_mix__njets",i,"samp",-1,"E");
-            can17->addPlotData(*this,"3l_mix_sfz__njets",i,"samp",-1,"E");
-            can18->addPlotData(*this,"ge4l__njets",i,"samp",-1,"E");
+//            can8->addPlotData(*this,"2lss_p_ee__njets",i,"samp",-1,"E");
+//             can9->addPlotData(*this,"2lss_p_emu__njets",i,"samp",-1,"E");
+//             can10->addPlotData(*this,"2lss_p_mumu__njets",i,"samp",-1,"E");
+//             can11->addPlotData(*this,"2lss_m_ee__njets",i,"samp",-1,"E");
+//             can12->addPlotData(*this,"2lss_m_emu__njets",i,"samp",-1,"E");
+//             can13->addPlotData(*this,"2lss_m_mumu__njets",i,"samp",-1,"E");
+//             can14->addPlotData(*this,"3l_ppp__njets",i,"samp",-1,"E");
+//             can15->addPlotData(*this,"3l_mmm__njets",i,"samp",-1,"E");
+//             can16->addPlotData(*this,"3l_mix__njets",i,"samp",-1,"E");
+//             can17->addPlotData(*this,"3l_mix_sfz__njets",i,"samp",-1,"E");
+//             can18->addPlotData(*this,"ge4l__njets",i,"samp",-1,"E");
             can1l_mu__njets->addPlotData(*this,"1l_mu__njets",i,"samp",-1,"E");
             can1l_e__njets->addPlotData(*this,"1l_e__njets",i,"samp",-1,"E");
 
@@ -220,17 +237,17 @@ void MakeGoodPlot::standard_plots()
             can21->addPlotData(*this,"2los_mumu__nbjets",i,"samp",-1,"E");
             can22->addPlotData(*this,"2los_sfz_ee__nbjets",i,"samp",-1,"E");
             can24->addPlotData(*this,"2los_sfz_mumu__nbjets",i,"samp",-1,"E");
-            can25->addPlotData(*this,"2lss_p_ee__nbjets",i,"samp",-1,"E");
-            can26->addPlotData(*this,"2lss_p_emu__nbjets",i,"samp",-1,"E");
-            can27->addPlotData(*this,"2lss_p_mumu__nbjets",i,"samp",-1,"E");
-            can28->addPlotData(*this,"2lss_m_ee__nbjets",i,"samp",-1,"E");
-            can29->addPlotData(*this,"2lss_m_emu__nbjets",i,"samp",-1,"E");
-            can30->addPlotData(*this,"2lss_m_mumu__nbjets",i,"samp",-1,"E");
-            can31->addPlotData(*this,"3l_ppp__nbjets",i,"samp",-1,"E");
-            can32->addPlotData(*this,"3l_mmm__nbjets",i,"samp",-1,"E");
-            can33->addPlotData(*this,"3l_mix__nbjets",i,"samp",-1,"E");
-            can34->addPlotData(*this,"3l_mix_sfz__nbjets",i,"samp",-1,"E");
-            can35->addPlotData(*this,"ge4l__nbjets",i,"samp",-1,"E");   
+//             can25->addPlotData(*this,"2lss_p_ee__nbjets",i,"samp",-1,"E");
+//             can26->addPlotData(*this,"2lss_p_emu__nbjets",i,"samp",-1,"E");
+//             can27->addPlotData(*this,"2lss_p_mumu__nbjets",i,"samp",-1,"E");
+//             can28->addPlotData(*this,"2lss_m_ee__nbjets",i,"samp",-1,"E");
+//             can29->addPlotData(*this,"2lss_m_emu__nbjets",i,"samp",-1,"E");
+//             can30->addPlotData(*this,"2lss_m_mumu__nbjets",i,"samp",-1,"E");
+//             can31->addPlotData(*this,"3l_ppp__nbjets",i,"samp",-1,"E");
+//             can32->addPlotData(*this,"3l_mmm__nbjets",i,"samp",-1,"E");
+//             can33->addPlotData(*this,"3l_mix__nbjets",i,"samp",-1,"E");
+//             can34->addPlotData(*this,"3l_mix_sfz__nbjets",i,"samp",-1,"E");
+//             can35->addPlotData(*this,"ge4l__nbjets",i,"samp",-1,"E");   
             can1l_mu__nbjets->addPlotData(*this,"1l_mu__nbjets",i,"samp",-1,"E");   
             can1l_e__nbjets->addPlotData(*this,"1l_e__nbjets",i,"samp",-1,"E");   
             
@@ -240,19 +257,19 @@ void MakeGoodPlot::standard_plots()
             can2los_mumu__jetpt->addPlotData(*this,"2los_mumu__jetpt",i,"samp",-1,"E");     
             can2los_sfz_ee__jetpt->addPlotData(*this,"2los_sfz_ee__jetpt",i,"samp",-1,"E");   
             can2los_sfz_mumu__jetpt->addPlotData(*this,"2los_sfz_mumu__jetpt",i,"samp",-1,"E"); 
-            can2lss_p_ee__jetpt->addPlotData(*this,"2lss_p_ee__jetpt",i,"samp",5,"E");     
-            can2lss_p_emu__jetpt->addPlotData(*this,"2lss_p_emu__jetpt",i,"samp",5,"E");    
-            can2lss_p_mumu__jetpt->addPlotData(*this,"2lss_p_mumu__jetpt",i,"samp",5,"E");   
-            can2lss_m_ee__jetpt->addPlotData(*this,"2lss_m_ee__jetpt",i,"samp",5,"E");     
-            can2lss_m_emu__jetpt->addPlotData(*this,"2lss_m_emu__jetpt",i,"samp",5,"E");    
-            can2lss_m_mumu__jetpt->addPlotData(*this,"2lss_m_mumu__jetpt",i,"samp",5,"E");   
-            can3l_ppp__jetpt->addPlotData(*this,"3l_ppp__jetpt",i,"samp",5,"E");        
-            can3l_mmm__jetpt->addPlotData(*this,"3l_mmm__jetpt",i,"samp",5,"E");        
-            can3l_mix__jetpt->addPlotData(*this,"3l_mix__jetpt",i,"samp",5,"E");        
-            can3l_mix_sfz__jetpt->addPlotData(*this,"3l_mix_sfz__jetpt",i,"samp",5,"E");    
-            cange4l__jetpt->addPlotData(*this,"ge4l__jetpt",i,"samp",5,"E");        
-            can1l_mu__jetpt->addPlotData(*this,"1l_mu__jetpt",i,"samp",5,"E");        
-            can1l_e__jetpt->addPlotData(*this,"1l_e__jetpt",i,"samp",5,"E");        
+//             can2lss_p_ee__jetpt->addPlotData(*this,"2lss_p_ee__jetpt",i,"samp",5,"E");     
+//             can2lss_p_emu__jetpt->addPlotData(*this,"2lss_p_emu__jetpt",i,"samp",5,"E");    
+//             can2lss_p_mumu__jetpt->addPlotData(*this,"2lss_p_mumu__jetpt",i,"samp",5,"E");   
+//             can2lss_m_ee__jetpt->addPlotData(*this,"2lss_m_ee__jetpt",i,"samp",5,"E");     
+//             can2lss_m_emu__jetpt->addPlotData(*this,"2lss_m_emu__jetpt",i,"samp",5,"E");    
+//             can2lss_m_mumu__jetpt->addPlotData(*this,"2lss_m_mumu__jetpt",i,"samp",5,"E");   
+//             can3l_ppp__jetpt->addPlotData(*this,"3l_ppp__jetpt",i,"samp",5,"E");        
+//             can3l_mmm__jetpt->addPlotData(*this,"3l_mmm__jetpt",i,"samp",5,"E");        
+//             can3l_mix__jetpt->addPlotData(*this,"3l_mix__jetpt",i,"samp",5,"E");        
+//             can3l_mix_sfz__jetpt->addPlotData(*this,"3l_mix_sfz__jetpt",i,"samp",5,"E");    
+//             cange4l__jetpt->addPlotData(*this,"ge4l__jetpt",i,"samp",5,"E");        
+            can1l_mu__jetpt->addPlotData(*this,"1l_mu__jetpt",i,"samp",-1,"E");        
+            can1l_e__jetpt->addPlotData(*this,"1l_e__jetpt",i,"samp",-1,"E");        
 
 
             can2los_ee__jeteta->addPlotData(*this,"2los_ee__jeteta",i,"samp",-1,"E");      
@@ -260,19 +277,19 @@ void MakeGoodPlot::standard_plots()
             can2los_mumu__jeteta->addPlotData(*this,"2los_mumu__jeteta",i,"samp",-1,"E");    
             can2los_sfz_ee__jeteta->addPlotData(*this,"2los_sfz_ee__jeteta",i,"samp",-1,"E");  
             can2los_sfz_mumu__jeteta->addPlotData(*this,"2los_sfz_mumu__jeteta",i,"samp",-1,"E");
-            can2lss_p_ee__jeteta->addPlotData(*this,"2lss_p_ee__jeteta",i,"samp",5,"E");    
-            can2lss_p_emu__jeteta->addPlotData(*this,"2lss_p_emu__jeteta",i,"samp",5,"E");   
-            can2lss_p_mumu__jeteta->addPlotData(*this,"2lss_p_mumu__jeteta",i,"samp",5,"E");  
-            can2lss_m_ee__jeteta->addPlotData(*this,"2lss_m_ee__jeteta",i,"samp",5,"E");    
-            can2lss_m_emu__jeteta->addPlotData(*this,"2lss_m_emu__jeteta",i,"samp",5,"E");   
-            can2lss_m_mumu__jeteta->addPlotData(*this,"2lss_m_mumu__jeteta",i,"samp",5,"E");  
-            can3l_ppp__jeteta->addPlotData(*this,"3l_ppp__jeteta",i,"samp",5,"E");       
-            can3l_mmm__jeteta->addPlotData(*this,"3l_mmm__jeteta",i,"samp",5,"E");       
-            can3l_mix__jeteta->addPlotData(*this,"3l_mix__jeteta",i,"samp",5,"E");       
-            can3l_mix_sfz__jeteta->addPlotData(*this,"3l_mix_sfz__jeteta",i,"samp",5,"E");   
-            cange4l__jeteta->addPlotData(*this,"ge4l__jeteta",i,"samp",5,"E");        
-            can1l_mu__jeteta->addPlotData(*this,"1l_mu__jeteta",i,"samp",5,"E");        
-            can1l_e__jeteta->addPlotData(*this,"1l_e__jeteta",i,"samp",5,"E");        
+//             can2lss_p_ee__jeteta->addPlotData(*this,"2lss_p_ee__jeteta",i,"samp",5,"E");    
+//             can2lss_p_emu__jeteta->addPlotData(*this,"2lss_p_emu__jeteta",i,"samp",5,"E");   
+//             can2lss_p_mumu__jeteta->addPlotData(*this,"2lss_p_mumu__jeteta",i,"samp",5,"E");  
+//             can2lss_m_ee__jeteta->addPlotData(*this,"2lss_m_ee__jeteta",i,"samp",5,"E");    
+//             can2lss_m_emu__jeteta->addPlotData(*this,"2lss_m_emu__jeteta",i,"samp",5,"E");   
+//             can2lss_m_mumu__jeteta->addPlotData(*this,"2lss_m_mumu__jeteta",i,"samp",5,"E");  
+//             can3l_ppp__jeteta->addPlotData(*this,"3l_ppp__jeteta",i,"samp",5,"E");       
+//             can3l_mmm__jeteta->addPlotData(*this,"3l_mmm__jeteta",i,"samp",5,"E");       
+//             can3l_mix__jeteta->addPlotData(*this,"3l_mix__jeteta",i,"samp",5,"E");       
+//             can3l_mix_sfz__jeteta->addPlotData(*this,"3l_mix_sfz__jeteta",i,"samp",5,"E");   
+//             cange4l__jeteta->addPlotData(*this,"ge4l__jeteta",i,"samp",5,"E");        
+            can1l_mu__jeteta->addPlotData(*this,"1l_mu__jeteta",i,"samp",-1,"E");        
+            can1l_e__jeteta->addPlotData(*this,"1l_e__jeteta",i,"samp",-1,"E");        
 
 
             can2los_ee__jetcsv->addPlotData(*this,"2los_ee__jetcsv",i,"samp",-1,"E");      
@@ -280,19 +297,19 @@ void MakeGoodPlot::standard_plots()
             can2los_mumu__jetcsv->addPlotData(*this,"2los_mumu__jetcsv",i,"samp",-1,"E");    
             can2los_sfz_ee__jetcsv->addPlotData(*this,"2los_sfz_ee__jetcsv",i,"samp",-1,"E");  
             can2los_sfz_mumu__jetcsv->addPlotData(*this,"2los_sfz_mumu__jetcsv",i,"samp",-1,"E");
-            can2lss_p_ee__jetcsv->addPlotData(*this,"2lss_p_ee__jetcsv",i,"samp",5,"E");    
-            can2lss_p_emu__jetcsv->addPlotData(*this,"2lss_p_emu__jetcsv",i,"samp",5,"E");   
-            can2lss_p_mumu__jetcsv->addPlotData(*this,"2lss_p_mumu__jetcsv",i,"samp",5,"E");  
-            can2lss_m_ee__jetcsv->addPlotData(*this,"2lss_m_ee__jetcsv",i,"samp",5,"E");    
-            can2lss_m_emu__jetcsv->addPlotData(*this,"2lss_m_emu__jetcsv",i,"samp",5,"E");   
-            can2lss_m_mumu__jetcsv->addPlotData(*this,"2lss_m_mumu__jetcsv",i,"samp",5,"E");  
-            can3l_ppp__jetcsv->addPlotData(*this,"3l_ppp__jetcsv",i,"samp",5,"E");       
-            can3l_mmm__jetcsv->addPlotData(*this,"3l_mmm__jetcsv",i,"samp",5,"E");       
-            can3l_mix__jetcsv->addPlotData(*this,"3l_mix__jetcsv",i,"samp",5,"E");       
-            can3l_mix_sfz__jetcsv->addPlotData(*this,"3l_mix_sfz__jetcsv",i,"samp",5,"E");   
-            cange4l__jetcsv->addPlotData(*this,"ge4l__jetcsv",i,"samp",5,"E");        
-            can1l_mu__jetcsv->addPlotData(*this,"1l_mu__jetcsv",i,"samp",5,"E");        
-            can1l_e__jetcsv->addPlotData(*this,"1l_e__jetcsv",i,"samp",5,"E");        
+//             can2lss_p_ee__jetcsv->addPlotData(*this,"2lss_p_ee__jetcsv",i,"samp",5,"E");    
+//             can2lss_p_emu__jetcsv->addPlotData(*this,"2lss_p_emu__jetcsv",i,"samp",5,"E");   
+//             can2lss_p_mumu__jetcsv->addPlotData(*this,"2lss_p_mumu__jetcsv",i,"samp",5,"E");  
+//             can2lss_m_ee__jetcsv->addPlotData(*this,"2lss_m_ee__jetcsv",i,"samp",5,"E");    
+//             can2lss_m_emu__jetcsv->addPlotData(*this,"2lss_m_emu__jetcsv",i,"samp",5,"E");   
+//             can2lss_m_mumu__jetcsv->addPlotData(*this,"2lss_m_mumu__jetcsv",i,"samp",5,"E");  
+//             can3l_ppp__jetcsv->addPlotData(*this,"3l_ppp__jetcsv",i,"samp",5,"E");       
+//             can3l_mmm__jetcsv->addPlotData(*this,"3l_mmm__jetcsv",i,"samp",5,"E");       
+//             can3l_mix__jetcsv->addPlotData(*this,"3l_mix__jetcsv",i,"samp",5,"E");       
+//             can3l_mix_sfz__jetcsv->addPlotData(*this,"3l_mix_sfz__jetcsv",i,"samp",5,"E");   
+//             cange4l__jetcsv->addPlotData(*this,"ge4l__jetcsv",i,"samp",5,"E");        
+            can1l_mu__jetcsv->addPlotData(*this,"1l_mu__jetcsv",i,"samp",-1,"E");        
+            can1l_e__jetcsv->addPlotData(*this,"1l_e__jetcsv",i,"samp",-1,"E");        
 
 
             can2los_ee__leppt->addPlotData(*this,"2los_ee__leppt",i,"samp",-1,"E");       
@@ -300,19 +317,19 @@ void MakeGoodPlot::standard_plots()
             can2los_mumu__leppt->addPlotData(*this,"2los_mumu__leppt",i,"samp",-1,"E");     
             can2los_sfz_ee__leppt->addPlotData(*this,"2los_sfz_ee__leppt",i,"samp",-1,"E");   
             can2los_sfz_mumu__leppt->addPlotData(*this,"2los_sfz_mumu__leppt",i,"samp",-1,"E"); 
-            can2lss_p_ee__leppt->addPlotData(*this,"2lss_p_ee__leppt",i,"samp",5,"E");     
-            can2lss_p_emu__leppt->addPlotData(*this,"2lss_p_emu__leppt",i,"samp",5,"E");    
-            can2lss_p_mumu__leppt->addPlotData(*this,"2lss_p_mumu__leppt",i,"samp",5,"E");   
-            can2lss_m_ee__leppt->addPlotData(*this,"2lss_m_ee__leppt",i,"samp",5,"E");     
-            can2lss_m_emu__leppt->addPlotData(*this,"2lss_m_emu__leppt",i,"samp",5,"E");    
-            can2lss_m_mumu__leppt->addPlotData(*this,"2lss_m_mumu__leppt",i,"samp",5,"E");   
-            can3l_ppp__leppt->addPlotData(*this,"3l_ppp__leppt",i,"samp",5,"E");        
-            can3l_mmm__leppt->addPlotData(*this,"3l_mmm__leppt",i,"samp",5,"E");        
-            can3l_mix__leppt->addPlotData(*this,"3l_mix__leppt",i,"samp",5,"E");        
-            can3l_mix_sfz__leppt->addPlotData(*this,"3l_mix_sfz__leppt",i,"samp",5,"E");   
-            cange4l__leppt->addPlotData(*this,"ge4l__leppt",i,"samp",5,"E");        
-            can1l_mu__leppt->addPlotData(*this,"1l_mu__leppt",i,"samp",5,"E");        
-            can1l_e__leppt->addPlotData(*this,"1l_e__leppt",i,"samp",5,"E");        
+//             can2lss_p_ee__leppt->addPlotData(*this,"2lss_p_ee__leppt",i,"samp",5,"E");     
+//             can2lss_p_emu__leppt->addPlotData(*this,"2lss_p_emu__leppt",i,"samp",5,"E");    
+//             can2lss_p_mumu__leppt->addPlotData(*this,"2lss_p_mumu__leppt",i,"samp",5,"E");   
+//             can2lss_m_ee__leppt->addPlotData(*this,"2lss_m_ee__leppt",i,"samp",5,"E");     
+//             can2lss_m_emu__leppt->addPlotData(*this,"2lss_m_emu__leppt",i,"samp",5,"E");    
+//             can2lss_m_mumu__leppt->addPlotData(*this,"2lss_m_mumu__leppt",i,"samp",5,"E");   
+//             can3l_ppp__leppt->addPlotData(*this,"3l_ppp__leppt",i,"samp",5,"E");        
+//             can3l_mmm__leppt->addPlotData(*this,"3l_mmm__leppt",i,"samp",5,"E");        
+//             can3l_mix__leppt->addPlotData(*this,"3l_mix__leppt",i,"samp",5,"E");        
+//             can3l_mix_sfz__leppt->addPlotData(*this,"3l_mix_sfz__leppt",i,"samp",5,"E");   
+//             cange4l__leppt->addPlotData(*this,"ge4l__leppt",i,"samp",5,"E");        
+            can1l_mu__leppt->addPlotData(*this,"1l_mu__leppt",i,"samp",-1,"E");        
+            can1l_e__leppt->addPlotData(*this,"1l_e__leppt",i,"samp",-1,"E");        
 
 
             can2los_ee__lepeta->addPlotData(*this,"2los_ee__lepeta",i,"samp",-1,"E");      
@@ -320,19 +337,19 @@ void MakeGoodPlot::standard_plots()
             can2los_mumu__lepeta->addPlotData(*this,"2los_mumu__lepeta",i,"samp",-1,"E");
             can2los_sfz_ee__lepeta->addPlotData(*this,"2los_sfz_ee__lepeta",i,"samp",-1,"E");  
             can2los_sfz_mumu__lepeta->addPlotData(*this,"2los_sfz_mumu__lepeta",i,"samp",-1,"E");
-            can2lss_p_ee__lepeta->addPlotData(*this,"2lss_p_ee__lepeta",i,"samp",5,"E");
-            can2lss_p_emu__lepeta->addPlotData(*this,"2lss_p_emu__lepeta",i,"samp",5,"E");
-            can2lss_p_mumu__lepeta->addPlotData(*this,"2lss_p_mumu__lepeta",i,"samp",5,"E");  
-            can2lss_m_ee__lepeta->addPlotData(*this,"2lss_m_ee__lepeta",i,"samp",5,"E");    
-            can2lss_m_emu__lepeta->addPlotData(*this,"2lss_m_emu__lepeta",i,"samp",5,"E");   
-            can2lss_m_mumu__lepeta->addPlotData(*this,"2lss_m_mumu__lepeta",i,"samp",5,"E");  
-            can3l_ppp__lepeta->addPlotData(*this,"3l_ppp__lepeta",i,"samp",5,"E");       
-            can3l_mmm__lepeta->addPlotData(*this,"3l_mmm__lepeta",i,"samp",5,"E");       
-            can3l_mix__lepeta->addPlotData(*this,"3l_mix__lepeta",i,"samp",5,"E");       
-            can3l_mix_sfz__lepeta->addPlotData(*this,"3l_mix_sfz__lepeta",i,"samp",5,"E");  
-            cange4l__lepeta->addPlotData(*this,"ge4l__lepeta",i,"samp",5,"E");        
-            can1l_mu__lepeta->addPlotData(*this,"1l_mu__lepeta",i,"samp",5,"E");        
-            can1l_e__lepeta->addPlotData(*this,"1l_e__lepeta",i,"samp",5,"E");        
+//             can2lss_p_ee__lepeta->addPlotData(*this,"2lss_p_ee__lepeta",i,"samp",5,"E");
+//             can2lss_p_emu__lepeta->addPlotData(*this,"2lss_p_emu__lepeta",i,"samp",5,"E");
+//             can2lss_p_mumu__lepeta->addPlotData(*this,"2lss_p_mumu__lepeta",i,"samp",5,"E");  
+//             can2lss_m_ee__lepeta->addPlotData(*this,"2lss_m_ee__lepeta",i,"samp",5,"E");    
+//             can2lss_m_emu__lepeta->addPlotData(*this,"2lss_m_emu__lepeta",i,"samp",5,"E");   
+//             can2lss_m_mumu__lepeta->addPlotData(*this,"2lss_m_mumu__lepeta",i,"samp",5,"E");  
+//             can3l_ppp__lepeta->addPlotData(*this,"3l_ppp__lepeta",i,"samp",5,"E");       
+//             can3l_mmm__lepeta->addPlotData(*this,"3l_mmm__lepeta",i,"samp",5,"E");       
+//             can3l_mix__lepeta->addPlotData(*this,"3l_mix__lepeta",i,"samp",5,"E");       
+//             can3l_mix_sfz__lepeta->addPlotData(*this,"3l_mix_sfz__lepeta",i,"samp",5,"E");  
+//             cange4l__lepeta->addPlotData(*this,"ge4l__lepeta",i,"samp",5,"E");        
+            can1l_mu__lepeta->addPlotData(*this,"1l_mu__lepeta",i,"samp",-1,"E");        
+            can1l_e__lepeta->addPlotData(*this,"1l_e__lepeta",i,"samp",-1,"E");        
 
 
 
@@ -341,38 +358,67 @@ void MakeGoodPlot::standard_plots()
             can2los_mumu__met->addPlotData(*this,"2los_mumu__met",i,"samp",-1,"E");       
             can2los_sfz_ee__met->addPlotData(*this,"2los_sfz_ee__met",i,"samp",-1,"E");     
             can2los_sfz_mumu__met->addPlotData(*this,"2los_sfz_mumu__met",i,"samp",-1,"E");   
-            can2lss_p_ee__met->addPlotData(*this,"2lss_p_ee__met",i,"samp",5,"E");       
-            can2lss_p_emu__met->addPlotData(*this,"2lss_p_emu__met",i,"samp",5,"E");      
-            can2lss_p_mumu__met->addPlotData(*this,"2lss_p_mumu__met",i,"samp",5,"E");     
-            can2lss_m_ee__met->addPlotData(*this,"2lss_m_ee__met",i,"samp",5,"E");       
-            can2lss_m_emu__met->addPlotData(*this,"2lss_m_emu__met",i,"samp",5,"E");      
-            can2lss_m_mumu__met->addPlotData(*this,"2lss_m_mumu__met",i,"samp",5,"E");     
-            can3l_ppp__met->addPlotData(*this,"3l_ppp__met",i,"samp",5,"E");        
-            can3l_mmm__met->addPlotData(*this,"3l_mmm__met",i,"samp",5,"E");        
-            can3l_mix__met->addPlotData(*this,"3l_mix__met",i,"samp",5,"E");        
-            can3l_mix_sfz__met->addPlotData(*this,"3l_mix_sfz__met",i,"samp",5,"E");      
-            cange4l__met->addPlotData(*this,"ge4l__met",i,"samp",5,"E");        
-            can1l_mu__met->addPlotData(*this,"1l_mu__met",i,"samp",5,"E");        
-            can1l_e__met->addPlotData(*this,"1l_e__met",i,"samp",5,"E");        
+//             can2lss_p_ee__met->addPlotData(*this,"2lss_p_ee__met",i,"samp",5,"E");       
+//             can2lss_p_emu__met->addPlotData(*this,"2lss_p_emu__met",i,"samp",5,"E");      
+//             can2lss_p_mumu__met->addPlotData(*this,"2lss_p_mumu__met",i,"samp",5,"E");     
+//             can2lss_m_ee__met->addPlotData(*this,"2lss_m_ee__met",i,"samp",5,"E");       
+//             can2lss_m_emu__met->addPlotData(*this,"2lss_m_emu__met",i,"samp",5,"E");      
+//             can2lss_m_mumu__met->addPlotData(*this,"2lss_m_mumu__met",i,"samp",5,"E");     
+//             can3l_ppp__met->addPlotData(*this,"3l_ppp__met",i,"samp",5,"E");        
+//             can3l_mmm__met->addPlotData(*this,"3l_mmm__met",i,"samp",5,"E");        
+//             can3l_mix__met->addPlotData(*this,"3l_mix__met",i,"samp",5,"E");        
+//             can3l_mix_sfz__met->addPlotData(*this,"3l_mix_sfz__met",i,"samp",5,"E");      
+//             cange4l__met->addPlotData(*this,"ge4l__met",i,"samp",5,"E");        
+            can1l_mu__met->addPlotData(*this,"1l_mu__met",i,"samp",-1,"E");        
+            can1l_e__met->addPlotData(*this,"1l_e__met",i,"samp",-1,"E");        
 
             can2los_ee__metphi->addPlotData(*this,"2los_ee__metphi",i,"samp",-1,"E");      
             can2los_emu__metphi->addPlotData(*this,"2los_emu__metphi",i,"samp",-1,"E");     
             can2los_mumu__metphi->addPlotData(*this,"2los_mumu__metphi",i,"samp",-1,"E");    
             can2los_sfz_ee__metphi->addPlotData(*this,"2los_sfz_ee__metphi",i,"samp",-1,"E");  
             can2los_sfz_mumu__metphi->addPlotData(*this,"2los_sfz_mumu__metphi",i,"samp",-1,"E");
-            can2lss_p_ee__metphi->addPlotData(*this,"2lss_p_ee__metphi",i,"samp",5,"E");    
-            can2lss_p_emu__metphi->addPlotData(*this,"2lss_p_emu__metphi",i,"samp",5,"E");   
-            can2lss_p_mumu__metphi->addPlotData(*this,"2lss_p_mumu__metphi",i,"samp",5,"E");  
-            can2lss_m_ee__metphi->addPlotData(*this,"2lss_m_ee__metphi",i,"samp",5,"E");    
-            can2lss_m_emu__metphi->addPlotData(*this,"2lss_m_emu__metphi",i,"samp",5,"E");   
-            can2lss_m_mumu__metphi->addPlotData(*this,"2lss_m_mumu__metphi",i,"samp",5,"E");  
-            can3l_ppp__metphi->addPlotData(*this,"3l_ppp__metphi",i,"samp",5,"E");       
-            can3l_mmm__metphi->addPlotData(*this,"3l_mmm__metphi",i,"samp",5,"E");       
-            can3l_mix__metphi->addPlotData(*this,"3l_mix__metphi",i,"samp",5,"E");       
-            can3l_mix_sfz__metphi->addPlotData(*this,"3l_mix_sfz__metphi",i,"samp",5,"E");   
-            cange4l__metphi->addPlotData(*this,"ge4l__metphi",i,"samp",5,"E");
-            can1l_mu__metphi->addPlotData(*this,"1l_mu__metphi",i,"samp",5,"E");
-            can1l_e__metphi->addPlotData(*this,"1l_e__metphi",i,"samp",5,"E");
+//             can2lss_p_ee__metphi->addPlotData(*this,"2lss_p_ee__metphi",i,"samp",5,"E");    
+//             can2lss_p_emu__metphi->addPlotData(*this,"2lss_p_emu__metphi",i,"samp",5,"E");   
+//             can2lss_p_mumu__metphi->addPlotData(*this,"2lss_p_mumu__metphi",i,"samp",5,"E");  
+//             can2lss_m_ee__metphi->addPlotData(*this,"2lss_m_ee__metphi",i,"samp",5,"E");    
+//             can2lss_m_emu__metphi->addPlotData(*this,"2lss_m_emu__metphi",i,"samp",5,"E");   
+//             can2lss_m_mumu__metphi->addPlotData(*this,"2lss_m_mumu__metphi",i,"samp",5,"E");  
+//             can3l_ppp__metphi->addPlotData(*this,"3l_ppp__metphi",i,"samp",5,"E");       
+//             can3l_mmm__metphi->addPlotData(*this,"3l_mmm__metphi",i,"samp",5,"E");       
+//             can3l_mix__metphi->addPlotData(*this,"3l_mix__metphi",i,"samp",5,"E");       
+//             can3l_mix_sfz__metphi->addPlotData(*this,"3l_mix_sfz__metphi",i,"samp",5,"E");   
+//             cange4l__metphi->addPlotData(*this,"ge4l__metphi",i,"samp",5,"E");
+            can1l_mu__metphi->addPlotData(*this,"1l_mu__metphi",i,"samp",-1,"E");
+            can1l_e__metphi->addPlotData(*this,"1l_e__metphi",i,"samp",-1,"E");
+            
+            
+            can2los_ee__numPVs->addPlotData(*this,"2los_ee__numPVs",i,"samp",-1,"E");      
+            can2los_emu__numPVs->addPlotData(*this,"2los_emu__numPVs",i,"samp",-1,"E");     
+            can2los_mumu__numPVs->addPlotData(*this,"2los_mumu__numPVs",i,"samp",-1,"E");    
+            can2los_sfz_ee__numPVs->addPlotData(*this,"2los_sfz_ee__numPVs",i,"samp",-1,"E");  
+            can2los_sfz_mumu__numPVs->addPlotData(*this,"2los_sfz_mumu__numPVs",i,"samp",-1,"E");
+//             can2lss_p_ee__numPVs->addPlotData(*this,"2lss_p_ee__numPVs",i,"samp",5,"E");    
+//             can2lss_p_emu__numPVs->addPlotData(*this,"2lss_p_emu__numPVs",i,"samp",5,"E");   
+//             can2lss_p_mumu__numPVs->addPlotData(*this,"2lss_p_mumu__numPVs",i,"samp",5,"E");  
+//             can2lss_m_ee__numPVs->addPlotData(*this,"2lss_m_ee__numPVs",i,"samp",5,"E");    
+//             can2lss_m_emu__numPVs->addPlotData(*this,"2lss_m_emu__numPVs",i,"samp",5,"E");   
+//             can2lss_m_mumu__numPVs->addPlotData(*this,"2lss_m_mumu__numPVs",i,"samp",5,"E");  
+//             can3l_ppp__numPVs->addPlotData(*this,"3l_ppp__numPVs",i,"samp",5,"E");       
+//             can3l_mmm__numPVs->addPlotData(*this,"3l_mmm__numPVs",i,"samp",5,"E");       
+//             can3l_mix__numPVs->addPlotData(*this,"3l_mix__numPVs",i,"samp",5,"E");       
+//             can3l_mix_sfz__numPVs->addPlotData(*this,"3l_mix_sfz__numPVs",i,"samp",5,"E");   
+//             cange4l__numPVs->addPlotData(*this,"ge4l__numPVs",i,"samp",5,"E");
+            can1l_mu__numPVs->addPlotData(*this,"1l_mu__numPVs",i,"samp",-1,"E");
+            can1l_e__numPVs->addPlotData(*this,"1l_e__numPVs",i,"samp",-1,"E");            
+            
+            
+            
+            
+            
+            
+            
+            
+            
         
             cout << " " << endl;      
             double eff = ((TH1D*)hist[i].FindObject("single_ele_trigs"))->GetBinContent(2);
@@ -501,17 +547,17 @@ void MakeGoodPlot::standard_plots()
         can4->addStackWithSumMC(*this,"2los_mumu__njets",i,"samp");
         can5->addStackWithSumMC(*this,"2los_sfz_ee__njets",i,"samp");
         can7->addStackWithSumMC(*this,"2los_sfz_mumu__njets",i,"samp");
-        can8->addStackWithSumMC(*this,"2lss_p_ee__njets",i,"samp");
-        can9->addStackWithSumMC(*this,"2lss_p_emu__njets",i,"samp");
-        can10->addStackWithSumMC(*this,"2lss_p_mumu__njets",i,"samp");
-        can11->addStackWithSumMC(*this,"2lss_m_ee__njets",i,"samp");
-        can12->addStackWithSumMC(*this,"2lss_m_emu__njets",i,"samp");
-        can13->addStackWithSumMC(*this,"2lss_m_mumu__njets",i,"samp");
-        can14->addStackWithSumMC(*this,"3l_ppp__njets",i,"samp");
-        can15->addStackWithSumMC(*this,"3l_mmm__njets",i,"samp");
-        can16->addStackWithSumMC(*this,"3l_mix__njets",i,"samp");
-        can17->addStackWithSumMC(*this,"3l_mix_sfz__njets",i,"samp");
-        can18->addStackWithSumMC(*this,"ge4l__njets",i,"samp");
+//         can8->addStackWithSumMC(*this,"2lss_p_ee__njets",i,"samp");
+//         can9->addStackWithSumMC(*this,"2lss_p_emu__njets",i,"samp");
+//         can10->addStackWithSumMC(*this,"2lss_p_mumu__njets",i,"samp");
+//         can11->addStackWithSumMC(*this,"2lss_m_ee__njets",i,"samp");
+//         can12->addStackWithSumMC(*this,"2lss_m_emu__njets",i,"samp");
+//         can13->addStackWithSumMC(*this,"2lss_m_mumu__njets",i,"samp");
+//         can14->addStackWithSumMC(*this,"3l_ppp__njets",i,"samp");
+//         can15->addStackWithSumMC(*this,"3l_mmm__njets",i,"samp");
+//         can16->addStackWithSumMC(*this,"3l_mix__njets",i,"samp");
+//         can17->addStackWithSumMC(*this,"3l_mix_sfz__njets",i,"samp");
+//         can18->addStackWithSumMC(*this,"ge4l__njets",i,"samp");
         can1l_mu__njets->addStackWithSumMC(*this,"1l_mu__njets",i,"samp");
         can1l_e__njets->addStackWithSumMC(*this,"1l_e__njets",i,"samp");
 
@@ -520,17 +566,17 @@ void MakeGoodPlot::standard_plots()
         can21->addStackWithSumMC(*this,"2los_mumu__nbjets",i,"samp");
         can22->addStackWithSumMC(*this,"2los_sfz_ee__nbjets",i,"samp");
         can24->addStackWithSumMC(*this,"2los_sfz_mumu__nbjets",i,"samp");
-        can25->addStackWithSumMC(*this,"2lss_p_ee__nbjets",i,"samp");
-        can26->addStackWithSumMC(*this,"2lss_p_emu__nbjets",i,"samp");
-        can27->addStackWithSumMC(*this,"2lss_p_mumu__nbjets",i,"samp");
-        can28->addStackWithSumMC(*this,"2lss_m_ee__nbjets",i,"samp");
-        can29->addStackWithSumMC(*this,"2lss_m_emu__nbjets",i,"samp");
-        can30->addStackWithSumMC(*this,"2lss_m_mumu__nbjets",i,"samp");
-        can31->addStackWithSumMC(*this,"3l_ppp__nbjets",i,"samp");
-        can32->addStackWithSumMC(*this,"3l_mmm__nbjets",i,"samp");
-        can33->addStackWithSumMC(*this,"3l_mix__nbjets",i,"samp");
-        can34->addStackWithSumMC(*this,"3l_mix_sfz__nbjets",i,"samp");
-        can35->addStackWithSumMC(*this,"ge4l__nbjets",i,"samp");   
+//         can25->addStackWithSumMC(*this,"2lss_p_ee__nbjets",i,"samp");
+//         can26->addStackWithSumMC(*this,"2lss_p_emu__nbjets",i,"samp");
+//         can27->addStackWithSumMC(*this,"2lss_p_mumu__nbjets",i,"samp");
+//         can28->addStackWithSumMC(*this,"2lss_m_ee__nbjets",i,"samp");
+//         can29->addStackWithSumMC(*this,"2lss_m_emu__nbjets",i,"samp");
+//         can30->addStackWithSumMC(*this,"2lss_m_mumu__nbjets",i,"samp");
+//         can31->addStackWithSumMC(*this,"3l_ppp__nbjets",i,"samp");
+//         can32->addStackWithSumMC(*this,"3l_mmm__nbjets",i,"samp");
+//         can33->addStackWithSumMC(*this,"3l_mix__nbjets",i,"samp");
+//         can34->addStackWithSumMC(*this,"3l_mix_sfz__nbjets",i,"samp");
+//         can35->addStackWithSumMC(*this,"ge4l__nbjets",i,"samp");   
         can1l_mu__nbjets->addStackWithSumMC(*this,"1l_mu__nbjets",i,"samp");   
         can1l_e__nbjets->addStackWithSumMC(*this,"1l_e__nbjets",i,"samp");   
         
@@ -539,19 +585,19 @@ void MakeGoodPlot::standard_plots()
         can2los_mumu__jetpt->addStackWithSumMC(*this,"2los_mumu__jetpt",i,"samp",-1);     
         can2los_sfz_ee__jetpt->addStackWithSumMC(*this,"2los_sfz_ee__jetpt",i,"samp",-1);   
         can2los_sfz_mumu__jetpt->addStackWithSumMC(*this,"2los_sfz_mumu__jetpt",i,"samp",-1); 
-        can2lss_p_ee__jetpt->addStackWithSumMC(*this,"2lss_p_ee__jetpt",i,"samp",5);     
-        can2lss_p_emu__jetpt->addStackWithSumMC(*this,"2lss_p_emu__jetpt",i,"samp",5);    
-        can2lss_p_mumu__jetpt->addStackWithSumMC(*this,"2lss_p_mumu__jetpt",i,"samp",5);   
-        can2lss_m_ee__jetpt->addStackWithSumMC(*this,"2lss_m_ee__jetpt",i,"samp",5);     
-        can2lss_m_emu__jetpt->addStackWithSumMC(*this,"2lss_m_emu__jetpt",i,"samp",5);    
-        can2lss_m_mumu__jetpt->addStackWithSumMC(*this,"2lss_m_mumu__jetpt",i,"samp",5);   
-        can3l_ppp__jetpt->addStackWithSumMC(*this,"3l_ppp__jetpt",i,"samp",5);        
-        can3l_mmm__jetpt->addStackWithSumMC(*this,"3l_mmm__jetpt",i,"samp",5);        
-        can3l_mix__jetpt->addStackWithSumMC(*this,"3l_mix__jetpt",i,"samp",5);        
-        can3l_mix_sfz__jetpt->addStackWithSumMC(*this,"3l_mix_sfz__jetpt",i,"samp",5);    
-        cange4l__jetpt->addStackWithSumMC(*this,"ge4l__jetpt",i,"samp",5);        
-        can1l_mu__jetpt->addStackWithSumMC(*this,"1l_mu__jetpt",i,"samp",5);        
-        can1l_e__jetpt->addStackWithSumMC(*this,"1l_e__jetpt",i,"samp",5);        
+//         can2lss_p_ee__jetpt->addStackWithSumMC(*this,"2lss_p_ee__jetpt",i,"samp",5);     
+//         can2lss_p_emu__jetpt->addStackWithSumMC(*this,"2lss_p_emu__jetpt",i,"samp",5);    
+//         can2lss_p_mumu__jetpt->addStackWithSumMC(*this,"2lss_p_mumu__jetpt",i,"samp",5);   
+//         can2lss_m_ee__jetpt->addStackWithSumMC(*this,"2lss_m_ee__jetpt",i,"samp",5);     
+//         can2lss_m_emu__jetpt->addStackWithSumMC(*this,"2lss_m_emu__jetpt",i,"samp",5);    
+//         can2lss_m_mumu__jetpt->addStackWithSumMC(*this,"2lss_m_mumu__jetpt",i,"samp",5);   
+//         can3l_ppp__jetpt->addStackWithSumMC(*this,"3l_ppp__jetpt",i,"samp",5);        
+//         can3l_mmm__jetpt->addStackWithSumMC(*this,"3l_mmm__jetpt",i,"samp",5);        
+//         can3l_mix__jetpt->addStackWithSumMC(*this,"3l_mix__jetpt",i,"samp",5);        
+//         can3l_mix_sfz__jetpt->addStackWithSumMC(*this,"3l_mix_sfz__jetpt",i,"samp",5);    
+//         cange4l__jetpt->addStackWithSumMC(*this,"ge4l__jetpt",i,"samp",5);        
+        can1l_mu__jetpt->addStackWithSumMC(*this,"1l_mu__jetpt",i,"samp",-1);        
+        can1l_e__jetpt->addStackWithSumMC(*this,"1l_e__jetpt",i,"samp",-1);        
 
 
         can2los_ee__jeteta->addStackWithSumMC(*this,"2los_ee__jeteta",i,"samp",-1);      
@@ -559,19 +605,19 @@ void MakeGoodPlot::standard_plots()
         can2los_mumu__jeteta->addStackWithSumMC(*this,"2los_mumu__jeteta",i,"samp",-1);    
         can2los_sfz_ee__jeteta->addStackWithSumMC(*this,"2los_sfz_ee__jeteta",i,"samp",-1);  
         can2los_sfz_mumu__jeteta->addStackWithSumMC(*this,"2los_sfz_mumu__jeteta",i,"samp",-1);
-        can2lss_p_ee__jeteta->addStackWithSumMC(*this,"2lss_p_ee__jeteta",i,"samp",5);    
-        can2lss_p_emu__jeteta->addStackWithSumMC(*this,"2lss_p_emu__jeteta",i,"samp",5);   
-        can2lss_p_mumu__jeteta->addStackWithSumMC(*this,"2lss_p_mumu__jeteta",i,"samp",5);  
-        can2lss_m_ee__jeteta->addStackWithSumMC(*this,"2lss_m_ee__jeteta",i,"samp",5);    
-        can2lss_m_emu__jeteta->addStackWithSumMC(*this,"2lss_m_emu__jeteta",i,"samp",5);   
-        can2lss_m_mumu__jeteta->addStackWithSumMC(*this,"2lss_m_mumu__jeteta",i,"samp",5);  
-        can3l_ppp__jeteta->addStackWithSumMC(*this,"3l_ppp__jeteta",i,"samp",5);       
-        can3l_mmm__jeteta->addStackWithSumMC(*this,"3l_mmm__jeteta",i,"samp",5);       
-        can3l_mix__jeteta->addStackWithSumMC(*this,"3l_mix__jeteta",i,"samp",5);       
-        can3l_mix_sfz__jeteta->addStackWithSumMC(*this,"3l_mix_sfz__jeteta",i,"samp",5);   
-        cange4l__jeteta->addStackWithSumMC(*this,"ge4l__jeteta",i,"samp",5);        
-        can1l_mu__jeteta->addStackWithSumMC(*this,"1l_mu__jeteta",i,"samp",5);        
-        can1l_e__jeteta->addStackWithSumMC(*this,"1l_e__jeteta",i,"samp",5);        
+//         can2lss_p_ee__jeteta->addStackWithSumMC(*this,"2lss_p_ee__jeteta",i,"samp",5);    
+//         can2lss_p_emu__jeteta->addStackWithSumMC(*this,"2lss_p_emu__jeteta",i,"samp",5);   
+//         can2lss_p_mumu__jeteta->addStackWithSumMC(*this,"2lss_p_mumu__jeteta",i,"samp",5);  
+//         can2lss_m_ee__jeteta->addStackWithSumMC(*this,"2lss_m_ee__jeteta",i,"samp",5);    
+//         can2lss_m_emu__jeteta->addStackWithSumMC(*this,"2lss_m_emu__jeteta",i,"samp",5);   
+//         can2lss_m_mumu__jeteta->addStackWithSumMC(*this,"2lss_m_mumu__jeteta",i,"samp",5);  
+//         can3l_ppp__jeteta->addStackWithSumMC(*this,"3l_ppp__jeteta",i,"samp",5);       
+//         can3l_mmm__jeteta->addStackWithSumMC(*this,"3l_mmm__jeteta",i,"samp",5);       
+//         can3l_mix__jeteta->addStackWithSumMC(*this,"3l_mix__jeteta",i,"samp",5);       
+//         can3l_mix_sfz__jeteta->addStackWithSumMC(*this,"3l_mix_sfz__jeteta",i,"samp",5);   
+//         cange4l__jeteta->addStackWithSumMC(*this,"ge4l__jeteta",i,"samp",5);        
+        can1l_mu__jeteta->addStackWithSumMC(*this,"1l_mu__jeteta",i,"samp",-1);        
+        can1l_e__jeteta->addStackWithSumMC(*this,"1l_e__jeteta",i,"samp",-1);        
 
 
         can2los_ee__jetcsv->addStackWithSumMC(*this,"2los_ee__jetcsv",i,"samp",-1);      
@@ -579,19 +625,19 @@ void MakeGoodPlot::standard_plots()
         can2los_mumu__jetcsv->addStackWithSumMC(*this,"2los_mumu__jetcsv",i,"samp",-1);    
         can2los_sfz_ee__jetcsv->addStackWithSumMC(*this,"2los_sfz_ee__jetcsv",i,"samp",-1);  
         can2los_sfz_mumu__jetcsv->addStackWithSumMC(*this,"2los_sfz_mumu__jetcsv",i,"samp",-1);
-        can2lss_p_ee__jetcsv->addStackWithSumMC(*this,"2lss_p_ee__jetcsv",i,"samp",5);    
-        can2lss_p_emu__jetcsv->addStackWithSumMC(*this,"2lss_p_emu__jetcsv",i,"samp",5);   
-        can2lss_p_mumu__jetcsv->addStackWithSumMC(*this,"2lss_p_mumu__jetcsv",i,"samp",5);  
-        can2lss_m_ee__jetcsv->addStackWithSumMC(*this,"2lss_m_ee__jetcsv",i,"samp",5);    
-        can2lss_m_emu__jetcsv->addStackWithSumMC(*this,"2lss_m_emu__jetcsv",i,"samp",5);   
-        can2lss_m_mumu__jetcsv->addStackWithSumMC(*this,"2lss_m_mumu__jetcsv",i,"samp",5);  
-        can3l_ppp__jetcsv->addStackWithSumMC(*this,"3l_ppp__jetcsv",i,"samp",5);       
-        can3l_mmm__jetcsv->addStackWithSumMC(*this,"3l_mmm__jetcsv",i,"samp",5);       
-        can3l_mix__jetcsv->addStackWithSumMC(*this,"3l_mix__jetcsv",i,"samp",5);       
-        can3l_mix_sfz__jetcsv->addStackWithSumMC(*this,"3l_mix_sfz__jetcsv",i,"samp",5);   
-        cange4l__jetcsv->addStackWithSumMC(*this,"ge4l__jetcsv",i,"samp",5);        
-        can1l_mu__jetcsv->addStackWithSumMC(*this,"1l_mu__jetcsv",i,"samp",5);        
-        can1l_e__jetcsv->addStackWithSumMC(*this,"1l_e__jetcsv",i,"samp",5);        
+//         can2lss_p_ee__jetcsv->addStackWithSumMC(*this,"2lss_p_ee__jetcsv",i,"samp",5);    
+//         can2lss_p_emu__jetcsv->addStackWithSumMC(*this,"2lss_p_emu__jetcsv",i,"samp",5);   
+//         can2lss_p_mumu__jetcsv->addStackWithSumMC(*this,"2lss_p_mumu__jetcsv",i,"samp",5);  
+//         can2lss_m_ee__jetcsv->addStackWithSumMC(*this,"2lss_m_ee__jetcsv",i,"samp",5);    
+//         can2lss_m_emu__jetcsv->addStackWithSumMC(*this,"2lss_m_emu__jetcsv",i,"samp",5);   
+//         can2lss_m_mumu__jetcsv->addStackWithSumMC(*this,"2lss_m_mumu__jetcsv",i,"samp",5);  
+//         can3l_ppp__jetcsv->addStackWithSumMC(*this,"3l_ppp__jetcsv",i,"samp",5);       
+//         can3l_mmm__jetcsv->addStackWithSumMC(*this,"3l_mmm__jetcsv",i,"samp",5);       
+//         can3l_mix__jetcsv->addStackWithSumMC(*this,"3l_mix__jetcsv",i,"samp",5);       
+//         can3l_mix_sfz__jetcsv->addStackWithSumMC(*this,"3l_mix_sfz__jetcsv",i,"samp",5);   
+//         cange4l__jetcsv->addStackWithSumMC(*this,"ge4l__jetcsv",i,"samp",5);        
+        can1l_mu__jetcsv->addStackWithSumMC(*this,"1l_mu__jetcsv",i,"samp",-1);        
+        can1l_e__jetcsv->addStackWithSumMC(*this,"1l_e__jetcsv",i,"samp",-1);        
 
 
         can2los_ee__leppt->addStackWithSumMC(*this,"2los_ee__leppt",i,"samp",-1);       
@@ -599,19 +645,19 @@ void MakeGoodPlot::standard_plots()
         can2los_mumu__leppt->addStackWithSumMC(*this,"2los_mumu__leppt",i,"samp",-1);     
         can2los_sfz_ee__leppt->addStackWithSumMC(*this,"2los_sfz_ee__leppt",i,"samp",-1);   
         can2los_sfz_mumu__leppt->addStackWithSumMC(*this,"2los_sfz_mumu__leppt",i,"samp",-1); 
-        can2lss_p_ee__leppt->addStackWithSumMC(*this,"2lss_p_ee__leppt",i,"samp",5);     
-        can2lss_p_emu__leppt->addStackWithSumMC(*this,"2lss_p_emu__leppt",i,"samp",5);    
-        can2lss_p_mumu__leppt->addStackWithSumMC(*this,"2lss_p_mumu__leppt",i,"samp",5);   
-        can2lss_m_ee__leppt->addStackWithSumMC(*this,"2lss_m_ee__leppt",i,"samp",5);     
-        can2lss_m_emu__leppt->addStackWithSumMC(*this,"2lss_m_emu__leppt",i,"samp",5);    
-        can2lss_m_mumu__leppt->addStackWithSumMC(*this,"2lss_m_mumu__leppt",i,"samp",5);   
-        can3l_ppp__leppt->addStackWithSumMC(*this,"3l_ppp__leppt",i,"samp",5);        
-        can3l_mmm__leppt->addStackWithSumMC(*this,"3l_mmm__leppt",i,"samp",5);        
-        can3l_mix__leppt->addStackWithSumMC(*this,"3l_mix__leppt",i,"samp",5);        
-        can3l_mix_sfz__leppt->addStackWithSumMC(*this,"3l_mix_sfz__leppt",i,"samp",5);   
-        cange4l__leppt->addStackWithSumMC(*this,"ge4l__leppt",i,"samp",5);        
-        can1l_mu__leppt->addStackWithSumMC(*this,"1l_mu__leppt",i,"samp",5);        
-        can1l_e__leppt->addStackWithSumMC(*this,"1l_e__leppt",i,"samp",5);        
+//         can2lss_p_ee__leppt->addStackWithSumMC(*this,"2lss_p_ee__leppt",i,"samp",5);     
+//         can2lss_p_emu__leppt->addStackWithSumMC(*this,"2lss_p_emu__leppt",i,"samp",5);    
+//         can2lss_p_mumu__leppt->addStackWithSumMC(*this,"2lss_p_mumu__leppt",i,"samp",5);   
+//         can2lss_m_ee__leppt->addStackWithSumMC(*this,"2lss_m_ee__leppt",i,"samp",5);     
+//         can2lss_m_emu__leppt->addStackWithSumMC(*this,"2lss_m_emu__leppt",i,"samp",5);    
+//         can2lss_m_mumu__leppt->addStackWithSumMC(*this,"2lss_m_mumu__leppt",i,"samp",5);   
+//         can3l_ppp__leppt->addStackWithSumMC(*this,"3l_ppp__leppt",i,"samp",5);        
+//         can3l_mmm__leppt->addStackWithSumMC(*this,"3l_mmm__leppt",i,"samp",5);        
+//         can3l_mix__leppt->addStackWithSumMC(*this,"3l_mix__leppt",i,"samp",5);        
+//         can3l_mix_sfz__leppt->addStackWithSumMC(*this,"3l_mix_sfz__leppt",i,"samp",5);   
+//         cange4l__leppt->addStackWithSumMC(*this,"ge4l__leppt",i,"samp",5);        
+        can1l_mu__leppt->addStackWithSumMC(*this,"1l_mu__leppt",i,"samp",-1);        
+        can1l_e__leppt->addStackWithSumMC(*this,"1l_e__leppt",i,"samp",-1);        
 
 
         can2los_ee__lepeta->addStackWithSumMC(*this,"2los_ee__lepeta",i,"samp",-1);      
@@ -619,19 +665,19 @@ void MakeGoodPlot::standard_plots()
         can2los_mumu__lepeta->addStackWithSumMC(*this,"2los_mumu__lepeta",i,"samp",-1);
         can2los_sfz_ee__lepeta->addStackWithSumMC(*this,"2los_sfz_ee__lepeta",i,"samp",-1);  
         can2los_sfz_mumu__lepeta->addStackWithSumMC(*this,"2los_sfz_mumu__lepeta",i,"samp",-1);
-        can2lss_p_ee__lepeta->addStackWithSumMC(*this,"2lss_p_ee__lepeta",i,"samp",5);
-        can2lss_p_emu__lepeta->addStackWithSumMC(*this,"2lss_p_emu__lepeta",i,"samp",5);
-        can2lss_p_mumu__lepeta->addStackWithSumMC(*this,"2lss_p_mumu__lepeta",i,"samp",5);  
-        can2lss_m_ee__lepeta->addStackWithSumMC(*this,"2lss_m_ee__lepeta",i,"samp",5);    
-        can2lss_m_emu__lepeta->addStackWithSumMC(*this,"2lss_m_emu__lepeta",i,"samp",5);   
-        can2lss_m_mumu__lepeta->addStackWithSumMC(*this,"2lss_m_mumu__lepeta",i,"samp",5);  
-        can3l_ppp__lepeta->addStackWithSumMC(*this,"3l_ppp__lepeta",i,"samp",5);       
-        can3l_mmm__lepeta->addStackWithSumMC(*this,"3l_mmm__lepeta",i,"samp",5);       
-        can3l_mix__lepeta->addStackWithSumMC(*this,"3l_mix__lepeta",i,"samp",5);       
-        can3l_mix_sfz__lepeta->addStackWithSumMC(*this,"3l_mix_sfz__lepeta",i,"samp",5);  
-        cange4l__lepeta->addStackWithSumMC(*this,"ge4l__lepeta",i,"samp",5);        
-        can1l_mu__lepeta->addStackWithSumMC(*this,"1l_mu__lepeta",i,"samp",5);        
-        can1l_e__lepeta->addStackWithSumMC(*this,"1l_e__lepeta",i,"samp",5);        
+//         can2lss_p_ee__lepeta->addStackWithSumMC(*this,"2lss_p_ee__lepeta",i,"samp",5);
+//         can2lss_p_emu__lepeta->addStackWithSumMC(*this,"2lss_p_emu__lepeta",i,"samp",5);
+//         can2lss_p_mumu__lepeta->addStackWithSumMC(*this,"2lss_p_mumu__lepeta",i,"samp",5);  
+//         can2lss_m_ee__lepeta->addStackWithSumMC(*this,"2lss_m_ee__lepeta",i,"samp",5);    
+//         can2lss_m_emu__lepeta->addStackWithSumMC(*this,"2lss_m_emu__lepeta",i,"samp",5);   
+//         can2lss_m_mumu__lepeta->addStackWithSumMC(*this,"2lss_m_mumu__lepeta",i,"samp",5);  
+//         can3l_ppp__lepeta->addStackWithSumMC(*this,"3l_ppp__lepeta",i,"samp",5);       
+//         can3l_mmm__lepeta->addStackWithSumMC(*this,"3l_mmm__lepeta",i,"samp",5);       
+//         can3l_mix__lepeta->addStackWithSumMC(*this,"3l_mix__lepeta",i,"samp",5);       
+//         can3l_mix_sfz__lepeta->addStackWithSumMC(*this,"3l_mix_sfz__lepeta",i,"samp",5);  
+//         cange4l__lepeta->addStackWithSumMC(*this,"ge4l__lepeta",i,"samp",5);        
+        can1l_mu__lepeta->addStackWithSumMC(*this,"1l_mu__lepeta",i,"samp",-1);        
+        can1l_e__lepeta->addStackWithSumMC(*this,"1l_e__lepeta",i,"samp",-1);        
 
 
 
@@ -640,40 +686,57 @@ void MakeGoodPlot::standard_plots()
         can2los_mumu__met->addStackWithSumMC(*this,"2los_mumu__met",i,"samp",-1);       
         can2los_sfz_ee__met->addStackWithSumMC(*this,"2los_sfz_ee__met",i,"samp",-1);     
         can2los_sfz_mumu__met->addStackWithSumMC(*this,"2los_sfz_mumu__met",i,"samp",-1);   
-        can2lss_p_ee__met->addStackWithSumMC(*this,"2lss_p_ee__met",i,"samp",5);       
-        can2lss_p_emu__met->addStackWithSumMC(*this,"2lss_p_emu__met",i,"samp",5);      
-        can2lss_p_mumu__met->addStackWithSumMC(*this,"2lss_p_mumu__met",i,"samp",5);     
-        can2lss_m_ee__met->addStackWithSumMC(*this,"2lss_m_ee__met",i,"samp",5);       
-        can2lss_m_emu__met->addStackWithSumMC(*this,"2lss_m_emu__met",i,"samp",5);      
-        can2lss_m_mumu__met->addStackWithSumMC(*this,"2lss_m_mumu__met",i,"samp",5);     
-        can3l_ppp__met->addStackWithSumMC(*this,"3l_ppp__met",i,"samp",5);        
-        can3l_mmm__met->addStackWithSumMC(*this,"3l_mmm__met",i,"samp",5);        
-        can3l_mix__met->addStackWithSumMC(*this,"3l_mix__met",i,"samp",5);        
-        can3l_mix_sfz__met->addStackWithSumMC(*this,"3l_mix_sfz__met",i,"samp",5);      
-        cange4l__met->addStackWithSumMC(*this,"ge4l__met",i,"samp",5);        
-        can1l_mu__met->addStackWithSumMC(*this,"1l_mu__met",i,"samp",5);        
-        can1l_e__met->addStackWithSumMC(*this,"1l_e__met",i,"samp",5);        
+//         can2lss_p_ee__met->addStackWithSumMC(*this,"2lss_p_ee__met",i,"samp",5);       
+//         can2lss_p_emu__met->addStackWithSumMC(*this,"2lss_p_emu__met",i,"samp",5);      
+//         can2lss_p_mumu__met->addStackWithSumMC(*this,"2lss_p_mumu__met",i,"samp",5);     
+//         can2lss_m_ee__met->addStackWithSumMC(*this,"2lss_m_ee__met",i,"samp",5);       
+//         can2lss_m_emu__met->addStackWithSumMC(*this,"2lss_m_emu__met",i,"samp",5);      
+//         can2lss_m_mumu__met->addStackWithSumMC(*this,"2lss_m_mumu__met",i,"samp",5);     
+//         can3l_ppp__met->addStackWithSumMC(*this,"3l_ppp__met",i,"samp",5);        
+//         can3l_mmm__met->addStackWithSumMC(*this,"3l_mmm__met",i,"samp",5);        
+//         can3l_mix__met->addStackWithSumMC(*this,"3l_mix__met",i,"samp",5);        
+//         can3l_mix_sfz__met->addStackWithSumMC(*this,"3l_mix_sfz__met",i,"samp",5);      
+//         cange4l__met->addStackWithSumMC(*this,"ge4l__met",i,"samp",5);        
+        can1l_mu__met->addStackWithSumMC(*this,"1l_mu__met",i,"samp",-1);        
+        can1l_e__met->addStackWithSumMC(*this,"1l_e__met",i,"samp",-1);        
 
         can2los_ee__metphi->addStackWithSumMC(*this,"2los_ee__metphi",i,"samp",-1);      
         can2los_emu__metphi->addStackWithSumMC(*this,"2los_emu__metphi",i,"samp",-1);     
         can2los_mumu__metphi->addStackWithSumMC(*this,"2los_mumu__metphi",i,"samp",-1);    
         can2los_sfz_ee__metphi->addStackWithSumMC(*this,"2los_sfz_ee__metphi",i,"samp",-1);  
         can2los_sfz_mumu__metphi->addStackWithSumMC(*this,"2los_sfz_mumu__metphi",i,"samp",-1);
-        can2lss_p_ee__metphi->addStackWithSumMC(*this,"2lss_p_ee__metphi",i,"samp",5);    
-        can2lss_p_emu__metphi->addStackWithSumMC(*this,"2lss_p_emu__metphi",i,"samp",5);   
-        can2lss_p_mumu__metphi->addStackWithSumMC(*this,"2lss_p_mumu__metphi",i,"samp",5);  
-        can2lss_m_ee__metphi->addStackWithSumMC(*this,"2lss_m_ee__metphi",i,"samp",5);    
-        can2lss_m_emu__metphi->addStackWithSumMC(*this,"2lss_m_emu__metphi",i,"samp",5);   
-        can2lss_m_mumu__metphi->addStackWithSumMC(*this,"2lss_m_mumu__metphi",i,"samp",5);  
-        can3l_ppp__metphi->addStackWithSumMC(*this,"3l_ppp__metphi",i,"samp",5);       
-        can3l_mmm__metphi->addStackWithSumMC(*this,"3l_mmm__metphi",i,"samp",5);       
-        can3l_mix__metphi->addStackWithSumMC(*this,"3l_mix__metphi",i,"samp",5);       
-        can3l_mix_sfz__metphi->addStackWithSumMC(*this,"3l_mix_sfz__metphi",i,"samp",5);   
-        cange4l__metphi->addStackWithSumMC(*this,"ge4l__metphi",i,"samp",5);        
-        can1l_mu__metphi->addStackWithSumMC(*this,"1l_mu__metphi",i,"samp",5);
-        can1l_e__metphi->addStackWithSumMC(*this,"1l_e__metphi",i,"samp",5);
+//         can2lss_p_ee__metphi->addStackWithSumMC(*this,"2lss_p_ee__metphi",i,"samp",5);    
+//         can2lss_p_emu__metphi->addStackWithSumMC(*this,"2lss_p_emu__metphi",i,"samp",5);   
+//         can2lss_p_mumu__metphi->addStackWithSumMC(*this,"2lss_p_mumu__metphi",i,"samp",5);  
+//         can2lss_m_ee__metphi->addStackWithSumMC(*this,"2lss_m_ee__metphi",i,"samp",5);    
+//         can2lss_m_emu__metphi->addStackWithSumMC(*this,"2lss_m_emu__metphi",i,"samp",5);   
+//         can2lss_m_mumu__metphi->addStackWithSumMC(*this,"2lss_m_mumu__metphi",i,"samp",5);  
+//         can3l_ppp__metphi->addStackWithSumMC(*this,"3l_ppp__metphi",i,"samp",5);       
+//         can3l_mmm__metphi->addStackWithSumMC(*this,"3l_mmm__metphi",i,"samp",5);       
+//         can3l_mix__metphi->addStackWithSumMC(*this,"3l_mix__metphi",i,"samp",5);       
+//         can3l_mix_sfz__metphi->addStackWithSumMC(*this,"3l_mix_sfz__metphi",i,"samp",5);   
+//         cange4l__metphi->addStackWithSumMC(*this,"ge4l__metphi",i,"samp",5);        
+        can1l_mu__metphi->addStackWithSumMC(*this,"1l_mu__metphi",i,"samp",-1);
+        can1l_e__metphi->addStackWithSumMC(*this,"1l_e__metphi",i,"samp",-1);
 
-
+        can2los_ee__numPVs->addStackWithSumMC(*this,"2los_ee__numPVs",i,"samp",-1);      
+        can2los_emu__numPVs->addStackWithSumMC(*this,"2los_emu__numPVs",i,"samp",-1);     
+        can2los_mumu__numPVs->addStackWithSumMC(*this,"2los_mumu__numPVs",i,"samp",-1);    
+        can2los_sfz_ee__numPVs->addStackWithSumMC(*this,"2los_sfz_ee__numPVs",i,"samp",-1);  
+        can2los_sfz_mumu__numPVs->addStackWithSumMC(*this,"2los_sfz_mumu__numPVs",i,"samp",-1);
+//         can2lss_p_ee__numPVs->addStackWithSumMC(*this,"2lss_p_ee__numPVs",i,"samp",5);    
+//         can2lss_p_emu__numPVs->addStackWithSumMC(*this,"2lss_p_emu__numPVs",i,"samp",5);   
+//         can2lss_p_mumu__numPVs->addStackWithSumMC(*this,"2lss_p_mumu__numPVs",i,"samp",5);  
+//         can2lss_m_ee__numPVs->addStackWithSumMC(*this,"2lss_m_ee__numPVs",i,"samp",5);    
+//         can2lss_m_emu__numPVs->addStackWithSumMC(*this,"2lss_m_emu__numPVs",i,"samp",5);   
+//         can2lss_m_mumu__numPVs->addStackWithSumMC(*this,"2lss_m_mumu__numPVs",i,"samp",5);  
+//         can3l_ppp__numPVs->addStackWithSumMC(*this,"3l_ppp__numPVs",i,"samp",5);       
+//         can3l_mmm__numPVs->addStackWithSumMC(*this,"3l_mmm__numPVs",i,"samp",5);       
+//         can3l_mix__numPVs->addStackWithSumMC(*this,"3l_mix__numPVs",i,"samp",5);       
+//         can3l_mix_sfz__numPVs->addStackWithSumMC(*this,"3l_mix_sfz__numPVs",i,"samp",5);   
+//         cange4l__numPVs->addStackWithSumMC(*this,"ge4l__numPVs",i,"samp",5);        
+        can1l_mu__numPVs->addStackWithSumMC(*this,"1l_mu__numPVs",i,"samp",-1);
+        can1l_e__numPVs->addStackWithSumMC(*this,"1l_e__numPVs",i,"samp",-1);
         
         
         

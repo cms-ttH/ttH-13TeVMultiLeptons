@@ -20,7 +20,7 @@ void MakeGoodPlot::get_rate_info()
 //     pdfup[6]= 0.;
 //     pdfdown[6]= 0.;
     
-     // Z+Jets
+     // Z+Jets (DY M>50)
     xsec[6]=1921.8*3; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
     q2up[6]= 0.6*3; 
     q2down[6]= -0.6*3;

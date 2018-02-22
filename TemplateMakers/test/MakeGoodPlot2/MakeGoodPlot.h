@@ -58,7 +58,7 @@ class MakeGoodPlot
         void standard_plots();
         
         MakeGoodPlot() { cout << "Default constructor of MakeGoodPlot doesn't do anything. Use a different constructor." << endl; }
-        MakeGoodPlot(std::vector<int> thesamps);
+        MakeGoodPlot(std::vector<int> thesamps, TString histdir="");
         MakeGoodPlot(std::vector<int> thesamps, std::vector<TObjArray> exthists);
         
         void drawAll();
@@ -69,7 +69,7 @@ class MakeGoodPlot
 };
 
 
-MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps)
+MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps, TString histdir)
 {    
     numsamples = thesamps.size();
     samples = thesamps;
@@ -79,8 +79,25 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps)
     for (int i=0; i<numsamples; i++)
     {
         // load the saved hists from file(s):
+        TString thishistfile = "temp_"+int2ss(samples[i])+".root";
         
-        files.push_back( new TFile("temp_"+int2ss(samples[i])+".root") ); 
+        if (histdir!="")
+        {
+            // in case the histograms are somewhere besides the current dir:
+            thishistfile = histdir;
+            // get subdir for this sample:
+            TString sampTStemp = sample_int2TString(samples[i]);
+            // the rest of this is due to the way lobster merges output files:
+            thishistfile = thishistfile + "/" + sampTStemp + "/*.root";
+            TString lsstring = "ls -d "+thishistfile+" > temp.txt";
+            system(lsstring);
+            ifstream passed_root_file;
+            passed_root_file.open("temp.txt");
+            passed_root_file >> thishistfile;
+            passed_root_file.close();
+        }
+        
+        files.push_back( new TFile(thishistfile) ); 
         TIter next(files[i]->GetListOfKeys());
         TKey *key;
         TObjArray dummyArray;

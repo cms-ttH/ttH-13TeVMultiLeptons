@@ -8,14 +8,15 @@ class HistMaker
         // everything is public
         
         HistMaker();
+        HistMaker(TString thepassedsamp);
         
-        const unsigned int arrsize = 500;
-        
+        const unsigned int th1arrsize = 5000;
+        const unsigned int th2arrsize = 1000;
         int sample = -1;
         
         // you DO need these here!
-        TH1D *th1ds[500]; 
-        TH2D *th2ds[500];
+        TH1D *th1ds[5000]; 
+        TH2D *th2ds[1000];
         std::unordered_map<string,TH1D*> th1d;
         std::unordered_map<string,TH2D*> th2d;
         std::unordered_map<string,TGraph*> tgraph;
@@ -24,6 +25,7 @@ class HistMaker
         
         TTreeReaderValue<double> wgt_intree;
         TTreeReaderValue<vector<string>> passTrigger_intree;
+        TTreeReaderValue<int> numPVs_intree;
         
         TTreeReaderValue<vector<ttH::Lepton>> raw_leptons_intree;
         TTreeReaderValue<vector<ttH::Lepton>> preselected_leptons_intree;
@@ -93,10 +95,20 @@ HistMaker::HistMaker()
     passedSample >> sample;
     passedSample.close();
     
-    // doing it this way instead when using condor/batch:
+    // doing it this way instead when using condor/batch (not lobster):
 //     auto samp_env_var = getenv("SAMPLE");
 //     string samp_env_var_string = samp_env_var;
 //     stringstream samp_env_var_ss(samp_env_var_string);
 //     samp_env_var_ss >> sample;
     
 }
+HistMaker::HistMaker(TString thepassedsamp)
+{
+    // Use this when running lobster
+    // Alternative constructor (if you have direct access to the sample number, i.e. 
+    // when running from wrapper_lobster.C)
+    
+    TH1::SetDefaultSumw2(); 
+    sample = sample_TString2int(thepassedsamp); // see loadsample.h
+}
+

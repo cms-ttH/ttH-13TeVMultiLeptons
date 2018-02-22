@@ -13,6 +13,13 @@ string d2ss(double dbl,int prec=-1)
     std::string thestr = thess.str();
     return thestr;
 }
+std::string TString2string(TString the_abomination)
+{
+        std::ostringstream thess;
+        thess << the_abomination;
+        std::string string_out = thess.str();
+        return string_out;
+}
 TLegend getleg(string format)
 {
     if (format=="bl") 

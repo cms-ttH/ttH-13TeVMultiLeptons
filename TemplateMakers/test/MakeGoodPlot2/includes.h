@@ -52,10 +52,13 @@
 
 
 // Other stuff...
-#include "../variables.h"
-#include "../functionsTTH.cc" // should relocate this
+//#include "../variables.h"
+//#include "../functionsTTH.cc" // should relocate this
+#include "variables.h"
+#include "functionsTTH.cc"
+
 // #include "../sample_lists.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
 
 
@@ -78,9 +81,9 @@
 // --------- Header files in the this (MakeGoodPlot2) directory ---------
 
 #include "utils.h"
+#include "loadsample.h"
 
 // Stuff used by HistMaker
-#include "loadsample.h"
 #include "HistMaker.h"
 #include "datasets.h"
 #include "bookhistos.h"

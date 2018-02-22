@@ -19,22 +19,27 @@ void HistMaker::standard_hists()
         double jetsize = preselected_jets_intree->size();
         double taggedjetssize = taggedjetsmedium.size();
         double taggedjetsloosesize = taggedjetsloose.size();
+        
+        int nummuons = tight_muons_intree->size();
+        int numeles = tight_electrons_intree->size();
+    
+        int numleps = numeles+nummuons;
     
         bool pass = false;
-        if (jetsize>2) // >3
-        {
-            pass=true;
+        //if (jetsize>2) // >3
+        //{
+            //pass=true;
             //if (taggedjetssize>0 || taggedjetsloosesize>1) pass=true;
-        }
+        //}
     
-        if (!pass) return;
+        //if (!pass) return;
     
         // this SF section eventually should be bigger / have more stuff:
         if (sample<100) for (const auto & lep : *tight_leptons_intree) 
         {
             // For 2016 data/MC, this is the combined reco+POGID+lepMVA SF:
             if (category.substr(0,2)=="2l") weight *= leptonSF_ttH(lep.pdgID, lep.obj.Pt(), lep.obj.Eta(), 2);
-            else weight *= leptonSF_ttH(lep.pdgID, lep.obj.Pt(), lep.obj.Eta(), 3);
+            else if (category.substr(0,2)=="3l" || category.substr(0,2)=="ge") weight *= leptonSF_ttH(lep.pdgID, lep.obj.Pt(), lep.obj.Eta(), 3);
         }
         
         bool passedtrig = passesAnyTrigger();
@@ -53,26 +58,36 @@ void HistMaker::standard_hists()
             th1d[category+"__njets"]->Fill(jetsize,weight);               
             th1d[category+"__nbjets"]->Fill(taggedjetssize,weight);        
             th2d[category+"__nbjets_vs_njets"]->Fill(jetsize,taggedjetssize,weight);
-         
+            th1d[category+"__numPVs"]->Fill((*numPVs_intree),weight);
          
             for (const auto & jet : *preselected_jets_intree)
             {
-            
                 th1d[category+"__jetpt"]->Fill(jet.obj.Pt(),weight);
                 th1d[category+"__jeteta"]->Fill(jet.obj.Eta(),weight);
                 th1d[category+"__jetcsv"]->Fill(jet.csv,weight);
-            
+                //th1d[category+"__jetdeepcsv"]->Fill(jet.DeepCSV,weight);
             }
         
             for (const auto & lep : *tight_leptons_intree)
             {
                 th1d[category+"__leppt"]->Fill(lep.obj.Pt(),weight);
-                th1d[category+"__lepeta"]->Fill(lep.obj.Eta(),weight);    
+                th1d[category+"__lepeta"]->Fill(lep.obj.Eta(),weight);   
+                th1d[category+"__lepMVA"]->Fill(lep.lepMVA,weight);
             }
-        
+            
+            th1d[category+"__lep1pt"]->Fill((*tight_leptons_intree)[0].obj.Pt(),weight);
+            if (numleps>1)
+            {
+                th1d[category+"__lep2pt"]->Fill((*tight_leptons_intree)[1].obj.Pt(),weight);
+                auto obj12 = (*tight_leptons_intree)[0].obj + (*tight_leptons_intree)[1].obj;
+                th1d[category+"__llmass"]->Fill(obj12.M(),weight);
+            }
+            
+            auto allobjsTLV = getsumTLV(*tight_leptons_intree,*preselected_jets_intree);
+            th1d[category+"__MHT"]->Fill(allobjsTLV.Pt(),weight);
             th1d[category+"__met"]->Fill((*met_intree)[0].obj.Pt(),weight);
             th1d[category+"__metphi"]->Fill((*met_intree)[0].obj.Phi(),weight);
-         
+            
          
             int thisbin = th1d["category_yields"]->GetXaxis()->FindBin(category.c_str());
             th1d["category_yields"]->Fill(thisbin,weight);

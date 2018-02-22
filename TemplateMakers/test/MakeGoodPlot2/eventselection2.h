@@ -138,14 +138,15 @@ string HistMaker::eventselection()
     {
         if ((*tight_leptons_intree)[0].obj.Pt()>25)
         {
-            bool isfake=false;
+              
+            // "poor man's" single lep (if you skimmed on >=2 preselected leptons)
+            // bool isfake=false;
+//             for (const auto & lep : *preselected_leptons_intree) 
+//             {
+//                 if (lep.lepMVA<0.5) isfake=true;
+//             }
+//             if (!isfake) return "null";
             
-            // "poor man's" single lep
-            for (const auto & lep : *preselected_leptons_intree) 
-            {
-                if (lep.lepMVA<0.5) isfake=true;
-            }
-            if (!isfake) return "null";
             
             if (nummuons==1)
             {   

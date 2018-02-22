@@ -116,25 +116,29 @@ TH2F *_histo_recoToLoose_leptonSF_gsf = NULL;
 float _get_recoToLoose_leptonSF_ttH(int pdgid, float pt, float eta, int nlep, float var){
 
   if (var!=0 && abs(pdgid)!=11) assert(0); // NOT IMPLEMENTED
-
+  
+  auto cmsswprefix = getenv("CMSSW_BASE");
+  TString mypfx(cmsswprefix);
+  mypfx = mypfx+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/";
+  
   if (!_histo_recoToLoose_leptonSF_mu1) {
-    _file_recoToLoose_leptonSF_mu1 = new TFile("../../data/CERN/leptonSF/TnP_NUM_LooseID_DENOM_generalTracks_VAR_map_pt_eta.root","read");
-    _file_recoToLoose_leptonSF_mu2 = new TFile("../../data/CERN/leptonSF/TnP_NUM_MiniIsoLoose_DENOM_LooseID_VAR_map_pt_eta.root","read");
-    _file_recoToLoose_leptonSF_mu3 = new TFile("../../data/CERN/leptonSF/TnP_NUM_TightIP2D_DENOM_MediumID_VAR_map_pt_eta.root","read");
-    _file_recoToLoose_leptonSF_mu4 = new TFile("../../data/CERN/leptonSF/ratios_HIP_trkEff.root","read");
+    _file_recoToLoose_leptonSF_mu1 = new TFile(mypfx+"CERN/leptonSF/TnP_NUM_LooseID_DENOM_generalTracks_VAR_map_pt_eta.root","read");
+    _file_recoToLoose_leptonSF_mu2 = new TFile(mypfx+"CERN/leptonSF/TnP_NUM_MiniIsoLoose_DENOM_LooseID_VAR_map_pt_eta.root","read");
+    _file_recoToLoose_leptonSF_mu3 = new TFile(mypfx+"CERN/leptonSF/TnP_NUM_TightIP2D_DENOM_MediumID_VAR_map_pt_eta.root","read");
+    _file_recoToLoose_leptonSF_mu4 = new TFile(mypfx+"CERN/leptonSF/ratios_HIP_trkEff.root","read");
     _histo_recoToLoose_leptonSF_mu1 = (TH2F*)(_file_recoToLoose_leptonSF_mu1->Get("SF"));
     _histo_recoToLoose_leptonSF_mu2 = (TH2F*)(_file_recoToLoose_leptonSF_mu2->Get("SF"));
     _histo_recoToLoose_leptonSF_mu3 = (TH2F*)(_file_recoToLoose_leptonSF_mu3->Get("SF"));
     _histo_recoToLoose_leptonSF_mu4 = (TGraphAsymmErrors*)(_file_recoToLoose_leptonSF_mu4->Get("ratio_eta"));
   }
   if (!_histo_recoToLoose_leptonSF_el1) {
-    _file_recoToLoose_leptonSF_el = new TFile("../../data/CERN/leptonSF/el_scaleFactors_Moriond17.root","read");
+    _file_recoToLoose_leptonSF_el = new TFile(mypfx+"CERN/leptonSF/el_scaleFactors_Moriond17.root","read");
     _histo_recoToLoose_leptonSF_el1 = (TH2F*)(_file_recoToLoose_leptonSF_el->Get("GsfElectronToMVAVLooseFOIDEmuTightIP2D"));
     _histo_recoToLoose_leptonSF_el2 = (TH2F*)(_file_recoToLoose_leptonSF_el->Get("MVAVLooseElectronToMini4"));
     _histo_recoToLoose_leptonSF_el3 = (TH2F*)(_file_recoToLoose_leptonSF_el->Get("MVAVLooseElectronToConvVetoIHit1"));
   }
   if (!_histo_recoToLoose_leptonSF_gsf) {
-    _file_recoToLoose_leptonSF_gsf = new TFile("../../data/CERN/leptonSF/egammaEffi.txt_EGM2D.root","read");
+    _file_recoToLoose_leptonSF_gsf = new TFile(mypfx+"CERN/leptonSF/egammaEffi.txt_EGM2D.root","read");
     _histo_recoToLoose_leptonSF_gsf = (TH2F*)(_file_recoToLoose_leptonSF_gsf->Get("EGamma_SF2D"));
   }
 
@@ -205,20 +209,24 @@ float _get_looseToTight_leptonSF_ttH(int pdgid, float pt, float eta, int nlep, f
 
   if (var!=0) assert(0); // NOT IMPLEMENTED
 
+  auto cmsswprefix = getenv("CMSSW_BASE");
+  TString mypfx(cmsswprefix);
+  mypfx = mypfx+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/";
+
   if (!_histo_looseToTight_leptonSF_mu_2lss) {
-    _file_looseToTight_leptonSF_mu_2lss = new TFile("../../data/CERN/leptonSF/lepMVAEffSF_m_2lss.root","read");
+    _file_looseToTight_leptonSF_mu_2lss = new TFile(mypfx+"CERN/leptonSF/lepMVAEffSF_m_2lss.root","read");
     _histo_looseToTight_leptonSF_mu_2lss = (TH2F*)(_file_looseToTight_leptonSF_mu_2lss->Get("sf"));
   }
   if (!_histo_looseToTight_leptonSF_el_2lss) {
-    _file_looseToTight_leptonSF_el_2lss = new TFile("../../data/CERN/leptonSF/lepMVAEffSF_e_2lss.root","read");
+    _file_looseToTight_leptonSF_el_2lss = new TFile(mypfx+"CERN/leptonSF/lepMVAEffSF_e_2lss.root","read");
     _histo_looseToTight_leptonSF_el_2lss = (TH2F*)(_file_looseToTight_leptonSF_el_2lss->Get("sf"));
   }
   if (!_histo_looseToTight_leptonSF_mu_3l) {
-    _file_looseToTight_leptonSF_mu_3l = new TFile("../../data/CERN/leptonSF/lepMVAEffSF_m_3l.root","read");
+    _file_looseToTight_leptonSF_mu_3l = new TFile(mypfx+"CERN/leptonSF/lepMVAEffSF_m_3l.root","read");
     _histo_looseToTight_leptonSF_mu_3l = (TH2F*)(_file_looseToTight_leptonSF_mu_3l->Get("sf"));
   }
   if (!_histo_looseToTight_leptonSF_el_3l) {
-    _file_looseToTight_leptonSF_el_3l = new TFile("../../data/CERN/leptonSF/lepMVAEffSF_e_3l.root","read");
+    _file_looseToTight_leptonSF_el_3l = new TFile(mypfx+"CERN/leptonSF/lepMVAEffSF_e_3l.root","read");
     _histo_looseToTight_leptonSF_el_3l = (TH2F*)(_file_looseToTight_leptonSF_el_3l->Get("sf"));
   }
 

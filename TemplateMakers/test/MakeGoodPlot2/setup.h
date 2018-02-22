@@ -1,6 +1,6 @@
 void MakeGoodPlot::setup()
 {   
-    
+    cout << "hey1" << endl;
     
     for (int i=0; i<200; i++)
     {
@@ -104,11 +104,12 @@ void MakeGoodPlot::setup()
     color[103] = kBlack;
     color[104] = kBlack;
 
-    
+    cout << "hey2" << endl;
 
     
     for (int i=0; i<numsamples; i++)
     {    
+        cout << samples[i] << endl;
         numgen[samples[i]] = ((TH1D*)hist[i].FindObject("NumInitialWeightedMCevents"))->Integral();
         //if (samples[i]==0) hasdata = true;   
         if (samples[i]>99)
@@ -119,12 +120,15 @@ void MakeGoodPlot::setup()
         //scale[i] *= lumi;
     }
     
+    
     double lumifb = lumi / 1000.;
     string lumistr = d2ss(lumifb,1);
-    //cmsinfo = "CMS Preliminary  #sqrt{s} = 13 TeV, L = "+lumistr+" fb^{-1}";
-    cmsinfo = "CMS Preliminary                                                     #sqrt{s} = 13 TeV, L = "+lumistr+" fb^{-1}";
-    //CMSInfoLatex = new TLatex(0.48, 0.91, cmsinfo.c_str());
-    CMSInfoLatex = new TLatex(0.10, 0.91, cmsinfo.c_str());
+    // perfect top left placement but covers up power of 10 if present:
+    //cmsinfo = "CMS Preliminary                                                     #sqrt{s} = 13 TeV, L = "+lumistr+" fb^{-1}"; 
+    //CMSInfoLatex = new TLatex(0.10, 0.91, cmsinfo.c_str());
+    // compromise:
+    cmsinfo = "CMS Preliminary  #sqrt{s} = 13 TeV, L = "+lumistr+" fb^{-1}";
+    CMSInfoLatex = new TLatex(0.48, 0.91, cmsinfo.c_str());
     CMSInfoLatex->SetNDC();
     CMSInfoLatex->SetTextFont(42);
     // CMSInfoLatex.SetTextSize(0.055);
