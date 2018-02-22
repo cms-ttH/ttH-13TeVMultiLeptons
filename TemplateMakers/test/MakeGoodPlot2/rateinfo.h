@@ -13,19 +13,27 @@ void MakeGoodPlot::get_rate_info()
     pdfup[5]=35.06;
     pdfdown[5]=-35.06;               
 
-    // Z+Jets
-    xsec[6]=1921.8*3;
-    q2up[6]= 33.2*3; // pdf + scale are together for this one
-    q2down[6]= 33.2*3;
-    pdfup[6]= 0.;
-    pdfdown[6]= 0.;
+//     // Z+Jets
+//     xsec[6]=1921.8*3;
+//     q2up[6]= 33.2*3; // pdf + scale are together for this one
+//     q2down[6]= 33.2*3;
+//     pdfup[6]= 0.;
+//     pdfdown[6]= 0.;
+    
+     // Z+Jets
+    xsec[6]=1921.8*3; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
+    q2up[6]= 0.6*3; 
+    q2down[6]= -0.6*3;
+    pdfup[6]= 33.2*3;
+    pdfdown[6]= -33.2*3;   
+    
 
     // W+Jets
-    xsec[7]=61526.7; // was 20508.9...
+    xsec[7]=61526.7; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
     q2up[7]=497.1;
-    q2down[7]=264.6;
+    q2down[7]=-264.6;
     pdfup[7]=2312.7;
-    pdfdown[7]=2312.7;
+    pdfdown[7]=-2312.7;
 
     // TTWJets
                    
@@ -39,7 +47,7 @@ void MakeGoodPlot::get_rate_info()
 
     
     // diboson (WZ)
-    xsec[10]=4.42965; // was 2.165...
+    xsec[10]=4.42965; // was 2.165... should double check this
     q2up[10]=0.; // <- to be updated.. ?
     q2down[10]=0.; // <- to be updated.. ?
     pdfup[10]=0.; // <- to be updated.. ?
@@ -53,12 +61,13 @@ void MakeGoodPlot::get_rate_info()
     pdfdown[11]=0.; // <- to be updated.. ?
     
    // diboson (WW)
-    xsec[12]=  12.178 / (0.11*0.11*9);  // reverse-engineering the dilep xsec from https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
-                                        // to get the inclusive xsec
-    q2up[12]=0.; // <- to be updated.. ?
-    q2down[12]=0.; // <- to be updated.. ?
-    pdfup[12]=0.; // <- to be updated.. ?
-    pdfdown[12]=0.; // <- to be updated.. ?
+    //xsec[12]=  12.178 / (0.11*0.11*9);  // reverse-engineering the dilep xsec from https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
+    //                                    // to get the inclusive xsec
+    xsec[12]= 118.7; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
+    q2up[12]=0.; // fixed scale 
+    q2down[12]=0.; //
+    pdfup[12]=0.025*118.7;
+    pdfdown[12]=-0.022*118.7;
         
     // dilepton ttbar
     xsec[13]=831.76*(3*0.108)*(3*0.108); // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
@@ -89,6 +98,8 @@ void MakeGoodPlot::get_rate_info()
     pdfup[16]=0.; // <- to be updated.. ?
     pdfdown[16]=0.; // <- to be updated.. ?
  
+ 
+    // Single top info: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec
     // SingleTop_tWchan_top
     xsec[17]=35.85;
     q2up[17]=0.9;
@@ -104,23 +115,23 @@ void MakeGoodPlot::get_rate_info()
     pdfdown[18]= 1.7;
 
     // SingleTop_tchan_top
-    xsec[19]=44.33;
-    q2up[19]=1.76;
-    q2down[19]=1.49;
-    pdfup[19]=0.; // ?
-    pdfdown[19]=0.; // ?
+    xsec[19]=136.02;
+    q2up[19]=4.09;
+    q2down[19]=-2.92;
+    pdfup[19]=3.52;
+    pdfdown[19]=-3.52;
 
     // SingleTop_tchan_antitop
-    xsec[20]=26.38;
-    q2up[20]=1.32;
-    q2down[20]=1.18;
-    pdfup[20]=0.; // ?
-    pdfdown[20]=0.; // ?
+    xsec[20]=80.95;
+    q2up[20]=2.53;
+    q2down[20]=-1.71;
+    pdfup[20]=3.18;
+    pdfdown[20]=-3.18;
 
-    // SingleTop_schan
-    xsec[21]=3.36;
-    q2up[21]=0.13;
-    q2down[21]=0.12;
-    pdfup[21]=0.; // ?
-    pdfdown[21]=0.; // ?
+    // SingleTop_schan (leptonic decays)
+    xsec[21]=3.34; // 10.32*(3*0.108)
+    q2up[21]=0.29*(3*0.108);
+    q2down[21]=-0.24*(3*0.108);
+    pdfup[21]=0.27*(3*0.108);
+    pdfdown[21]=-0.27*(3*0.108);
 }
