@@ -11,12 +11,12 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
 		// EDAnalyzer-specific:
 		virtual void beginJob() ;
-      		virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      		virtual void endJob() ;
-      		virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-      		virtual void endRun(edm::Run const&, edm::EventSetup const&);
-      		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-      		virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);				
+        virtual void analyze(const edm::Event&, const edm::EventSetup&);
+        virtual void endJob() ;
+        virtual void beginRun(edm::Run const&, edm::EventSetup const&);
+        virtual void endRun(edm::Run const&, edm::EventSetup const&);
+        virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+        virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);				
 
 		// OSTwoLep-specific
 		void tree_add_branches();
@@ -54,31 +54,32 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		
 		int numBadMuons_intree;
 		int numPVs_intree;
+		int numTruePVs_intree;
 
 		vector<ttH::Lepton> raw_leptons_intree;
-                vector<ttH::Lepton> loose_leptons_intree;
-                vector<ttH::Lepton> preselected_leptons_intree;
+        vector<ttH::Lepton> loose_leptons_intree;
+        vector<ttH::Lepton> preselected_leptons_intree;
 		vector<ttH::Lepton> fakeable_leptons_intree;
 		vector<ttH::Lepton> tight_leptons_intree;
  
 		vector<ttH::Electron> raw_electrons_intree; 
-                vector<ttH::Electron> loose_electrons_intree;            
+        vector<ttH::Electron> loose_electrons_intree;            
 		vector<ttH::Electron> preselected_electrons_intree;
 		vector<ttH::Electron> fakeable_electrons_intree;
 		vector<ttH::Electron> tight_electrons_intree;
 
 		vector<ttH::Muon> raw_muons_intree;
-                vector<ttH::Muon> loose_muons_intree;
+        vector<ttH::Muon> loose_muons_intree;
 		vector<ttH::Muon> preselected_muons_intree;
 		vector<ttH::Muon> fakeable_muons_intree;
 		vector<ttH::Muon> tight_muons_intree;
                 
-                vector<ttH::Tau> raw_taus_intree;
-                vector<ttH::Tau> preselected_taus_intree;
-                vector<ttH::Tau> selected_taus_intree;
+        vector<ttH::Tau> raw_taus_intree;
+        vector<ttH::Tau> preselected_taus_intree;
+        vector<ttH::Tau> selected_taus_intree;
 
 		vector<ttH::Jet> raw_jets_intree;
-                vector<ttH::Jet> loose_jets_intree;
+        vector<ttH::Jet> loose_jets_intree;
 		vector<ttH::Jet> preselected_jets_intree;
 		vector<ttH::Jet> preselected_jets_JECup_intree;
 		vector<ttH::Jet> preselected_jets_JECdown_intree;
@@ -96,10 +97,10 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 		std::auto_ptr<JetCorrectionUncertainty> junc_;//charlie
 
 
-                int singleEleCount;
-                int singleMuCount;
-                int singleTauCount;
-                int singleJetCount;
+        int singleEleCount;
+        int singleMuCount;
+        int singleTauCount;
+        int singleJetCount;
                 
 };
 
@@ -115,6 +116,7 @@ void OSTwoLepAna::tree_add_branches()
   summaryTree->Branch("runNumber", &runNumber_intree);
   summaryTree->Branch("higgs_decay", &higgs_decay_intree);
   summaryTree->Branch("numPVs", &numPVs_intree);
+  summaryTree->Branch("numTruePVs", &numTruePVs_intree);
   summaryTree->Branch("passTrigger", &passTrigger_intree);
   
   summaryTree->Branch("preselected_leptons", &preselected_leptons_intree);
@@ -166,6 +168,8 @@ void OSTwoLepAna::initialize_variables()
   lumiBlock_intree = -99;
   runNumber_intree = -99;
   numBadMuons_intree = -99;
+  numPVs_intree = -99;
+  numTruePVs_intree = -99;
   //passTrigger_intree = false;
   passTrigger_intree.clear();
   preselected_leptons_intree.clear();

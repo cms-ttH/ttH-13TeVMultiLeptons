@@ -188,7 +188,8 @@ namespace ttH
     double DeepCSVprobb;
     double DeepCSVprobbb;
     double qgid;
-    //bool passPUID;
+    //bool passPUID; // only available in >90X MINIAOD
+    double PUMVA;
     int pdgID; //place holder for Geoff's templated functions
     
     void clear(void)
@@ -198,10 +199,14 @@ namespace ttH
       genPdgID = -9999;
       genMotherPdgID = -9999;
       genGrandMotherPdgID = -9999;
-      csv = -.2;
+      flavor = -99;
+      csv = -2.;
+      DeepCSV = -2.;
+      DeepCSVprobb = -2.;
+      DeepCSVprobbb = -2.;
+      PUMVA = -2.;
       qgid = -99.;      
       pdgID = -9999;
-      flavor = -99;
     }
 
     virtual ~Jet(){};

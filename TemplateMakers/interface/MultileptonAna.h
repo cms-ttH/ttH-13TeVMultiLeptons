@@ -173,7 +173,7 @@ class MultileptonAna: public MiniAODHelper
   edm::EDGetTokenT<edm::ValueMap<float>> qg_token_;
   edm::EDGetTokenT<std::vector<reco::GenJet>> genJet_token_;
   edm::EDGetTokenT<int> badmu_token_;
-
+  edm::EDGetTokenT <std::vector< PileupSummaryInfo > > puInfoToken;
 
   void parse_params();
   

@@ -28,6 +28,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
   genJet_token_ = consumes< std::vector<reco::GenJet> >(edm::InputTag("slimmedGenJets")); 
   badmu_token_ = consumes<int>(edm::InputTag("removeBadAndCloneGlobalMuons"));
+  puInfoToken = consumes <std::vector< PileupSummaryInfo > > (edm::InputTag(std::string("slimmedAddPileupInfo")));
 
 }
 
@@ -145,6 +146,24 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   int numpvs =                GetVertices(event);
   if (numpvs<1) return; // skips event
   if (debug) cout << "numpvs: " << numpvs << endl;
+  
+  double numTruePV = -1;
+  //double numGenPV = -1;
+  edm::Handle<std::vector< PileupSummaryInfo > > PupInfo;
+  event.getByToken(puInfoToken,PupInfo);
+  if(PupInfo.isValid())
+  {
+    for( std::vector<PileupSummaryInfo>::const_iterator PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI )
+    {
+        int BX = PVI->getBunchCrossing();
+        if( BX==0 )
+        {
+          numTruePV = PVI->getTrueNumInteractions();
+          //numGenPV  = PVI->getPU_NumInteractions();
+        }
+    }
+  }
+
 
 
   /////////
@@ -490,6 +509,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
     numBadMuons_intree = numBadMu;
     numPVs_intree = numpvs;
+    numTruePVs_intree = numTruePV;
     
     wgt_intree = weight;
 

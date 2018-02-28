@@ -9,7 +9,7 @@ if __name__ == '__main__':
     # That's why we need to set this parameter (here or above in the configuration file, it does not matter, we will not overwrite it).
 
 
-    jobID = 'EFT_test_7_2_18'
+    jobID = 'EFT_test_26_2_18'
 
     config.General.workArea = 'crab_project_dir'
     config.General.transferLogs = True
@@ -117,10 +117,40 @@ if __name__ == '__main__':
 #     config.General.requestName = jobID+'__ZZ'
 #     config.Data.inputDataset = '/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'
 #     submit(config)
-
-
-
-
+#     
+#     config.General.requestName = jobID+'__WWW'
+#     config.Data.inputDataset = '/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
+#     submit(config)
+#     
+#     config.General.requestName = jobID+'__WWZ'
+#     config.Data.inputDataset = '/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
+#     submit(config)
+#     
+#     config.General.requestName = jobID+'__WZZ'
+#     config.Data.inputDataset = '/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
+#     submit(config)
+#     
+#     config.General.requestName = jobID+'__ZZZ'
+#     config.Data.inputDataset = '/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
+#     submit(config)
+#     
+#     
+#     config.General.requestName = jobID+'__tZq'
+#     config.Data.inputDataset = '/tZq_ll_4f_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM'
+#     submit(config)
+#     
+#     config.General.requestName = jobID+'__tttt'
+#     config.Data.inputDataset = '/TTTT_TuneCUETP8M2T4_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM'
+#     submit(config)
+#     
+#     config.General.requestName = jobID+'__ttWW'
+#     config.Data.inputDataset = '/TTWW_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v3/MINIAODSIM'
+#     submit(config)
+#     
+#     config.General.requestName = jobID+'__ttWZ'
+#     config.Data.inputDataset = '/TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM'
+#     submit(config)
+    
 
     #### Data (2016) ####
     
