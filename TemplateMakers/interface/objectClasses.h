@@ -187,6 +187,8 @@ namespace ttH
     double DeepCSV;
     double DeepCSVprobb;
     double DeepCSVprobbb;
+    double DeepCSVprobc;
+    double DeepCSVprobudsg;
     double qgid;
     //bool passPUID; // only available in >90X MINIAOD
     double PUMVA;

@@ -411,6 +411,8 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       jet.DeepCSV =  iJet.bDiscriminator("pfDeepCSVJetTags:probb") + iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
       jet.DeepCSVprobb = iJet.bDiscriminator("pfDeepCSVJetTags:probb");
       jet.DeepCSVprobbb = iJet.bDiscriminator("pfDeepCSVJetTags:probbb");
+      jet.DeepCSVprobc = iJet.bDiscriminator("pfDeepCSVJetTags:probc");
+      jet.DeepCSVprobudsg = iJet.bDiscriminator("pfDeepCSVJetTags:probudsg");
       jet.csv = iJet.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
       //jet.qgid = -99.;//iJet.userFloat("qgid");
       jet.qgid = iJet.userFloat("qgid");
