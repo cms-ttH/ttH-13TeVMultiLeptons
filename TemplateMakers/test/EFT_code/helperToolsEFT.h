@@ -185,9 +185,9 @@ template <typename T1, typename T2> T2* matchObject(T1 target_particle, vector<T
 */
 
 // Returns b-jets matched to their gen_particle counterparts
-template <typename T> vector<T> getBJets(vector<ttH::GenParticle> gen_particles, vector<T> jets) {
+vector<ttH::GenParticle> getBJets(vector<ttH::GenParticle> gen_particles, vector<ttH::GenParticle> jets) {
     double deltaR_cut = 0.4;
-    vector<T> b_jets;
+    vector<ttH::GenParticle> b_jets;
     for (auto &gen_jet: jets) {
         int index = 0;
         for (auto &gen_particle: gen_particles) {
@@ -203,6 +203,18 @@ template <typename T> vector<T> getBJets(vector<ttH::GenParticle> gen_particles,
             }
             index += 1;
         }
+    }
+    return b_jets;
+}
+
+vector<ttH::Jet> getBJets(vector<ttH::GenParticle> gen_particles, vector<ttH::Jet> jets) {
+
+    vector<ttH::Jet> b_jets;
+    for (auto &ttH_jet: jets) {
+        if(jets.DeepCSV > 0.2219) { // 2016 DeepCSV loose WP
+          b_jets.push_back(ttH_jet);
+        }
+        int index = 0;
     }
     return b_jets;
 }
