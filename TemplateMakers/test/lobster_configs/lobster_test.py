@@ -5,18 +5,18 @@ from lobster.core import AdvancedOptions, Category, Config, Dataset, StorageConf
 
 #version = datetime.datetime.now().strftime('%Y%m%d_%H%M')
 version = "EFT_test_1_3_18"
-
+outdir = "/store/user/gesmith/lobster_trees__"+version
 
 storage = StorageConfiguration(
     output=[
-        "hdfs://eddie.crc.nd.edu:19000/store/user/gesmith/lobster_trees__" + version,
-        "file:///hadoop/store/user/gesmith/lobster_trees__" + version,
+        "hdfs://eddie.crc.nd.edu:19000"+outdir,
+        "file:///hadoop"+outdir,
         # ND is not in the XrootD redirector, thus hardcode server.
         # Note the double-slash after the hostname!
-        "root://deepthought.crc.nd.edu//store/user/gesmith/lobster_trees__" + version,
+        "root://deepthought.crc.nd.edu/"+outdir,
         #"chirp://eddie.crc.nd.edu:9094/store/user/gesmith/lobster_test_" + version,
-        "gsiftp://T3_US_NotreDame/store/user/gesmith/lobster_trees__" + version,
-        "srm://T3_US_NotreDame/store/user/gesmith/lobster_trees__" + version
+        "gsiftp://T3_US_NotreDame"+outdir,
+        "srm://T3_US_NotreDame"+outdir
     ]
 )
 
@@ -106,12 +106,12 @@ mysamples.append(['MuonEG_Run2016Bv1','/MuonEG/Run2016B-07Aug17_ver1-v1/MINIAOD'
 mysamples.append(['MuonEG_Run2016D','/MuonEG/Run2016D-07Aug17-v1/MINIAOD'])
 
 
-## redundant?
-lumimask = '/afs/crc.nd.edu/user/g/gsmith15/EFT/16jan18/CMSSW_9_4_0/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
+## golden json 2016:
+#lumimask = '/afs/crc.nd.edu/user/g/gsmith15/EFT/16jan18/CMSSW_9_4_0/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
 
 workflows = []
 for label, samp in mysamples:
-    ttH = Workflow(
+    thisworkflow = Workflow(
         label=label,
         dataset=cmssw.Dataset(
             dataset=samp,
@@ -122,7 +122,7 @@ for label, samp in mysamples:
         merge_size='2.0G',
     )
 
-    workflows.append(ttH)
+    workflows.append(thisworkflow)
     print "added workflow ",label
 
 config = Config(
