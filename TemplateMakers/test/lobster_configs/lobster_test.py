@@ -4,7 +4,7 @@ from lobster import cmssw
 from lobster.core import AdvancedOptions, Category, Config, Dataset, StorageConfiguration, Workflow
 
 #version = datetime.datetime.now().strftime('%Y%m%d_%H%M')
-version = "EFT_test_1_3_18"
+version = "EFT_test_1_3_18_take2"
 outdir = "/store/user/gesmith/lobster_trees__"+version
 
 storage = StorageConfiguration(
@@ -107,7 +107,7 @@ mysamples.append(['MuonEG_Run2016D','/MuonEG/Run2016D-07Aug17-v1/MINIAOD'])
 
 
 ## golden json 2016:
-#lumimask = '/afs/crc.nd.edu/user/g/gsmith15/EFT/16jan18/CMSSW_9_4_0/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
+lumimask = '/afs/crc.nd.edu/user/g/gsmith15/EFT/16jan18/CMSSW_9_4_0/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
 
 workflows = []
 for label, samp in mysamples:
@@ -115,7 +115,8 @@ for label, samp in mysamples:
         label=label,
         dataset=cmssw.Dataset(
             dataset=samp,
-            events_per_task=30000
+            events_per_task=30000,
+            lumi_mask=lumimask
         ),
         category=processing,
         command='cmsRun osTwoLep_cfg.py',
