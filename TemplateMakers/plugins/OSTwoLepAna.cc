@@ -26,6 +26,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) :
   rho_token_ = consumes<double>(setupoptionsparams.getParameter<string>("rhoHandle"));
   vertex_token_ = consumes<reco::VertexCollection>(edm::InputTag("offlineSlimmedPrimaryVertices")); // ,"","RECO"));
   genInfo_token_ = consumes<GenEventInfoProduct>(edm::InputTag("generator"));
+  lheInfo_token_ = consumes<LHEEventProduct>(edm::InputTag("externalLHEProducer"));
   genJet_token_ = consumes< std::vector<reco::GenJet> >(edm::InputTag("slimmedGenJets")); 
   badmu_token_ = consumes<int>(edm::InputTag("removeBadAndCloneGlobalMuons"));
   puInfoToken = consumes <std::vector< PileupSummaryInfo > > (edm::InputTag(std::string("slimmedAddPileupInfo")));
@@ -54,8 +55,7 @@ void OSTwoLepAna::beginJob()
   singleMuCount=0;
   singleTauCount=0;
   singleJetCount=0;
-  
-    
+
 }
 void OSTwoLepAna::endJob() {
 
@@ -128,7 +128,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   SetRho(rho);
   
   edm::Handle<GenEventInfoProduct> GenInfo;
-  if (!isData) event.getByToken(genInfo_token_,GenInfo);
+  edm::Handle<LHEEventProduct> LHEInfo;
+  if (!isData)
+  {
+    event.getByToken(genInfo_token_,GenInfo);
+    event.getByToken(lheInfo_token_,LHEInfo);
+  }
 
   ///////////////////////////
   if (!isData) mcwgt_intree = GenInfo->weight();      // <- gen-level weight

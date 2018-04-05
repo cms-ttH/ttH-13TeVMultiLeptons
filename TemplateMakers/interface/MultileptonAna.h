@@ -170,6 +170,7 @@ class MultileptonAna: public MiniAODHelper
   edm::EDGetTokenT<reco::VertexCollection> vertex_token_;
   edm::EDGetTokenT<double> rho_token_;
   edm::EDGetTokenT<GenEventInfoProduct> genInfo_token_;
+  edm::EDGetTokenT<LHEEventProduct> lheInfo_token_;
   edm::EDGetTokenT<edm::ValueMap<float>> qg_token_;
   edm::EDGetTokenT<std::vector<reco::GenJet>> genJet_token_;
   edm::EDGetTokenT<int> badmu_token_;
