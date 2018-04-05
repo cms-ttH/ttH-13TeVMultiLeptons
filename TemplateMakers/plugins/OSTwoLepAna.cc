@@ -131,13 +131,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     {
         event.getByToken(genInfo_token_,GenInfo);
         event.getByToken(lheInfo_token_,LHEInfo);
-    }
 
-    ///////////////////////////
-    if (!isData)
-    {
-        mcwgt_intree = GenInfo->weight();  // <- gen-level weight
-
+        mcwgt_intree = GenInfo->weight();                   // <- gen-level weight
+        originalXWGTUP_intree = LHEInfo->originalXWGTUP();  // original cross-section
         // Add EFT weights
         for (auto wgt_info: LHEInfo->weights())
         {
@@ -145,7 +141,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         }
     }
 
-
+    ///////////////////////////
     // make it +/-1!
     mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
 
@@ -527,6 +523,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
 void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
 {
+    eventcount = 0;
 
     // This has to be done here (not at beginjob):
 

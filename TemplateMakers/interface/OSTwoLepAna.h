@@ -97,6 +97,7 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
         std::auto_ptr<JetCorrectionUncertainty> junc_;//charlie
 
         std::unordered_map<std::string,double> eftwgts_intree;
+        double originalXWGTUP_intree;
 
         int singleEleCount;
         int singleMuCount;
@@ -157,6 +158,7 @@ void OSTwoLepAna::tree_add_branches()
     //summaryTree->Branch("numBadMuons", &numBadMuons_intree);
 
     summaryTree->Branch("eftwgts",&eftwgts_intree);
+    summaryTree->Branch("originalXWGTUP",&originalXWGTUP_intree);
 
 }
 
@@ -209,4 +211,5 @@ void OSTwoLepAna::initialize_variables()
     top_final_state = "none";
 
     eftwgts_intree.clear();
+    originalXWGTUP_intree = -99;
 }
