@@ -137,6 +137,12 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     if (!isData)
     {
         mcwgt_intree = GenInfo->weight();  // <- gen-level weight
+
+        // Add EFT weights
+        for (auto wgt_info: LHEInfo->weights())
+        {
+            eftwgts_intree[wgt_info.id] = wgt_info.wgt;
+        }
     }
 
 
