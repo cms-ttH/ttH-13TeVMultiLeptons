@@ -80,7 +80,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   //   }
   
   // analysis goes here
-  //  if (debug) cout << "eventB: " << event.id().event() << endl;
+  if (debug) cout << "eventB: " << event.id().event() << endl;
   clock_t startTime = clock();
   eventcount++;
   SetupOptions(event); // chgd
@@ -109,8 +109,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   //////// bad muons
   ////////
   ///////////////////
-  int numBadMu = (*get_collection(event, badmu_token_));                                            // <------ ?
-
+  cout << "hey1" << endl;
+  //int numBadMu = (*get_collection(event, badmu_token_));                                            // <------ ?
+  int numBadMu = 0;
+  cout << "hey2" << endl;
   /////////////////////
   /////////
   ///////// Setting up JECs

@@ -419,7 +419,7 @@ vector<ttH::Jet> MultileptonAna::GetCollection (vecPatJet theobjs)
       jet.pdgID = iJet.pdgId();
       jet.flavor = iJet.hadronFlavour();
       jetCollection.push_back(jet);
-      //jet.passPUID = PileupJetIdentifier::passJetId( iJet.userInt("pileupJetId:fullId"), PileupJetIdentifier::kLoose ); // apparently only in >90X MINIAOD
+      jet.passPUID = PileupJetIdentifier::passJetId( iJet.userInt("pileupJetId:fullId"), PileupJetIdentifier::kLoose ); // apparently only in >90X MINIAOD
       jet.PUMVA = iJet.userFloat("pileupJetId:fullDiscriminant");
 
   }

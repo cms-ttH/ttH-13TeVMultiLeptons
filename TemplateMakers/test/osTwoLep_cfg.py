@@ -10,22 +10,22 @@ options.maxEvents = -1
 options.register("jetCleanFakeable", False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "lepton selecton for jet cleaning")
-options.register("data", True,                                                 # <---------
+options.register("data", False,                                                 # <---------
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Data or MC.")
-options.register("skim", True,                                                  # <---------
+options.register("skim", False,                                                  # <---------
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Produce skimmed trees.")
-options.register("hip",True,
+options.register("hip",False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Run hip safe muID.")
-options.register("globalTag", "80X_mcRun2_asymptotic_2016_TrancheIV_v8",
+options.register("globalTag", "94X_mc2017_realistic_v14",
                  VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.string, "Global tag to use") #80X_dataRun2_2016SeptRepro_v7
+                 VarParsing.VarParsing.varType.string, "Global tag to use") #80X_dataRun2_2016SeptRepro_v7 # 80X_mcRun2_asymptotic_2016_TrancheIV_v8
 #options.parseArguments()
 
 from Configuration.StandardSequences.Eras import eras
-process = cms.Process("Demo", eras.run2_common)
+process = cms.Process("Demo", eras.Run2_2017)
 
 ####### IS THIS DATA YES OR NO ######
 isData = options.data
@@ -34,7 +34,6 @@ isData = options.data
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load("Configuration.StandardSequences.MagneticField_cff") # why is this here?
-
 process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
 
 process.GlobalTag.globaltag = options.globalTag
@@ -49,27 +48,17 @@ process.maxEvents = cms.untracked.PSet(
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-#"jetCleanFakeable"
-## set up to take input file as command line argument.
-if len(sys.argv)>2:
-    infile = sys.argv[2] # the first arg after osTwoLep_cfg.py
-
 process.source = cms.Source("PoolSource",
-#    	fileNames = cms.untracked.vstring( infile ),        
 #    	fileNames = cms.untracked.vstring( "/store/mc/RunIISpring16MiniAODv2/ttHToNonbb_M125_13TeV_powheg_pythia8/MINIAODSIM/PUSpring16RAWAODSIM_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/0415D796-9226-E611-9274-AC853D9DAC41.root" ),
 #    	fileNames = cms.untracked.vstring("root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/3C70EB0A-6BBE-E611-B094-0025905A606A.root"),
 #    	fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/23Sep2016-v1/70000/081A803C-8B8A-E611-86A7-008CFA110C90.root" ),
 #      fileNames = cms.untracked.vstring("/store/data/Run2017F/DoubleMuon/MINIAOD/06Nov2017-v1/30000/18844453-05C4-E711-8C82-FA163E631C08.root" ),
-       #eventsToProcess = cms.untracked.VEventRange('1:23725:3368878','1:23725:3368878'),
-        fileNames = cms.untracked.vstring( "root://cms-xrd-global.cern.ch//store/data/Run2016F/MuonEG/MINIAOD/07Aug17-v1/110000/0CBD9D04-BB9A-E711-82FE-008CFAE450B0.root" ),
+        #fileNames = cms.untracked.vstring( "root://cms-xrd-global.cern.ch///store/mc/RunIIFall17MiniAOD/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0A9B6F9D-EB18-E811-A53B-3417EBE64426.root" ),
+        fileNames = cms.untracked.vstring( "file:///tmpscratch/users/gsmith15/temp/0A9B6F9D-EB18-E811-A53B-3417EBE64426.root" ),
 #        fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/07Aug17-v1/50000/006DC839-EB89-E711-9209-002590D9D956.root" ),
 )
 
-### specifying run / lumi range:
-#process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange(
-#    '199812:70-199812:80'
-#)
-## or, using json file:
+## Golden json file:
 if isData:
     cmsswbase = os.environ['CMSSW_BASE']
     import FWCore.PythonUtilities.LumiList as LumiList
@@ -78,55 +67,25 @@ if isData:
 #################################################
 ## JEC & Redo BTagging
 #################################################
+# 
+# from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+# 
+# bTagDiscriminators = [
+#     'pfCombinedInclusiveSecondaryVertexV2BJetTags',
+#     'pfDeepCSVJetTags:probb',
+#     'pfDeepCSVJetTags:probc',
+#     'pfDeepCSVJetTags:probudsg',
+#     'pfDeepCSVJetTags:probbb',
+# ]
+# updateJetCollection(
+#     process,
+#     jetSource = cms.InputTag('slimmedJets'),
+#     labelName = 'Tagged',
+#     btagDiscriminators = bTagDiscriminators, # Uncommenting this will skip btagging, but jet collections will wrong further down.
+#     jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
+# )
 
-from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
-bTagDiscriminators = [
-    'pfCombinedInclusiveSecondaryVertexV2BJetTags',
-    'pfDeepCSVJetTags:probb',
-    'pfDeepCSVJetTags:probc',
-    'pfDeepCSVJetTags:probudsg',
-    'pfDeepCSVJetTags:probbb',
-]
-updateJetCollection(
-    process,
-    jetSource = cms.InputTag('slimmedJets'),
-    labelName = 'Tagged',
-    btagDiscriminators = bTagDiscriminators, # Uncommenting this will skip btagging, but jet collections will wrong further down.
-    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
-)
-
-#################################################
-## Bad Muons
-#################################################
-
-# Not clear if this is still needed. For the 
-# moment keep for 80X miniAOD:
-process.badGlobalMuonTagger = cms.EDFilter(
-    "BadGlobalMuonTagger",
-    muons=cms.InputTag("slimmedMuons"),
-    vtx=cms.InputTag("offlineSlimmedPrimaryVertices"),
-    muonPtCut=cms.double(20),
-    selectClones=cms.bool(False),
-    taggingMode=cms.bool(True),
-    verbose=cms.untracked.bool(False)
-)
-process.cloneGlobalMuonTagger = process.badGlobalMuonTagger.clone(
-    selectClones=cms.bool(True)
-)
-
-process.removeBadAndCloneGlobalMuons = cms.EDProducer(
-    "MuonRefPruner",
-    input=cms.InputTag("slimmedMuons"),
-    toremove=cms.InputTag("badGlobalMuonTagger", "bad"),
-    toremove2=cms.InputTag("cloneGlobalMuonTagger", "bad")
-)
-
-process.noBadGlobalMuons = cms.Sequence(
-    process.cloneGlobalMuonTagger +
-    process.badGlobalMuonTagger +
-    process.removeBadAndCloneGlobalMuons
-)  # in tagging mode, these modules return always "true"
 
 ######################################
 # Analysis
@@ -147,12 +106,12 @@ process.ttHLeptons.MediumCSVWP = cms.double(0.8484) # CSVv2 2016 # LepID plugin 
 #process.ttHLeptons.MediumCSVWP = cms.double(0.4941) # DeepCSV 2017 preliminary # will eventually need this when lepMVA switches to DeepCSV for 2017 data
 process.ttHLeptons.IsHIPSafe = cms.bool(options.hip)
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
-process.ttHLeptons.jets = cms.InputTag("updatedPatJetsTransientCorrectedTagged") #use JEC's from tag
-process.ttHLeptons.JECTag = "patJetCorrFactorsTransientCorrectedTagged"
+process.ttHLeptons.jets = cms.InputTag("slimmedJets")
+process.ttHLeptons.JECTag = "patJetCorrFactors"
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
-process.OSTwoLepAna.jets.jetCollection = cms.string('updatedPatJetsTransientCorrectedTagged') #use JEC's from global tag
+process.OSTwoLepAna.jets.jetCollection = cms.string('slimmedJets')
 
 if isData:
     process.OSTwoLepAna.setupoptions.isdata = True
@@ -164,20 +123,10 @@ process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTa
 #process.OSTwoLepAna.btags.btagdisc = "DeepCSV" # "DeepCSV" adds probb+probbb, otherwise full disc required
 process.OSTwoLepAna.triggers.hltlabel = "HLT"
 
-process.OSTwoLepAna.debug = False
+process.OSTwoLepAna.debug = True
 process.OSTwoLepAna.jetCleanFakeable = cms.bool( options.jetCleanFakeable )
 process.OSTwoLepAna.skim = cms.bool( options.skim )
 
-#process.SkeletonAnalysis = cms.EDAnalyzer('SkeletonAnalysis',
-#    jets = cms.InputTag('updatedPatJetsTransientCorrectedTagged'), # input jet collection name
-#    bDiscriminators = cms.vstring(          # list of b-tag discriminators to access
-#        'pfCombinedInclusiveSecondaryVertexV2BJetTags',
-#        'pfDeepCSVJetTags:probb',
-#        'pfDeepCSVJetTags:probc',
-#        'pfDeepCSVJetTags:probudsg',
-#        'pfDeepCSVJetTags:probbb',
-#    )
-#)
 
 ######################################
 # Misc
@@ -200,7 +149,7 @@ for idmod in my_id_modules: setupAllVIDIdsInModule(process,idmod,setupVIDElectro
 
 
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-process.QGTagger.srcJets          = cms.InputTag('updatedPatJetsTransientCorrectedTagged')
+process.QGTagger.srcJets          = cms.InputTag('slimmedJets') # 
 process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
 
 ######################################
@@ -213,7 +162,7 @@ for mod in process.filters_().itervalues():
     process.ProducersAndFiltersTask.add(mod)
 
 #process.p = cms.Path( process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna * process.SkeletonAnalysis, process.ProducersAndFiltersTask)
-process.p = cms.Path( process.noBadGlobalMuons * process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna, process.ProducersAndFiltersTask)
+process.p = cms.Path( process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna, process.ProducersAndFiltersTask)
 
 # summary
 process.options = cms.untracked.PSet(
