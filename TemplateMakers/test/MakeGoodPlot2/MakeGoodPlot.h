@@ -31,7 +31,7 @@ class MakeGoodPlot
 	    const double lumi2016 = 36814.; // 2.5%, pb^-1, https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
 	    const double lumi2016up = (1.+0.025)*lumi2016;
 	    const double lumi2016down = (1.-0.025)*lumi2016;
-	    const double lumi2017 = 42710.; // 5% with normtag
+	    const double lumi2017 = 42710.; // 5% with normtag. sync gitlab page: 41.298 /fb ? 
 	    const double lumi2017up = (1.+0.05)*lumi2017;
 	    const double lumi2017down = (1.-0.05)*lumi2017;
         //const double lumi = lumi2016+lumi2017;

@@ -62,7 +62,10 @@ process.source = cms.Source("PoolSource",
 if isData:
     cmsswbase = os.environ['CMSSW_BASE']
     import FWCore.PythonUtilities.LumiList as LumiList
-    process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt').getVLuminosityBlockRange()
+    ## 2016 golden json
+    #process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt').getVLuminosityBlockRange()
+    ## 2017 golden json    
+    process.source.lumisToProcess = LumiList.LumiList(filename = cmsswbase+'/src/ttH-13TeVMultiLeptons/TemplateMakers/data/JSON/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt').getVLuminosityBlockRange()
 
 #################################################
 ## JEC & Redo BTagging
@@ -123,7 +126,7 @@ process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTa
 #process.OSTwoLepAna.btags.btagdisc = "DeepCSV" # "DeepCSV" adds probb+probbb, otherwise full disc required
 process.OSTwoLepAna.triggers.hltlabel = "HLT"
 
-process.OSTwoLepAna.debug = True
+process.OSTwoLepAna.debug = False
 process.OSTwoLepAna.jetCleanFakeable = cms.bool( options.jetCleanFakeable )
 process.OSTwoLepAna.skim = cms.bool( options.skim )
 
