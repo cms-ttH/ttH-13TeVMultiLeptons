@@ -190,7 +190,7 @@ namespace ttH
     double DeepCSVprobc;
     double DeepCSVprobudsg;
     double qgid;
-    //bool passPUID; // only available in >90X MINIAOD
+    bool passPUID; // only available in >90X MINIAOD
     double PUMVA;
     int pdgID; //place holder for Geoff's templated functions
     
@@ -206,7 +206,10 @@ namespace ttH
       DeepCSV = -2.;
       DeepCSVprobb = -2.;
       DeepCSVprobbb = -2.;
+      DeepCSVprobc = -2.;
+      DeepCSVprobudsg = -2.;      
       PUMVA = -2.;
+      passPUID = false;
       qgid = -99.;      
       pdgID = -9999;
     }
