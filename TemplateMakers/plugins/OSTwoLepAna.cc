@@ -108,10 +108,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     //////// bad muons
     ////////
     ///////////////////
-    cout << "hey1" << endl;
+    
     //int numBadMu = (*get_collection(event, badmu_token_));                                            // <------ ?
     int numBadMu = 0;
-    cout << "hey2" << endl;
+    
     /////////////////////
     /////////
     ///////// Setting up JECs
