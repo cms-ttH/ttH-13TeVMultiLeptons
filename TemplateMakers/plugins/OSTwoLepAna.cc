@@ -72,18 +72,18 @@ void OSTwoLepAna::endJob() {
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
-<<<<<<< HEAD
-    //if ( event.id().event() != 1692766 ) 
-    //{
-    //    if (debug) cout << "eventA: " << event.id().event() << endl;
-    //    return;
-    //}
+    // if ( event.id().event() != 1692766 ) 
+    //   {
+    //     if (debug) cout << "eventA: " << event.id().event() << endl;
+    //     return;
+    //   }
   
     // analysis goes here
-    //if (debug) cout << "eventB: " << event.id().event() << endl;
+    if (debug) cout << "eventB: " << event.id().event() << endl;
     clock_t startTime = clock();
     eventcount++;
     SetupOptions(event); // chgd
+  
   
     // tree vars to default values:
     initialize_variables();
@@ -102,82 +102,28 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         packedParticles = get_collection(event, genPackedParticles_token_);
         genjets = get_collection(event, genJet_token_);
     }
-=======
-  // if ( event.id().event() != 1692766 ) 
-  //   {
-  //     if (debug) cout << "eventA: " << event.id().event() << endl;
-  //     return;
-  //   }
-  
-  // analysis goes here
-  if (debug) cout << "eventB: " << event.id().event() << endl;
-  clock_t startTime = clock();
-  eventcount++;
-  SetupOptions(event); // chgd
-  
-  
-  // tree vars to default values:
-  initialize_variables();
-
-  trigRes triggerResults =        GetTriggers(event);
-  auto muons =                    get_collection(event, muons_token_);
-  auto electrons =                get_collection(event, electrons_token_);
-  auto taus =                     get_collection(event, taus_token_);
-  patMETs mets =                  get_collection(event, mets_token_);
-  prunedGenParticles prunedParticles;
-  packedGenParticles packedParticles;
-  edm::Handle<std::vector<reco::GenJet> > genjets;
-  if (!isData)
-  {
-    prunedParticles = get_collection(event, genParticles_token_);
-    packedParticles = get_collection(event, genPackedParticles_token_);
-    genjets = get_collection(event, genJet_token_);
-  }
-
-  ///////////////////
-  ////////
-  //////// bad muons
-  ////////
-  ///////////////////
-  cout << "hey1" << endl;
-  //int numBadMu = (*get_collection(event, badmu_token_));                                            // <------ ?
-  int numBadMu = 0;
-  cout << "hey2" << endl;
-  /////////////////////
-  /////////
-  ///////// Setting up JECs
-  /////////
-  /////////////////////
-
-  edm::Handle<pat::JetCollection> pfjets =                get_collection(event, jets_token_);
-  
-  edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
-  evsetup.get<JetCorrectionsRecord>().get("AK5PF", JetCorParColl);
-  const JetCorrectorParameters& JetCorPar = (*JetCorParColl)["Uncertainty"];
-  junc_.reset(new JetCorrectionUncertainty(JetCorPar));
-
->>>>>>> 4fd217b2a5df9ed3be77ea10ccfb91eac43828d1
 
     ///////////////////
     ////////
     //////// bad muons
     ////////
     ///////////////////
-    int numBadMu = (*get_collection(event, badmu_token_));                                            // <------ ?
-
+    cout << "hey1" << endl;
+    //int numBadMu = (*get_collection(event, badmu_token_));                                            // <------ ?
+    int numBadMu = 0;
+    cout << "hey2" << endl;
     /////////////////////
     /////////
     ///////// Setting up JECs
     /////////
     /////////////////////
 
-    edm::Handle<pat::JetCollection> pfjets = get_collection(event, jets_token_);
-
+    edm::Handle<pat::JetCollection> pfjets =                get_collection(event, jets_token_);
+  
     edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
     evsetup.get<JetCorrectionsRecord>().get("AK5PF", JetCorParColl);
     const JetCorrectorParameters& JetCorPar = (*JetCorParColl)["Uncertainty"];
     junc_.reset(new JetCorrectionUncertainty(JetCorPar));
-
 
     SetRho(rho);
   
