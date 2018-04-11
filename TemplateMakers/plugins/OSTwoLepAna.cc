@@ -139,7 +139,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         // Add EFT weights
         for (auto wgt_info: LHEInfo->weights())
         {
-            eftwgts_intree[wgt_info.id] = wgt_info.wgt;
+            auto LHEwgtstr = string(wgt_info.id);
+            std::size_t foundstr = LHEwgtstr.find("EFTrwgt"); // only save our EFT weights
+            if ( foundstr!=std::string::npos ) eftwgts_intree[wgt_info.id] = wgt_info.wgt;
         }
     }
 
