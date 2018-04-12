@@ -311,9 +311,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         vecPatJet cleaned_rawJets_JECdown  = cleanObjects<pat::Jet,pat::Tau>(correctedRawJets_JECdown,selectedTaus_preselected,0.4);
     
         /// the jet selection:
-        vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetPU, '-' );                    // 25., 2.4, jetID::jetPU, '-'
-        vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 25., 2.4, jetID::jetPU, '-' );        // 25., 2.4, jetID::jetPU, '-'
-        vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 25., 2.4, jetID::jetPU, '-' );    // 25., 2.4, jetID::jetPU, '-'
+        vecPatJet selectedJets_preselected = GetSelectedJets(cleaned_rawJets, 25., 2.4, jetID::jetTight, '-' );                    // 25., 2.4, jetID::jetPU, '-'
+        vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 25., 2.4, jetID::jetTight, '-' );        // 25., 2.4, jetID::jetPU, '-'
+        vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 25., 2.4, jetID::jetTight, '-' );    // 25., 2.4, jetID::jetPU, '-'
 
         /////////
         ///
@@ -323,7 +323,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
         if ( jetCleanFakeable )
         {
-            // do we really need/want this option?
+            // Do we really need/want this option? Yes.
             selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
             selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
         }
@@ -570,11 +570,12 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
 
     //same-sign 2e
     hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v");
+    hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"); // new 2017 
     hlt_trigstofind.push_back("HLT_Ele27_WPTight_Gsf_v");
     hlt_trigstofind.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v");
     hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
     hlt_trigstofind.push_back("HLT_Ele32_WPTight_Gsf_v"); // new 2017
-    hlt_trigstofind.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v"); // new 2017  
+    hlt_trigstofind.push_back("HLT_Ele35_WPTight_Gsf_v"); // new 2017 
 
     //same-sign mu e
     hlt_trigstofind.push_back("HLT_Mu23_TrkIsoVVL_Ele8_CaloIdL_TrackIdL_IsoVL_v");  
@@ -594,6 +595,10 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     hlt_trigstofind.push_back("HLT_DiMu9_Ele9_CaloIdL_TrackIdL_DZ_v"); // new 2017
     hlt_trigstofind.push_back("HLT_TripleMu_10_5_5_DZ_v"); // new 2017
 
+    // tau
+    hlt_trigstofind.push_back("HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1_v"); // new 2017
+    hlt_trigstofind.push_back("HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1_v"); // new 2017
+    
 
     for (int trigit=0; trigit<triggersize; trigit++)
     {
