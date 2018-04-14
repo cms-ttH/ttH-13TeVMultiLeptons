@@ -190,8 +190,8 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.jetPtRel = iEle.userFloat("nearestJetPtRel");
       ele.csv = iEle.userFloat("nearestJetCsv");
       ele.sip3D = iEle.userFloat("sip3D");
-      ele.mvaID = iEle.userFloat("eleMvaIdHZZ");
-      ele.mvaIDGP = iEle.userFloat("eleMvaId");
+      ele.mvaID = iEle.userFloat("eleMvaHZZ");
+      ele.mvaIDGP = iEle.userFloat("eleMva");
       ele.jet_nCharged_tracks = iEle.userFloat("nearestJetNDauCharged");
       ele.correctedPt = iEle.userFloat("correctedPt");
 
@@ -204,7 +204,6 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.miniAbsIsoNeutralcorr = iEle.userFloat("miniAbsIsoNeutralcorr");      
       
       // trying stuff out:
-
       ele.idTightPOG = PassElectron80XId(iEle,electronID::electron80XCutBasedT);
       ele.idMediumPOG = PassElectron80XId(iEle,electronID::electron80XCutBasedM); 
       ele.idLoosePOG = PassElectron80XId(iEle,electronID::electron80XCutBasedL);    

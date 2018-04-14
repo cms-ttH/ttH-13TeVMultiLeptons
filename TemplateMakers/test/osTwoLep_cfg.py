@@ -7,13 +7,13 @@ from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
 
 options = VarParsing.VarParsing('analysis')
 options.maxEvents = -1
-options.register("jetCleanFakeable", False,
+options.register("jetCleanFakeable", True,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "lepton selecton for jet cleaning")
 options.register("data", False,                                                 # <---------
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Data or MC.")
-options.register("skim", False,                                                  # <---------
+options.register("skim", True,                                                  # <---------
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Produce skimmed trees.")
 options.register("hip",False,
@@ -38,7 +38,7 @@ process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_cond
 
 process.GlobalTag.globaltag = options.globalTag
 if isData:
-    process.GlobalTag = customiseGlobalTag(None, globaltag = 'auto:run2_data')
+    process.GlobalTag = customiseGlobalTag(None, globaltag = '94X_dataRun2_v6') # auto:run2_data
 
 process.prefer("GlobalTag")
 
@@ -70,9 +70,9 @@ if isData:
 #################################################
 ## JEC & Redo BTagging
 #################################################
-# 
-# from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
-# 
+ 
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+ 
 # bTagDiscriminators = [
 #     'pfCombinedInclusiveSecondaryVertexV2BJetTags',
 #     'pfDeepCSVJetTags:probb',
@@ -88,6 +88,19 @@ if isData:
 #     jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
 # )
 
+theJECorrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute'])
+
+if isData:
+    theJECorrections.append('L2L3Residual')
+
+#print theJECorrections
+
+updateJetCollection(
+    process,
+    jetSource = cms.InputTag('slimmedJets'),
+    labelName = 'Updated',
+    jetCorrections = ('AK4PFchs', theJECorrections, 'None'),
+)
 
 
 ######################################
@@ -109,12 +122,12 @@ process.ttHLeptons.MediumCSVWP = cms.double(0.8484) # CSVv2 2016 # LepID plugin 
 #process.ttHLeptons.MediumCSVWP = cms.double(0.4941) # DeepCSV 2017 preliminary # will eventually need this when lepMVA switches to DeepCSV for 2017 data
 process.ttHLeptons.IsHIPSafe = cms.bool(options.hip)
 process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
-process.ttHLeptons.jets = cms.InputTag("slimmedJets")
-process.ttHLeptons.JECTag = "patJetCorrFactors"
+process.ttHLeptons.jets = cms.InputTag("updatedPatJetsUpdated")
+process.ttHLeptons.JECTag = "patJetCorrFactorsUpdated"
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
-process.OSTwoLepAna.jets.jetCollection = cms.string('slimmedJets')
+process.OSTwoLepAna.jets.jetCollection = cms.string('updatedPatJetsUpdated')
 
 if isData:
     process.OSTwoLepAna.setupoptions.isdata = True
@@ -139,11 +152,11 @@ process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("output_tree.root")
                                    )
 
-if len(sys.argv)>3:
-    outfile = sys.argv[3]
-    process.TFileService = cms.Service("TFileService",
-        fileName = cms.string(outfile)
-)
+# if len(sys.argv)>3:
+#     outfile = sys.argv[3]
+#     process.TFileService = cms.Service("TFileService",
+#         fileName = cms.string(outfile)
+# )
 
 # Electron IDs
 switchOnVIDElectronIdProducer(process, DataFormat.MiniAOD)
@@ -154,7 +167,7 @@ for idmod in my_id_modules:
 
 
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-process.QGTagger.srcJets          = cms.InputTag('slimmedJets') # 
+process.QGTagger.srcJets          = cms.InputTag('updatedPatJetsUpdated') # 
 process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
 
 ######################################

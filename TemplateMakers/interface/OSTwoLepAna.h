@@ -126,9 +126,9 @@ void OSTwoLepAna::tree_add_branches()
     summaryTree->Branch("preselected_taus", &preselected_taus_intree);
     summaryTree->Branch("selected_taus", &selected_taus_intree);
 
-    //summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
-    //summaryTree->Branch("fakeable_electrons", &fakeable_electrons_intree);
-    //summaryTree->Branch("fakeable_muons", &fakeable_muons_intree);
+    summaryTree->Branch("fakeable_leptons", &fakeable_leptons_intree);
+    summaryTree->Branch("fakeable_electrons", &fakeable_electrons_intree);
+    summaryTree->Branch("fakeable_muons", &fakeable_muons_intree);
 
     //summaryTree->Branch("loose_leptons", &loose_leptons_intree);
     //summaryTree->Branch("loose_electrons", &loose_electrons_intree);
