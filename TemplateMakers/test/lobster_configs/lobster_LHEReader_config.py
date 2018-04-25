@@ -10,13 +10,13 @@ from lobster.core import AdvancedOptions, Category, Config, Dataset, StorageConf
 
 #version = "lobster_test_" + datetime.datetime.now().strftime('%Y%m%d_%H%M')
 
-input_path_full     = "/hadoop/store/user/awightma/LHE_step/2018_04_17/v2"
-input_path          = "/store/user/$USER/LHE_step/2018_04_17/v2/"
+input_path_full = "/hadoop/store/user/awightma/LHE_step/2018_04_17/sans_ttW/v2/"
+input_path      = "/store/user/$USER/LHE_step/2018_04_17/sans_ttW/v2/"
 
 version = "v1"
-output_path  = "/store/user/$USER/summaryTree_LHE/"       + version
-workdir_path = "/tmpscratch/users/$USER/summaryTree_LHE/" + version
-plotdir_path = "~/www/lobster/summaryTree_LHE/"           + version
+output_path  = "/store/user/$USER/summaryTree_LHE/sans_ttW/"       + version
+workdir_path = "/tmpscratch/users/$USER/summaryTree_LHE/sans_ttW/" + version
+plotdir_path = "~/www/lobster/summaryTree_LHE/sans_ttW/"           + version
 
 storage = StorageConfiguration(
     input=[
@@ -42,22 +42,30 @@ processing = Category(
     disk=2000
 )
 
+# Only run over gridpacks from specific processes/coeffs/runs (i.e. MG starting points)
+process_whitelist = ['ttH','ttZ','tZq']
+coeff_whitelist   = []
+runs_whitelist    = []
+
 lhe_dirs = []
 for f in os.listdir(input_path_full):
     if not os.path.isdir(os.path.join(input_path_full,f)):
         continue
+    arr = f.split('_')
+    p,c,r = arr[2],arr[3],arr[4]
+    if len(process_whitelist) > 0 and not p in process_whitelist:
+        continue
+    elif len(coeff_whitelist) > 0 and not c in coeff_whitelist:
+        continue
+    elif len(runs_whitelist) > 0 and not r in runs_whitelist:
+        continue
     lhe_dirs.append(f)
-
-# Only run over gridpacks from specific processes
-process_whitelist = ['ttH','ttZ']
 
 wf = []
 
 for idx,lhe_dir in enumerate(lhe_dirs):
     arr = lhe_dir.split('_')
     p,c,r = arr[2],arr[3],arr[4]
-    if len(process_whitelist) > 0 and not p in process_whitelist:
-        continue
     print "Dir:",lhe_dir
     print [idx,p,c,r]
     print ""
