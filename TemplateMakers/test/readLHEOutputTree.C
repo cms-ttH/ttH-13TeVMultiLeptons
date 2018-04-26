@@ -203,10 +203,12 @@ FitParameters fitWilsonCoefficients(std::vector<WCPoint> points,std::string run)
 void readOutputTree(TString output_name,TString input_rundirs_spec) {
     gStyle->SetPadRightMargin(0.2);
 
-    const double no_norm  = 1.0;
-    const double norm_ttH = 0.386;
-    const double norm_ttZ = 0.557;
-    const double norm_factor = norm_ttH;
+    //const double no_norm  = 1.0;
+    //const double norm_ttH = 0.386;
+    //const double norm_ttZ = 0.557;
+    //const double norm_factor = norm_ttH;
+
+    const double kFitCut = 10e-5;
 
     const std::string kOrig  = "original";
     const std::string kSMstr = "sm";
@@ -225,6 +227,7 @@ void readOutputTree(TString output_name,TString input_rundirs_spec) {
     double x_min = 999.;
     double y_max = -999.;
     double y_min = 999.;
+    double max_fitparam = -999.;
     int sel = 0;
     int count = 0;
 
@@ -318,6 +321,15 @@ void readOutputTree(TString output_name,TString input_rundirs_spec) {
 
         FitParameters fit_params = fitWilsonCoefficients(points,run);
 
+        for (uint i = 0; i < fit_params.names.size(); i++) {
+            if (fit_params.names.at(i) == (kSMstr + "*" + kSMstr)) {
+                continue;
+            }
+            if (std::abs(fit_params.values.at(i)) > max_fitparam) {
+                max_fitparam = std::abs(fit_params.values.at(i));
+            }
+        }
+
         std::string fn =  process + "_"+ coeff + "_fitparams.txt";
         std::ofstream outf(fn,std::ofstream::out | std::ofstream::app);
 
@@ -339,7 +351,7 @@ void readOutputTree(TString output_name,TString input_rundirs_spec) {
         outf.close();
         count++;
 
-        continue;
+        //continue;
 
         //////////////////////////////
         // Begin making the plots
@@ -392,18 +404,19 @@ void readOutputTree(TString output_name,TString input_rundirs_spec) {
         run_list.push_back(run_graph);
     }
 
-    return;
+    //return;
 
     //////////////////////////////
     // Begin drawing the plots
     //////////////////////////////
 
-    if (y_max - y_min < 0.02) {
+    if (max_fitparam < kFitCut) {
         // Skip non-interesting coeffs
-        std::cout << "Skipping plot with no effect on xsec!" << std::endl;    
+        std::cout << "Skipping plot with no effect on xsec!" << std::endl;
         return;
     }
 
+    // Ensure a minimum y-axis range
     y_min = std::min(0.8,y_min);
     y_max = std::max(1.2,y_max);
 
@@ -460,57 +473,4 @@ void readOutputTree(TString output_name,TString input_rundirs_spec) {
     c1->Update();
 
     c1->Print(output_name,"pdf");
-
-
-
-
-
-
-
-    /*
-    int chain_entries = chain.GetEntries();
-    int last_entry = chain_entries;
-    int first_entry = 0;
-
-    if (chain_entries == 0) {
-        return;
-    }
-
-    cout << "chain entries: " << chain_entries << endl;
-
-    std::unordered_map<std::string,double> *eftwgts_intree = 0;
-    double originalXWGTUP_intree = -1.;
-
-    chain.SetBranchAddress("eftwgts",&eftwgts_intree);
-    chain.SetBranchAddress("originalXWGTUP",&originalXWGTUP_intree);
-
-    std::unordered_map<std::string,double> summed_wgts {
-        {"original",0.0}
-    };
-    std::set<std::array<int, 2> > unique_runs;
-
-
-    for (int i = first_entry; i <= last_entry; i++) {
-        printProgress(i - first_entry,last_entry - first_entry);
-
-        chain.GetEntry(i);
-
-        std::array<int, 2> ls_id { {runNumber_intree,lumiBlock_intree} };
-        unique_runs.insert(ls_id);
-
-        summed_wgts["original"] += originalXWGTUP_intree;
-        for (auto& kv: *eftwgts_intree) {
-            if (summed_wgts.find(kv.first) == summed_wgts.end()) {
-                summed_wgts[kv.first] = 0.0;
-            }
-            summed_wgts[kv.first] += kv.second;
-        }
-    }
-
-    //cout << "Original XSEC: " << summed_wgts["original"] / unique_runs.size() << endl;
-    cout << "Summed Weights:" << endl;
-    for (auto& kv: summed_wgts) {
-        cout << "\t" << kv.first << ": " << kv.second / unique_runs.size() << endl;
-    }
-    */
 }
