@@ -200,7 +200,7 @@ FitParameters fitWilsonCoefficients(std::vector<WCPoint> points,std::string run)
     return params;
 }
 
-void readOutputTree(TString output_name,TString input_rundirs_spec) {
+void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
     gStyle->SetPadRightMargin(0.2);
 
     //const double no_norm  = 1.0;
