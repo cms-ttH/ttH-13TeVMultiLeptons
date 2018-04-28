@@ -5,9 +5,15 @@ std::unordered_map<string,int> sample_TString2int_map()
     std::unordered_map<string,int> dummy;
     
     ///// signals /////
+    // main signals
     dummy["ttH"] = 1;
     dummy["ttW"] = 8;
     dummy["ttZ"] = 9;
+    // additional signals
+    dummy["tZq"] = 26;
+    dummy["tttt"] = 27;
+    dummy["ttWW"] = 28;
+    dummy["ttWZ"] = 29;
     
     ///// backgrounds /////
     // V + jets
@@ -28,6 +34,11 @@ std::unordered_map<string,int> sample_TString2int_map()
     dummy["SingleTop_tchan_top"] = 19;  
     dummy["SingleTop_tchan_antitop"] = 20;        
     dummy["SingleTop_schan"] = 21;
+    // triboson
+    dummy["WWW"] = 22;
+    dummy["WWZ"] = 23;
+    dummy["WZZ"] = 24;
+    dummy["ZZZ"] = 25;
 
     ////// data /////
     dummy["SingleMuon"] = 100;
@@ -35,6 +46,12 @@ std::unordered_map<string,int> sample_TString2int_map()
     dummy["DoubleMuon"] = 102;
     dummy["DoubleEG"] = 103;
     dummy["MuonEG"] = 104;
+    
+    ////// extra /////
+    // in case you want to supply a one-off sample that's in a
+    // different directory than usual, or in case you want to 
+    // compare 2 versions of the same sample (e.g. for validation, etc.)
+    dummy["ttH_EFTtest1"] = 0;
     
     return dummy;
 }
@@ -100,24 +117,23 @@ TString loadsample(const int samp)
 {
     bool atND = true;       // Choose whether files are located at ND or at CERN (on an ndpc).
 
-    //TString thisround = "EFT_test_19_12_17";
-    TString thisround = "EFT_test_7_2_18";
+    TString thisround = "lobster_trees__EFT_test_14_4_18";
     
-    TString basedir = "/hadoop/store/user/gesmith/crab/"+thisround+"/";     // The directory on hadoop where your samples are located.
-    if (!atND) TString basedir = "/store/ndpc6disk2/gesmith/crab/";         // The directory on ndpc disk where your samples are located.
+    TString basedir = "/hadoop/store/user/gesmith/"+thisround+"/";  // The directory on hadoop where your samples are located.
+    if (!atND) basedir = "/store/ndpc6disk2/gesmith/crab/";         // The directory on ndpc disk where your samples are located.
 
     
     TString thissample = "none";
     TString thissubsample = "";    
     
     
-    if (samp==0) // data
-    {
-        cout << "Using sample=0 for data is deprecated. Use 100-104 instead. See loadsample.h." << endl;
-    }
+    //if (samp==0) // "extra"
+    //{
+        //cout << "Using sample=0 for data is deprecated. Use 100-104 instead. See loadsample.h." << endl;
+    //}
     
     // Vast majority of the time we will want to use this method:
-    else if (samp<1000)
+    if (samp<1000)
     {
         thissample = sample_int2TString(samp);
     }
@@ -200,6 +216,11 @@ TString loadsample(const int samp)
             TString lsstring = "ls -d "+basedir+"*/crab_"+thisround+"__"+thissample+"*/*/*/*.root | grep -v \"failed\" > inputfiles__"+thissample+".txt"; // .!
             if (samp>99 && samp<1000) lsstring = "find "+basedir+thissample+"/ -name \"*.root\" | grep -v \"failed\" > inputfiles__"+thissample+".txt";
             if (samp>999) lsstring = "find "+basedir+thissample+"/crab_"+thisround+"__"+thissample+thissubsample+" -name \"*.root\" | grep -v \"failed\" > inputfiles__"+thissample+thissubsample+".txt";
+            
+            //if trees produced with lobster:
+            lsstring = "ls -d "+basedir+thissample+"/*.root > inputfiles__"+thissample+".txt";
+            if (samp>99 && samp<1000) lsstring = "find "+basedir+thissample+"_*/ -name \"*.root\" > inputfiles__"+thissample+".txt";
+            
             // should be able to add " | sed 's#/hadoop/#root://deepthought.crc.nd.edu//#'" before the ">" if you want to use xrootd instead of fuse.
             // note: i found that sed didn't seem to be working when i tried it here (though it's possible i was doing something wrong...)
             //gROOT->ProcessLine(lsstring);

@@ -16,7 +16,7 @@ void MakeGoodPlot::setup()
     }  
     
     
-    sample_names[0] = "data"; //"data (mu)";
+    sample_names[0] = "test";
     sample_names[1] = "t#bar{t}H (H->non-bb)"; //"t#bar{t}H(125)";
     sample_names[2] = "(none)"; 
     sample_names[3] = "(none)"; 
@@ -38,17 +38,32 @@ void MakeGoodPlot::setup()
     sample_names[19] = "t (t chan)";
     sample_names[20] = "#bar{t} (t chan)";
     sample_names[21] = "t/#bar{t} (s chan)";
+    sample_names[22] = "WWW";
+    sample_names[23] = "WWZ";
+    sample_names[24] = "WZZ";
+    sample_names[25] = "ZZZ";
+    sample_names[26] = "t/#bar{t}+Zq";
+    sample_names[27] = "4 Top";
+    sample_names[28] = "t#bar{t}+WW";
+    sample_names[29] = "t#bar{t}+WZ";
     sample_names[100] = "Single Mu data";
     sample_names[101] = "Single Ele data";
     sample_names[102] = "Double Mu data";
     sample_names[103] = "Double Ele data";
     sample_names[104] = "Mu+Ele data";
     
+    
+    
+    
+    
+    
+    
+    
          
     
     for (int i=0; i<200; i++) sample_names_std[i]  = sample_names[i];
 
-    sample_names_reg[0] = "_data"; //"data (mu)";
+    sample_names_reg[0] = "_test"; //"data (mu)";
     sample_names_reg[1] = "_ttH"; //"t#bar{t}H(125)";
     sample_names_reg[2] = ""; 
     sample_names_reg[3] = ""; 
@@ -70,6 +85,14 @@ void MakeGoodPlot::setup()
     sample_names_reg[19] = "_singlet_tchan";
     sample_names_reg[20] = "_singletbar_tchan";
     sample_names_reg[21] = "_singletop_schan";
+    sample_names_reg[22] = "_WWW";
+    sample_names_reg[23] = "_WWZ";
+    sample_names_reg[24] = "_WZZ";
+    sample_names_reg[25] = "_ZZZ";
+    sample_names_reg[26] = "_tZq";
+    sample_names_reg[27] = "_tttt";
+    sample_names_reg[28] = "_ttWW";
+    sample_names_reg[29] = "_ttWZ";    
     sample_names_reg[100] = "_data_singleMu";
     sample_names_reg[101] = "_data_singleEle";
     sample_names_reg[102] = "_data_doubleMu";
@@ -98,6 +121,14 @@ void MakeGoodPlot::setup()
     color[19] = kYellow-6; 
     color[20] = kYellow-8;
     color[21] = kYellow-10; //-5
+    color[22] = kGray;
+    color[23] = kGray;    
+    color[24] = kGray;    
+    color[25] = kGray;    
+    color[26] = kPink+1;    
+    color[27] = kSpring+4;    
+    color[28] = kAzure+1;    
+    color[29] = kBlue+2;    
     color[100] = kBlack;
     color[101] = kBlack;
     color[102] = kBlack;
@@ -160,5 +191,7 @@ void MakeGoodPlot::setup()
     
     set_plot_style(); // see nicepalette.h
     get_rate_info();
+    
+    groupsamples = true;
     
 }

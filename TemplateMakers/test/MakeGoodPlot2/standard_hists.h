@@ -1,8 +1,13 @@
 void HistMaker::standard_hists()
 {
+    //cout << "what" << endl;
+    
+    
     double weight = *wgt_intree;
     
     string category = eventselection();
+    
+    //cout << "ok" << endl;    
     
     if (category!="null") 
     {
@@ -25,24 +30,34 @@ void HistMaker::standard_hists()
     
         int numleps = numeles+nummuons;
     
-        bool pass = false;
-        //if (jetsize>2) // >3
-        //{
-            //pass=true;
-            //if (taggedjetssize>0 || taggedjetsloosesize>1) pass=true;
-        //}
-    
-        //if (!pass) return;
-    
-        // this SF section eventually should be bigger / have more stuff:
-        if (sample<100) for (const auto & lep : *tight_leptons_intree) 
+//         bool pass = false;
+//         
+//         if (jetsize>1) // >3
+//         {
+//             //pass=true;
+//             if (taggedjetssize>0 || taggedjetsloosesize>1) pass=true;
+//         }
+//     
+//         if (!pass) return;
+//     
+//         // this SF section eventually should be bigger / have more stuff:
+        if (sample<100) 
         {
-            // For 2016 data/MC, this is the combined reco+POGID+lepMVA SF:
-            if (category.substr(0,2)=="2l") weight *= leptonSF_ttH(lep.pdgID, lep.obj.Pt(), lep.obj.Eta(), 2);
-            else if (category.substr(0,2)=="3l" || category.substr(0,2)=="ge") weight *= leptonSF_ttH(lep.pdgID, lep.obj.Pt(), lep.obj.Eta(), 3);
+            for (const auto & lep : *tight_leptons_intree) 
+            {
+                // For 2016 data/MC, this is the combined reco+POGID+lepMVA SF:
+                if (category.substr(0,2)=="2l") weight *= leptonSF_ttH(lep.pdgID, lep.obj.Pt(), lep.obj.Eta(), 2);
+                else if (category.substr(0,2)=="3l" || category.substr(0,2)=="41" || category.substr(0,2)=="ge") weight *= leptonSF_ttH(lep.pdgID, lep.obj.Pt(), lep.obj.Eta(), 3);
+            }
+            
+            int ntpvs = *numTruePVs_intree;
+            if ( ntpvs<0 ) ntpvs = 99;
+            weight *= puw2016_nTrueInt_36fb(ntpvs);
         }
         
+        
         bool passedtrig = passesAnyTrigger();
+        passedtrig = true; // comment me!
             
         th1d["single_ele_trigs"]->Fill(passesDatasetDependentTriggers(101),weight);
         th1d["double_ele_trigs"]->Fill(passesDatasetDependentTriggers(103),weight);
@@ -65,7 +80,11 @@ void HistMaker::standard_hists()
                 th1d[category+"__jetpt"]->Fill(jet.obj.Pt(),weight);
                 th1d[category+"__jeteta"]->Fill(jet.obj.Eta(),weight);
                 th1d[category+"__jetcsv"]->Fill(jet.csv,weight);
-                //th1d[category+"__jetdeepcsv"]->Fill(jet.DeepCSV,weight);
+                th1d[category+"__jetDeepCSVprobb"]->Fill(jet.DeepCSVprobb,weight);
+                th1d[category+"__jetDeepCSVprobbb"]->Fill(jet.DeepCSVprobbb,weight);
+                th1d[category+"__jetDeepCSVprobc"]->Fill(jet.DeepCSVprobc,weight);
+                th1d[category+"__jetDeepCSVprobudsg"]->Fill(jet.DeepCSVprobudsg,weight);
+                th1d[category+"__PUMVA"]->Fill(jet.PUMVA,weight);
             }
         
             for (const auto & lep : *tight_leptons_intree)
@@ -91,6 +110,20 @@ void HistMaker::standard_hists()
          
             int thisbin = th1d["category_yields"]->GetXaxis()->FindBin(category.c_str());
             th1d["category_yields"]->Fill(thisbin,weight);
+
+            //cout << "hey" << endl;
+
+            string jtcat = getjettagcategory(category,jetsize,taggedjetssize);
+
+            //cout << jtcat << endl;
+
+            if (jtcat!="null" && category.substr(0,2)!="1l")
+            {
+                int thisbin = th1d["category_yields_njets_nbjets"]->GetXaxis()->FindBin(jtcat.c_str());
+                th1d["category_yields_njets_nbjets"]->Fill(thisbin,weight);
+            }
+
+            //cout << "hey2" << endl;
 
             //thisbin = th1d["category_yields_noOS"]->GetXaxis()->FindBin(category.c_str());
             //th1d["category_yields_noOS"]->Fill(thisbin,weight);

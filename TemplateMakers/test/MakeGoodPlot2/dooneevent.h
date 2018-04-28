@@ -2,6 +2,7 @@
 #include "lepeff_hists.h"
 #include "jetcleaningstudies_hists.h"
 #include "standard_hists.h"
+#include "mc_validation_hists.h"
 
 void HistMaker::doOneEvent()
 {
@@ -14,5 +15,6 @@ void HistMaker::doOneEvent()
     
     //lepton_eff_studies();
     //jet_cleaning_studies();
-    standard_hists();
+    //standard_hists();
+    mc_validation_hists();
 }

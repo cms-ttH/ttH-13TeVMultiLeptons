@@ -4,10 +4,12 @@ string HistMaker::eventselection()
     
     //auto jets = simpleCut(*loose_jets_intree,"pt",25.0);
     
-    //auto taggedjetsmedium = keepTagged(jets,"M");
+    auto taggedjetsmedium = keepTagged(*preselected_jets_intree,"M");
     //auto taggedjetsloose = keepTagged(jets,"L");
     
-    //int numjets = jets.size();
+    
+    int jetsize = preselected_jets_intree->size();
+    int tagsize = taggedjetsmedium.size();
     int nummuons = tight_muons_intree->size();
     int numeles = tight_electrons_intree->size();
     
@@ -33,7 +35,7 @@ string HistMaker::eventselection()
                     if (mu.idMediumPOG==false) return "null";
                 }
                 
-                if (numleps==2)
+                if (numleps==2 && jetsize>1 && tagsize>0)
                 {
                     // SS2l
                     if ((*tight_leptons_intree)[0].charge == (*tight_leptons_intree)[1].charge)
@@ -104,7 +106,7 @@ string HistMaker::eventselection()
                         }           
                     }
                 }            
-                else if (numleps==3)
+                else if (numleps==3 && jetsize>0 && tagsize>0)
                 {                    
                     if ((*tight_leptons_intree)[0].charge + (*tight_leptons_intree)[1].charge + (*tight_leptons_intree)[2].charge == 3)
                     {
@@ -127,10 +129,15 @@ string HistMaker::eventselection()
                         }                                         
                     }
                 }
-                else if (numleps>=4)
+                else if (numleps==4 && jetsize>0 && tagsize>0)
                 {
-                    return "ge4l";
-                }                
+                    return "4l";
+                }
+                else if (numleps>=5 && jetsize>0 && tagsize>0)
+                {
+                    return "ge5l";
+                }
+                                
             } // end lep pt req
         } // end dilep mass cut
     } // end ge2 leps

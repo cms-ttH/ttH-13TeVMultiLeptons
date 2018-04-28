@@ -1,6 +1,8 @@
 #include "lepeff_plots.h" // include whatever plots you want here (can be multiple functions)
 #include "jetcleaningstudies_plots.h"
 #include "standard_plots.h"
+#include "standard_plots_normalized.h"
+#include "mc_validation_plots.h"
 
 void MakeGoodPlot::drawAll()
 {
@@ -10,8 +12,9 @@ void MakeGoodPlot::drawAll()
     
     //lepeff_plots();
     //jetcleaning_plots();
-    standard_plots();
-
+    //standard_plots();
+    standard_plots_normalized();
+    //mc_validation_plots();
 
 }
 

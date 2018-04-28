@@ -23,6 +23,7 @@ void wrapper_lobster(TString sample, TString input_filenames)
     if (debug) cout << "About to run over " << numfiles << " files" << endl;
                 
     ch->AddFileInfoList(fc.GetList());
+    if (debug) cout << ch->GetEntries() << endl;
     TTreeReader reader(ch);
 
     //////////////////////////////////////////////////

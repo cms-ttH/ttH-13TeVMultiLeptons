@@ -77,18 +77,18 @@ void MakeGoodPlot::get_rate_info()
     pdfdown[13]=-35.06*(3*0.108)*(3*0.108);
 
     // ttbar: 1l from top
-    xsec[14]=831.76*2*(3*0.108)*(0.676);
-    q2up[14]=19.77*2*(3*0.108)*(0.676);
-    q2down[14]=-29.20*2*(3*0.108)*(0.676);
-    pdfup[14]=35.06*2*(3*0.108)*(0.676);
-    pdfdown[14]=-35.06*2*(3*0.108)*(0.676);            
+    xsec[14]=831.76*(3*0.108)*(0.676); // specifically 1l from top, so don't have an extra factor of 2 here
+    q2up[14]=19.77*(3*0.108)*(0.676);
+    q2down[14]=-29.20*(3*0.108)*(0.676);
+    pdfup[14]=35.06*(3*0.108)*(0.676);
+    pdfdown[14]=-35.06*(3*0.108)*(0.676);            
 
     // ttbar: 1l from anti-top
-    xsec[15]=831.76*2*(3*0.108)*(0.676);
-    q2up[15]=19.77*2*(3*0.108)*(0.676);
-    q2down[15]=-29.20*2*(3*0.108)*(0.676);
-    pdfup[15]=35.06*2*(3*0.108)*(0.676);
-    pdfdown[15]=-35.06*2*(3*0.108)*(0.676);
+    xsec[15]=831.76*(3*0.108)*(0.676); // specifically 1l from antitop, so don't have an extra factor of 2 here
+    q2up[15]=19.77*(3*0.108)*(0.676);
+    q2down[15]=-29.20*(3*0.108)*(0.676);
+    pdfup[15]=35.06*(3*0.108)*(0.676);
+    pdfdown[15]=-35.06*(3*0.108)*(0.676);
     
     
     // DY low M
@@ -134,4 +134,66 @@ void MakeGoodPlot::get_rate_info()
     q2down[21]=-0.24*(3*0.108);
     pdfup[21]=0.27*(3*0.108);
     pdfdown[21]=-0.27*(3*0.108);
+
+
+    //dummy["WWW"] = 22;
+    xsec[22]=0.2086;
+    q2up[22]=0.0002024;
+    q2down[22]=0.0002024;
+    pdfup[22]=0.; // <- to be updated..
+    pdfdown[22]=0.; // <- to be updated..
+    
+    //dummy["WWZ"] = 23;
+    xsec[23]=0.1651;
+    q2up[23]=0.0001724;
+    q2down[23]=0.0001724;
+    pdfup[23]=0.; // <- to be updated..
+    pdfdown[23]=0.; // <- to be updated..    
+    
+    //dummy["WZZ"] = 24;
+    xsec[24]=0.05565;
+    q2up[24]=5.5e-05;
+    q2down[24]=5.5e-05;
+    pdfup[24]=0.; // <- to be updated..
+    pdfdown[24]=0.; // <- to be updated..    
+    
+    //dummy["ZZZ"] = 25;
+    xsec[25]=0.01398;
+    q2up[25]=1.496e-05;
+    q2down[25]=1.496e-05;
+    pdfup[25]=0.; // <- to be updated..
+    pdfdown[25]=0.; // <- to be updated..    
+    
+    
+    //dummy["tZq"] = 26;
+    xsec[26]=0.0758;
+    q2up[26]=0.0001989;
+    q2down[26]=0.0001989;
+    pdfup[26]=0.; // <- to be updated..
+    pdfdown[26]=0.; // <- to be updated..   
+    
+    //dummy["tttt"] = 27;
+    xsec[27]=0.009103;
+    q2up[27]=1.401e-05;
+    q2down[27]=1.401e-05;
+    pdfup[27]=0.; // <- to be updated..
+    pdfdown[27]=0.; // <- to be updated..       
+    
+    //dummy["ttWW"] = 28;
+    xsec[28]=0.007834;
+    q2up[28]=6.335e-06;
+    q2down[28]=6.335e-06;
+    pdfup[28]=0.; // <- to be updated..
+    pdfdown[28]=0.; // <- to be updated..       
+    
+    //dummy["ttWZ"] = 29;
+    xsec[29]=0.002938;
+    q2up[29]=1.773e-06;
+    q2down[29]=1.773e-06;
+    pdfup[29]=0.; // <- to be updated..
+    pdfdown[29]=0.; // <- to be updated.. 
+    
+    
+    
+    
 }

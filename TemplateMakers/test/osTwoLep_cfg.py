@@ -54,8 +54,11 @@ process.source = cms.Source("PoolSource",
 #    	fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/23Sep2016-v1/70000/081A803C-8B8A-E611-86A7-008CFA110C90.root" ),
 #      fileNames = cms.untracked.vstring("/store/data/Run2017F/DoubleMuon/MINIAOD/06Nov2017-v1/30000/18844453-05C4-E711-8C82-FA163E631C08.root" ),
         #fileNames = cms.untracked.vstring( "root://cms-xrd-global.cern.ch///store/mc/RunIIFall17MiniAOD/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0A9B6F9D-EB18-E811-A53B-3417EBE64426.root" ),
-        fileNames = cms.untracked.vstring( "file:///tmpscratch/users/gsmith15/temp/0A9B6F9D-EB18-E811-A53B-3417EBE64426.root" ),
+#        fileNames = cms.untracked.vstring( "file:///tmpscratch/users/gsmith15/temp/0A9B6F9D-EB18-E811-A53B-3417EBE64426.root" ),
 #        fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/07Aug17-v1/50000/006DC839-EB89-E711-9209-002590D9D956.root" ),
+#        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/ctG_scan/v2/mAOD_step_run7/HIG-RunIIFall17MiniAOD-00821ND_2420.root",
+#                                            "file:///hadoop/store/user/awightma/postLHE_step/ctG_scan/v2/mAOD_step_run7/HIG-RunIIFall17MiniAOD-00821ND_2518.root" )
+        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/2018_04_17/500k_events/v2/mAOD_step_ttH_ctG_run1/HIG-RunIIFall17MiniAOD-00821ND_2818.root" )
 )
 
 ## Golden json file:
@@ -93,7 +96,6 @@ theJECorrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute'])
 if isData:
     theJECorrections.append('L2L3Residual')
 
-#print theJECorrections
 
 updateJetCollection(
     process,

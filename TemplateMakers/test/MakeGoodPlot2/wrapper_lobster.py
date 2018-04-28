@@ -1,4 +1,4 @@
-#### For use with wrapper_lobster.py ####
+#### For use with config_lobster.py ####
 
 import subprocess
 import sys

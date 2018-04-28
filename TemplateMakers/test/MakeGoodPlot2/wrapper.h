@@ -6,7 +6,7 @@ void wrapper(std::vector<int> samples, int mode=2)
     /////////////// histo making half /////////////
     
     // See https://root.cern.ch/doc/v608/mp102__readNtuplesFillHistosAndFit_8C.html
-    Int_t njobs = 24;   // The ndpcs have 8 cores x 2 threads/core = max ~16 threads/machine.
+    Int_t njobs = 8;   // The ndpcs have 8 cores x 2 threads/core = max ~16 threads/machine.
                         // Remains to be seen what is the optimal number of threads. On earth 
                         // you have in principle max ~64 threads, but of course there you
                         // might as well be using condor or lobster, etc.
@@ -97,13 +97,17 @@ void wrapper(std::vector<int> samples, int mode=2)
         // Now do something with the hists (draw 'em, etc.)
 
         // This loads the hists from file and prepares to make the plots:
-        MakeGoodPlot *newplots = new MakeGoodPlot(samples,"/hadoop/store/user/gesmith/lobster_test_20180220_1204");
+        //MakeGoodPlot *newplots = new MakeGoodPlot(samples,"copied_hists_from_hadoop/lobster_test_20180308_0947");
+        MakeGoodPlot *newplots = new MakeGoodPlot(samples);     // When running over hists produced with lobster, 
+                                                                // you should be good to go with this constructor as 
+                                                                // long as you ran haddhists.py first. 
 
         // Then, picking one of these will run the "drawall" function (see drawall.h), and save resulting plots to
         // file/web area, or plot directly to screen (in x-windows):
-    
         //newplots->drawAllToScreen();
         //newplots->drawAllToFile("plttest","pdf");
-        newplots->drawAllToWebArea("EFT_all_plots_20_2_18_no_jet_btag_req__test_apply_lepSFs__explicit_idMediumPOG_muons__firstlobstertest","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
+        //newplots->drawAllToWebArea("EFT_all_plots_27_4_18_std_plots_os2l_2017dataMC_2016SFs","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
+        newplots->drawAllToWebArea("EFT_all_plots_27_4_18_numPVs_norm","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
+    
     }
 }

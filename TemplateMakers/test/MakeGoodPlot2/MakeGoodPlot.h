@@ -13,6 +13,7 @@ class MakeGoodPlot
         int numsamples = 1;
         int numdatasamples = 0;
         bool hasdata = false;
+        bool groupsamples = false;
         int numtotalhists = 0;
         std::vector<int> samples;
         vector<TFile*> files;
@@ -31,15 +32,19 @@ class MakeGoodPlot
 	    const double lumi2016 = 36814.; // 2.5%, pb^-1, https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
 	    const double lumi2016up = (1.+0.025)*lumi2016;
 	    const double lumi2016down = (1.-0.025)*lumi2016;
-	    const double lumi2017 = 42710.; // 5% with normtag. sync gitlab page: 41.298 /fb ? 
+	    const double lumi2017 = 42710.; // 5% with normtag
 	    const double lumi2017up = (1.+0.05)*lumi2017;
 	    const double lumi2017down = (1.-0.05)*lumi2017;
         //const double lumi = lumi2016+lumi2017;
 	    //const double lumiup = lumi2016up+lumi2017up; // note: for 2016+2017, this is not lumi*(1.+sqrt(0.025*0.025+0.05*0.05)).
 	    //const double lumidown = lumi2016down+lumi2017down;
-        const double lumi = lumi2016;
-	    const double lumiup = lumi2016up;
-	    const double lumidown = lumi2016down;	    
+        //const double lumi = lumi2016;
+	    //const double lumiup = lumi2016up;
+	    //const double lumidown = lumi2016down;	    
+        const double lumi = lumi2017;
+	    const double lumiup = lumi2017up;
+	    const double lumidown = lumi2017down;	 	    
+	    
 	    
         
         std::vector<TObjArray> hist;
@@ -56,6 +61,8 @@ class MakeGoodPlot
         void lepeff_plots();
         void jetcleaning_plots();
         void standard_plots();
+        void standard_plots_normalized();
+        void mc_validation_plots();
         
         MakeGoodPlot() { cout << "Default constructor of MakeGoodPlot doesn't do anything. Use a different constructor." << endl; }
         MakeGoodPlot(std::vector<int> thesamps, TString histdir="");
@@ -79,7 +86,9 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps, TString histdir)
     for (int i=0; i<numsamples; i++)
     {
         // load the saved hists from file(s):
-        TString thishistfile = "temp_"+int2ss(samples[i])+".root";
+        //TString thishistfile = "temp_"+int2ss(samples[i])+".root";
+        TString thishistfile = "temp_"+sample_int2TString(samples[i])+".root";
+        
         
         if (histdir!="")
         {
@@ -107,7 +116,10 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps, TString histdir)
             //printf("key: %s points to an object of class: %s",
             //key->GetName(),
             //key->GetClassName());
-            dummyArray.Add(files[i]->Get(key->GetName()));
+            if (strncmp(key->GetName(),"blah",4)!=0)
+            {
+                dummyArray.Add(files[i]->Get(key->GetName()));
+            }
         }
         
         numtotalhists = dummyArray.GetEntriesFast();

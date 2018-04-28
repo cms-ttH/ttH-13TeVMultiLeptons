@@ -7,6 +7,8 @@ void HistMaker::setBranchAddresses( TTreeReader & newreader )
     wgt_intree = TTreeReaderValue<double>(newreader, "wgt");       
     passTrigger_intree = TTreeReaderValue<vector<string>>(newreader, "passTrigger");
     numPVs_intree = TTreeReaderValue<int>(newreader, "numPVs");
+    numTruePVs_intree = TTreeReaderValue<int>(newreader, "numTruePVs");
+    higgsdecay_intree = TTreeReaderValue<int>(newreader, "higgs_decay");
     
     raw_electrons_intree = TTreeReaderValue<vector<ttH::Electron>>(newreader, "raw_electrons");    
     //raw_leptons_intree = TTreeReaderValue<vector<ttH::Lepton>>(newreader, "raw_leptons");
@@ -28,8 +30,7 @@ void HistMaker::setBranchAddresses( TTreeReader & newreader )
     met_intree = TTreeReaderValue<vector<ttH::MET>>(newreader, "met");
     
     pruned_genParticles_intree = TTreeReaderValue<vector<ttH::GenParticle>>(newreader, "pruned_genParticles");
-
-    // and the rest ....
+    genJets_intree = TTreeReaderValue<vector<ttH::GenParticle>>(newreader, "genJets");
 
     
 }

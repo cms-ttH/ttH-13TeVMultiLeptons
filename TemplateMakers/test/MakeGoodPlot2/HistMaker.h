@@ -10,13 +10,13 @@ class HistMaker
         HistMaker();
         HistMaker(TString thepassedsamp);
         
-        const unsigned int th1arrsize = 5000;
-        const unsigned int th2arrsize = 1000;
+        const unsigned int th1arrsize = 2000;
+        const unsigned int th2arrsize = 500;
         int sample = -1;
         
         // you DO need these here!
-        TH1D *th1ds[5000]; 
-        TH2D *th2ds[1000];
+        TH1D *th1ds[2000]; 
+        TH2D *th2ds[500];
         std::unordered_map<string,TH1D*> th1d;
         std::unordered_map<string,TH2D*> th2d;
         std::unordered_map<string,TGraph*> tgraph;
@@ -26,7 +26,8 @@ class HistMaker
         TTreeReaderValue<double> wgt_intree;
         TTreeReaderValue<vector<string>> passTrigger_intree;
         TTreeReaderValue<int> numPVs_intree;
-        
+        TTreeReaderValue<int> numTruePVs_intree;
+        TTreeReaderValue<int> higgsdecay_intree;
         TTreeReaderValue<vector<ttH::Lepton>> raw_leptons_intree;
         TTreeReaderValue<vector<ttH::Lepton>> preselected_leptons_intree;
         TTreeReaderValue<vector<ttH::Lepton>> loose_leptons_intree;
@@ -60,6 +61,7 @@ class HistMaker
         TTreeReaderValue<vector<ttH::MET>> met_intree;
 
         TTreeReaderValue<vector<ttH::GenParticle>> pruned_genParticles_intree;
+        TTreeReaderValue<vector<ttH::GenParticle>> genJets_intree;
 
 
         void bookHistos();
@@ -80,6 +82,7 @@ class HistMaker
         void get_hist_of_simple_variable_2D();
         void jet_cleaning_studies();
         void standard_hists();
+        void mc_validation_hists();
         
         bool ele_tight(ttH::Electron ele);
         bool mu_tight(ttH::Muon mu);
@@ -89,6 +92,7 @@ HistMaker::HistMaker()
 {
     TH1::SetDefaultSumw2();  
     
+    // Default method, when running with multiple cores
     // Getting the sample number this way due to limitations of TTreeProcessorMP   
     ifstream passedSample;
     passedSample.open("current_samp.txt");
