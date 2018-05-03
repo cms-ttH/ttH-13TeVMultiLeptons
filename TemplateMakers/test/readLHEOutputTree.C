@@ -28,6 +28,7 @@
 #include "TMatrixD.h"
 #include "TVectorD.h"
 #include "TDecompSVD.h"
+#include "TMath.h"
 
 #include <boost/algorithm/string.hpp>   // For string splitting
 
@@ -67,6 +68,75 @@ void printProgress(int current_index, int total_entries) {
         float fraction = 100.*current_index/total_entries;
         cout << int(fraction) << " % processed " << endl;
     }
+}
+
+// Calculates the output of the fit function for a given input
+double evalFitPoint(FitParameters fit_params,WCPoint point) {
+    double value = 0.0;
+    for (uint i = 0; i < fit_params.names.size(); i++) {
+        std::string name = fit_params.names.at(i);
+        vector<std::string> words;
+        split_string(name,words,"*");
+        if (words.size() != 2) {
+            std::cout << "ERROR: Unable to split parameter name, " << name << std::endl;
+            continue;
+        }
+        std::string n1 = words.at(0);
+        std::string n2 = words.at(1);
+
+        double x1;
+        double x2;
+
+        if (n1 == "sm") {
+            x1 = 1.0;
+        } else if (point.inputs.find(n1) != point.inputs.end()) {
+            x1 = point.inputs.at(n1);
+        } else {
+            // If the WCPoint did not specify a WC, assume its strength is 0 (i.e. SM value)
+            x1 = 0.0;
+        }
+
+        if (n2 == "sm") {
+            x2 = 1.0;
+        } else if (point.inputs.find(n2) != point.inputs.end()) {
+            x2 = point.inputs.at(n2);
+        } else {
+            // If the WCPoint did not specify a WC, assume its strength is 0 (i.e. SM value)
+            x2 = 0.0;
+        }
+
+        value += x1*x2*fit_params.values.at(i);
+    }
+
+    return value;
+}
+
+// Reformats a 1-D histogram to have equal bin width on log scale
+void binLogX(TH1D* hist) {
+    TAxis* axis = hist->GetXaxis();
+    int bins = axis->GetNbins();
+
+    Double_t fro = axis->GetXmin();
+    Double_t to  = axis->GetXmax();
+    Double_t width = (to - fro) / bins;
+    Axis_t *new_bins = new Axis_t[bins+1];
+
+    for (int i = 0; i <= bins; i++) {
+        new_bins[i] = TMath::Power(10,fro + i*width);
+    }
+    axis->Set(bins,new_bins);
+    delete[] new_bins;
+}
+
+// Returns the euclidean distance between two WC points
+double getEuclideanDistance(WCPoint pt1, WCPoint pt2) {
+    double d = 0.0;
+    for (auto& kv: pt1.inputs) {
+        d += TMath::Power((pt1.inputs[kv.first] - pt2.inputs[kv.first]),2);
+    }
+
+    d = TMath::Power(d,0.5);
+    return d;
 }
 
 // Returns a vector of file names inside of the specified directory
@@ -133,7 +203,7 @@ void fillLegend(std::vector<RunGraph> graphs, TLegend *legend) {
 }
 
 // Solves a system of equations A*x = b, for x with an over-determined system
-FitParameters fitWilsonCoefficients(std::vector<WCPoint> points,std::string run) {
+FitParameters fitWilsonCoefficients(std::vector<WCPoint> points) {
     FitParameters params;
     if (points.size() == 0) {
         std::cout << "No points to fit!" << std::endl;
@@ -191,36 +261,223 @@ FitParameters fitWilsonCoefficients(std::vector<WCPoint> points,std::string run)
     const TVectorD c_x = svd.Solve(b,ok);
 
     for (uint i = 0; i < s_tuples.size(); i++) {
-        std::string str = s_tuples.at(i).first + "*" + s_tuples.at(i).second;
-
-        params.names.push_back(str);
-        params.values.push_back(c_x(i));
+        if (s_tuples.at(i).first == sm_str || s_tuples.at(i).second == sm_str || s_tuples.at(i).first == s_tuples.at(i).second) {
+            // Skip NP*NP interference terms for now
+            std::string str = s_tuples.at(i).first + "*" + s_tuples.at(i).second;
+            params.names.push_back(str);
+            params.values.push_back(c_x(i));
+        }
     }
 
     return params;
 }
 
+void make_1d_plot(TString output_name, double x_min, double x_max, double y_min, double y_max, std::vector<RunGraph> run_list) {
+    // Ensure a minimum y-axis range
+    y_min = std::min(0.8,y_min);
+    y_max = std::max(1.2,y_max);
+
+    // For testing
+    //y_min = std::min(0.0,y_min);
+    //y_max = std::max(1.2,y_max);
+
+    std::cout << "Graphs: " << run_list.size() << std::endl;
+    std::cout << "\tX-Range: (" << x_min << "," << x_max << ")" << std::endl;
+    std::cout << "\tY-Range: (" << y_min << "," << y_max << ")" << std::endl;
+    std::cout << "\tX-Range(mod): (" << x_min*1.1 << "," << x_max*1.1 << ")" << std::endl;
+    std::cout << "\tY-Range(mod): (" << y_min*0.9 << "," << y_max*1.1 << ")" << std::endl;
+
+    TCanvas *c1 = new TCanvas("c1","",1280,720);
+    c1->ToggleEventStatus();
+    c1->cd();
+    c1->SetGrid(1,1);
+
+    double left,right,top,bottom,scale_factor,minimum;
+    left  = 0.81;
+    right = 0.98;
+    top   = 0.9;
+    scale_factor = 0.05;
+    minimum = 0.1;
+    bottom = std::max(top - scale_factor*(run_list.size()+1),minimum);
+    TLegend *legend = new TLegend(left,top,right,bottom);
+
+    fillLegend(run_list,legend);
+
+    // Produce the actual plots!
+    for (uint i = 0; i < run_list.size(); i++) {
+        RunGraph run_graph = run_list.at(i);
+        run_graph.rwgt_gr->GetXaxis()->SetRangeUser(x_min*1.1,x_max*1.1);
+        run_graph.rwgt_gr->SetMinimum(y_min*0.8);
+        run_graph.rwgt_gr->SetMaximum(y_max*1.1);
+        if (i == 0) {
+            run_graph.rwgt_gr->SetTitle(run_graph.title);
+            run_graph.rwgt_gr->Draw("APL");
+        } else {
+            run_graph.rwgt_gr->Draw("PL");
+        }
+        c1->Update();
+    }
+
+    // Overlay the starting point plots
+    for (uint i = 0; i < run_list.size(); i++) {
+        RunGraph run_graph = run_list.at(i);
+        run_graph.orig_gr->Draw("PL");
+        c1->Update();
+    }
+
+    legend->SetFillColor(0);
+    legend->Draw();
+    c1->Update();
+
+    TString save_name = output_name + ".pdf";
+    c1->Print(save_name,"pdf");
+
+    delete legend;
+    delete c1;
+}
+
+void make_weight_distribution_plot(TString output_name,std::vector<double> wgts,int num_runs) {
+    double x_min = -6;
+    double x_max = 4;
+    int nbins = 500;
+
+    double lo = 999.;
+    double hi = 0.0;
+    double wgt_sum = 0.0;
+
+    TH1D* h1 = new TH1D("h1","title",nbins,x_min,x_max);
+    binLogX(h1);
+    for (auto& wgt: wgts) {
+        h1->Fill(wgt);
+        lo = (lo < wgt) ? lo : wgt;
+        hi = (hi > wgt) ? hi : wgt;
+        wgt_sum += wgt;
+    }
+
+    std::cout << "\tLow Wgt:  " << lo << std::endl;
+    std::cout << "\tHigh Wgt: " << hi << std::endl;
+    std::cout << "\tSum Wgt:  " << wgt_sum / num_runs << std::endl;
+
+    TCanvas *c1 = new TCanvas("c1","",1280,720);
+    c1->ToggleEventStatus();
+    c1->cd();
+    c1->SetGrid(1,1);
+    c1->SetLogx(1);
+    c1->SetLogy(1);
+
+    h1->Draw();
+
+    TString save_name = "wgts_" + output_name + ".pdf";
+    c1->Print(save_name,"pdf");
+
+    delete h1;
+    delete c1;
+}
+
+void make_residuals_plot(TString output_name, FitParameters fit_params, std::vector<WCPoint> points) {
+    double x_min = -1.0;
+    double x_max = 1.0;
+    int nbins = 100;
+
+    std::vector<double> residuals;
+    for (uint i = 0; i < points.size(); i++) {
+        WCPoint pt = points.at(i);
+        double actual_wgt = pt.wgt;
+        double pred_wgt = evalFitPoint(fit_params,pt);
+        double res = actual_wgt - pred_wgt;
+
+        x_max = (x_max > res) ? x_max : res;
+        x_min = (x_min < res) ? x_min : res;
+        residuals.push_back(res);
+    }
+
+    TH1D* h1 = new TH1D("h1","title",nbins,x_min*1.2,x_max*1.2);
+    for (auto& res: residuals) {
+        h1->Fill(res);
+    }
+
+
+    TCanvas *c1 = new TCanvas("c1","",1280,720);
+    c1->ToggleEventStatus();
+    c1->cd();
+    //c1->SetGrid(1,1);
+
+    h1->Draw();
+
+    TString save_name = "residuals_" + output_name + ".pdf";
+    c1->Print(save_name,"pdf");
+
+    delete h1;
+    delete c1;
+}
+
+void make_euclidean_plot(TString output_name,WCPoint starting_pt, std::vector<WCPoint> points) {
+    std::cout << "GOT HERE 0!" << std::endl;
+    const int max_points = 50;
+    Double_t x_pts[max_points], y_pts[max_points];
+    std::cout << "GOT HERE 1!" << std::endl;
+    for (uint i = 0; i < points.size(); i++) {
+        if (i >= max_points) {
+            break;
+        }
+        x_pts[i] = points.at(i).wgt;
+        y_pts[i] = getEuclideanDistance(starting_pt,points.at(i));
+    }
+
+    std::cout << "GOT HERE 2!" << std::endl;
+
+    TCanvas *c1 = new TCanvas("c1","",1280,720);
+    c1->ToggleEventStatus();
+    c1->cd();
+    c1->SetGrid(1,1);
+
+    TGraph* gr = new TGraph(max_points,x_pts,y_pts);
+    gr->SetMarkerStyle(7);
+    gr->SetMarkerSize(0.7);
+
+    std::cout << "GOT HERE 3!" << std::endl;
+
+    gr->Draw();
+
+    std::cout << "GOT HERE 4!" << std::endl;
+
+    TString save_name = "eucl_" + output_name + ".pdf";
+    c1->Print(save_name,"pdf");
+
+    std::cout << "GOT HERE 5!" << std::endl;
+
+    delete gr;
+    delete c1;
+
+    std::cout << "GOT HERE 6!" << std::endl;
+}
+
 void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
     gStyle->SetPadRightMargin(0.2);
 
-    //const double no_norm  = 1.0;
-    //const double norm_ttH = 0.386;
-    //const double norm_ttZ = 0.557;
-    //const double norm_factor = norm_ttH;
-
-    const double kFitCut = 10e-5;
-
     const std::string kOrig  = "original";
     const std::string kSMstr = "sm";
+    const uint kMinFitPts = 580;
     const int kMaxPoints = 128;
     const int kNColors = 8;
     const int color_map[kNColors] = {12,46,9,30,41,4,6,8};
+    const double kFitCut = 10e-5;
 
     // Crude hack to get MadGraph starting point (only works for 1-D scans)
     std::unordered_map<std::string,double> kRunMapping {
         {"run0",-10.0},
         {"run1",0.0},
         {"run2",10.0}
+    };
+
+    bool no_norm = false;
+    std::unordered_map<std::string,double> kXsecNorm {
+        {"ttH",   0.385841},
+        {"ttZ",   0.557918},
+        {"tZq",   0.804017},
+        {"ttbar", 493.646 },
+        {"ttlnu", 0.112075},
+        {"ttll",  0.074694}
     };
 
     double x_max = -999.;
@@ -281,45 +538,68 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
             {kOrig,0.0}
         };
 
+        std::unordered_map<std::string,std::vector<double> > vector_wgts;
+
         // Calculate summed weights
+        std::vector<WCPoint> event_wgt_points;
         for (int i = first_entry; i <= last_entry; i++) {
+            printProgress(i - first_entry,last_entry - first_entry);
             chain.GetEntry(i);
             unique_runs.insert(lumiBlock_intree);
             summed_wgts[kOrig] += originalXWGTUP_intree;
             for (auto& kv: *eftwgts_intree) {
+                WCPoint event_point;
+                event_point.inputs = getWCInputs(kv.first);
+                event_point.wgt = kv.second;
+                event_wgt_points.push_back(event_point);
+
                 if (summed_wgts.find(kv.first) == summed_wgts.end()) {
                     summed_wgts[kv.first] = 0.0;
                 }
                 summed_wgts[kv.first] += kv.second;
+
+                if (vector_wgts.find(kv.first) == vector_wgts.end()) {
+                    std::vector<double> new_wgt_vector = {kv.second};
+                    vector_wgts[kv.first] = new_wgt_vector;
+                } else {
+                    vector_wgts[kv.first].push_back(kv.second);
+                }
             }
         }
-
+        // How to normalize the plots
+        double norm_factor = 1.0;
+        if (!no_norm && kXsecNorm.find(process) != kXsecNorm.end()) {
+            norm_factor = kXsecNorm[process];
+        }
         // Generate the list of WC points
         int nRuns = unique_runs.size();
         WCPoint orig_pt;
         std::vector<WCPoint> points;
+        std::vector<WCPoint> test_points;
         for (auto& kv: summed_wgts) {
-            //double xsec = kv.second / nRuns;
-            double xsec = kv.second / summed_wgts[kOrig];    // Don't need nRuns, since we normalize by original xsec
+            double xsec = kv.second / nRuns;
             if (kv.first == kOrig) {
                 // NOTE: This only works for the 1-D case
-                //orig_pt.wgt = xsec / norm_factor;
-                orig_pt.wgt = xsec;  // Need to figure out how to handle nRuns
+                orig_pt.wgt = xsec / norm_factor;
                 if (kRunMapping.find(run) != kRunMapping.end()) {
                     orig_pt.inputs[coeff] = kRunMapping[run];
                 }
-                points.push_back(orig_pt);
+                // For N-dim scans don't add orig_pt to the list (need to find a better way to get the correct WC point)
+                //points.push_back(orig_pt);
                 continue;
             }
             WCPoint new_pt;
             new_pt.inputs = getWCInputs(kv.first);
-            //new_pt.wgt = xsec / norm_factor;
-            new_pt.wgt = xsec;   // Need to figure out how to handle nRuns
+            new_pt.wgt = xsec / norm_factor;
 
-            points.push_back(new_pt);
+            if (points.size() < kMinFitPts) {
+                points.push_back(new_pt);
+            } else {
+                test_points.push_back(new_pt);
+            }
         }
 
-        FitParameters fit_params = fitWilsonCoefficients(points,run);
+        FitParameters fit_params = fitWilsonCoefficients(points);
 
         for (uint i = 0; i < fit_params.names.size(); i++) {
             if (fit_params.names.at(i) == (kSMstr + "*" + kSMstr)) {
@@ -330,34 +610,58 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
             }
         }
 
+        ////////////////////////
+        // Per run plot making
+        ////////////////////////
+
+        std::cout << "Plotting Wgt distributions..." << std::endl;
+        int wgts_counter = 0;
+        for (auto&kv: vector_wgts) {
+            if (wgts_counter > 10) {
+                continue;
+            }
+            TString wgt_dist_name = output_name + "_" + run + "_rwgt" + std::to_string(wgts_counter);
+            //make_weight_distribution_plot(wgt_dist_name,kv.second,nRuns);
+            wgts_counter++;
+        }
+
+        std::cout << "Checking fit... " << coeff << std::endl;
+        TString output_run_name = output_name + "_" + run;
+        //make_residuals_plot(output_run_name,fit_params,points);
+
+        std::cout << "Making Euclidean Distance Plot..." << std::endl;
+        output_run_name = output_name + "_" + run;
+        make_euclidean_plot(output_run_name,orig_pt,event_wgt_points);
+
+        /*
         std::string fn =  process + "_"+ coeff + "_fitparams.txt";
         std::ofstream outf(fn,std::ofstream::out | std::ofstream::app);
 
         std::stringstream ss1;
         std::stringstream ss2;
 
-        ss1 << std::setw(10) << "";
-        ss2 << std::setw(10) << process + "_" + run;
+        ss1 << std::setw(15) << "";
+        ss2 << std::setw(15) << process + "_" + run;
         for (uint i = 0; i < fit_params.names.size(); i++) {
-            ss1 << std::setw(10) << fit_params.names.at(i);
-            ss2 << std::setw(10) << std::to_string(fit_params.values.at(i));
+            ss1 << std::setw(15) << fit_params.names.at(i);
+            ss2 << std::setw(15) << std::to_string(fit_params.values.at(i));
         }
 
         if (count == 0) {
             // Write the header
             outf << ss1.str() << "\n";
         }
+        // Write the fit parameters
         outf << ss2.str() << "\n";
         outf.close();
         count++;
-
-        //continue;
+        */
 
         //////////////////////////////
         // Begin making the plots
         //////////////////////////////
 
-        points = sortPoints(points,coeff);
+        //points = sortPoints(points,coeff);
 
         // NOTE: This only works for 1-D case, for 2-D+ it effectively projects into the 1-D case
         uint n_pts = points.size();
@@ -403,74 +707,14 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
         run_graph.title = run_title;
         run_list.push_back(run_graph);
     }
-
-    //return;
-
-    //////////////////////////////
-    // Begin drawing the plots
-    //////////////////////////////
-
-    if (max_fitparam < kFitCut) {
-        // Skip non-interesting coeffs
-        std::cout << "Skipping plot with no effect on xsec!" << std::endl;
-        return;
-    }
-
-    // Ensure a minimum y-axis range
-    y_min = std::min(0.8,y_min);
-    y_max = std::max(1.2,y_max);
-
-    std::cout << "Graphs: " << run_list.size() << std::endl;
-    std::cout << "\tX-Range: (" << x_min << "," << x_max << ")" << std::endl;
-    std::cout << "\tY-Range: (" << y_min << "," << y_max << ")" << std::endl;
-    std::cout << "\tX-Range(mod): (" << x_min*1.1 << "," << x_max*1.1 << ")" << std::endl;
-    std::cout << "\tY-Range(mod): (" << y_min*0.9 << "," << y_max*1.1 << ")" << std::endl;
+    input_filenames.close();
 
 
-    TCanvas *c1 = new TCanvas("c1","",1280,720);
-    c1->ToggleEventStatus();
-    c1->cd();
-    c1->SetGrid(1,1);
+    //if (max_fitparam < kFitCut) {
+    //    // Skip non-interesting coeffs
+    //    std::cout << "Skipping plot with no effect on xsec!" << std::endl;
+    //    return;
+    //}
 
-    double left,right,top,bottom,scale_factor,minimum;
-    left  = 0.81;
-    right = 0.98;
-    top   = 0.9;
-    scale_factor = 0.05;
-    minimum = 0.1;
-    bottom = std::max(top - scale_factor*(run_list.size()+1),minimum);
-    TLegend *legend = new TLegend(left,top,right,bottom);
-
-    fillLegend(run_list,legend);
-
-    // Produce the actual plots!
-    for (uint i = 0; i < run_list.size(); i++) {
-        RunGraph run_graph = run_list.at(i);
-        run_graph.rwgt_gr->GetXaxis()->SetRangeUser(x_min*1.1,x_max*1.1);
-        run_graph.rwgt_gr->SetMinimum(y_min*0.8);
-        run_graph.rwgt_gr->SetMaximum(y_max*1.1);
-        //run_graph.orig_gr->GetXaxis()->SetRangeUser(x_min*1.1,x_max*1.1);
-        if (i == 0) {
-            run_graph.rwgt_gr->SetTitle(run_graph.title);
-            run_graph.rwgt_gr->Draw("APL");
-            //run_graph.orig_gr->Draw("PL");
-        } else {
-            run_graph.rwgt_gr->Draw("PL");
-            //run_graph.orig_gr->Draw("PL");
-        }
-        c1->Update();
-    }
-
-    // Overlay the starting point plots
-    for (uint i = 0; i < run_list.size(); i++) {
-        RunGraph run_graph = run_list.at(i);
-        run_graph.orig_gr->Draw("PL");
-        c1->Update();
-    }
-
-    legend->SetFillColor(0);
-    legend->Draw();
-    c1->Update();
-
-    c1->Print(output_name,"pdf");
+    //make_1d_plot(output_name,x_min,x_max,y_min,y_max,run_list);
 }

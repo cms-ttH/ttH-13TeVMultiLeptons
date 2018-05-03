@@ -5,11 +5,21 @@
 import subprocess
 import os
 
-HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/v1/"
+#HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/sans_ttW/v2/"
+HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/ttbar/v1/"
+#HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/ttlnu/v1/"
+#HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/ttll/v1/"
+#HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/ttllTopEFTcuts/v1/"
+#HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/tteeTopEFTcuts/v1/"
 
-process_whitelist = ['ttH']
-coeff_whitelist = ['ctG']
-run_whitelist = []
+#HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/2018_05_03/2HeavyScans/v1/"  # Has ttH, ttll, ttlnu with 9 operators
+
+#HADOOP_PATH = "/hadoop/store/user/awightma/tests/lobster_20180502_1357/"    # ttbar fullscan (multi file)
+#HADOOP_PATH = "/hadoop/store/user/awightma/tests/lobster_20180502_1547/"    # ttbar fullscan (single file)
+
+process_whitelist = []
+coeff_whitelist = ['ctZ']
+run_whitelist = ['run0']
 
 # Group the directories based on process and coeff scan
 file_dirs = {}
@@ -42,6 +52,7 @@ for k,runs in file_dirs.iteritems():
         for r in runs:
             l = os.path.join(HADOOP_PATH,"output_%s_%s\n" % (k,r))
             fd.write(l)
-    output_name = "output_%s.pdf" % (k)
+    print "[%d/%d] %s:" % (counter+1,min(max_plots-1,len(file_dirs.keys())),k)
+    output_name = "output_%s" % (k)
     subprocess.check_call(['root','-b','-l','-q','readLHEOutputTree.C+(\"%s\",\"files.txt\")' % (output_name)])
     counter += 1
