@@ -254,8 +254,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
     bool skim_statement = true;
     //if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size())>=2;
-    if (skim) skim_statement = (selectedElectrons_tight.size()+selectedMuons_tight.size())>0;
-
+    //if (skim) skim_statement = (selectedElectrons_tight.size()+selectedMuons_tight.size())>0;
+    if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size())>0;
+    
     if ( skim_statement )
     {
         eventnum_intree = event.id().event();
@@ -576,6 +577,7 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     hlt_trigstofind.push_back("HLT_Ele25_eta2p1_WPTight_Gsf_v");
     hlt_trigstofind.push_back("HLT_Ele27_eta2p1_WPLoose_Gsf_v");
     hlt_trigstofind.push_back("HLT_Ele32_WPTight_Gsf_v"); // new 2017
+    hlt_trigstofind.push_back("HLT_Ele32_WPTight_Gsf L1DoubleEG_v"); // new 2017
     hlt_trigstofind.push_back("HLT_Ele35_WPTight_Gsf_v"); // new 2017 
 
     //same-sign mu e

@@ -189,6 +189,7 @@ vector<ttH::Electron> MultileptonAna::GetCollection (vecPatElectron theobjs)
       ele.jetPtRatio = iEle.userFloat("nearestJetPtRatio");
       ele.jetPtRel = iEle.userFloat("nearestJetPtRel");
       ele.csv = iEle.userFloat("nearestJetCsv");
+      ele.deepcsv = iEle.userFloat("nearestJetDeepCsv");
       ele.sip3D = iEle.userFloat("sip3D");
       ele.mvaID = iEle.userFloat("eleMvaHZZ");
       ele.mvaIDGP = iEle.userFloat("eleMva");
@@ -300,6 +301,7 @@ vector<ttH::Muon> MultileptonAna::GetCollection (vecPatMuon theobjs)
       mu.jetPtRatio = iMu.userFloat("nearestJetPtRatio");
       mu.jetPtRel = iMu.userFloat("nearestJetPtRel");
       mu.csv = iMu.userFloat("nearestJetCsv");
+      mu.deepcsv = iMu.userFloat("nearestJetDeepCsv");
       mu.sip3D = iMu.userFloat("sip3D");
       mu.jet_nCharged_tracks = iMu.userFloat("nearestJetNDauCharged");
       mu.correctedPt = iMu.userFloat("correctedPt");

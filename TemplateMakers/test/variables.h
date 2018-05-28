@@ -185,11 +185,20 @@ template <typename almostTLVtype> TLorentzVector makeRealTLV( almostTLVtype thin
 
 double convertWPtoCSVvalue(string tagtype)
 {
+    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+    
     double tagcut=0.0;
     if (tagtype=="None") return tagcut;   
+    // regular csv
     else if (tagtype=="L") tagcut = 0.5426; // 10.1716% DUSG mistag efficiency
     else if (tagtype=="M") tagcut = 0.8484; // 1.0623% DUSG mistag efficiency
     else if (tagtype=="T") tagcut = 0.941; // 0.1144% DUSG mistag efficiency
+    
+    // DeepCSV
+    else if (tagtype=="DL") tagcut = 0.1522; // keep it on the DL
+    else if (tagtype=="DM") tagcut = 0.4941; // deep medium
+    else if (tagtype=="DT") tagcut = 0.8001; // gives you the DTs
+    
     return tagcut;
 }
     
@@ -238,7 +247,14 @@ template <typename coll1type> coll1type keepTagged(coll1type collection1, string
     coll1type keptobjs;
     for (const auto & it : collection1)
     {
-      if (tagcut < it.csv) keptobjs.push_back(it);
+      if (tagtype=="L" || tagtype=="M" || tagtype=="T")
+      {
+        if (tagcut < it.csv) keptobjs.push_back(it);
+      }
+      else if (tagtype=="DL" || tagtype=="DM" || tagtype=="DT")
+      {
+        if (tagcut < it.DeepCSV) keptobjs.push_back(it);
+      }
     }
     
     return keptobjs;
@@ -253,7 +269,14 @@ template <typename coll1type> coll1type keepUnTagged(coll1type collection1, stri
     coll1type keptobjs;
     for (const auto & it : collection1)
     {    
+      if (tagtype=="L" || tagtype=="M" || tagtype=="T")
+      {
         if (tagcut >= it.csv) keptobjs.push_back(it);
+      }
+      else if (tagtype=="DL" || tagtype=="DM" || tagtype=="DT")
+      {
+        if (tagcut >= it.DeepCSV) keptobjs.push_back(it);
+      }
     }
     return keptobjs;
 }            
@@ -296,6 +319,10 @@ template <typename coll1type> coll1type simpleCut(coll1type collection1, string 
         else if  (cutvar=="eta" || cutvar=="Eta")
         {
             if (abs(it.obj.Eta())>value) keptobjs.push_back(it);
+        }
+        else if  (cutvar=="miniIso")
+        {
+            if (it.miniIso<value) keptobjs.push_back(it);
         }
     }
     return keptobjs;

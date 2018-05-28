@@ -7,7 +7,7 @@ from Configuration.AlCa.GlobalTag import GlobalTag as customiseGlobalTag
 
 options = VarParsing.VarParsing('analysis')
 options.maxEvents = -1
-options.register("jetCleanFakeable", True,
+options.register("jetCleanFakeable", False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "lepton selecton for jet cleaning")
 options.register("data", False,                                                 # <---------
@@ -123,7 +123,7 @@ process.ttHLeptons.MediumCSVWP = cms.double(0.8484) # CSVv2 2016 # LepID plugin 
 #process.ttHLeptons.LooseCSVWP = cms.double(0.1522) # DeepCSV 2017 preliminary # will eventually need this when lepMVA switches to DeepCSV for 2017 data
 #process.ttHLeptons.MediumCSVWP = cms.double(0.4941) # DeepCSV 2017 preliminary # will eventually need this when lepMVA switches to DeepCSV for 2017 data
 process.ttHLeptons.IsHIPSafe = cms.bool(options.hip)
-process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral"
+process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral" ## <-- to update? (should be CentralNeutral->All?)
 process.ttHLeptons.jets = cms.InputTag("updatedPatJetsUpdated")
 process.ttHLeptons.JECTag = "patJetCorrFactorsUpdated"
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
@@ -136,7 +136,7 @@ if isData:
 else:
     process.OSTwoLepAna.setupoptions.isdata = False
     
-process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral"
+process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral" ## <-- to update? (should be CentralNeutral->All?)
 process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags" # DeepCSV still saved (see MultileptonAna.cc)
 #process.OSTwoLepAna.btags.btagdisc = "DeepCSV" # "DeepCSV" adds probb+probbb, otherwise full disc required
 process.OSTwoLepAna.triggers.hltlabel = "HLT"

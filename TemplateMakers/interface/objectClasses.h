@@ -38,6 +38,7 @@ namespace ttH
     double jetPtRatio;
     double jetPtRel;
     double csv;
+    double deepcsv;
     double sip3D;
     int jet_nCharged_tracks;
     double correctedPt;
@@ -78,6 +79,7 @@ namespace ttH
       jetPtRatio = -99.;
       jetPtRel = -99.;
       csv = -99.;
+      deepcsv = -99.;
       sip3D = -99.;
       jet_nCharged_tracks = -99;
       // extra for sync
