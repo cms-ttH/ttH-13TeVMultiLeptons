@@ -56,9 +56,9 @@ process.source = cms.Source("PoolSource",
         #fileNames = cms.untracked.vstring( "root://cms-xrd-global.cern.ch///store/mc/RunIIFall17MiniAOD/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/MINIAODSIM/94X_mc2017_realistic_v10-v1/00000/0A9B6F9D-EB18-E811-A53B-3417EBE64426.root" ),
 #        fileNames = cms.untracked.vstring( "file:///tmpscratch/users/gsmith15/temp/0A9B6F9D-EB18-E811-A53B-3417EBE64426.root" ),
 #        fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/07Aug17-v1/50000/006DC839-EB89-E711-9209-002590D9D956.root" ),
-#        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/ctG_scan/v2/mAOD_step_run7/HIG-RunIIFall17MiniAOD-00821ND_2420.root",
-#                                            "file:///hadoop/store/user/awightma/postLHE_step/ctG_scan/v2/mAOD_step_run7/HIG-RunIIFall17MiniAOD-00821ND_2518.root" )
-        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/2018_04_17/500k_events/v2/mAOD_step_ttH_ctG_run1/HIG-RunIIFall17MiniAOD-00821ND_2818.root" )
+        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/ctG_scan/v2/mAOD_step_run7/HIG-RunIIFall17MiniAOD-00821ND_2420.root",
+                                            "file:///hadoop/store/user/awightma/postLHE_step/ctG_scan/v2/mAOD_step_run7/HIG-RunIIFall17MiniAOD-00821ND_2518.root" )
+#        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/2018_04_17/500k_events/v2/mAOD_step_ttH_ctG_run1/HIG-RunIIFall17MiniAOD-00821ND_2818.root" )
 )
 
 ## Golden json file:

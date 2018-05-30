@@ -195,6 +195,9 @@ namespace ttH
     bool passPUID; // only available in >90X MINIAOD
     double PUMVA;
     int pdgID; //place holder for Geoff's templated functions
+    double ptD;
+    double axis1;
+    int mult;
     
     void clear(void)
     {
@@ -214,6 +217,9 @@ namespace ttH
       passPUID = false;
       qgid = -99.;      
       pdgID = -9999;
+      ptD = -9999;
+      axis1 = -9999;
+      mult = -9999;
     }
 
     virtual ~Jet(){};
