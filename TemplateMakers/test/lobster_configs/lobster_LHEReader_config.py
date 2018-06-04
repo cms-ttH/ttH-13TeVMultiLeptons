@@ -8,15 +8,40 @@ from lobster.core import AdvancedOptions, Category, Config, Dataset, StorageConf
 #   It produces output trees similar to OSTwoLepAna.cc, but can run over LHE level EDM files. It stores
 #   only the eftwgts and the original xsec wgt as well as basic run,LS,etc. info
 
-#version = "lobster_test_" + datetime.datetime.now().strftime('%Y%m%d_%H%M')
+timestamp_tag = datetime.datetime.now().strftime('%Y%m%d_%H%M')
 
-input_path_full = "/hadoop/store/user/awightma/LHE_step/2018_04_17/sans_ttW/v2/"
-input_path      = "/store/user/$USER/LHE_step/2018_04_17/sans_ttW/v2/"
+RUN_SETUP = 'local'
+RUN_SETUP = 'mg_studies'
 
-version = "v1"
-output_path  = "/store/user/$USER/summaryTree_LHE/sans_ttW/"       + version
-workdir_path = "/tmpscratch/users/$USER/summaryTree_LHE/sans_ttW/" + version
-plotdir_path = "~/www/lobster/summaryTree_LHE/sans_ttW/"           + version
+input_version  = "v1"
+output_version = "v1"
+grp_tag  = "2018_05_06/2HeavyScan10kPilot"
+test_tag = "lobster_20180505_1440"      # If the input LHE files were also produced in 'local' running
+
+# Only run over gridpacks from specific processes/coeffs/runs (i.e. MG starting points)
+process_whitelist = ['ttH']
+coeff_whitelist   = []
+runs_whitelist    = []
+
+master_label = 'EFT_LHE_%s' % (timestamp_tag)
+
+if RUN_SETUP == 'local':
+    # For quick generic lobster workflow testing
+    input_path   = "/store/user/awightma/tests/%s" % (test_tag)
+    output_path  = "/store/user/$USER/tests/lobster_%s" % (timestamp_tag)
+    workdir_path = "/tmpscratch/users/$USER/tests/lobster_%s" % (timestamp_tag)
+    plotdir_path = "~/www/lobster/tests/lobster_%s" % (timestamp_tag)
+elif RUN_SETUP == 'mg_studies':
+    # For MadGraph test studies
+    input_path   = "/store/user/awightma/LHE_step/%s/%s/" % (grp_tag,input_version)
+    output_path  = "/store/user/$USER/summaryTree_LHE/%s/%s" % (grp_tag,output_version)
+    workdir_path = "/tmpscratch/users/$USER/summaryTree_LHE/%s/%s" % (grp_tag,output_version)
+    plotdir_path = "~/www/lobster/summaryTree_LHE/%s/%s" % (grp_tag,output_version)
+else:
+    print "Unknown run setup, %s" % (RUN_SETUP)
+    raise ValueError
+
+input_path_full = "/hadoop" + input_path
 
 storage = StorageConfiguration(
     input=[
@@ -38,14 +63,9 @@ storage = StorageConfiguration(
 processing = Category(
     name='processing',
     cores=1,
-    memory=1500,
-    disk=2000
+    memory=1200,
+    disk=500
 )
-
-# Only run over gridpacks from specific processes/coeffs/runs (i.e. MG starting points)
-process_whitelist = ['ttH','ttZ','tZq']
-coeff_whitelist   = []
-runs_whitelist    = []
 
 lhe_dirs = []
 for f in os.listdir(input_path_full):
@@ -63,12 +83,11 @@ for f in os.listdir(input_path_full):
 
 wf = []
 
+print "Generating workflows:"
 for idx,lhe_dir in enumerate(lhe_dirs):
     arr = lhe_dir.split('_')
     p,c,r = arr[2],arr[3],arr[4]
-    print "Dir:",lhe_dir
-    print [idx,p,c,r]
-    print ""
+    print "\t[%d/%d] LHE Input: %s" % (idx+1,len(lhe_dirs),lhe_dir)
     output = Workflow(
         label='output_%s_%s_%s' % (p,c,r),
         command='cmsRun EFTLHEReader_cfg.py',
@@ -84,7 +103,7 @@ for idx,lhe_dir in enumerate(lhe_dirs):
     wf.extend([output])
 
 config = Config(
-    label='EFT_LHE',
+    label=master_label,
     workdir=workdir_path,
     plotdir=plotdir_path,
     storage=storage,
