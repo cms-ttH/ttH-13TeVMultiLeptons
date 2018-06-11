@@ -13,6 +13,8 @@ class TH1EFT : public TH1D
         
         std::vector<WCFit> hist_fits;
         //TODO(maybe?): Add over/underflow bin fit functions and update Fill to use them accordingly
+        WCFit overflow_fit;
+        WCFit underflow_fit;
 
         using TH1D::Fill;           // Bring the TH1D Fill fcts into scope
         using TH1D::GetBinContent;  // Bring the TH1D GetBinContent fcts into scope
@@ -41,11 +43,14 @@ TH1EFT::TH1EFT(const char *name, const char *title, Int_t nbinsx, Double_t xlow,
 Int_t TH1EFT::Fill(Double_t x, Double_t w, WCFit fit)
 {
     Int_t bin_idx = this->FindFixBin(x) - 1;
-    if (bin_idx >= this->hist_fits.size()) {
+    Int_t nhists  = this->hist_fits.size();
+    if (bin_idx >= nhists) {
         // For now ignore events which enter overflow bin
+        this->overflow_fit.addFit(fit);
         return Fill(x,w);
     } else if (bin_idx < 0) {
         // For now ignore events which enter underflow bin
+        this->underflow_fit.addFit(fit);
         return Fill(x,w);
     }
     this->hist_fits.at(bin_idx).addFit(fit);
@@ -55,6 +60,12 @@ Int_t TH1EFT::Fill(Double_t x, Double_t w, WCFit fit)
 // Returns a fit function for a particular bin (no checks are made if the bin is an over/underflow bin)
 WCFit TH1EFT::GetBinFit(Int_t bin)
 {
+    Int_t nhists = this->hist_fits.size();
+    if (bin < 0) {
+        return this->underflow_fit;
+    } else if (bin >= nhists) {
+        return this->overflow_fit;
+    }
     return this->hist_fits.at(bin - 1);
 }
 

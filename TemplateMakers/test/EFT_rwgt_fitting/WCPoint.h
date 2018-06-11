@@ -95,6 +95,11 @@ public:
         return dim;
     }
 
+    // Returns if the point actually has an entry for a particular WC
+    bool hasWC(std::string wc_name) {
+        return (this->inputs.find(wc_name) != this->inputs.end());
+    }
+
     // Compares if two WC points are equal
     bool isEqualTo(WCPoint* pt) {
         for (auto&kv: this->inputs) {

@@ -25,10 +25,12 @@ private:
     std::string tag;    // Names the fit, for identification
     WCPoint start_pt;
 
-    const int kPad = 12;
+    int kPad = 12;
 
 public:
-    WCFit(){}
+    WCFit(){
+        this->tag = "";
+    }
 
     WCFit(std::vector<WCPoint> pts,std::string _tag) {
         this->points = pts;
@@ -40,7 +42,7 @@ public:
         this->clear();
     }
 
-    const std::string kSMstr = "sm";    // Need to figure out how to make this a global constant...
+    std::string kSMstr = "sm";    // Need to figure out how to make this a global constant...
 
     void setTag(std::string _tag) {
         this->tag = _tag;
@@ -121,6 +123,16 @@ public:
         return strength;
     }
 
+    // Checks to see if the fit includes the specified WC
+    bool hasCoefficient(std::string wc_name) {
+        for (uint i = 0; i < this->names.size(); i++) {
+            if (wc_name == this->names.at(i).first || wc_name == this->names.at(i).second) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Evaluate the fit at a particular WC phase space point
     double evalPoint(WCPoint* pt) {
         double val = 0.0;
@@ -147,8 +159,8 @@ public:
                 x2 = 0.0;
             }
 
-            double str = this->values.at(i);
-            val += x1*x2*str;
+            double fit_constant = this->values.at(i);    // This is the structure constant
+            val += x1*x2*fit_constant;
         }
         return val;
     }
@@ -255,7 +267,9 @@ public:
 
     // Save the fit to indicated file
     void save(std::string fpath,bool append=false) {
-        std::cout << "Producing fitparams table..." << std::endl;
+        if (!append) {
+            std::cout << "Producing fitparams table..." << std::endl;
+        }
 
         std::stringstream ss1;  // Header info
         std::stringstream ss2;  // Row info
@@ -279,6 +293,8 @@ public:
         }
         outf << "\n" << ss2.str();
         outf.close();
+
+        this->dump(append);
     }
 
     // Same as save, but dumps to stdout instead
@@ -286,8 +302,8 @@ public:
         std::stringstream ss1;  // Header info
         std::stringstream ss2;  // Row info
 
-        ss1 << std::setw(kPad+3) << "";
-        ss2 << std::setw(kPad+3) << this->tag;
+        ss1 << std::setw(kPad+5) << "";
+        ss2 << std::setw(kPad+5) << this->tag;
         for (uint i = 0; i < this->names.size(); i++) {
             if (i >= max_cols) {
                 break;
