@@ -1,3 +1,6 @@
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/WCPoint.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/WCFit.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/TH1EFT.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
 #ifndef TTH_DUMMY_OBJS
@@ -32,6 +35,11 @@ namespace {
     ttH::GenParticle dummy_genparticle;
     std::vector<ttH::GenParticle> dummy_genparticle_vector;
     std::vector< std::vector<ttH::GenParticle> > dummy_genparticle_vector_vector;
+
+    //WCPoint dummy_wcpoint;
+    //WCFit dummy_wcfit;
+    //TH1EFT dummy_TH1EFT;
+    ////TH1EFT dummy_TH1EFTconst("dummmy","instance of TH1D constructor",10,0,10);
 
   };
 }

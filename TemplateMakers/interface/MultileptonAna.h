@@ -98,7 +98,8 @@
 
 // Multilepton
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/JobParameters.h"
-#include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
 // end includes
 // -----------------------------------------------

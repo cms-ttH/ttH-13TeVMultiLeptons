@@ -20,5 +20,8 @@
   <class name="ttH::GenParticle"/>
   <class name="std::vector<ttH::GenParticle>"/>
   <class name="std::vector< std::vector<ttH::GenParticle> >"/>
-
+  <class name="WCPoint"/>
+  <class name="WCFit"/>
+  <class name="TH1EFT"/>
+  
 </lcgdict>

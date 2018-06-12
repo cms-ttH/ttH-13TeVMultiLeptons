@@ -1,6 +1,8 @@
 #include "TObject.h"
 
-
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/WCPoint.h"
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/WCFit.h"
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/TH1EFT.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
 #if 1 /* 0 or 1 */
@@ -13,6 +15,9 @@ ClassImp(ttH::Jet);
 ClassImp(ttH::MET);
 ClassImp(ttH::GenParticle);
 
+//ClassImp(WCPoint);
+//ClassImp(WCFit);
+//ClassImp(TH1EFT);
 
 #else /* 0 or 1 */
 
@@ -25,5 +30,9 @@ ClassImp(Tau);
 ClassImp(Jet);
 ClassImp(MET);
 ClassImp(GenParticle);
+
+//ClassImp(WCPoint);
+//ClassImp(WCFit);
+//ClassImp(TH1EFT);
 
 #endif /* 0 or 1 */
