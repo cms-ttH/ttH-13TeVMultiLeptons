@@ -1,7 +1,8 @@
+#ifndef TH1EFT_H_
+#define TH1EFT_H_
+
 #include "TH1D.h"
-//#include <transform>
 #include <vector>
-//#include <plus> // ?
 
 #include "WCFit.h"
 #include "WCPoint.h"
@@ -9,6 +10,12 @@
 class TH1EFT : public TH1D
 {
     public:
+    
+        // ROOT needs these:
+        TH1EFT();
+        ~TH1EFT();
+        
+        // usual constructor:
         TH1EFT(const char *name, const char *title, Int_t nbinsx, Double_t xlow, Double_t xup);
         
         std::vector<WCFit> hist_fits;
@@ -27,8 +34,16 @@ class TH1EFT : public TH1D
         TH1EFT* Scale(WCPoint wc_pt);
         void ScaleFits(double amt);
         void DumpFits();
+        
+        ClassDef(TH1EFT,1); // ROOT needs this here
         //TODO(maybe?): Add member function to return specifically fit coeffs (rather then entire WCFit object)
 };
+
+// ROOT needs this here:
+ClassImp(TH1EFT);
+TH1EFT::TH1EFT() {}
+TH1EFT::~TH1EFT() {}
+
 
 TH1EFT::TH1EFT(const char *name, const char *title, Int_t nbinsx, Double_t xlow, Double_t xup)
  : TH1D (name, title, nbinsx, xlow, xup) 
@@ -120,3 +135,4 @@ void TH1EFT::DumpFits()
         this->hist_fits.at(i).dump();
     }
 }
+#endif

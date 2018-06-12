@@ -192,7 +192,7 @@ public:
             return;
         }
 
-        vector<std::string> wc_coeffs = { kSMstr };   // This vector controls the ordering of our phase space point
+        std::vector<std::string> wc_coeffs = { kSMstr };   // This vector controls the ordering of our phase space point
         for (auto& kv: pts.at(0).inputs) {
             wc_coeffs.push_back(kv.first);
         }
