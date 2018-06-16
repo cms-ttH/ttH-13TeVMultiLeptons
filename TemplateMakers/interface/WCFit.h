@@ -2,6 +2,7 @@
 #define WCFIT_H_
 
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <iomanip>
 #include <string>

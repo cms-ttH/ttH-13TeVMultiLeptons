@@ -2,6 +2,7 @@
 #define WCPOINT_H_
 
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 #include <string>
 #include <vector>
