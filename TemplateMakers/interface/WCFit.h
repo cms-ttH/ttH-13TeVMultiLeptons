@@ -124,6 +124,23 @@ public:
         return strength;
     }
 
+    // Returns the dimensionality of the fit
+    int getDim() {
+        int dim = 0;
+        for (uint i = 0; i < this->names.size(); i++) {
+            std::string n1 = this->names.at(i).first;
+            std::string n2 = this->names.at(i).second;
+
+            if (n1 != n2) {
+                continue;
+            } else if (n1 == this->kSMstr || n2 == this->kSMstr) {
+                continue;
+            }
+            dim++;
+        }
+        return dim;
+    }
+
     // Checks to see if the fit includes the specified WC
     bool hasCoefficient(std::string wc_name) {
         for (uint i = 0; i < this->names.size(); i++) {
@@ -164,6 +181,13 @@ public:
             val += x1*x2*fit_constant;
         }
         return val;
+    }
+
+    // Overloaded function to evaluate the fit in 1-D at a specific WC
+    double evalPoint(std::string wc_name,double val) {
+        WCPoint wc_pt;
+        wc_pt.setStrength(wc_name,val);
+        return this->evalPoint(&wc_pt);
     }
 
     // Changes a specific structure constant by the specified amount, if none found adds it to the list
