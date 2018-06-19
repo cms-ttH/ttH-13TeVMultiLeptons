@@ -5,8 +5,8 @@
 #include <vector>
 #include <algorithm>
 
-#include "WCPoint.h"
-#include "WCFit.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/WCPoint.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/WCFit.h"
 
 #include "TString.h"
 #include "TCanvas.h"
@@ -122,25 +122,41 @@ void make_1d_xsec_plot(
     double origpts_marker_size = 2.0;//3.0;
 
     plt_ops.setXLimits(0.0,0.0);
-    //plt_ops.setYLimits(0.5,1.3);
-    plt_ops.setYLimits(-0.01,0.1);
-
+    plt_ops.setYLimits(0.0,1.3);
+    //plt_ops.setYLimits(-0.01,0.1);
 
     // Setup the low and high limits for the plot
     WCPoint tmp_pt;
     double x_low,x_high,y_val;
     for (uint i = 0; i < wc_fits.size(); i++) {
+        tmp_pt.setSMPoint();
         x_low  = wc_fits.at(i).getLowStrength(wc_name);
         tmp_pt.setStrength(wc_name,x_low);
         y_val = wc_fits.at(i).evalPoint(&tmp_pt);
         plt_ops.updateYLimits(y_val,y_val);
 
+        tmp_pt.setSMPoint();
         x_high = wc_fits.at(i).getHighStrength(wc_name);
         tmp_pt.setStrength(wc_name,x_high);
         y_val = wc_fits.at(i).evalPoint(&tmp_pt);
         plt_ops.updateYLimits(y_val,y_val);
 
         plt_ops.updateXLimits(x_low,x_high);
+
+        for (uint j = 0; j < orig_pts.size(); j++) {
+            if (!orig_pts.at(j).isSMPoint() && orig_pts.at(j).getDim() != 1) {
+                // Don't try to plot pts which are in n-Dim WC phase space
+                continue;
+            } else if (!orig_pts.at(j).isSMPoint() && orig_pts.at(j).getStrength(wc_name) == 0.0) {
+                // The point is 1-D, but not for the WC we are plotting
+                continue;
+            }
+            WCPoint orig_pt = orig_pts.at(j);
+            y_val = wc_fits.at(i).evalPoint(&orig_pt);
+
+            plt_ops.updateXLimits(orig_pt.getStrength(wc_name),orig_pt.getStrength(wc_name));
+            plt_ops.updateYLimits(y_val,y_val);
+        }
     }
 
     TCanvas *c1 = new TCanvas("c1","",1280,720);
@@ -215,6 +231,63 @@ void make_1d_xsec_plot(
 
     delete legend;
     delete c1;
+}
+
+// Saves the specified list of fits to a txt file
+void make_fitparams_file(
+    std::string fpath,
+    std::vector<WCFit> wc_fits
+)
+{
+    for (uint i = 0; i < wc_fits.size(); i++) {
+        WCFit fit = wc_fits.at(i);
+        if (i == 0) {
+            //fit.dump(false);
+            fit.save(fpath,false);
+        } else {
+            //fit.dump(true);
+            fit.save(fpath,true);
+        }
+    }
+}
+
+// For 1-D fits, generate a fit using only MadGraph starting points
+void make_dedicated_fits(
+    std::string process,
+    std::vector<std::string> wc_names,
+    std::vector<WCPoint> orig_pts
+)
+{
+    std::string output_dir = "read_lhe_outputs";
+    std::vector<WCFit> fits;
+    for (auto& wc_name: wc_names) {
+        std::vector<WCPoint> fit_pts;
+        for (uint i = 0; i < orig_pts.size(); i++) {
+            WCPoint wc_pt = orig_pts.at(i);
+            if (wc_pt.hasWC(wc_name) && wc_pt.isSMPoint()) {
+                // Always add SM points to the list
+                fit_pts.push_back(wc_pt);
+            } else if (wc_pt.hasWC(wc_name) && wc_pt.getDim() == 1 && wc_pt.getStrength(wc_name) != 0.0) {
+                // Add 1-D points which are non-zero for the WC of interest
+                fit_pts.push_back(wc_pt);
+            }
+        }
+
+        if (fit_pts.size() < 3) {
+            std::cout << "[ERROR] Not enough fit points for " << wc_name << ", skipping..." << std::endl;
+            continue;
+        }
+
+        std::string fit_tag = process + "_" + wc_name + "_" + "orig";
+        WCFit fit(fit_pts,fit_tag);
+        std::string save_path = output_dir + "/" + "fitparams_" + process + "_" + wc_name + ".txt";
+        fit.save(save_path);
+        for (uint i = 0; i < fit_pts.size(); i++) {
+            WCPoint wc_pt = fit_pts.at(i);
+            wc_pt.dump(wc_name,false);
+        }
+        std::cout << std::endl;
+    }
 }
 
 #endif

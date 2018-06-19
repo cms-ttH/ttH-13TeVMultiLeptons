@@ -7,11 +7,11 @@
 
 #include <math.h>
 
-#include "WCPoint.h"
-#include "WCFit.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/WCPoint.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/WCFit.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/TH1EFT.h"
+#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/split_string.h"
 #include "makeEFTPlots.h"
-#include "split_string.h"
-#include "TH1EFT.h"
 
 #include "TString.h"
 #include "TSystemDirectory.h"
@@ -30,7 +30,7 @@
 const std::string kMGStart   = "MGStart";   // The tag we use to designate MadGraph starting point in the scanpoints file
 const std::string kOrig      = "original";
 const std::string kOutputDir = "read_lhe_outputs";
-
+const std::string kSumPrefix = "S";
 std::unordered_map<std::string,double> kXsecNorm {
     {"ttH",   0.385841},
     {"ttZ",   0.557918},
@@ -42,7 +42,7 @@ std::unordered_map<std::string,double> kXsecNorm {
 };
 
 void printProgress(int current_index, int total_entries) {
-    int interval = 5;
+    int interval = 20;
     if (current_index % max(int(total_entries*interval/100.),interval) == 0) {
         float fraction = 100.*current_index/total_entries;
         std::cout << int(fraction) << " % processed " << std::endl;
@@ -103,7 +103,6 @@ std::string getScanPointsDirectory(std::string summary_tree_path) {
 
 // Reads a scanpoints file and returns a vector of WC points
 std::vector<WCPoint> parseScanPointsFile(std::string fpath) {
-    //std::cout << "Reading scanpoints file..." << std::endl;
     std::string line,header;
     std::vector<std::string> coeffs,words;
     std::vector<WCPoint> wc_pts;
@@ -163,15 +162,19 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
     std::vector<WCFit> all_fits;
     std::vector<WCPoint> all_orig_pts;
 
+    std::string curr_process;
+
     TH1EFT* eft_hist = new TH1EFT("name","title",50,-3.0,3.0);
     eft_hist->GetYaxis()->SetTitle("Counts");
 
     PlotOptions xsec_plt_ops_1d;
     xsec_plt_ops_1d.output_dir = kOutputDir;
     xsec_plt_ops_1d.setXLimits(0.0,0.0);
-    xsec_plt_ops_1d.setYLimits(0.5,1.3);
+    xsec_plt_ops_1d.setYLimits(0.0,1.3);
 
     TRandom3* rnd_gen = new TRandom3();
+
+    bool include_summed_fit = false;
 
     TString fdir;
     std::ifstream input_filenames(input_rundirs_spec);
@@ -191,6 +194,10 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
         eft_hist->Reset();
         for (uint i = 0; i < eft_hist->hist_fits.size(); i++) {
             eft_hist->hist_fits.at(i).clear();
+        }
+
+        if (run_idx == 0) {
+            curr_process = words.at(1);
         }
 
         std::string process   = words.at(1);
@@ -243,7 +250,7 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
         chain.SetBranchAddress("lumiBlock",&lumiBlock_intree);
 
         WCFit summed_fit;
-        summed_fit.setTag("S"+grp_tag+"_"+run_label);
+        summed_fit.setTag(kSumPrefix+grp_tag+"_"+run_label);
 
         std::set<int> unique_runs;
         std::unordered_map<std::string,WCPoint> inclusive_xsec_wgts;    // Keys are the rwgt string ids
@@ -253,6 +260,11 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
             chain.GetEntry(i);
             unique_runs.insert(lumiBlock_intree);
             inclusive_xsec_wgts[kOrig].wgt += originalXWGTUP_intree;
+
+            //if (grp_tag.find("AxisScan") == std::string::npos) {
+            //    continue;
+            //}
+
             std::vector<WCPoint> event_wgts;
             for (auto& kv: *eftwgts_intree) {
                 if (inclusive_xsec_wgts.find(kv.first) == inclusive_xsec_wgts.end()) {
@@ -265,15 +277,18 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
                 event_wgts.push_back(new_pt);
             }
 
-            WCFit event_wgt_fit(event_wgts,"");
-            summed_fit.addFit(event_wgt_fit);
+            if (include_summed_fit) {
+                WCFit event_wgt_fit(event_wgts,"");
+                summed_fit.addFit(event_wgt_fit);
 
-            // For testing purposes
-            for (uint j = 0; j < 10; j++) {            
-                double x = rnd_gen->Gaus(0.0,0.5);
-                //double x = rnd_gen->Uniform(-2.5,2.5);
-                eft_hist->Fill(x,1.0,event_wgt_fit);
+                // For testing TH1EFT purposes
+                for (uint j = 0; j < 10; j++) {            
+                    double x = rnd_gen->Gaus(0.0,0.5);
+                    //double x = rnd_gen->Uniform(-2.5,2.5);
+                    eft_hist->Fill(x,1.0,event_wgt_fit);
+                }
             }
+
         }
 
         double gridpack_scale = 1.0 / unique_runs.size();
@@ -285,14 +300,21 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
             fit_pts.push_back(inclusive_xsec_wgts[kv.first]);
         }
 
-        summed_fit.scale(gridpack_scale);
-        summed_fit.scale(xsec_norm);
-        summed_fit.setStart(inclusive_xsec_wgts[kOrig]);
-        all_fits.push_back(summed_fit);
+        if (include_summed_fit) {        
+            summed_fit.scale(gridpack_scale);
+            summed_fit.scale(xsec_norm);
+            summed_fit.setStart(inclusive_xsec_wgts[kOrig]);
+            all_fits.push_back(summed_fit);
+        }
 
         all_orig_pts.push_back(inclusive_xsec_wgts[kOrig]);
 
-        std::string fit_tag = grp_tag + "_" + run_label;
+        std::string fit_tag = process + "_" + grp_tag + "_" + run_label;
+        //if (grp_tag.find("AxisScan") != std::string::npos) {
+        //    WCFit inclusive_fit(fit_pts,fit_tag);
+        //    inclusive_fit.setStart(inclusive_xsec_wgts[kOrig]);
+        //    all_fits.push_back(inclusive_fit);
+        //}
         WCFit inclusive_fit(fit_pts,fit_tag);
         inclusive_fit.setStart(inclusive_xsec_wgts[kOrig]);
         all_fits.push_back(inclusive_fit);
@@ -302,6 +324,7 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
     input_filenames.close();
 
     // Example using TF1EFT class
+    /*
     WCPoint tmp_pt("EFTrwgt_ctW_0.0",0.0);
     WCPoint tmp_pt1("EFTrwgt_ctW_-5.0",0.0);
 
@@ -328,29 +351,69 @@ void readLHEOutputTree(TString output_name,TString input_rundirs_spec) {
     scaled_eft_hist->SetTitle("-5.0 diff");
     scaled_eft_hist->Add(eft_hist,-1);
     scaled_eft_hist->Draw();
-
     TString tmp_hist_fpath = kOutputDir + "/" + "eft_histograms_example.pdf";
     tmp_canv->Print(tmp_hist_fpath,"pdf");
+    */
+
+    std::vector<std::string> wc_names {"ctW","ctp","cpQM","ctZ","ctG","cbW","cpQ3","cptb","cpt","ctl1","cQe1"};
+    //make_dedicated_fits(curr_process,wc_names,all_orig_pts);
+
+    std::unordered_map<std::string,std::vector<WCFit> > grouped_fits;
+    for (uint i = 0; i < all_fits.size(); i++) {
+        WCFit fit = all_fits.at(i);
+        std::vector<std::string> words;
+        split_string(fit.getTag(),words,"_");
+
+        if (words.size() != 3) {
+            std::cout << "[WARNING] Unexpected fit tag, " << fit.getTag() << std::endl;
+            continue;
+        }
+
+        std::string grp = words.at(0) + "_" + words.at(1);
+        if (grouped_fits.find(grp) == grouped_fits.end()) {
+            std::vector<WCFit> new_list;
+            grouped_fits[grp] = new_list;
+        }
+        grouped_fits[grp].push_back(fit);
+    }
+
+    for (auto& kv: grouped_fits) {
+        std::string fitparams_fpath = kOutputDir + "/" + "fitparams_" + kv.first + ".txt";
+        //make_fitparams_file(fitparams_fpath,kv.second);
+    }
 
     // Save and/or dump the fit parameters
     for (uint i = 0; i < all_fits.size(); i++) {
+        if (all_fits.at(i).getDim() <= 1) {
+            continue;
+        }
         WCFit fit = all_fits.at(i);
         std::string fitparams_fpath = kOutputDir + "/" + "fitparams_" + output_name.Data() + "_" + fit.getTag() + ".txt";
-        //fit.save(fitparams_fpath);
-        fit.dump();
+        fit.save(fitparams_fpath);
     }
 
     // Plot specific 1-D fits
-    //std::vector<std::string> wc_names {"ctW","ctp","cpQM","ctZ","ctG","cbW","cpQ3","cptb","cpt"};
-    std::vector<std::string> wc_names {"ctW"};
+    //std::vector<std::string> wc_names {"ctW","ctp","cpQM","ctZ","ctG","cbW","cpQ3","cptb","cpt","ctl1","cQe1"};
+    //std::vector<std::string> wc_names {"ctW","ctZ"};
     for (auto& wc_name: wc_names) {
+        std::vector<WCFit> subset_fits;
+        for (uint i = 0; i < all_fits.size(); i++) {
+            if (all_fits.at(i).hasCoefficient(wc_name) && all_fits.at(i).getDim() > 1) {
+                subset_fits.push_back(all_fits.at(i));
+            }
+        }
+
+        if (subset_fits.size() == 0) {
+            continue;
+        }
+
         xsec_plt_ops_1d.tag = output_name.Data();   // This becomes the save name for the plot
         xsec_plt_ops_1d.tag += "_" + wc_name;
         xsec_plt_ops_1d.title = xsec_plt_ops_1d.tag;
         make_1d_xsec_plot(
             xsec_plt_ops_1d,
             wc_name,
-            all_fits,
+            subset_fits,
             all_orig_pts
         );
     }

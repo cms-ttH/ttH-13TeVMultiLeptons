@@ -10,6 +10,8 @@ from lobster.core import AdvancedOptions, Category, Config, Dataset, StorageConf
 
 timestamp_tag = datetime.datetime.now().strftime('%Y%m%d_%H%M')
 
+username = "awightma"
+
 RUN_SETUP = 'local'
 RUN_SETUP = 'mg_studies'
 
@@ -23,17 +25,17 @@ process_whitelist = ['ttH']
 coeff_whitelist   = []
 runs_whitelist    = []
 
-master_label = 'EFT_LHE_%s' % (timestamp_tag)
+master_label = 'EFT_T3_%s' % (timestamp_tag)
 
 if RUN_SETUP == 'local':
     # For quick generic lobster workflow testing
-    input_path   = "/store/user/awightma/tests/%s" % (test_tag)
+    input_path   = "/store/user/%s/tests/%s" % (username,test_tag)
     output_path  = "/store/user/$USER/tests/lobster_%s" % (timestamp_tag)
     workdir_path = "/tmpscratch/users/$USER/tests/lobster_%s" % (timestamp_tag)
     plotdir_path = "~/www/lobster/tests/lobster_%s" % (timestamp_tag)
 elif RUN_SETUP == 'mg_studies':
     # For MadGraph test studies
-    input_path   = "/store/user/awightma/LHE_step/%s/%s/" % (grp_tag,input_version)
+    input_path   = "/store/user/%s/LHE_step/%s/%s/" % (username,grp_tag,input_version)
     output_path  = "/store/user/$USER/summaryTree_LHE/%s/%s" % (grp_tag,output_version)
     workdir_path = "/tmpscratch/users/$USER/summaryTree_LHE/%s/%s" % (grp_tag,output_version)
     plotdir_path = "~/www/lobster/summaryTree_LHE/%s/%s" % (grp_tag,output_version)
@@ -69,7 +71,11 @@ processing = Category(
 
 lhe_dirs = []
 for f in os.listdir(input_path_full):
-    if not os.path.isdir(os.path.join(input_path_full,f)):
+    dir_path = os.path.join(input_path_full,f)
+    if not os.path.isdir(dir_path):
+        continue
+    elif len(os.listdir(dir_path)) == 0:
+        print "[WARNING] Skipping empty directory, %s" % (f)
         continue
     arr = f.split('_')
     p,c,r = arr[2],arr[3],arr[4]
@@ -91,7 +97,7 @@ for idx,lhe_dir in enumerate(lhe_dirs):
     output = Workflow(
         label='output_%s_%s_%s' % (p,c,r),
         command='cmsRun EFTLHEReader_cfg.py',
-        merge_size='3.0G',
+        merge_size='1.0G',
         cleanup_input=False,
         dataset=Dataset(
             files=lhe_dir,

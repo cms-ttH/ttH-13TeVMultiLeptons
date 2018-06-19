@@ -20,8 +20,12 @@ import os
 #HADOOP_PATH = "/hadoop/store/user/awightma/tests/lobster_20180502_1547/"    # ttbar fullscan (single file)
 #HADOOP_PATH = "/hadoop/store/user/awightma/tests/lobster_20180505_1507"     # ttH ctW linear scan (with pdf syst)
 
+#process_whitelist = ["ttH"]
+#coeff_whitelist   = []
+#run_whitelist     = []
+
 #grp_tag = "2018_05_06/2HeavyScan10kPilot"
-grp_tag = "2018_05_06/ctW1dim"
+#grp_tag = "2018_05_06/ctW1dim"
 #grp_tag = "2018_05_06/2Hvy1d10kPilot"
 #grp_tag = "2018_05_03/2HeavyScan1dim"
 #grp_tag = "2018_05_03/ctWctZCheck"
@@ -30,62 +34,147 @@ grp_tag = "2018_05_06/ctW1dim"
 #grp_tag = "2018_05_06/100eventLS"
 #grp_tag = "2018_05_06/1000eventLS"
 
-version = "v1"
+#grp_tag = "2018_05_06/AllProcessesAllCoeffsAxisScans"
+#coeff_whitelist = ["ctW","ctZ"]
 
-HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/%s/%s/" % (grp_tag,version)
+#grp_tag = "2018_05_06/2DAxisScans"
+#coeff_whitelist = ["cptbcbWctGAxisScan"]
 
-process_whitelist = ["ttH"]
-coeff_whitelist   = []
-run_whitelist     = ["run2"]
+#version = "v1"
 
-#name_prefix = "output_100eventLS"
-name_prefix = "output_1000eventLS"
+all_info = [
+    {
+        'tag': '2018_05_06/AllProcessesAllCoeffsAxisScans',
+        'version': 'v1',
+        'include': False,
+        'p_wl': [],
+        'c_wl': [],
+        'r_wl': [],
+    },
+    {
+        'tag': '2018_05_06/ttbar1DAxisScans',
+        'version': 'v1',
+        'include': False,
+        'p_wl': [],
+        'c_wl': [],
+        'r_wl': [],
+    },
+    {
+        'tag': '2018_05_06/4DAxisScans',
+        'version': 'v1',
+        'include': True,
+        'p_wl': [],
+        'c_wl': [],
+        'r_wl': [],
+    },
+]
 
-# Group the directories based on process and coeff scan
+#HADOOP_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/%s/%s/" % (grp_tag,version)
+HADOOP_BASE_PATH = "/hadoop/store/user/awightma/summaryTree_LHE/"
+
+def getDirectories(path,p_wl=[],c_wl=[],r_wl=[]):
+    # Get list of all directories which pass the whitelists
+    dir_list = []
+    for fd in os.listdir(path):
+        if not os.path.isdir(os.path.join(path,fd)):
+            continue
+        arr = fd.split('_')
+        if len(arr) != 4:
+            print "[WARNING] Bad name: %s" % (fd)
+            continue
+        p,c,r = arr[1],arr[2],arr[3]
+        if len(p_wl) > 0 and not p in p_wl:
+            continue
+        elif len(c_wl) > 0 and not c in c_wl:
+            continue
+        elif len(r_wl) > 0 and not r in r_wl:
+            continue
+        dir_list.append(os.path.join(path,fd))
+    return dir_list
+
+# Group the directories based on process
+def groupByProcess(path,tag,p_wl=[],c_wl=[],r_wl=[]):
+    grp_dirs = {}   # {'ttH': [path1,path2,...]}
+    for fd in os.listdir(path):
+        if not os.path.isdir(os.path.join(path,fd)):
+            continue
+        arr = fd.split('_')
+        if len(arr) != 4:
+            print "[WARNING] Bad name: %s" % (fd)
+            continue
+        p,c,r = arr[1],arr[2],arr[3]
+        if len(p_wl) > 0 and not p in p_wl:
+            continue
+        elif len(c_wl) > 0 and not c in c_wl:
+            continue
+        elif len(r_wl) > 0 and not r in r_wl:
+            continue
+        key = (tag,p)
+        if not grp_dirs.has_key(key):
+            grp_dirs[key] = []
+        grp_dirs[key].append(os.path.join(path,fd))
+    return grp_dirs
+
+# Group the directories based on process and coeff tags
+def groupByCoefficient(path,tag,p_wl=[],c_wl=[],r_wl=[]):
+    grp_dirs = {}
+    for fd in os.listdir(path):
+        if not os.path.isdir(os.path.join(path,fd)):
+            continue
+        arr = fd.split('_')
+        if len(arr) != 4:
+            print "[WARNING] Bad name: %s" % (fd)
+            continue
+        p,c,r = arr[1],arr[2],arr[3]
+        if len(p_wl) > 0 and not p in p_wl:
+            continue
+        elif len(c_wl) > 0 and not c in c_wl:
+            continue
+        elif len(r_wl) > 0 and not r in r_wl:
+            continue
+        #key = "%s_%s" % (p,c)
+        key = (tag,p,c)
+        if not grp_dirs.has_key(key):
+            grp_dirs[key] = []
+        grp_dirs[key].append(os.path.join(path,fd))
+    return grp_dirs
+
+#file_dirs = groupByProcess(HADOOP_PATH,grp_tag,process_whitelist,coeff_whitelist,run_whitelist)
+#file_dirs = groupByCoefficient(HADOOP_PATH,grp_tag,process_whitelist,coeff_whitelist,run_whitelist)
+
+#NOTE: The output name could be duplicated and overwrite a previous run
 file_dirs = {}
-for fd in os.listdir(HADOOP_PATH):
-    if not os.path.isdir(os.path.join(HADOOP_PATH,fd)):
+for info in all_info:
+    if not info['include']:
         continue
-    arr = fd.split('_')
-    if len(arr) != 4:
-        print "WARNING: Bad name: %s" % (fd)
-        continue
-    p,c,r = arr[1],arr[2],arr[3]
-    if len(process_whitelist) > 0 and not p in process_whitelist:
-        continue
-    elif len(coeff_whitelist) > 0 and not c in coeff_whitelist:
-        continue
-    elif len(run_whitelist) > 0 and not r in run_whitelist:
-        continue
-    k = "%s_%s" % (p,c)
-    if not file_dirs.has_key(k):
-        file_dirs[k] = []
-    file_dirs[k].append(r)
+    path = os.path.join(HADOOP_BASE_PATH,info['tag'],info['version'])
+    file_dirs.update(groupByProcess(path,info['tag'],info['p_wl'],info['c_wl'],info['r_wl']))
 
-max_plots = 999
-counter = 0
-for k,runs in file_dirs.iteritems():
-    if counter >= max_plots:
-        break
-    with open('files.txt','w') as fd:
-        # Writes the path directories to all runs for a certain scan
-        for r in runs:
-            l = os.path.join(HADOOP_PATH,"output_%s_%s\n" % (k,r))
-            fd.write(l)
-    print "[%d/%d] %s:" % (counter+1,min(max_plots-1,len(file_dirs.keys())),k)
-    output_name = "%s_%s" % (name_prefix,k)
-    #subprocess.check_call(['root','-b','-l','-q','readLHEOutputTree.C+(\"%s\",\"files.txt\")' % (output_name)])
-    #subprocess.check_call(['root','-b','-l','-q','readTest.C+(\"%s\",\"files.txt\")' % (output_name)])
-    counter += 1
+# Run root macro once per process
+count = 0
+for tup,fdirs in file_dirs.iteritems():
+    if len(tup) == 2:
+        # Grouped by process
+        name = tup[1]
+        process = tup[1]
+    elif len(tup) == 3:
+        # Grouped by coefficient
+        name = "_".join(tup[1:])
+        process = tup[1]
+    else:
+        print "[WARNING] Unknown file tuple,",tup
+        continue
 
-with open ('files.txt','w') as fd:
-    for k,runs in file_dirs.iteritems():
-        if counter >= max_plots:
-            break
-        # Writes the path directories to all runs for a certain scan
-        for r in runs:
-            l = os.path.join(HADOOP_PATH,"output_%s_%s\n" % (k,r))
-            fd.write(l)
-
-#subprocess.check_call(['root','-b','-l','-q','readTest.C+(\"output_compare\",\"files.txt\")'])
-subprocess.check_call(['root','-b','-l','-q','readLHEOutputTree.C+(\"output_compare\",\"files.txt\")'])
+    print "[%d/%d] %s (dirs %d):" % (count+1,len(file_dirs.keys()),name.ljust(5),len(fdirs))
+    supplement_dirs = getDirectories("/hadoop/store/user/awightma/summaryTree_LHE/2018_05_06/AllProcessesAllCoeffsAxisScans/v1/",
+        p_wl=[process],
+        c_wl=[],
+        r_wl=[]
+    )
+    with open('files.txt','w') as f:
+        # Write the path directories to all relevant coeffs/runs
+        for fd in (fdirs+supplement_dirs):
+            l = "%s\n" % (fd)
+            f.write(l)
+    subprocess.check_call(['root','-b','-l','-q','readLHEOutputTree.C+(\"output_%s\",\"files.txt\")' % (name)])
+    count += 1
