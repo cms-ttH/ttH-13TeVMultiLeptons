@@ -3,7 +3,7 @@
 
 #include "TH1D.h"
 #include <vector>
-
+#include "TClass.h"
 #include "WCFit.h"
 #include "WCPoint.h"
 
@@ -35,7 +35,7 @@ class TH1EFT : public TH1D
         void ScaleFits(double amt);
         void DumpFits();
         
-        Bool_t 	Add(const TH1 *h1, Double_t c1=1); // overriding virtual function from TH1
+        Bool_t Add(const TH1 *h1, Double_t c1=1); // overriding virtual function from TH1
         
         ClassDef(TH1EFT,1); // ROOT needs this here
         //TODO(maybe?): Add member function to return specifically fit coeffs (rather then entire WCFit object)
@@ -57,16 +57,20 @@ TH1EFT::TH1EFT(const char *name, const char *title, Int_t nbinsx, Double_t xlow,
     }
 }
 
-Bool_t 	TH1EFT::Add(const TH1 *h1, Double_t c1)
+Bool_t TH1EFT::Add(const TH1 *h1, Double_t c1)
 {
     // check whether the object pointed to inherits from (or is a) TH1EFT:
     if (h1->IsA()->InheritsFrom(TH1EFT::Class())) 
     {
-        for (unsigned int i=0; i<hist_fits.size(); i++)
+        if (this->hist_fits.size()==((TH1EFT*)h1)->hist_fits.size())
         {
-            // assumes this hist and the one whose fits we're adding have the same bins!
-            this->hist_fits[i].addFit( ((TH1EFT*)h1)->hist_fits[i] );
+            for (unsigned int i=0; i<hist_fits.size(); i++)
+            {
+                // assumes this hist and the one whose fits we're adding have the same bins!
+                this->hist_fits[i].addFit( ((TH1EFT*)h1)->hist_fits[i] );
+            }
         }
+        else cout << "Attempt to add 2 TH1EFTs with different # of fits!" << endl;
         this->overflow_fit.addFit( ((TH1EFT*)h1)->overflow_fit );
         this->underflow_fit.addFit( ((TH1EFT*)h1)->underflow_fit );
     }
