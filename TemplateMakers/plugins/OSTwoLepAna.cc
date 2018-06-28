@@ -118,7 +118,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     /////////
     /////////////////////
 
-    edm::Handle<pat::JetCollection> pfjets =                get_collection(event, jets_token_);
+    edm::Handle<pat::JetCollection> pfjets = get_collection(event, jets_token_);
   
     edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
     evsetup.get<JetCorrectionsRecord>().get("AK5PF", JetCorParColl);
@@ -139,16 +139,16 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         // Add EFT weights
         for (auto wgt_info: LHEInfo->weights())
         {
-            //auto LHEwgtstr = string(wgt_info.id);
-            //std::size_t foundstr = LHEwgtstr.find("EFTrwgt"); // only save our EFT weights
-            //if ( foundstr!=std::string::npos ) eftwgts_intree[wgt_info.id] = wgt_info.wgt;
-            eftwgts_intree[wgt_info.id] = wgt_info.wgt;
+            auto LHEwgtstr = string(wgt_info.id);
+            std::size_t foundstr = LHEwgtstr.find("EFTrwgt"); // only save our EFT weights
+            if ( foundstr!=std::string::npos ) eftwgts_intree[wgt_info.id] = wgt_info.wgt;
+            //eftwgts_intree[wgt_info.id] = wgt_info.wgt;
         }
     }
 
     ///////////////////////////
     // make it +/-1!
-    mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;        
+    mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;
 
     double weight = 1.;                 // <- analysis weight 
     weight *= mcwgt_intree;                 // MC-only (flag to be added if nec)
@@ -186,7 +186,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     ///
     ////////
 
-    double min_ele_pt = 7.; // lowered for studies
+    double min_ele_pt = 15.; // 7.; // lowered for studies
 
     vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronPreselection );    //miniAODhelper.
     //vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronLoose ); //miniAODhelper. // doesn't exist yet
@@ -199,7 +199,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     ///
     ////////
 
-    double min_mu_pt = 5.; // lowered for studies
+    double min_mu_pt = 10.; // 5.; // lowered for studies
 
     vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, min_mu_pt, muonID::muonPreselection );
     //vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, min_mu_pt, muonID::muonLoose );

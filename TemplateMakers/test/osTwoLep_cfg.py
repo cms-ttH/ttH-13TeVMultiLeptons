@@ -19,9 +19,9 @@ options.register("skim", True,                                                  
 options.register("hip",False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Run hip safe muID.")
-options.register("globalTag", "94X_mc2017_realistic_v14",
+options.register("globalTag", "94X_mc2017_realistic_v13",
                  VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.string, "Global tag to use") #80X_dataRun2_2016SeptRepro_v7 # 80X_mcRun2_asymptotic_2016_TrancheIV_v8
+                 VarParsing.VarParsing.varType.string, "Global tag to use") #80X_dataRun2_2016SeptRepro_v7 # 80X_mcRun2_asymptotic_2016_TrancheIV_v8 # 94X_mc2017_realistic_v13
 #options.parseArguments()
 
 from Configuration.StandardSequences.Eras import eras
@@ -34,11 +34,12 @@ isData = options.data
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load("Configuration.StandardSequences.MagneticField_cff") # why is this here?
-process.load( "Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff" )
+process.load("Configuration.StandardSequences.Services_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 
 process.GlobalTag.globaltag = options.globalTag
 if isData:
-    process.GlobalTag = customiseGlobalTag(None, globaltag = '94X_dataRun2_v6') # auto:run2_data
+    process.GlobalTag = customiseGlobalTag(None, globaltag = '94X_dataRun2_v6') # auto:run2_data # 94X_dataRun2_v6
 
 process.prefer("GlobalTag")
 
@@ -58,7 +59,11 @@ process.source = cms.Source("PoolSource",
 #        fileNames = cms.untracked.vstring( "/store/data/Run2016D/SingleElectron/MINIAOD/07Aug17-v1/50000/006DC839-EB89-E711-9209-002590D9D956.root" ),
 #        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/ctG_scan/v2/mAOD_step_run7/HIG-RunIIFall17MiniAOD-00821ND_2420.root",
 #                                            "file:///hadoop/store/user/awightma/postLHE_step/ctG_scan/v2/mAOD_step_run7/HIG-RunIIFall17MiniAOD-00821ND_2518.root" )
-        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/2018_04_17/500k_events/v2/mAOD_step_ttH_ctG_run1/HIG-RunIIFall17MiniAOD-00821ND_2818.root" )
+#        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/postLHE_step/2018_04_17/500k_events/v2/mAOD_step_ttH_ctG_run1/HIG-RunIIFall17MiniAOD-00821ND_2818.root" )
+#        fileNames = cms.untracked.vstring(  "file:///hadoop/store/user/awightma/FullProduction/Round1/Batch2/postLHE_step/v1/mAOD_step_ttH_ctW_run2/HIG-RunIIFall17MiniAOD-00821ND_19344.root" )
+        fileNames = cms.untracked.vstring(  "root://cms-xrd-global.cern.ch///store/mc/RunIIFall17MiniAODv2/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/90000/FE36D3CC-2642-E811-8648-002590E3A224.root" )
+
+
 )
 
 ## Golden json file:
@@ -75,7 +80,13 @@ if isData:
 #################################################
  
 from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
- 
+
+theJECorrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute'])
+
+if isData:
+    theJECorrections.append('L2L3Residual')
+
+
 # bTagDiscriminators = [
 #     'pfCombinedInclusiveSecondaryVertexV2BJetTags',
 #     'pfDeepCSVJetTags:probb',
@@ -83,19 +94,15 @@ from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 #     'pfDeepCSVJetTags:probudsg',
 #     'pfDeepCSVJetTags:probbb',
 # ]
+# 
 # updateJetCollection(
 #     process,
 #     jetSource = cms.InputTag('slimmedJets'),
 #     labelName = 'Tagged',
 #     btagDiscriminators = bTagDiscriminators, # Uncommenting this will skip btagging, but jet collections will wrong further down.
-#     jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
+#     #jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None'),
+#     jetCorrections = ('AK4PFchs', theJECorrections, 'None'),
 # )
-
-theJECorrections = cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute'])
-
-if isData:
-    theJECorrections.append('L2L3Residual')
-
 
 updateJetCollection(
     process,
@@ -123,20 +130,20 @@ process.ttHLeptons.MediumCSVWP = cms.double(0.8484) # CSVv2 2016 # LepID plugin 
 #process.ttHLeptons.LooseCSVWP = cms.double(0.1522) # DeepCSV 2017 preliminary # will eventually need this when lepMVA switches to DeepCSV for 2017 data
 #process.ttHLeptons.MediumCSVWP = cms.double(0.4941) # DeepCSV 2017 preliminary # will eventually need this when lepMVA switches to DeepCSV for 2017 data
 process.ttHLeptons.IsHIPSafe = cms.bool(options.hip)
-process.ttHLeptons.rhoParam = "fixedGridRhoFastjetCentralNeutral" ## <-- to update? (should be CentralNeutral->All?)
-process.ttHLeptons.jets = cms.InputTag("updatedPatJetsUpdated")
-process.ttHLeptons.JECTag = "patJetCorrFactorsUpdated"
+process.ttHLeptons.rhoParam = "fixedGridRhoFastjetAll" ## <-- to update? (should be CentralNeutral->All?) # fixedGridRhoFastjetCentralNeutral
+process.ttHLeptons.jets = cms.InputTag("updatedPatJetsUpdated") # updatedPatJetsTransientCorrectedTagged # updatedPatJetsUpdated
+process.ttHLeptons.JECTag = "patJetCorrFactorsUpdated" # patJetCorrFactorsTransientCorrectedTagged # patJetCorrFactorsUpdated
 process.OSTwoLepAna.electrons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.muons = cms.InputTag("ttHLeptons")
 process.OSTwoLepAna.taus = cms.InputTag("ttHLeptons")
-process.OSTwoLepAna.jets.jetCollection = cms.string('updatedPatJetsUpdated')
+process.OSTwoLepAna.jets.jetCollection = cms.string('updatedPatJetsUpdated') # updatedPatJetsTransientCorrectedTagged # updatedPatJetsUpdated
 
 if isData:
     process.OSTwoLepAna.setupoptions.isdata = True
 else:
     process.OSTwoLepAna.setupoptions.isdata = False
     
-process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetCentralNeutral" ## <-- to update? (should be CentralNeutral->All?)
+process.OSTwoLepAna.setupoptions.rhoHandle = "fixedGridRhoFastjetAll" ## <-- to update? (should be CentralNeutral->All?) # fixedGridRhoFastjetCentralNeutral
 process.OSTwoLepAna.btags.btagdisc = "pfCombinedInclusiveSecondaryVertexV2BJetTags" # DeepCSV still saved (see MultileptonAna.cc)
 #process.OSTwoLepAna.btags.btagdisc = "DeepCSV" # "DeepCSV" adds probb+probbb, otherwise full disc required
 process.OSTwoLepAna.triggers.hltlabel = "HLT"
@@ -169,20 +176,25 @@ for idmod in my_id_modules:
 
 
 process.load('RecoJets.JetProducers.QGTagger_cfi')
-process.QGTagger.srcJets          = cms.InputTag('updatedPatJetsUpdated') # 
+process.QGTagger.srcJets          = cms.InputTag('updatedPatJetsUpdated') # updatedPatJetsTransientCorrectedTagged # updatedPatJetsUpdated
 process.QGTagger.jetsLabel        = cms.string('QGL_AK4PFchs')
 
 ######################################
 # Add everything to execution path
 ######################################
+
+# This collects everything that's not an EDAnalyzer
 process.ProducersAndFiltersTask = cms.Task()
 for mod in process.producers_().itervalues():
     process.ProducersAndFiltersTask.add(mod)
 for mod in process.filters_().itervalues():
     process.ProducersAndFiltersTask.add(mod)
 
+
 #process.p = cms.Path( process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna * process.SkeletonAnalysis, process.ProducersAndFiltersTask)
-process.p = cms.Path( process.electronMVAValueMapProducer * process.ttHLeptons * process.QGTagger * process.OSTwoLepAna, process.ProducersAndFiltersTask)
+
+## Add the EDAnalyzer plus everything else. ProducersAndFiltersTask is an "unscheduled" cms.Task containing all of our EDProducers/Filters.
+process.p = cms.Path( process.OSTwoLepAna, process.ProducersAndFiltersTask)
 
 # summary
 process.options = cms.untracked.PSet(
