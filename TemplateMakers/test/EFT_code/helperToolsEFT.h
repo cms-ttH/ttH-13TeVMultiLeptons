@@ -211,7 +211,7 @@ vector<ttH::Jet> getBJets(vector<ttH::GenParticle> gen_particles, vector<ttH::Je
 
     vector<ttH::Jet> b_jets;
     for (auto &ttH_jet: jets) {
-        if(jets.DeepCSV > 0.2219) { // 2016 DeepCSV loose WP
+        if(ttH_jet.DeepCSV > 0.2219) { // 2016 DeepCSV loose WP
           b_jets.push_back(ttH_jet);
         }
         int index = 0;
