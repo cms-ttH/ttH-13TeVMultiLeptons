@@ -1,46 +1,85 @@
-string HistMaker::eventselection()
+string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable)
 {
     //int numbjets = 0;
     
-    //auto jets = simpleCut(*loose_jets_intree,"pt",25.0);
+    auto jets = thejets;
+    //auto jets = simpleJetCut(thejets,"pt",30.0);
+    //jets = simpleJetCut(jets,"passPUID",0);
     
-    auto taggedjetsmedium = keepTagged(*preselected_jets_intree,"M");
+    bool tightercuts = false;
+    
+    //auto taggedjetsmedium = keepTagged(*preselected_jets_intree,"DM");
+    auto taggedjetsmedium = keepTagged(jets,"DM");
     //auto taggedjetsloose = keepTagged(jets,"L");
     
     
-    int jetsize = preselected_jets_intree->size();
+    int jetsize = jets.size();
     int tagsize = taggedjetsmedium.size();
-    int nummuons = tight_muons_intree->size();
-    int numeles = tight_electrons_intree->size();
     
-    int numleps = numeles+nummuons;        
+    vector<ttH::Lepton> leptons;
+    vector<ttH::Electron> electrons;
+    vector<ttH::Muon> muons;
+      
     
-    if (numleps>1)
+    //bool sshelper = false;
+    
+    if (!useFakeable)
+    {
+        leptons = tight_leptons;
+        electrons = tight_electrons;
+        muons = tight_muons;   
+    }
+    else
+    {
+        leptons = fakeable_leptons;
+        electrons = fakeable_electrons;
+        muons = fakeable_muons;
+    }
+    
+    int nummuons = muons.size();
+    int numeles = electrons.size();
+    int numleps = leptons.size();    
+    
+    int numPSmuons = preselected_muons_intree->size();
+    int numPSeles = preselected_electrons_intree->size();
+    int numPSleps = preselected_leptons_intree->size();
+        
+    bool testcutpass = true;
+    
+//     for (const auto & leptest : *preselected_leptons_intree)
+//     {
+//         //if (!leptest.idMediumPOG) testcutpass = false;
+//         //if (leptest.csv>0.8484) testcutpass = false;
+//         if (leptest.lepMVA<0.9) testcutpass = false;
+//     }
+    
+    if (numleps>1 && testcutpass)
     {    
-        double mindilepmass = getTwoObjKineExtreme(*tight_leptons_intree,"min","mass");
+        double mindilepmass = getTwoObjKineExtreme(leptons,"min","mass"); // might need to be over more leps (to check)
            
         if (mindilepmass>12)
         {            
-            if ((*tight_leptons_intree)[0].obj.Pt()>25 && (*tight_leptons_intree)[1].obj.Pt()>20)
+            if ( (leptons[0].correctedPt>25) && (leptons[1].correctedPt>20 || (leptons[1].correctedPt>15 && !tightercuts)) ) 
             {
-                for (const auto & ele : *tight_electrons_intree)
-                {
-                    if (!ele.isGsfCtfScPixChargeConsistent) return "null";
-                    if (ele.lepMVA<0.5) return "null";
-                }
-                for (const auto & mu : *tight_muons_intree) 
-                {
-                    if (!(mu.chargeFlip<0.2)) return "null";
-                    if (mu.lepMVA<0.5) return "null";
-                    if (mu.idMediumPOG==false) return "null";
-                }
-                
-                if (numleps==2 && jetsize>1 && tagsize>0)
+
+                if ( (numleps==2 || (useFakeable && numleps>=2)) && jetsize>=2 && jetsize<=3 && tagsize>=1) // jetsize>1 && tagsize>1) 
                 {
                     // SS2l
-                    if ((*tight_leptons_intree)[0].charge == (*tight_leptons_intree)[1].charge)
+                    if (leptons[0].charge == leptons[1].charge)
                     {                
-                        if ((*tight_leptons_intree)[0].charge+(*tight_leptons_intree)[1].charge == 2)
+                        for (const auto & ele : electrons)
+                        {
+                            if (!ele.isGsfCtfScPixChargeConsistent) return "null";
+                            //if (ele.lepMVA<0.5) return "null";
+                        }
+                        for (const auto & mu : muons) 
+                        {
+                            if (!(mu.chargeFlip<0.2)) return "null";
+                            //if (mu.lepMVA<0.5) return "null";
+                            //if (mu.idMediumPOG==false) return "null";
+                        }
+                        
+                        if (leptons[0].charge+leptons[1].charge == 2)
                         {                    
                             if (nummuons==2)
                             {
@@ -77,7 +116,10 @@ string HistMaker::eventselection()
                         // SFOS
                         if (nummuons==2)
                         {
-                            double vetoZmass = pickFromSortedTwoObjKine((*tight_muons_intree),"mass",1,91.2);                        
+                            // the following cut is temporary!
+                            //if (tightercuts && (muons)[0].correctedPt<30.) return "null"; // for triggering on 1mu only
+                            
+                            double vetoZmass = pickFromSortedTwoObjKine(muons,"mass",1,91.2);                        
                             if (abs(vetoZmass-91.2)<10)
                             {
                                 return "2los_sfz_mumu";
@@ -90,7 +132,9 @@ string HistMaker::eventselection()
                         // SFOS                    
                         else if (numeles==2)
                         {
-                            double vetoZmass = pickFromSortedTwoObjKine((*tight_electrons_intree),"mass",1,91.2);
+                            //if (tightercuts && (*tight_electrons_intree)[0].correctedPt<40.) return "null"; // for triggering on 1ele only
+                            
+                            double vetoZmass = pickFromSortedTwoObjKine(electrons,"mass",1,91.2);
                             if (abs(vetoZmass-91.2)<10)
                             {
                                  return "2los_sfz_ee";                           
@@ -102,38 +146,45 @@ string HistMaker::eventselection()
                         }
                         else if (numeles==1 && nummuons==1)
                         {
+                            // the following 2 cuts are temporary!
+                            //if (tightercuts && (*tight_muons_intree)[0].correctedPt<30.) return "null"; // for triggering on 1mu only
+                            //if ((*met_intree)[0].correctedPt<100.) return "null"; // for triggering on 1mu only
+                            
                             return "2los_emu";
                         }           
                     }
                 }            
-                else if (numleps==3 && jetsize>0 && tagsize>0)
+                else if ((numleps==3 || (useFakeable && numleps>=3)) && jetsize>0 && tagsize==0)
                 {                    
-                    if ((*tight_leptons_intree)[0].charge + (*tight_leptons_intree)[1].charge + (*tight_leptons_intree)[2].charge == 3)
+                    if (leptons[2].correctedPt>10.)
                     {
-                        return "3l_ppp";
-                    }
-                    else if ((*tight_leptons_intree)[0].charge + (*tight_leptons_intree)[1].charge + (*tight_leptons_intree)[2].charge == -3)
-                    {
-                        return "3l_mmm";                    
-                    }
-                    else
-                    {                    
-                        double vetoZmass = pickFromSortedTwoObjKine((*tight_leptons_intree),"mass",1,91.2);
-                        if (abs(vetoZmass-91.2)<10)
+                        if (leptons[0].charge + leptons[1].charge + leptons[2].charge == 3)
                         {
-                            return "3l_mix_sfz";                           
+                            return "3l_ppp";
+                        }
+                        else if (leptons[0].charge + leptons[1].charge + leptons[2].charge == -3)
+                        {
+                            return "3l_mmm";                    
                         }
                         else
-                        {
-                            return "3l_mix";                         
-                        }                                         
+                        {                    
+                            double vetoZmass = pickFromSortedTwoObjKine(leptons,"mass",1,91.2);
+                            if (abs(vetoZmass-91.2)<10)
+                            {
+                                return "3l_mix_sfz";                           
+                            }
+                            else
+                            {
+                                return "3l_mix";                         
+                            }                                         
+                        }
                     }
                 }
-                else if (numleps==4 && jetsize>0 && tagsize>0)
+                else if (numleps==4) // && jetsize>0 && tagsize>0)
                 {
                     return "4l";
                 }
-                else if (numleps>=5 && jetsize>0 && tagsize>0)
+                else if (numleps>=5) // && jetsize>0 && tagsize>0)
                 {
                     return "ge5l";
                 }
@@ -141,9 +192,9 @@ string HistMaker::eventselection()
             } // end lep pt req
         } // end dilep mass cut
     } // end ge2 leps
-    else if (numleps==1)
+    else if ((numleps==1 || (useFakeable && numleps>=1)) && jetsize>=3 && tagsize>=1 && testcutpass)
     {
-        if ((*tight_leptons_intree)[0].obj.Pt()>25)
+        if (leptons[0].correctedPt>40.) // should really be >35, at least for eles
         {
               
             // "poor man's" single lep (if you skimmed on >=2 preselected leptons)
@@ -167,3 +218,20 @@ string HistMaker::eventselection()
     }
     return "null"; // <-- definitely can get here, especially if sample isn't a skim
 } //end function
+
+vector<string> HistMaker::eventselections(bool useFakeable)
+{
+    vector<string> myselections;
+    
+    //std::vector<ttH::Jet> cleanedjets = cleanObjs(*preselected_jets_intree,*preselected_leptons_intree,0.4);
+    
+    //myselections.push_back(eventselection(cleanedjets)); // nominal
+    //myselections.push_back(eventselection(*preselected_jets_JECup_intree)); // event selection with JESup jets
+    //myselections.push_back(eventselection(*preselected_jets_JECdown_intree)); // event selection with JESdown jets
+    
+    myselections.push_back(eventselection(preselected_jets,useFakeable)); // nominal
+    myselections.push_back(eventselection(preselected_jets_JECup,useFakeable)); // event selection with JESup jets
+    myselections.push_back(eventselection(preselected_jets_JECdown,useFakeable)); // event selection with JESdown jets    
+    
+    return myselections;
+}

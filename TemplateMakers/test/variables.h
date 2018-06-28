@@ -307,6 +307,7 @@ template <typename ob1type, typename ob2type> double getdR(ob1type object1, ob2t
 
 ////////////////////////////////////////////////////////////////////////////
 
+// if there was a base class for all the tth object classes, this function would only cut on member variables of the base class
 template <typename coll1type> coll1type simpleCut(coll1type collection1, string cutvar, double value)
 {
     coll1type keptobjs;
@@ -318,15 +319,40 @@ template <typename coll1type> coll1type simpleCut(coll1type collection1, string 
         }
         else if  (cutvar=="eta" || cutvar=="Eta")
         {
-            if (abs(it.obj.Eta())>value) keptobjs.push_back(it);
+            if (abs(it.obj.Eta())<value) keptobjs.push_back(it);
         }
-        else if  (cutvar=="miniIso")
+        else cout << "in function simpleCut: cutting on this variable isn't implemented. Returning empty collection" << endl;
+    }
+    return keptobjs;
+}
+std::vector<ttH::Lepton> simpleLepCut(std::vector<ttH::Lepton> collection1, string cutvar, double value)
+{
+    std::vector<ttH::Lepton> keptobjs;
+    for (const auto & it : collection1)
+    {    
+        if (cutvar=="miniIso")
         {
             if (it.miniIso<value) keptobjs.push_back(it);
         }
+        else keptobjs = simpleCut(collection1, cutvar, value);
     }
     return keptobjs;
-}            
+}
+std::vector<ttH::Jet> simpleJetCut(std::vector<ttH::Jet> collection1, string cutvar, double value)
+{
+    std::vector<ttH::Jet> keptobjs;
+    for (const auto & it : collection1)
+    {    
+        if (cutvar=="passPUID")
+        {
+            if (it.passPUID>value) keptobjs.push_back(it);
+        }
+        else keptobjs = simpleCut(collection1, cutvar, value);
+    }
+    return keptobjs;
+}
+
+      
 ////////////////////////////////////////////////////////////////////////////
 
 

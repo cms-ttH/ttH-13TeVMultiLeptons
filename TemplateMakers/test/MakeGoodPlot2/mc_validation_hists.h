@@ -2,6 +2,22 @@ void HistMaker::mc_validation_hists()
 {
     double weight = *wgt_intree;
     
+    
+    //EFT reweighting...    
+    if (sample>=40 && sample<100)
+    {
+        for (const auto thispair : *eftwgts_intree)
+        {
+            WCPoint thiswgt(thispair.first,thispair.second);
+            if (thiswgt.isSMPoint()) // pick a point to reweight to
+            {
+                weight *= thispair.second / 2000.; // / (*originalXWGTUP_intree); // check this -> actually, don't think we want to divide by this here.
+                break;
+            }
+        }
+    }
+    
+    
     auto taggedjetsmedium = keepTagged(*preselected_jets_intree,"M"); // these are csv v2 tagged jets
     auto taggedjetsloose = keepTagged(*preselected_jets_intree,"L");
 
@@ -48,6 +64,10 @@ void HistMaker::mc_validation_hists()
             th1d[category+"__leppt"]->Fill(lep.obj.Pt(),weight);
             th1d[category+"__lepeta"]->Fill(lep.obj.Eta(),weight);   
             th1d[category+"__lepMVA"]->Fill(lep.lepMVA,weight);
+            th1d[category+"__dxy"]->Fill(lep.dxy,weight);
+            th1d[category+"__dz"]->Fill(lep.dz,weight);
+            th1d[category+"__miniIso"]->Fill(lep.miniIso,weight);
+        
         }
     
         if (numleps>0) th1d[category+"__lep1pt"]->Fill((*tight_leptons_intree)[0].obj.Pt(),weight);

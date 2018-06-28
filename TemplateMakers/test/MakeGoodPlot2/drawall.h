@@ -1,8 +1,10 @@
 #include "lepeff_plots.h" // include whatever plots you want here (can be multiple functions)
 #include "jetcleaningstudies_plots.h"
+#include "triggerstudies_plots.h"
 #include "standard_plots.h"
 #include "standard_plots_normalized.h"
 #include "mc_validation_plots.h"
+#include "save_analysis_hists.h"
 
 void MakeGoodPlot::drawAll()
 {
@@ -12,9 +14,11 @@ void MakeGoodPlot::drawAll()
     
     //lepeff_plots();
     //jetcleaning_plots();
-    //standard_plots();
-    standard_plots_normalized();
+    //triggerstudies_plots();
+    standard_plots();
+    //standard_plots_normalized();
     //mc_validation_plots();
+    //save_analysis_hists();
 
 }
 
@@ -34,8 +38,10 @@ void MakeGoodPlot::drawAllToFile(string plotfile, string plotoption)
         
         for (int i=0; i<canvas.GetEntries(); i++)
         {
-            auto tmpcan = (TCanvas*)canvas[i];
-            theplotfile->WriteTObject(tmpcan);
+            // //auto tmpcan = (TCanvas*)canvas[i];
+            //auto tmpcan = (TH1*)canvas[i];
+            //theplotfile->WriteTObject(tmpcan);
+            theplotfile->WriteTObject(canvas[i]);
         }
     }
     

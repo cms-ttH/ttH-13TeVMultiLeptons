@@ -1,3 +1,14 @@
+string systint2str(int syst)
+{
+    if (syst==0) return "";
+    if (syst==1) return "JESUP";
+    if (syst==2) return "JESDOWN";
+    if (syst==3) return "FRUP";
+    if (syst==4) return "FRDOWN";
+
+    return "";
+}
+
 TString int2ss(int theint)
 {
 	std::ostringstream thess;
@@ -130,11 +141,20 @@ string getjettagcategory(string lepcat, int jets, int tags)
         if (tags>=1) tagstr = "_1b";
         else return "null";
     }
-    
+
+    //if (jets<0) return lepcat+tagstr;    
     return lepcat+jetstr+tagstr;
 
 }
-
+string gettagcategory(string lepcat, int tags)
+{
+    string tagstr = "";
+    if (lepcat=="ge5l" && tags>=1) tagstr = "_1b";
+    else if (tags>=2) tagstr = "_2b";
+    else if (tags==1) tagstr = "_1b";
+    else return "null";
+    return lepcat+tagstr;
+}
 
 
 void clean_neg_bins(TH1 &negBinHist)
@@ -160,3 +180,26 @@ void clean_neg_bins(TH1 &negBinHist)
     }
 }
 
+// normally you shouldn't need this (if objects were cleaned correctly when filling the trees):
+template <typename coll1type, typename coll2type> coll1type cleanObjs(coll1type colltobecleaned, coll2type colltocleanwith, double mindR) // could add other options besides dR
+{
+    coll1type returnedCleanColl; // meant to be ttH::X objects
+    
+    for (const auto mostlikelyajet : colltobecleaned)
+    {
+        bool toadd = true;
+        
+        for (const auto mostlikelyalep : colltocleanwith)
+        {
+            if ( getdR(mostlikelyajet,mostlikelyalep)<mindR ) toadd = false;
+        }
+        
+        if (toadd) returnedCleanColl.push_back(mostlikelyajet);
+    }
+    
+    return returnedCleanColl;
+}
+    
+    
+    
+    

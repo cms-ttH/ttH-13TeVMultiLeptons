@@ -5,8 +5,24 @@ from lobster.core import AdvancedOptions, Category, Config, Dataset, StorageConf
 
 version = datetime.datetime.now().strftime('%Y%m%d_%H%M')
 
-thisround = "lobster_trees__EFT_test_14_4_18/"
+#thisround = "lobster_trees__EFT_test_14_4_18/" # old Fall17 MINIAOD
+#thisround = "lobster_trees__EFT_test_28_4_18/" # available new MINIAOD 
+#thisround = "lobster_trees__EFT_SingleMu_only_test_10_5_18/" #SingleMu data and ttjets only
+#thisround = "lobster_trees__EFT_noSkim_test_10_5_18/" #ttjets only
+#thisround = "lobster_trees__EFT_for_trigSFs_15_5_18/"
 
+
+## current ##
+isdata = True
+#############
+
+ddbr_or_nom = ['nom']
+thisround = "lobster_trees__lobster_trees__EFT_test_25_5_18/" # mc
+#thisround = "lobster_trees__lobster_trees__EFT_test_14_6_18/" # EFT mc
+
+if isdata:
+    thisround = "lobster_trees__lobster_trees__EFT_test_20_5_18/" # data
+    ddbr_or_nom=['nom','_Fakes','_QFs']
 
 
 #/store/user/$USER
@@ -40,38 +56,101 @@ processing = Category(
 
 
 mysamples = []
-## Add the MC...
-mysamples.append('DYJets_M10to50')
-mysamples.append('DYJets_M50')
-mysamples.append('SingleTop_schan')
-mysamples.append('SingleTop_tWchan_antitop')
-mysamples.append('SingleTop_tWchan_top')
-mysamples.append('SingleTop_tchan_antitop')
-mysamples.append('SingleTop_tchan_top')
-mysamples.append('WJets')
-mysamples.append('WW')
-mysamples.append('WZ')
-mysamples.append('ZZ')
-mysamples.append('WWW')
-mysamples.append('WWZ')
-mysamples.append('WZZ')
-mysamples.append('ZZZ')
-mysamples.append('ttJets_Dilept')
-mysamples.append('ttJets_SingleLeptFromT')
-mysamples.append('ttJets_SingleLeptFromTbar')
-mysamples.append('ttH')
-mysamples.append('ttW')
-mysamples.append('ttZ')
-mysamples.append('tZq')
-mysamples.append('tttt')
-mysamples.append('ttWW')
-mysamples.append('ttWZ')
+if (not isdata):
+    ## Add the MC...
+    mysamples.append('DYJets_M50')
+    mysamples.append('SingleTop_schan')
+    mysamples.append('SingleTop_tWchan_antitop')
+    mysamples.append('SingleTop_tWchan_top')
+    mysamples.append('SingleTop_tchan_antitop')
+    mysamples.append('SingleTop_tchan_top')
+    mysamples.append('ZZ')
+    mysamples.append('WWW')
+    mysamples.append('WWZ')
+    mysamples.append('WZZ')
+    mysamples.append('ZZZ')
+    mysamples.append('ttJets')                              #<-- new in latest round
+    # #mysamples.append('ttJets_Dilept')                      #<-- not in latest round
+    # #mysamples.append('ttJets_SingleLeptFromT')             #<-- not in latest round
+    # #mysamples.append('ttJets_SingleLeptFromTbar')          #<-- not in latest round
+    mysamples.append('ttH')
+    mysamples.append('ttW')
+    mysamples.append('ttZ')
+    mysamples.append('tZq')
+    # ## mysamples.append('ttWW')
+    # ## mysamples.append('ttWZ')
+    mysamples.append('DYJets_M10to50')                    
+    mysamples.append('WJets')                             
+    mysamples.append('WW')                                
+    mysamples.append('WZ')
+
+    # EFT samps
+    ##mysamples.append('ttH_cbW')
+    # mysamples.append('ttH_cpQ3') 
+    # mysamples.append('ttH_cpQM') 
+    # mysamples.append('ttH_cptb') 
+    # mysamples.append('ttH_cpt')
+    # mysamples.append('ttH_cQe1') 
+    # mysamples.append('ttH_ctG')
+    # mysamples.append('ttH_ctl1') 
+    # mysamples.append('ttH_ctp')
+    # mysamples.append('ttH_ctW')
+    # mysamples.append('ttH_ctZ')
+    # mysamples.append('tllq_cpQ3')
+    # mysamples.append('tllq_cpQM')
+    # mysamples.append('tllq_cptb')
+    # mysamples.append('tllq_cpt') 
+    # mysamples.append('tllq_cQe1')
+    # mysamples.append('tllq_ctG') 
+    # mysamples.append('tllq_ctl1')
+    # mysamples.append('tllq_ctp') 
+    # mysamples.append('tllq_ctW') 
+    # mysamples.append('tllq_ctZ') 
+    # ##mysamples.append('ttll_cbW') 
+    # mysamples.append('ttll_cpQ3')
+    # mysamples.append('ttll_cpQM')
+    # mysamples.append('ttll_cptb')
+    # mysamples.append('ttll_cpt') 
+    # mysamples.append('ttll_cQe1')
+    # mysamples.append('ttll_ctG') 
+    # mysamples.append('ttll_ctl1')
+    # mysamples.append('ttll_ctp') 
+    # mysamples.append('ttll_ctW') 
+    # mysamples.append('ttll_ctZ') 
+    # ##mysamples.append('ttlnu_cbW')
+    # mysamples.append('ttlnu_cpQ3')
+    # mysamples.append('ttlnu_cpQM')
+    # mysamples.append('ttlnu_cptb')
+    # mysamples.append('ttlnu_cpt')
+    # mysamples.append('ttlnu_cQe1')
+    # mysamples.append('ttlnu_ctG')
+    # mysamples.append('ttlnu_ctl1')
+    # mysamples.append('ttlnu_ctp')
+    # mysamples.append('ttlnu_ctW')
+    # mysamples.append('ttlnu_ctZ')
+
+if isdata:
 # ## Add the data...
-mysamples.append('DoubleEG')
-mysamples.append('DoubleMuon')
-mysamples.append('MuonEG')
-mysamples.append('SingleElectron')
-mysamples.append('SingleMuon')
+    mysamples.append('DoubleEG')
+    mysamples.append('DoubleMuon')
+    mysamples.append('MuonEG')
+    mysamples.append('SingleElectron')
+    mysamples.append('SingleMuon')
+
+
+## for trigger studies only:
+#mysamples.append('MET')
+
+### moving these here temporarily
+## lobster_trees__EFT_test_14_4_18 samps
+# mysamples.append('DYJets_M10to50')                     #<-- not in latest round
+# mysamples.append('WJets')                              #<-- not in latest round
+# mysamples.append('WW')                                 #<-- not in latest round
+# mysamples.append('WZ')                                 #<-- not in latest round
+# mysamples.append('tttt')                               #<-- not in latest round
+
+#mysamples.append('ttJets_noSkim')
+
 ## ToDo: just update sample_names_reg to be the above.
 
 
@@ -101,43 +180,59 @@ sandbox = cmssw.Sandbox(include=['ttH-13TeVMultiLeptons/TemplateMakers/src','ttH
 extra_inputs=[]
 extra_inputs.append('../variables.h')
 extra_inputs.append('../functionsTTH.cc')
+extra_inputs.append('../csvSF_treeReader_13TeV.C')
+extra_inputs.append('../EFT_code/helperToolsEFT.h')
 headerfiles = glob("*.h")
 extra_inputs.extend(headerfiles)
 extra_inputs.append('wrapper_lobster.C')
 extra_inputs.append('wrapper_lobster.py')
+
 print " "
 print "included files: ",extra_inputs
 print " "
 
 workflows = []
-for label, dirs in data:
-    ttH = Workflow(
-        label=label,
-        # maybe update this part:
-        dataset=Dataset(
-            files=dirs,
-            files_per_task=1, # eventually change to 5-10
-            patterns=["*.root"]
-        ),
-        category=processing,
-        command='python wrapper_lobster.py '+label+' @inputfiles',
-        #extra_inputs=[
-        #    #'wrapper_lobster_C.so',
-        #    #'wrapper_lobster_C_ACLiC_dict_rdict.pcm',
-        #    #'wrapper_lobster_C.d',
-        #    'wrapper_lobster.C',
-        #    'wrapper.py',
-        #],
-        extra_inputs=extra_inputs,
-        publish_label='test',
-        merge_command='hadd @outputfiles @inputfiles',
-        merge_size='0.001K',
-        outputs=['output.root'],
-        sandbox=sandbox
-    )
+for thing in ddbr_or_nom:
+    extlabel=''
+    if (thing is not 'nom'):
+        extlabel=thing
+    for label, dirs in data:
+        fpt=10
+        if (label=='tZq' or label=='ttW' or label=='ttZ'):
+            fpt=1
+        if (label=='ttJets'):
+            fpt=5
+        ttH = Workflow(
+            label=label+extlabel,
+            # maybe update this part:
+            dataset=Dataset(
+                files=dirs,
+                files_per_task=fpt,
+                patterns=["*.root"]
+            ),
+            category=processing,
+            command='python wrapper_lobster.py '+label+' '+thing+' @inputfiles',
+            #extra_inputs=[
+            #    #'wrapper_lobster_C.so',
+            #    #'wrapper_lobster_C_ACLiC_dict_rdict.pcm',
+            #    #'wrapper_lobster_C.d',
+            #    'wrapper_lobster.C',
+            #    'wrapper.py',
+            #],
+            extra_inputs=extra_inputs,
+            publish_label='test',
+            merge_command='hadd @outputfiles @inputfiles',
+            #merge_size='0.001K',
+            #merge_size='1G',
+            #merge_size = -1,
+            merge_size='10M',
+            outputs=['output.root'],
+            sandbox=sandbox
+        )
 
-    workflows.append(ttH)
-    print "added workflow ",label
+        workflows.append(ttH)
+        print "added workflow ",label+extlabel
+
 
 config = Config(
     workdir='/tmpscratch/users/$USER/lobster_test_' + version,

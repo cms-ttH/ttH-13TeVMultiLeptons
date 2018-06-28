@@ -54,13 +54,15 @@
 // Other stuff...
 //#include "../variables.h"
 //#include "../functionsTTH.cc" // should relocate this
+#include "helperToolsEFT.h"
 #include "variables.h"
 #include "functionsTTH.cc"
+#include "csvSF_treeReader_13TeV.C"
 
 // #include "../sample_lists.h"
 //#include "ttH-13TeVMultiLeptons/TemplateMakers/test/eventReconstructor.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/src/classes.h"
-
+//#include "ttH-13TeVMultiLeptons/TemplateMakers/test/EFT_rwgt_fitting/TH1EFT.h"
 
 #if not defined(__CINT__) || defined(__MAKECINT__)
 // needs to be included when makecint runs (ACLIC)
@@ -78,7 +80,7 @@
 
 // end external includes
 
-// --------- Header files in the this (MakeGoodPlot2) directory ---------
+// --------- Header files in this (MakeGoodPlot2) directory ---------
 
 #include "utils.h"
 #include "loadsample.h"
@@ -89,11 +91,14 @@
 #include "bookhistos.h"
 #include "setbranchaddresses.h"
 #include "lep_selection.h"
+#include "scalefactors.h"
 #include "dooneevent.h" // <-- functions for filling hists are included inside this file
 #include "run.h"
 #include "collectresults.h"
-#include "triggerselection.h"
 #include "eventselection2.h"
+#include "triggerstudies_eventselection.h"
+#include "makedatadrivenbkgds.h"
+
 
 // Stuff used by MakeGoodPlot
 #include "MakeGoodPlot.h"

@@ -47,23 +47,22 @@ void MakeGoodPlot::get_rate_info()
 
     
     // diboson (WZ)
-    xsec[10]=4.42965; // was 2.165... should double check this
+    xsec[10]=4.42965; // <- to 3lnu. (2.165.. what was this?)
     q2up[10]=0.; // <- to be updated.. ?
     q2down[10]=0.; // <- to be updated.. ?
     pdfup[10]=0.; // <- to be updated.. ?
     pdfdown[10]=0.; // <- to be updated.. ?
 
     // diboson (ZZ)
-    xsec[11]=16.523;
+    xsec[11]=1.212; // to 4l. Inclusive is 16.523.
     q2up[11]=0.; // <- to be updated.. ?
     q2down[11]=0.; // <- to be updated.. ?
     pdfup[11]=0.; // <- to be updated.. ?
     pdfdown[11]=0.; // <- to be updated.. ?
     
-   // diboson (WW)
-    //xsec[12]=  12.178 / (0.11*0.11*9);  // reverse-engineering the dilep xsec from https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
-    //                                    // to get the inclusive xsec
-    xsec[12]= 118.7; // https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
+    // diboson (WW)
+    xsec[12]=  12.178; // dilep xsec from https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
+    //xsec[12]= 118.7; // inclusive is 118.7 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
     q2up[12]=0.; // fixed scale 
     q2down[12]=0.; //
     pdfup[12]=0.025*118.7;

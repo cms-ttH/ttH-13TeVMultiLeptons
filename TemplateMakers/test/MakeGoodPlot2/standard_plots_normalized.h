@@ -3,6 +3,7 @@ void MakeGoodPlot::standard_plots_normalized()
     
     //GoodPlot *can1     = new GoodPlot("category_yields","darren"); // above
     
+    
     GoodPlot *can2     = new GoodPlot("2los_ee__njets","darren");
     GoodPlot *can3     = new GoodPlot("2los_emu__njets","darren");
     GoodPlot *can4     = new GoodPlot("2los_mumu__njets","darren");
@@ -236,6 +237,28 @@ void MakeGoodPlot::standard_plots_normalized()
     GoodPlot *can1l_mu__numPVs     = new GoodPlot("1l_mu__numPVs","darren");
     GoodPlot *can1l_e__numPVs     = new GoodPlot("1l_e__numPVs","darren");
     
+    GoodPlot *can__numTruePVs     = new GoodPlot("numTruePVs","darren");
+    GoodPlot *can2los_ee__numTruePVs     = new GoodPlot("2los_ee__numTruePVs","darren");
+    GoodPlot *can2los_emu__numTruePVs     = new GoodPlot("2los_emu__numTruePVs","darren");
+    GoodPlot *can2los_mumu__numTruePVs     = new GoodPlot("2los_mumu__numTruePVs","darren");
+    GoodPlot *can2los_sfz_ee__numTruePVs     = new GoodPlot("2los_sfz_ee__numTruePVs","darren");
+    GoodPlot *can2los_sfz_mumu__numTruePVs     = new GoodPlot("2los_sfz_mumu__numTruePVs","darren");
+    GoodPlot *can2lss_p_ee__numTruePVs     = new GoodPlot("2lss_p_ee__numTruePVs","darren");
+    GoodPlot *can2lss_p_emu__numTruePVs     = new GoodPlot("2lss_p_emu__numTruePVs","darren");
+    GoodPlot *can2lss_p_mumu__numTruePVs     = new GoodPlot("2lss_p_mumu__numTruePVs","darren");
+    GoodPlot *can2lss_m_ee__numTruePVs     = new GoodPlot("2lss_m_ee__numTruePVs","darren");
+    GoodPlot *can2lss_m_emu__numTruePVs     = new GoodPlot("2lss_m_emu__numTruePVs","darren");
+    GoodPlot *can2lss_m_mumu__numTruePVs     = new GoodPlot("2lss_m_mumu__numTruePVs","darren");
+    GoodPlot *can3l_ppp__numTruePVs     = new GoodPlot("3l_ppp__numTruePVs","darren");
+    GoodPlot *can3l_mmm__numTruePVs     = new GoodPlot("3l_mmm__numTruePVs","darren");
+    GoodPlot *can3l_mix__numTruePVs     = new GoodPlot("3l_mix__numTruePVs","darren");
+    GoodPlot *can3l_mix_sfz__numTruePVs     = new GoodPlot("3l_mix_sfz__numTruePVs","darren");
+    GoodPlot *cange4l__numTruePVs     = new GoodPlot("ge4l__numTruePVs","darren");
+    GoodPlot *can1l_mu__numTruePVs     = new GoodPlot("1l_mu__numTruePVs","darren");
+    GoodPlot *can1l_e__numTruePVs     = new GoodPlot("1l_e__numTruePVs","darren");    
+    
+    
+    
     GoodPlot *can2los_ee__llmass     = new GoodPlot("2los_ee__llmass","darren");
     GoodPlot *can2los_emu__llmass     = new GoodPlot("2los_emu__llmass","darren");
     GoodPlot *can2los_mumu__llmass     = new GoodPlot("2los_mumu__llmass","darren");
@@ -290,7 +313,34 @@ void MakeGoodPlot::standard_plots_normalized()
     
     
     
+    // for the num true interactions plots:
+    auto pudatafile = TFile::Open("../../data/PU/PileupData_ReRecoJSON_Full2017.root");
+    TH1D *pudata = (TH1D*)pudatafile->Get("pileup");
+    TH1D *pudataUP = (TH1D*)pudatafile->Get("pileup_plus");
+    TH1D *pudataDOWN = (TH1D*)pudatafile->Get("pileup_minus");
+    // todo: eventually move the above to some MakeGoodPlot thing
     
+    // now add this "data" hist for comparison:
+    //MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC", TH1D *exthist=0
+    can__numTruePVs->addPlotNorm(*this,"numTruePVs",-1,"data",-1,"hist",pudata);
+    can2los_ee__numTruePVs->addPlotNorm(*this,"2los_ee__numTruePVs",-1,"data",-1,"hist",pudata);      
+    can2los_emu__numTruePVs->addPlotNorm(*this,"2los_emu__numTruePVs",-1,"data",-1,"hist",pudata);     
+    can2los_mumu__numTruePVs->addPlotNorm(*this,"2los_mumu__numTruePVs",-1,"data",-1,"hist",pudata);    
+    can2los_sfz_ee__numTruePVs->addPlotNorm(*this,"2los_sfz_ee__numTruePVs",-1,"data",-1,"hist",pudata);  
+    can2los_sfz_mumu__numTruePVs->addPlotNorm(*this,"2los_sfz_mumu__numTruePVs",-1,"data",-1,"hist",pudata);
+    can2lss_p_ee__numTruePVs->addPlotNorm(*this,"2lss_p_ee__numTruePVs",-1,"data",5,"hist",pudata);    
+    can2lss_p_emu__numTruePVs->addPlotNorm(*this,"2lss_p_emu__numTruePVs",-1,"data",5,"hist",pudata);   
+    can2lss_p_mumu__numTruePVs->addPlotNorm(*this,"2lss_p_mumu__numTruePVs",-1,"data",5,"hist",pudata);  
+    can2lss_m_ee__numTruePVs->addPlotNorm(*this,"2lss_m_ee__numTruePVs",-1,"data",5,"hist",pudata);    
+    can2lss_m_emu__numTruePVs->addPlotNorm(*this,"2lss_m_emu__numTruePVs",-1,"data",5,"hist",pudata);   
+    can2lss_m_mumu__numTruePVs->addPlotNorm(*this,"2lss_m_mumu__numTruePVs",-1,"data",5,"hist",pudata);  
+    can3l_ppp__numTruePVs->addPlotNorm(*this,"3l_ppp__numTruePVs",-1,"data",5,"hist",pudata);       
+    can3l_mmm__numTruePVs->addPlotNorm(*this,"3l_mmm__numTruePVs",-1,"data",5,"hist",pudata);       
+    can3l_mix__numTruePVs->addPlotNorm(*this,"3l_mix__numTruePVs",-1,"data",5,"hist",pudata);       
+    can3l_mix_sfz__numTruePVs->addPlotNorm(*this,"3l_mix_sfz__numTruePVs",-1,"data",5,"hist",pudata);   
+    cange4l__numTruePVs->addPlotNorm(*this,"4l__numTruePVs",-1,"data",5,"hist",pudata);        
+    can1l_mu__numTruePVs->addPlotNorm(*this,"1l_mu__numTruePVs",-1,"data",-1,"hist",pudata);
+    can1l_e__numTruePVs->addPlotNorm(*this,"1l_e__numTruePVs",-1,"data",-1,"hist",pudata);
     
     
 
@@ -496,6 +546,29 @@ void MakeGoodPlot::standard_plots_normalized()
         cange4l__numPVs->addPlotNorm(*this,"4l__numPVs",i,"samp",5);        
         can1l_mu__numPVs->addPlotNorm(*this,"1l_mu__numPVs",i,"samp");
         can1l_e__numPVs->addPlotNorm(*this,"1l_e__numPVs",i,"samp");
+        
+        can__numTruePVs->addPlotNorm(*this,"numTruePVs",i,"samp");
+        can2los_ee__numTruePVs->addPlotNorm(*this,"2los_ee__numTruePVs",i,"samp");      
+        can2los_emu__numTruePVs->addPlotNorm(*this,"2los_emu__numTruePVs",i,"samp");     
+        can2los_mumu__numTruePVs->addPlotNorm(*this,"2los_mumu__numTruePVs",i,"samp");    
+        can2los_sfz_ee__numTruePVs->addPlotNorm(*this,"2los_sfz_ee__numTruePVs",i,"samp");  
+        can2los_sfz_mumu__numTruePVs->addPlotNorm(*this,"2los_sfz_mumu__numTruePVs",i,"samp");
+        can2lss_p_ee__numTruePVs->addPlotNorm(*this,"2lss_p_ee__numTruePVs",i,"samp",5);    
+        can2lss_p_emu__numTruePVs->addPlotNorm(*this,"2lss_p_emu__numTruePVs",i,"samp",5);   
+        can2lss_p_mumu__numTruePVs->addPlotNorm(*this,"2lss_p_mumu__numTruePVs",i,"samp",5);  
+        can2lss_m_ee__numTruePVs->addPlotNorm(*this,"2lss_m_ee__numTruePVs",i,"samp",5);    
+        can2lss_m_emu__numTruePVs->addPlotNorm(*this,"2lss_m_emu__numTruePVs",i,"samp",5);   
+        can2lss_m_mumu__numTruePVs->addPlotNorm(*this,"2lss_m_mumu__numTruePVs",i,"samp",5);  
+        can3l_ppp__numTruePVs->addPlotNorm(*this,"3l_ppp__numTruePVs",i,"samp",5);       
+        can3l_mmm__numTruePVs->addPlotNorm(*this,"3l_mmm__numTruePVs",i,"samp",5);       
+        can3l_mix__numTruePVs->addPlotNorm(*this,"3l_mix__numTruePVs",i,"samp",5);       
+        can3l_mix_sfz__numTruePVs->addPlotNorm(*this,"3l_mix_sfz__numTruePVs",i,"samp",5);   
+        cange4l__numTruePVs->addPlotNorm(*this,"4l__numTruePVs",i,"samp",5);        
+        can1l_mu__numTruePVs->addPlotNorm(*this,"1l_mu__numTruePVs",i,"samp");
+        can1l_e__numTruePVs->addPlotNorm(*this,"1l_e__numTruePVs",i,"samp");       
+        
+        
+        
         
 //         can2los_ee__lep1pt->addPlotNorm(*this,"2los_ee__lep1pt",i,"samp");      
 //         can2los_emu__lep1pt->addPlotNorm(*this,"2los_emu__lep1pt",i,"samp");     

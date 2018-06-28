@@ -3,7 +3,7 @@
 class GoodPlot : public TCanvas
 {
     private:
-        bool checkForCombo(MakeGoodPlot &thisMGP, TH1D *thehist, int sample);
+        bool checkForCombo(MakeGoodPlot &thisMGP, TH1 *thehist, int sample);
     
     public:
         GoodPlot(TString name, string legopt="none");
@@ -18,7 +18,7 @@ class GoodPlot : public TCanvas
         TGraphAsymmErrors *sumMCbandNoStat;
         std::vector<TString> stacksamps;
         std::vector<int> stacksampints;
-        std::vector<int> stacksampintscomboaware;
+        std::vector<int> stacksampintscomboaware; // doesn't do anything
         int globalfont=42;
         bool exists = false;
         double maxsofar = 0.;
@@ -29,12 +29,18 @@ class GoodPlot : public TCanvas
         TH1D *sumTriboson=0;
         TH1D *sumSingleTop=0;
         TH1D *sumSplitTTBar=0;
+        TH1D *sumQFs=0;
+        TH1D *sumFakes=0;
+        TH1D *finalnumer;
+        TH1D *finaldenom;
         void addTGraphAsErrors(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i, TString ylabel="Efficiency", double ymin=0., double ymax=1.05);
-        void addEfficiencyPlot(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i);
+        void addEfficiencyPlot(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i, bool printsfs=true);
         //void addROC(... // To Do
         void addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
-        void addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="E", bool withRatio=true);
-        void addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
+        void addPlotData(MakeGoodPlot &thisMGP, TString thehist="same", int i=0, TString legtext="none", int rebin=-1, TString drawopt="E", bool withRatio=true);
+        //void addPlotDDBkgd(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="E");
+        void addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC", TH1D *exthist=0);
+        
         void addPlot2D(MakeGoodPlot &thisMGP, int i, TString thehist="same");
         
         //void addComparison( ... // To do: this should be after you already added the things you're going to compare,
@@ -43,8 +49,12 @@ class GoodPlot : public TCanvas
                                     // on the lower pad (with a given y axis label)
         
         void addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1);
-        void addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1);
-        void printStackContents(); // in progress
+        //void addToComboAndOrStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1); // ???
+        void addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist="same", int i=0, TString legtext="none", int rebin=-1);
+        void printStackContentsLatex();
+        void printCombosLatex(MakeGoodPlot &thisMGP);
+        void printStackContentsForCard(MakeGoodPlot &thisMGP);
+        void printTriggerSFs();
         //void addErrorBand(... // To Do;
         void addCMSText(MakeGoodPlot &thisMGP);
 };
@@ -93,16 +103,49 @@ void GoodPlot::addTGraphAsErrors(MakeGoodPlot &thisMGP, TString thenumer, TStrin
     if (i==(thisMGP.numsamples-1)) theleg->Draw();
 }
 
-void GoodPlot::addEfficiencyPlot(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i)
+void GoodPlot::addEfficiencyPlot(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i, bool printsfs)
 {
-    addTGraphAsErrors(thisMGP, thenumer, thedenom, i);
+    
+    if (printsfs)
+    {
+        if (thisMGP.numsamples==2)
+        {
+            if (i==0)
+            {
+                finaldenom = (TH1D*)thisMGP.hist[i].FindObject(thenumer)->Clone();
+                finaldenom->Divide(finaldenom,(TH1D*)thisMGP.hist[i].FindObject(thedenom),1.,1.,"B");
+            }
+            else
+            {
+                finalnumer = (TH1D*)thisMGP.hist[i].FindObject(thenumer)->Clone();
+                finalnumer->Divide(finalnumer,(TH1D*)thisMGP.hist[i].FindObject(thedenom),1.,1.,"B");
+                finalnumer->Divide(finalnumer,finaldenom,1.,1.,"B");
+            
+                cout << " " << endl;
+                cout << " " << endl;
+                cout << "SFs for " << this->GetName() <<  endl;
+            
+                for (int j=1; j<=finalnumer->GetNbinsX(); j++)
+                {
+                    cout << "SF for bin starting at " << finalnumer->GetBinLowEdge(j) << ": " << finalnumer->GetBinContent(j) << ", +/- " << finalnumer->GetBinError(j) << endl;
+                }
+            }
+        }
+        else cout << "Trying to calculate SFs using >2 hists! Skipping..." << endl;
+    }
+    
+    addTGraphAsErrors(thisMGP, thenumer, thedenom, i);    
+    
+    
 }
 
-void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt)
+void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt, TH1D *exthist)
 {
     this->cd();
     if (thehist=="auto") thehist=this->GetName();
-    auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
+    TH1D *myhist;
+    if (exthist) myhist = (TH1D*)exthist->Clone(thehist);
+    else myhist = (TH1D*)thisMGP.hist[i].FindObject(thehist); 
     if (rebin>0) myhist->Rebin(rebin);
     myhist->SetLineWidth(2);    
     myhist->GetXaxis()->SetTitleFont(globalfont);
@@ -110,9 +153,11 @@ void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
     if (strcmp(myhist->GetYaxis()->GetTitle(),"")==0) myhist->GetYaxis()->SetTitle("a. u.");
     
     myhist->SetMarkerStyle(10);
-    myhist->SetMarkerColor(thisMGP.color[thisMGP.samples[i]]); // <- not if drawopt contains "PLC" ...
-    myhist->SetLineColor(thisMGP.color[thisMGP.samples[i]]); // <- not if drawopt contains "PLC" ...
-    
+    if (!exthist)
+    {
+        myhist->SetMarkerColor(thisMGP.color[thisMGP.samples[i]]); // <- not if drawopt contains "PLC" ...
+        myhist->SetLineColor(thisMGP.color[thisMGP.samples[i]]); // <- not if drawopt contains "PLC" ...
+    }
     clean_neg_bins(*myhist);
     myhist->Scale(1./myhist->Integral());
     if (maxsofar<myhist->GetMaximum()) maxsofar = myhist->GetMaximum();
@@ -132,7 +177,7 @@ void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
     
     if (drawleg)
     {
-        if (legtext=="samp") theleg->AddEntry(myhist,thisMGP.sample_names[thisMGP.samples[i]],"L");
+        if (legtext=="samp" && !exthist) theleg->AddEntry(myhist,thisMGP.sample_names[thisMGP.samples[i]],"L");
         else theleg->AddEntry(myhist,legtext,"L");
         theleg->Draw();
     }
@@ -172,9 +217,14 @@ void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString le
     } 
     if (i==(thisMGP.numsamples-1)) thisMGP.canvas.Add(this);
 }
+
 void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt, bool withRatio)
 {
     this->cd();
+    if (thehist=="same")
+    {
+        thehist=this->GetName();
+    }
     auto myhist = (TH1D*)thisMGP.hist[i].FindObject(thehist);
 
     if (rebin>0) myhist->Rebin(rebin);
@@ -324,7 +374,7 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
 {
     //cout << "inside00" << endl;
     this->cd();
-    
+
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
     if (rebin>0) myhist->Rebin(rebin);
     clean_neg_bins(*myhist);       
@@ -335,7 +385,7 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     stacksamps.push_back(thisMGP.sample_names[thisSamp]);
     stacksampints.push_back(thisSamp);
     
-    myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);    
+    if (thisSamp<94) myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);    
     myhist->SetLineColor(thisMGP.color[thisSamp]);
     
     bool isSig = (thisSamp==1 || thisSamp==8 || thisSamp==9 || thisSamp==26 || thisSamp==27 || thisSamp==28 || thisSamp==29) ? true : false;
@@ -346,6 +396,8 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     
     thestack->Add(myhist);  
     if (!isSig) thebackstack->Add(myhist);
+    bool addedtocombo = checkForCombo(thisMGP, myhist, thisSamp);
+    //if (addedtocombo) cout << "added " << thehist << " to combo hist" << endl;
     
     // add the systs:
     // comment this out if not needed and causing problems
@@ -353,14 +405,14 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     
     //TH1 *myhistMCStatUP = myhist->Clone();
     //TH1 *myhistMCStatDOWN = myhist->Clone();
-    cout << "hey1" << endl;
+    //cout << "hey1" << endl;
     TH1 *myhistLumiUP = (TH1*)myhist->Clone();
     TH1 *myhistLumiDOWN = (TH1*)myhist->Clone();
     TH1 *myhistpdfUP = (TH1*)myhist->Clone();
     TH1 *myhistpdfDOWN = (TH1*)myhist->Clone();
     TH1 *myhistQ2UP = (TH1*)myhist->Clone();
     TH1 *myhistQ2DOWN = (TH1*)myhist->Clone();
-    cout << "hey2" << endl;
+    //cout << "hey2" << endl;
 
     myhistLumiUP->Scale((thisMGP.lumiup-thisMGP.lumi)/thisMGP.lumi);
     myhistLumiDOWN->Scale((thisMGP.lumidown-thisMGP.lumi)/thisMGP.lumi);
@@ -408,7 +460,10 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
     // If you get plots with non-translucent error bands, try uncommenting this:
     //gStyle->SetCanvasPreferGL(1);
     this->SetGrid(0,0);
-    
+    if (thehist=="same")
+    {
+        thehist=this->GetName();
+    }
     addStack(thisMGP, thehist, i, legtext, rebin); // <- this should already have scaled the hist, cleaned neg bins, rebinned etc.
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
     auto stackarray = thebackstack->GetStack();   
@@ -506,7 +561,7 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
     }    
        
 }
-void GoodPlot::printStackContents()
+void GoodPlot::printStackContentsLatex()
 {
     // prints a latex-formatted table summarizing the stack contents
     
@@ -594,6 +649,216 @@ void GoodPlot::printStackContents()
     cout << " " << endl;
     cout << " " << endl;
     
+}
+void GoodPlot::printCombosLatex(MakeGoodPlot &thisMGP)
+{
+    // prints a latex-formatted table summarizing the stack contents
+    
+    cout << " " << endl;
+    cout << "Printing contents of " << this->GetName() << " stack:" << endl;
+    cout << " " << endl;
+    
+    auto hlist = thestack->GetHists();
+    int numhists = hlist->GetEntries();
+
+    if (numhists<1)
+    {
+        cout << "Empty stack. Skipping the rest of printStackContents..." << endl;
+        return;
+    }
+
+    TH1D *backsum = (TH1D*)hlist->At(0)->Clone();
+    TH1D *sigsum = (TH1D*)hlist->At(0)->Clone();
+    backsum->Reset();
+    sigsum->Reset();    
+
+    int startbin = 6;
+    int endbin = 15;
+
+
+    // bin labels -> names of columns in table
+    cout << "\\hline \\\\" << endl;
+    //for (int j=1; j<=backsum->GetNbinsX(); j++)
+    for (int j=startbin; j<=endbin; j++)
+    {
+        if (thestack->GetXaxis()->GetBinLabel(j)!="") cout << " & " << thestack->GetXaxis()->GetBinLabel(j);
+        else cout << " & " << j;
+    }
+    cout << " \\\\" << endl;     
+    cout << "\\hline \\\\" << endl;
+
+
+
+    for (int i=0; i<numhists; i++)
+    {
+        //cout << stacksamps[i] << "  ";
+        //for (int j=1; j<=((TH1*)hlist->At(i))->GetNbinsX(); j++)
+        //{
+        //    cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlist->At(i))->GetBinContent(j);
+        //}
+        //cout << " \\\\" << endl; // this will actually print two backslashes
+        if (stacksampints[i]==1 || stacksampints[i]==8 || stacksampints[i]==9) sigsum->Add((TH1*)hlist->At(i));
+        else backsum->Add((TH1*)hlist->At(i));
+    }
+    
+    cout << thisMGP.sample_names[90] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << sumVjets->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes
+    
+    cout << thisMGP.sample_names[91] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << sumDiboson->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes    
+    
+    cout << thisMGP.sample_names[92] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << sumTriboson->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes    
+    
+    cout << thisMGP.sample_names[93] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << sumSingleTop->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes    
+    
+    cout << thisMGP.sample_names[5] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << sumSplitTTBar->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes     
+
+    
+    // signals
+    // FYI the way you are doing this now is really bad. Please fix!
+    cout << thisMGP.sample_names[8] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlist->At(hlist->GetSize()-4))->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes 
+        
+    cout << thisMGP.sample_names[9] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlist->At(hlist->GetSize()-3))->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes     
+    
+    cout << thisMGP.sample_names[1] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlist->At(hlist->GetSize()-2))->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes     
+    
+    cout << thisMGP.sample_names[26] << "  ";
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlist->At(hlist->GetSize()-1))->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; // this will actually print two backslashes     
+    
+    
+                
+    auto stackarray = thestack->GetStack();
+    auto sumhist = (TH1*)stackarray->Last();
+
+    cout << "\\hline \\\\" << endl;
+    cout << "Sum Background  ";    
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << backsum->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; 
+
+    cout << "\\hline \\\\" << endl;
+    cout << "Sum Signal  ";    
+    for (int j=startbin; j<=endbin; j++)
+    {
+        cout << std::fixed << std::setprecision(1) << " & " << sigsum->GetBinContent(j);
+    }
+    cout << " \\\\" << endl; 
+
+//     cout << "\\hline \\\\" << endl;
+//     cout << "S+B  ";    
+//     for (int j=1; j<=sumhist->GetNbinsX(); j++)
+//     {
+//         cout << std::fixed << std::setprecision(1) << " & " << sumhist->GetBinContent(j);
+//     }
+//     cout << " \\\\" << endl; 
+
+    cout << "\\hline \\\\" << endl;
+    cout << "$S/\\sqrt{B}$  ";    
+    for (int j=startbin; j<=endbin; j++)
+    {
+        if (backsum->GetBinContent(j)>0)
+        {
+            cout << std::fixed << std::setprecision(1) << " & " << (sigsum->GetBinContent(j)/sqrt(backsum->GetBinContent(j)));
+        }
+        else cout << " & " << "(inf)";
+    }
+    cout << " \\\\" << endl;     
+    cout << "\\hline \\\\" << endl;
+
+
+    cout << " " << endl;
+    cout << " " << endl;
+    
+}
+void GoodPlot::printStackContentsForCard(MakeGoodPlot &thisMGP)
+{
+    // prints a delimited table summarizing the events yeilds and systematics (intended as input to a datacard)
+    
+    int precision = 3;
+    
+    auto hlist = thestack->GetHists();
+    int numhists = hlist->GetEntries();
+
+    if (numhists<1)
+    {
+        cout << "Empty stack. Skipping the rest of printStackContents..." << endl;
+        return;
+    }
+
+    TH1D *backsum = (TH1D*)hlist->At(0)->Clone();
+    TH1D *sigsum = (TH1D*)hlist->At(0)->Clone();
+    backsum->Reset();
+    sigsum->Reset();    
+
+
+    // bin labels -> names of columns in table
+
+    for (int j=1; j<=backsum->GetNbinsX(); j++)
+    {
+        if (thestack->GetXaxis()->GetBinLabel(j)!="") cout << "&" << thestack->GetXaxis()->GetBinLabel(j);
+        else cout << "&" << j;
+    }
+    
+    cout << endl;
+    
+    for (int i=0; i<numhists; i++)
+    {
+        cout << thisMGP.sample_names_reg[stacksampints[i]];
+        for (int j=1; j<=((TH1*)hlist->At(i))->GetNbinsX(); j++)
+        {
+            cout << std::fixed << std::setprecision(precision) << "&" << ((TH1*)hlist->At(i))->GetBinContent(j);
+        }
+        cout << endl;
+        if (stacksampints[i]==1 || stacksampints[i]==8 || stacksampints[i]==9) sigsum->Add((TH1*)hlist->At(i));
+        else backsum->Add((TH1*)hlist->At(i));
+    }            
+    auto stackarray = thestack->GetStack();
+    auto sumhist = (TH1*)stackarray->Last();
+
     
     for (int thisSyst=0; thisSyst<numsysts; thisSyst++)
     {        
@@ -601,13 +866,13 @@ void GoodPlot::printStackContents()
         {
             for (int i=0; i<numhists; i++)
             {
-                cout << stacksamps[i]+" "+thisSystTStr[thisSyst] << "  ";
+                cout << thisMGP.sample_names_reg[stacksampints[i]]+":"+thisSystTStr[thisSyst];
                 for (int j=1; j<=((TH1*)hlist->At(i))->GetNbinsX(); j++)
                 {
-                    if (thisSyst==0) cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlist->At(i))->GetBinContent(j) + ((TH1*)hlist->At(i))->GetBinError(j);
-                    else if (thisSyst==1) cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlist->At(i))->GetBinContent(j) - ((TH1*)hlist->At(i))->GetBinError(j);
+                    if (thisSyst==0) cout << std::fixed << std::setprecision(precision) << "&" << ((TH1*)hlist->At(i))->GetBinContent(j) + ((TH1*)hlist->At(i))->GetBinError(j);
+                    else if (thisSyst==1) cout << std::fixed << std::setprecision(precision) << "&" << ((TH1*)hlist->At(i))->GetBinContent(j) - ((TH1*)hlist->At(i))->GetBinError(j);
                 }
-                cout << " \\\\" << endl; // this will actually print two backslashes
+                cout << endl;
             }
             continue;
         }
@@ -620,74 +885,21 @@ void GoodPlot::printStackContents()
         backsumSyst->Reset();
         sigsumSyst->Reset();    
 
-        // bin labels -> names of columns in table
-        // cout << "\\hline \\\\" << endl;
-//         for (int j=1; j<=backsumSyst->GetNbinsX(); j++)
-//         {
-//             if (syststack[thisSyst]->GetXaxis()->GetBinLabel(j)!="") cout << " & " << syststack[thisSyst]->GetXaxis()->GetBinLabel(j);
-//             else cout << " & " << j;
-//         }
-//         cout << " \\\\" << endl;     
-//         cout << "\\hline \\\\" << endl;
-
         for (int i=0; i<numhists; i++)
         {
-            cout << stacksamps[i]+" "+thisSystTStr[thisSyst] << "  ";
+            cout << thisMGP.sample_names_reg[stacksampints[i]]+":"+thisSystTStr[thisSyst];
             for (int j=1; j<=((TH1*)hlistSyst->At(i))->GetNbinsX(); j++)
             {
-                cout << std::fixed << std::setprecision(1) << " & " << ((TH1*)hlistSyst->At(i))->GetBinContent(j);
+                cout << std::fixed << std::setprecision(precision) << "&" << ((TH1*)hlistSyst->At(i))->GetBinContent(j);
             }
-            cout << " \\\\" << endl; // this will actually print two backslashes
-            
-            //if (stacksampints[i]==1 || stacksampints[i]==8 || stacksampints[i]==9) sigsumSyst->Add((TH1*)hlistSyst->At(i));
-            //else backsumSyst->Add((TH1*)hlistSyst->At(i));
-        }            
-//         auto stackarraySyst = syststack[thisSyst]->GetStack();
-//         auto sumhistSyst = (TH1*)stackarraySyst->Last();
-//     
-//         cout << "\\hline \\\\" << endl;
-//         cout << "Sum Background  ";    
-//         for (int j=1; j<=backsumSyst->GetNbinsX(); j++)
-//         {
-//             cout << std::fixed << std::setprecision(1) << " & " << backsumSyst->GetBinContent(j);
-//         }
-//         cout << " \\\\" << endl; 
-//     
-//         cout << "\\hline \\\\" << endl;
-//         cout << "Sum Signal  ";    
-//         for (int j=1; j<=sigsumSyst->GetNbinsX(); j++)
-//         {
-//             cout << std::fixed << std::setprecision(1) << " & " << sigsumSyst->GetBinContent(j);
-//         }
-//         cout << " \\\\" << endl; 
-//     
-//         cout << "\\hline \\\\" << endl;
-//         cout << "S+B  ";    
-//         for (int j=1; j<=sumhistSyst->GetNbinsX(); j++)
-//         {
-//             cout << std::fixed << std::setprecision(1) << " & " << sumhistSyst->GetBinContent(j);
-//         }
-//         cout << " \\\\" << endl; 
-//     
-//         cout << "\\hline \\\\" << endl;
-//         cout << "$S/\\sqrt{B}$  ";    
-//         for (int j=1; j<=sigsumSyst->GetNbinsX(); j++)
-//         {
-//             if (backsumSyst->GetBinContent(j)>0)
-//             {
-//                 cout << std::fixed << std::setprecision(1) << " & " << (sigsumSyst->GetBinContent(j)/sqrt(backsumSyst->GetBinContent(j)));
-//             }
-//             else cout << " & " << "(inf)";
-//         }
-//         cout << " \\\\" << endl;     
-//         cout << "\\hline \\\\" << endl;
-    
-    
-        cout << " " << endl;
-        cout << " " << endl;
-    }
+            cout << endl;
+        }
+                        
+    } // end loop over systs
 }
-bool GoodPlot::checkForCombo(MakeGoodPlot &thisMGP, TH1D *thehist, int sample)
+
+
+bool GoodPlot::checkForCombo(MakeGoodPlot &thisMGP, TH1 *thehist, int sample)
 {
     if (thisMGP.groupsamples)
     {
@@ -719,8 +931,8 @@ bool GoodPlot::checkForCombo(MakeGoodPlot &thisMGP, TH1D *thehist, int sample)
             else sumSingleTop->Add(thehist);
             return true;
         }        
-        //SplitTTBar
-        if (sample==13 || sample==14 || sample==15)
+        //SplitTTBar <-- or, now inclusive. Shouldn't be a problem but just be aware of this!
+        if (sample==13 || sample==14 || sample==15 || sample==5)
         {
             if (sumSplitTTBar==0) sumSplitTTBar = (TH1D*)thehist->Clone();
             else sumSplitTTBar->Add(thehist);

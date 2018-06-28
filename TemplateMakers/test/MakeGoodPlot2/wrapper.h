@@ -4,7 +4,13 @@ void wrapper(std::vector<int> samples, int mode=2)
 {
       
     /////////////// histo making half /////////////
+    // Note: this way of running the histo-making code (interactive with multiple cores)
+    // should still work, but has been deprecated in favor of batch mode with lobster
+    // (see config_lobster.py->wrapper_lobster.py->wrapper_lobster.C). After hist making,
+    // you should still use makegoodplot.C->wrapper.h for making plots. For this, just
+    // type `root makegoodplot.C+`
     
+    // Interactive, multi-core way of making hists
     // See https://root.cern.ch/doc/v608/mp102__readNtuplesFillHistosAndFit_8C.html
     Int_t njobs = 8;   // The ndpcs have 8 cores x 2 threads/core = max ~16 threads/machine.
                         // Remains to be seen what is the optimal number of threads. On earth 
@@ -90,24 +96,30 @@ void wrapper(std::vector<int> samples, int mode=2)
     //trytogethist->Draw();
     
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////drawing half///////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     if (mode==2 || mode==3)
     {  
-        /////////////// drawing half ////////////////
-
         // Now do something with the hists (draw 'em, etc.)
 
         // This loads the hists from file and prepares to make the plots:
-        //MakeGoodPlot *newplots = new MakeGoodPlot(samples,"copied_hists_from_hadoop/lobster_test_20180308_0947");
-        MakeGoodPlot *newplots = new MakeGoodPlot(samples);     // When running over hists produced with lobster, 
+        MakeGoodPlot *newplots = new MakeGoodPlot(samples,"/tmpscratch/users/gsmith15/hhadded_hists/standardhists_2lss2or3JetsGeq1Btags_1l3orMoreJets1orMoreBtag_noReqOnPSleps_geqFakeableSel_FRbugfix2__withPUSF_DeepCSVSFsAllJets_MuSFs_partialEleSFs2_1pslepskimallsamps_lowerpts_18_6_28b/");
+        //MakeGoodPlot *newplots = new MakeGoodPlot(samples);     // When running over hists produced with lobster, 
                                                                 // you should be good to go with this constructor as 
                                                                 // long as you ran haddhists.py first. 
 
         // Then, picking one of these will run the "drawall" function (see drawall.h), and save resulting plots to
         // file/web area, or plot directly to screen (in x-windows):
         //newplots->drawAllToScreen();
-        //newplots->drawAllToFile("plttest","pdf");
+        //newplots->drawAllToFile("anatest4","root");
+        //newplots->drawAllToWebArea("EFT_scratch","png");
         //newplots->drawAllToWebArea("EFT_all_plots_27_4_18_std_plots_os2l_2017dataMC_2016SFs","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
-        newplots->drawAllToWebArea("EFT_all_plots_27_4_18_numPVs_norm","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
-    
+        //newplots->drawAllToWebArea("EFT_plots_15_6_18_mcvalidation_ttlnu","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
+        //newplots->drawAllToWebArea("EFT_all_plots_8_5_18_noSFs_DeepCSV_nodata_lin","png");
+        newplots->drawAllToWebArea("EFT_plots_2lss2or3JetsGeq1Btags_1l3orMoreJets1orMoreBtag_noReqOnPSleps_geqFakeableSel_FRbugfix2__withPUSF_DeepCSVSFsAllJets_MuSFs_partialEleSFs2_1pslepskimallsamps_lowerpts_ddbs_2lssjetbtagplots_18_6_28","png");
+        //newplots->drawAllToWebArea("trig_eff_plots_23_5_18_v3","png");
+        
     }
 }

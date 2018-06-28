@@ -15,9 +15,9 @@ void MakeGoodPlot::setup()
         pdfdown[i] = 0.;
     }  
     
-    
+    // standard MC samps
     sample_names[0] = "test";
-    sample_names[1] = "t#bar{t}H (H->non-bb)"; //"t#bar{t}H(125)";
+    sample_names[1] = "t#bar{t}H (H#rightarrow{}non-bb)"; //"t#bar{t}H(125)";
     sample_names[2] = "(none)"; 
     sample_names[3] = "(none)"; 
     sample_names[4] = "(none)"; 
@@ -46,18 +46,72 @@ void MakeGoodPlot::setup()
     sample_names[27] = "4 Top";
     sample_names[28] = "t#bar{t}+WW";
     sample_names[29] = "t#bar{t}+WZ";
+    
+    sample_names[40] = "ttH:cbW";
+    sample_names[41] = "ttH:cpQ3";  
+    sample_names[42] = "ttH:cpQM";  
+    sample_names[43] = "ttH:cptb";  
+    sample_names[44] = "ttH:cpt";   
+    sample_names[45] = "ttH:cQe1";  
+    sample_names[46] = "ttH:ctG";   
+    sample_names[47] = "ttH:ctl1";  
+    sample_names[48] = "ttH:ctp";   
+    sample_names[49] = "ttH:ctW";   
+    sample_names[50] = "ttH:ctZ";   
+
+    sample_names[51] = "tllq:cbW";
+    sample_names[52] = "tllq:cpQ3"; 
+    sample_names[53] = "tllq:cpQM"; 
+    sample_names[54] = "tllq:cptb"; 
+    sample_names[55] = "tllq:cpt";  
+    sample_names[56] = "tllq:cQe1"; 
+    sample_names[57] = "tllq:ctG";  
+    sample_names[58] = "tllq:ctl1"; 
+    sample_names[59] = "tllq:ctp";  
+    sample_names[60] = "tllq:ctW";  
+    sample_names[61] = "tllq:ctZ";  
+
+    sample_names[62] = "ttll:cbW";  
+    sample_names[63] = "ttll:cpQ3"; 
+    sample_names[64] = "ttll:cpQM"; 
+    sample_names[65] = "ttll:cptb"; 
+    sample_names[66] = "ttll:cpt";  
+    sample_names[67] = "ttll:cQe1"; 
+    sample_names[68] = "ttll:ctG";  
+    sample_names[69] = "ttll:ctl1"; 
+    sample_names[70] = "ttll:ctp";  
+    sample_names[71] = "ttll:ctW";  
+    sample_names[72] = "ttll:ctZ";  
+
+    sample_names[73] = "ttl#nu:cbW"; 
+    sample_names[74] = "ttl#nu:cpQ3";
+    sample_names[75] = "ttl#nu:cpQM";
+    sample_names[76] = "ttl#nu:cptb";
+    sample_names[77] = "ttl#nu:cpt"; 
+    sample_names[78] = "ttl#nu:cQe1";
+    sample_names[79] = "ttl#nu:ctG"; 
+    sample_names[80] = "ttl#nu:ctl1";
+    sample_names[81] = "ttl#nu:ctp"; 
+    sample_names[82] = "ttl#nu:ctW"; 
+    sample_names[83] = "ttl#nu:ctZ"; 
+    
+    
+    // these will prob just be internal to MakeGoodPlot
+    sample_names[90] = "V+Jets";
+    sample_names[91] = "Diboson";
+    sample_names[92] = "Triboson";
+    sample_names[93] = "Single Top";
+    sample_names[94] = "Charge Flips";
+    sample_names[95] = "Fakes";
+    // ..."Conversions" ?
+    
+    // data
     sample_names[100] = "Single Mu data";
     sample_names[101] = "Single Ele data";
     sample_names[102] = "Double Mu data";
     sample_names[103] = "Double Ele data";
     sample_names[104] = "Mu+Ele data";
-    
-    
-    
-    
-    
-    
-    
+    sample_names[105] = "MET data";
     
          
     
@@ -92,12 +146,61 @@ void MakeGoodPlot::setup()
     sample_names_reg[26] = "_tZq";
     sample_names_reg[27] = "_tttt";
     sample_names_reg[28] = "_ttWW";
-    sample_names_reg[29] = "_ttWZ";    
+    sample_names_reg[29] = "_ttWZ";
+    sample_names_reg[40] = "_ttH_cbW";
+    sample_names_reg[41] = "_ttH_cpQ3";  
+    sample_names_reg[42] = "_ttH_cpQM";  
+    sample_names_reg[43] = "_ttH_cptb";  
+    sample_names_reg[44] = "_ttH_cpt";   
+    sample_names_reg[45] = "_ttH_cQe1";  
+    sample_names_reg[46] = "_ttH_ctG";   
+    sample_names_reg[47] = "_ttH_ctl1";  
+    sample_names_reg[48] = "_ttH_ctp";   
+    sample_names_reg[49] = "_ttH_ctW";   
+    sample_names_reg[50] = "_ttH_ctZ";   
+    sample_names_reg[51] = "_tllq_cbW";
+    sample_names_reg[52] = "_tllq_cpQ3"; 
+    sample_names_reg[53] = "_tllq_cpQM"; 
+    sample_names_reg[54] = "_tllq_cptb"; 
+    sample_names_reg[55] = "_tllq_cpt";  
+    sample_names_reg[56] = "_tllq_cQe1"; 
+    sample_names_reg[57] = "_tllq_ctG";  
+    sample_names_reg[58] = "_tllq_ctl1"; 
+    sample_names_reg[59] = "_tllq_ctp";  
+    sample_names_reg[60] = "_tllq_ctW";  
+    sample_names_reg[61] = "_tllq_ctZ";  
+    sample_names_reg[62] = "_ttll_cbW";  
+    sample_names_reg[63] = "_ttll_cpQ3"; 
+    sample_names_reg[64] = "_ttll_cpQM"; 
+    sample_names_reg[65] = "_ttll_cptb"; 
+    sample_names_reg[66] = "_ttll_cpt";  
+    sample_names_reg[67] = "_ttll_cQe1"; 
+    sample_names_reg[68] = "_ttll_ctG";  
+    sample_names_reg[69] = "_ttll_ctl1"; 
+    sample_names_reg[70] = "_ttll_ctp";  
+    sample_names_reg[71] = "_ttll_ctW";  
+    sample_names_reg[72] = "_ttll_ctZ";  
+    sample_names_reg[73] = "_ttlnu_cbW"; 
+    sample_names_reg[74] = "_ttlnu_cpQ3";
+    sample_names_reg[75] = "_ttlnu_cpQM";
+    sample_names_reg[76] = "_ttlnu_cptb";
+    sample_names_reg[77] = "_ttlnu_cpt"; 
+    sample_names_reg[78] = "_ttlnu_cQe1";
+    sample_names_reg[79] = "_ttlnu_ctG"; 
+    sample_names_reg[80] = "_ttlnu_ctl1";
+    sample_names_reg[81] = "_ttlnu_ctp"; 
+    sample_names_reg[82] = "_ttlnu_ctW"; 
+    sample_names_reg[83] = "_ttlnu_ctZ";
+    
+    sample_names_reg[94] = "_charge_flips";
+    sample_names_reg[95] = "_fakes";
+    
     sample_names_reg[100] = "_data_singleMu";
     sample_names_reg[101] = "_data_singleEle";
     sample_names_reg[102] = "_data_doubleMu";
     sample_names_reg[103] = "_data_doubleEle";
     sample_names_reg[104] = "_data_muonEle";
+    sample_names_reg[105] = "_data_MET";
 
     color[0] = kBlack;
     color[1] = kRed+1;
@@ -121,14 +224,18 @@ void MakeGoodPlot::setup()
     color[19] = kYellow-6; 
     color[20] = kYellow-8;
     color[21] = kYellow-10; //-5
-    color[22] = kGray;
-    color[23] = kGray;    
-    color[24] = kGray;    
-    color[25] = kGray;    
+    color[22] = kSpring+1;
+    color[23] = kSpring+2;
+    color[24] = kSpring+3;
+    color[25] = kSpring+4;
     color[26] = kPink+1;    
     color[27] = kSpring+4;    
     color[28] = kAzure+1;    
     color[29] = kBlue+2;    
+    
+    color[94] = kAzure-9;
+    color[95] = kYellow-7;
+    
     color[100] = kBlack;
     color[101] = kBlack;
     color[102] = kBlack;
@@ -137,6 +244,25 @@ void MakeGoodPlot::setup()
 
     cout << "hey2" << endl;
 
+    categoryTS.push_back("2los_ee");
+    categoryTS.push_back("2los_emu");
+    categoryTS.push_back("2los_mumu");
+    categoryTS.push_back("2los_sfz_ee");
+    categoryTS.push_back("2los_sfz_mumu");
+    categoryTS.push_back("2lss_p_ee");
+    categoryTS.push_back("2lss_p_emu");
+    categoryTS.push_back("2lss_p_mumu");
+    categoryTS.push_back("2lss_m_ee");
+    categoryTS.push_back("2lss_m_emu");
+    categoryTS.push_back("2lss_m_mumu");
+    categoryTS.push_back("3l_ppp");
+    categoryTS.push_back("3l_mmm");
+    categoryTS.push_back("3l_mix");
+    categoryTS.push_back("3l_mix_sfz");
+    categoryTS.push_back("4l");
+    categoryTS.push_back("1l_mu");
+    categoryTS.push_back("1l_e");
+    
     
     for (int i=0; i<numsamples; i++)
     {    

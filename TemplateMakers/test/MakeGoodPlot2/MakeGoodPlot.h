@@ -22,7 +22,8 @@ class MakeGoodPlot
         string sample_names_std[200];
         Color_t color[200];
         double numgen[200];		
-
+        vector<TString> categoryTS;
+        
         // CMS info stuff
         std::string cmsinfo;
         TLatex *CMSInfoLatex;
@@ -32,9 +33,9 @@ class MakeGoodPlot
 	    const double lumi2016 = 36814.; // 2.5%, pb^-1, https://twiki.cern.ch/twiki/bin/view/CMS/TWikiLUM
 	    const double lumi2016up = (1.+0.025)*lumi2016;
 	    const double lumi2016down = (1.-0.025)*lumi2016;
-	    const double lumi2017 = 42710.; // 5% with normtag
-	    const double lumi2017up = (1.+0.05)*lumi2017;
-	    const double lumi2017down = (1.-0.05)*lumi2017;
+	    const double lumi2017 = 41530.; // 5% with normtag
+	    const double lumi2017up = (1.+0.023)*lumi2017;
+	    const double lumi2017down = (1.-0.023)*lumi2017;
         //const double lumi = lumi2016+lumi2017;
 	    //const double lumiup = lumi2016up+lumi2017up; // note: for 2016+2017, this is not lumi*(1.+sqrt(0.025*0.025+0.05*0.05)).
 	    //const double lumidown = lumi2016down+lumi2017down;
@@ -59,10 +60,12 @@ class MakeGoodPlot
         void get_rate_info();        
         void setup();        
         void lepeff_plots();
+        void triggerstudies_plots();
         void jetcleaning_plots();
         void standard_plots();
         void standard_plots_normalized();
         void mc_validation_plots();
+        void save_analysis_hists();
         
         MakeGoodPlot() { cout << "Default constructor of MakeGoodPlot doesn't do anything. Use a different constructor." << endl; }
         MakeGoodPlot(std::vector<int> thesamps, TString histdir="");
@@ -87,24 +90,23 @@ MakeGoodPlot::MakeGoodPlot(std::vector<int> thesamps, TString histdir)
     {
         // load the saved hists from file(s):
         //TString thishistfile = "temp_"+int2ss(samples[i])+".root";
-        TString thishistfile = "temp_"+sample_int2TString(samples[i])+".root";
+        TString thishistfile = histdir+"temp_"+sample_int2TString(samples[i])+".root";
         
-        
-        if (histdir!="")
-        {
-            // in case the histograms are somewhere besides the current dir:
-            thishistfile = histdir;
-            // get subdir for this sample:
-            TString sampTStemp = sample_int2TString(samples[i]);
-            // the rest of this is due to the way lobster merges output files:
-            thishistfile = thishistfile + "/" + sampTStemp + "/*.root";
-            TString lsstring = "ls -d "+thishistfile+" > temp.txt";
-            system(lsstring);
-            ifstream passed_root_file;
-            passed_root_file.open("temp.txt");
-            passed_root_file >> thishistfile;
-            passed_root_file.close();
-        }
+//         if (histdir!="")
+//         {
+//             // in case the histograms are somewhere besides the current dir:
+//             thishistfile = histdir;
+//             // get subdir for this sample:
+//             TString sampTStemp = sample_int2TString(samples[i]);
+//             // the rest of this is due to the way lobster merges output files:
+//             thishistfile = thishistfile + "/" + sampTStemp + "/*.root";
+//             TString lsstring = "ls -d "+thishistfile+" > temp.txt";
+//             system(lsstring);
+//             ifstream passed_root_file;
+//             passed_root_file.open("temp.txt");
+//             passed_root_file >> thishistfile;
+//             passed_root_file.close();
+//         }
         
         files.push_back( new TFile(thishistfile) ); 
         TIter next(files[i]->GetListOfKeys());

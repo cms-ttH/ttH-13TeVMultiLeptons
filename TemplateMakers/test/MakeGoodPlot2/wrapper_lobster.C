@@ -1,6 +1,6 @@
 #include "includes.h"
 
-void wrapper_lobster(TString sample, TString input_filenames)
+void wrapper_lobster(TString sample, TString input_filenames, bool doQFs=false, bool dofakes=false)
 {
     // input_filenames -> just "files.txt" provided by lobster. open and read files, add to chain as doing already below.
 
@@ -29,7 +29,7 @@ void wrapper_lobster(TString sample, TString input_filenames)
     //////////////////////////////////////////////////
     // Fill histograms
     
-    HistMaker *histmaker = new HistMaker(sample); // <---------- update me
+    HistMaker *histmaker = new HistMaker(sample,doQFs,dofakes);
     histmaker->setBranchAddresses(reader);
     histmaker->bookHistos();
     histmaker->run(reader); // contains the while loop
@@ -43,7 +43,11 @@ void wrapper_lobster(TString sample, TString input_filenames)
     double numgen = 1.;            
     numgen = getNumInitialMCevents(0,*ch); // use this to get numgen (To do -> should really remove the first arg as it's just a dummy int now)
     if (debug) cout << "Ran getNumInitialMCevents" << endl;
-
+    
+    //TString supl="_Nom";
+    //if (doQFs) supl="_ChargeFlips";
+    //if (dofakes) supl="_Fakes";
+    
     //TFile tempfile("temp_"+int2ss(sample)+"_"+int2ss(i)+".root","RECREATE");
     TFile tempfile("output.root","RECREATE"); // the naming of this should now be handled by lobster
     sumObjArray->Write();

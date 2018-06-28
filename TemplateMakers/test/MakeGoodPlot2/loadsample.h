@@ -6,7 +6,7 @@ std::unordered_map<string,int> sample_TString2int_map()
     
     ///// signals /////
     // main signals
-    dummy["ttH"] = 1;
+    dummy["ttH"] = 1; // ttH_NLO // ttH_LO_old
     dummy["ttW"] = 8;
     dummy["ttZ"] = 9;
     // additional signals
@@ -25,9 +25,10 @@ std::unordered_map<string,int> sample_TString2int_map()
     dummy["ZZ"] = 11;    
     dummy["WW"] = 12;
     // ttbar + jets
-    dummy["ttJets_Dilept"] = 13;
-    dummy["ttJets_SingleLeptFromT"] = 14;
-    dummy["ttJets_SingleLeptFromTbar"] = 15;    
+    dummy["ttJets"] = 5;
+    //dummy["ttJets_Dilept"] = 13;
+    //dummy["ttJets_SingleLeptFromT"] = 14;
+    //dummy["ttJets_SingleLeptFromTbar"] = 15;    
     // single top
     dummy["SingleTop_tWchan_top"] = 17;  
     dummy["SingleTop_tWchan_antitop"] = 18;    
@@ -39,6 +40,64 @@ std::unordered_map<string,int> sample_TString2int_map()
     dummy["WWZ"] = 23;
     dummy["WZZ"] = 24;
     dummy["ZZZ"] = 25;
+    
+    // EFT samps
+    
+    
+    //ttH_EFT
+    dummy["ttH_cbW"]    = 40;
+    dummy["ttH_cpQ3"]   = 41;
+    dummy["ttH_cpQM"]   = 42;
+    dummy["ttH_cptb"]   = 43;
+    dummy["ttH_cpt"]    = 44;
+    dummy["ttH_cQe1"]   = 45;
+    dummy["ttH_ctG"]    = 46;
+    dummy["ttH_ctl1"]   = 47;
+    dummy["ttH_ctp"]    = 48;
+    dummy["ttH_ctW"]    = 49;
+    dummy["ttH_ctZ"]    = 50;
+    
+    //tllq_EFT
+    // missing cbW for the moment = 51;
+    dummy["tllq_cpQ3"]  = 52;          
+    dummy["tllq_cpQM"]  = 53;          
+    dummy["tllq_cptb"]  = 54;
+    dummy["tllq_cpt"]   = 55;   
+    dummy["tllq_cQe1"]  = 56;         
+    dummy["tllq_ctG"]   = 57;        
+    dummy["tllq_ctl1"]  = 58;         
+    dummy["tllq_ctp"]   = 59;
+    dummy["tllq_ctW"]   = 60;
+    dummy["tllq_ctZ"]   = 61;  
+    
+    //ttll_EFT
+    dummy["ttll_cbW"]   = 62;
+    dummy["ttll_cpQ3"]  = 63;
+    dummy["ttll_cpQM"]  = 64;
+    dummy["ttll_cptb"]  = 65;
+    dummy["ttll_cpt"]   = 66;
+    dummy["ttll_cQe1"]  = 67;
+    dummy["ttll_ctG"]   = 68;
+    dummy["ttll_ctl1"]  = 69;
+    dummy["ttll_ctp"]   = 70;
+    dummy["ttll_ctW"]   = 71;
+    dummy["ttll_ctZ"]   = 72;
+    
+    //ttlnu_EFT
+    dummy["ttlnu_cbW"]  = 73;
+    dummy["ttlnu_cpQ3"] = 74;
+    dummy["ttlnu_cpQM"] = 75;
+    dummy["ttlnu_cptb"] = 76;
+    dummy["ttlnu_cpt"]  = 77;
+    dummy["ttlnu_cQe1"] = 78;
+    dummy["ttlnu_ctG"]  = 79;
+    dummy["ttlnu_ctl1"] = 80;
+    dummy["ttlnu_ctp"]  = 81;
+    dummy["ttlnu_ctW"]  = 82;
+    dummy["ttlnu_ctZ"]  = 83;
+    
+    dummy["QFs"]  = 94;
+    dummy["Fakes"]  = 95;
 
     ////// data /////
     dummy["SingleMuon"] = 100;
@@ -47,11 +106,13 @@ std::unordered_map<string,int> sample_TString2int_map()
     dummy["DoubleEG"] = 103;
     dummy["MuonEG"] = 104;
     
+    dummy["MET"] = 105;
+    
     ////// extra /////
     // in case you want to supply a one-off sample that's in a
     // different directory than usual, or in case you want to 
     // compare 2 versions of the same sample (e.g. for validation, etc.)
-    dummy["ttH_EFTtest1"] = 0;
+    dummy["ttJets_noSkim"] = 0;
     
     return dummy;
 }
@@ -67,7 +128,7 @@ int sample_TString2int(TString tstrsamp)
 {
     string strsamp = TString2string(tstrsamp);
     auto blah = sample_TString2int_map();
-    if (!blah[strsamp]) cout << "Warning: unspecified sample. See loadsample.h." << endl;
+    if (!blah[strsamp]) cout << "Warning: sample may be unspecified. See loadsample.h." << endl;
     return blah[strsamp];
 }
 TString sample_int2TString(int intsamp)
@@ -117,7 +178,12 @@ TString loadsample(const int samp)
 {
     bool atND = true;       // Choose whether files are located at ND or at CERN (on an ndpc).
 
-    TString thisround = "lobster_trees__EFT_test_14_4_18";
+    //TString thisround = "lobster_trees__EFT_test_28_4_18"; // 28 // 14
+    //TString thisround = "lobster_trees__EFT_SingleMu_only_test_10_5_18";
+    //TString thisround = "lobster_trees__EFT_noSkim_test_10_5_18";
+    //TString thisround = "lobster_trees__EFT_for_trigSFs_15_5_18";
+    //TString thisround = "lobster_trees__lobster_trees__EFT_test_25_5_18";
+    TString thisround = "lobster_trees__lobster_trees__EFT_test_14_6_18";
     
     TString basedir = "/hadoop/store/user/gesmith/"+thisround+"/";  // The directory on hadoop where your samples are located.
     if (!atND) basedir = "/store/ndpc6disk2/gesmith/crab/";         // The directory on ndpc disk where your samples are located.
