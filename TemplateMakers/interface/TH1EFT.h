@@ -35,6 +35,7 @@ class TH1EFT : public TH1D
         void ScaleFits(double amt);
         void DumpFits();
         
+        void SetBins (Int_t nx, Double_t xmin, Double_t xmax);  // overriding virtual function from TH1
         Bool_t Add(const TH1 *h1, Double_t c1=1); // overriding virtual function from TH1
         Long64_t Merge(TCollection* list);
 
@@ -57,7 +58,19 @@ TH1EFT::TH1EFT(const char *name, const char *title, Int_t nbinsx, Double_t xlow,
         this->hist_fits.push_back(new_fit);
     }
 }
-
+void TH1EFT::SetBins(Int_t nx, Double_t xmin, Double_t xmax)
+{
+    // Use this function with care! Non-over/underflow bins are simply
+    // erased and hist_fits re-sized with empty fits.
+    
+    hist_fits.clear();
+    WCFit new_fit;
+    for (Int_t i = 0; i < nx; i++) {
+        this->hist_fits.push_back(new_fit);
+    }
+    
+    TH1::SetBins(nx, xmin, xmax);
+}
 Bool_t TH1EFT::Add(const TH1 *h1, Double_t c1)
 {
     // check whether the object pointed to inherits from (or is a) TH1EFT:
@@ -118,9 +131,9 @@ Int_t TH1EFT::Fill(Double_t x, Double_t w, WCFit fit)
 WCFit TH1EFT::GetBinFit(Int_t bin)
 {
     Int_t nhists = this->hist_fits.size();
-    if (bin < 0) {
+    if (bin <= 0) {
         return this->underflow_fit;
-    } else if (bin >= nhists) {
+    } else if (bin > nhists) {
         return this->overflow_fit;
     }
     return this->hist_fits.at(bin - 1);
