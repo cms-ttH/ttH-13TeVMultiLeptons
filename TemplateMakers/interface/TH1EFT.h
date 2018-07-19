@@ -152,6 +152,11 @@ WCFit TH1EFT::GetSumFit()
 // Returns a bin scaled by the the corresponding fit evaluated at a particular WC point
 Double_t TH1EFT::GetBinContent(Int_t bin, WCPoint wc_pt)
 {
+    if (this->GetBinFit(bin).getDim() == 0) {
+        // We don't have a fit for this bin, return regular bin contents
+        return GetBinContent(bin);
+    }
+
     double scale_value = this->GetBinFit(bin).evalPoint(&wc_pt);
     Double_t num_events = GetBinContent(bin);
     if (num_events == 0) {
