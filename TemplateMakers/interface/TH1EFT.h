@@ -163,8 +163,6 @@ Double_t TH1EFT::GetBinContent(Int_t bin, WCPoint wc_pt)
         return 0.0;
     }
 
-    //return num_events*scale_value;
-    //return scale_value/num_events;  // Counter-intuitive, but the scale value is a sum of normalized wgts so needs to be adjusted for number of events in the bin
     return scale_value;
 }
 
@@ -172,9 +170,22 @@ Double_t TH1EFT::GetBinContent(Int_t bin, WCPoint wc_pt)
 TH1EFT* TH1EFT::Scale(WCPoint wc_pt)
 {
     TH1EFT* new_hist = (TH1EFT*)this->Clone("clone");
+    
     for (Int_t i = 1; i <= this->GetNbinsX(); i++) {
+        Double_t old_content = this->GetBinContent(i);
+        Double_t old_error = this->GetBinError(i);
         Double_t new_content = this->GetBinContent(i,wc_pt);
+        Double_t new_error = 0.;
+        
+        if (old_content!=0. && old_error!=0.) {
+            new_error = old_error*new_content/old_content;
+        }
+        else {
+            new_error = sqrt(abs(new_content));
+        }
+        
         new_hist->SetBinContent(i,new_content);
+        new_hist->SetBinError(i,new_error);
     }
 
     return new_hist;
