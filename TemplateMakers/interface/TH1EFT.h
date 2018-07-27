@@ -31,7 +31,8 @@ class TH1EFT : public TH1D
         WCFit GetBinFit(Int_t bin);
         WCFit GetSumFit();
         Double_t GetBinContent(Int_t bin, WCPoint wc_pt);
-        TH1EFT* Scale(WCPoint wc_pt);
+        //TH1EFT* Scale(WCPoint wc_pt);
+        void Scale(WCPoint wc_pt);
         void ScaleFits(double amt);
         void DumpFits();
         
@@ -82,6 +83,7 @@ Bool_t TH1EFT::Add(const TH1 *h1, Double_t c1)
             }
         } else { 
             std::cout << "Attempt to add 2 TH1EFTs with different # of fits!" << std::endl;
+            std::cout << this->hist_fits.size() << ", " << ((TH1EFT*)h1)->hist_fits.size() << endl;
         }
         this->overflow_fit.addFit( ((TH1EFT*)h1)->overflow_fit );
         this->underflow_fit.addFit( ((TH1EFT*)h1)->underflow_fit );
@@ -166,10 +168,9 @@ Double_t TH1EFT::GetBinContent(Int_t bin, WCPoint wc_pt)
     return scale_value;
 }
 
-// Return a copy of the histogram which has bins scaled using the internal WCFits
-TH1EFT* TH1EFT::Scale(WCPoint wc_pt)
+void TH1EFT::Scale(WCPoint wc_pt)
 {
-    TH1EFT* new_hist = (TH1EFT*)this->Clone("clone");
+    //TH1EFT* new_hist = (TH1EFT*)this->Clone("clone");
     
     for (Int_t i = 1; i <= this->GetNbinsX(); i++) {
         Double_t old_content = this->GetBinContent(i);
@@ -184,11 +185,11 @@ TH1EFT* TH1EFT::Scale(WCPoint wc_pt)
             new_error = sqrt(abs(new_content));
         }
         
-        new_hist->SetBinContent(i,new_content);
-        new_hist->SetBinError(i,new_error);
+        this->SetBinContent(i,new_content);
+        this->SetBinError(i,new_error);
     }
 
-    return new_hist;
+    //return new_hist;
 }
 
 // Uniformly scale all fits by amt
