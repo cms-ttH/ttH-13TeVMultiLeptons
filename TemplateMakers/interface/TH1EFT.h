@@ -173,7 +173,7 @@ void TH1EFT::Scale(WCPoint wc_pt)
     //TH1EFT* new_hist = (TH1EFT*)this->Clone("clone");
     for (Int_t i = 1; i <= this->GetNbinsX(); i++) {
         Double_t new_content = this->GetBinContent(i,wc_pt);
-        Double_t new_error = (GetBinFit(i)).evalPointError(wc_pt);
+        Double_t new_error = (GetBinFit(i)).evalPointError(&wc_pt);
         this->SetBinContent(i,new_content);
         this->SetBinError(i,new_error);
     }

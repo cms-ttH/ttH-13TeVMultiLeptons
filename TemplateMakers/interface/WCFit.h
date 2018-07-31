@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <tuple>    // for std::pair
+#include <map>
 
 #include "WCPoint.h"
 #include "split_string.h"
@@ -21,7 +22,7 @@ class WCFit
 private:
     // Using vectors here instead of map to ensure ordering
     std::vector<std::pair<std::string,std::string> > names;
-    std::unordered_map< std::pair< std::pair<std::string,std::string>, std::pair<std::string,std::string> >, double > errormap;
+    std::map<std::pair<std::pair<std::string,std::string>,std::pair<std::string,std::string>>,double> errormap;
     std::vector<double> values; // The fit structure constants
     std::vector<WCPoint> points;
     std::string tag;    // Names the fit, for identification
@@ -244,7 +245,7 @@ public:
                 } 
                 
                 
-                val += x1*x2*x3*x4*errormap[{n1,n2},{n3,n4}];
+                val += x1*x2*x3*x4*errormap[{{n1,n2},{n3,n4}}];
                 
             }
             
@@ -339,8 +340,8 @@ public:
             
             for (uint j = 0; j < this->names.size(); j++) 
             {
-                if (errormap.find(names[i],names[j]) == m.end()) errormap[names[i],names[j]] = 0.; // necessary here?
-                errormap[names[i],names[j]] += c_x(i)*c_x(j);
+                if (errormap.find({names[i],names[j]}) == errormap.end()) errormap[{names[i],names[j]}] = 0.; // necessary here?
+                errormap[{names[i],names[j]}] += c_x(i)*c_x(j);
                 
             }
         }
@@ -356,8 +357,8 @@ public:
             for (uint j = 0; j < added_names.size(); j++)
             {
                 double amt2 = added_fit.getParameter(j);
-                if (errormap.find(added_names[i],added_names[j]) == m.end()) errormap[added_names[i],added_names[j]] = 0.; // necessary here.
-                errormap[added_names[i],added_names[j]] += amt*amt2;
+                if (errormap.find({added_names[i],added_names[j]}) == errormap.end()) errormap[{added_names[i],added_names[j]}] = 0.; // necessary here.
+                errormap[{added_names[i],added_names[j]}] += amt*amt2;
             }
         }
     }
@@ -366,7 +367,7 @@ public:
         for (uint i = 0; i < this->values.size(); i++) {
             this->values.at(i) = this->values.at(i)*_val;
         }
-        for (const auto thiserror : errormap)
+        for (auto &thiserror : errormap)
         {
             thiserror.second *= _val*_val; // scaled by square of val
         }
