@@ -244,7 +244,7 @@ public:
                 } 
                 
                 
-                val += x1*x2*x3*x4*valerrormap[{n1,n2},{n3,n4}];
+                val += x1*x2*x3*x4*errormap[{n1,n2},{n3,n4}];
                 
             }
             
