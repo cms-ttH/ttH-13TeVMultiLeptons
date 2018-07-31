@@ -21,6 +21,7 @@ class WCFit
 private:
     // Using vectors here instead of map to ensure ordering
     std::vector<std::pair<std::string,std::string> > names;
+    std::unordered_map< std::pair< std::pair<std::string,std::string>, std::pair<std::string,std::string> >, double > errormap;
     std::vector<double> values; // The fit structure constants
     std::vector<WCPoint> points;
     std::string tag;    // Names the fit, for identification
@@ -190,6 +191,76 @@ public:
         return this->evalPoint(&wc_pt);
     }
 
+    double evalPointError(WCPoint* pt) 
+    {
+        double val = 0.0;
+        double x1,x2,x3,x4;
+        
+        for (uint i = 0; i < this->names.size(); i++) 
+        {
+            std::string n1 = this->names.at(i).first;
+            std::string n2 = this->names.at(i).second;
+            
+            if (n1 == kSMstr) {
+                x1 = 1.0;
+            } else if (pt->inputs.find(n1) != pt->inputs.end()) {
+                x1 = pt->inputs.at(n1);
+            } else {
+                // If the WCPoint did not specify a WC, assume its strength is 0 (i.e. SM value)
+                x1 = 0.0;
+            }
+
+            if (n2 == kSMstr) {
+                x2 = 1.0;
+            } else if (pt->inputs.find(n2) != pt->inputs.end()) {
+                x2 = pt->inputs.at(n2);
+            } else {
+                // If the WCPoint did not specify a WC value, assume its strength is 0 (i.e. SM value)
+                x2 = 0.0;
+            }            
+            
+            
+            for (uint j = 0; j < this->names.size(); j++) 
+            {
+                std::string n3 = this->names.at(j).first;
+                std::string n4 = this->names.at(j).second;            
+                
+                if (n3 == kSMstr) {
+                    x3 = 1.0;
+                } else if (pt->inputs.find(n3) != pt->inputs.end()) {
+                    x3 = pt->inputs.at(n3);
+                } else {
+                    // If the WCPoint did not specify a WC, assume its strength is 0 (i.e. SM value)
+                    x3 = 0.0;
+                }
+
+                if (n4 == kSMstr) {
+                    x4 = 1.0;
+                } else if (pt->inputs.find(n4) != pt->inputs.end()) {
+                    x4 = pt->inputs.at(n4);
+                } else {
+                    // If the WCPoint did not specify a WC value, assume its strength is 0 (i.e. SM value)
+                    x4 = 0.0;
+                } 
+                
+                
+                val += x1*x2*x3*x4*valerrormap[{n1,n2},{n3,n4}];
+                
+            }
+            
+        }
+        
+        return sqrt(val);
+
+    }    
+
+    double evalPointError(std::string wc_name,double val) {
+        WCPoint wc_pt;
+        wc_pt.setStrength(wc_name,val);
+        return this->evalPointError(&wc_pt);
+    }
+
+
     // Changes a specific structure constant by the specified amount, if none found adds it to the list
     void addParameter(std::string n1, std::string n2, double amt) {
         for (uint i = 0; i < this->names.size(); i++) {
@@ -265,6 +336,13 @@ public:
         for (uint i = 0; i < this->names.size(); i++) {
             this->values.push_back(c_x(i));
             //std::cout << this->names.at(i).first << "*" << this->names.at(i).second << ": " << c_x(i) << std::endl;
+            
+            for (uint j = 0; j < this->names.size(); j++) 
+            {
+                if (errormap.find(names[i],names[j]) == m.end()) errormap[names[i],names[j]] = 0.; // necessary here?
+                errormap[names[i],names[j]] += c_x(i)*c_x(j);
+                
+            }
         }
     }
 
@@ -274,12 +352,23 @@ public:
         for (uint i = 0; i < added_names.size(); i++) {
             double amt = added_fit.getParameter(i);
             this->addParameter(added_names.at(i).first,added_names.at(i).second,amt);
+            
+            for (uint j = 0; j < added_names.size(); j++)
+            {
+                double amt2 = added_fit.getParameter(j);
+                if (errormap.find(added_names[i],added_names[j]) == m.end()) errormap[added_names[i],added_names[j]] = 0.; // necessary here.
+                errormap[added_names[i],added_names[j]] += amt*amt2;
+            }
         }
     }
-
+    
     void scale(double _val) {
         for (uint i = 0; i < this->values.size(); i++) {
             this->values.at(i) = this->values.at(i)*_val;
+        }
+        for (const auto thiserror : errormap)
+        {
+            thiserror.second *= _val*_val; // scaled by square of val
         }
     }
 
@@ -288,6 +377,7 @@ public:
         this->names.clear();
         this->values.clear();
         this->points.clear();
+        errormap.clear();
     }
 
     // Save the fit to indicated file

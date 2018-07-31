@@ -57,6 +57,7 @@ TH1EFT::TH1EFT(const char *name, const char *title, Int_t nbinsx, Double_t xlow,
     WCFit new_fit;
     for (Int_t i = 0; i < nbinsx; i++) {
         this->hist_fits.push_back(new_fit);
+        this->hist_fit_errors.push_back(new_fit);
     }
 }
 void TH1EFT::SetBins(Int_t nx, Double_t xmin, Double_t xmax)
@@ -65,9 +66,11 @@ void TH1EFT::SetBins(Int_t nx, Double_t xmin, Double_t xmax)
     // erased and hist_fits re-sized with empty fits.
     
     hist_fits.clear();
+    hist_fit_errors.clear();
     WCFit new_fit;
     for (Int_t i = 0; i < nx; i++) {
         this->hist_fits.push_back(new_fit);
+        this->hist_fit_errors.push_back(new_fit);
     }
     
     TH1::SetBins(nx, xmin, xmax);
@@ -171,28 +174,17 @@ Double_t TH1EFT::GetBinContent(Int_t bin, WCPoint wc_pt)
 void TH1EFT::Scale(WCPoint wc_pt)
 {
     //TH1EFT* new_hist = (TH1EFT*)this->Clone("clone");
-    
     for (Int_t i = 1; i <= this->GetNbinsX(); i++) {
-        Double_t old_content = this->GetBinContent(i);
-        Double_t old_error = this->GetBinError(i);
         Double_t new_content = this->GetBinContent(i,wc_pt);
-        Double_t new_error = 0.;
-        
-        if (old_content!=0. && old_error!=0.) {
-            new_error = old_error*new_content/old_content;
-        }
-        else {
-            new_error = sqrt(abs(new_content));
-        }
-        
+        Double_t new_error = (GetBinFit(i)).evalPointError(wc_pt);
         this->SetBinContent(i,new_content);
         this->SetBinError(i,new_error);
     }
-
+    
     //return new_hist;
 }
 
-// Uniformly scale all fits by amt
+// Uniformly scale all fits (and associated errors) by amt
 void TH1EFT::ScaleFits(double amt)
 {
     for (uint i = 0; i < this->hist_fits.size(); i++) {
