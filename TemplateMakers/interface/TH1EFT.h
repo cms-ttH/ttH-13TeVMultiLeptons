@@ -57,7 +57,6 @@ TH1EFT::TH1EFT(const char *name, const char *title, Int_t nbinsx, Double_t xlow,
     WCFit new_fit;
     for (Int_t i = 0; i < nbinsx; i++) {
         this->hist_fits.push_back(new_fit);
-        this->hist_fit_errors.push_back(new_fit);
     }
 }
 void TH1EFT::SetBins(Int_t nx, Double_t xmin, Double_t xmax)
@@ -66,11 +65,9 @@ void TH1EFT::SetBins(Int_t nx, Double_t xmin, Double_t xmax)
     // erased and hist_fits re-sized with empty fits.
     
     hist_fits.clear();
-    hist_fit_errors.clear();
     WCFit new_fit;
     for (Int_t i = 0; i < nx; i++) {
         this->hist_fits.push_back(new_fit);
-        this->hist_fit_errors.push_back(new_fit);
     }
     
     TH1::SetBins(nx, xmin, xmax);
