@@ -154,7 +154,7 @@ WCFit TH1EFT::GetSumFit()
 // Returns a bin scaled by the the corresponding fit evaluated at a particular WC point
 Double_t TH1EFT::GetBinContent(Int_t bin, WCPoint wc_pt)
 {
-    if (this->GetBinFit(bin).getDim() == 0) {
+    if (this->GetBinFit(bin).getDim() <= 0) {
         // We don't have a fit for this bin, return regular bin contents
         return GetBinContent(bin);
     }
@@ -171,6 +171,7 @@ Double_t TH1EFT::GetBinContent(Int_t bin, WCPoint wc_pt)
 void TH1EFT::Scale(WCPoint wc_pt)
 {
     //TH1EFT* new_hist = (TH1EFT*)this->Clone("clone");
+    
     for (Int_t i = 1; i <= this->GetNbinsX(); i++) {
         Double_t new_content = this->GetBinContent(i,wc_pt);
         Double_t new_error = (GetBinFit(i)).evalPointError(&wc_pt);
@@ -178,10 +179,9 @@ void TH1EFT::Scale(WCPoint wc_pt)
         this->SetBinError(i,new_error);
     }
     
-    //return new_hist;
 }
 
-// Uniformly scale all fits (and associated errors) by amt
+// Uniformly scale all fits by amt
 void TH1EFT::ScaleFits(double amt)
 {
     for (uint i = 0; i < this->hist_fits.size(); i++) {
