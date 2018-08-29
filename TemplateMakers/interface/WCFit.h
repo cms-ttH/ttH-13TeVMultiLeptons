@@ -306,6 +306,9 @@ public:
 
     //TODO: Change this to pass by reference
     void addFit(WCFit added_fit) {
+        
+        if (added_fit.size() == 0) return;
+
         if (this->size() == 0) {
             // We are an empty fit, set all values to those of the added fit
             this->names = added_fit.getNames();
@@ -320,14 +323,14 @@ public:
         }
 
         if (this->size() != added_fit.size()) {
-            std::cout << "[ERROR] WCFit mismatch in pairs! (addFit)" << std::endl;
+            std::cout << "[ERROR] WCFit mismatch in pairs! (addFit), this->size(): " << this->size() << ", added_fit.size(): " << added_fit.size() << std::endl;
             return;
         } else if (this->errSize() != added_fit.errSize()) {
             std::cout << "[ERROR] WCFit mismatch in error pairs! (addFit)" << std::endl;
             return;
         }
 
-        uint i;
+        uint i; // <- why is this out here?
         for (i = 0; i < this->errSize(); i++) {
             if (i < this->size()) {
                 this->coeffs.at(i) += added_fit.getCoefficient(i);
