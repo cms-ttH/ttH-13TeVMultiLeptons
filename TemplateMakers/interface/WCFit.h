@@ -116,10 +116,10 @@ public:
         int idx2 = -1;
         int which = -1;
         for (uint i = 0; i < this->names.size(); i++) {
-            if (n1 == this->names.at(i)) {
+            if (which == -1 && n1 == this->names.at(i)) {
                 idx1 = i;
                 which = 1;
-            } else if (n2 == this->names.at(i)) {
+            } else if (which == -1 && n2 == this->names.at(i)) {
                 idx1 = i;
                 which = 2;
             }
