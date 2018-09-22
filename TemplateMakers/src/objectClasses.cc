@@ -5,6 +5,9 @@
 //#include "ttH-13TeVMultiLeptons/TemplateMakers/interface/TH1EFT.h"
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/objectClasses.h"
 
+//ClassImp(WCPoint::WCPoint);
+//ClassImp(WCFit::WCFit);
+
 #if 1 /* 0 or 1 */
 
 ClassImp(ttH::Lepton);

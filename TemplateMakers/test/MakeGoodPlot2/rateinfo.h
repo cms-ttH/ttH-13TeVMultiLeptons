@@ -4,8 +4,15 @@ void MakeGoodPlot::get_rate_info()
     
     // ttH
 
+    // pb
     xsec[1]=0.5085*(1-0.577); // https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
-
+    q2up[1]=0.057*xsec[1];	
+    q2down[1]=-0.093*xsec[1];	
+    pdfup[1]=0.088*xsec[1];	
+    pdfdown[1]=-0.088*xsec[1];
+    
+    xsec[46]=0.5085;
+    
     // TTJets
     xsec[5] = 831.76; // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
     q2up[5]=19.77;
@@ -191,6 +198,29 @@ void MakeGoodPlot::get_rate_info()
     q2down[29]=1.773e-06;
     pdfup[29]=0.; // <- to be updated..
     pdfdown[29]=0.; // <- to be updated.. 
+    
+    
+    ////////// multidim EFT samples ////////
+    // these are not really xsecs but various adjustments to be applied to
+    // the differential xsecs already stored in the event weights
+    //    
+    // Inclusive LO xsecs:
+    // ttlnu: 0.11269   um..
+    // ttH:   0.386016  ok
+    // ttll:  0.074436  um..
+    // tllq:  0.0675964 ok
+    // ttbar: 493.386 ...
+    // https://arxiv.org/pdf/1802.07237.pdf
+    //
+    
+    //16D ttH
+    xsec[84]=1.-0.577; // (1-0.577)*(0.577/0.386) ?
+    //16D ttlnu
+    xsec[85]=1.; // k-factor?
+    //16D ttll
+    xsec[86]=1.; // k-factor?
+    //16D tllq
+    xsec[87]=1.; // k-factor?
     
     
     

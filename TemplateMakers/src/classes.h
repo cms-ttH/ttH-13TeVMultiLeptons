@@ -36,6 +36,7 @@ namespace {
     std::vector<ttH::GenParticle> dummy_genparticle_vector;
     std::vector< std::vector<ttH::GenParticle> > dummy_genparticle_vector_vector;
 
+    //std::map<std::pair<std::pair<std::string,std::string>,std::pair<std::string,std::string>>,double> dummy_errormap;
     //WCPoint dummy_wcpoint;
     //WCFit dummy_wcfit;
     //TH1EFT dummy_TH1EFT;

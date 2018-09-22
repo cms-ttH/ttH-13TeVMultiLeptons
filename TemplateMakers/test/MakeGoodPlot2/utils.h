@@ -1,13 +1,86 @@
-string systint2str(int syst)
+TString systint2str(int syst)
 {
     if (syst==0) return "";
     if (syst==1) return "JESUP";
     if (syst==2) return "JESDOWN";
     if (syst==3) return "FRUP";
     if (syst==4) return "FRDOWN";
+    if (syst==5) return "FRQCD";
+    if (syst==6) return "FRTTBAR";
+    if (syst==7) return "CERR1UP";
+    if (syst==8) return "CERR1DOWN";
+    if (syst==9) return "CERR2UP";
+    if (syst==10) return "CERR2DOWN";
+    if (syst==11) return "HFUP";
+    if (syst==12) return "HFDOWN";
+    if (syst==13) return "HFSTATS1UP";
+    if (syst==14) return "HFSTATS1DOWN";
+    if (syst==15) return "HFSTATS2UP";
+    if (syst==16) return "HFSTATS2DOWN";
+    if (syst==17) return "LFUP";
+    if (syst==18) return "LFDOWN";
+    if (syst==19) return "LFSTATS1UP";
+    if (syst==20) return "LFSTATS1DOWN";
+    if (syst==21) return "LFSTATS2UP";
+    if (syst==22) return "LFSTATS2DOWN";
+    if (syst==23) return "PDFUP";
+    if (syst==24) return "PDFDOWN";
+    if (syst==25) return "MURUP";
+    if (syst==26) return "MURDOWN";
+    if (syst==27) return "MUFUP";
+    if (syst==28) return "MUFDOWN";
 
     return "";
 }
+
+int getRobinBtagSyst(int syst)
+{
+
+    //// btag syst mapping:
+// CMS_ttHl_btag_cErr1 - up : 29
+// CMS_ttHl_btag_cErr2 - up : 31
+// CMS_ttHl_btag_HF - up : 17
+// CMS_ttHl_btag_LF - up : 19
+// CMS_ttHl16_btag_HFStats1 - up : 21
+// CMS_ttHl16_btag_HFStats2 - up : 25
+// CMS_ttHl16_btag_LFStats1 - up : 23
+// CMS_ttHl16_btag_LFStats2 - up : 27
+//     
+// CMS_ttHl_btag_cErr1 - down : 30
+// CMS_ttHl_btag_cErr2 - down : 32
+// CMS_ttHl_btag_HF - down : 18
+// CMS_ttHl_btag_LF - down : 20
+// CMS_ttHl16_btag_HFStats1 - down : 22
+// CMS_ttHl16_btag_HFStats2 - down : 26
+// CMS_ttHl16_btag_LFStats1 - down : 24
+// CMS_ttHl16_btag_LFStats2 - down : 28
+
+    
+    if (syst<1 || syst>22) return 0;
+    if (syst==1) return 11;
+    if (syst==2) return 12;
+    if (syst>2 && syst<7) return 0;
+    if (syst==7) return 29;
+    if (syst==8) return 30;
+    if (syst==9) return 31;
+    if (syst==10) return 32;
+    if (syst==11) return 17;
+    if (syst==12) return 18;
+    if (syst==13) return 21;
+    if (syst==14) return 22;
+    if (syst==15) return 25;
+    if (syst==16) return 26;
+    if (syst==17) return 19;
+    if (syst==18) return 20;
+    if (syst==19) return 23;
+    if (syst==20) return 24;
+    if (syst==21) return 27;
+    if (syst==22) return 28;
+    
+    cout << "should not be logically possible to get here (see utils.h)" << endl;
+    return -1;
+}
+
 
 TString int2ss(int theint)
 {
@@ -159,6 +232,9 @@ string gettagcategory(string lepcat, int tags)
 
 void clean_neg_bins(TH1 &negBinHist)
 {
+    //cout << "here a" << endl;
+    //cout << negBinHist.GetName() << endl;
+    
     // this works for 1D and 2D hists
     int numbinsx = negBinHist.GetNbinsX();
     int numbinsy = negBinHist.GetNbinsY();
@@ -170,14 +246,17 @@ void clean_neg_bins(TH1 &negBinHist)
         {                  
             int bin = negBinHist.GetBin(i,j);
             double bincont = negBinHist.GetBinContent(bin);
-
+            
             if (bincont<0.) 
             {
+                //cout << "here c" << endl;
                 negBinHist.SetBinContent(bin,0.);
                 negBinHist.SetBinError(bin,0.);
             }
         } 
     }
+    //cout << "here b" << endl;
+    
 }
 
 // normally you shouldn't need this (if objects were cleaned correctly when filling the trees):
@@ -200,6 +279,40 @@ template <typename coll1type, typename coll2type> coll1type cleanObjs(coll1type 
     return returnedCleanColl;
 }
     
-    
+
+int getComboSampInt(int sample)
+{
+    //Vjets
+    if (sample==6 || sample==16 || sample==7)
+    {
+        return 90;
+    }
+    //Diboson 
+    else if (sample==10 || sample==11 || sample==12)
+    {
+        return 91;
+    }        
+    //Triboson
+    else if (sample==22 || sample==23 || sample==24 || sample==25)
+    {
+        return 92;
+    }        
+    //SingleTop 
+    else if (sample==17 || sample==18 || sample==19 || sample==20 || sample==21)
+    {
+        return 93;
+    }        
+    //TTBar .. not sure if we want this, but leaving for now
+    else if (sample==13 || sample==14 || sample==15) // || sample==5)
+    {
+        return 5;
+    }
+    //data
+    else if (sample==100 || sample==101 || sample==102 || sample==103 || sample==104)
+    {
+        return 0;
+    }    
+    else return sample;
+}
     
     

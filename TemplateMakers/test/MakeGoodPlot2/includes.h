@@ -98,6 +98,7 @@
 #include "eventselection2.h"
 #include "triggerstudies_eventselection.h"
 #include "makedatadrivenbkgds.h"
+#include "eventfit.h"
 
 
 // Stuff used by MakeGoodPlot

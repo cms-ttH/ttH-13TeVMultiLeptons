@@ -4,9 +4,10 @@ class GoodPlot : public TCanvas
 {
     private:
         bool checkForCombo(MakeGoodPlot &thisMGP, TH1 *thehist, int sample);
+        bool divided=false;       
     
     public:
-        GoodPlot(TString name, string legopt="none");
+        GoodPlot(TString name, string legopt="none", int nx=1, int ny=1);
         TLegend *theleg;
         TH1D *sumdata=0;
         THStack *thestack;
@@ -18,7 +19,8 @@ class GoodPlot : public TCanvas
         TGraphAsymmErrors *sumMCbandNoStat;
         std::vector<TString> stacksamps;
         std::vector<int> stacksampints;
-        std::vector<int> stacksampintscomboaware; // doesn't do anything
+        //std::vector<int> stacksampintscomboaware; // doesn't do anything
+        vector<double> sumevents;        
         int globalfont=42;
         bool exists = false;
         double maxsofar = 0.;
@@ -33,14 +35,17 @@ class GoodPlot : public TCanvas
         TH1D *sumFakes=0;
         TH1D *finalnumer;
         TH1D *finaldenom;
+
         void addTGraphAsErrors(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i, TString ylabel="Efficiency", double ymin=0., double ymax=1.05);
         void addEfficiencyPlot(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i, bool printsfs=true);
         //void addROC(... // To Do
-        void addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
+        void addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC", int pad=1);
+        void addPlotTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, double wc=0., TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
         void addPlotData(MakeGoodPlot &thisMGP, TString thehist="same", int i=0, TString legtext="none", int rebin=-1, TString drawopt="E", bool withRatio=true);
         //void addPlotDDBkgd(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="E");
+        void addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TString thehistdenom, int i, TString legtext, int rebin=-1, TString drawopt="E", int pad=1);
         void addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC", TH1D *exthist=0);
-        
+        void addPlotNormTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, double wc=0., TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
         void addPlot2D(MakeGoodPlot &thisMGP, int i, TString thehist="same");
         
         //void addComparison( ... // To do: this should be after you already added the things you're going to compare,
@@ -59,7 +64,7 @@ class GoodPlot : public TCanvas
         void addCMSText(MakeGoodPlot &thisMGP);
 };
 
-GoodPlot::GoodPlot(TString name, string legopt) : TCanvas(name,"can",150,10,960,660) 
+GoodPlot::GoodPlot(TString name, string legopt, int nx, int ny) : TCanvas(name,"can",150,10,960,660) 
 {
     logplot = false;
     
@@ -69,6 +74,13 @@ GoodPlot::GoodPlot(TString name, string legopt) : TCanvas(name,"can",150,10,960,
     thebackstack = new THStack("backstack","");
     if (legopt!="none") drawleg = true;
     if (logplot) this->SetLogy(true);
+    if (nx<1 || ny<1) cout << "Invalid number of pads." << endl;
+    if (nx>1 || ny>1)
+    {
+        this->Divide(nx,ny,0,0); // turns out it's A LOT easier to do this beforehand.
+        divided=true;
+    }
+        
 }
 void GoodPlot::addCMSText(MakeGoodPlot &thisMGP)
 {
@@ -177,15 +189,21 @@ void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
     
     if (drawleg)
     {
-        if (legtext=="samp" && !exthist) theleg->AddEntry(myhist,thisMGP.sample_names[thisMGP.samples[i]],"L");
+        if (legtext=="samp") theleg->AddEntry(myhist,thisMGP.sample_names[thisMGP.samples[i]],"L");
         else theleg->AddEntry(myhist,legtext,"L");
         theleg->Draw();
     }
     if (i==(thisMGP.numsamples-1)) thisMGP.canvas.Add(this);
 }
-void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt)
+void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt, int pad)
 {
     this->cd();
+    if (divided) this->cd(pad);
+    int thisSamp = thisMGP.samples[i];
+    if (thehist=="same")
+    {
+        thehist=this->GetName();
+    }
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
     if (rebin>0) myhist->Rebin(rebin);
     myhist->SetLineWidth(2);
@@ -194,7 +212,8 @@ void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString le
     myhist->GetYaxis()->SetTitleFont(globalfont);     
     if (strcmp(myhist->GetYaxis()->GetTitle(),"")==0) myhist->GetYaxis()->SetTitle("Events");
 
-    clean_neg_bins(*myhist);    
+    clean_neg_bins(*myhist);
+    if (thisSamp<40) myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]); 
     if (maxsofar<myhist->GetMaximum()) maxsofar = myhist->GetMaximum();
     
     if (exists) 
@@ -203,7 +222,113 @@ void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString le
         TIter iter(this->GetListOfPrimitives());
         TH1D *h = (TH1D*)iter.Next();
         if (logplot) h->SetAxisRange(0.,1000.*maxsofar,"Y");
-        else h->SetAxisRange(0.,1.1*maxsofar,"Y");
+        else h->SetAxisRange(0.,1.25*maxsofar,"Y");
+    }
+    
+    myhist->Draw(drawopt);
+    exists = true;
+    
+    if (drawleg)
+    {
+        if (legtext=="samp") theleg->AddEntry(myhist,thisMGP.sample_names[thisMGP.samples[i]],"L");
+        else theleg->AddEntry(myhist,legtext,"L");
+        theleg->Draw();
+    } 
+    //if (i==(thisMGP.numsamples-1)) thisMGP.canvas.Add(this);
+}
+void GoodPlot::addPlotNormTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, double wc, TString legtext, int rebin, TString drawopt) 
+{
+    this->cd();
+    if (thehist=="auto") thehist=this->GetName();
+    TH1EFT *myhist = (TH1EFT*)thisMGP.hist[i].FindObject(thehist);
+
+    string foundwc="none";
+    vector<string> foundwcs;
+    
+    for (Int_t j = 1; j <= myhist->GetNbinsX(); j++)
+    {
+        auto dummyfit = myhist->GetBinFit(j);
+        //myhist->DumpFits();
+        for (auto thiswc : thisMGP.wilsoncoeffs) 
+        {
+            if (dummyfit.hasCoefficient(thiswc))
+            {
+                foundwc=thiswc;
+                //break; // stop after first one (1-D)
+                foundwcs.push_back(thiswc); // for multi-dim
+            }
+        }
+        if (foundwc!="none") break;
+    }
+    if (foundwc=="none") cout << "Warning: did not find a wc." << endl;
+
+    WCPoint pt;
+    //pt.setStrength(foundwc,wc); // 1-D
+    for (auto thiswc : foundwcs) pt.setStrength(thiswc,wc); // multi-dim: sets all the WCs to the same value
+    //auto myhist2 = (TH1EFT*)myhist->Scale(pt);
+    myhist->Scale(pt);
+    this->addPlotNorm(thisMGP, thehist, i, legtext, rebin, drawopt, myhist);
+}
+void GoodPlot::addPlotTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, double wc, TString legtext, int rebin, TString drawopt)
+{
+    this->cd();
+    int thisSamp = thisMGP.samples[i];
+    if (thehist=="same")
+    {
+        thehist=this->GetName();
+    }
+    TH1EFT *myhist = (TH1EFT*)thisMGP.hist[i].FindObject(thehist);
+
+    if (rebin>0)
+    {
+        cout << "Warning: rebinning a TH1EFT! This is probably not what you meant to do!" << endl;
+        myhist->Rebin(rebin);
+    }
+    myhist->SetLineWidth(2);
+    //myhist->SetLineColor(1);
+    myhist->GetXaxis()->SetTitleFont(globalfont);
+    myhist->GetYaxis()->SetTitleFont(globalfont);     
+    if (strcmp(myhist->GetYaxis()->GetTitle(),"")==0) myhist->GetYaxis()->SetTitle("Events");
+
+    clean_neg_bins(*myhist);
+    
+    cout << "asdfasdfasdfasdf" << endl;
+    cout << myhist->GetNbinsX() << endl;
+    
+    string foundwc="none";
+    for (Int_t j = 1; j <= myhist->GetNbinsX(); j++)
+    {
+        auto dummyfit = myhist->GetBinFit(j);
+        myhist->DumpFits();
+        //cout << myhist->hist_fits.size() << endl;
+        for (auto thiswc : thisMGP.wilsoncoeffs) 
+        {
+            if (dummyfit.hasCoefficient(thiswc))
+            {
+                foundwc=thiswc;
+                break; // stop after first one (should eventually change this for multi-dim)
+            }
+        }
+        if (foundwc!="none") break;
+    }
+    if (foundwc=="none") cout << "Warning: did not find a wc." << endl;
+
+    WCPoint pt;
+    pt.setStrength(foundwc,wc);
+    //auto myhist2 = (TH1EFT*)myhist->Scale(pt);
+    myhist->Scale(pt);
+    double ffact = (1-0.577); // (1-0.577)*(0.577/0.386);
+    myhist->Scale(thisMGP.lumi*ffact);
+    
+    if (maxsofar<myhist->GetMaximum()) maxsofar = myhist->GetMaximum();
+    
+    if (exists) 
+    {
+        drawopt=drawopt+",same";
+        TIter iter(this->GetListOfPrimitives());
+        TH1D *h = (TH1D*)iter.Next();
+        if (logplot) h->SetAxisRange(0.,1000.*maxsofar,"Y");
+        else h->SetAxisRange(0.,1.25*maxsofar,"Y");
     }
     
     myhist->Draw(drawopt);
@@ -218,6 +343,172 @@ void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString le
     if (i==(thisMGP.numsamples-1)) thisMGP.canvas.Add(this);
 }
 
+
+// in progress..
+void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TString thehistdenom, int i, TString legtext, int rebin, TString drawopt, int pad)
+{
+    // the plot should already have a top part
+    this->cd();
+    this->SetCanvasSize(960,900); // really should be (960,943), but due to margins, etc., it's a little different
+    if (divided) 
+    {
+        // hardcoded to 2 pads (1 up and 1 down),
+        // which should be the case 99% of the
+        // time with a ratio plot
+        this->cd(1);
+        gPad->SetPad(0.0,0.3,1.0,1.0);
+        //this->cd(pad); // even needed?
+        this->cd(2);
+        gPad->SetPad(0.0,0.0,1.0,0.3);
+    }
+        
+        
+    //auto toppad = (TVirtualPad*)this->cd()->Clone();
+    //TPad *toppad = (TPad*)gPad->Clone();
+    
+    // assuming we're not doing "same" or anything like that here
+    auto myhistnumer = (TH1D*)thisMGP.hist[i].FindObject(thehistnumer)->Clone();
+    auto myhistdenom = (TH1D*)thisMGP.hist[i].FindObject(thehistdenom);
+    
+    // *I think* should have already been rebinned if needed..
+    //    if (rebin>0) myhist->Rebin(rebin);
+    
+    cout << "a s d f" << endl;
+    
+//     this->GetListOfPrimitives()->Print();
+//     TIter iter(this->GetListOfPrimitives());
+//     TH1 *dummy;
+
+    
+    
+    
+    //if (!this->cd(1)) // couldn't get this protection to work right for some reason. 
+    //{
+        //this->Divide(1,2,0,0); // first divide this canvas into two sections
+        // now move to top pad:        
+        //this->cd(1);
+        //gPad->SetPad("mainPad","",0.0,0.3,1.0,1.0);
+        //gPad->SetBorderSize(0);
+        //gPad->SetFillColor(0);
+        ////gPad->Modified();
+        //gPad->SetPad(0.0,0.3,1.0,1.0);
+        
+        // works (sort of)
+//         TPad *toppad = new TPad("toppad","",0.0,0.3,1.0,1.0);
+//         toppad->cd();
+//         this->DrawClonePad();
+//         //toppad->SetPad("toppad","",0.0,0.3,1.0,1.0);
+//         this->cd();
+//         //toppad->SetPad(0.0,0.3,1.0,1.0);
+//         toppad->Draw();
+        
+        
+        //TPad *toppad = new TPad("toppad","",0.0,0.3,1.0,1.0);
+        //toppad->cd();
+        //this->DrawClonePad();
+        //toppad->SetPad("toppad","",0.0,0.3,1.0,1.0);
+        //this->cd();
+        //toppad->SetPad(0.0,0.3,1.0,1.0);
+        //toppad->Draw();
+        
+        
+        
+    //}
+    cout << "asdf" << endl;
+
+    //this->GetListOfPrimitives()->Print();
+    //myhistdenom->Draw();
+
+//    bool wasdrawn = false;
+//     while (dummy = (TH1*)iter())
+//     {
+//         if (!wasdrawn) dummy->Draw();
+//         else dummy->Draw("same");
+//         wasdrawn = true;
+//     }
+    cout << "asdfasdf" << endl;
+    // move to bottom pad:
+    //this->cd(2);
+    //TPad *ratiopad = new TPad("ratioPad","",0.0,0.0,1.0,0.3);
+    //ratiopad->cd();
+    //gPad->SetPad("ratioPad","",0.0,0.0,1.0,0.3);
+    gPad->SetBorderSize(0);
+    gPad->SetFillColor(0);
+    //gPad->SetGridx(0);
+    cout << "asdfasdfasdf" << endl;
+
+    // make the ratio
+    myhistnumer->Add(myhistdenom,-1); // comment this if not taking difference first
+    myhistnumer->Divide(myhistdenom);
+    
+    
+    myhistnumer->GetYaxis()->SetTitle(legtext);
+    //myhistnumer->GetYaxis()->SetRangeUser(0.1,1.9); // ratio only
+    myhistnumer->GetYaxis()->SetRangeUser(-1.1,1.1); // difference first
+    
+    
+    // copy settings from top plot:
+//     myhistnumer->SetLabelSize(myhistdenom->GetLabelSize());
+//     //dataMCratio->SetTitleOffset(sumback->GetTitleOffset("Y"), "Y");
+//     myhistnumer->SetTitleSize(myhistdenom->GetTitleSize("Y")*0.7/0.3, "Y");
+//     //dataMCratio->SetTitleOffset(sumback->GetTitleOffset("X"), "X");
+//     myhistnumer->SetTitleSize(myhistdenom->GetTitleSize("X")*0.7/0.3, "X");
+    
+    
+    
+//    TGraphAsymmErrors *sumMCbandRatio = new TGraphAsymmErrors(*sumMCband);
+//    
+//     for (int j=0; j<dataMCratio->GetNbinsX(); j++)
+//     {
+//         double xpoint, ypoint;
+//         int dummyint = sumMCbandRatio->GetPoint(j,xpoint,ypoint);
+//         double errorup = sumMCbandRatio->GetErrorYhigh(j)/ypoint;
+//         double errordown = sumMCbandRatio->GetErrorYlow(j)/ypoint;             
+//         sumMCbandRatio->SetPoint(j,xpoint,1.);
+//         sumMCbandRatio->SetPointEYhigh(j,errorup);
+//         sumMCbandRatio->SetPointEYlow(j,errordown);
+//     }   
+//     
+//     sumMCbandRatio->Draw("2");
+
+//     TLine lineAt1;
+//     lineAt1.SetLineColor(2);
+//     lineAt1.SetLineWidth(2);
+//     lineAt1.DrawLine(dataMCratio->GetXaxis()->GetBinLowEdge(1),1,dataMCratio->GetXaxis()->GetBinUpEdge(dataMCratio->GetNbinsX()),1);
+    
+    
+    
+    
+    //myhistnumer->Draw("same");
+    myhistnumer->Draw(drawopt);
+    //this->cd();
+    //ratiopad->Draw();
+    
+    
+    
+//     auto oldtopmargin = gPad->GetTopMargin();
+//     //gPad->SetTopMargin(gPad->GetTopMargin()/2.);
+//     gPad->SetTopMargin(0);
+//     //gPad->SetBottomMargin(gPad->GetBottomMargin()+(gPad->GetTopMargin()/2.));
+//     gPad->SetBottomMargin(gPad->GetBottomMargin()+oldtopmargin);
+
+//    this->Update();
+    
+    // works:
+// root [2] asdf.Draw()
+// Info in <TCanvas::MakeDefCanvas>:  created default TCanvas with name c1
+// root [3] auto pad = (TPad*)gPad->Clone()
+// (class TPad*)0x7ff264717330
+// root [4] c1->Divide(1,2,0,0);
+// root [5] c1->cd(1);
+// root [6] pad->SetPad(0.0,0.3,1.0,1.0);
+// root [7] pad->Draw()
+
+}
+
+
+
+
 void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt, bool withRatio)
 {
     this->cd();
@@ -226,8 +517,8 @@ void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
         thehist=this->GetName();
     }
     auto myhist = (TH1D*)thisMGP.hist[i].FindObject(thehist);
-
     if (rebin>0) myhist->Rebin(rebin);
+    sumevents.push_back(myhist->Integral());
     myhist->SetLineWidth(2);
     myhist->SetLineColor(1); // should already be this but whatever
     myhist->SetMarkerStyle(10);
@@ -311,7 +602,7 @@ void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
             // copy settings from top plot:
             dataMCratio->Divide(sumdata,sumback);
             dataMCratio->GetYaxis()->SetTitle("Data/MC");
-            dataMCratio->GetYaxis()->SetRangeUser(0.5,1.5);
+            dataMCratio->GetYaxis()->SetRangeUser(0.1,1.9);
             dataMCratio->SetLabelSize(sumback->GetLabelSize());
             //dataMCratio->SetTitleOffset(sumback->GetTitleOffset("Y"), "Y");
             dataMCratio->SetTitleSize(sumback->GetTitleSize("Y")*0.7/0.3, "Y");
@@ -376,6 +667,8 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     this->cd();
 
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
+    //TH1D *myhist = ((TH1EFT*)thisMGP.hist[i].FindObject(thehist))->Scale(WCPoint()); // SM value
+    //auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist)->Clone("clone");
     if (rebin>0) myhist->Rebin(rebin);
     clean_neg_bins(*myhist);       
     
@@ -384,8 +677,8 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     int numsamps = thisMGP.numsamples;
     stacksamps.push_back(thisMGP.sample_names[thisSamp]);
     stacksampints.push_back(thisSamp);
-    
-    if (thisSamp<94) myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);    
+    if (thisSamp>=40 && thisSamp<94)  cout << "Trying to add a custom EFT sample to the stack (not yet implemented!)" << endl;
+    if (thisSamp<40) myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);    
     myhist->SetLineColor(thisMGP.color[thisSamp]);
     
     bool isSig = (thisSamp==1 || thisSamp==8 || thisSamp==9 || thisSamp==26 || thisSamp==27 || thisSamp==28 || thisSamp==29) ? true : false;
@@ -395,9 +688,13 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     if (logplot) myhist->SetMinimum(0.1);
     
     thestack->Add(myhist);  
+    sumevents.push_back(myhist->Integral());
+    
     if (!isSig) thebackstack->Add(myhist);
     bool addedtocombo = checkForCombo(thisMGP, myhist, thisSamp);
     //if (addedtocombo) cout << "added " << thehist << " to combo hist" << endl;
+    
+    ////////////////// revist this section //////////////////
     
     // add the systs:
     // comment this out if not needed and causing problems
@@ -429,7 +726,8 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     syststack[5]->Add(myhistpdfDOWN);    
     syststack[6]->Add(myhistQ2UP);
     syststack[7]->Add(myhistQ2DOWN);
-        
+    ////////////////////////////////////////////////////////
+    
     
     if (logplot) thestack->SetMinimum(0.1);
     thestack->Draw("hist");
@@ -465,7 +763,9 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
         thehist=this->GetName();
     }
     addStack(thisMGP, thehist, i, legtext, rebin); // <- this should already have scaled the hist, cleaned neg bins, rebinned etc.
-    auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
+    auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist); // <- pointer to exact same object you modified in addStack
+    //TH1D *myhist = ((TH1EFT*)thisMGP.hist[i].FindObject(thehist))->Scale(WCPoint()); // SM value
+    //auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist)->Clone("clone");
     auto stackarray = thebackstack->GetStack();   
     if (stackarray->GetEntries()<1)
     {

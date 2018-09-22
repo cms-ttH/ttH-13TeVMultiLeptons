@@ -96,6 +96,13 @@ std::unordered_map<string,int> sample_TString2int_map()
     dummy["ttlnu_ctW"]  = 82;
     dummy["ttlnu_ctZ"]  = 83;
     
+    // EFT multidim
+    dummy["ttH_multidim"]   = 84;
+    dummy["ttlnu_multidim"] = 85;
+    dummy["ttll_multidim"]  = 86;
+    dummy["tllq_multidim"]  = 87;    
+    
+    
     dummy["QFs"]  = 94;
     dummy["Fakes"]  = 95;
 
@@ -183,7 +190,10 @@ TString loadsample(const int samp)
     //TString thisround = "lobster_trees__EFT_noSkim_test_10_5_18";
     //TString thisround = "lobster_trees__EFT_for_trigSFs_15_5_18";
     //TString thisround = "lobster_trees__lobster_trees__EFT_test_25_5_18";
-    TString thisround = "lobster_trees__lobster_trees__EFT_test_14_6_18";
+    //TString thisround = "lobster_trees__lobster_trees__EFT_test_14_6_18";
+    //TString thisround = "lobster_trees__EFT_test_multidim_samps_ext_16_7_18";
+    //TString thisround = "lobster_trees__EFT_test_for_pdfs_central_ttH_13_9_18";
+    TString thisround = "lobster_trees__EFT_test_for_pdfs_EFT_ttH_13_9_18";
     
     TString basedir = "/hadoop/store/user/gesmith/"+thisround+"/";  // The directory on hadoop where your samples are located.
     if (!atND) basedir = "/store/ndpc6disk2/gesmith/crab/";         // The directory on ndpc disk where your samples are located.

@@ -141,6 +141,6 @@ void HistMaker::fixcollections()
         
     preselected_jets = simpleJetCut(*preselected_jets_intree,"pt",30.0);
     preselected_jets_JECup = simpleJetCut(*preselected_jets_JECup_intree,"pt",30.0);
-    preselected_jets_JECdown = simpleJetCut(*preselected_jets_JECup_intree,"pt",30.0);  
+    preselected_jets_JECdown = simpleJetCut(*preselected_jets_JECdown_intree,"pt",30.0);  
     
 }

@@ -4,7 +4,7 @@ void wrapper_lobster(TString sample, TString input_filenames, bool doQFs=false, 
 {
     // input_filenames -> just "files.txt" provided by lobster. open and read files, add to chain as doing already below.
 
-    bool debug=false;
+    bool debug = false;
     
     if (debug) cout << " " << endl;
     if (debug) cout << "At the top of wrapper function" << endl;    
@@ -23,16 +23,20 @@ void wrapper_lobster(TString sample, TString input_filenames, bool doQFs=false, 
     if (debug) cout << "About to run over " << numfiles << " files" << endl;
                 
     ch->AddFileInfoList(fc.GetList());
-    if (debug) cout << ch->GetEntries() << endl;
+    //if (debug) cout << ch->GetEntries() << endl;
     TTreeReader reader(ch);
 
     //////////////////////////////////////////////////
     // Fill histograms
-    
+    if (debug) cout << "Before Histmaker" << endl;
     HistMaker *histmaker = new HistMaker(sample,doQFs,dofakes);
+    if (debug) cout << "Before setBranchAddresses" << endl;
     histmaker->setBranchAddresses(reader);
+    if (debug) cout << "Before bookHistos" << endl;
     histmaker->bookHistos();
+    if (debug) cout << "Before run" << endl;
     histmaker->run(reader); // contains the while loop
+    if (debug) cout << "Before collectResults" << endl;
     histmaker->collectResults();
     auto sumObjArray = histmaker->objArray;
     if (debug) cout << "Done with HistMaker" << endl;

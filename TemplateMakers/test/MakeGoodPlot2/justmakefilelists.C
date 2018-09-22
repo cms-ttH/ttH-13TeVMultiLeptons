@@ -3,7 +3,7 @@
 
 void justmakefilelists()
 {
-    for (int i=1; i<105; i++)
+    for (int i=84; i<85; i++) // 1-105
     {
         // This will print some warnings; you can ignore them.
         TString samp = loadsample(i);

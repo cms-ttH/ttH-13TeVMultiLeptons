@@ -2,6 +2,7 @@
 
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/OSTwoLepAna.h"
 
+
 OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) ://Anything that needs to be done at creation time
   hltPrescaleProvider_(constructparams, consumesCollector(), *this)
 {
@@ -32,6 +33,10 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) ://Anything t
     badmu_token_ = consumes<int>(edm::InputTag("removeBadAndCloneGlobalMuons"));
     puInfoToken = consumes <std::vector< PileupSummaryInfo > > (edm::InputTag(std::string("slimmedAddPileupInfo")));
 
+    // pdf weights
+    // lheRunToken_ = consumes<LHERunInfoProduct, edm::InRun>(edm::InputTag("externalLHEProducer"));
+    consumes<LHERunInfoProduct, edm::InRun>(edm::InputTag("externalLHEProducer"));
+
 }
 
 OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction time
@@ -46,6 +51,12 @@ void OSTwoLepAna::beginJob()
 
     // book histos:
     numInitialWeightedMCevents = newfs->make<TH1D>("numInitialWeightedMCevents","numInitialWeightedMCevents",1,1,2);
+    numSummedWeights_pdfUp = newfs->make<TH1D>("numSummedWeights_pdfUp","numSummedWeights for pdfUp",1,1,2);
+    numSummedWeights_pdfDown = newfs->make<TH1D>("numSummedWeights_pdfDown","numSummedWeights for pdfDown",1,1,2);
+    numSummedWeights_muRUp = newfs->make<TH1D>("numSummedWeights_muRUp","numSummedWeights for muRUp",1,1,2);
+    numSummedWeights_muRDown = newfs->make<TH1D>("numSummedWeights_muRDown","numSummedWeights for muRDown",1,1,2);
+    numSummedWeights_muFUp = newfs->make<TH1D>("numSummedWeights_muFUp","numSummedWeights for muFUp",1,1,2);
+    numSummedWeights_muFDown = newfs->make<TH1D>("numSummedWeights_muFDown","numSummedWeights for muFDown",1,1,2);
 
     // add the tree:
     summaryTree = newfs->make<TTree>("summaryTree", "Summary Event Values");  
@@ -55,6 +66,16 @@ void OSTwoLepAna::beginJob()
     singleMuCount=0;
     singleTauCount=0;
     singleJetCount=0;
+
+    nnpdfWeightSumUp=0.;
+    nnpdfWeightSumDown=0.;
+    
+    muRWeightSumUp=0.;
+    muRWeightSumDown=0.;
+    
+    muFWeightSumUp=0.;
+    muFWeightSumDown=0.;
+
 
 }
 
@@ -68,6 +89,25 @@ void OSTwoLepAna::endJob() {
     cout << "singleEleCount: " << singleEleCount << endl;
     cout << "singleTauCount: " << singleTauCount << endl;
     cout << "singleJetCount: " << singleJetCount << endl;
+
+    cout << "nnpdfWeightSumUp: " << nnpdfWeightSumUp << endl;
+    cout << "nnpdfWeightSumDown: " << nnpdfWeightSumDown << endl;
+
+    cout << "muRWeightSumUp: " << muRWeightSumUp << endl;
+    cout << "muRWeightSumDown: " << muRWeightSumDown << endl;
+
+    cout << "muFWeightSumUp: " << muFWeightSumUp << endl;
+    cout << "muFWeightSumDown: " << muFWeightSumDown << endl;
+
+    numSummedWeights_pdfUp->Fill(1, nnpdfWeightSumUp);
+    numSummedWeights_pdfDown->Fill(1, nnpdfWeightSumDown);
+
+    numSummedWeights_muRUp->Fill(1, muRWeightSumUp);
+    numSummedWeights_muRDown->Fill(1, muRWeightSumDown);
+
+    numSummedWeights_muFUp->Fill(1, muFWeightSumUp);
+    numSummedWeights_muFDown->Fill(1, muFWeightSumDown);
+
 } // job completion (cutflow table, etc.)
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
@@ -135,6 +175,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         event.getByToken(lheInfo_token_,LHEInfo);
 
         mcwgt_intree = GenInfo->weight();                   // <- gen-level weight
+	    // make it +/-1!
+	    mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;
+
         originalXWGTUP_intree = LHEInfo->originalXWGTUP();  // original cross-section
         // Add EFT weights
         for (auto wgt_info: LHEInfo->weights())
@@ -143,12 +186,103 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             std::size_t foundstr = LHEwgtstr.find("EFTrwgt"); // only save our EFT weights
             if ( foundstr!=std::string::npos ) eftwgts_intree[wgt_info.id] = wgt_info.wgt;
             //eftwgts_intree[wgt_info.id] = wgt_info.wgt;
+
+            // try add Q^2 weights
+            // std::cout << "==>" << wgt_info.id << std::endl;
+            // if ( LHEwgtstr.find("rwgt")==std::string::npos ) 
+            //   {
+            // 	if ( stoi(wgt_info.id) == 1006 ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
+            // 	if ( stoi(wgt_info.id) == 1011 ) muRWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
+        
+            // 	if ( stoi(wgt_info.id) == 1016 ) muFWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
+            // 	if ( stoi(wgt_info.id) == 1031 ) muFWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
+            //   }
+            if ( LHEwgtstr.find("1006")!=std::string::npos ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
+            if ( LHEwgtstr.find("1011")!=std::string::npos ) muRWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
+        
+            if ( LHEwgtstr.find("1016")!=std::string::npos ) muFWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
+            if ( LHEwgtstr.find("1031")!=std::string::npos ) muFWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
+
         }
+
+        muRWeightSumUp += muRWeightUp_intree*mcwgt_intree;
+        muRWeightSumDown += muRWeightDown_intree*mcwgt_intree;
+
+        muFWeightSumUp += muFWeightUp_intree*mcwgt_intree;
+        muFWeightSumDown += muFWeightDown_intree*mcwgt_intree;
+
+        //-------------
+        // pdf weights and Q^2 weights
+        //-------------
+        std::vector<double> nnpdfWeights;
+
+        // create the PDF
+        LHAPDF::PDFSet nnpdfSet("NNPDF31_nlo_hessian_pdfas"); // NNPDF30_nlo_as_0118 = central samples    //NNPDF31_nlo_hessian_pdfas  = EFT samples
+
+        // // sums for renormalization
+        // double nnpdfWeightSumUp = 0.;
+        // double nnpdfWeightSumDown = 0.;
+
+        // pdf ID start and end ???
+        int pdfID_start = 305800;  //305800; //NNPDF31_nlo_hessian_pdfas       //260001; //NNPDF30_nlo_as_0118
+        int pdfID_end = 305902;    //305902; //NNPDF31_nlo_hessian_pdfas       //260100; //NNPDF30_nlo_as_0118
+
+        // obtain weights
+        auto& mcWeights = LHEInfo->weights();
+        for (size_t i = 0; i < mcWeights.size(); i++)
+        {
+            // use the mapping to identify the weight
+                auto wgtstr = string(mcWeights[i].id);
+            std::size_t foundstr = wgtstr.find("rwgt"); ////
+            if ( foundstr!=std::string::npos ) continue;
+
+            ////
+            int idInt = stoi(mcWeights[i].id);
+            if (pdfIdMap_.find(idInt) != pdfIdMap_.end())
+            {
+                int setId = pdfIdMap_[idInt];
+                // std::cout << "  ---->" << wgtstr << " : " << setId << std::endl;
+                if (setId >= pdfID_start && setId <= pdfID_end) // NNPDF30_nlo_as_0118
+                {
+                    // divide by original weight to get scale-factor-like number
+                    nnpdfWeights.push_back(mcWeights[i].wgt / originalXWGTUP_intree);
+                }
+            }
+        }
+
+        // create the combined up/down variations
+        double weightUp = 1.;
+        double weightDown = 1.;
+        if (nnpdfWeights.size() > 0)
+        {
+            // in rare cases it might happen that not all weights are present, so in order to
+            // use LHAPDF's uncertainty function, we fill up the vector
+            // this is expected not to have a big impact
+            while ((int)nnpdfWeights.size() < (pdfID_end - pdfID_start + 1))
+            {
+                nnpdfWeights.push_back(1.);
+            }
+            // first value must be the nominal value, i.e. 1 since we normalize by original weight
+            // nnpdfWeights.insert(nnpdfWeights.begin(), 1.);
+            // calculate combined weights
+            // std::cout << "nnpdfWeights size is: " << (int)nnpdfWeights.size() << std::endl;
+            const LHAPDF::PDFUncertainty pdfUnc = nnpdfSet.uncertainty(nnpdfWeights, 68.268949);
+            weightUp = pdfUnc.central + pdfUnc.errplus;
+            weightDown = pdfUnc.central - pdfUnc.errminus;
+        }
+
+        nnpdfWeightUp_intree = weightUp;
+        nnpdfWeightDown_intree = weightDown;
+
+        // add to sums
+        nnpdfWeightSumUp += weightUp*mcwgt_intree;
+        nnpdfWeightSumDown += weightDown*mcwgt_intree;
+
     }
 
     ///////////////////////////
     // make it +/-1!
-    mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;
+    // mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;
 
     double weight = 1.;                 // <- analysis weight 
     weight *= mcwgt_intree;                 // MC-only (flag to be added if nec)
@@ -616,6 +750,51 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
         }
     }
 }
+
+    /////////////////
+    //// pdf weights mapping
+    /////////////////
+    edm::Handle<LHERunInfoProduct> runInfo;
+    //   run.getByLabel(lheRunToken_, runInfo); //getByToken not work
+    run.getByLabel("externalLHEProducer", runInfo);
+
+    std::string weightTag = "initrwgt";
+    std::string startStr = "&lt;weight id=";
+    std::string setStr = " MUR=\"1.0\" MUF=\"1.0\" PDF=\"";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it???
+    std::string endStr = " &gt; PDF=305800"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>";
+
+    for (std::vector<LHERunInfoProduct::Header>::const_iterator it = runInfo->headers_begin(); it != runInfo->headers_end(); it++)
+    {
+        if (it->tag() != weightTag)
+	    {
+            continue;
+	    }
+
+	    std::vector<std::string> lines = it->lines();
+        for (size_t i = 0; i < lines.size(); i++)
+	    {
+	        // std::cout << lines[i] << std::endl;
+            size_t startPos = lines[i].find(startStr);
+            size_t setPos = lines[i].find(setStr);
+            size_t endPos = lines[i].find(endStr);
+            if (startPos == std::string::npos || setPos == std::string::npos || endPos == std::string::npos)
+	        {
+                continue;
+	        }
+	        std::string weightId = lines[i].substr(startPos + startStr.size() + 1, setPos - startPos - startStr.size() - 2); // this has changed, modify it???
+	        std::string setId = lines[i].substr(setPos + setStr.size(), endPos - setPos - setStr.size() - 1); // this has changed, modify it???
+	        // std::cout << weightId << " : " << setId << std::endl;
+            try
+	        {
+                pdfIdMap_[stoi(weightId)] = stoi(setId);
+	        }
+            catch (...)
+	        {
+		        std::cerr << "error while parsing the lhe run xml header: ";
+		        std::cerr << "cannot interpret as ints:" << weightId << " -> " << setId << std::endl;
+	        }
+	    }
+    }
 
 
 }

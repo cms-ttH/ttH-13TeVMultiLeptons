@@ -27,7 +27,7 @@ double get_wall_time()
     return (double)time.tv_sec + (double)time.tv_usec * .000001;
 }
 
-// maybe not really nec.? (I think fabs is really double by now)
+// maybe not really nec.? (I think fabs is really double by now) <- yes
 double dabs(double value)
 {
     if (value>=0.0) return value;
@@ -64,15 +64,6 @@ template <typename doubletype> doubletype atestfunction(doubletype input)
 //     
 //     return val;
 // }
-
-// works!
-template <typename doubletype> doubletype atestfunction3(doubletype input)
-{
-    //multiply by 2:
-    doubletype val = 2*input;
-    
-    return val;
-}
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -643,15 +634,6 @@ double getMetLd(vector<ttH::MET> met,vector<ttH::Lepton> leps, vector<ttH::Jet> 
 
 
 ////////////////////////////////////////////////////////////////////////////
-
-double getFinalBDTOSTwoLep()
-{
-    // still need to do this...
-    return 0.;
-}
-
-////////////////////////////////////////////////////////////////////////////
-
 /// event shapes ///
 
 template <typename coll1type, typename coll2type, typename coll3type> void getSp(coll1type leptons, coll2type met, coll3type jets, double &aplanarity, double &sphericity) {

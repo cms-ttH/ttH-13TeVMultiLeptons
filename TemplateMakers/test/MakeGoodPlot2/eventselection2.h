@@ -43,6 +43,20 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
     int numPSmuons = preselected_muons_intree->size();
     int numPSeles = preselected_electrons_intree->size();
     int numPSleps = preselected_leptons_intree->size();
+    
+    //if (numleps>=3) cout << "found one" << endl;
+    
+    // SRs and CRs
+    //bool cr2lss = jetsize>=2 && jetsize<=3 && tagsize>=1;
+    //bool cr2lss = jetsize>=1;
+    //bool cr2lss = jetsize>=2 && tagsize==1;
+    bool cr2lss = jetsize>=1 &&  jetsize<=2 && tagsize==1;
+    bool cr3l = jetsize>=1 && tagsize==0;
+    bool sr2lss = jetsize>=4 && tagsize>=2;
+    bool sr3l = jetsize>=2 && tagsize>=1;
+    
+    bool jetbpass2l = sr2lss; // change this if switching between SRs / CRs...
+    bool jetbpass3l = sr3l; // change this if switching between SRs / CRs...
         
     bool testcutpass = true;
     
@@ -59,10 +73,12 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
            
         if (mindilepmass>12)
         {            
+            //if (numleps>=3) cout << "here1" << endl;
             if ( (leptons[0].correctedPt>25) && (leptons[1].correctedPt>20 || (leptons[1].correctedPt>15 && !tightercuts)) ) 
             {
-
-                if ( (numleps==2 || (useFakeable && numleps>=2)) && jetsize>=2 && jetsize<=3 && tagsize>=1) // jetsize>1 && tagsize>1) 
+                //if (numleps>=3) cout << "here2" << endl;
+                //if ( (numleps==2 || (useFakeable && numleps>=2)) && jetbpass2l)
+                if ( numleps==2 && jetbpass2l )
                 {
                     // SS2l
                     if (leptons[0].charge == leptons[1].charge)
@@ -154,7 +170,8 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
                         }           
                     }
                 }            
-                else if ((numleps==3 || (useFakeable && numleps>=3)) && jetsize>0 && tagsize==0)
+                //else if ((numleps==3 || (useFakeable && numleps>=3)) && jetbpass3l)
+                if ((numleps==3 || (useFakeable && numleps>=3)) && jetbpass3l)                
                 {                    
                     if (leptons[2].correctedPt>10.)
                     {
@@ -180,11 +197,11 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
                         }
                     }
                 }
-                else if (numleps==4) // && jetsize>0 && tagsize>0)
+                else if (numleps==4) // && jetsize>0 && tagsize>0) // check this. it's >1, >0 according to AN.
                 {
                     return "4l";
                 }
-                else if (numleps>=5) // && jetsize>0 && tagsize>0)
+                else if (numleps>=5) // && jetsize>0 && tagsize>0) // combine with 4l!
                 {
                     return "ge5l";
                 }
@@ -192,7 +209,7 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
             } // end lep pt req
         } // end dilep mass cut
     } // end ge2 leps
-    else if ((numleps==1 || (useFakeable && numleps>=1)) && jetsize>=3 && tagsize>=1 && testcutpass)
+    if ((numleps==1 || (useFakeable && numleps>=1)) && jetsize>=4 && tagsize>=2 && testcutpass) // jetsize>=1 && tagsize==0
     {
         if (leptons[0].correctedPt>40.) // should really be >35, at least for eles
         {

@@ -3,6 +3,11 @@
 #include "ttH-13TeVMultiLeptons/TemplateMakers/interface/MultileptonAna.h"
 #include <boost/any.hpp>
 
+// includes
+#include "LHAPDF/LHAPDF.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+
 class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 {
     private:
@@ -32,6 +37,23 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
         vstring alltriggerstostudy;
         
         TH1D *numInitialWeightedMCevents; // <- easily keep track of num (weighted) mc events we started with
+        TH1D *numSummedWeights_pdfUp;
+        TH1D *numSummedWeights_pdfDown;
+        TH1D *numSummedWeights_muRUp;
+        TH1D *numSummedWeights_muRDown;
+        TH1D *numSummedWeights_muFUp;
+        TH1D *numSummedWeights_muFDown;
+
+        //
+        // sums for renormalization
+        double nnpdfWeightSumUp;
+        double nnpdfWeightSumDown;
+
+        double muRWeightSumUp;
+        double muRWeightSumDown;
+
+        double muFWeightSumUp;
+        double muFWeightSumDown;
                 
         // declare the tree
         TTree * summaryTree;
@@ -93,7 +115,22 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
         edm::EDGetTokenT<pat::MuonCollection> muons_token_;
         edm::EDGetTokenT<pat::ElectronCollection> electrons_token_;
         edm::EDGetTokenT<pat::TauCollection> taus_token_;
-        
+
+        // pdf and Q^2 weights
+        // token and mapping definition
+        //	edm::EDGetTokenT<LHEEventProduct> lheEventToken_;
+        edm::EDGetTokenT<LHERunInfoProduct> lheRunToken_;
+        std::map<int, int> pdfIdMap_; // this is the map we want to fill
+
+        double nnpdfWeightUp_intree;
+        double nnpdfWeightDown_intree;
+
+        double muRWeightUp_intree;
+        double muRWeightDown_intree;
+
+        double muFWeightUp_intree;
+        double muFWeightDown_intree;
+
         std::auto_ptr<JetCorrectionUncertainty> junc_;//charlie
 
         std::unordered_map<std::string,double> eftwgts_intree;
@@ -160,6 +197,15 @@ void OSTwoLepAna::tree_add_branches()
     summaryTree->Branch("eftwgts",&eftwgts_intree);
     summaryTree->Branch("originalXWGTUP",&originalXWGTUP_intree);
 
+    summaryTree->Branch("nnpdfWeightUp",&nnpdfWeightUp_intree);
+    summaryTree->Branch("nnpdfWeightDown",&nnpdfWeightDown_intree);
+
+    summaryTree->Branch("muRWeightUp",&muRWeightUp_intree);
+    summaryTree->Branch("muRWeightDown",&muRWeightDown_intree);
+
+    summaryTree->Branch("muFWeightUp",&muFWeightUp_intree);
+    summaryTree->Branch("muFWeightDown",&muFWeightDown_intree);
+
 }
 
 void OSTwoLepAna::initialize_variables()
@@ -212,4 +258,15 @@ void OSTwoLepAna::initialize_variables()
 
     eftwgts_intree.clear();
     originalXWGTUP_intree = -99;
+
+    // pdf and Q^2 weights
+    nnpdfWeightUp_intree = 1.;
+    nnpdfWeightDown_intree = 1.;
+
+    muRWeightUp_intree = 1.;
+    muRWeightDown_intree = 1.;
+
+    muFWeightUp_intree = 1.;
+    muFWeightDown_intree = 1.;
+
 }

@@ -76,13 +76,44 @@ std::pair<double,double> HistMaker::getQFweights(string category)
 
 double HistMaker::getFakeWeight(int iSys, vector<string> category)
 {
-    //vector<string> category = eventselections(true); // true=do the selection with fakeable leptons
     
     //double weight = 0.;
     double factor = 0.;    
     auto leptons = fakeable_leptons;
     bool passedtrig = passesAnyTrigger();
     
+    TH2D *elFRhist;
+    TH2D *muFRhist;
+    
+    if (iSys==3)
+    {
+        elFRhist = elFRsfs_up;
+        muFRhist = muFRsfs_up;
+    }
+    else if (iSys==4)
+    {
+        elFRhist = elFRsfs_down; 
+        muFRhist = muFRsfs_down;
+    }
+    else if (iSys==5)
+    {
+        elFRhist = elFRsfs_qcd;
+        muFRhist = muFRsfs_qcd;
+    }
+    else if (iSys==6)
+    {
+        elFRhist = elFRsfs_ttbar;
+        muFRhist = muFRsfs_ttbar;
+    }
+    else
+    {
+        elFRhist = elFRsfs;
+        muFRhist = muFRsfs;
+    }    
+    
+    iSys = iSys>2 ? 0 : iSys; // for category[iSys]
+    
+    //cout << "here" << endl;
     
     if (removeDatasetOverlaps() && passedtrig)
     {              
@@ -94,7 +125,8 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
             
             if (category[iSys].substr(0,2)=="2l") 
             {
-
+                
+                //cout << "here2" << endl;
 
                 double factor1 = 0.;
                 double factor2 = 0.;
@@ -103,37 +135,37 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 
                 if (!lep_tight(leptons[0]))
                 {
-                    if (abs(leptons[0].pdgID)==11) factor1 = elFRsfs->GetBinContent(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                    if (abs(leptons[0].pdgID)==13) factor1 = muFRsfs->GetBinContent(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+                    if (abs(leptons[0].pdgID)==11) factor1 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+                    if (abs(leptons[0].pdgID)==13) factor1 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
                     
-                    if (iSys==3)
-                    {
-                        if (abs(leptons[0].pdgID)==11) factor1 += factor1*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                        if (abs(leptons[0].pdgID)==13) factor1 += factor1*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                    }
-                    if (iSys==4)
-                    {
-                        if (abs(leptons[0].pdgID)==11) factor1 -= factor1*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                        if (abs(leptons[0].pdgID)==13) factor1 -= factor1*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                    }
+//                     if (iSys==3)
+//                     {
+//                         if (abs(leptons[0].pdgID)==11) factor1 += factor1*elFRhist->GetBinError(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+//                         if (abs(leptons[0].pdgID)==13) factor1 += factor1*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+//                     }
+//                     if (iSys==4)
+//                     {
+//                         if (abs(leptons[0].pdgID)==11) factor1 -= factor1*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+//                         if (abs(leptons[0].pdgID)==13) factor1 -= factor1*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+//                     }
                     if (factor1<0.) factor1=0.;
                     firstNotTight = true;
                 }
                 if (!lep_tight(leptons[1]))
                 {
-                    if (abs(leptons[1].pdgID)==11) factor2 = elFRsfs->GetBinContent(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                    if (abs(leptons[1].pdgID)==13) factor2 = muFRsfs->GetBinContent(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+                    if (abs(leptons[1].pdgID)==11) factor2 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+                    if (abs(leptons[1].pdgID)==13) factor2 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
                     
-                    if (iSys==3)
-                    {
-                        if (abs(leptons[1].pdgID)==11) factor2 += factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                        if (abs(leptons[1].pdgID)==13) factor2 += factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                    }
-                    if (iSys==4)
-                    {
-                        if (abs(leptons[1].pdgID)==11) factor2 -= factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                        if (abs(leptons[1].pdgID)==13) factor2 -= factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                    }                        
+//                     if (iSys==3)
+//                     {
+//                         if (abs(leptons[1].pdgID)==11) factor2 += factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+//                         if (abs(leptons[1].pdgID)==13) factor2 += factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+//                     }
+//                     if (iSys==4)
+//                     {
+//                         if (abs(leptons[1].pdgID)==11) factor2 -= factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+//                         if (abs(leptons[1].pdgID)==13) factor2 -= factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+//                     }                        
                     if (factor2<0.) factor2=0.;
                     secondNotTight = true;
                 }
@@ -159,7 +191,6 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
             
             if (category[iSys].substr(0,2)=="3l") 
             {
-                factor = -1.;
                 
                 double factor1 = 0.;
                 double factor2 = 0.;
@@ -170,58 +201,59 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 
                 if (!lep_tight(leptons[0]))
                 {
-                    if (abs(leptons[0].pdgID)==11) factor1 = elFRsfs->GetBinContent(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                    if (abs(leptons[0].pdgID)==13) factor1 = muFRsfs->GetBinContent(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+                    if (abs(leptons[0].pdgID)==11) factor1 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+                    if (abs(leptons[0].pdgID)==13) factor1 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
                     
-                    if (iSys==3)
-                    {
-                        if (abs(leptons[0].pdgID)==11) factor1 += factor1*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                        if (abs(leptons[0].pdgID)==13) factor1 += factor1*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                    }
-                    if (iSys==4)
-                    {
-                        if (abs(leptons[0].pdgID)==11) factor1 -= factor1*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                        if (abs(leptons[0].pdgID)==13) factor1 -= factor1*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                    }
+//                     if (iSys==3)
+//                     {
+//                         if (abs(leptons[0].pdgID)==11) factor1 += factor1*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+//                         if (abs(leptons[0].pdgID)==13) factor1 += factor1*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+//                     }
+//                     if (iSys==4)
+//                     {
+//                         if (abs(leptons[0].pdgID)==11) factor1 -= factor1*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+//                         if (abs(leptons[0].pdgID)==13) factor1 -= factor1*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+//                     }
                     if (factor1<0.) factor1=0.;
                     firstNotTight = true;
                 }
                 if (!lep_tight(leptons[1]))
                 {
-                    if (abs(leptons[1].pdgID)==11) factor2 = elFRsfs->GetBinContent(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                    if (abs(leptons[1].pdgID)==13) factor2 = muFRsfs->GetBinContent(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+                    if (abs(leptons[1].pdgID)==11) factor2 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+                    if (abs(leptons[1].pdgID)==13) factor2 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
                     
-                    if (iSys==3)
-                    {
-                        if (abs(leptons[1].pdgID)==11) factor2 += factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                        if (abs(leptons[1].pdgID)==13) factor2 += factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                    }
-                    if (iSys==4)
-                    {
-                        if (abs(leptons[1].pdgID)==11) factor2 -= factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                        if (abs(leptons[1].pdgID)==13) factor2 -= factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                    }                        
+//                     if (iSys==3)
+//                     {
+//                         if (abs(leptons[1].pdgID)==11) factor2 += factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+//                         if (abs(leptons[1].pdgID)==13) factor2 += factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+//                     }
+//                     if (iSys==4)
+//                     {
+//                         if (abs(leptons[1].pdgID)==11) factor2 -= factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+//                         if (abs(leptons[1].pdgID)==13) factor2 -= factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+//                     }                        
                     if (factor2<0.) factor2=0.;
                     secondNotTight = true;
                 }
                 if (!lep_tight(leptons[2]))
                 {
-                    if (abs(leptons[2].pdgID)==11) factor3 = elFRsfs->GetBinContent(elFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
-                    if (abs(leptons[2].pdgID)==13) factor3 = muFRsfs->GetBinContent(muFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
+                    if (abs(leptons[2].pdgID)==11) factor3 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
+                    if (abs(leptons[2].pdgID)==13) factor3 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
                     
-                    if (iSys==3)
-                    {
-                        if (abs(leptons[2].pdgID)==11) factor3 += factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
-                        if (abs(leptons[2].pdgID)==13) factor3 += factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
-                    }
-                    if (iSys==4)
-                    {
-                        if (abs(leptons[2].pdgID)==11) factor3 -= factor2*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
-                        if (abs(leptons[2].pdgID)==13) factor3 -= factor2*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
-                    }                        
+//                     if (iSys==3)
+//                     {
+//                         if (abs(leptons[2].pdgID)==11) factor3 += factor3*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
+//                         if (abs(leptons[2].pdgID)==13) factor3 += factor3*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
+//                     }
+//                     if (iSys==4)
+//                     {
+//                         if (abs(leptons[2].pdgID)==11) factor3 -= factor3*elFRsfs->GetBinError(elFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
+//                         if (abs(leptons[2].pdgID)==13) factor3 -= factor3*muFRsfs->GetBinError(muFRsfs->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
+//                     }                        
                     if (factor3<0.) factor3=0.;
                     thirdNotTight = true;
                 }                    
+                if (firstNotTight || secondNotTight || thirdNotTight) factor = -1.;
                 if (firstNotTight)
                 {
                     factor *= -factor1 / (1. - factor1);
@@ -234,7 +266,7 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 {
                     factor *= -factor3 / (1. - factor3);
                 }
-                
+
             }                    
 
         

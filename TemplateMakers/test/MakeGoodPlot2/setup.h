@@ -6,7 +6,7 @@ void MakeGoodPlot::setup()
     {
         sample_names[i] = "(none)";
         sample_names_reg[i] = "";
-        color[i] = kGray;        
+        color[i] = kGreen;        
         
         xsec[i] = 1.;
         q2up[i] = 0.;
@@ -15,9 +15,41 @@ void MakeGoodPlot::setup()
         pdfdown[i] = 0.;
     }  
     
+    // 1D samps
+//     wilsoncoeffs.push_back("cpQ3");
+//     wilsoncoeffs.push_back("cpQM");
+//     wilsoncoeffs.push_back("cptb");
+//     wilsoncoeffs.push_back("cpt");
+//     wilsoncoeffs.push_back("cQe1");
+//     wilsoncoeffs.push_back("ctG");
+//     wilsoncoeffs.push_back("ctl1");
+//     wilsoncoeffs.push_back("ctp");
+//     wilsoncoeffs.push_back("ctW");
+//     wilsoncoeffs.push_back("ctZ");
+
+    // nD samps. 16 dim fit (17 choose 2 cross terms + 17 non-cross = 153 points)
+//     wilsoncoeffs.push_back("cptb"); 
+//     wilsoncoeffs.push_back("cpt"); 
+//     wilsoncoeffs.push_back("ctlT1"); 
+//     wilsoncoeffs.push_back("cpQ3"); 
+//     wilsoncoeffs.push_back("cpQM"); 
+//     wilsoncoeffs.push_back("ctG"); 
+//     wilsoncoeffs.push_back("cbW"); 
+//     wilsoncoeffs.push_back("cQl31"); 
+//     wilsoncoeffs.push_back("ctl1"); 
+//     wilsoncoeffs.push_back("ctp"); 
+//     wilsoncoeffs.push_back("ctlS1"); 
+//     wilsoncoeffs.push_back("ctZ"); 
+//     wilsoncoeffs.push_back("cQe1"); 
+//     wilsoncoeffs.push_back("cQlM1"); 
+//     wilsoncoeffs.push_back("cte1"); 
+    wilsoncoeffs.push_back("ctW");
+    
+    
+    
     // standard MC samps
     sample_names[0] = "test";
-    sample_names[1] = "t#bar{t}H (H#rightarrow{}non-bb)"; //"t#bar{t}H(125)";
+    sample_names[1] = "t#bar{t}H"; //"t#bar{t}H(125)"; "t#bar{t}H (H#rightarrownon-bb)";
     sample_names[2] = "(none)"; 
     sample_names[3] = "(none)"; 
     sample_names[4] = "(none)"; 
@@ -94,6 +126,11 @@ void MakeGoodPlot::setup()
     sample_names[81] = "ttl#nu:ctp"; 
     sample_names[82] = "ttl#nu:ctW"; 
     sample_names[83] = "ttl#nu:ctZ"; 
+    
+    sample_names[84] = "ttH:16D";
+    sample_names[85] = "ttl#nu:16D"; 
+    sample_names[86] = "ttll:16D"; 
+    sample_names[87] = "tllq:16D";    
     
     
     // these will prob just be internal to MakeGoodPlot
@@ -192,6 +229,13 @@ void MakeGoodPlot::setup()
     sample_names_reg[82] = "_ttlnu_ctW"; 
     sample_names_reg[83] = "_ttlnu_ctZ";
     
+    sample_names_reg[84] = "_ttH_16D";
+    sample_names_reg[85] = "_ttlnu_16D";
+    sample_names_reg[86] = "_ttll_16D";
+    sample_names_reg[87] = "_tllq_16D";
+    
+    
+    
     sample_names_reg[94] = "_charge_flips";
     sample_names_reg[95] = "_fakes";
     
@@ -242,8 +286,9 @@ void MakeGoodPlot::setup()
     color[103] = kBlack;
     color[104] = kBlack;
 
-    cout << "hey2" << endl;
-
+    //cout << "hey2" << endl;
+    
+    // what was this for??
     categoryTS.push_back("2los_ee");
     categoryTS.push_back("2los_emu");
     categoryTS.push_back("2los_mumu");

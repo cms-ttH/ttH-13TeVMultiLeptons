@@ -23,6 +23,7 @@ class MakeGoodPlot
         Color_t color[200];
         double numgen[200];		
         vector<TString> categoryTS;
+        vector<string> wilsoncoeffs;
         
         // CMS info stuff
         std::string cmsinfo;
@@ -59,6 +60,7 @@ class MakeGoodPlot
         
         void get_rate_info();        
         void setup();        
+        
         void lepeff_plots();
         void triggerstudies_plots();
         void jetcleaning_plots();
@@ -66,6 +68,8 @@ class MakeGoodPlot
         void standard_plots_normalized();
         void mc_validation_plots();
         void save_analysis_hists();
+        void th1eft_test_plots();
+        void fr_studies_plots();
         
         MakeGoodPlot() { cout << "Default constructor of MakeGoodPlot doesn't do anything. Use a different constructor." << endl; }
         MakeGoodPlot(std::vector<int> thesamps, TString histdir="");

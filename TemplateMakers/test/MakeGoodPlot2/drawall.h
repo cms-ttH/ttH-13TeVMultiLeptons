@@ -5,6 +5,8 @@
 #include "standard_plots_normalized.h"
 #include "mc_validation_plots.h"
 #include "save_analysis_hists.h"
+#include "th1eft_dist_test_plots.h"
+#include "fr_studies_plots.h"
 
 void MakeGoodPlot::drawAll()
 {
@@ -15,11 +17,13 @@ void MakeGoodPlot::drawAll()
     //lepeff_plots();
     //jetcleaning_plots();
     //triggerstudies_plots();
-    standard_plots();
+    //standard_plots();
     //standard_plots_normalized();
     //mc_validation_plots();
     //save_analysis_hists();
-
+    th1eft_test_plots();
+    //fr_studies_plots();
+    
 }
 
 
@@ -45,7 +49,7 @@ void MakeGoodPlot::drawAllToFile(string plotfile, string plotoption)
         }
     }
     
-    else if (plotoption=="png" || plotoption=="pdf")
+    else if (plotoption=="png" || plotoption=="pdf" || plotoption==".png" || plotoption==".pdf" )
     {        
         
         ofstream htmlfile;
@@ -55,10 +59,10 @@ void MakeGoodPlot::drawAllToFile(string plotfile, string plotoption)
         for (int i=0; i<canvas.GetEntries(); i++)
         {
             auto tmpcan = (TCanvas*)canvas[i];
-            TString plotfilename = plotfile+"output_"+tmpcan->GetName()+"."+plotoption;
+            TString plotfilename = plotfile+"output_"+tmpcan->GetName()+plotoption;
             tmpcan->SaveAs(plotfilename);
             plotfilename = "output_";
-            plotfilename = plotfilename+tmpcan->GetName()+"."+plotoption;
+            plotfilename = plotfilename+tmpcan->GetName()+plotoption;
             TString htmlvoodoo = "<div class=\"pic photo-link smoothbox\" id=\""+plotfilename+"\"><a href=\""+plotfilename+"\" rel=\"gallery\"><img src=\""+plotfilename+"\" class=\"pic\"/></a><div class=\"desc\">"+tmpcan->GetName()+"</div></div>";
             htmlfile << htmlvoodoo << "\n";
         }

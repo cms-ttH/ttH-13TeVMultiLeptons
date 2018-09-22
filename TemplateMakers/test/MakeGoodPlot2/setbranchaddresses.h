@@ -13,6 +13,13 @@ void HistMaker::setBranchAddresses( TTreeReader & newreader )
     eftwgts_intree = TTreeReaderValue<std::unordered_map<std::string,double>>(newreader, "eftwgts");
     originalXWGTUP_intree = TTreeReaderValue<double>(newreader, "originalXWGTUP");
     
+    nnpdfWeightUp_intree = TTreeReaderValue<double>(newreader, "nnpdfWeightUp");
+    nnpdfWeightDown_intree = TTreeReaderValue<double>(newreader, "nnpdfWeightDown");
+    muRWeightUp_intree = TTreeReaderValue<double>(newreader, "muRWeightUp");
+    muRWeightDown_intree = TTreeReaderValue<double>(newreader, "muRWeightDown");
+    muFWeightUp_intree = TTreeReaderValue<double>(newreader, "muFWeightUp");
+    muFWeightDown_intree = TTreeReaderValue<double>(newreader, "muFWeightDown");
+    
     
     raw_electrons_intree = TTreeReaderValue<vector<ttH::Electron>>(newreader, "raw_electrons");    
     //raw_leptons_intree = TTreeReaderValue<vector<ttH::Lepton>>(newreader, "raw_leptons");
@@ -35,7 +42,6 @@ void HistMaker::setBranchAddresses( TTreeReader & newreader )
     //tight_muons_intree = TTreeReaderValue<vector<ttH::Muon>>(newreader, "preselected_muons");     
     
     
-    
     raw_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "raw_jets");
     //loose_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "loose_jets");
     preselected_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "preselected_jets");
@@ -48,6 +54,5 @@ void HistMaker::setBranchAddresses( TTreeReader & newreader )
     pruned_genParticles_intree = TTreeReaderValue<vector<ttH::GenParticle>>(newreader, "pruned_genParticles");
     genJets_intree = TTreeReaderValue<vector<ttH::GenParticle>>(newreader, "genJets");
 
-    
     
 }

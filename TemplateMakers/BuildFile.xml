@@ -5,7 +5,7 @@
 <use name="DataFormats/Math"/>
 <use name="root"/>
 <use name="roottmva"/>
-
+<use name="lhapdf" />
 <!--<use   name="FWCore/Framework"/>
 <use   name="FWCore/PluginManager"/>
 <use   name="FWCore/ParameterSet"/>

@@ -11,15 +11,16 @@ class HistMaker
         HistMaker(TString thepassedsamp, bool cfs=false, bool fks=false);
         
         // member variables
-        const unsigned int th1arrsize = 2000;
+        const unsigned int th1arrsize = 2500;
         const unsigned int th2arrsize = 500;
-        const unsigned int th1eftarrsize = 250;
+        const unsigned int th1eftarrsize = 1500;
         int sample = -1;
-        
-        TH1D *th1ds[2000]; 
+         
+        TH1EFT *th1ds[2500];
         TH2D *th2ds[500];
-        TH1EFT *th1efts[250];
-        std::unordered_map<string,TH1D*> th1d;
+        TH1EFT *th1efts[1500];
+
+        std::unordered_map<string,TH1EFT*> th1d;
         std::unordered_map<string,TH2D*> th2d;
         std::unordered_map<string,TH1EFT*> th1eft;
         std::unordered_map<string,TGraph*> tgraph;
@@ -33,6 +34,14 @@ class HistMaker
         TTreeReaderValue<int> higgsdecay_intree;
         TTreeReaderValue<std::unordered_map<std::string,double>> eftwgts_intree;
         TTreeReaderValue<double> originalXWGTUP_intree;
+            
+        TTreeReaderValue<double> nnpdfWeightUp_intree;
+        TTreeReaderValue<double> nnpdfWeightDown_intree; 
+        TTreeReaderValue<double> muRWeightUp_intree;
+        TTreeReaderValue<double> muRWeightDown_intree;
+        TTreeReaderValue<double> muFWeightUp_intree;
+        TTreeReaderValue<double> muFWeightDown_intree;
+
         TTreeReaderValue<vector<ttH::Lepton>> raw_leptons_intree;
         TTreeReaderValue<vector<ttH::Lepton>> preselected_leptons_intree;
         TTreeReaderValue<vector<ttH::Lepton>> loose_leptons_intree;
@@ -86,19 +95,35 @@ class HistMaker
         
         // sf hists
         TH1D *pileupSFs;
-        TH2F *muh4_2l;
-        TH2F *muh4_3l; 
-        TH2F *eleh4_2l;
-        TH2F *eleh4_3l;
+        
         TGraphAsymmErrors *muh1;
         TH2D *muh2;
-        TH2F *eleh1;
-        TH2F *eleh1lowpt;
+        TH2D *muh2b;
+        TH2D *muh3;        
+        TH2F *muh4_2l;
+        TH2F *muh4_3l; 
+        
+        TH2D *eleh1;
+        TH2D *eleh1lowpt;
+        TH2D *eleh2;
+        TH2F *eleh4_2l;
+        TH2F *eleh4_3l;
+
         
         // data-driven bkgd hists
         TH2D *elQFsfs;
+        
         TH2D *elFRsfs;
         TH2D *muFRsfs;
+        TH2D *elFRsfs_up;
+        TH2D *muFRsfs_up;
+        TH2D *elFRsfs_down; 
+        TH2D *muFRsfs_down;
+        TH2D *elFRsfs_qcd;
+        TH2D *muFRsfs_qcd;
+        TH2D *elFRsfs_ttbar;
+        TH2D *muFRsfs_ttbar;
+
         
         // technical functions needed to run HistMaker
         void bookHistos();
@@ -122,6 +147,9 @@ class HistMaker
         double totalSF(int iSys, vector<string> category);
         double getFakeWeight(int iSys, vector<string> category);
         std::pair<double,double> getQFweights(string category);
+        
+        WCFit getEventFit(double weight=1.);
+        WCFit thisEventFit;
         
         bool dochgfs = false;
         bool dofakes = false;
@@ -174,6 +202,7 @@ HistMaker::HistMaker()
 //     stringstream samp_env_var_ss(samp_env_var_string);
 //     samp_env_var_ss >> sample;
     
+    setupSFs();
 }
 HistMaker::HistMaker(TString thepassedsamp, bool cfs, bool fks)
 {

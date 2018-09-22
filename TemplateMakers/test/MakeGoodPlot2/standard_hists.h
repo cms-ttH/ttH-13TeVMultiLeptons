@@ -2,7 +2,7 @@ void HistMaker::standard_hists()
 {
     bool debug = false;
     
-    //cout << "what" << endl;
+    vector<int> systs;
     
     double weight = *wgt_intree;
     
@@ -10,7 +10,7 @@ void HistMaker::standard_hists()
     vector<string> category;
     int doNtimes = 1;    
     
-    ////////////////////////// 
+    ////////////////////////////////////////////////// 
     // charge flip / fake stuff    
     //
     // dochgfs and dofakes bools are set externally
@@ -18,7 +18,11 @@ void HistMaker::standard_hists()
     
     vector<string> category2;
     
-    if (!dochgfs && !dofakes) category = stdcategory;
+    if (!dochgfs && !dofakes)
+    {
+        category = stdcategory;
+        systs = {0, 1, 2, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
+    }
     else if (dochgfs)
     {
         doNtimes = 2;
@@ -41,12 +45,18 @@ void HistMaker::standard_hists()
                 category2.push_back("null");
             }
         }
+        systs = {0, 1, 2, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22};
     }
     else if (dofakes)
     {
         category = eventselections(true); // true = do the event selection with fakeable leptons
+        systs = {0, 1, 2, 3, 4, 5, 6};
     }
-    ////////////////////////   
+    
+    ////////////////////////////////////////////////
+    
+    
+    
     
     th1d["numTruePVs"]->Fill((*numTruePVs_intree),weight);
         
@@ -76,7 +86,7 @@ void HistMaker::standard_hists()
         {
             if (forchgfs==1) category = category2; // don't ever get here for nominal hists
             
-            for (int sys=0; sys<category.size(); sys++)
+            for (int sys : systs)
             {   
                 // these two conditionals skipped for nominal hists
                 if (dochgfs)
@@ -89,10 +99,26 @@ void HistMaker::standard_hists()
                 if (dofakes)
                 {
                     weight = *wgt_intree;
+                    if (debug) cout << "before getFakeWeight" << endl;
                     weight *= getFakeWeight(sys,category);
+                    if (debug) cout << "after getFakeWeight" << endl;
+                    // if (category[sys]=="3l_mix_sfz")
+//                     {
+//                         cout << "found a 3l_mix_sfz event -- " << weight << endl;
+//                     }
                 }
+                // if (category[sys]=="3l_mix_sfz")
+//                 {
+//                     cout << "found a 3l_mix_sfz event -- " << weight << endl;
+//                     cout << "fakeable leps size: " << fakeable_leptons.size() << endl;
+//                     cout << "tight leps size: " << tight_leptons.size() << endl;
+//                 }
                 
-                if (category[sys]!="null")
+                int catSys = sys>2 ? 0 : sys;   // catSys = 0, or 1 or 2 in the case of JESup/down. Should I think be fine as-is. 
+                                                // q-flip, fake selections are special cases, which are already handled. 
+                                                // lepID, btag systs are SF variations on already-selected events.
+                
+                if (category[catSys]!="null")
                 {
                     if (sys==0)
                     {            
@@ -163,6 +189,15 @@ void HistMaker::standard_hists()
                         th2d[category[sys]+"__nbjets_vs_njets"]->Fill(jetsize,taggedjetssize,weight);
                         th1d[category[sys]+"__numPVs"]->Fill((*numPVs_intree),weight);
                         th1d[category[sys]+"__numTruePVs"]->Fill((*numTruePVs_intree),weight);
+                        
+                        th1d[category[sys]+"__nnpdfWeightUp"]->Fill((*nnpdfWeightUp_intree),weight,getEventFit(weight));
+                        th1d[category[sys]+"__nnpdfWeightDown"]->Fill((*nnpdfWeightDown_intree),weight,getEventFit(weight));
+                        th1d[category[sys]+"__muRWeightUp"]->Fill((*muRWeightUp_intree),weight,getEventFit(weight));
+                        th1d[category[sys]+"__muRWeightDown"]->Fill((*muRWeightDown_intree),weight,getEventFit(weight));
+                        th1d[category[sys]+"__muFWeightUp"]->Fill((*muFWeightUp_intree),weight,getEventFit(weight));
+                        th1d[category[sys]+"__muFWeightDown"]->Fill((*muFWeightDown_intree),weight,getEventFit(weight));
+
+                        
 
                     
      
@@ -244,17 +279,9 @@ void HistMaker::standard_hists()
                                 if (debug) cout << lbcat << endl;
                                 if (debug) cout << jetsize << endl;
                                 if (debug) cout << weight << endl;
-                            
-                                std::vector<WCPoint> event_wgts;
-                                for (auto& kv: *eftwgts_intree) 
-                                {
-                                    WCPoint new_pt(kv.first,kv.second/2000.);
-                                    //WCPoint new_pt(kv.first,kv.second / (*originalXWGTUP_intree));
-                                    event_wgts.push_back(new_pt);
-                                }
-                                WCFit event_wgt_fit(event_wgts,"");
+                                
                                 //th1d[lbcat+"."]->Fill(jetsize,weight); // regular TH1D
-                                th1eft[lbcat+"."]->Fill(jetsize,weight,event_wgt_fit); // using the TH1EFT class
+                                th1eft[lbcat+"."]->Fill(jetsize,weight,getEventFit(weight)); // using the TH1EFT class
                                 //fillQFHists(sys,category); // for this, really only care about data
                                 //fillFakeHists(sys,category); // for this, really only care about data
                             
@@ -277,7 +304,7 @@ void HistMaker::standard_hists()
                         if (sample<100) 
                         {
                             weight = *wgt_intree;
-                            weight *= totalSF(sys,category);
+                            weight *= totalSF(sys,category); // now includes JES btagging syst.
                         }
                     
                         if (debug) cout << "JESUP " << jtcat << endl;
@@ -293,21 +320,12 @@ void HistMaker::standard_hists()
                             if (lbcat!="null")
                             {
                                 if (debug) cout << "here0.3" <<endl;
-                                std::vector<WCPoint> event_wgts;
-                                for (auto kv: *eftwgts_intree) 
-                                {
-                                    WCPoint new_pt(kv.first,kv.second/2000.);
-                                    //WCPoint new_pt(kv.first,kv.second / (*originalXWGTUP_intree));
-                                    event_wgts.push_back(new_pt);
-                                }
-                                if (debug) cout << "here0.4" <<endl;
-                                WCFit event_wgt_fit(event_wgts,"");
+                                
                                 //th1d[lbcat+".JESUP"]->Fill(jetsize,weight); // regular TH1D
                                 if (debug) cout <<"here2"<<endl;
-                                th1eft[lbcat+".JESUP"]->Fill(jetsize,weight,event_wgt_fit); // using the TH1EFT class
+                                th1eft[lbcat+".JESUP"]->Fill(jetsize,weight,getEventFit(weight)); // using the TH1EFT class
                                 if (debug) cout<<"here3"<<endl;
-                                //fillQFHists(sys,category);
-                                //fillFakeHists(sys,category);
+
                             }
                         }
                 
@@ -328,7 +346,7 @@ void HistMaker::standard_hists()
                         if (sample<100) 
                         {
                             weight = *wgt_intree;
-                            weight *= totalSF(sys,category);
+                            weight *= totalSF(sys,category); // now includes JES btagging syst.
                         }
 
                         if (jtcat!="null" && category[sys].substr(0,2)!="1l")
@@ -337,22 +355,64 @@ void HistMaker::standard_hists()
                             th1d["category_yields_njets_nbjets_JESDOWN"]->Fill(thisbin,weight);
                             if (lbcat!="null")
                             {
-                                std::vector<WCPoint> event_wgts;
-                                for (auto& kv: *eftwgts_intree) 
-                                {
-                                    WCPoint new_pt(kv.first,kv.second/2000.);
-                                    //WCPoint new_pt(kv.first,kv.second / (*originalXWGTUP_intree));
-                                    event_wgts.push_back(new_pt);
-                                }
-                                WCFit event_wgt_fit(event_wgts,"");
                                 //th1d[lbcat+".JESDOWN"]->Fill(jetsize,weight); // regular TH1D
-                                th1eft[lbcat+".JESDOWN"]->Fill(jetsize,weight,event_wgt_fit); // using the TH1EFT class
-                                //fillQFHists(sys,category);
-                                //fillFakeHists(sys,category);
+                                th1eft[lbcat+".JESDOWN"]->Fill(jetsize,weight,getEventFit(weight)); // using the TH1EFT class
                             }
                         }                    
                     }
-                
+                    else if (sys>=3 && sys<=6)
+                    {
+                        auto cleanedjets = preselected_jets;
+                        auto taggedjetsmedium = keepTagged(cleanedjets,"DM");
+                        int jetsize = cleanedjets.size();
+                        int taggedjetssize = taggedjetsmedium.size();
+                    
+                        string jtcat = getjettagcategory(category[0],jetsize,taggedjetssize); // category[0] -> not a mistake!
+                        string lbcat = gettagcategory(category[0],taggedjetssize);
+                    
+                        if (sample<100) 
+                        {
+                            cout << "trying to apply fake rate systs to non-data sample" << endl;
+                        }
+
+                        if (jtcat!="null" && category[0].substr(0,2)!="1l")
+                        {
+                            if (lbcat!="null")
+                            {
+                                //th1d[lbcat+".JESDOWN"]->Fill(jetsize,weight); // regular TH1D
+                                if (debug) cout << "inside fr systs" << endl;
+                                if (sys==3) th1eft[lbcat+".FRUP"]->Fill(jetsize,weight,getEventFit(weight)); // using the TH1EFT class
+                                else if (sys==4) th1eft[lbcat+".FRDOWN"]->Fill(jetsize,weight,getEventFit(weight)); // using the TH1EFT class
+                                else if (sys==5) th1eft[lbcat+".FRQCD"]->Fill(jetsize,weight,getEventFit(weight)); // using the TH1EFT class
+                                else if (sys==6) th1eft[lbcat+".FRTTBAR"]->Fill(jetsize,weight,getEventFit(weight)); // using the TH1EFT class
+                            }
+                        }                    
+                    }                    
+                    else
+                    {
+                        auto cleanedjets = preselected_jets;
+                        auto taggedjetsmedium = keepTagged(cleanedjets,"DM");
+                        int jetsize = cleanedjets.size();
+                        int taggedjetssize = taggedjetsmedium.size();
+                    
+                        string jtcat = getjettagcategory(category[catSys],jetsize,taggedjetssize);
+                        string lbcat = gettagcategory(category[catSys],taggedjetssize);
+                    
+                        if (sample<100) 
+                        {
+                            weight = *wgt_intree;
+                            weight *= totalSF(sys,category);
+                        }
+
+                        if (jtcat!="null" && category[catSys].substr(0,2)!="1l")
+                        {
+                            if (lbcat!="null")
+                            {
+                                th1eft[lbcat+"."+string(systint2str(sys))]->Fill(jetsize,weight,getEventFit(weight)); // using the TH1EFT class
+                            }
+                        }                    
+                    }
+                    
                 
                 } // non-null cat
             } // end loop over systs

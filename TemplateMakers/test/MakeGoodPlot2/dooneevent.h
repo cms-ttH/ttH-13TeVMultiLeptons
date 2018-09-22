@@ -8,6 +8,8 @@
 
 void HistMaker::doOneEvent()
 {
+    thisEventFit.clear();
+    
     // simply (and only!) the functions that actually calculate / do physics stuff
     // just run the functions here.
     // functions only!!! the functions (probably) should be members of HistMaker
@@ -15,10 +17,11 @@ void HistMaker::doOneEvent()
     
     //proof_of_concept();
     fixcollections();
+    standard_hists();
     
     //lepton_eff_studies();
     //trigger_studies();
     //jet_cleaning_studies();
-    standard_hists();
-    //mc_validation_hists();
+    //mc_validation_hists(); 
+
 }

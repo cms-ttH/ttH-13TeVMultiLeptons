@@ -1396,7 +1396,7 @@ void fillCSVhistos(TFile* fileHF, TFile* fileLF){
   }
 
   // CSV reweighting /// only care about the nominal ones !!!
-  for( int iSys=0; iSys<1; iSys++ ){
+  for( int iSys=0; iSys<9; iSys++ ){
     TString syst_csv_suffix_hf = "final";
     TString syst_csv_suffix_c = "final";
     TString syst_csv_suffix_lf = "final";
@@ -1497,7 +1497,9 @@ double get_csv_wgt( bool TaggerisCSV, vecTLorentzVector jets, vdouble jetCSV, vi
   double csvWgthf = 1.;
   double csvWgtC  = 1.;
   double csvWgtlf = 1.;
-
+    
+  //cout << "hey1" << endl;
+    
   for( int iJet=0; iJet<int(jets.size()); iJet++ ){
     TLorentzVector myJet = jets[iJet];
     // myJet.SetPxPyPzE( jets[iJet][0], jets[iJet][1], jets[iJet][2], jets[iJet][3] );
@@ -1537,30 +1539,46 @@ double get_csv_wgt( bool TaggerisCSV, vecTLorentzVector jets, vdouble jetCSV, vi
     // if(iPt==0) continue;
     // else iPt = iPt-1;
 
+    //cout << "hey2" << endl;
+
     if (abs(flavor) == 5 ){
+      //cout << "hey2.1" << endl;
       int useCSVBin = (!TaggerisCSV || csv>=0.) ? h_csv_wgt_hf[iSysHF][iPt]->FindBin(csv) : 1;
       double iCSVWgtHF = h_csv_wgt_hf[iSysHF][iPt]->GetBinContent(useCSVBin);
       if( iCSVWgtHF!=0 ) csvWgthf *= iCSVWgtHF;
 
       // if( iSysHF==0 ) printf(" iJet,\t flavor=%d,\t pt=%.1f,\t eta=%.2f,\t csv=%.3f,\t wgt=%.2f \n",
       // 			     flavor, jetPt, iJet->eta, csv, iCSVWgtHF );
+      
     }
+
     else if( abs(flavor) == 4 ){
+      //cout << "hey2.2" << endl;
       int useCSVBin = (!TaggerisCSV || csv>=0.) ? c_csv_wgt_hf[iSysC][iPt]->FindBin(csv) : 1;
       double iCSVWgtC = c_csv_wgt_hf[iSysC][iPt]->GetBinContent(useCSVBin);
       if( iCSVWgtC!=0 ) csvWgtC *= iCSVWgtC;
       // if( iSysC==0 ) printf(" iJet,\t flavor=%d,\t pt=%.1f,\t eta=%.2f,\t csv=%.3f,\t wgt=%.2f \n",
       //      flavor, jetPt, iJet->eta, csv, iCSVWgtC );
+      
     }
+    
     else {//tpj
+      //cout << "hey2.3" << endl;
       if (iPt >=3) iPt=3;       /// [30-40], [40-60] and [60-10000] only 3 Pt bins for lf
+      //cout << "hey2.3.1" << endl;
+      //cout << iSysLF << " " << iPt << " " << iEta << " " << csv << endl;
       int useCSVBin = (!TaggerisCSV || csv>=0.) ? h_csv_wgt_lf[iSysLF][iPt][iEta]->FindBin(csv) : 1;
+      //cout << "hey2.3.2" << endl;
       double iCSVWgtLF = h_csv_wgt_lf[iSysLF][iPt][iEta]->GetBinContent(useCSVBin);
+      //cout << "hey2.3.3" << endl;
       if( iCSVWgtLF!=0 ) csvWgtlf *= iCSVWgtLF;
 
       // if( iSysLF==0 ) printf(" iJet,\t flavor=%d,\t pt=%.1f,\t eta=%.2f,\t csv=%.3f,\t wgt=%.2f \n",
       // 			     flavor, jetPt, iJet->eta, csv, iCSVWgtLF );
+      
     }
+    
+    //cout << "hey3" << endl;
   }
 
   double csvWgtTotal = csvWgthf * csvWgtC * csvWgtlf;

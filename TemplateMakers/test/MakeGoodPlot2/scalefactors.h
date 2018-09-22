@@ -12,18 +12,22 @@ void HistMaker::setupSFs()
     
     auto muSFfile1 = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/fits_mu_trkEffSF_2017_allTracks.root");
     auto muSFfile2 = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/RunBCDEF_SF_ID.root");
-    //auto muSFfile3 = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/loose_mu_to_ttH_loose_Sergio.root"); // bug in the file
+    auto muSFfile2b = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/RunBCDEF_SF_ID_ptLt30.root");
+    auto muSFfile3 = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/loose_mu_to_ttH_loose_Sergio.root");
     
     muh1 = (TGraphAsymmErrors*)muSFfile1->Get("ratio_eff_eta3_dr030e030_corr");
-    muh2 = (TH2D*)muSFfile2->Get("NUM_MediumID_DEN_genTracks_pt_abseta"); // <- should be LooseID
-
+    //muh2 = (TH2D*)muSFfile2->Get("NUM_MediumID_DEN_genTracks_pt_abseta"); // <- should be LooseID
+    muh2 = (TH2D*)muSFfile2->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
+    muh2b = (TH2D*)muSFfile2b->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
+    muh3 = (TH2D*)muSFfile3->Get("NUM_ttHLoo_DEN_LooseID");
 
     auto eleSFfile1a = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root");
     auto eleSFfile1b = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/egammaEffi.txt_EGM2D_runBCDEF_passingRECO_lowEt.root");
-
-    eleh1 = (TH2F*)eleSFfile1a->Get("EGamma_SF2D");
-    eleh1lowpt = (TH2F*)eleSFfile1b->Get("EGamma_SF2D");
-
+    auto eleSFfile2 = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/el_reco_loose_SF.root");
+     
+    eleh1 = (TH2D*)eleSFfile1a->Get("EGamma_SF2D");
+    eleh1lowpt = (TH2D*)eleSFfile1b->Get("EGamma_SF2D");
+    eleh2 = (TH2D*)eleSFfile2->Get("EGamma_SF2D");
 
     auto lepMVASFfile_m_2lss = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/lepMVAEffSF2017_m_2lss.root");
     auto lepMVASFfile_e_3l = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/leptonSF/lepMVAEffSF2017_e_3l.root");
@@ -39,10 +43,24 @@ void HistMaker::setupSFs()
     auto QFSFfile = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/fakerate/ElectronChargeMisIdRates_2017.root");
     //min pt: 15, max pt : 1000
     elQFsfs = (TH2D*)QFSFfile->Get("eChargeMisIdRates");
-    auto FRSFfile = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/fakerate/leptonFakeRates_Tallinn_2018May24.root");
-    elFRsfs = (TH2D*)FRSFfile->Get("FR_mva090_el_data_comb");
+    //auto FRSFfile = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/fakerate/leptonFakeRates_Tallinn_2018May24.root");     // 2017 old
+    auto FRSFfile = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/CERN/fakerate/FR_lep_ttH_mva090_2017_CERN_2018May29.root"); // 2017 new
+    
+    elFRsfs = (TH2D*)FRSFfile->Get("FR_mva090_el_data_comb_NC"); // comb_NC -> conversion-corrected
     muFRsfs = (TH2D*)FRSFfile->Get("FR_mva090_mu_data_comb");
 
+    elFRsfs_up = (TH2D*)FRSFfile->Get("FR_mva090_el_data_comb_NC_up"); // comb_NC -> conversion-corrected
+    muFRsfs_up = (TH2D*)FRSFfile->Get("FR_mva090_mu_data_comb_up");
+    
+    elFRsfs_down = (TH2D*)FRSFfile->Get("FR_mva090_el_data_comb_NC_down"); // comb_NC -> conversion-corrected
+    muFRsfs_down = (TH2D*)FRSFfile->Get("FR_mva090_mu_data_comb_down");
+    
+    elFRsfs_qcd = (TH2D*)FRSFfile->Get("FR_mva090_el_QCD_NC"); // QCD_NC -> conversion-corrected
+    muFRsfs_qcd = (TH2D*)FRSFfile->Get("FR_mva090_mu_QCD");
+    
+    elFRsfs_ttbar = (TH2D*)FRSFfile->Get("FR_mva090_el_TT");
+    muFRsfs_ttbar = (TH2D*)FRSFfile->Get("FR_mva090_mu_TT");    
+    
     
 }
 
@@ -59,8 +77,8 @@ double triggerSF(int pdgid1, int pdgid2, int nlep, double leadingleppt)
 
     int comb = abs(pdgid1)+abs(pdgid2);
     
-    if (comb==1010) comb = 22; //kludge
-    if (comb==1012) comb = 26; //kludge
+    if (comb==1010) comb = 22; //kludge for 1l
+    if (comb==1012) comb = 26; //kludge for 1l
     
     if (comb==22) // ee
     {
@@ -85,33 +103,40 @@ double HistMaker::muonSF(double mu_pt, double mu_eta, int lepmult)
     double musf = 1.;
     double abseta = abs(mu_eta);
     
-    //cout << mu_pt << endl;
-    //cout << mu_eta << endl;
+    bool debug = false;
+    if (debug) cout << "inside muonSF..." << endl;
     
-    //cout << "hey1" << endl;
     // tracking eff sf
-    Double_t muSF1 = muh1->Eval(mu_eta); // this returns a linear interpolation between two points on a TGraphAsymErrors
-    if (mu_pt>20) musf *= muSF1; // is there one for <20?
-    //cout << "hey2" << endl;
+    Double_t muSF1 = muh1->Eval(mu_eta); //-2.8-2.8??? this returns a linear interpolation between two points on a TGraphAsymErrors
+    if (mu_pt>10) musf *= muSF1; // is there one for <10? <- yes!
+    
+    if (debug) cout << musf << endl;
+    
     // loose ID sf
-    musf *= muh2->GetBinContent(muh2->FindBin(max(20.,min(mu_pt,119.9)),min(abseta,2.39)));
-    //cout << "hey3" << endl;
+    if (mu_pt>=30) musf *= muh2->GetBinContent(muh2->FindBin( min(mu_pt,119.9), min(abseta,2.399) ) ); // 20-120; 0-2.4
+    if (mu_pt<30) musf *= muh2b->GetBinContent(muh2b->FindBin( min(mu_pt,119.9), min(abseta,2.399) ) ); // like 3-40; 0-2.4
+    
+    if (debug) cout << musf << endl;
+    
     // POG loose -> ttH loose SF
-    //auto muh3 = muSFfile3->Get(""); // something wrong with the file
+    //musf *= muh3->GetBinContent(muh3->FindBin(max(20.,min(mu_pt,119.9)),min(abseta,2.39)));
+    musf *= muh3->GetBinContent(muh3->FindBin(min(mu_pt,119.9),abseta)); // 10-120; 0-2.4
+    
+    if (debug) cout << musf << endl;
     
     // ID tight (lepMVA) sf
     if (lepmult==2)
     {   
-        //cout << "hey4.0" << endl;
-        musf *= muh4_2l->GetBinContent(muh4_2l->FindBin(min(mu_pt,99.9),min(abseta,2.49)));
-        //cout << "hey4" << endl;
+        //musf *= muh4_2l->GetBinContent(muh4_2l->FindBin(min(mu_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
+        musf *= muh4_2l->GetBinContent(muh4_2l->FindBin(mu_pt,abseta));
+        if (debug) cout << musf << "(lepmult==2)" << endl;
     }
     else if (lepmult>=3)
     {   
-        //cout << "hey5.0" << endl;
         //cout << muh4_3l->FindBin(min(mu_pt,99.9),min(abseta,2.49)) << endl;
-        musf *= muh4_3l->GetBinContent(muh4_3l->FindBin(min(mu_pt,99.9),min(abseta,2.49)));
-        //cout << "hey5" << endl;
+        //musf *= muh4_3l->GetBinContent(muh4_3l->FindBin(min(mu_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
+        musf *= muh4_3l->GetBinContent(muh4_3l->FindBin(mu_pt,abseta));
+        if (debug) cout << musf << "(lepmult==3)" << endl;
     }
     
     return musf;
@@ -123,20 +148,29 @@ double HistMaker::electronSF(double ele_pt, double ele_eta, int lepmult)
     double elesf = 1.;
     double abseta = abs(ele_eta);
 
+    bool debug = false;
+    if (debug) cout << "inside electronSF..." << endl;
+    
     // todo: fill in this part...
     // its (eta,pt) for this one
-    if (ele_pt>=20.) elesf *= eleh1->GetBinContent(eleh1->FindBin(ele_eta,min(ele_pt,499.)));
-    else elesf *= eleh1lowpt->GetBinContent(eleh1lowpt->FindBin(ele_eta,min(ele_pt,19.9)));
+    if (ele_pt>=20.) elesf *= eleh1->GetBinContent(eleh1->FindBin(ele_eta,min(ele_pt,499.))); // -2.5-2.5; 20-500
+    else elesf *= eleh1lowpt->GetBinContent(eleh1lowpt->FindBin(ele_eta,min(ele_pt,19.9))); // -2.5-2.5; 10-20
+    if (debug) cout << elesf << endl;
+    
+    elesf *= eleh2->GetBinContent(eleh2->FindBin(ele_eta,min(ele_pt,499.))); // -2.5-2.5; 10-500
+    if (debug) cout << elesf << endl;
     
     if (lepmult==2)
-    {
-        
-        elesf *= eleh4_2l->GetBinContent(eleh4_2l->FindBin(min(ele_pt,99.9),min(abseta,2.49)));
+    {        
+        //elesf *= eleh4_2l->GetBinContent(eleh4_2l->FindBin(min(ele_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
+        elesf *= eleh4_2l->GetBinContent(eleh4_2l->FindBin(ele_pt,abseta));
+        if (debug) cout << elesf << "(lepmult==2)" << endl;
     }
     else if (lepmult>=3)
     {
-        
-        elesf *= eleh4_3l->GetBinContent(eleh4_3l->FindBin(min(ele_pt,99.9),min(abseta,2.49)));
+        //elesf *= eleh4_3l->GetBinContent(eleh4_3l->FindBin(min(ele_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
+        elesf *= eleh4_3l->GetBinContent(eleh4_3l->FindBin(ele_pt,abseta));
+        if (debug) cout << elesf << "(lepmult==3)" << endl;
     }
     
     return elesf;
@@ -157,11 +191,12 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     auto deezleps = tight_leptons;
     
     std::vector<ttH::Jet> cleanedjets;
-    if (iSys==0) cleanedjets = preselected_jets;
     if (iSys==1) cleanedjets = preselected_jets_JECup;
-    if (iSys==2) cleanedjets = preselected_jets_JECdown;
-    // if iSys==1 , JESup, etc.?
+    else if (iSys==2) cleanedjets = preselected_jets_JECdown;
+    else cleanedjets = preselected_jets;    
     
+
+    //if ( !(cleanedjets.size()>=2 && tight_leptons.size()>=2 && iSys==0) ) debug=false;
     //cleanedjets = simpleJetCut(cleanedjets,"pt",30.0);
     //jets = simpleJetCut(jets,"passPUID",0);
     
@@ -170,7 +205,15 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     double leadingleppt = nlep>0 ? deezleps[0].obj.Pt() : 0.;
     int lpdgID1 = nlep>0 ? deezleps[0].pdgID : -999;
     int lpdgID2 = nlep>1 ? deezleps[1].pdgID : -999;
-    weight *= triggerSF(lpdgID1, lpdgID2, nlep, leadingleppt);
+    
+    if (debug) cout << " " << endl;
+    //if (debug) cout << "Next event... " << endl;    
+    if (debug) cout << " " << endl;
+    if (debug) cout << "nmuons, nelectrons, njets:  " << tight_muons.size() << ", " << tight_electrons.size() << ", " << cleanedjets.size() << endl;
+    double triggersf = triggerSF(lpdgID1, lpdgID2, nlep, leadingleppt);
+    if (debug) cout << "trigger SF: " << triggersf << endl;
+    
+    weight *= triggersf;
     
     
     ///////////  lep SFs ///////////
@@ -202,8 +245,18 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     //cout << "heyA" << endl;
     for (const auto dislep : deezleps)
     {
-        if (abs(dislep.pdgID)==13) weight *= muonSF(dislep.obj.Pt(),dislep.obj.Eta(),nlep);
-        else if (abs(dislep.pdgID)==11) weight *= electronSF(dislep.obj.Pt(),dislep.obj.Eta(),nlep);
+        if (abs(dislep.pdgID)==13)
+        {
+            double mSF = muonSF(dislep.obj.Pt(),dislep.obj.Eta(),nlep);
+            if (debug) cout << "mu pt, eta, SF:  " << dislep.obj.Pt() << ", " <<  dislep.obj.Eta() << ", " << mSF << endl;   
+            weight *= mSF;
+        }
+        else if (abs(dislep.pdgID)==11)
+        {
+            double eSF = electronSF(dislep.obj.Pt(),dislep.obj.Eta(),nlep); 
+            if (debug) cout << "el pt, eta, SF:  " << dislep.obj.Pt() << ", " <<  dislep.obj.Eta() << ", " << eSF << endl;                    
+            weight *= eSF;
+        }
     }
     //cout << "heyB" << endl;
     /////////////////////////////
@@ -213,7 +266,7 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     int ntpvs = *numTruePVs_intree;
     if ( ntpvs<0 ) ntpvs=0;
     if ( ntpvs>199 ) ntpvs=199;
-    weight *= pileupSF(ntpvs);
+    //weight *= pileupSF(ntpvs);
     
     
     // DeepCSV reweighting:
@@ -235,15 +288,37 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     double deepcsvwgt = 1.;
     if (cleanedjets.size()>0)
     {
-        deepcsvwgt = get_csv_wgt(true, vectJetTLV, jetCSV, jetFlavor, 0, hfSF, lfSF, cSF); // iSys=0 for now-> fix
+        if (debug) cout << "getRobinBtagSyst(iSys): " << getRobinBtagSyst(iSys) << endl;
+        deepcsvwgt = get_csv_wgt(true, vectJetTLV, jetCSV, jetFlavor, getRobinBtagSyst(iSys), hfSF, lfSF, cSF);
         weight *= deepcsvwgt;
     }
     if (debug) cout << " " << endl;
     if (debug) cout << "event DeepCSVSF,hfSF,lfSF,cSF: " << deepcsvwgt << ", " << hfSF << ", " << lfSF << ", " << cSF << endl;
     if (debug) cout << " " << endl;
     if (debug) cout << " " << endl;
+    if (debug) cout << "Total SF: " << weight << endl;
     if (debug) cout << "next event..." << endl;
     
     return weight;
+    
+//// btag syst mapping:
+// CMS_ttHl_btag_cErr1 - up : 29
+// CMS_ttHl_btag_cErr2 - up : 31
+// CMS_ttHl_btag_HF - up : 17
+// CMS_ttHl_btag_LF - up : 19
+// CMS_ttHl16_btag_HFStats1 - up : 21
+// CMS_ttHl16_btag_HFStats2 - up : 25
+// CMS_ttHl16_btag_LFStats1 - up : 23
+// CMS_ttHl16_btag_LFStats2 - up : 27
+//     
+// CMS_ttHl_btag_cErr1 - down : 30
+// CMS_ttHl_btag_cErr2 - down : 32
+// CMS_ttHl_btag_HF - down : 18
+// CMS_ttHl_btag_LF - down : 20
+// CMS_ttHl16_btag_HFStats1 - down : 22
+// CMS_ttHl16_btag_HFStats2 - down : 26
+// CMS_ttHl16_btag_LFStats1 - down : 24
+// CMS_ttHl16_btag_LFStats2 - down : 28
+    
     
 }
