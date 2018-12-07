@@ -15,6 +15,7 @@ class GoodPlot : public TCanvas
         THStack *syststack[100];
         int numsysts = 8;
         TString thisSystTStr[12] = {"MCStatUP","MCStatDOWN","LumiUP","LumiDOWN","pdfUP","pdfDOWN","Q2UP","Q2DOWN","JESUP","JESDOWN","BTagUP","BTagDOWN"}; // work in progress
+        //vector<TString> thisSystTStr;
         TGraphAsymmErrors *sumMCband;
         TGraphAsymmErrors *sumMCbandNoStat;
         std::vector<TString> stacksamps;
@@ -350,7 +351,9 @@ void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TStri
     // the plot should already have a top part
     this->cd();
     this->SetCanvasSize(960,900); // really should be (960,943), but due to margins, etc., it's a little different
-    if (divided) 
+    
+    if (!divided) cout << "This isn't going to work. You need to divide the canvas beforehand (use the relevant args of the GoodPlot ctr)." << endl;
+    else 
     {
         // hardcoded to 2 pads (1 up and 1 down),
         // which should be the case 99% of the
