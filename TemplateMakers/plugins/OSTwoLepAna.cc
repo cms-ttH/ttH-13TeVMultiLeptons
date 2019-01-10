@@ -189,20 +189,20 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 
             // try add Q^2 weights
             // std::cout << "==>" << wgt_info.id << std::endl;
-            // if ( LHEwgtstr.find("rwgt")==std::string::npos ) 
-            //   {
-            // 	if ( stoi(wgt_info.id) == 1006 ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
-            // 	if ( stoi(wgt_info.id) == 1011 ) muRWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
-        
-            // 	if ( stoi(wgt_info.id) == 1016 ) muFWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
-            // 	if ( stoi(wgt_info.id) == 1031 ) muFWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
-            //   }
+            
+            // "regular" (actually just EFT? Or madgraph?):
             if ( LHEwgtstr.find("1006")!=std::string::npos ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
             if ( LHEwgtstr.find("1011")!=std::string::npos ) muRWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
         
             if ( LHEwgtstr.find("1016")!=std::string::npos ) muFWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
             if ( LHEwgtstr.find("1031")!=std::string::npos ) muFWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
-
+            
+            // at least some powheg, amcatnlo central samples (translation: most samples):
+//             if ( LHEwgtstr.find("1004")!=std::string::npos ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
+//             if ( LHEwgtstr.find("1007")!=std::string::npos ) muRWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
+//         
+//             if ( LHEwgtstr.find("1002")!=std::string::npos ) muFWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
+//             if ( LHEwgtstr.find("1003")!=std::string::npos ) muFWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;            
         }
 
         muRWeightSumUp += muRWeightUp_intree*mcwgt_intree;
@@ -217,31 +217,37 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         std::vector<double> nnpdfWeights;
 
         // create the PDF
-        LHAPDF::PDFSet nnpdfSet("NNPDF31_nlo_hessian_pdfas"); // NNPDF30_nlo_as_0118 = central samples    //NNPDF31_nlo_hessian_pdfas  = EFT samples
+        LHAPDF::PDFSet nnpdfSet("NNPDF31_nnlo_hessian_pdfas"); // NNPDF30_nlo_as_0118 = central (powheg-only?) samples    //NNPDF31_nlo_hessian_pdfas  = EFT samples // NNPDF31_nnlo_hessian_pdfas = newer EFT samps, amcatnlo, some central powheg samples
+
+        // NNPDF30_nlo_as_0118: besides ttH powheg: ?  
+        // NNPDF31_nnlo_hessian_pdfas: wz, all tribosons, ttGJets, 
+        // NNPDF31_nnlo_hessian_pdfas but choose "hessian" option below: single (anti-)top, zz, ww,
+        //
 
         // // sums for renormalization
         // double nnpdfWeightSumUp = 0.;
         // double nnpdfWeightSumDown = 0.;
 
         // pdf ID start and end ???
-        int pdfID_start = 305800;  //305800; //NNPDF31_nlo_hessian_pdfas       //260001; //NNPDF30_nlo_as_0118
-        int pdfID_end = 305902;    //305902; //NNPDF31_nlo_hessian_pdfas       //260100; //NNPDF30_nlo_as_0118
+        int pdfID_start = 306001;  //305800; //NNPDF31_nlo_hessian_pdfas       //260001; //NNPDF30_nlo_as_0118      //306001 NNPDF31_nnlo_hessian_pdfas, hessian
+        int pdfID_end = 306102;    //305902; //NNPDF31_nlo_hessian_pdfas       //260100; //NNPDF30_nlo_as_0118      //306102 NNPDF31_nnlo_hessian_pdfas, hessian
 
         // obtain weights
         auto& mcWeights = LHEInfo->weights();
         for (size_t i = 0; i < mcWeights.size(); i++)
         {
             // use the mapping to identify the weight
-                auto wgtstr = string(mcWeights[i].id);
-            std::size_t foundstr = wgtstr.find("rwgt"); ////
-            if ( foundstr!=std::string::npos ) continue;
+            auto wgtstr = string(mcWeights[i].id);
+            //cout << wgtstr << endl;
+            std::size_t foundstr = wgtstr.find("rwgt");
+            if ( foundstr!=std::string::npos ) continue; // skip EFT stuff here
 
             ////
             int idInt = stoi(mcWeights[i].id);
             if (pdfIdMap_.find(idInt) != pdfIdMap_.end())
             {
                 int setId = pdfIdMap_[idInt];
-                // std::cout << "  ---->" << wgtstr << " : " << setId << std::endl;
+                //std::cout << "  ---->" << wgtstr << " : " << setId << std::endl;
                 if (setId >= pdfID_start && setId <= pdfID_end) // NNPDF30_nlo_as_0118
                 {
                     // divide by original weight to get scale-factor-like number
@@ -263,7 +269,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
                 nnpdfWeights.push_back(1.);
             }
             // first value must be the nominal value, i.e. 1 since we normalize by original weight
-            // nnpdfWeights.insert(nnpdfWeights.begin(), 1.);
+            nnpdfWeights.insert(nnpdfWeights.begin(), 1.);                                                                      // <<----------
             // calculate combined weights
             // std::cout << "nnpdfWeights size is: " << (int)nnpdfWeights.size() << std::endl;
             const LHAPDF::PDFUncertainty pdfUnc = nnpdfSet.uncertainty(nnpdfWeights, 68.268949);
@@ -758,10 +764,30 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     //   run.getByLabel(lheRunToken_, runInfo); //getByToken not work
     run.getByLabel("externalLHEProducer", runInfo);
 
+    // was "default" (prob. don't use):
+//     std::string weightTag = "initrwgt";
+//     std::string startStr = "<weight id="; // "&lt;weight id="
+//     std::string setStr = "> PDF set = ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+//     std::string endStr = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+    
+    // "hessian":
+//     std::string weightTag = "initrwgt";
+//     std::string startStr = "<weight id="; // "&lt;weight id="
+//     std::string setStr = "> lhapdf=";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+//     std::string endStr = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+
+    // stuff that uses NNPDF31_nnlo_hessian_pdfas (amcatnlo, ... ?). basically everythin except EFT or the few that use the "hessian" option
+//     std::string weightTag = "initrwgt";
+//     std::string startStr = "<weight id="; // "&lt;weight id="
+//     std::string setStr = "> PDF=  ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+//     std::string endStr = "NNPDF31_nnlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+    
+    // ****newer EFT samps****
     std::string weightTag = "initrwgt";
-    std::string startStr = "&lt;weight id=";
-    std::string setStr = " MUR=\"1.0\" MUF=\"1.0\" PDF=\"";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it???
-    std::string endStr = " &gt; PDF=305800"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>";
+    std::string startStr = "&lt;weight id="; // "&lt;weight id="
+    std::string setStr = " MUR=\"1.0\" MUF=\"1.0\" PDF=\"";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+    std::string endStr = " &gt; PDF=306000"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+
 
     for (std::vector<LHERunInfoProduct::Header>::const_iterator it = runInfo->headers_begin(); it != runInfo->headers_end(); it++)
     {
@@ -773,17 +799,20 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
 	    std::vector<std::string> lines = it->lines();
         for (size_t i = 0; i < lines.size(); i++)
 	    {
-	        // std::cout << lines[i] << std::endl;
+	        std::cout << lines[i] << std::endl;
             size_t startPos = lines[i].find(startStr);
             size_t setPos = lines[i].find(setStr);
             size_t endPos = lines[i].find(endStr);
+            cout << (startPos == std::string::npos) << endl;
+            cout << (setPos == std::string::npos) << endl;
+            cout << (endPos == std::string::npos) << endl;
             if (startPos == std::string::npos || setPos == std::string::npos || endPos == std::string::npos)
 	        {
                 continue;
 	        }
 	        std::string weightId = lines[i].substr(startPos + startStr.size() + 1, setPos - startPos - startStr.size() - 2); // this has changed, modify it???
 	        std::string setId = lines[i].substr(setPos + setStr.size(), endPos - setPos - setStr.size() - 1); // this has changed, modify it???
-	        // std::cout << weightId << " : " << setId << std::endl;
+	        std::cout << weightId << " : " << setId << std::endl;
             try
 	        {
                 pdfIdMap_[stoi(weightId)] = stoi(setId);
