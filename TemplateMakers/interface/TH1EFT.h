@@ -167,10 +167,11 @@ Double_t TH1EFT::GetBinContent(Int_t bin, WCPoint wc_pt)
 
     return scale_value;
 }
-
+/*
 void TH1EFT::Scale(WCPoint wc_pt)
 {
-    //TH1EFT* new_hist = (TH1EFT*)this->Clone("clone");
+    // Warning: calling GetEntries after a call to this function will return a 
+    // non-zero value, even if the histogram was never filled.
     
     for (Int_t i = 1; i <= this->GetNbinsX(); i++) {
         Double_t new_content = this->GetBinContent(i,wc_pt);
@@ -180,7 +181,22 @@ void TH1EFT::Scale(WCPoint wc_pt)
     }
     
 }
-
+*/
+// evalPointError disabled:
+void TH1EFT::Scale(WCPoint wc_pt)
+{
+    // Warning: calling GetEntries after a call to this function will return a 
+    // non-zero value, even if the histogram was never filled.
+    
+    for (Int_t i = 1; i <= this->GetNbinsX(); i++) {
+        Double_t old_content = this->GetBinContent(i);
+        Double_t new_content = this->GetBinContent(i,wc_pt);
+        Double_t old_error = this->GetBinError(i);
+        this->SetBinContent(i,new_content);
+        this->SetBinError(i,old_error*new_content/old_content);
+    }
+    
+}
 // Uniformly scale all fits by amt
 void TH1EFT::ScaleFits(double amt)
 {
