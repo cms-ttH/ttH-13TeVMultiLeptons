@@ -1,12 +1,16 @@
+const int numberOfSysts = 45; // change this when changing below ////// 45 // 35
+
 TString systint2str(int syst)
 {
+    // (non-trivial) systematics for this analysis
+    
     if (syst==0) return "";
     if (syst==1) return "JESUP";
     if (syst==2) return "JESDOWN";
     if (syst==3) return "FRUP";
     if (syst==4) return "FRDOWN";
-    if (syst==5) return "FRQCD";
-    if (syst==6) return "FRTTBAR";
+    if (syst==5) return "FRQCD"; // not considered
+    if (syst==6) return "FRTTBAR"; // not considered
     if (syst==7) return "CERR1UP";
     if (syst==8) return "CERR1DOWN";
     if (syst==9) return "CERR2UP";
@@ -29,31 +33,49 @@ TString systint2str(int syst)
     if (syst==26) return "MURDOWN";
     if (syst==27) return "MUFUP";
     if (syst==28) return "MUFDOWN";
-
+    if (syst==29) return "LEPIDUP";
+    if (syst==30) return "LEPIDDOWN";
+    if (syst==31) return "FRPT1"; // not considered
+    if (syst==32) return "FRPT2"; // not considered
+    if (syst==33) return "FRETA1"; // not considered
+    if (syst==34) return "FRETA2"; // not considered
+    if (syst==35) return "PFUP"; // not considered
+    if (syst==36) return "PFDOWN"; // not considered
+    if (syst==37) return "PSISRUP";
+    if (syst==38) return "PSISRDOWN";
+    if (syst==39) return "PSFSRUP"; // not considered
+    if (syst==40) return "PSFSRDOWN";  // not considered
+    if (syst==41) return "TRGUP";
+    if (syst==42) return "TRGDOWN";
+    if (syst==43) return "PUUP";
+    if (syst==44) return "PUDOWN";        
+    
+    
+    cout << "Unspecified systematic!" << endl;
     return "";
 }
 
 int getRobinBtagSyst(int syst)
 {
 
-    //// btag syst mapping:
-// CMS_ttHl_btag_cErr1 - up : 29
-// CMS_ttHl_btag_cErr2 - up : 31
-// CMS_ttHl_btag_HF - up : 17
-// CMS_ttHl_btag_LF - up : 19
-// CMS_ttHl16_btag_HFStats1 - up : 21
-// CMS_ttHl16_btag_HFStats2 - up : 25
-// CMS_ttHl16_btag_LFStats1 - up : 23
-// CMS_ttHl16_btag_LFStats2 - up : 27
-//     
-// CMS_ttHl_btag_cErr1 - down : 30
-// CMS_ttHl_btag_cErr2 - down : 32
-// CMS_ttHl_btag_HF - down : 18
-// CMS_ttHl_btag_LF - down : 20
-// CMS_ttHl16_btag_HFStats1 - down : 22
-// CMS_ttHl16_btag_HFStats2 - down : 26
-// CMS_ttHl16_btag_LFStats1 - down : 24
-// CMS_ttHl16_btag_LFStats2 - down : 28
+    //// Robin's btag syst mapping (see csvSF_treeReader_13TeV.C):
+    // CMS_ttHl_btag_cErr1 - up : 29
+    // CMS_ttHl_btag_cErr2 - up : 31
+    // CMS_ttHl_btag_HF - up : 17
+    // CMS_ttHl_btag_LF - up : 19
+    // CMS_ttHl16_btag_HFStats1 - up : 21
+    // CMS_ttHl16_btag_HFStats2 - up : 25
+    // CMS_ttHl16_btag_LFStats1 - up : 23
+    // CMS_ttHl16_btag_LFStats2 - up : 27
+    //     
+    // CMS_ttHl_btag_cErr1 - down : 30
+    // CMS_ttHl_btag_cErr2 - down : 32
+    // CMS_ttHl_btag_HF - down : 18
+    // CMS_ttHl_btag_LF - down : 20
+    // CMS_ttHl16_btag_HFStats1 - down : 22
+    // CMS_ttHl16_btag_HFStats2 - down : 26
+    // CMS_ttHl16_btag_LFStats1 - down : 24
+    // CMS_ttHl16_btag_LFStats2 - down : 28
 
     
     if (syst<1 || syst>22) return 0;
@@ -219,25 +241,67 @@ string getjettagcategory(string lepcat, int jets, int tags)
     return lepcat+jetstr+tagstr;
 
 }
-string gettagcategory(string lepcat, int tags)
+string gettagcategory(string lepcat, int tagsM, int tagsL=-1)
 {
     string tagstr = "";
-    if (lepcat=="ge5l" && tags>=1) tagstr = "_1b";
-    else if (tags>=2) tagstr = "_2b";
-    else if (tags==1) tagstr = "_1b";
-    else return "null";
-    return lepcat+tagstr;
+    if (tagsL<0) // old nominal case (ignore loose)
+    {
+        //if (lepcat=="ge5l" && tags>=1) tagstr = "_1b";
+        if (tagsM>=2) tagstr = "_2b";
+        else if (tagsM==1) tagstr = "_1b";
+        else return "null";
+        return lepcat+tagstr;
+    }
+    else // doing some crazy $#*! with the loose btags
+    {
+        // uncomment if "group 1"
+//         if (tagsM>=2) tagstr = "_2b";
+//         else if (tagsM==1 && tagsL>=1 && lepcat.substr(0,2)=="3l") tagstr = "_1b";
+//         else return "null";
+//         return lepcat+tagstr;
+//         
+//         uncomment if "group 2"
+//         if (tagsM==1 && tagsL>=1) tagstr = "_2b";
+//         else if (tagsM==1 && tagsL==0 && lepcat.substr(0,2)=="3l") tagstr = "_1b";
+//         else return "null";
+//         return lepcat+tagstr;
+//         
+//         // uncomment if "group 3"
+//         if (tagsM==0 && tagsL>=2) tagstr = "_2b";
+//         else if (tagsM==0 && tagsL==1 && lepcat.substr(0,2)=="3l") tagstr = "_1b";
+//         else return "null";
+//         return lepcat+tagstr;
+//         
+//         // uncomment if "group 4"
+//         if (tagsM==1 && tagsL==0 && lepcat.substr(0,4)=="2lss") tagstr = "_2b"; // only 2lss
+//         else return "null";
+//         return lepcat+tagstr;
+        
+        // what we're going with:
+        if (lepcat.substr(0,4)=="2lss" && (tagsM>=2 || (tagsM>=1 && tagsL>=2))) tagstr = "_2b";
+        else if (tagsM>=2 && lepcat.substr(0,2)=="3l") tagstr = "_2b";
+        else if (tagsM==1 && lepcat.substr(0,2)=="3l") tagstr = "_1b";
+        else if (lepcat=="4l" && (tagsM>=2 || (tagsM>=1 && tagsL>=2))) tagstr = "_2b";
+        else return "null";
+        return lepcat+tagstr;
+        
+    }
+    
 }
 
 
 void clean_neg_bins(TH1 &negBinHist)
 {
+    bool debug = false;
+    
     //cout << "here a" << endl;
-    //cout << negBinHist.GetName() << endl;
+    if (debug) cout << negBinHist.GetName() << endl;
     
     // this works for 1D and 2D hists
     int numbinsx = negBinHist.GetNbinsX();
+    if (debug) cout << "numbinsx " << numbinsx << endl;
     int numbinsy = negBinHist.GetNbinsY();
+    if (debug) cout << "numbinsy " << numbinsy << endl;
     int numbins = numbinsx*numbinsy;
     
     for (int i=1; i<=numbinsx; i++)
@@ -249,7 +313,7 @@ void clean_neg_bins(TH1 &negBinHist)
             
             if (bincont<0.) 
             {
-                //cout << "here c" << endl;
+                if (debug) cout << "bin " << bin << endl;
                 negBinHist.SetBinContent(bin,0.);
                 negBinHist.SetBinError(bin,0.);
             }

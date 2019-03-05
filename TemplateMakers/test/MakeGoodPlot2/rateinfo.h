@@ -54,26 +54,31 @@ void MakeGoodPlot::get_rate_info()
 
     
     // diboson (WZ)
-    xsec[10]=4.42965; // <- to 3lnu. (2.165.. what was this?)
-    q2up[10]=0.; // <- to be updated.. ?
-    q2down[10]=0.; // <- to be updated.. ?
-    pdfup[10]=0.; // <- to be updated.. ?
-    pdfdown[10]=0.; // <- to be updated.. ?
+    xsec[10]=4.42965; // <- to 3lnu.
+    q2up[10]=0.02*xsec[10]; 
+    q2down[10]=-0.02*xsec[10]; 
+    pdfup[10]=0.02*xsec[10];
+    pdfdown[10]=-0.02*xsec[10]; 
 
     // diboson (ZZ)
     xsec[11]=1.212; // to 4l. Inclusive is 16.523.
-    q2up[11]=0.; // <- to be updated.. ?
-    q2down[11]=0.; // <- to be updated.. ?
-    pdfup[11]=0.; // <- to be updated.. ?
-    pdfdown[11]=0.; // <- to be updated.. ?
+    q2up[11]=0.02*xsec[11]; 
+    q2down[11]=-0.02*xsec[11]; 
+    pdfup[11]=0.02*xsec[11];
+    pdfdown[11]=-0.02*xsec[11]; 
     
     // diboson (WW)
     xsec[12]=  12.178; // dilep xsec from https://twiki.cern.ch/twiki/bin/view/CMS/XsdbTutorialSep
     //xsec[12]= 118.7; // inclusive is 118.7 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
-    q2up[12]=0.; // fixed scale 
-    q2down[12]=0.; //
-    pdfup[12]=0.025*118.7;
-    pdfdown[12]=-0.022*118.7;
+//     q2up[12]=0.; // fixed scale 
+//     q2down[12]=0.; //
+//     pdfup[12]=0.025*118.7;
+//     pdfdown[12]=-0.022*118.7;
+    q2up[12]=0.02*xsec[12]; 
+    q2down[12]=-0.02*xsec[12]; 
+    pdfup[12]=0.02*xsec[12];
+    pdfdown[12]=-0.02*xsec[12]; 
+    
         
     // dilepton ttbar
     xsec[13]=831.76*(3*0.108)*(3*0.108); // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/TtbarNNLO
@@ -144,31 +149,39 @@ void MakeGoodPlot::get_rate_info()
 
     //dummy["WWW"] = 22;
     xsec[22]=0.2086;
-    q2up[22]=0.0002024;
-    q2down[22]=0.0002024;
-    pdfup[22]=0.; // <- to be updated..
-    pdfdown[22]=0.; // <- to be updated..
+    //q2up[22]=0.0002024;
+    //q2down[22]=0.0002024;
+    q2up[22]=0.05*xsec[22];
+    q2down[22]=-0.05*xsec[22];    
+    pdfup[22]=0.05*xsec[22];
+    pdfdown[22]=-0.05*xsec[22]; 
     
     //dummy["WWZ"] = 23;
     xsec[23]=0.1651;
-    q2up[23]=0.0001724;
-    q2down[23]=0.0001724;
-    pdfup[23]=0.; // <- to be updated..
-    pdfdown[23]=0.; // <- to be updated..    
+    //q2up[23]=0.0001724;
+    //q2down[23]=0.0001724;
+    q2up[23]=0.05*xsec[23];
+    q2down[23]=-0.05*xsec[23];    
+    pdfup[23]=0.05*xsec[23];
+    pdfdown[23]=-0.05*xsec[23];
     
     //dummy["WZZ"] = 24;
     xsec[24]=0.05565;
-    q2up[24]=5.5e-05;
-    q2down[24]=5.5e-05;
-    pdfup[24]=0.; // <- to be updated..
-    pdfdown[24]=0.; // <- to be updated..    
+    //q2up[24]=5.5e-05;
+    //q2down[24]=5.5e-05;
+    q2up[24]=0.05*xsec[24];
+    q2down[24]=-0.05*xsec[24];    
+    pdfup[24]=0.05*xsec[24];
+    pdfdown[24]=-0.05*xsec[24];    
     
     //dummy["ZZZ"] = 25;
     xsec[25]=0.01398;
-    q2up[25]=1.496e-05;
-    q2down[25]=1.496e-05;
-    pdfup[25]=0.; // <- to be updated..
-    pdfdown[25]=0.; // <- to be updated..    
+    //q2up[25]=1.496e-05;
+    //q2down[25]=1.496e-05;
+    q2up[25]=0.05*xsec[25];
+    q2down[25]=-0.05*xsec[25];    
+    pdfup[25]=0.05*xsec[25];
+    pdfdown[25]=-0.05*xsec[25];    
     
     
     //dummy["tZq"] = 26;
@@ -199,30 +212,73 @@ void MakeGoodPlot::get_rate_info()
     pdfup[29]=0.; // <- to be updated..
     pdfdown[29]=0.; // <- to be updated.. 
     
+    // TTGJets
+    xsec[30]=3.697;
+    q2up[30]=0.1*xsec[30];
+    q2down[30]=-0.1*xsec[30];
+    pdfup[30]=0.05*xsec[30]; // <- to be updated..
+    pdfdown[30]=-0.05*xsec[30]; // <- to be updated.. 
+    
+    // TTGJets
+    xsec[31]=7.7129e-02; //2.879E-03+7.425e-02; // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV
+    q2up[31]=0.08*xsec[31];
+    q2down[31]=-0.149*xsec[31];
+    pdfup[31]=0.0045*xsec[31];
+    pdfdown[31]=-0.0045*xsec[31];
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     
     ////////// multidim EFT samples ////////
-    // these are not really xsecs but various adjustments to be applied to
+    // FOR THESE SAMPLES ONLY: THESE ARE NOT REALLY XSECS but various adjustments to be applied to
     // the differential xsecs already stored in the event weights
     //    
     // Inclusive LO xsecs:
-    // ttlnu: 0.11269   um..
+    // ttlnu: 0.11269   um.. (seems to check out)
     // ttH:   0.386016  ok
-    // ttll:  0.074436  um..
+    // ttll:  0.074436  um.. // <-note: central includes Z->nunu, which boosts xsec by factor ~3
     // tllq:  0.0675964 ok
     // ttbar: 493.386 ...
     // https://arxiv.org/pdf/1802.07237.pdf
     //
     
+    
+    
+    //const double tempff = 1./1.72; /// remove this when not needed (or set to 1)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    const double tempff = 1.;
+    
     //16D ttH
-    xsec[84]=1.-0.577; // (1-0.577)*(0.577/0.386) ?
+    xsec[84]=tempff*xsec[1]/0.386; // The ratio is inclusive NLO / inclusive LO. The factor out front (see xsec[1]) is adjusting for the fact that Andrew removed by hand the H->bb decays after the fact; i.e. the 
+                                        // cross section still stored in the samples is the inclusive one, so we adjust this down.  // remove the /6.7 (temp fudge-factor) // 
+    q2up[84]=0.057*xsec[84];
+    q2down[84]=-0.093*xsec[84];
+    pdfup[84]=0.036*xsec[84];
+    pdfdown[84]=-0.036*xsec[84];
+    
     //16D ttlnu
-    xsec[85]=1.; // k-factor?
+    xsec[85]=tempff*xsec[8]/0.11269; // ok
+    q2up[85]=0.13*xsec[85];
+    q2down[85]=-0.12*xsec[85];
+    pdfup[85]=0.02*xsec[85];
+    pdfdown[85]=-0.02*xsec[85];
+    
+    
     //16D ttll
-    xsec[86]=1.; // k-factor?
+    xsec[86]=tempff*(0.087/0.07)*(xsec[9]/3)/0.0744; // First adjusting the NLO one by removing the neutrino component (~/3), and adjust for the fact that our samples don't cut on mll (the factor out front is the 
+                                                        // difference between LO cross sections when you do/don't do the mll cut), then finally do an apples-to-apples between the NLO & LO.
+    q2up[86]=0.1*xsec[86];
+    q2down[86]=-0.12*xsec[86];
+    pdfup[86]=0.03*xsec[86];
+    pdfdown[86]=-0.03*xsec[86];
+    
     //16D tllq
-    xsec[87]=1.; // k-factor?
+    xsec[87]=tempff*xsec[26]/0.0675964; // ok
+    q2up[87]=0.01*xsec[87];
+    q2down[87]=-0.01*xsec[87];
+    pdfup[87]=0.04*xsec[87];
+    pdfdown[87]=-0.04*xsec[87];
     
-    
+    //16D tHq
+    xsec[88]=(9214./10000.)*xsec[31]/0.072955 ; // factor out front is temporary! to be removed next time!
     
     
 }

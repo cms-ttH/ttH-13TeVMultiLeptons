@@ -5,6 +5,7 @@
 #include "triggerstudies_hists.h"
 #include "standard_hists.h"
 #include "mc_validation_hists.h"
+#include "sync_hists.h"
 
 void HistMaker::doOneEvent()
 {
@@ -16,8 +17,10 @@ void HistMaker::doOneEvent()
     // doesn't return anything; the hist map is also member of HistMaker!
     
     //proof_of_concept();
+    
     fixcollections();
     standard_hists();
+    //sync_hists();
     
     //lepton_eff_studies();
     //trigger_studies();

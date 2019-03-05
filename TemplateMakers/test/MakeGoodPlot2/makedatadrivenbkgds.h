@@ -85,6 +85,8 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
     TH2D *elFRhist;
     TH2D *muFRhist;
     
+    //cout << iSys << endl;
+    
     if (iSys==3)
     {
         elFRhist = elFRsfs_up;
@@ -105,6 +107,27 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
         elFRhist = elFRsfs_ttbar;
         muFRhist = muFRsfs_ttbar;
     }
+    else if (iSys==31)
+    {
+        elFRhist = elFRsfs_pt1;
+        muFRhist = muFRsfs_pt1;
+    }    
+    else if (iSys==32)
+    {
+        elFRhist = elFRsfs_pt2;
+        muFRhist = muFRsfs_pt2;
+    }    
+    else if (iSys==33)
+    {
+        elFRhist = elFRsfs_eta1;
+        muFRhist = muFRsfs_eta1;
+    }    
+    else if (iSys==34)
+    {
+        elFRhist = elFRsfs_eta2;
+        muFRhist = muFRsfs_eta2;
+    }    
+    
     else
     {
         elFRhist = elFRsfs;
@@ -135,8 +158,11 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 
                 if (!lep_tight(leptons[0]))
                 {
-                    if (abs(leptons[0].pdgID)==11) factor1 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                    if (abs(leptons[0].pdgID)==13) factor1 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+                    //cout << "l1" << endl;
+                    //cout << leptons[0].correctedPt << " " << leptons[0].obj.Eta() << endl;
+                    
+                    if (abs(leptons[0].pdgID)==11) factor1 = elFRhist->GetBinContent(elFRhist->FindBin(min(leptons[0].correctedPt,99.),min(abs(leptons[0].obj.Eta()),2.49))); // the newer cern ones only go up to 100 :P
+                    if (abs(leptons[0].pdgID)==13) factor1 = muFRhist->GetBinContent(muFRhist->FindBin(min(leptons[0].correctedPt,99.),min(abs(leptons[0].obj.Eta()),2.49)));
                     
 //                     if (iSys==3)
 //                     {
@@ -153,8 +179,12 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 }
                 if (!lep_tight(leptons[1]))
                 {
-                    if (abs(leptons[1].pdgID)==11) factor2 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                    if (abs(leptons[1].pdgID)==13) factor2 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+                
+                    //cout << "l2" << endl;
+                    //cout << leptons[1].correctedPt << " " << leptons[1].obj.Eta() << endl;                   
+                
+                    if (abs(leptons[1].pdgID)==11) factor2 = elFRhist->GetBinContent(elFRhist->FindBin(min(leptons[1].correctedPt,99.),min(abs(leptons[1].obj.Eta()),2.49)));
+                    if (abs(leptons[1].pdgID)==13) factor2 = muFRhist->GetBinContent(muFRhist->FindBin(min(leptons[1].correctedPt,99.),min(abs(leptons[1].obj.Eta()),2.49)));
                     
 //                     if (iSys==3)
 //                     {
@@ -186,6 +216,8 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 
                 //th1d[category[sys]+"_Fakes."+systint2str(sys)]->Fill(,factor*weight); // not here..
                 
+                
+                //cout << "here3" << endl;
             }
 
             
@@ -201,8 +233,8 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 
                 if (!lep_tight(leptons[0]))
                 {
-                    if (abs(leptons[0].pdgID)==11) factor1 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
-                    if (abs(leptons[0].pdgID)==13) factor1 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[0].correctedPt,abs(leptons[0].obj.Eta())));
+                    if (abs(leptons[0].pdgID)==11) factor1 = elFRhist->GetBinContent(elFRhist->FindBin(min(leptons[0].correctedPt,99.),min(abs(leptons[0].obj.Eta()),2.49)));
+                    if (abs(leptons[0].pdgID)==13) factor1 = muFRhist->GetBinContent(muFRhist->FindBin(min(leptons[0].correctedPt,99.),min(abs(leptons[0].obj.Eta()),2.49)));
                     
 //                     if (iSys==3)
 //                     {
@@ -219,8 +251,8 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 }
                 if (!lep_tight(leptons[1]))
                 {
-                    if (abs(leptons[1].pdgID)==11) factor2 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
-                    if (abs(leptons[1].pdgID)==13) factor2 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[1].correctedPt,abs(leptons[1].obj.Eta())));
+                    if (abs(leptons[1].pdgID)==11) factor2 = elFRhist->GetBinContent(elFRhist->FindBin(min(leptons[1].correctedPt,99.),min(abs(leptons[1].obj.Eta()),2.49)));
+                    if (abs(leptons[1].pdgID)==13) factor2 = muFRhist->GetBinContent(muFRhist->FindBin(min(leptons[1].correctedPt,99.),min(abs(leptons[1].obj.Eta()),2.49)));
                     
 //                     if (iSys==3)
 //                     {
@@ -237,8 +269,8 @@ double HistMaker::getFakeWeight(int iSys, vector<string> category)
                 }
                 if (!lep_tight(leptons[2]))
                 {
-                    if (abs(leptons[2].pdgID)==11) factor3 = elFRhist->GetBinContent(elFRhist->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
-                    if (abs(leptons[2].pdgID)==13) factor3 = muFRhist->GetBinContent(muFRhist->FindBin(leptons[2].correctedPt,abs(leptons[2].obj.Eta())));
+                    if (abs(leptons[2].pdgID)==11) factor3 = elFRhist->GetBinContent(elFRhist->FindBin(min(leptons[2].correctedPt,99.),min(abs(leptons[2].obj.Eta()),2.49)));
+                    if (abs(leptons[2].pdgID)==13) factor3 = muFRhist->GetBinContent(muFRhist->FindBin(min(leptons[2].correctedPt,99.),min(abs(leptons[2].obj.Eta()),2.49)));
                     
 //                     if (iSys==3)
 //                     {

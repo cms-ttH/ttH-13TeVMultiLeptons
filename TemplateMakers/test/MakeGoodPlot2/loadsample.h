@@ -41,6 +41,10 @@ std::unordered_map<string,int> sample_TString2int_map()
     dummy["WZZ"] = 24;
     dummy["ZZZ"] = 25;
     
+    dummy["ttGJets"] = 30;
+    
+    dummy["tHq"] = 31;
+    
     // EFT samps
     
     
@@ -100,9 +104,13 @@ std::unordered_map<string,int> sample_TString2int_map()
     dummy["ttH_multidim"]   = 84;
     dummy["ttlnu_multidim"] = 85;
     dummy["ttll_multidim"]  = 86;
-    dummy["tllq_multidim"]  = 87;    
+    dummy["tllq_multidim"]  = 87;
+    dummy["tHq_multidim"]  = 88;
     
     
+    //dummy["Diboson"] = 91; // actually, no, you can't do that
+    //dummy["Triboson"] = 92; // actually, no, you can't do that
+    // single top was 93..
     dummy["QFs"]  = 94;
     dummy["Fakes"]  = 95;
 
@@ -119,7 +127,7 @@ std::unordered_map<string,int> sample_TString2int_map()
     // in case you want to supply a one-off sample that's in a
     // different directory than usual, or in case you want to 
     // compare 2 versions of the same sample (e.g. for validation, etc.)
-    dummy["ttJets_noSkim"] = 0;
+    dummy["ttGJets_ext"] = 0;
     
     return dummy;
 }
@@ -193,7 +201,11 @@ TString loadsample(const int samp)
     //TString thisround = "lobster_trees__lobster_trees__EFT_test_14_6_18";
     //TString thisround = "lobster_trees__EFT_test_multidim_samps_ext_16_7_18";
     //TString thisround = "lobster_trees__EFT_test_for_pdfs_central_ttH_13_9_18";
-    TString thisround = "lobster_trees__EFT_test_for_pdfs_EFT_ttH_13_9_18";
+    //TString thisround = "lobster_trees__EFT_test_for_pdfs_EFT_ttH_13_9_18";
+    //TString thisround = "lobster_trees__EFT_test_multidim_samps_ext_11_10_18";
+    //TString thisround = "lobster_trees__EFT_test_just_powheg_ttH_again_for_pdfs_11_10_18";
+    //TString thisround = "lobster_trees__EFT_test_all_mc_bkds_for_pdfs_1_11_18_b";
+    TString thisround = "lobster_trees__EFT_test_27_2_19_central";
     
     TString basedir = "/hadoop/store/user/gesmith/"+thisround+"/";  // The directory on hadoop where your samples are located.
     if (!atND) basedir = "/store/ndpc6disk2/gesmith/crab/";         // The directory on ndpc disk where your samples are located.
@@ -295,7 +307,7 @@ TString loadsample(const int samp)
             
             //if trees produced with lobster:
             lsstring = "ls -d "+basedir+thissample+"/*.root > inputfiles__"+thissample+".txt";
-            if (samp>99 && samp<1000) lsstring = "find "+basedir+thissample+"_*/ -name \"*.root\" > inputfiles__"+thissample+".txt";
+            if ((samp>99 && samp<1000) || (samp>83 && samp<89)) lsstring = "find "+basedir+thissample+"_*/ -name \"*.root\" > inputfiles__"+thissample+".txt";
             
             // should be able to add " | sed 's#/hadoop/#root://deepthought.crc.nd.edu//#'" before the ">" if you want to use xrootd instead of fuse.
             // note: i found that sed didn't seem to be working when i tried it here (though it's possible i was doing something wrong...)

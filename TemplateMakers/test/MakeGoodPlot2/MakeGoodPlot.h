@@ -70,7 +70,8 @@ class MakeGoodPlot
         void save_analysis_hists();
         void th1eft_test_plots();
         void fr_studies_plots();
-        
+        void pdf_studies_plots();
+        void syst_sanity_check();
         MakeGoodPlot() { cout << "Default constructor of MakeGoodPlot doesn't do anything. Use a different constructor." << endl; }
         MakeGoodPlot(std::vector<int> thesamps, TString histdir="");
         MakeGoodPlot(std::vector<int> thesamps, std::vector<TObjArray> exthists);

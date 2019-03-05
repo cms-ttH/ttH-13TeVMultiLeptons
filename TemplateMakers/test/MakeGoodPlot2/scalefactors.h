@@ -3,8 +3,10 @@ void HistMaker::setupSFs()
     // This function is run in the HistMaker constructor
     
     TString basedir = getenv("CMSSW_BASE");
-    auto pudatafile = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/PU/2017PU_SFstest.root");
+    auto pudatafile = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/PU/2017PU_SFstest2.root");
     pileupSFs = (TH1D*)pudatafile->Get("pileupSF");
+    pileupSFs_up = (TH1D*)pudatafile->Get("pileupSF_UP");
+    pileupSFs_down = (TH1D*)pudatafile->Get("pileupSF_DOWN");
     
     auto hffile = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/btag/Deepcsv_rwt_fit_hf_v2_final_2018_2_12test.root");
     auto lffile = TFile::Open(basedir+"/src/ttH-13TeVMultiLeptons/TemplateMakers/data/btag/Deepcsv_rwt_fit_lf_v2_final_2018_2_12test.root");
@@ -61,44 +63,132 @@ void HistMaker::setupSFs()
     elFRsfs_ttbar = (TH2D*)FRSFfile->Get("FR_mva090_el_TT");
     muFRsfs_ttbar = (TH2D*)FRSFfile->Get("FR_mva090_mu_TT");    
     
+    elFRsfs_pt1 = (TH2D*)FRSFfile->Get("FR_mva090_el_data_comb_NC_pt1"); // comb_NC -> conversion-corrected
+    muFRsfs_pt1 = (TH2D*)FRSFfile->Get("FR_mva090_mu_data_comb_pt1");
+    
+    elFRsfs_pt2 = (TH2D*)FRSFfile->Get("FR_mva090_el_data_comb_NC_pt2"); // comb_NC -> conversion-corrected
+    muFRsfs_pt2 = (TH2D*)FRSFfile->Get("FR_mva090_mu_data_comb_pt2");
+    
+    elFRsfs_eta1 = (TH2D*)FRSFfile->Get("FR_mva090_el_data_comb_NC_be1"); // comb_NC -> conversion-corrected
+    muFRsfs_eta1 = (TH2D*)FRSFfile->Get("FR_mva090_mu_data_comb_be1");    
+    
+    elFRsfs_eta2 = (TH2D*)FRSFfile->Get("FR_mva090_el_data_comb_NC_be2"); // comb_NC -> conversion-corrected
+    muFRsfs_eta2 = (TH2D*)FRSFfile->Get("FR_mva090_mu_data_comb_be2");
     
 }
 
-double HistMaker::pileupSF(int numtrueint)
+double HistMaker::pileupSF(int numtrueint, int sys)
 {
     // assumes that setupSFs has been run already
-    return pileupSFs->GetBinContent(numtrueint+1);
+    //numtrueint = min(numtrueint,199); // ok, done outside
     // if up / down ...
+    if (sys==43) return pileupSFs_up->GetBinContent(numtrueint+1);
+    if (sys==44) return pileupSFs_down->GetBinContent(numtrueint+1);
+    return pileupSFs->GetBinContent(numtrueint+1);
 }
-
-double triggerSF(int pdgid1, int pdgid2, int nlep, double leadingleppt)
+double HistMaker::partonShowerSF(int bin, vector<string> category, int sys) 
 {
-    if (nlep>=3) return 1.0;
-
+    // this assumes we're looking at SRs, njets plots, all with ==4 bins.
+    // should be handled by dedicated condition in standard hists
+    // uses existing PSISRUP/DOWN
+    
+    if (!isSR) return 1.;
+    if (bin<1) return 1.;
+    
+    if (category[0].substr(0,2)=="3l" || category[0].substr(0,4)=="2lss" || category[0].substr(0,2)=="4l")
+    {
+        if (bin==1)
+        {
+            if (sys==37) return 1.05;
+            if (sys==38) return 0.95;
+        }
+        if (bin==2) 
+        {
+            if (sys==37) return 1.025;
+            if (sys==38) return 0.975;
+        }
+        if (bin==3) 
+        {
+            if (sys==37) return 0.975;
+            if (sys==38) return 1.025;
+        }
+        if (bin==4) 
+        {
+            if (sys==37) return 0.95;
+            if (sys==38) return 1.05;
+        }
+    }
+    return 1.;
+}
+double triggerSF(int pdgid1, int pdgid2, int nlep, double leadingleppt, int sys=0)
+{
+    if (nlep>=3) 
+    {
+        if (sys==41) return 1.05;
+        if (sys==42) return 0.95;
+        return 1.0;    
+    }
     int comb = abs(pdgid1)+abs(pdgid2);
     
     if (comb==1010) comb = 22; //kludge for 1l
     if (comb==1012) comb = 26; //kludge for 1l
     
+    double sys_amt = 0.;
+    
     if (comb==22) // ee
     {
-        if (leadingleppt<30.) return 0.937;
-        else return 0.991;
+        if (leadingleppt<30.)
+        {
+            if (sys==41) return 0.027+0.02+0.937;
+            if (sys==42) return 0.937-(0.027+0.02);
+            return 0.937;
+        }
+        else
+        {
+            if (sys==41) return 0.002+0.02+0.991;
+            if (sys==42) return 0.991-(0.002+0.02);
+            return 0.991;
+        }
     }
     else if (comb==24)  // em
     {
-        if (leadingleppt<35.) return 0.952;
-        else if (leadingleppt>=35. && leadingleppt<50.) return 0.983;
-        else return 1.0;
+        if (leadingleppt<35.) 
+        {
+            if (sys==41) return 0.008+0.02+0.952;
+            if (sys==42) return 0.952-(0.008+0.02);
+            return 0.952;
+        }
+        else if (leadingleppt>=35. && leadingleppt<50.) 
+        {
+            if (sys==41) return 0.003+0.02+0.983;
+            if (sys==42) return 0.983-(0.003+0.02);
+            return 0.983;
+        }
+        else 
+        {
+            if (sys==41) return 0.001+0.02+1.;
+            if (sys==42) return 1.-(0.001+0.02);
+            return 1.0;
+        }
     }
     else if (comb==26)  // mm
     {
-        if (leadingleppt<35.) return 0.972;
-        else return 0.994;
+        if (leadingleppt<35.) 
+        {
+            if (sys==41) return 0.006+0.02+0.972;
+            if (sys==42) return 0.972-(0.006+0.02);            
+            return 0.972;
+        }
+        else
+        {
+            if (sys==41) return 0.001+0.02+0.994;
+            if (sys==42) return 0.994-(0.001+0.02);
+            return 0.994;
+        }
     }
     return 1.;
 }
-double HistMaker::muonSF(double mu_pt, double mu_eta, int lepmult)
+double HistMaker::muonSF(double mu_pt, double mu_eta, int lepmult, int sys)
 {
     double musf = 1.;
     double abseta = abs(mu_eta);
@@ -112,66 +202,101 @@ double HistMaker::muonSF(double mu_pt, double mu_eta, int lepmult)
     
     if (debug) cout << musf << endl;
     
-    // loose ID sf
-    if (mu_pt>=30) musf *= muh2->GetBinContent(muh2->FindBin( min(mu_pt,119.9), min(abseta,2.399) ) ); // 20-120; 0-2.4
-    if (mu_pt<30) musf *= muh2b->GetBinContent(muh2b->FindBin( min(mu_pt,119.9), min(abseta,2.399) ) ); // like 3-40; 0-2.4
+    double addnlpiece = 0.;
     
+    // loose ID sf
+    if (mu_pt>=30)
+    {
+        musf *= muh2->GetBinContent(muh2->FindBin( min(mu_pt,119.9), min(abseta,2.399) ) ); // 20-120; 0-2.4
+        addnlpiece += pow(muh2->GetBinError(muh2->FindBin( min(mu_pt,119.9), min(abseta,2.399) ) ),2);
+
+    }
+    if (mu_pt<30) 
+    {
+        musf *= muh2b->GetBinContent(muh2b->FindBin( min(mu_pt,119.9), min(abseta,2.399) ) ); // like 3-40; 0-2.4
+        addnlpiece += pow(muh2b->GetBinError(muh2b->FindBin( min(mu_pt,119.9), min(abseta,2.399) ) ),2);
+        
+    }
     if (debug) cout << musf << endl;
     
     // POG loose -> ttH loose SF
     //musf *= muh3->GetBinContent(muh3->FindBin(max(20.,min(mu_pt,119.9)),min(abseta,2.39)));
     musf *= muh3->GetBinContent(muh3->FindBin(min(mu_pt,119.9),abseta)); // 10-120; 0-2.4
+    addnlpiece += pow(muh3->GetBinError(muh3->FindBin(min(mu_pt,119.9),abseta)),2);
     
     if (debug) cout << musf << endl;
     
     // ID tight (lepMVA) sf
     if (lepmult==2)
     {   
-        //musf *= muh4_2l->GetBinContent(muh4_2l->FindBin(min(mu_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
-        musf *= muh4_2l->GetBinContent(muh4_2l->FindBin(mu_pt,abseta));
+        musf *= muh4_2l->GetBinContent(muh4_2l->FindBin(min(mu_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
         if (debug) cout << musf << "(lepmult==2)" << endl;
+        addnlpiece += pow(muh4_2l->GetBinError(muh4_2l->FindBin(min(mu_pt,99.9),min(abseta,2.49))),2);
     }
     else if (lepmult>=3)
     {   
         //cout << muh4_3l->FindBin(min(mu_pt,99.9),min(abseta,2.49)) << endl;
-        //musf *= muh4_3l->GetBinContent(muh4_3l->FindBin(min(mu_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
-        musf *= muh4_3l->GetBinContent(muh4_3l->FindBin(mu_pt,abseta));
+        musf *= muh4_3l->GetBinContent(muh4_3l->FindBin(min(mu_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
         if (debug) cout << musf << "(lepmult==3)" << endl;
+        addnlpiece += pow(muh4_3l->GetBinError(muh4_3l->FindBin(min(mu_pt,99.9),min(abseta,2.49))),2);
+        
     }
+    
+    addnlpiece += musf*musf*(2*0.005*0.005 + 0.01*0.01); // 0.5% tracking systematic, 1% ID systematic, and a 0.5% Iso systematic
+    addnlpiece = sqrt(addnlpiece);
+        
+    if (sys==29) musf += addnlpiece;
+    if (sys==30) musf -= addnlpiece;
     
     return musf;
     
 }
 
-double HistMaker::electronSF(double ele_pt, double ele_eta, int lepmult)
+double HistMaker::electronSF(double ele_pt, double ele_eta, int lepmult, int sys)
 {
     double elesf = 1.;
     double abseta = abs(ele_eta);
 
     bool debug = false;
     if (debug) cout << "inside electronSF..." << endl;
+    double addnlpiece = 0.;
     
-    // todo: fill in this part...
     // its (eta,pt) for this one
-    if (ele_pt>=20.) elesf *= eleh1->GetBinContent(eleh1->FindBin(ele_eta,min(ele_pt,499.))); // -2.5-2.5; 20-500
-    else elesf *= eleh1lowpt->GetBinContent(eleh1lowpt->FindBin(ele_eta,min(ele_pt,19.9))); // -2.5-2.5; 10-20
+    if (ele_pt>=20.)
+    {
+        elesf *= eleh1->GetBinContent(eleh1->FindBin(ele_eta,min(ele_pt,499.))); // -2.5-2.5; 20-500
+        addnlpiece += pow(eleh1->GetBinError(eleh1->FindBin(ele_eta,min(ele_pt,499.))),2);
+        
+    }
+    else
+    {
+        elesf *= eleh1lowpt->GetBinContent(eleh1lowpt->FindBin(ele_eta,min(ele_pt,19.9))); // -2.5-2.5; 10-20
+        addnlpiece += pow(eleh1lowpt->GetBinError(eleh1lowpt->FindBin(ele_eta,min(ele_pt,19.9))),2);
+        
+    }
     if (debug) cout << elesf << endl;
     
     elesf *= eleh2->GetBinContent(eleh2->FindBin(ele_eta,min(ele_pt,499.))); // -2.5-2.5; 10-500
     if (debug) cout << elesf << endl;
+    addnlpiece += pow(eleh2->GetBinError(eleh2->FindBin(ele_eta,min(ele_pt,499.))),2);
     
     if (lepmult==2)
     {        
-        //elesf *= eleh4_2l->GetBinContent(eleh4_2l->FindBin(min(ele_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
-        elesf *= eleh4_2l->GetBinContent(eleh4_2l->FindBin(ele_pt,abseta));
+        elesf *= eleh4_2l->GetBinContent(eleh4_2l->FindBin(min(ele_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
+        addnlpiece += pow(eleh4_2l->GetBinError(eleh4_2l->FindBin(min(ele_pt,99.9),min(abseta,2.49))),2);
         if (debug) cout << elesf << "(lepmult==2)" << endl;
     }
     else if (lepmult>=3)
     {
-        //elesf *= eleh4_3l->GetBinContent(eleh4_3l->FindBin(min(ele_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
-        elesf *= eleh4_3l->GetBinContent(eleh4_3l->FindBin(ele_pt,abseta));
+        elesf *= eleh4_3l->GetBinContent(eleh4_3l->FindBin(min(ele_pt,99.9),min(abseta,2.49))); // 10-100; 0-2.5
+        addnlpiece += pow(eleh4_3l->GetBinError(eleh4_3l->FindBin(min(ele_pt,99.9),min(abseta,2.49))),2);
         if (debug) cout << elesf << "(lepmult==3)" << endl;
     }
+    
+    addnlpiece = sqrt(addnlpiece);
+        
+    if (sys==29) elesf += addnlpiece;
+    if (sys==30) elesf -= addnlpiece;
     
     return elesf;
     
@@ -179,11 +304,16 @@ double HistMaker::electronSF(double ele_pt, double ele_eta, int lepmult)
 
 //double topPtWgt
 
-double HistMaker::totalSF(int iSys, vector<string> category)
+double HistMaker::totalSF(int iSys, vector<string> category, int bin)
 {
-    // 2017 under construction
-    // uncertainties? :P
 
+    if (sample==94 || sample==95 || sample>=100) // in practice should never get to 94 or 95, but doesn't hurt
+    {
+	    cout << "You are trying to apply MC SFs to data or data-driven background." << endl;
+	    cout << "Consequently, this program will now exit via \'exit(EXIT_FAILURE)\'." << endl;
+	    exit(EXIT_FAILURE);
+    }
+    
     bool debug = false;
     
     double weight = 1.;
@@ -202,7 +332,7 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     
     // trigger SFs:
     int nlep = deezleps.size();
-    double leadingleppt = nlep>0 ? deezleps[0].obj.Pt() : 0.;
+    double leadingleppt = nlep>0 ? deezleps[0].obj.Pt() : 0.; // should be correctedPt ?
     int lpdgID1 = nlep>0 ? deezleps[0].pdgID : -999;
     int lpdgID2 = nlep>1 ? deezleps[1].pdgID : -999;
     
@@ -210,10 +340,13 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     //if (debug) cout << "Next event... " << endl;    
     if (debug) cout << " " << endl;
     if (debug) cout << "nmuons, nelectrons, njets:  " << tight_muons.size() << ", " << tight_electrons.size() << ", " << cleanedjets.size() << endl;
-    double triggersf = triggerSF(lpdgID1, lpdgID2, nlep, leadingleppt);
+    double triggersf = triggerSF(lpdgID1, lpdgID2, nlep, leadingleppt, iSys);
     if (debug) cout << "trigger SF: " << triggersf << endl;
     
     weight *= triggersf;
+    
+    // parton shower SF (comment out ones below if using this)
+    weight *= partonShowerSF(bin, category, iSys);
     
     
     ///////////  lep SFs ///////////
@@ -247,13 +380,13 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     {
         if (abs(dislep.pdgID)==13)
         {
-            double mSF = muonSF(dislep.obj.Pt(),dislep.obj.Eta(),nlep);
+            double mSF = muonSF(dislep.obj.Pt(),dislep.obj.Eta(),nlep,iSys);
             if (debug) cout << "mu pt, eta, SF:  " << dislep.obj.Pt() << ", " <<  dislep.obj.Eta() << ", " << mSF << endl;   
             weight *= mSF;
         }
         else if (abs(dislep.pdgID)==11)
         {
-            double eSF = electronSF(dislep.obj.Pt(),dislep.obj.Eta(),nlep); 
+            double eSF = electronSF(dislep.obj.Pt(),dislep.obj.Eta(),nlep,iSys); 
             if (debug) cout << "el pt, eta, SF:  " << dislep.obj.Pt() << ", " <<  dislep.obj.Eta() << ", " << eSF << endl;                    
             weight *= eSF;
         }
@@ -266,7 +399,7 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     int ntpvs = *numTruePVs_intree;
     if ( ntpvs<0 ) ntpvs=0;
     if ( ntpvs>199 ) ntpvs=199;
-    //weight *= pileupSF(ntpvs);
+    weight *= pileupSF(ntpvs,iSys);
     
     
     // DeepCSV reweighting:
@@ -299,7 +432,7 @@ double HistMaker::totalSF(int iSys, vector<string> category)
     if (debug) cout << "Total SF: " << weight << endl;
     if (debug) cout << "next event..." << endl;
     
-    return weight;
+    
     
 //// btag syst mapping:
 // CMS_ttHl_btag_cErr1 - up : 29
@@ -319,6 +452,28 @@ double HistMaker::totalSF(int iSys, vector<string> category)
 // CMS_ttHl16_btag_HFStats2 - down : 26
 // CMS_ttHl16_btag_LFStats1 - down : 24
 // CMS_ttHl16_btag_LFStats2 - down : 28
+
+                        
+    if (iSys==23) weight *= (*nnpdfWeightUp_intree);
+    if (iSys==24) weight *= (*nnpdfWeightDown_intree);
+    if (iSys==25) weight *= (*muRWeightUp_intree);     
+    if (iSys==26) weight *= (*muRWeightDown_intree);   
+    if (iSys==27) weight *= (*muFWeightUp_intree);     
+    if (iSys==28) weight *= (*muFWeightDown_intree);
+    
+    // commented out since using function above now
+    //if (iSys==37) weight *= (*preshowerISRweightUp_intree);
+    //if (iSys==38) weight *= (*preshowerISRweightDown_intree);
+    //if (iSys==39) weight *= (*preshowerFSRweightUp_intree);
+    //if (iSys==40) weight *= (*preshowerFSRweightDown_intree);
+    
+
+    // this is not set up this way, at the end of this function, by mistake:
+    if (iSys==35) weight *= (*prefiringweightup_intree);
+    else if (iSys==36) weight *= (*prefiringweightdown_intree);
+    else weight *= (*prefiringweight_intree); // we really do want this applied in all cases except sys 35 or 36
+
+    return weight;
     
     
 }

@@ -12,7 +12,7 @@ void wrapper(std::vector<int> samples, int mode=2)
     
     // Interactive, multi-core way of making hists
     // See https://root.cern.ch/doc/v608/mp102__readNtuplesFillHistosAndFit_8C.html
-    Int_t njobs = 8;   // The ndpcs have 8 cores x 2 threads/core = max ~16 threads/machine.
+    Int_t njobs = 24;   // The ndpcs have 8 cores x 2 threads/core = max ~16 threads/machine.
                         // Remains to be seen what is the optimal number of threads. On earth 
                         // you have in principle max ~64 threads, but of course there you
                         // might as well be using condor or lobster, etc.
@@ -105,7 +105,9 @@ void wrapper(std::vector<int> samples, int mode=2)
         // Now do something with the hists (draw 'em, etc.)
 
         // This loads the hists from file and prepares to make the plots:
-        MakeGoodPlot *newplots = new MakeGoodPlot(samples,"/tmpscratch/users/gsmith15/hhadded_hists/standardhists_2lss2or3JetsGeq1Btags_1l3orMoreJets1orMoreBtag_noReqOnPSleps_geqFakeableSel_FRbugfix2__withPUSF_DeepCSVSFsAllJets_MuSFs_partialEleSFs2_1pslepskimallsamps_lowerpts_18_6_28b/");
+        MakeGoodPlot *newplots = new MakeGoodPlot(samples,"/tmpscratch/users/gsmith15/hhadded_hists/standardhists_SRs_noTauClean_19_2_28/");
+        //MakeGoodPlot *newplots = new MakeGoodPlot(samples,"/tmpscratch/users/gsmith15/hhadded_hists/standardhists_CRs_19_2_26/");
+        //MakeGoodPlot *newplots = new MakeGoodPlot(samples,"sync_mu_comb/");
         //MakeGoodPlot *newplots = new MakeGoodPlot(samples);     // When running over hists produced with lobster, 
                                                                 // you should be good to go with this constructor as 
                                                                 // long as you ran haddhists.py first. 
@@ -113,13 +115,30 @@ void wrapper(std::vector<int> samples, int mode=2)
         // Then, picking one of these will run the "drawall" function (see drawall.h), and save resulting plots to
         // file/web area, or plot directly to screen (in x-windows):
         //newplots->drawAllToScreen();
-        //newplots->drawAllToFile("anatest4","root");
-        //newplots->drawAllToWebArea("EFT_scratch","png");
+        //newplots->drawAllToFile("anatest13","root");
+        //newplots->drawAllToWebArea("EFT_scratch",".png");
         //newplots->drawAllToWebArea("EFT_all_plots_27_4_18_std_plots_os2l_2017dataMC_2016SFs","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
         //newplots->drawAllToWebArea("EFT_plots_15_6_18_mcvalidation_ttlnu","png"); // args: (name for this round of plots, image format -- png, pdf, etc.)
+        //newplots->drawAllToWebArea("EFT_plots_16Dmcvalidation_tllq_19_2_4",".png");
         //newplots->drawAllToWebArea("EFT_all_plots_8_5_18_noSFs_DeepCSV_nodata_lin","png");
-        newplots->drawAllToWebArea("EFT_plots_2lss2or3JetsGeq1Btags_1l3orMoreJets1orMoreBtag_noReqOnPSleps_geqFakeableSel_FRbugfix2__withPUSF_DeepCSVSFsAllJets_MuSFs_partialEleSFs2_1pslepskimallsamps_lowerpts_ddbs_2lssjetbtagplots_18_6_28","png");
-        //newplots->drawAllToWebArea("trig_eff_plots_23_5_18_v3","png");
-        
+        //newplots->drawAllToWebArea("EFT_plots_2lss2or3JetsGeq1Btags_1l3orMoreJets1orMoreBtag_noReqOnPSleps_geqFakeableSel_FRbugfix2__withPUSF_DeepCSVSFsAllJets_MuSFs_partialEleSFs2_1pslepskimallsamps_lowerpts_ddbs_3lsfzcombos_18_6_29","png");
+        //newplots->drawAllToWebArea("EFT_plots_sanity_check_cat_yields_ttH_18_7_6","png");
+        //newplots->drawAllToWebArea("EFT_plots_TH1EFTtest1_wc0_18_6_29","png");
+        //newplots->drawAllToWebArea("EFT_plots_ttH_EFTfits_allWCs_vs_central_wc100_18_7_3","png");
+        //newplots->drawAllToWebArea("EFT_njet_stackplots_sigregions_blind_log_18_7_4","png");
+        //newplots->drawAllToWebArea("EFT_standardhists_2l1or2jetsExactly1Btag_3l0btagsCR_1l4orMoreJets2orMoreBtag__noPUSF_DeepCSVSFsAllJets_FullMuSFsEleSFs_1pslepskimallsamps_exactly2lfakeableForddbr_18_7_24",".png");
+        //newplots->drawAllToWebArea("EFT_plots_multidim_tllq_3WCvalues_for_ctG_18_7_22",".png");
+        //newplots->drawAllToWebArea("EFT_plots_fakes_only_fr_syst_studies_statonly_19_2_15",".png");
+        //newplots->drawAllToWebArea("EFT_plots_ttH_only_pdf_syst_studies_18_10_30",".png");
+        //newplots->drawAllToWebArea("EFT_plots_allMC_pdf_syst_studies_19_1_16",".png");
+        //newplots->drawAllToWebArea("EFT_plots_new_syst_studies_tZq_19_1_21",".png");
+        //newplots->drawAllToWebArea("EFTstandardhists_2lssGeq4JetsGeq2Btags_3lGeq2JetsGeq1Btag_Geq4l__DeepCSVSFsAllJets_FullMuSFsEleSFs_1pslepskimallsamps__moresysts_18_10_19",".png");
+        //newplots->drawAllToWebArea("EFTstandardhists_CRs_centralsigsamps_nopdfscale_fixerrband_18_12_11",".png");
+        //newplots->drawAllToWebArea("standardhists_CRs_19_2_26",".png");
+        //newplots->drawAllToWebArea("EFTstandardhists_SRs_checkttHMLbtagReqs_18_12_20",".png");
+        //newplots->drawAllToWebArea("EFTstandardhists_SRs_19_2_6/",".png");
+        newplots->drawAllToWebArea("EFTstandardhists_SRs_noTauClean_19_2_28/",".png");
+        //newplots->drawAllToWebArea("EFTsynchists_mu_nT_19_1_23/",".png");
+        //newplots->drawAllToWebArea("EFT_systcheck_zoomout_19_2_6/",".png");
     }
 }

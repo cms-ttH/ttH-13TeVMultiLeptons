@@ -39,25 +39,28 @@ void MakeGoodPlot::setup()
 //     wilsoncoeffs.push_back("ctl1"); 
 //     wilsoncoeffs.push_back("ctp"); 
 //     wilsoncoeffs.push_back("ctlS1"); 
-//     wilsoncoeffs.push_back("ctZ"); 
+     wilsoncoeffs.push_back("ctZ"); 
 //     wilsoncoeffs.push_back("cQe1"); 
 //     wilsoncoeffs.push_back("cQlM1"); 
 //     wilsoncoeffs.push_back("cte1"); 
-    wilsoncoeffs.push_back("ctW");
+//    wilsoncoeffs.push_back("ctW");
     
     
     
     // standard MC samps
     sample_names[0] = "test";
     sample_names[1] = "t#bar{t}H"; //"t#bar{t}H(125)"; "t#bar{t}H (H#rightarrownon-bb)";
+    //sample_names[0] = "HIG-18-019";
+    //sample_names[1] = "This analysis"; //"t#bar{t}H(125)"; "t#bar{t}H (H#rightarrownon-bb)";    
+    
     sample_names[2] = "(none)"; 
     sample_names[3] = "(none)"; 
     sample_names[4] = "(none)"; 
     sample_names[5] = "t#bar{t}+Jets"; 
     sample_names[6] = "DY"; // Z+Jets
     sample_names[7] = "W+Jets"; 
-    sample_names[8] = "t#bar{t}+W"; 
-    sample_names[9] = "t#bar{t}+Z"; 
+    sample_names[8] = "t#bar{t}W"; 
+    sample_names[9] = "t#bar{t}Z"; 
     sample_names[10] = "WZ"; 
     sample_names[11] = "ZZ"; 
     sample_names[12] = "WW";
@@ -78,6 +81,8 @@ void MakeGoodPlot::setup()
     sample_names[27] = "4 Top";
     sample_names[28] = "t#bar{t}+WW";
     sample_names[29] = "t#bar{t}+WZ";
+    sample_names[30] = "Convs";
+    sample_names[31] = "t/#bar{t}+Hq";
     
     sample_names[40] = "ttH:cbW";
     sample_names[41] = "ttH:cpQ3";  
@@ -130,19 +135,21 @@ void MakeGoodPlot::setup()
     sample_names[84] = "ttH:16D";
     sample_names[85] = "ttl#nu:16D"; 
     sample_names[86] = "ttll:16D"; 
-    sample_names[87] = "tllq:16D";    
+    sample_names[87] = "tllq:16D";
+    sample_names[88] = "tHq:16D";
     
-    
-    // these will prob just be internal to MakeGoodPlot
+    //// "combos" ////
+    // these will prob just be internal to MakeGoodPlot:
     sample_names[90] = "V+Jets";
     sample_names[91] = "Diboson";
     sample_names[92] = "Triboson";
     sample_names[93] = "Single Top";
+    // these are external:
     sample_names[94] = "Charge Flips";
     sample_names[95] = "Fakes";
     // ..."Conversions" ?
     
-    // data
+    //// data ///
     sample_names[100] = "Single Mu data";
     sample_names[101] = "Single Ele data";
     sample_names[102] = "Double Mu data";
@@ -184,6 +191,9 @@ void MakeGoodPlot::setup()
     sample_names_reg[27] = "_tttt";
     sample_names_reg[28] = "_ttWW";
     sample_names_reg[29] = "_ttWZ";
+    sample_names_reg[30] = "_ttGJets";    
+    sample_names_reg[31] = "_tHq";
+    
     sample_names_reg[40] = "_ttH_cbW";
     sample_names_reg[41] = "_ttH_cpQ3";  
     sample_names_reg[42] = "_ttH_cpQM";  
@@ -233,8 +243,10 @@ void MakeGoodPlot::setup()
     sample_names_reg[85] = "_ttlnu_16D";
     sample_names_reg[86] = "_ttll_16D";
     sample_names_reg[87] = "_tllq_16D";
+    sample_names_reg[88] = "_tHq_16D";
     
-    
+    sample_names_reg[91] = "_diboson";
+    sample_names_reg[92] = "_triboson";
     
     sample_names_reg[94] = "_charge_flips";
     sample_names_reg[95] = "_fakes";
@@ -245,6 +257,7 @@ void MakeGoodPlot::setup()
     sample_names_reg[103] = "_data_doubleEle";
     sample_names_reg[104] = "_data_muonEle";
     sample_names_reg[105] = "_data_MET";
+
 
     color[0] = kBlack;
     color[1] = kRed+1;
@@ -276,6 +289,14 @@ void MakeGoodPlot::setup()
     color[27] = kSpring+4;    
     color[28] = kAzure+1;    
     color[29] = kBlue+2;    
+    //color[30] (currently kGreen)
+    color[31] = kCyan;
+    
+    color[84] = kRed+1;
+    color[85] = kBlue;
+    color[86] = kGreen+1;
+    color[87] = kPink+1;
+    color[88] = kCyan;
     
     color[94] = kAzure-9;
     color[95] = kYellow-7;
@@ -312,6 +333,7 @@ void MakeGoodPlot::setup()
     for (int i=0; i<numsamples; i++)
     {    
         cout << samples[i] << endl;
+        //cout << "uncomment NumInitialWeightedMCevents thing in setup.h" << endl;
         numgen[samples[i]] = ((TH1D*)hist[i].FindObject("NumInitialWeightedMCevents"))->Integral();
         //if (samples[i]==0) hasdata = true;   
         if (samples[i]>99)
@@ -364,5 +386,6 @@ void MakeGoodPlot::setup()
     get_rate_info();
     
     groupsamples = true;
+    TH1::SetDefaultSumw2();
     
 }

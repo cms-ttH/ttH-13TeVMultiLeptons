@@ -9,16 +9,17 @@ class HistMaker
         
         HistMaker();
         HistMaker(TString thepassedsamp, bool cfs=false, bool fks=false);
+        ~HistMaker();
         
         // member variables
-        const unsigned int th1arrsize = 2500;
+        const unsigned int th1arrsize = 10000;
         const unsigned int th2arrsize = 500;
-        const unsigned int th1eftarrsize = 1500;
+        const unsigned int th1eftarrsize = 2000;
         int sample = -1;
          
-        TH1EFT *th1ds[2500];
+        TH1EFT *th1ds[10000];
         TH2D *th2ds[500];
-        TH1EFT *th1efts[1500];
+        TH1EFT *th1efts[2000];
 
         std::unordered_map<string,TH1EFT*> th1d;
         std::unordered_map<string,TH2D*> th2d;
@@ -41,6 +42,15 @@ class HistMaker
         TTreeReaderValue<double> muRWeightDown_intree;
         TTreeReaderValue<double> muFWeightUp_intree;
         TTreeReaderValue<double> muFWeightDown_intree;
+        
+        TTreeReaderValue<double> prefiringweight_intree;
+        TTreeReaderValue<double> prefiringweightup_intree;
+        TTreeReaderValue<double> prefiringweightdown_intree;
+        TTreeReaderValue<double> preshowerISRweightUp_intree;
+        TTreeReaderValue<double> preshowerFSRweightUp_intree;
+        TTreeReaderValue<double> preshowerISRweightDown_intree;
+        TTreeReaderValue<double> preshowerFSRweightDown_intree;
+
 
         TTreeReaderValue<vector<ttH::Lepton>> raw_leptons_intree;
         TTreeReaderValue<vector<ttH::Lepton>> preselected_leptons_intree;
@@ -95,7 +105,8 @@ class HistMaker
         
         // sf hists
         TH1D *pileupSFs;
-        
+        TH1D *pileupSFs_up;
+        TH1D *pileupSFs_down;
         TGraphAsymmErrors *muh1;
         TH2D *muh2;
         TH2D *muh2b;
@@ -123,12 +134,20 @@ class HistMaker
         TH2D *muFRsfs_qcd;
         TH2D *elFRsfs_ttbar;
         TH2D *muFRsfs_ttbar;
+        TH2D *elFRsfs_pt1;
+        TH2D *muFRsfs_pt1; 
+        TH2D *elFRsfs_pt2; 
+        TH2D *muFRsfs_pt2; 
+        TH2D *elFRsfs_eta1;
+        TH2D *muFRsfs_eta1;
+        TH2D *elFRsfs_eta2;
+        TH2D *muFRsfs_eta2;
 
         
         // technical functions needed to run HistMaker
         void bookHistos();
         void setBranchAddresses(TTreeReader & newreader); //TTreeReader & newreader
-        void run(TTreeReader & newreader);
+        void run(TTreeReader & newreader, int firstevent=-1, int lastevent=-1);
         void doOneEvent();
         void collectResults();
         
@@ -140,13 +159,14 @@ class HistMaker
         bool removeDatasetOverlaps();
         bool passesDatasetDependentTriggers(int mysample);
         bool passesAnyTrigger();
-        double pileupSF(int numtrueint=0);
+        double pileupSF(int numtrueint, int sys=0);
         void setupSFs();
-        double muonSF(double mu_pt, double mu_eta, int lepmult);
-        double electronSF(double ele_pt, double ele_eta, int lepmult);
-        double totalSF(int iSys, vector<string> category);
+        double muonSF(double mu_pt, double mu_eta, int lepmult, int sys);
+        double electronSF(double ele_pt, double ele_eta, int lepmult, int sys);
+        double totalSF(int iSys, vector<string> category, int bin=-1);
         double getFakeWeight(int iSys, vector<string> category);
         std::pair<double,double> getQFweights(string category);
+        double partonShowerSF(int bin, vector<string> category, int sys=0);
         
         WCFit getEventFit(double weight=1.);
         WCFit thisEventFit;
@@ -159,6 +179,8 @@ class HistMaker
         bool lep_tight(ttH::Lepton lep);
         bool ele_fakeable(ttH::Electron ele);
         bool mu_fakeable(ttH::Muon mu);        
+
+        bool isSR=false;
 
         //add'l trigger studies stuff
         bool passes_common();     
@@ -182,6 +204,7 @@ class HistMaker
         void standard_hists();
         void mc_validation_hists();
         void incl_hists();
+        void sync_hists();
         
 };
 
@@ -214,6 +237,7 @@ HistMaker::HistMaker(TString thepassedsamp, bool cfs, bool fks)
     dochgfs=cfs;
     dofakes=fks;
     
+    isSR=true; // <<------------------------------------ is signal region
     
     // Use this when running lobster
     // Alternative constructor (if you have direct access to the sample number, i.e. 
@@ -223,4 +247,11 @@ HistMaker::HistMaker(TString thepassedsamp, bool cfs, bool fks)
     sample = sample_TString2int(thepassedsamp); // see loadsample.h
     setupSFs();
 }
+HistMaker::~HistMaker()
+{
+    // fix memory leak
+    for (int i=0; i<(int)th1arrsize; i++) delete th1ds[i];
+    for (int i=0; i<(int)th1eftarrsize; i++) delete th1efts[i];
+    for (int i=0; i<(int)th2arrsize; i++) delete th2ds[i];
 
+}

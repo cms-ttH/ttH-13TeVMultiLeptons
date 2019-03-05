@@ -10,11 +10,12 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
     
     //auto taggedjetsmedium = keepTagged(*preselected_jets_intree,"DM");
     auto taggedjetsmedium = keepTagged(jets,"DM");
-    //auto taggedjetsloose = keepTagged(jets,"L");
+    auto taggedjetsloose = keepTagged(jets,"DL");
     
     
     int jetsize = jets.size();
     int tagsize = taggedjetsmedium.size();
+    int tagsizeL = taggedjetsloose.size();
     
     vector<ttH::Lepton> leptons;
     vector<ttH::Electron> electrons;
@@ -50,13 +51,24 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
     //bool cr2lss = jetsize>=2 && jetsize<=3 && tagsize>=1;
     //bool cr2lss = jetsize>=1;
     //bool cr2lss = jetsize>=2 && tagsize==1;
-    bool cr2lss = jetsize>=1 &&  jetsize<=2 && tagsize==1;
-    bool cr3l = jetsize>=1 && tagsize==0;
-    bool sr2lss = jetsize>=4 && tagsize>=2;
-    bool sr3l = jetsize>=2 && tagsize>=1;
+    bool cr2lss = jetsize>=1 &&  jetsize<=3 && tagsize==1 && tagsizeL==1; // jetsize>=1 &&  jetsize<=2 && tagsize==1 && tagsizeL==1;
+    bool cr3l = jetsize>=1 && tagsize==0 && tagsizeL==0; // jetsize>=1 && tagsize==0 && tagsizeL==0;
+    bool sr2lss = jetsize>=4 && (tagsizeL>=2 || tagsize>=1); // jetsize>=4 && tagsize>=2; // jetsize>=4 && (tagsizeL>=2 || tagsize>=1); // jetsize>=4 && tagsizeL>=1;
+    bool sr3l = jetsize>=2 && tagsize>=1; // jetsize>=2 && tagsize>=1; // jetsize>=2 && (tagsizeL>=2 || tagsize>=1); // jetsize>=2 && tagsizeL>=1;
     
-    bool jetbpass2l = sr2lss; // change this if switching between SRs / CRs...
-    bool jetbpass3l = sr3l; // change this if switching between SRs / CRs...
+    bool jetbpass2l = false;                                                                                   // change this if switching between SRs / CRs!!!!!
+    bool jetbpass3l = false;                                                                                     // change this if switching between SRs / CRs!!!!!
+    
+    if (isSR) // see ctr
+    {
+        jetbpass2l = sr2lss;                                                                                   // change this if switching between SRs / CRs!!!!!
+        jetbpass3l = sr3l;
+    }
+    else
+    {
+        jetbpass2l = cr2lss;                                                                                   // change this if switching between SRs / CRs!!!!!
+        jetbpass3l = cr3l;
+    }
         
     bool testcutpass = true;
     
@@ -185,26 +197,34 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
                         }
                         else
                         {                    
-                            double vetoZmass = pickFromSortedTwoObjKine(leptons,"mass",1,91.2);
+                            double vetoZmass = pickFromSortedTwoObjKine(leptons,"massSFOS",1,91.2);
                             if (abs(vetoZmass-91.2)<10)
                             {
                                 return "3l_mix_sfz";                           
                             }
                             else
                             {
-                                return "3l_mix";                         
+                                if (leptons[0].charge + leptons[1].charge + leptons[2].charge == 1)
+                                {
+                                    return "3l_mix_p";
+                                }
+                                else
+                                {
+                                    return "3l_mix_m";
+                                }   
+                                                   
                             }                                         
                         }
                     }
                 }
-                else if (numleps==4) // && jetsize>0 && tagsize>0) // check this. it's >1, >0 according to AN.
+                else if (numleps>=4) // && jetsize>0 && tagsize>0) // check this. it's >1, >0 according to AN.
                 {
                     return "4l";
                 }
-                else if (numleps>=5) // && jetsize>0 && tagsize>0) // combine with 4l!
-                {
-                    return "ge5l";
-                }
+                //else if (numleps>=5) // && jetsize>0 && tagsize>0) // combine with 4l!
+                //{
+                //    return "ge5l";
+                //}
                                 
             } // end lep pt req
         } // end dilep mass cut
