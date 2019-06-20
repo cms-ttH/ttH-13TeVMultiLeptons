@@ -12,7 +12,7 @@ EOF
    set -e
    set -o xtrace
 
-   export SCRAM_ARCH=slc6_amd64_gcc630
+   export SCRAM_ARCH=slc7_amd64_gcc630
    scramv1 project CMSSW CMSSW_9_4_6
    cd CMSSW_9_4_6/src
    set +o xtrace
