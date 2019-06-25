@@ -86,6 +86,227 @@ double HistMaker::pileupSF(int numtrueint, int sys)
     if (sys==44) return pileupSFs_down->GetBinContent(numtrueint+1);
     return pileupSFs->GetBinContent(numtrueint+1);
 }
+
+// "v3" (SF using full njets range)
+double HistMaker::adhocNjetSF(int bin, vector<string> category, int sys) 
+{
+    if (sample!=84 && sample!=85 && sample!=87) return 1.;
+    double adhocSF = 1.;
+    if (category[0].substr(0,2)=="3l")
+    {
+        //ttW:
+        if (sample==85)
+        {
+            if (bin==1) adhocSF = 0.898273;
+            if (bin==2) adhocSF = 1.10505;
+            if (bin==3) adhocSF = 1.58784;
+            if (bin==4) adhocSF = 2.52711;
+        }    
+
+        //ttH:
+        if (sample==84)
+        {
+            if (bin==1) adhocSF = 0.915586;
+            if (bin==2) adhocSF = 0.968141;
+            if (bin==3) adhocSF = 1.11549;
+            if (bin==4) adhocSF = 1.14007;
+        }
+        //tZq:
+        if (sample==87)
+        {
+            if (bin==1) adhocSF = 0.97725;
+            if (bin==2) adhocSF = 0.992164;
+            if (bin==3) adhocSF = 0.948662;
+            if (bin==4) adhocSF = 0.829534;
+        }
+        
+    }
+    else if (category[0].substr(0,4)=="2lss")
+    {
+        //ttW:
+        if (sample==85)
+        {
+            if (bin==1) adhocSF = 1.00071;
+            if (bin==2) adhocSF = 1.26732;
+            if (bin==3) adhocSF = 1.66762;
+            if (bin==4) adhocSF = 2.25097;
+        }
+        //ttH:
+        if (sample==84)
+        {
+            if (bin==1) adhocSF = 0.959517;
+            if (bin==2) adhocSF = 1.02484;
+            if (bin==3) adhocSF = 1.16089;
+            if (bin==4) adhocSF = 1.34144;
+        }
+        //tZq:
+        if (sample==87)
+        {
+            // did a linear fit in this case due to low stats in last couple bins
+            if (bin==1) adhocSF = 1.1793 - 0.0740338*4.5; // 4.5 instead of 4 because the fit is to the center of the bin
+            if (bin==2) adhocSF = 1.1793 - 0.0740338*5.5;
+            if (bin==3) adhocSF = 1.1793 - 0.0740338*6.5;
+            if (bin==4) adhocSF = 1.1793 - 0.0740338*7.5;
+        }
+    }
+    
+    // adhocSF is the SF, up variation is applying twice the correction, down is applying no SF.
+    if (sys==45) return 1. + 2.*(adhocSF-1.);         // twice the correction
+    if (sys==46) return 1.;                         // fully uncorrected
+    return adhocSF;                                 // nominal correction
+}
+
+// "v1", "v2": SFs derived only using analysis bins
+// double HistMaker::adhocNjetSF(int bin, vector<string> category, int sys) 
+// {
+//     //if (!(sample>=84 && sample<=88)) return 1.;
+//     if (!(sample>=84 && sample<=87) || sample==86) return 1.;
+//     double adhocSF = 1.;
+//     if (category[0].substr(0,2)=="3l")
+//     {
+//         //ttW:
+//         if (sample==85)
+//         {
+//             if (bin==1) adhocSF = 0.859596;
+//             if (bin==2) adhocSF = 1.04251;
+//             if (bin==3) adhocSF = 1.56901;
+//             if (bin==4) adhocSF = 2.44186;
+//         }    
+//         //ttZ: (not doing)
+// //         if (sample==86)
+// //         {
+// //             if (bin==1) adhocSF = 1.02377;
+// //             if (bin==2) adhocSF = 1.01088;
+// //             if (bin==3) adhocSF = 0.974548;
+// //             if (bin==4) adhocSF = 0.99366;
+// //         }
+//         //ttH:
+//         if (sample==84)
+//         {
+//             if (bin==1) adhocSF = 0.894639;
+//             if (bin==2) adhocSF = 0.941526;
+//             if (bin==3) adhocSF = 1.06549;
+//             if (bin==4) adhocSF = 1.17726;
+//         }
+//         //tZq:
+//         if (sample==87)
+//         {
+//             if (bin==1) adhocSF = 0.985265;
+//             if (bin==2) adhocSF = 1.01997;
+//             if (bin==3) adhocSF = 1.0263;
+//             if (bin==4) adhocSF = 1.05791;
+//         }
+// //         tHq: (not doing)
+// //         if (sample==88)
+// //         {
+// //             if (bin==1) adhocSF = 1.88585;
+// //             if (bin==2) adhocSF = 0.436247;
+// //             if (bin==3) adhocSF = 0.188235;
+// //             if (bin==4) adhocSF = 0.129871;
+// //         }        
+//     }
+//     if (category[0].substr(0,4)=="2lss")
+//     {
+//         //ttW:
+//         if (sample==85)
+//         {
+//             if (bin==1) adhocSF = 0.867116;
+//             if (bin==2) adhocSF = 1.09907;
+//             if (bin==3) adhocSF = 1.47473;
+//             if (bin==4) adhocSF = 2.05149;
+//         }
+//         //ttZ: (not doing)
+// //         if (sample==86)
+// //         {
+// //             if (bin==1) adhocSF = 1.08712;
+// //             if (bin==2) adhocSF = 0.958936;
+// //             if (bin==3) adhocSF = 0.951982;
+// //             if (bin==4) adhocSF = 0.6606;
+// //         }
+//         //ttH:
+//         if (sample==84)
+//         {
+//             if (bin==1) adhocSF = 0.911441;
+//             if (bin==2) adhocSF = 0.970544;
+//             if (bin==3) adhocSF = 1.14447;
+//             if (bin==4) adhocSF = 1.30127;
+//         }
+//         //tZq:
+//         if (sample==87)
+//         {
+//             if (bin==1) adhocSF = 1.07607;
+//             if (bin==2) adhocSF = 1.08074;
+//             if (bin==3) adhocSF = 0.215199;
+//             if (bin==4) adhocSF = 0.23471;
+//         }
+//         //tHq: (not doing)
+// //         if (sample==88)
+// //         {
+// //             if (bin==1) adhocSF = 1.49829;
+// //             if (bin==2) adhocSF = 0.338653;
+// //             if (bin==3) adhocSF = 0.322669;
+// //             if (bin==4) adhocSF = 0.0001;
+// //         }
+//     }
+//     if (category[0].substr(0,2)=="4l")
+//     {
+//         //ttW:
+//         if (sample==85)
+//         {
+//             if (bin==2) adhocSF = 0.564873;
+//             if (bin==3) adhocSF = 0.663006;
+//             if (bin==4) adhocSF = 3.9067;
+//         }
+//         //ttH:
+//         if (sample==84)
+//         {
+//             if (bin==2) adhocSF = 0.690122;
+//             if (bin==3) adhocSF = 0.933003;
+//             if (bin==4) adhocSF = 1.63881;
+//         }
+//         //tZq: (doing by hand)
+// //         if (sample==87)
+// //         {
+// //             if (bin==2) adhocSF = 0.550709;
+// //             if (bin==3) adhocSF = 596.482;
+// //             if (bin==4) adhocSF = 0.52808;
+// //         }
+//         //tHq: (not doing)
+// //         if (sample==88)
+// //         {
+// //             if (bin==2) adhocSF = 1.0778;
+// //             if (bin==3) adhocSF = 0.738742;
+// //             if (bin==4) adhocSF = 2.3202;
+// //         }
+//     }    
+//     if (sample==87) // special case: SF=1, and "UP" variation is adhocSF, down is 1-(adhocSF-1).
+//     {
+//         if (sys==45) return adhocSF;
+//         if (sys==46)
+//         {
+//             if (category[0].substr(0,2)!="4l")
+//             {
+//                 return 1. - (adhocSF-1.);
+//             }
+//         }
+//         return 1.; // not a mistake that 4l sys 46 can get here
+//     }
+//     else // nominal case: adhocSF is the SF, up variation is applying twice the SF, down is applying no SF.
+//     {
+//         if (sys==45) 
+//         {
+//             double maxfactor = 2.;
+//             if (category[0].substr(0,2)=="3l" && sample==88) maxfactor = 1./(1.-0.129871); // <- comes from solving 1+x*(adhocSF-1)=0
+//             if (category[0].substr(0,4)=="2lss" && sample==88) maxfactor = 1.;
+//             if (category[0].substr(0,4)=="2lss" && sample==87) maxfactor = 1./(1.-0.215199);
+//             return 1. + maxfactor*(adhocSF-1.);         // twice the correction unless some bins pulled negative, in which case use the maximum factor possible that's <2
+//         }
+//         //if (sys==46) return 1. + 0.5*(adhocSF-1.);    // half the correction
+//         if (sys==46) return 1.;                         // fully uncorrected
+//         return adhocSF;                                 // nominal correction
+//     }
+// }
+
 double HistMaker::partonShowerSF(int bin, vector<string> category, int sys) 
 {
     // this assumes we're looking at SRs, njets plots, all with ==4 bins.
@@ -95,29 +316,132 @@ double HistMaker::partonShowerSF(int bin, vector<string> category, int sys)
     if (!isSR) return 1.;
     if (bin<1) return 1.;
     
-    if (category[0].substr(0,2)=="3l" || category[0].substr(0,4)=="2lss" || category[0].substr(0,2)=="4l")
+    // with 3jet bin:
+//     if (category[0].substr(0,4)=="2lss")
+//     {
+//         if (bin==1)
+//         {
+//             if (sys==37) return 1.05;
+//             if (sys==38) return 0.95;
+//         }
+//         if (bin==2) 
+//         {
+//             if (sys==37) return 1.025;
+//             if (sys==38) return 0.975;
+//         }
+//         if (bin==3) 
+//         {
+//             if (sys==37) return 1.0;
+//             if (sys==38) return 1.0;
+//         }        
+//         if (bin==4) 
+//         {
+//             if (sys==37) return 0.975;
+//             if (sys==38) return 1.025;
+//         }
+//         if (bin==5) 
+//         {
+//             if (sys==37) return 0.95;
+//             if (sys==38) return 1.05;
+//         }
+//     }
+
+
+    //else if (category[0].substr(0,2)=="3l")
+    // regular 3l, 2l:
+//     if (category[0].substr(0,2)=="3l" || category[0].substr(0,4)=="2lss")
+//     {
+//         if (bin==1)
+//         {
+//             if (sys==37) return 1.05;
+//             if (sys==38) return 0.95;
+//         }
+//         if (bin==2) 
+//         {
+//             if (sys==37) return 1.0 + (0.05/3.0);
+//             if (sys==38) return 1.0 - (0.05/3.0);
+//         }
+//         if (bin==3) 
+//         {
+//             if (sys==37) return 1.0 - (0.05/3.0);
+//             if (sys==38) return 1.0 + (0.05/3.0);
+//         }        
+//         if (bin==4) 
+//         {
+//             if (sys==37) return 0.95;
+//             if (sys==38) return 1.05;
+//         }
+//     }
+
+
+    // study combining last two bins:
+//     if (category[0].substr(0,2)=="3l" || category[0].substr(0,4)=="2lss")
+//     {
+//         if (bin==1) 
+//         {
+//             if (sys==37) return 1.05;
+//             if (sys==38) return 0.95;
+//         }
+//         if (bin==2) 
+//         {
+//             if (sys==37) return 1.0;
+//             if (sys==38) return 1.0;
+//         }        
+//         if (bin==3) 
+//         {
+//             if (sys==37) return 0.95;
+//             if (sys==38) return 1.05;
+//         }
+//     } 
+
+    // study combining last three bins:
+    if (category[0].substr(0,2)=="3l" || category[0].substr(0,4)=="2lss")
     {
-        if (bin==1)
+        if (bin==1) 
         {
             if (sys==37) return 1.05;
             if (sys==38) return 0.95;
         }
         if (bin==2) 
         {
-            if (sys==37) return 1.025;
-            if (sys==38) return 0.975;
+            if (sys==37) return 0.95;
+            if (sys==38) return 1.05;
+        }        
+    } 
+    else if (category[0].substr(0,2)=="4l")
+    {   
+        if (bin==2) 
+        {
+            if (sys==37) return 1.05;
+            if (sys==38) return 0.95;
         }
         if (bin==3) 
         {
-            if (sys==37) return 0.975;
-            if (sys==38) return 1.025;
-        }
-        if (bin==4) 
-        {
             if (sys==37) return 0.95;
             if (sys==38) return 1.05;
-        }
-    }
+        }        
+    } 
+
+    // regular 4l:
+//     else if (category[0].substr(0,2)=="4l")
+//     {
+//         if (bin==2) 
+//         {
+//             if (sys==37) return 1.05;
+//             if (sys==38) return 0.95;
+//         }
+//         if (bin==3) 
+//         {
+//             if (sys==37) return 1.0;
+//             if (sys==38) return 1.0;
+//         }        
+//         if (bin==4) 
+//         {
+//             if (sys==37) return 0.95;
+//             if (sys==38) return 1.05;
+//         }
+//     }
+
     return 1.;
 }
 double triggerSF(int pdgid1, int pdgid2, int nlep, double leadingleppt, int sys=0)
@@ -346,8 +670,8 @@ double HistMaker::totalSF(int iSys, vector<string> category, int bin)
     weight *= triggersf;
     
     // parton shower SF (comment out ones below if using this)
-    weight *= partonShowerSF(bin, category, iSys);
-    
+    if (iSys==37 || iSys==38) weight *= partonShowerSF(bin, category, iSys);
+    //weight *= adhocNjetSF(bin, category, iSys);                                                                                                           //////////    <<-----------------------  !!!!!!! don't leave commented !!!!!!!
     
     ///////////  lep SFs ///////////
     // see email from Marco, etc. See also here for prelim. lepMVA sfs:

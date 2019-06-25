@@ -51,7 +51,7 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
     //bool cr2lss = jetsize>=2 && jetsize<=3 && tagsize>=1;
     //bool cr2lss = jetsize>=1;
     //bool cr2lss = jetsize>=2 && tagsize==1;
-    bool cr2lss = jetsize>=1 &&  jetsize<=3 && tagsize==1 && tagsizeL==1; // jetsize>=1 &&  jetsize<=2 && tagsize==1 && tagsizeL==1;
+    bool cr2lss = jetsize>=1 &&  jetsize<=2 && tagsize==1 && tagsizeL==1; // jetsize>=1 &&  jetsize<=2 && tagsize==1 && tagsizeL==1;
     bool cr3l = jetsize>=1 && tagsize==0 && tagsizeL==0; // jetsize>=1 && tagsize==0 && tagsizeL==0;
     bool sr2lss = jetsize>=4 && (tagsizeL>=2 || tagsize>=1); // jetsize>=4 && tagsize>=2; // jetsize>=4 && (tagsizeL>=2 || tagsize>=1); // jetsize>=4 && tagsizeL>=1;
     bool sr3l = jetsize>=2 && tagsize>=1; // jetsize>=2 && tagsize>=1; // jetsize>=2 && (tagsizeL>=2 || tagsize>=1); // jetsize>=2 && tagsizeL>=1;
@@ -59,17 +59,23 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
     bool jetbpass2l = false;                                                                                   // change this if switching between SRs / CRs!!!!!
     bool jetbpass3l = false;                                                                                     // change this if switching between SRs / CRs!!!!!
     
+    
     if (isSR) // see ctr
     {
-        jetbpass2l = sr2lss;                                                                                   // change this if switching between SRs / CRs!!!!!
+        jetbpass2l = sr2lss;       
         jetbpass3l = sr3l;
     }
     else
     {
-        jetbpass2l = cr2lss;                                                                                   // change this if switching between SRs / CRs!!!!!
+        jetbpass2l = cr2lss;  
         jetbpass3l = cr3l;
     }
-        
+    
+    // temp!!!
+    jetbpass2l = true;
+    jetbpass3l = true;
+    
+    
     bool testcutpass = true;
     
 //     for (const auto & leptest : *preselected_leptons_intree)

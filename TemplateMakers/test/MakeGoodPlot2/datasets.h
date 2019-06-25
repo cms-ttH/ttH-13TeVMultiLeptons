@@ -123,6 +123,32 @@ bool HistMaker::removeDatasetOverlaps()
     // in case of MC:
     else return true;
 }
+// the result of trying this alternative way was that there were a very small number of differences:
+// bool HistMaker::removeDatasetOverlaps()
+// {
+//     if (sample==104)
+//     {
+//         return passesDatasetDependentTriggers(104);
+//     }
+//     else if (sample==103)
+//     {
+//         return (!passesDatasetDependentTriggers(104) && passesDatasetDependentTriggers(103));
+//     }
+//     else if (sample==102)
+//     {
+//         return (!passesDatasetDependentTriggers(104) && !passesDatasetDependentTriggers(103) && passesDatasetDependentTriggers(102));
+//     }
+//     else if (sample==101)
+//     {
+//         return (!passesDatasetDependentTriggers(104) && !passesDatasetDependentTriggers(103) && !passesDatasetDependentTriggers(102) && passesDatasetDependentTriggers(101));
+//     }
+//     else if (sample==100)
+//     {
+//         return (!passesDatasetDependentTriggers(104) && !passesDatasetDependentTriggers(103) && !passesDatasetDependentTriggers(102) && !passesDatasetDependentTriggers(101) && passesDatasetDependentTriggers(100));
+//     }
+//     // in case of MC:
+//     else return true;
+// }
 bool HistMaker::passesAnyTrigger()
 {
     return ( passesDatasetDependentTriggers(100)

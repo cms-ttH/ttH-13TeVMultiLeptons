@@ -12,14 +12,14 @@ class HistMaker
         ~HistMaker();
         
         // member variables
-        const unsigned int th1arrsize = 10000;
+        const unsigned int th1arrsize = 16100;
         const unsigned int th2arrsize = 500;
-        const unsigned int th1eftarrsize = 2000;
+        const unsigned int th1eftarrsize = 2100;
         int sample = -1;
          
-        TH1EFT *th1ds[10000];
+        TH1EFT *th1ds[16100];
         TH2D *th2ds[500];
-        TH1EFT *th1efts[2000];
+        TH1EFT *th1efts[2100];
 
         std::unordered_map<string,TH1EFT*> th1d;
         std::unordered_map<string,TH2D*> th2d;
@@ -78,6 +78,8 @@ class HistMaker
         TTreeReaderValue<vector<ttH::Muon>> looseMvaBased_muons_intree;
         TTreeReaderValue<vector<ttH::Muon>> tightMvaBased_muons_intree;
         TTreeReaderValue<vector<ttH::Muon>> tight_muons_intree;
+
+        TTreeReaderValue<vector<ttH::Tau>> selected_taus_intree;
 
         TTreeReaderValue<vector<ttH::Jet>> raw_jets_intree;
         TTreeReaderValue<vector<ttH::Jet>> loose_jets_intree;
@@ -167,6 +169,7 @@ class HistMaker
         double getFakeWeight(int iSys, vector<string> category);
         std::pair<double,double> getQFweights(string category);
         double partonShowerSF(int bin, vector<string> category, int sys=0);
+        double adhocNjetSF(int bin, vector<string> category, int sys=0);
         
         WCFit getEventFit(double weight=1.);
         WCFit thisEventFit;
@@ -237,7 +240,7 @@ HistMaker::HistMaker(TString thepassedsamp, bool cfs, bool fks)
     dochgfs=cfs;
     dofakes=fks;
     
-    isSR=true; // <<------------------------------------ is signal region
+    isSR=false; // <<------------------------------------ is signal region
     
     // Use this when running lobster
     // Alternative constructor (if you have direct access to the sample number, i.e. 

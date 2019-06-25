@@ -20,14 +20,29 @@ WCFit HistMaker::getEventFit(double weight)
     }
     
     WCFit scaledFit = thisEventFit; // only scale copy of Histmaker member
-    if (sample==84) scaledFit.scale(weight/42223.); // div by # of gridpacks // 23000 // 13400 // 2000
-    else if (sample==85) scaledFit.scale(weight/41739.);
-    else if (sample==86) scaledFit.scale(weight/23164.);
-    else if (sample==87) scaledFit.scale(weight/22914.);
-    else if (sample==88) scaledFit.scale(weight/9214.);
-    else scaledFit.scale(weight/2000.); // div by # of gridpacks // 23000 // 13400 // 2000
+    
+    // old method:
+//     if (sample==84) scaledFit.scale(weight/42223.); // div by # of gridpacks // 23000 // 13400 // 2000
+//     //else if (sample==85) scaledFit.scale(weight/41739.); // "nominal" cuts
+//     else if (sample==85) scaledFit.scale(weight/24000.); // central cuts
+//     //else if (sample==86) scaledFit.scale(weight/23164.); // "nominal" cuts
+//     else if (sample==86) scaledFit.scale(weight/24000.); // central cuts
+//     //else if (sample==87) scaledFit.scale(weight/22914.); // "nominal" cuts
+//     else if (sample==87) scaledFit.scale(weight/24000.); // central cuts
+//     else if (sample==88) scaledFit.scale(weight/9214.);
+//     else scaledFit.scale(weight/2000.); // div by # of gridpacks // 23000 // 13400 // 2000
+    
+    // new method:
+    scaledFit.scale(weight);
+    
     return scaledFit;
 }
+
+
+
+
+
+
 
 /*
 
@@ -48,4 +63,11 @@ ttlnu: 4788500 + 4770000 + 1937000 + 9374000 = 20869500 -> / 500 = 41739
 feb. 23:
 tHq: ~5000000 -> / 500 = 10000
 Mar3: actually 4606820 -> / 500 = 9214
+
+May3, samples using central cuts:
+ttlnu = ~12M (actually 11208566)
+ttll = ~12M (actually 11904822)
+tllq = ~12M (actually 11759080)
+12M / 500 = 24000
+
 */

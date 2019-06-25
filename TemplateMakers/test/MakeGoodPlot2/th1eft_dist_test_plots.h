@@ -69,6 +69,19 @@ void MakeGoodPlot::th1eft_test_plots()
     cats.push_back("2lss_p_ee_2b.");    
     cats.push_back("3l_ppp_2b."); 
 
+    sample_names[1] = "ttH (NLO)";
+    sample_names[8] = "ttW (NLO)";
+    sample_names[9] = "ttZ (NLO)";
+    sample_names[26] = "tZq (NLO)"; 
+    sample_names[31] = "tHq (NLO)";
+    
+    sample_names[84] = "ttH (LO)";
+    sample_names[85] = "ttl#nu (LO)"; 
+    sample_names[86] = "ttll (LO)"; 
+    sample_names[87] = "tllq (LO)";
+    sample_names[88] = "tHq (LO)";
+    
+    
     
 
     // construct hists for combined 2lss + 3l categories:
@@ -116,7 +129,7 @@ void MakeGoodPlot::th1eft_test_plots()
     {
         for (const auto quant : quants)
         {
-            canvect.push_back({new GoodPlot(cat+quant.first,"darren"),quant.second});
+            canvect.push_back({new GoodPlot(cat+quant.first,"darren",1,2),quant.second});
         }
     }
 
@@ -132,6 +145,8 @@ void MakeGoodPlot::th1eft_test_plots()
                 canvect[j].first->addPlot(*this,"same",i,"samp", -1, "E,PLC");
                 //addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
                 //canvect[j].first->addPlotNorm(*this,"auto",i,"samp");
+                canvect[j].first->addSimpleRatio(*this, canvect[j].first->GetName(),canvect[j].first->GetName(), i,"blah", -1, "hist,PLC",2,0);
+                canvas.Add(canvect[j].first);
             } 
         }
         else

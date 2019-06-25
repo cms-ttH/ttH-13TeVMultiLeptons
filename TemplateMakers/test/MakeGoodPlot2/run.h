@@ -7,8 +7,8 @@ void HistMaker::run(TTreeReader & newreader, int firstevent, int lastevent)
     while (newreader.Next())
     {
         doOneEvent();
-        //count++;
-        //if (count>3000) break;
-        //if (count%100==0) cout << "Event: " << count << endl;
+        count++;
+        //if (count>500) break;
+        if (count%5000==0) cout << "Event: " << count << endl;
     }
 }

@@ -57,6 +57,8 @@ class MakeGoodPlot
         double q2down[200];
         double pdfup[200];
         double pdfdown[200]; 
+        const double extra_tllq_factor_2lss = 1.497; // see [1] in rateinfo()
+        const double extra_tllq_factor_3lnonZ = 0.827; // see [1] in rateinfo()
         
         void get_rate_info();        
         void setup();        
@@ -72,6 +74,8 @@ class MakeGoodPlot
         void fr_studies_plots();
         void pdf_studies_plots();
         void syst_sanity_check();
+        void derive_njet_sfs();
+        
         MakeGoodPlot() { cout << "Default constructor of MakeGoodPlot doesn't do anything. Use a different constructor." << endl; }
         MakeGoodPlot(std::vector<int> thesamps, TString histdir="");
         MakeGoodPlot(std::vector<int> thesamps, std::vector<TObjArray> exthists);

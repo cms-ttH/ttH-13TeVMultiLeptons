@@ -72,6 +72,7 @@ void HistMaker::setBranchAddresses( TTreeReader & newreader )
     //tight_leptons_intree = TTreeReaderValue<vector<ttH::Lepton>>(newreader, "preselected_leptons");
     //tight_muons_intree = TTreeReaderValue<vector<ttH::Muon>>(newreader, "preselected_muons");     
     
+    selected_taus_intree = TTreeReaderValue<vector<ttH::Tau>>(newreader, "selected_taus");
     
     raw_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "raw_jets");
     //loose_jets_intree = TTreeReaderValue<vector<ttH::Jet>>(newreader, "loose_jets");

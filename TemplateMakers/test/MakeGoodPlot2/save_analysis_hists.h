@@ -1,6 +1,6 @@
 void MakeGoodPlot::save_analysis_hists()
 {
-    bool debug = true;
+    bool debug = false;
     
     vector<TString> allAnaHists;
     vector<TString> cats;
@@ -79,21 +79,29 @@ void MakeGoodPlot::save_analysis_hists()
     allSysts.push_back("MUFDOWN");
     allSysts.push_back("LEPIDUP");
     allSysts.push_back("LEPIDDOWN");
-//     allSysts.push_back("PSISRUP");
-//     allSysts.push_back("PSISRDOWN");
-//     allSysts.push_back("TRGUP");
-//     allSysts.push_back("TRGDOWN");
-//     allSysts.push_back("PUUP");
-//     allSysts.push_back("PUDOWN");  
+    allSysts.push_back("PSISRUP");
+    allSysts.push_back("PSISRDOWN");
+    allSysts.push_back("TRGUP");
+    allSysts.push_back("TRGDOWN");
+    allSysts.push_back("PUUP");
+    allSysts.push_back("PUDOWN");  
+    allSysts.push_back("ADHOCNJUP");
+    allSysts.push_back("ADHOCNJDOWN");
     
     // for the other systs, need some way of picking MC-only, etc.
 
     // construct hists for combined 2lss + 3l categories
     // Note: this modifies existing histograms, so comment it out if not using.
+    
+    cout << "here1" << endl;
+    
     for (int i=0; i<numsamples; i++)
     {     
         for (const auto syst : allSysts)
         {
+	      int thisSamp = samples[i];
+	      cout << i << ", " << thisSamp << ", " << syst << endl;
+
 //             auto combohist1 = (TH1EFT*)hist[i].FindObject("2lss_p_ee_1b."+syst); //->Clone("2lss."+syst);
 //             combohist1->Add((TH1EFT*)hist[i].FindObject("2lss_p_emu_1b."+syst));
 //             combohist1->Add((TH1EFT*)hist[i].FindObject("2lss_p_mumu_1b."+syst));
@@ -124,6 +132,7 @@ void MakeGoodPlot::save_analysis_hists()
 //             if (debug) ((TH1EFT*)hist[i].FindObject("3l_ppp_1b."+syst))->DumpFits();
 //             //hist[i].Add(combohist2);            
 
+	    if (!(thisSamp>=84 && thisSamp<=88) && (syst=="ADHOCNJUP" || syst=="ADHOCNJDOWN")) continue;
 
             auto combohist1 = (TH1EFT*)hist[i].FindObject("3l_mix_p_1b."+syst); //->Clone("3l."+syst);
             combohist1->Add((TH1EFT*)hist[i].FindObject("3l_ppp_1b."+syst));
@@ -158,6 +167,8 @@ void MakeGoodPlot::save_analysis_hists()
     cout << " & $\\geq$4l";
     cout << " \\\\ " << endl;
     cout << "\\hline" << endl;
+
+    //TH1EFT *data;
 
     for (int i=0; i<numsamples; i++)
     {    
@@ -208,13 +219,45 @@ void MakeGoodPlot::save_analysis_hists()
                 if (thisSamp==95 && (thissyst!="FRUP" && thissyst!="FRDOWN" && thissyst!="")) continue;
                 if (thisSamp==94 && thissyst!="") continue;
                 if (thisSamp>99 && thissyst!="") continue;
-                
+                if (!(thisSamp>=84 && thisSamp<=88) && (thissyst=="ADHOCNJUP" || thissyst=="ADHOCNJDOWN")) continue;
+
                 auto thishist = (TH1EFT*)hist[i].FindObject(thiscat+thissyst);
                 
                 if (thissyst=="") thishist->SetName(thishist->GetName()+sample_names_reg[thisSamp]);
                 else thishist->SetName(thishist->GetName()+string(".")+sample_names_reg[thisSamp]);
                 
-                if (thisSamp<40) thishist->Scale(lumi*xsec[thisSamp]/numgen[thisSamp]);
+                
+                if (thisSamp<40)
+                {
+                    thishist->Scale(lumi*xsec[thisSamp]/numgen[thisSamp]);
+                    // Dibosons
+                    if (thisSamp==11)
+                    {
+                        if (thissyst=="") ((TH1EFT*)hist[i-1].FindObject(thiscat+thissyst+sample_names_reg[10]))->Add(thishist); // assumes i-1 is sample 10 (WZ)!!!
+                        else ((TH1EFT*)hist[i-1].FindObject(thiscat+thissyst+string(".")+sample_names_reg[10]))->Add(thishist); // assumes i-1 is sample 10 (WZ)!!!
+                    }
+                    if (thisSamp==12)
+                    {
+                        if (thissyst=="") ((TH1EFT*)hist[i-2].FindObject(thiscat+thissyst+sample_names_reg[10]))->Add(thishist); // assumes i-2 is sample 10 (WZ)!!!
+                        else ((TH1EFT*)hist[i-2].FindObject(thiscat+thissyst+string(".")+sample_names_reg[10]))->Add(thishist); // assumes i-2 is sample 10 (WZ)!!!
+                    }
+                    // Tribosons
+                    if (thisSamp==23)
+                    {
+                        if (thissyst=="") ((TH1EFT*)hist[i-1].FindObject(thiscat+thissyst+sample_names_reg[22]))->Add(thishist); // assumes i-1 is sample 22 (WWW)!!!
+                        else ((TH1EFT*)hist[i-1].FindObject(thiscat+thissyst+string(".")+sample_names_reg[22]))->Add(thishist); // assumes i-1 is sample 22 (WWW)!!!
+                    }
+                    if (thisSamp==24)
+                    {
+                        if (thissyst=="") ((TH1EFT*)hist[i-2].FindObject(thiscat+thissyst+sample_names_reg[22]))->Add(thishist); // assumes i-2 is sample 22 (WWW)!!!
+                        else ((TH1EFT*)hist[i-2].FindObject(thiscat+thissyst+string(".")+sample_names_reg[22]))->Add(thishist); // assumes i-2 is sample 22 (WWW)!!!
+                    }
+                    if (thisSamp==25)
+                    {
+                        if (thissyst=="") ((TH1EFT*)hist[i-3].FindObject(thiscat+thissyst+sample_names_reg[22]))->Add(thishist); // assumes i-3 is sample 22 (WWW)!!!
+                        else ((TH1EFT*)hist[i-3].FindObject(thiscat+thissyst+string(".")+sample_names_reg[22]))->Add(thishist); // assumes i-3 is sample 22 (WWW)!!!
+                    }                    
+                }
                 else if(thisSamp>=40 && thisSamp<84) 
                 {
                     thishist->ScaleFits(lumi);
@@ -229,8 +272,11 @@ void MakeGoodPlot::save_analysis_hists()
                 }
                 else if(thisSamp>=84 && thisSamp<90) 
                 {
-                    thishist->ScaleFits(lumi*xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
+                    double addlfactor = 1.;
+                    if (thisSamp==87 && (thiscat=="3l_mix_p_1b." || thiscat=="3l_mix_m_1b." || thiscat=="3l_mix_p_2b." || thiscat=="3l_mix_m_2b.")) addlfactor = extra_tllq_factor_3lnonZ;
+                    else if (thisSamp==87 && (thiscat=="2lss_p_ee_2b." || thiscat=="2lss_p_emu_2b." || thiscat=="2lss_p_mumu_2b." || thiscat=="2lss_m_ee_2b." || thiscat=="2lss_m_emu_2b." || thiscat=="2lss_m_mumu_2b.")) addlfactor = extra_tllq_factor_2lss;
                     
+                    thishist->ScaleFits(addlfactor*lumi*xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
                     thishist->Scale(WCPoint()); // SM
                     
                     //WCPoint pt;
@@ -245,6 +291,22 @@ void MakeGoodPlot::save_analysis_hists()
                         thishist->ScaleFits(normamnt);
                         thishist->Scale(WCPoint()); // SM
                     }
+                }
+                //else if (thisSamp>99)
+                else if (thisSamp==104)
+                {
+                    //cout << "hey" << endl;
+//                     if (thisSamp==100) data = (TH1EFT*)hist[i].FindObject(thiscat+thissyst+sample_names_reg[thisSamp])->Clone();
+//                     else data->Add(thishist);
+                    
+                    // this is so shitty. Like, really. Jesus dude. (Maaaakes alot of assUMPtions duuude!)
+                    // no, really. seriously. you really need to rewrite this whole function.
+                    auto data = (TH1EFT*)hist[i].FindObject(thiscat+sample_names_reg[thisSamp]);
+                    data->Add((TH1EFT*)hist[i-1].FindObject(thiscat+sample_names_reg[103]));
+                    data->Add((TH1EFT*)hist[i-2].FindObject(thiscat+sample_names_reg[102]));
+                    data->Add((TH1EFT*)hist[i-3].FindObject(thiscat+sample_names_reg[101]));
+                    data->Add((TH1EFT*)hist[i-4].FindObject(thiscat+sample_names_reg[100]));                    
+                    
                 }
                 
                 TString cltxt = "\\textcolor{black}{";
@@ -263,7 +325,24 @@ void MakeGoodPlot::save_analysis_hists()
                 cout << " & " << cltxt << std::fixed << std::setprecision(2) << thishist->Integral() << "}";
                 //cout << " & " << cltxt << std::fixed << std::setprecision(2) << abs((thishist->Integral() - nomylds[cnt])/nomylds[cnt]) << "}";
                 
-                canvas.Add(thishist); //<-- last step 
+                if (!(thisSamp>=10 && thisSamp<=12) && !(thisSamp>=22 && thisSamp<=25) && thisSamp<100) canvas.Add(thishist); //<-- last step 
+                if (thisSamp==12) 
+                {
+                    if (thissyst=="") canvas.Add( (TH1EFT*)hist[i-2].FindObject(thiscat+thissyst+sample_names_reg[10]) );
+                    else canvas.Add( (TH1EFT*)hist[i-2].FindObject(thiscat+thissyst+string(".")+sample_names_reg[10]) );
+                }
+                if (thisSamp==25) 
+                {
+                    if (thissyst=="") canvas.Add( (TH1EFT*)hist[i-3].FindObject(thiscat+thissyst+sample_names_reg[22]) );
+                    else canvas.Add( (TH1EFT*)hist[i-3].FindObject(thiscat+thissyst+string(".")+sample_names_reg[22]) );
+                }     
+                if (thisSamp==104)
+                {
+                    auto data = (TH1EFT*)hist[i].FindObject(thiscat+sample_names_reg[thisSamp]);
+                    data->SetName(thiscat+thissyst+"data");
+                    //cout << "blah" << endl;
+                    canvas.Add(data);
+                }           
                 cnt++;
             }
             

@@ -127,7 +127,9 @@ std::unordered_map<string,int> sample_TString2int_map()
     // in case you want to supply a one-off sample that's in a
     // different directory than usual, or in case you want to 
     // compare 2 versions of the same sample (e.g. for validation, etc.)
-    dummy["ttGJets_ext"] = 0;
+    //dummy["ttlnu_no_rewgt_1Jet"] = 0;
+    //dummy["ttllnunu_no_rewgt"] = 0;
+    dummy["tllqSMmatched"] = 0;
     
     return dummy;
 }
@@ -205,7 +207,8 @@ TString loadsample(const int samp)
     //TString thisround = "lobster_trees__EFT_test_multidim_samps_ext_11_10_18";
     //TString thisround = "lobster_trees__EFT_test_just_powheg_ttH_again_for_pdfs_11_10_18";
     //TString thisround = "lobster_trees__EFT_test_all_mc_bkds_for_pdfs_1_11_18_b";
-    TString thisround = "lobster_trees__EFT_test_27_2_19_central";
+    //TString thisround = "lobster_trees__EFT_test_ttlnu_no_rewgt_0Jet_29_5_19";
+    TString thisround = "lobster_trees__EFT_test_ttH_actuallySMreweightedNumInitialWeightedMCevents_10M_7_6_19";
     
     TString basedir = "/hadoop/store/user/gesmith/"+thisround+"/";  // The directory on hadoop where your samples are located.
     if (!atND) basedir = "/store/ndpc6disk2/gesmith/crab/";         // The directory on ndpc disk where your samples are located.

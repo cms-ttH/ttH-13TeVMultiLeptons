@@ -9,6 +9,7 @@
 #include "fr_studies_plots.h"
 #include "pdf_studies_plots.h"
 #include "syst_sanity_check.h"
+#include "derive_njet_sfs.h"
 
 void MakeGoodPlot::drawAll()
 {
@@ -27,6 +28,7 @@ void MakeGoodPlot::drawAll()
     //fr_studies_plots();
     //pdf_studies_plots();
     //syst_sanity_check();   
+    //derive_njet_sfs();
 }
 
 
@@ -50,6 +52,8 @@ void MakeGoodPlot::drawAllToFile(string plotfile, string plotoption)
             //theplotfile->WriteTObject(tmpcan);
             theplotfile->WriteTObject(canvas[i]);
         }
+        
+        theplotfile->Close();
     }
     
     else if (plotoption=="png" || plotoption=="pdf" || plotoption==".png" || plotoption==".pdf" )

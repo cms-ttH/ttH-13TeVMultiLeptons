@@ -724,3 +724,49 @@ template <typename coll1type, typename coll2type, typename coll3type> void getSp
 // 	return;
 // }
 
+double had_top_mass(std::vector<ttH::Jet> bjets, std::vector<ttH::Jet> lfjets)
+{
+	// ported from 8TeV ttH(bb) ana
+	// recommendation: use >=medium b-tags
+	double mass = -1.;
+	
+	double minChi = 1000000.;
+	
+	double W_mass = 80.0;
+	double top_mass = 172.5;
+	double H_mass=120.0;
+
+	double sigma_hadW 	= 12.59,
+		sigma_hadTop 	= 19.9;
+		//sigma_lepTop	= 39.05;
+	
+	int ntags = bjets.size();
+	int untags = lfjets.size();
+
+	for(int j=0;j<untags;j++)
+	{
+		for(int k=0;k<untags;k++)
+		{
+			if(j!=k)
+			{
+				auto W_had = lfjets.at(j).obj+lfjets.at(k).obj;
+				double chi_W_had = pow((W_had.M()-W_mass)/sigma_hadW,2);
+
+				for(int l=0;l<ntags;l++)
+				{
+					auto top_had = W_had + bjets.at(l).obj;
+					double chi_top_had = pow((top_had.M()-top_mass)/sigma_hadTop,2);
+					double chi = chi_W_had + chi_top_had;
+					
+					if(chi<minChi)
+					{
+						minChi = chi;
+						mass = top_had.M();
+					}
+				}
+			}
+		}
+	}
+	
+	return mass;	
+}

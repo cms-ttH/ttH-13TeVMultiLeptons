@@ -185,6 +185,7 @@ void MakeGoodPlot::get_rate_info()
     
     
     //dummy["tZq"] = 26;
+    //xsec[26]=0.0758*(1./0.97); // <-------- trailing factor is a by-hand accounting for the fact that we removed 3% of events
     xsec[26]=0.0758;
     q2up[26]=0.0001989;
     q2down[26]=0.0001989;
@@ -219,7 +220,7 @@ void MakeGoodPlot::get_rate_info()
     pdfup[30]=0.05*xsec[30]; // <- to be updated..
     pdfdown[30]=-0.05*xsec[30]; // <- to be updated.. 
     
-    // TTGJets
+    // tHq
     xsec[31]=7.7129e-02; //2.879E-03+7.425e-02; // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV
     q2up[31]=0.08*xsec[31];
     q2down[31]=-0.149*xsec[31];
@@ -240,45 +241,122 @@ void MakeGoodPlot::get_rate_info()
     // ttbar: 493.386 ...
     // https://arxiv.org/pdf/1802.07237.pdf
     //
+
+    //////////////////////////////////////  "V1" //////////////////////////////////////////////
     
+    bool uncorrected = false;   // don't apply extra "by hand" norm fixes
+    bool newsamps = true;       // using "new" samples with central cuts
     
     
     //const double tempff = 1./1.72; /// remove this when not needed (or set to 1)!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     const double tempff = 1.;
     
     //16D ttH
-    xsec[84]=tempff*xsec[1]/0.386; // The ratio is inclusive NLO / inclusive LO. The factor out front (see xsec[1]) is adjusting for the fact that Andrew removed by hand the H->bb decays after the fact; i.e. the 
-                                        // cross section still stored in the samples is the inclusive one, so we adjust this down.  // remove the /6.7 (temp fudge-factor) // 
+//     xsec[84]=tempff*xsec[1]/0.386; // The ratio is inclusive NLO / inclusive LO. The factor out front (see xsec[1]) is adjusting for the fact that Andrew removed by hand the H->bb decays after the fact; i.e. the 
+//                                         // cross section still stored in the samples is the inclusive one, so we adjust this down.  // remove the /6.7 (temp fudge-factor) // 
+//     q2up[84]=0.057*xsec[84];
+//     q2down[84]=-0.093*xsec[84];
+//     pdfup[84]=0.036*xsec[84];
+//     pdfdown[84]=-0.036*xsec[84];
+    
+    //16D ttlnu
+//     double ttlnu_normfix = 1.;
+//     if (!newsamps && !uncorrected) ttlnu_normfix = 0.709; // see [1] below -> still need to make sure cat-dep sfs are applied!!   // regular samps
+//     if (newsamps && !uncorrected) ttlnu_normfix = (0.11269/0.1119)*(12./11.2);                      // <---- new samps. change trailing factor to 1 after done w/ first round!
+//     xsec[85]=ttlnu_normfix*tempff*xsec[8]/0.11269; // ok
+//     q2up[85]=0.13*xsec[85];
+//     q2down[85]=-0.12*xsec[85];
+//     pdfup[85]=0.02*xsec[85];
+//     pdfdown[85]=-0.02*xsec[85];
+    
+    //16D ttll
+    //double ttll_normfix = (0.0744/0.0873)*(12./11.9);                           // change tf to 1 after done w/ first round!
+//     double ttll_normfix = (0.0744/(0.75*0.0873))*(12./(11.9));
+//     xsec[86]=tempff*(0.087/0.07)*(xsec[9]/3)/0.0744;    // Regular samps. First adjusting the NLO one by removing the neutrino component (~/3), and adjust for the fact that our samples don't cut on mll (the factor out front is the 
+//                                                         // difference between LO cross sections when you do/don't do the mll cut), then finally do an apples-to-apples between the NLO & LO.                     
+//     if (newsamps && !uncorrected) xsec[86]=ttll_normfix*tempff*(xsec[9]/3)/0.0744;    // <---- new samps. 
+//     q2up[86]=0.1*xsec[86];
+//     q2down[86]=-0.12*xsec[86];
+//     pdfup[86]=0.03*xsec[86];
+//     pdfdown[86]=-0.03*xsec[86];
+    
+    //16D tllq
+//     double tllq_normfix = 1.;
+//     if (!newsamps && !uncorrected) tllq_normfix = 0.847; // see [1] below // regular/old samps, with ad-hoc adjustment to match central yield
+//     if (newsamps && !uncorrected) tllq_normfix = (0.0675964/(0.95*0.09175))*(12./11.7);         // <---- new samps. Its: (xsec of old samp / (adjustment removing Higgs events * xsec of new samp)) * (fine adjustment to initially-applied approximation of total # of events). 
+//                                                                                                 // Note: we are manually removing spurious higgs events here, which is why we have to adjust the new xsec. Change trailing factor to 1 after done w/ first round!
+//     xsec[87]=tllq_normfix*tempff*xsec[26]/0.0675964; // ok
+//     q2up[87]=0.01*xsec[87];
+//     q2down[87]=-0.01*xsec[87];
+//     pdfup[87]=0.04*xsec[87];
+//     pdfdown[87]=-0.04*xsec[87];
+    
+    //16D tHq
+//    xsec[88]=xsec[31]/0.072955 ; //  (9214./10000.)* // factor out front is temporary! to be removed next time!
+    
+    
+    
+    //////////////////////////////////////  "V2" //////////////////////////////////////////////
+    
+    // ttH
+    xsec[84]=xsec[1];
     q2up[84]=0.057*xsec[84];
     q2down[84]=-0.093*xsec[84];
     pdfup[84]=0.036*xsec[84];
     pdfdown[84]=-0.036*xsec[84];
-    
+        
     //16D ttlnu
-    xsec[85]=tempff*xsec[8]/0.11269; // ok
+    xsec[85]=xsec[8];
     q2up[85]=0.13*xsec[85];
     q2down[85]=-0.12*xsec[85];
     pdfup[85]=0.02*xsec[85];
-    pdfdown[85]=-0.02*xsec[85];
+    pdfdown[85]=-0.02*xsec[85];    
     
-    
-    //16D ttll
-    xsec[86]=tempff*(0.087/0.07)*(xsec[9]/3)/0.0744; // First adjusting the NLO one by removing the neutrino component (~/3), and adjust for the fact that our samples don't cut on mll (the factor out front is the 
-                                                        // difference between LO cross sections when you do/don't do the mll cut), then finally do an apples-to-apples between the NLO & LO.
+    // tllq
+    xsec[87]=xsec[26];
+    q2up[87]=0.01*xsec[87];
+    q2down[87]=-0.01*xsec[87];
+    pdfup[87]=0.04*xsec[87];
+    pdfdown[87]=-0.04*xsec[87];
+ 
+    // ttll    
+    xsec[86]=xsec[9]/3.;    // <---- new samps. 
     q2up[86]=0.1*xsec[86];
     q2down[86]=-0.12*xsec[86];
     pdfup[86]=0.03*xsec[86];
     pdfdown[86]=-0.03*xsec[86];
     
-    //16D tllq
-    xsec[87]=tempff*xsec[26]/0.0675964; // ok
-    q2up[87]=0.01*xsec[87];
-    q2down[87]=-0.01*xsec[87];
-    pdfup[87]=0.04*xsec[87];
-    pdfdown[87]=-0.04*xsec[87];
-    
     //16D tHq
-    xsec[88]=(9214./10000.)*xsec[31]/0.072955 ; // factor out front is temporary! to be removed next time!
+    xsec[88]=xsec[31]; 
+    
+    
+    
+    ////////// test ////////
+
+    xsec[0]=xsec[26];
+    q2up[0]=0.13*xsec[8];
+    q2down[0]=-0.12*xsec[8];
+    pdfup[0]=0.02*xsec[8];
+    pdfdown[0]=-0.02*xsec[8];
+    
+    
+    
     
     
 }
+
+/* [1] (from skype chat with Kevin)
+
+Kevin:
+OK.  So, using the same approach that I used before, I would recommend the following:
+ - The normalization of tllq should be multiplied across the board by 0.847.  This is the factor that makes the yield inside the Z peak match up, which we can take as fixing issues with our sample's phase space compared to the phase space of the central sample.
+ - The 2lss categories should then be multiplied by 1.497 which is the factor by which our samples 2lss/3lZ ratio is off, compared to the central sample, after the new jet reweighting.  This presumably corrects for 2lss events that we didn't generate because of the lepton cuts we used.
+ - The 3lnonZ categories should be multiplied by 0.827.  Again this comes from comparing our 3lnonZ/3lZ to the central samples.  It should be accounting again for events that we didn't generate.  In this case, I think there are two effects: We generated too many 3l events where the two leptons are coming from low mass Z/gamma* because we insist that both leptons be > 10 GeV, but we generated too few 3l events with two leptons from the top quarks but only one from the Z/gamma.  The former leads to a SF < 1 while the latter leads to a SF > 1, and our final SF is a combination of the two.  
+
+Note:  The last two SF are applied on top of the first two (so 0.847*1.497 and 0.847*0.827).
+
+Me:
+also, I derived the ttlnu normalization SF by comparing the yields before applying the jet requirements, and got a factor of 0.709 going from our sample to the central one
+
+
+*/

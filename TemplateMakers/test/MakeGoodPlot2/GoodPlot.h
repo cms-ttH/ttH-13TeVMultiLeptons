@@ -7,7 +7,7 @@ class GoodPlot : public TCanvas
         bool divided=false;       
         bool debug;
     public:
-        GoodPlot(TString name, string legopt="none", int nx=1, int ny=1);
+        GoodPlot(TString name, string legopt="none", int nx=1, int ny=1, bool scaleFromFits=true);
         TLegend *theleg;
         TH1D *sumdata=0;
         THStack *thestack;
@@ -40,7 +40,7 @@ class GoodPlot : public TCanvas
         TH1D *finalnumer;
         TH1D *finaldenom;
         int lastdrawnsamp = -1;
-        
+        bool doTH1EFTScale = true;
         bool usecombosinplot = false;
         
         void addTGraphAsErrors(MakeGoodPlot &thisMGP, TString thenumer, TString thedenom, int i, TString ylabel="Efficiency", double ymin=0., double ymax=1.05);
@@ -50,7 +50,7 @@ class GoodPlot : public TCanvas
         void addPlotTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, double wc=0., TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
         void addPlotData(MakeGoodPlot &thisMGP, TString thehist="same", int i=0, TString legtext="none", int rebin=-1, TString drawopt="E", bool withRatio=true);
         //void addPlotDDBkgd(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="E");
-        void addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TString thehistdenom, int i, TString legtext, int rebin=-1, TString drawopt="E", int pad=1);
+        void addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TString thehistdenom, int i, TString legtext, int rebin=-1, TString drawopt="E", int pad=1, int notheri=-1);
         void addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext="none", int rebin=-1, TString drawopt="hist,PLC", TH1D *exthist=0);
         void addPlotNormTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, double wc=0., TString legtext="none", int rebin=-1, TString drawopt="hist,PLC");
         void addPlot2D(MakeGoodPlot &thisMGP, int i, TString thehist="same");
@@ -71,11 +71,12 @@ class GoodPlot : public TCanvas
         void addCMSText(MakeGoodPlot &thisMGP);
 };
 
-GoodPlot::GoodPlot(TString name, string legopt, int nx, int ny) : TCanvas(name,"can",150,10,960,660) 
+GoodPlot::GoodPlot(TString name, string legopt, int nx, int ny, bool scaleFromFits) : TCanvas(name,"can",150,10,960,660) 
 {
     // ----------------------
     logplot = false;
     debug = false;
+    doTH1EFTScale = scaleFromFits;
     //usecombosinplot = true;
     // ----------------------
     
@@ -169,6 +170,7 @@ void GoodPlot::addEfficiencyPlot(MakeGoodPlot &thisMGP, TString thenumer, TStrin
 void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt, TH1D *exthist)
 {
     this->cd();
+    if (divided) this->cd(1);
     if (thehist=="same") thehist=this->GetName();
     TH1D *myhist;
     if (exthist) myhist = (TH1D*)exthist->Clone(thehist);
@@ -182,6 +184,7 @@ void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
     myhist->SetMarkerStyle(10);
     if (!exthist)
     {
+        //cout << "here " << thisMGP.color[thisMGP.samples[i]] << endl;
         myhist->SetMarkerColor(thisMGP.color[thisMGP.samples[i]]); // <- not if drawopt contains "PLC" ...
         myhist->SetLineColor(thisMGP.color[thisMGP.samples[i]]); // <- not if drawopt contains "PLC" ...
     }
@@ -195,10 +198,12 @@ void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
         TIter iter(this->GetListOfPrimitives());
         TH1D *h = (TH1D*)iter.Next();
         if (logplot) h->SetAxisRange(0.,1000.*maxsofar,"Y");
-        else h->SetAxisRange(0.,1.25*maxsofar,"Y");
+        else h->SetAxisRange(0.,2.*maxsofar,"Y"); // 1.25
+        //myhist->GetYaxis()->SetRangeUser(0,2.*maxsofar);
     }
     
     //myhist->DrawNormalized(drawopt); // never use DrawNormalized with PLC or PMC
+    myhist->GetYaxis()->SetRangeUser(0,2.*maxsofar);
     myhist->Draw(drawopt);
     exists = true;
     
@@ -208,7 +213,7 @@ void GoodPlot::addPlotNorm(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
         else theleg->AddEntry(myhist,legtext,"L");
         theleg->Draw();
     }
-    if (i==(thisMGP.numsamples-1)) thisMGP.canvas.Add(this);
+    //if (i==(thisMGP.numsamples-1)) thisMGP.canvas.Add(this);
 }
 void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString legtext, int rebin, TString drawopt, int pad)
 {
@@ -238,7 +243,7 @@ void GoodPlot::addPlot(MakeGoodPlot &thisMGP, TString thehist, int i, TString le
         TIter iter(this->GetListOfPrimitives());
         TH1D *h = (TH1D*)iter.Next();
         if (logplot) h->SetAxisRange(0.1,1000.*maxsofar,"Y");
-        else h->SetAxisRange(0.,1.4*maxsofar,"Y");               // 1.25
+        else h->SetAxisRange(0.,2.0*maxsofar,"Y");               // 1.25 // 1.4
     }
 
     // i think this was for the mc validation plots:    
@@ -276,7 +281,10 @@ void GoodPlot::addPlotNormTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, 
     this->cd();
     if (thehist=="same") thehist=this->GetName();
     TH1EFT *myhist = (TH1EFT*)thisMGP.hist[i].FindObject(thehist);
-
+    
+    myhist->SetMarkerColor(thisMGP.color[thisMGP.samples[i]]); // <- not if drawopt contains "PLC" ...
+    myhist->SetLineColor(thisMGP.color[thisMGP.samples[i]]);
+    
     string foundwc="none";
     vector<string> foundwcs;
     
@@ -302,7 +310,7 @@ void GoodPlot::addPlotNormTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, 
     //for (auto thiswc : foundwcs) pt.setStrength(thiswc,wc); // multi-dim: sets all the WCs to the same value
     ////auto myhist2 = (TH1EFT*)myhist->Scale(pt);
     //myhist->Scale(pt);
-    myhist->Scale(WCPoint()); // just set it to SM strength
+    if (doTH1EFTScale) myhist->Scale(WCPoint()); // just set it to SM strength
     this->addPlotNorm(thisMGP, thehist, i, legtext, rebin, drawopt, myhist);
 }
 void GoodPlot::addPlotTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, double wc, TString legtext, int rebin, TString drawopt)
@@ -348,16 +356,23 @@ void GoodPlot::addPlotTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, doub
         if (foundwc!="none") break;
     }
     if (foundwc=="none") cout << "Warning: did not find a wc." << endl;
-
-    myhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
+    
+    if (doTH1EFTScale) 
+    {
+        myhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
                        
-    WCPoint pt;
-    pt.setStrength(foundwc,wc);
-    //auto myhist2 = (TH1EFT*)myhist->Scale(pt);
-    //myhist->Scale(pt);
-    myhist->Scale(WCPoint());
-    //double ffact = (1-0.577); // (1-0.577)*(0.577/0.386);
-    //myhist->Scale(thisMGP.lumi*ffact);
+        WCPoint pt;
+        pt.setStrength(foundwc,wc);
+        //auto myhist2 = (TH1EFT*)myhist->Scale(pt);
+        //myhist->Scale(pt);
+        myhist->Scale(WCPoint());
+        //double ffact = (1-0.577); // (1-0.577)*(0.577/0.386);
+        //myhist->Scale(thisMGP.lumi*ffact);
+    }
+    else
+    {
+        myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
+    }
     
     if (maxsofar<myhist->GetMaximum()) maxsofar = myhist->GetMaximum();
     
@@ -393,7 +408,7 @@ void GoodPlot::addPlotTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, doub
 
 
 // in progress..
-void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TString thehistdenom, int i, TString legtext, int rebin, TString drawopt, int pad)
+void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TString thehistdenom, int i, TString legtext, int rebin, TString drawopt, int pad, int notheri)
 {
     // the plot should already have a top part, if divided is true
     this->cd();
@@ -421,7 +436,8 @@ void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TStri
     }
     else if (exists2) drawopt = drawopt+",same";
     
-    
+    if (notheri==-1) notheri=i;
+    cout << "i: " << i << ", notheri: " << notheri << endl;
     //auto toppad = (TVirtualPad*)this->cd()->Clone();
     //TPad *toppad = (TPad*)gPad->Clone();
     
@@ -429,7 +445,7 @@ void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TStri
     //auto myhistnumer = (TH1D*)thisMGP.hist[i].FindObject(thehistnumer)->Clone(); // note - some care should be taken to make sure you know what and if you are scaled beforehand
     //auto myhistdenom = (TH1D*)thisMGP.hist[i].FindObject(thehistdenom);
     TH1EFT *myhistnumer = (TH1EFT*)thisMGP.hist[i].FindObject(thehistnumer); // note - some care should be taken to make sure you know what and if you are scaled beforehand
-    TH1EFT *myhistdenom = (TH1EFT*)thisMGP.hist[i].FindObject(thehistdenom);
+    TH1EFT *myhistdenom = (TH1EFT*)thisMGP.hist[notheri].FindObject(thehistdenom);
     
     //auto myhistnumer = (TH1*)thisMGP.hist[i].FindObject(thehistnumer)->Clone(); // note - some care should be taken to make sure you know what and if you are scaled beforehand
     //auto myhistdenom = (TH1*)thisMGP.hist[i].FindObject(thehistdenom)->Clone();    
@@ -442,13 +458,28 @@ void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TStri
     
     if (!divided && (thisSamp>=84 && thisSamp<=87))
     {
-        myhistnumer->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
-        if (!donethisampyet) myhistdenom->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]);
-                       
-        myhistnumer->Scale(WCPoint());
-        if (!donethisampyet) myhistdenom->Scale(WCPoint());
-
+        if (doTH1EFTScale) 
+        {
+            myhistnumer->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
+            if (!donethisampyet) myhistdenom->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]);
+            myhistnumer->Scale(WCPoint());
+            if (!donethisampyet) myhistdenom->Scale(WCPoint());
+        }
+        else
+        {
+            myhistnumer->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
+            if (!donethisampyet) myhistdenom->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
+        }
     }
+    
+    // you really need to clean up this function / class!                               //          --- Note: this is jenky and needs to be fixed ---
+    //myhistnumer->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);   // Assumes that this hasn't been scaled already. This is a valid assumption, 
+                                                                                        // provided you only did something with a cloned copy beforehand (eg. with 
+                                                                                        // addPlot). But, in general you have to be careful. Here, we're not scaling
+                                                                                        // the denom because in the most recent use case we were already scaling it in
+                                                                                        // addStack for the top plot, before adding this ratio plot on the bottom. If 
+                                                                                        // you're only going to have the non-divided ratio plot, prob want to comment 
+                                                                                        // this out.
     
     if (debug) cout << " " << endl;
     if (debug) cout << myhistnumer->Integral() << endl;
@@ -516,15 +547,17 @@ void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TStri
 
 
     // make the ratio
-    myhistnumer->Add(myhistdenom,-1); // comment this if not taking difference first
+    //myhistnumer->Add(myhistdenom,-1); // comment this if not taking difference first
     if (debug) cout << myhistnumer->Integral() << endl;
     myhistnumer->Divide(myhistdenom);
     if (debug) cout << myhistnumer->Integral() << endl;
     
-    myhistnumer->GetYaxis()->SetTitle("Frac. Change");
+    //myhistnumer->GetYaxis()->SetTitle("Frac. Change");
+    myhistnumer->GetYaxis()->SetTitle("Central/Ours");
     //myhistnumer->GetYaxis()->SetRangeUser(0.1,1.9); // ratio only
+    myhistnumer->GetYaxis()->SetRangeUser(0.1,3.); // ratio only
     //myhistnumer->GetYaxis()->SetRangeUser(-0.5,0.5); // difference first  ////// THE DEFAULT IS -1.1,1.1 !!!!!!!!!!!!!!!!!!!!!!!!!!
-    myhistnumer->GetYaxis()->SetRangeUser(-1.0,1.0);
+    //myhistnumer->GetYaxis()->SetRangeUser(-1.0,1.0); // difference first
 
     
     // copy settings from top plot:
@@ -606,6 +639,7 @@ void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
         thehist=this->GetName();
     }
     auto myhist = (TH1D*)thisMGP.hist[i].FindObject(thehist);
+    //myhist->SetBinContent(myhist->GetNbinsX(),myhist->GetBinContent(myhist->GetNbinsX())+myhist->GetBinContent(myhist->GetNbinsX()+1)); // temp - comment me! does not work with EFT fits!
     if (rebin>0) myhist->Rebin(rebin);
     sumevents.push_back(myhist->Integral());
     myhist->SetLineWidth(2);
@@ -640,8 +674,8 @@ void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
     
         if (drawleg)
         {
-            if (legtext=="samp") theleg->AddEntry(sumdata,"data","L");
-            else theleg->AddEntry(sumdata,legtext,"L");
+            if (legtext=="samp") theleg->AddEntry(sumdata,"data","P");
+            else theleg->AddEntry(sumdata,legtext,"P");
             theleg->Draw();
         } 
         
@@ -676,6 +710,8 @@ void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
             sumMCband->Draw("2"); // not drawn correctly on log plots for some reason
             if (drawleg) theleg->Draw();  
             thisMGP.CMSInfoLatex->Draw();
+            //sumdata->SetBinContent(4,0.);   // <-----
+            //sumdata->SetBinError(4,0.);   // <-----
             sumdata->Draw(drawopt);
             // move to bottom pad:
             this->cd(2);
@@ -690,13 +726,14 @@ void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
             auto dataMCratio = (TH1*)sumdata->Clone();
             // copy settings from top plot:
             dataMCratio->Divide(sumdata,sumback);
-            dataMCratio->GetYaxis()->SetTitle("Data/MC");
-            dataMCratio->GetYaxis()->SetRangeUser(0.1,1.9);
+            dataMCratio->GetYaxis()->SetTitle("Data/(S+B)");
+            dataMCratio->GetYaxis()->SetRangeUser(-1.0,3.0);
             dataMCratio->SetLabelSize(sumback->GetLabelSize());
-            //dataMCratio->SetTitleOffset(sumback->GetTitleOffset("Y"), "Y");
+            //cout << "Y Title offset from stack: " << sumback->GetTitleOffset("Y") << endl;
             dataMCratio->SetTitleSize(sumback->GetTitleSize("Y")*0.7/0.3, "Y");
-            //dataMCratio->SetTitleOffset(sumback->GetTitleOffset("X"), "X");
+            dataMCratio->SetTitleOffset(0.25, "Y");
             dataMCratio->SetTitleSize(sumback->GetTitleSize("X")*0.7/0.3, "X");
+            //dataMCratio->SetTitleOffset(sumback->GetTitleOffset("X"), "X");
             dataMCratio->Draw();
             TGraphAsymmErrors *sumMCbandRatio = new TGraphAsymmErrors(*sumMCband);
             TGraphAsymmErrors *sumMCbandRatioStatOnly = new TGraphAsymmErrors(*sumMCbandStatOnly);
@@ -712,15 +749,15 @@ void GoodPlot::addPlotData(MakeGoodPlot &thisMGP, TString thehist, int i, TStrin
                 sumMCbandRatio->SetPointEYhigh(j,errorup);
                 sumMCbandRatio->SetPointEYlow(j,errordown);
                 
-                errorup = dataMCratio->GetBinError(j+1);
-                errordown = dataMCratio->GetBinError(j+1);                
+                double staterrorup = dataMCratio->GetBinError(j+1);
+                double staterrordown = dataMCratio->GetBinError(j+1);                
                 
                 sumMCbandRatioStatOnly->SetPoint(j,xpoint,1.);
-                sumMCbandRatioStatOnly->SetPointEYhigh(j,errorup);
-                sumMCbandRatioStatOnly->SetPointEYlow(j,errordown);                
+                sumMCbandRatioStatOnly->SetPointEYhigh(j,staterrorup);
+                sumMCbandRatioStatOnly->SetPointEYlow(j,staterrordown);                
                 
-                sumMCbandRatio->SetPointEYhigh(j,sqrt(+errorup*errorup));
-                sumMCbandRatio->SetPointEYlow(j,sqrt(+errordown*errordown));                
+                //sumMCbandRatio->SetPointEYhigh(j,sqrt(staterrorup*staterrorup+errorup*errorup));
+                //sumMCbandRatio->SetPointEYlow(j,sqrt(staterrordown*staterrordown+errordown*errordown));                
                 
                 
             }   
@@ -768,14 +805,16 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
 {
     //cout << "inside00" << endl;
     this->cd();
-    
+    if (divided) this->cd(1);
     //auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist);
     auto myhist = (TH1EFT*)thisMGP.hist[i].FindObject(thehist);
     
     if (debug) cout << myhist->GetName() << endl;
     
+    //myhist->SetBinContent(myhist->GetNbinsX(),myhist->GetBinContent(myhist->GetNbinsX())+myhist->GetBinContent(myhist->GetNbinsX()+1)); // temp - comment me! does not work with EFT fits!
+    
     int thisSamp = thisMGP.samples[i];
-    if (thisSamp<40 || thisSamp>=90)
+    if (thisSamp<40 || thisSamp>=90 || !doTH1EFTScale)
     {
         if (rebin>0) myhist->Rebin(rebin);
         clean_neg_bins(*myhist);       
@@ -791,13 +830,15 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     if (thisSamp<40) myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
     if (thisSamp>=40 && thisSamp<90)
     {
-        myhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // remember: "xsec" is not really the xsec for the EFT samps (see rateinfo.h)
-                       
-//         WCPoint pt;
-//         pt.setStrength("ctZ",10.); // If doing non-SM
-//         myhist->Scale(pt);
-        
-        myhist->Scale(WCPoint()); // SM
+        if (doTH1EFTScale)
+        {
+            myhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // remember: "xsec" is not really the xsec for the EFT samps (see rateinfo.h)
+    //         WCPoint pt;
+    //         pt.setStrength("ctZ",10.); // If doing non-SM
+    //         myhist->Scale(pt);
+            myhist->Scale(WCPoint()); // SM
+        }
+        else myhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
     }
       
     myhist->SetLineColor(thisMGP.color[thisSamp]);
@@ -819,16 +860,19 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     {
     
         if (!isSig) thebackstack->Add(myhist);
-        thestack->Add(myhist);  
+        thestack->Add(myhist);
     }
     else if (combo==1 && dibosonvirgin)
     {
         thestack->Add(sumDiboson); // only need to add once, since it's a pointer
         thebackstack->Add(sumDiboson); // only need to add once, since it's a pointer
+        theleg->AddEntry(sumDiboson,"Diboson","F");
     }
     else if (combo==2 && tribosonvirgin)
     {
-        sumTriboson.
+        thestack->Add(sumTriboson);
+        thebackstack->Add(sumTriboson);
+        theleg->AddEntry(sumTriboson,"Triboson","F");
     }    
     
     sumevents.push_back(myhist->Integral());    
@@ -840,6 +884,8 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     
     // add the systs:
     
+    //thehist = thehist.substr(0, thehist.find("ADHOCNJDOWN")); // strip this part (if it exists) before entering syst loop
+    //thehist.ReplaceAll("ADHOCNJDOWN",""); // strip this part (if it exists) before entering syst loop
     
     for (int thisSyst=1; thisSyst<numsysts; thisSyst++) // numsysts
     {
@@ -852,9 +898,10 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
         //}
         
         auto dumhist = (TH1EFT*)thisMGP.hist[i].FindObject(thehist+thisSystTStr[thisSyst]); // should exist, have bins set, etc. Can be empty.
+        //dumhist->SetBinContent(dumhist->GetNbinsX(),dumhist->GetBinContent(dumhist->GetNbinsX())+dumhist->GetBinContent(dumhist->GetNbinsX()+1)); // temp - comment me! does not work with EFT fits!
         if (debug) cout << "got dumhist" << endl;
 
-        if (thisSamp<40 || thisSamp>=90)
+        if (thisSamp<40 || thisSamp>=90 || !doTH1EFTScale)
         {
             if (rebin>0) dumhist->Rebin(rebin);
             clean_neg_bins(*dumhist);    
@@ -863,13 +910,15 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
         
         if (thisSamp>=40 && thisSamp<90 && dumhist->GetEntries())
         {
-            dumhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]);
-                       
-//          WCPoint pt;
-//          pt.setStrength("ctZ",10.); // If doing non-SM
-//          myhist->Scale(pt);
-        
-            dumhist->Scale(WCPoint()); // SM
+            if (doTH1EFTScale)
+            {
+                dumhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]);
+    //          WCPoint pt;
+    //          pt.setStrength("ctZ",10.); // If doing non-SM
+    //          myhist->Scale(pt);
+                dumhist->Scale(WCPoint()); // SM
+            }
+            else dumhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
         }
         
         
@@ -911,7 +960,7 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
         if (legtext=="samp")
         {
             //if (isSig) theleg->AddEntry(myhist,thisMGP.sample_names[thisSamp],"L");
-            theleg->AddEntry(myhist,thisMGP.sample_names[thisSamp],"F");
+            if (!usecombosinplot || combo<0) theleg->AddEntry(myhist,thisMGP.sample_names[thisSamp],"F");
             //else theleg->AddEntry(myhist,thisMGP.sample_names[thisSamp],"F");
         }
         else theleg->AddEntry(myhist,legtext,"L");
@@ -931,6 +980,10 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
     {
         thehist=this->GetName();
     }
+    
+    int thisSamp = thisMGP.samples[i];
+    //if (thisSamp==84 || thisSamp==85) thehist = thehist+"ADHOCNJDOWN"; // gets the unscaled versions
+    
     addStack(thisMGP, thehist, i, legtext, rebin); // <- this should already have scaled the hist, cleaned neg bins, rebinned etc.
     auto myhist = (TH1*)thisMGP.hist[i].FindObject(thehist); // <- pointer to exact same object you modified in addStack
     //TH1D *myhist = ((TH1EFT*)thisMGP.hist[i].FindObject(thehist))->Scale(WCPoint()); // SM value
@@ -949,7 +1002,7 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
     if (!exists) sumMCbandNoStat = new TGraphAsymmErrors(sumhist);
     if (!exists) sumMCbandStatOnly = new TGraphAsymmErrors(sumhist);
     
-    int thisSamp = thisMGP.samples[i];
+    
     int numsamps = thisMGP.numsamples;
     
     if (debug) cout << "addStackWithSumMC 1" << endl;
@@ -993,7 +1046,7 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
             thisbinerrorsysdown += myhist->GetBinError(j+1);
         }
         
-        if (thisSamp<90)
+        if (thisSamp<90) // && thisSamp!=84) // <90
         {
             thisbinerrorsysup = thisbincontent*sqrt(thisMGP.q2up[thisSamp]*thisMGP.q2up[thisSamp] + thisMGP.pdfup[thisSamp]*thisMGP.pdfup[thisSamp])/thisMGP.xsec[thisSamp];
             thisbinerrorsysdown = thisbincontent*sqrt(thisMGP.q2down[thisSamp]*thisMGP.q2down[thisSamp] + thisMGP.pdfdown[thisSamp]*thisMGP.pdfdown[thisSamp])/thisMGP.xsec[thisSamp];
@@ -1037,7 +1090,7 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
     maxamount = std::max(maxamount,thestack->GetMaximum());    
     if (debug) cout << maxamount << thestack->GetMaximum() << endl;
     
-    maxsofar = 1.4*maxamount;
+    maxsofar = 1.4*maxamount; // 1.4
     if (logplot) maxsofar = 1000*maxamount;
     thestack->SetMaximum(maxsofar); // sumhist
     
@@ -1060,6 +1113,12 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
         
             if (debug) cout << " at the end, before loop over systs (j=" << j << ")" << endl;
             
+            // if want to leave out the by-hand stuff:
+//             sumMCbandNoStat->SetPointEYhigh(j,0);
+//             sumMCbandNoStat->SetPointEYlow(j,0);
+//             sumMCband->SetPointEYhigh(j,0);
+//             sumMCband->SetPointEYlow(j,0);
+            
             for (int thisSyst=1; thisSyst<numsysts; thisSyst++)
             {
 
@@ -1067,7 +1126,7 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
                 if (thisSamp==95 && (systint2str(thisSyst)!="FRUP" && systint2str(thisSyst)!="FRDOWN" && systint2str(thisSyst)!="")) continue;
                 if (thisSamp==94 && systint2str(thisSyst)!="") continue;
                 if ((thisSyst>=31 && thisSyst<=36) || thisSyst==5 || thisSyst==6 || thisSyst==39 || thisSyst==40) continue;
-                
+                //if ((thisSyst>=23 && thisSyst<=28) || thisSyst==37 || thisSyst==38) continue; // test only - comment me!
                 
                 
                 double thisbincont = syststack[thisSyst]->GetBinContent(j+1);
@@ -1082,7 +1141,6 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
                 {
                     sumMCbandNoStat->SetPointEYhigh(j,sqrt(sumMCbandNoStat->GetErrorYhigh(j)*sumMCbandNoStat->GetErrorYhigh(j) + thisbincont*thisbincont));
                     sumMCband->SetPointEYhigh(j,sqrt(sumMCband->GetErrorYhigh(j)*sumMCband->GetErrorYhigh(j) + thisbincont*thisbincont));
-                    
                 }
                 else
                 {
@@ -1104,7 +1162,9 @@ void GoodPlot::addStackWithSumMC(MakeGoodPlot &thisMGP, TString thehist, int i, 
             //sumMCband->SetPointEYlow(j,sqrt(sumMCband->GetErrorYlow(j)*sumMCband->GetErrorYlow(j) + maxdown*maxdown));
             //sumMCband->SetPointEYhigh(j,maxup);
             //sumMCband->SetPointEYlow(j,maxdown);
-            
+            //sumMCband->SetPointEYhigh(j,1.3*sumMCband->GetErrorYhigh(j));
+            //sumMCband->SetPointEYlow(j,1.3*sumMCband->GetErrorYlow(j));
+
             
 
         

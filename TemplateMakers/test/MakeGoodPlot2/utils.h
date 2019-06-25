@@ -1,4 +1,4 @@
-const int numberOfSysts = 45; // change this when changing below ////// 45 // 35
+const int numberOfSysts = 47; // change this when changing below ////// 45 // 35 // 23???   note: min # is 1
 
 TString systint2str(int syst)
 {
@@ -27,12 +27,12 @@ TString systint2str(int syst)
     if (syst==20) return "LFSTATS1DOWN";
     if (syst==21) return "LFSTATS2UP";
     if (syst==22) return "LFSTATS2DOWN";
-    if (syst==23) return "PDFUP";
-    if (syst==24) return "PDFDOWN";
-    if (syst==25) return "MURUP";
-    if (syst==26) return "MURDOWN";
-    if (syst==27) return "MUFUP";
-    if (syst==28) return "MUFDOWN";
+    if (syst==23) return "PDFUP";                               // <--- shape-only
+    if (syst==24) return "PDFDOWN";                             // <--- shape-only
+    if (syst==25) return "MURUP";                               // <--- shape-only
+    if (syst==26) return "MURDOWN";                             // <--- shape-only
+    if (syst==27) return "MUFUP";                               // <--- shape-only
+    if (syst==28) return "MUFDOWN";                             // <--- shape-only
     if (syst==29) return "LEPIDUP";
     if (syst==30) return "LEPIDDOWN";
     if (syst==31) return "FRPT1"; // not considered
@@ -41,15 +41,16 @@ TString systint2str(int syst)
     if (syst==34) return "FRETA2"; // not considered
     if (syst==35) return "PFUP"; // not considered
     if (syst==36) return "PFDOWN"; // not considered
-    if (syst==37) return "PSISRUP";
-    if (syst==38) return "PSISRDOWN";
+    if (syst==37) return "PSISRUP";                             // <--- shape-only
+    if (syst==38) return "PSISRDOWN";                           // <--- shape-only
     if (syst==39) return "PSFSRUP"; // not considered
     if (syst==40) return "PSFSRDOWN";  // not considered
     if (syst==41) return "TRGUP";
     if (syst==42) return "TRGDOWN";
     if (syst==43) return "PUUP";
     if (syst==44) return "PUDOWN";        
-    
+    if (syst==45) return "ADHOCNJUP";
+    if (syst==46) return "ADHOCNJDOWN";
     
     cout << "Unspecified systematic!" << endl;
     return "";
@@ -379,4 +380,46 @@ int getComboSampInt(int sample)
     else return sample;
 }
     
-    
+double fillHistOverflowAware(TH1* h, double loc)
+{
+    // last bin with upper-edge xup EXCLUDED
+    double range_max = h->GetXaxis()->GetBinUpEdge(h->GetNbinsX());
+    if (loc<range_max) return loc;
+    else
+    {
+        double lowedge = h->GetXaxis()->GetBinLowEdge(h->GetNbinsX());
+        return (range_max+lowedge)/2.; // should work, except in case of very finely-grained hist or hist with very small range starting at a non-0 value
+    }
+    cout << "Something is very wrong. See utils.h." << endl;
+    return loc;
+}
+
+/*
+Generic function to find an element in vector and also its position.
+It returns a pair of bool & int i.e.
+ 
+bool : Represents if element is present in vector or not.
+int : Represents the index of element in vector if its found else -1
+ 
+*/
+template < typename T>
+std::pair<bool, int > findInVector(const std::vector<T>  & vecOfElements, const T  & element)
+{
+	std::pair<bool, int > result;
+ 
+	// Find given element in vector
+	auto it = std::find(vecOfElements.begin(), vecOfElements.end(), element);
+ 
+	if (it != vecOfElements.end())
+	{
+		result.second = distance(vecOfElements.begin(), it);
+		result.first = true;
+	}
+	else
+	{
+		result.first = false;
+		result.second = -1;
+	}
+ 
+	return result;
+}

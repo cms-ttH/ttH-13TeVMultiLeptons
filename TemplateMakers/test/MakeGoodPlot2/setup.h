@@ -49,7 +49,7 @@ void MakeGoodPlot::setup()
     
     // standard MC samps
     sample_names[0] = "test";
-    sample_names[1] = "t#bar{t}H"; //"t#bar{t}H(125)"; "t#bar{t}H (H#rightarrownon-bb)";
+    sample_names[1] = "ttH"; //"t#bar{t}H"; "t#bar{t}H(125)"; "t#bar{t}H (H#rightarrownon-bb)";
     //sample_names[0] = "HIG-18-019";
     //sample_names[1] = "This analysis"; //"t#bar{t}H(125)"; "t#bar{t}H (H#rightarrownon-bb)";    
     
@@ -59,8 +59,8 @@ void MakeGoodPlot::setup()
     sample_names[5] = "t#bar{t}+Jets"; 
     sample_names[6] = "DY"; // Z+Jets
     sample_names[7] = "W+Jets"; 
-    sample_names[8] = "t#bar{t}W"; 
-    sample_names[9] = "t#bar{t}Z"; 
+    sample_names[8] = "ttW"; // "t#bar{t}W"
+    sample_names[9] = "ttZ"; // "t#bar{t}Z"
     sample_names[10] = "WZ"; 
     sample_names[11] = "ZZ"; 
     sample_names[12] = "WW";
@@ -77,12 +77,12 @@ void MakeGoodPlot::setup()
     sample_names[23] = "WWZ";
     sample_names[24] = "WZZ";
     sample_names[25] = "ZZZ";
-    sample_names[26] = "t/#bar{t}+Zq";
+    sample_names[26] = "tZq"; //"t/#bar{t}+Zq"
     sample_names[27] = "4 Top";
     sample_names[28] = "t#bar{t}+WW";
     sample_names[29] = "t#bar{t}+WZ";
     sample_names[30] = "Convs";
-    sample_names[31] = "t/#bar{t}+Hq";
+    sample_names[31] = "tHq"; // "t/#bar{t}+Hq"
     
     sample_names[40] = "ttH:cbW";
     sample_names[41] = "ttH:cpQ3";  
@@ -385,7 +385,7 @@ void MakeGoodPlot::setup()
     set_plot_style(); // see nicepalette.h
     get_rate_info();
     
-    groupsamples = true;
+    //groupsamples = true;
     TH1::SetDefaultSumw2();
     
 }
