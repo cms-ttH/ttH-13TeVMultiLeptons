@@ -14,6 +14,8 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) ://Anything t
     parse_params();
   
     alltriggerstostudy = HLTInfo();
+    
+    if (debug) cout << "inside ctor" << endl;
   
     // these are all the pat collections...
     muons_token_ = consumes<pat::MuonCollection>(constructparams.getParameter<edm::InputTag>("muons"));
@@ -35,7 +37,11 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) ://Anything t
 
     // pdf weights
     // lheRunToken_ = consumes<LHERunInfoProduct, edm::InRun>(edm::InputTag("externalLHEProducer"));
-    consumes<LHERunInfoProduct, edm::InRun>(edm::InputTag("externalLHEProducer"));
+    consumes<LHERunInfoProduct, edm::InRun>(edm::InputTag("externalLHEProducer")); // commented this out to run over data. Is it actually needed for MC (doesn't seem to do anything)???
+    
+    prefweight_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProb"));
+    prefweightup_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProbUp"));
+    prefweightdown_token = consumes< double >(edm::InputTag("prefiringweight:NonPrefiringProbDown"));
 
 }
 
@@ -43,6 +49,8 @@ OSTwoLepAna::~OSTwoLepAna(){} //Anything that needs to be done at destruction ti
 
 void OSTwoLepAna::beginJob()
 {
+    if (debug) cout << "inside beginjob" << endl;
+    
     // job setup  
     SetUp(analysisYear, -9999, analysisType::DIL, isData);
 
@@ -81,6 +89,7 @@ void OSTwoLepAna::beginJob()
 
 void OSTwoLepAna::endJob() {
 
+    if (debug) cout << "inside endjob" << endl;
     //cout << "Num Events processed " << numEvents << endl;
     //     << "Passed cuts " << numEventsPassCuts << endl;
     //     << "Failed cuts " << numEventsFailCuts << endl;  
@@ -112,14 +121,10 @@ void OSTwoLepAna::endJob() {
 
 void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetup) // this function is called once at each event
 {
-    // if ( event.id().event() != 1692766 ) 
-    //   {
-    //     if (debug) cout << "eventA: " << event.id().event() << endl;
-    //     return;
-    //   }
   
     // analysis goes here
-    if (debug) cout << "eventB: " << event.id().event() << endl;
+    if (debug) cout << "inside analyze fn..." << endl;
+    if (debug) cout << "event: " << event.id().event() << endl;
     clock_t startTime = clock();
     eventcount++;
     SetupOptions(event); // chgd
@@ -142,6 +147,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         packedParticles = get_collection(event, genPackedParticles_token_);
         genjets = get_collection(event, genJet_token_);
     }
+
+    // bandaid for tllq, ttll. Should comment out otherwise!!!
+    for (const auto & gp : *prunedParticles) if (abs(gp.pdgId())==25) return;                           // <<<------------------------------------------------ !!!!!!!!!!!!!!!!!
 
     ///////////////////
     ////////
@@ -169,8 +177,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
   
     edm::Handle<GenEventInfoProduct> GenInfo;
     edm::Handle<LHEEventProduct> LHEInfo;
+    
+    if (debug) cout << "before !isData" << endl;
+    
     if (!isData)
     {
+        if (debug) cout << "inside MC-only area" << endl;
+        
         event.getByToken(genInfo_token_,GenInfo);
         event.getByToken(lheInfo_token_,LHEInfo);
 
@@ -179,6 +192,18 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
 	    mcwgt_intree = mcwgt_intree<0. ? -1. : 1.;
 
         originalXWGTUP_intree = LHEInfo->originalXWGTUP();  // original cross-section
+        
+        // https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopModGen#Event_Generation
+        if (GenInfo->weights().size()==14) // test if PS weights present
+        {
+            std::vector<double> genwgtinfo = GenInfo->weights();
+            preshowerISRweightUp_intree = genwgtinfo[2]/originalXWGTUP_intree;
+            preshowerFSRweightUp_intree = genwgtinfo[3]/originalXWGTUP_intree;
+            preshowerISRweightDown_intree = genwgtinfo[4]/originalXWGTUP_intree;
+            preshowerFSRweightDown_intree = genwgtinfo[5]/originalXWGTUP_intree;
+        }
+        
+        
         // Add EFT weights
         for (auto wgt_info: LHEInfo->weights())
         {
@@ -191,11 +216,13 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             // std::cout << "==>" << wgt_info.id << std::endl;
             
             // "regular" (actually just EFT? Or madgraph?):
-            if ( LHEwgtstr.find("1006")!=std::string::npos ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
-            if ( LHEwgtstr.find("1011")!=std::string::npos ) muRWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
-        
+            //if ( LHEwgtstr.find("1006")!=std::string::npos ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree; // regular
+            if ( LHEwgtstr.find("1007")!=std::string::npos ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree; // just our tHq. .. And now, tllq?
+            //if ( LHEwgtstr.find("1011")!=std::string::npos ) muRWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree; // regular
+            if ( LHEwgtstr.find("1012")!=std::string::npos ) muRWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree; // just our tHq (and now, tllq?)
             if ( LHEwgtstr.find("1016")!=std::string::npos ) muFWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
             if ( LHEwgtstr.find("1031")!=std::string::npos ) muFWeightDown_intree = wgt_info.wgt / originalXWGTUP_intree;
+            
             
             // at least some powheg, amcatnlo central samples (translation: most samples):
 //             if ( LHEwgtstr.find("1004")!=std::string::npos ) muRWeightUp_intree = wgt_info.wgt / originalXWGTUP_intree;
@@ -220,7 +247,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         LHAPDF::PDFSet nnpdfSet("NNPDF31_nnlo_hessian_pdfas"); // NNPDF30_nlo_as_0118 = central (powheg-only?) samples    //NNPDF31_nlo_hessian_pdfas  = EFT samples // NNPDF31_nnlo_hessian_pdfas = newer EFT samps, amcatnlo, some central powheg samples
 
         // NNPDF30_nlo_as_0118: besides ttH powheg: ?  
-        // NNPDF31_nnlo_hessian_pdfas: wz, all tribosons, ttGJets, 
+        // NNPDF31_nnlo_hessian_pdfas: wz, all tribosons, ttGJets, the central PS sig samps
         // NNPDF31_nnlo_hessian_pdfas but choose "hessian" option below: single (anti-)top, zz, ww,
         //
 
@@ -241,9 +268,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             //cout << wgtstr << endl;
             std::size_t foundstr = wgtstr.find("rwgt");
             if ( foundstr!=std::string::npos ) continue; // skip EFT stuff here
-
-            ////
+            if (wgtstr=="dummy_point") continue;
+            //cout << "mcWeights[i].id, " << endl;
+            //cout << mcWeights[i].id << endl;
             int idInt = stoi(mcWeights[i].id);
+            //cout << "after stoi, i=" << i << endl;
             if (pdfIdMap_.find(idInt) != pdfIdMap_.end())
             {
                 int setId = pdfIdMap_[idInt];
@@ -283,6 +312,23 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         // add to sums
         nnpdfWeightSumUp += weightUp*mcwgt_intree;
         nnpdfWeightSumDown += weightDown*mcwgt_intree;
+        
+        
+        edm::Handle< double > theprefweight;
+        event.getByToken(prefweight_token, theprefweight ) ;
+
+        edm::Handle< double > theprefweightup;
+        event.getByToken(prefweightup_token, theprefweightup ) ;
+
+        edm::Handle< double > theprefweightdown;
+        event.getByToken(prefweightdown_token, theprefweightdown ) ;
+
+        prefiringweight_intree =(*theprefweight);
+        prefiringweightup_intree =(*theprefweightup);
+        prefiringweightdown_intree =(*theprefweightdown);
+
+
+
 
     }
 
@@ -295,7 +341,43 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     ///////////////////////////
 
     // count number of weighted mc events we started with:
-    numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+    
+    
+    
+//     EFTrwgt183_ctW_0.0_ctp_0.0_cpQM_0.0_  cpt_0.0   _cQei_0.0_ctZ_0.0_cQlMi_0.0_cQl3i_0.0_ctG_0.0_ctlTi_0.0_cbW_0.0_cpQ3_0.0_ctei_0.0   _ctli_0.0   _ctlSi_0.0_cptb_0.0
+//     EFTrwgt183_ctW_0.0_ctp_0.0_cpQM_0.0_  ctli_0.0   _cQei_0.0_ctZ_0.0_cQlMi_0.0_cQl3i_0.0_ctG_0.0_ctlTi_0.0_cbW_0.0_cpQ3_0.0_ctei_0.0  _cpt_0.0   _ctlSi_0.0_cptb_0.0
+// 
+//     std::string smpoint = "EFTrwgt183_ctW_0.0_ctp_0.0_cpQM_0.0_ctli_0.0_cQei_0.0_ctZ_0.0_cQlMi_0.0_cQl3i_0.0_ctG_0.0_ctlTi_0.0_cbW_0.0_cpQ3_0.0_ctei_0.0_cpt_0.0_ctlSi_0.0_cptb_0.0";    
+    
+    
+    string smpoint = "";
+    
+    for (auto thing : eftwgts_intree)
+    {
+        // the order of the EFT operators in the string can vary, so can only go by the first piece
+        
+        //cout << thing.first << " : " << thing.second << endl;
+        std::size_t found = thing.first.find("EFTrwgt183");
+        if (found!=std::string::npos)
+        {
+            smpoint = thing.first;
+            break;
+        }
+        
+    }
+
+    //if (eftwgts_intree.find(smpoint) == eftwgts_intree.end())
+    if (smpoint == "")
+    {
+        numInitialWeightedMCevents->Fill(1,mcwgt_intree);
+    }
+    else
+    {   
+        
+        // for EFT samples, fill this histogram with the SM-reweighted events, in order to make life easier later when normalizing to SM expectation
+        // ideally, would be less confusing (and possibly helpful?) to just set mcwgt to this value, but would have to change some things downstream...
+        numInitialWeightedMCevents->Fill(1,eftwgts_intree[smpoint]);
+    }
 
     int numpvs =                GetVertices(event);
     if (numpvs<1) return; // skips event
@@ -326,11 +408,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     ///
     ////////
 
-    double min_ele_pt = 15.; // 7.; // lowered for studies
+    double min_ele_pt = 15.; // 7 = lowered for studies // set to 15 for main production!!!!!!
 
     vecPatElectron selectedElectrons_preselected = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronPreselection );    //miniAODhelper.
     //vecPatElectron selectedElectrons_loose = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronLoose ); //miniAODhelper. // doesn't exist yet
-    vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, min_ele_pt, electronID::electronRaw ); //miniAODhelper.
+    vecPatElectron selectedElectrons_raw = GetSelectedElectrons( *electrons, 0, electronID::electronRaw ); //miniAODhelper.
     //vecPatElectron selectedElectrons_tight = GetSelectedElectrons( *electrons, 10., electronID::electronTight );
   
     /////////
@@ -339,11 +421,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     ///
     ////////
 
-    double min_mu_pt = 10.; // 5.; // lowered for studies
+    double min_mu_pt = 10.; // 5 = lowered for studies // set to 10 for main production!!!!!
 
     vecPatMuon selectedMuons_preselected = GetSelectedMuons( *muons, min_mu_pt, muonID::muonPreselection );
     //vecPatMuon selectedMuons_loose = GetSelectedMuons( *muons, min_mu_pt, muonID::muonLoose );
-    vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, min_mu_pt, muonID::muonRaw );
+    vecPatMuon selectedMuons_raw = GetSelectedMuons( *muons, 0, muonID::muonRaw );
     //vecPatMuon selectedMuons_tight = GetSelectedMuons( *muons, 10., muonID::muonTight );
   
     /////////
@@ -395,7 +477,10 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     bool skim_statement = true;
     //if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size())>=2;
     //if (skim) skim_statement = (selectedElectrons_tight.size()+selectedMuons_tight.size())>0;
-    if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size())>0;
+    if (skim) skim_statement = (selectedMuons_preselected.size()+selectedElectrons_preselected.size())>1;
+    
+    
+    if (debug) cout << "before skim" << endl;
     
     if ( skim_statement )
     {
@@ -457,6 +542,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         vecPatJet selectedJets_JECup_preselected = GetSelectedJets(cleaned_rawJets_JECup, 25., 2.4, jetID::jetTight, '-' );        // 25., 2.4, jetID::jetPU, '-'
         vecPatJet selectedJets_JECdown_preselected = GetSelectedJets(cleaned_rawJets_JECdown, 25., 2.4, jetID::jetTight, '-' );    // 25., 2.4, jetID::jetPU, '-'
 
+        vecPatJet selectedJets_preselected_noTauClean = GetSelectedJets(correctedRawJets, 25., 2.4, jetID::jetTight, '-' );                    // 25., 2.4, jetID::jetPU, '-'
+        vecPatJet selectedJets_JECup_preselected_noTauClean = GetSelectedJets(correctedRawJets_JECup, 25., 2.4, jetID::jetTight, '-' );        // 25., 2.4, jetID::jetPU, '-'
+        vecPatJet selectedJets_JECdown_preselected_noTauClean = GetSelectedJets(correctedRawJets_JECdown, 25., 2.4, jetID::jetTight, '-' );    // 25., 2.4, jetID::jetPU, '-'
+
+
         /////////
         ///
         /// Filling final selection PAT collections
@@ -468,17 +558,40 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
             // Do we really need/want this option? Yes.
             selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_fakeable,0.4);
             selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_fakeable,0.4);
+            selectedJets_preselected_noTauClean = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected_noTauClean,selectedMuons_fakeable,0.4);            
+            selectedJets_preselected_noTauClean = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected_noTauClean,selectedElectrons_fakeable,0.4);
+            
+            selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECup_preselected,selectedMuons_fakeable,0.4);
+            selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected,selectedElectrons_fakeable,0.4);
+            selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECdown_preselected,selectedMuons_fakeable,0.4);
+            selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECdown_preselected,selectedElectrons_fakeable,0.4);
+            selectedJets_JECup_preselected_noTauClean = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECup_preselected_noTauClean,selectedMuons_fakeable,0.4);
+            selectedJets_JECup_preselected_noTauClean = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected_noTauClean,selectedElectrons_fakeable,0.4);
+            selectedJets_JECdown_preselected_noTauClean = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECdown_preselected_noTauClean,selectedMuons_fakeable,0.4);
+            selectedJets_JECdown_preselected_noTauClean = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECdown_preselected_noTauClean,selectedElectrons_fakeable,0.4);            
+            
         }
         else
         {
             selectedJets_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected,selectedMuons_preselected,0.4);
             selectedJets_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected,selectedElectrons_preselected,0.4);
+            selectedJets_preselected_noTauClean = cleanObjects<pat::Jet,pat::Muon>(selectedJets_preselected_noTauClean,selectedMuons_preselected,0.4);            
+            selectedJets_preselected_noTauClean = cleanObjects<pat::Jet,pat::Electron>(selectedJets_preselected_noTauClean,selectedElectrons_preselected,0.4);
+            
+            selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECup_preselected,selectedMuons_preselected,0.4);
+            selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected,selectedElectrons_preselected,0.4);
+            selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECdown_preselected,selectedMuons_preselected,0.4);
+            selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECdown_preselected,selectedElectrons_preselected,0.4);
+            selectedJets_JECup_preselected_noTauClean = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECup_preselected_noTauClean,selectedMuons_preselected,0.4);
+            selectedJets_JECup_preselected_noTauClean = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected_noTauClean,selectedElectrons_preselected,0.4);
+            selectedJets_JECdown_preselected_noTauClean = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECdown_preselected_noTauClean,selectedMuons_preselected,0.4);
+            selectedJets_JECdown_preselected_noTauClean = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECdown_preselected_noTauClean,selectedElectrons_preselected,0.4); 
+            
         }
 
-        selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECup_preselected,selectedMuons_fakeable,0.4);
-        selectedJets_JECup_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECup_preselected,selectedElectrons_fakeable,0.4);
-        selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Muon>(selectedJets_JECdown_preselected,selectedMuons_fakeable,0.4);
-        selectedJets_JECdown_preselected = cleanObjects<pat::Jet,pat::Electron>(selectedJets_JECdown_preselected,selectedElectrons_fakeable,0.4);
+
+
+
 
         vecPatJet selectedJets_loose = cleanObjects<pat::Jet,pat::Muon>(correctedRawJets,selectedMuons_tight,0.4);
         selectedJets_loose = cleanObjects<pat::Jet,pat::Electron>(selectedJets_loose,selectedElectrons_tight,0.4);
@@ -562,6 +675,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         vector<ttH::Jet> preselected_jets = GetCollection(selectedJets_preselected);
         vector<ttH::Jet> preselected_jets_JECup = GetCollection(selectedJets_JECup_preselected);
         vector<ttH::Jet> preselected_jets_JECdown = GetCollection(selectedJets_JECdown_preselected);
+
+        vector<ttH::Jet> preselected_jets_noTauClean = GetCollection(selectedJets_preselected_noTauClean);
+        vector<ttH::Jet> preselected_jets_JECup_noTauClean = GetCollection(selectedJets_JECup_preselected_noTauClean);
+        vector<ttH::Jet> preselected_jets_JECdown_noTauClean = GetCollection(selectedJets_JECdown_preselected_noTauClean);
+        
         vector<ttH::Jet> preselected_jets_uncor = preselected_jets; // temporary
         
         vector<ttH::MET> theMET = GetCollection(mets);
@@ -642,6 +760,11 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         preselected_jets_intree = preselected_jets;
         preselected_jets_JECup_intree = preselected_jets_JECup;
         preselected_jets_JECdown_intree = preselected_jets_JECdown;
+        
+        preselected_jets_noTauClean_intree = preselected_jets_noTauClean;
+        preselected_jets_JECup_noTauClean_intree = preselected_jets_JECup_noTauClean;
+        preselected_jets_JECdown_noTauClean_intree = preselected_jets_JECdown_noTauClean;        
+        
         preselected_jets_uncor_intree = preselected_jets_uncor;
         
         met_intree = theMET;
@@ -664,6 +787,7 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
         /////////////////////////////////
         summaryTree->Fill();// fill tree;
         /////////////////////////////////
+        if (debug) cout << "end of analyze fn" << endl;
     } //end skim if statement
 } // end event loop
 
@@ -672,7 +796,7 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     eventcount = 0;
 
     // This has to be done here (not at beginjob):
-
+    if (debug) cout << "inside beginRun" << endl;
     bool changed = true;
     if (hltConfig_.init(run, evsetup, hltTag, changed)) std::cout << "HLT config with process name " << hltTag << " successfully extracted" << std::endl;
 
@@ -747,82 +871,134 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
     {
         if (debug) cout << myTriggernames[trigit] << endl;
     
-    for (unsigned int trigit2=0; trigit2<hlt_trigstofind.size(); trigit2++)
-    {
-        std::size_t found = myTriggernames[trigit].find(hlt_trigstofind[trigit2]);
-        if (found!=std::string::npos)
+        for (unsigned int trigit2=0; trigit2<hlt_trigstofind.size(); trigit2++)
         {
-            hlt_alltrigs.push_back(myTriggernames[trigit]);
+            std::size_t found = myTriggernames[trigit].find(hlt_trigstofind[trigit2]);
+            if (found!=std::string::npos)
+            {
+                hlt_alltrigs.push_back(myTriggernames[trigit]);
+            }
         }
     }
-}
 
-    /////////////////
-    //// pdf weights mapping
-    /////////////////
-    edm::Handle<LHERunInfoProduct> runInfo;
-    //   run.getByLabel(lheRunToken_, runInfo); //getByToken not work
-    run.getByLabel("externalLHEProducer", runInfo);
-
-    // was "default" (prob. don't use):
-//     std::string weightTag = "initrwgt";
-//     std::string startStr = "<weight id="; // "&lt;weight id="
-//     std::string setStr = "> PDF set = ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
-//     std::string endStr = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
-    
-    // "hessian":
-//     std::string weightTag = "initrwgt";
-//     std::string startStr = "<weight id="; // "&lt;weight id="
-//     std::string setStr = "> lhapdf=";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
-//     std::string endStr = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
-
-    // stuff that uses NNPDF31_nnlo_hessian_pdfas (amcatnlo, ... ?). basically everythin except EFT or the few that use the "hessian" option
-//     std::string weightTag = "initrwgt";
-//     std::string startStr = "<weight id="; // "&lt;weight id="
-//     std::string setStr = "> PDF=  ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
-//     std::string endStr = "NNPDF31_nnlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
-    
-    // ****newer EFT samps****
-    std::string weightTag = "initrwgt";
-    std::string startStr = "&lt;weight id="; // "&lt;weight id="
-    std::string setStr = " MUR=\"1.0\" MUF=\"1.0\" PDF=\"";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
-    std::string endStr = " &gt; PDF=306000"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
-
-
-    for (std::vector<LHERunInfoProduct::Header>::const_iterator it = runInfo->headers_begin(); it != runInfo->headers_end(); it++)
+    if (!isData)
     {
-        if (it->tag() != weightTag)
-	    {
-            continue;
-	    }
+        /////////////////
+        //// pdf weights mapping
+        /////////////////
+        edm::Handle<LHERunInfoProduct> runInfo;
+        //   run.getByLabel(lheRunToken_, runInfo); //getByToken not work
+        run.getByLabel("externalLHEProducer", runInfo);
 
-	    std::vector<std::string> lines = it->lines();
-        for (size_t i = 0; i < lines.size(); i++)
-	    {
-	        std::cout << lines[i] << std::endl;
-            size_t startPos = lines[i].find(startStr);
-            size_t setPos = lines[i].find(setStr);
-            size_t endPos = lines[i].find(endStr);
-            cout << (startPos == std::string::npos) << endl;
-            cout << (setPos == std::string::npos) << endl;
-            cout << (endPos == std::string::npos) << endl;
-            if (startPos == std::string::npos || setPos == std::string::npos || endPos == std::string::npos)
-	        {
+        // was "default" (prob. don't use):
+    //     std::string weightTag = "initrwgt";
+    //     std::string startStr = "<weight id="; // "&lt;weight id="
+    //     std::string setStr = "> PDF set = ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+    //     std::string endStr = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+    
+        // group "b"
+        // "hessian":
+    //     std::string weightTag = "initrwgt";
+    //     std::string startStr = "<weight id="; // "&lt;weight id="
+    //     std::string setStr = "> lhapdf=";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+    //     std::string endStr = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+
+        // group "a"
+        // stuff that uses NNPDF31_nnlo_hessian_pdfas (amcatnlo, ... ?). basically everythin except EFT or the few that use the "hessian" option
+//         std::string weightTag = "initrwgt";
+//         std::string startStr = "<weight id="; // "&lt;weight id="
+//         std::string setStr = "> PDF=  ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+//         std::string endStr = "NNPDF31_nnlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+    
+        // group "c"
+        // ****newer EFT samps****
+       std::string weightTag = "initrwgt";
+       std::string startStr = "&lt;weight id="; // "&lt;weight id="
+       std::string setStr = " MUR=\"1.0\" MUF=\"1.0\" PDF=\"";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+       std::string endStr = " &gt; PDF=306000"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+
+        if (debug) cout << "before loop over pdf stuff in beginRun" << endl;
+        
+        for (std::vector<LHERunInfoProduct::Header>::const_iterator it = runInfo->headers_begin(); it != runInfo->headers_end(); it++)
+        {
+            if (it->tag() != weightTag)
+            {
+                //cout << it->tag() << endl;
                 continue;
-	        }
-	        std::string weightId = lines[i].substr(startPos + startStr.size() + 1, setPos - startPos - startStr.size() - 2); // this has changed, modify it???
-	        std::string setId = lines[i].substr(setPos + setStr.size(), endPos - setPos - setStr.size() - 1); // this has changed, modify it???
-	        std::cout << weightId << " : " << setId << std::endl;
-            try
-	        {
-                pdfIdMap_[stoi(weightId)] = stoi(setId);
-	        }
-            catch (...)
-	        {
-		        std::cerr << "error while parsing the lhe run xml header: ";
-		        std::cerr << "cannot interpret as ints:" << weightId << " -> " << setId << std::endl;
-	        }
-	    }
+            }
+
+            std::vector<std::string> lines = it->lines();
+            for (size_t i = 0; i < lines.size(); i++)
+            {
+                std::cout << lines[i] << std::endl;
+                size_t startPos = lines[i].find(startStr);
+                size_t setPos = lines[i].find(setStr);
+                size_t endPos = lines[i].find(endStr);
+                cout << (startPos == std::string::npos) << endl;
+                cout << (setPos == std::string::npos) << endl;
+                cout << (endPos == std::string::npos) << endl;
+                if (startPos == std::string::npos || setPos == std::string::npos || endPos == std::string::npos)
+                {
+                    continue;
+                }
+                std::string weightId = lines[i].substr(startPos + startStr.size() + 1, setPos - startPos - startStr.size() - 2); // this has changed, modify it???
+                std::string setId = lines[i].substr(setPos + setStr.size(), endPos - setPos - setStr.size() - 1); // this has changed, modify it???
+                std::cout << weightId << " : " << setId << std::endl;
+                try
+                {
+                    pdfIdMap_[stoi(weightId)] = stoi(setId);
+                }
+                catch (...)
+                {
+                    std::cerr << "error while parsing the lhe run xml header: ";
+                    std::cerr << "cannot interpret as ints:" << weightId << " -> " << setId << std::endl;
+                }
+            }
+        }
+    
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // PS weights info
+    
+    //     edm::Handle<GenRunInfoProduct> grunInfo;
+    //     run.getByLabel("generator", grunInfo);
+    //     
+    //     for (std::vector<GenRunInfoProduct::Header>::const_iterator it = grunInfo->headers_begin(); it != grunInfo->headers_end(); it++)
+    //     {
+    // //         if (it->tag() != weightTag)
+    // // 	    {
+    // //             continue;
+    // // 	    }
+    // 
+    // 	    std::vector<std::string> lines = it->lines();
+    //         for (size_t i = 0; i < lines.size(); i++)
+    // 	    {
+    // 	        std::cout << lines[i] << std::endl;
+    //             // size_t startPos = lines[i].find(startStr);
+    // //             size_t setPos = lines[i].find(setStr);
+    // //             size_t endPos = lines[i].find(endStr);
+    // //             cout << (startPos == std::string::npos) << endl;
+    // //             cout << (setPos == std::string::npos) << endl;
+    // //             cout << (endPos == std::string::npos) << endl;
+    // //             if (startPos == std::string::npos || setPos == std::string::npos || endPos == std::string::npos)
+    // // 	        {
+    // //                 continue;
+    // // 	        }
+    // // 	        std::string weightId = lines[i].substr(startPos + startStr.size() + 1, setPos - startPos - startStr.size() - 2); // this has changed, modify it???
+    // // 	        std::string setId = lines[i].substr(setPos + setStr.size(), endPos - setPos - setStr.size() - 1); // this has changed, modify it???
+    // // 	        std::cout << weightId << " : " << setId << std::endl;
+    // //             try
+    // // 	        {
+    // //                 pdfIdMap_[stoi(weightId)] = stoi(setId);
+    // // 	        }
+    // //             catch (...)
+    // // 	        {
+    // // 		        std::cerr << "error while parsing the lhe run xml header: ";
+    // // 		        std::cerr << "cannot interpret as ints:" << weightId << " -> " << setId << std::endl;
+    // // 	        }
+    // 	    }
+    //     }
+    
+    
     }
 
 

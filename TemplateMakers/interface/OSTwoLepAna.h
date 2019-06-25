@@ -7,6 +7,7 @@
 #include "LHAPDF/LHAPDF.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 
 class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 {
@@ -106,7 +107,11 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
         vector<ttH::Jet> preselected_jets_JECup_intree;
         vector<ttH::Jet> preselected_jets_JECdown_intree;
         vector<ttH::Jet> preselected_jets_uncor_intree;
-                
+        vector<ttH::Jet> preselected_jets_noTauClean_intree;
+        vector<ttH::Jet> preselected_jets_JECup_noTauClean_intree;
+        vector<ttH::Jet> preselected_jets_JECdown_noTauClean_intree;
+
+                        
         vector<ttH::MET> met_intree;
         vector<ttH::GenParticle> pruned_genParticles_intree;
         vector<ttH::GenParticle> packed_genParticles_intree;
@@ -130,7 +135,20 @@ class OSTwoLepAna: public MultileptonAna, public edm::EDAnalyzer
 
         double muFWeightUp_intree;
         double muFWeightDown_intree;
+        
+        edm::EDGetTokenT< double > prefweight_token;
+        edm::EDGetTokenT< double > prefweightup_token;
+        edm::EDGetTokenT< double > prefweightdown_token;
+        
+        double prefiringweight_intree;
+        double prefiringweightup_intree;
+        double prefiringweightdown_intree;
+        double preshowerISRweightUp_intree;
+        double preshowerFSRweightUp_intree;
+        double preshowerISRweightDown_intree;
+        double preshowerFSRweightDown_intree;
 
+        
         std::auto_ptr<JetCorrectionUncertainty> junc_;//charlie
 
         std::unordered_map<std::string,double> eftwgts_intree;
@@ -186,6 +204,9 @@ void OSTwoLepAna::tree_add_branches()
     summaryTree->Branch("preselected_jets", &preselected_jets_intree);
     summaryTree->Branch("preselected_jets_JECup", &preselected_jets_JECup_intree);
     summaryTree->Branch("preselected_jets_JECdown", &preselected_jets_JECdown_intree);
+    summaryTree->Branch("preselected_jets_noTauClean", &preselected_jets_noTauClean_intree);
+    summaryTree->Branch("preselected_jets_JECup_noTauClean", &preselected_jets_JECup_noTauClean_intree);
+    summaryTree->Branch("preselected_jets_JECdown_noTauClean", &preselected_jets_JECdown_noTauClean_intree);    
     //summaryTree->Branch("preselected_jets_uncor", &preselected_jets_uncor_intree);
 
     summaryTree->Branch("met", &met_intree);
@@ -205,6 +226,16 @@ void OSTwoLepAna::tree_add_branches()
 
     summaryTree->Branch("muFWeightUp",&muFWeightUp_intree);
     summaryTree->Branch("muFWeightDown",&muFWeightDown_intree);
+
+    summaryTree->Branch("prefiringweight",&prefiringweight_intree);
+    summaryTree->Branch("prefiringweightup",&prefiringweightup_intree);
+    summaryTree->Branch("prefiringweightdown",&prefiringweightdown_intree);
+
+    summaryTree->Branch("preshowerISRweightUp",&preshowerISRweightUp_intree);
+    summaryTree->Branch("preshowerFSRweightUp",&preshowerFSRweightUp_intree);
+    summaryTree->Branch("preshowerISRweightDown",&preshowerISRweightDown_intree);
+    summaryTree->Branch("preshowerFSRweightDown",&preshowerFSRweightDown_intree);
+
 
 }
 
@@ -247,6 +278,10 @@ void OSTwoLepAna::initialize_variables()
     preselected_jets_JECdown_intree.clear();
     preselected_jets_uncor_intree.clear();
     
+    preselected_jets_noTauClean_intree.clear();
+    preselected_jets_JECup_noTauClean_intree.clear();
+    preselected_jets_JECdown_noTauClean_intree.clear();    
+    
     met_intree.clear();
     pruned_genParticles_intree.clear();
     packed_genParticles_intree.clear();
@@ -268,5 +303,15 @@ void OSTwoLepAna::initialize_variables()
 
     muFWeightUp_intree = 1.;
     muFWeightDown_intree = 1.;
+    
+    prefiringweight_intree = 1.;
+    prefiringweightup_intree = 1.;
+    prefiringweightdown_intree = 1.;
+    
+    preshowerISRweightUp_intree = 1.;
+    preshowerFSRweightUp_intree = 1.;
+    preshowerISRweightDown_intree = 1.;
+    preshowerFSRweightDown_intree = 1.;
+
 
 }

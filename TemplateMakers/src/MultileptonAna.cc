@@ -32,6 +32,7 @@ void MultileptonAna::parse_params()
 {
 
   setupoptionsparams = 	entire_pset.getParameter<edm::ParameterSet> ("setupoptions");
+  isData = setupoptionsparams.getParameter<bool> ("isdata");
   triggerparams = 	entire_pset.getParameter<edm::ParameterSet> ("triggers");
   jetparams = 		entire_pset.getParameter<edm::ParameterSet> ("jets");
   subjetparams = 		entire_pset.getParameter<edm::ParameterSet> ("fatjets");
@@ -54,7 +55,7 @@ void MultileptonAna::SetupOptions (const edm::Event& event)
  	
    	rho = *rhoHandle;
 	sampleName = setupoptionsparams.getParameter<string> ("sample");
-	isData = setupoptionsparams.getParameter<bool> ("isdata");
+	//isData = setupoptionsparams.getParameter<bool> ("isdata");
 
 }
 vstring MultileptonAna::HLTInfo ()
