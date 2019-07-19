@@ -88,7 +88,7 @@ if (not isdata):
 #     mysamples.append('ttH')
 #     mysamples.append('ttW')
 #     mysamples.append('ttZ')
-#     mysamples.append('tZq')
+#    mysamples.append('tZq')
 #     mysamples.append('tHq')
 
 #   #  ## mysamples.append('ttWW')
@@ -142,11 +142,11 @@ if (not isdata):
 #     mysamples.append('ttlnu_ctW')
 #     mysamples.append('ttlnu_ctZ')
     
-    mysamples.append('ttH_multidim')
-    #mysamples.append('ttlnu_multidim')
-    #mysamples.append('ttll_multidim')
-    #mysamples.append('tllq_multidim')
-    #mysamples.append('tHq_multidim')
+#     mysamples.append('ttH_multidim')
+#     mysamples.append('ttlnu_multidim')
+     mysamples.append('ttll_multidim')
+#     mysamples.append('tllq_multidim')
+#     mysamples.append('tHq_multidim')
     
     
     #mysamples.append('ttlnu_no_rewgt_1Jet')

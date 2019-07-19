@@ -9,7 +9,7 @@ void MakeGoodPlot::standard_plots()
     vector<TString> cats;
     vector<std::pair<TString,int>> quants;
 
-    bool sr = false;                                    //// <<-------------
+    bool sr = true;                                    //// <<-------------
     
     bool scaleFromFits = sr;
     
@@ -337,7 +337,10 @@ void MakeGoodPlot::standard_plots()
     //         cout << " & " << std::fixed << std::setprecision(2) << canvect[j].first->sumSingleTop->Integral();
     //     }        
     //     cout << " \\\\ " << endl;    
-    
+        
+        std::vector<std::map<int,double>> ylds = {{{-1,0.}},{{-1,0.}},{{-1,0.}}}; // assumes 3 cats at most
+        std::vector<std::map<int,double>> ylds_unc = {{{-1,0.}},{{-1,0.}},{{-1,0.}}}; // assumes 3 cats at most
+            
         if (!groupsamples)
         {
             for (int i=0; i<numsamples; i++)
@@ -359,6 +362,8 @@ void MakeGoodPlot::standard_plots()
                         
                         //cout << " & " << std::fixed << std::setprecision(2) << ((TH1*)canvect[j].first->thestack->GetHists()->At(i))->Integral(); // Oh Yeah. Ridiculous index + pointer achievement unlocked
                         cout << " & " << std::fixed << std::setprecision(2) << integral << " +/- " << error; 
+                        if (!sr) ylds[j][samples[i]] = integral;
+                        if (!sr) ylds_unc[j][samples[i]] = error;
                     }
                     cout << " \\\\ " << endl;
                 }
@@ -366,65 +371,101 @@ void MakeGoodPlot::standard_plots()
         }
         cout << "\\hline" << endl;
 
-        cout << "Sum Signal";
-        for (int j=0; j<canvect.size(); j++)
-        {
-            double sumsig = ((TH1*)canvect[j].first->thestack->GetStack()->Last())->Integral() - ((TH1*)canvect[j].first->thebackstack->GetStack()->Last())->Integral();
-            cout << " & " << std::fixed << std::setprecision(2) << sumsig;
-        }
-        cout << " \\\\ " << endl;
 
-    
-        cout << "Sum Background";
-        for (int j=0; j<canvect.size(); j++)
+
+
+
+//         cout << "Sum Signal";
+//         for (int j=0; j<canvect.size(); j++)
+//         {
+//             double sumsig = ((TH1*)canvect[j].first->thestack->GetStack()->Last())->Integral() - ((TH1*)canvect[j].first->thebackstack->GetStack()->Last())->Integral();
+//             cout << " & " << std::fixed << std::setprecision(2) << sumsig;
+//         }
+//         cout << " \\\\ " << endl;
+// 
+//     
+//         cout << "Sum Background";
+//         for (int j=0; j<canvect.size(); j++)
+//         {
+//             cout << " & " << std::fixed << std::setprecision(2) << ((TH1*)canvect[j].first->thebackstack->GetStack()->Last())->Integral();
+//         }
+//         cout << " \\\\ " << endl;
+//               
+//         cout << "Sig/$\\sqrt{Bkgd}$";
+//         for (int j=0; j<canvect.size(); j++)
+//         {
+//             double sumsig = ((TH1*)canvect[j].first->thestack->GetStack()->Last())->Integral() - ((TH1*)canvect[j].first->thebackstack->GetStack()->Last())->Integral();
+//             sumsig = sumsig / sqrt(((TH1*)canvect[j].first->thebackstack->GetStack()->Last())->Integral());
+//             cout << " & " << std::fixed << std::setprecision(2) << sumsig;
+//         }
+//         cout << " \\\\ " << endl;
+//     
+//         cout << " " << endl;
+//         cout << "Sum error band (up)";
+//         for (int j=0; j<canvect.size(); j++)
+//         {
+//             cout << " & " << std::fixed << std::setprecision(2) << canvect[j].first->sumMCbandNoStat->GetErrorYhigh(0);
+//         }
+//         cout << " \\\\ " << endl;
+//         cout << "Sum error band (down)";
+//         for (int j=0; j<canvect.size(); j++)
+//         {
+//             cout << " & " << std::fixed << std::setprecision(2) << canvect[j].first->sumMCbandNoStat->GetErrorYlow(0);
+//         }
+//         cout << " \\\\ " << endl;    
+//     
+//         cout << "\\hline" << endl;
+//         cout << "S+B";
+//         for (int j=0; j<canvect.size(); j++)
+//         {
+//             double toterrup = sqrt(canvect[j].first->sumMCbandNoStat->GetErrorYhigh(0)*canvect[j].first->sumMCbandNoStat->GetErrorYhigh(0) + ((TH1*)canvect[j].first->sumdata)->Integral());
+//             double toterrdown = sqrt(canvect[j].first->sumMCbandNoStat->GetErrorYlow(0)*canvect[j].first->sumMCbandNoStat->GetErrorYlow(0) + ((TH1*)canvect[j].first->sumdata)->Integral());
+//             cout << " & " << std::fixed << std::setprecision(2) << ((TH1*)canvect[j].first->thestack->GetStack()->Last())->Integral() << "$^{+" << toterrup << "}_{-" << toterrdown << "}$";
+//         }
+//         cout << " \\\\ " << endl;
+//     
+//     
+//         cout << "\\hline" << endl;
+//         cout << "Data";
+//         for (int j=0; j<canvect.size(); j++)
+//         {
+//             cout << " & " << std::fixed << std::setprecision(0) << ((TH1*)canvect[j].first->sumdata)->Integral();
+//         }
+//         cout << " \\\\ " << endl;
+//         cout << "\\hline" << endl;
+        
+        
+        
+        
+        
+        // prob leave this commented out most of time?
+        if (!sr) 
         {
-            cout << " & " << std::fixed << std::setprecision(2) << ((TH1*)canvect[j].first->thebackstack->GetStack()->Last())->Integral();
+            for (int blah=0; blah<cats.size(); blah++)
+            {
+                cout << " " << endl;
+                cout << cats[blah] << endl;
+                cout << sample_names[85] << ": " << 100*(ylds[blah][85] - ylds[blah][8]) / ylds[blah][8] << "$\pm$" << 100*sqrt(pow(ylds_unc[blah][85],2) + pow(ylds_unc[blah][8],2)) / ylds[blah][8] << endl;
+                cout << sample_names[86] << ": " << 100*(ylds[blah][86] - ylds[blah][9]) / ylds[blah][9] << "$\pm$" << 100*sqrt(pow(ylds_unc[blah][86],2) + pow(ylds_unc[blah][9],2)) / ylds[blah][9] << endl;
+                cout << sample_names[84] << ": " << 100*(ylds[blah][84] - ylds[blah][1]) / ylds[blah][1] << "$\pm$" << 100*sqrt(pow(ylds_unc[blah][84],2) + pow(ylds_unc[blah][1],2)) / ylds[blah][1] << endl;
+                cout << sample_names[87] << ": " << 100*(ylds[blah][87] - ylds[blah][26]) / ylds[blah][26] << "$\pm$" << 100*sqrt(pow(ylds_unc[blah][87],2) + pow(ylds_unc[blah][26],2)) / ylds[blah][26] << endl;
+            }
         }
-        cout << " \\\\ " << endl;
-              
-        cout << "Sig/$\\sqrt{Bkgd}$";
-        for (int j=0; j<canvect.size(); j++)
-        {
-            double sumsig = ((TH1*)canvect[j].first->thestack->GetStack()->Last())->Integral() - ((TH1*)canvect[j].first->thebackstack->GetStack()->Last())->Integral();
-            sumsig = sumsig / sqrt(((TH1*)canvect[j].first->thebackstack->GetStack()->Last())->Integral());
-            cout << " & " << std::fixed << std::setprecision(2) << sumsig;
-        }
-        cout << " \\\\ " << endl;
-    
-        cout << " " << endl;
-        cout << "Sum error band (up)";
-        for (int j=0; j<canvect.size(); j++)
-        {
-            cout << " & " << std::fixed << std::setprecision(2) << canvect[j].first->sumMCbandNoStat->GetErrorYhigh(0);
-        }
-        cout << " \\\\ " << endl;
-        cout << "Sum error band (down)";
-        for (int j=0; j<canvect.size(); j++)
-        {
-            cout << " & " << std::fixed << std::setprecision(2) << canvect[j].first->sumMCbandNoStat->GetErrorYlow(0);
-        }
-        cout << " \\\\ " << endl;    
-    
-        cout << "\\hline" << endl;
-        cout << "S+B";
-        for (int j=0; j<canvect.size(); j++)
-        {
-            double toterrup = sqrt(canvect[j].first->sumMCbandNoStat->GetErrorYhigh(0)*canvect[j].first->sumMCbandNoStat->GetErrorYhigh(0) + ((TH1*)canvect[j].first->sumdata)->Integral());
-            double toterrdown = sqrt(canvect[j].first->sumMCbandNoStat->GetErrorYlow(0)*canvect[j].first->sumMCbandNoStat->GetErrorYlow(0) + ((TH1*)canvect[j].first->sumdata)->Integral());
-            cout << " & " << std::fixed << std::setprecision(2) << ((TH1*)canvect[j].first->thestack->GetStack()->Last())->Integral() << "$^{+" << toterrup << "}_{-" << toterrdown << "}$";
-        }
-        cout << " \\\\ " << endl;
-    
-    
-        cout << "\\hline" << endl;
-        cout << "Data";
-        for (int j=0; j<canvect.size(); j++)
-        {
-            cout << " & " << std::fixed << std::setprecision(0) << ((TH1*)canvect[j].first->sumdata)->Integral();
-        }
-        cout << " \\\\ " << endl;
-        cout << "\\hline" << endl;
-    
+            
+// 85 // ttlnu_multidim
+// 86 // ttll_multidim
+// 84 // ttH_multidim
+// 87 // tllq_multidim
+// 
+// 
+// 8 // ttW   
+// 9 // ttZ    
+// 1 // ttH  
+// 26 // tZq
+            
+            
+            
+        
     }
     
 }
