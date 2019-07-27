@@ -1,0 +1,5 @@
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/WWZ/output_tree_239.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/WWZ/output_tree_412.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/WWZ/output_tree_659.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/WWZ/output_tree_661.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/WWZ/output_tree_662.root

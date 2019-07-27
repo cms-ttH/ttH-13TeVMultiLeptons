@@ -85,8 +85,8 @@ void MakeGoodPlot::save_analysis_hists()
     allSysts.push_back("TRGDOWN");
     allSysts.push_back("PUUP");
     allSysts.push_back("PUDOWN");  
-    allSysts.push_back("ADHOCNJUP");
-    allSysts.push_back("ADHOCNJDOWN");
+    //allSysts.push_back("ADHOCNJUP");
+    //allSysts.push_back("ADHOCNJDOWN");
     
     // for the other systs, need some way of picking MC-only, etc.
 
@@ -273,10 +273,11 @@ void MakeGoodPlot::save_analysis_hists()
                 else if(thisSamp>=84 && thisSamp<90) 
                 {
                     double addlfactor = 1.;
-                    if (thisSamp==87 && (thiscat=="3l_mix_p_1b." || thiscat=="3l_mix_m_1b." || thiscat=="3l_mix_p_2b." || thiscat=="3l_mix_m_2b.")) addlfactor = extra_tllq_factor_3lnonZ;
-                    else if (thisSamp==87 && (thiscat=="2lss_p_ee_2b." || thiscat=="2lss_p_emu_2b." || thiscat=="2lss_p_mumu_2b." || thiscat=="2lss_m_ee_2b." || thiscat=="2lss_m_emu_2b." || thiscat=="2lss_m_mumu_2b.")) addlfactor = extra_tllq_factor_2lss;
+                    //if (thisSamp==87 && (thiscat=="3l_mix_p_1b." || thiscat=="3l_mix_m_1b." || thiscat=="3l_mix_p_2b." || thiscat=="3l_mix_m_2b.")) addlfactor = extra_tllq_factor_3lnonZ;
+                    //else if (thisSamp==87 && (thiscat=="2lss_p_ee_2b." || thiscat=="2lss_p_emu_2b." || thiscat=="2lss_p_mumu_2b." || thiscat=="2lss_m_ee_2b." || thiscat=="2lss_m_emu_2b." || thiscat=="2lss_m_mumu_2b.")) addlfactor = extra_tllq_factor_2lss;
                     
-                    thishist->ScaleFits(addlfactor*lumi*xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
+                    //thishist->ScaleFits(addlfactor*lumi*xsec[thisSamp]); // see rateinfo.h
+                    thishist->ScaleFits(lumi*xsec[thisSamp]/numgen[thisSamp]); // using updated norm method for EFT samps
                     thishist->Scale(WCPoint()); // SM
                     
                     //WCPoint pt;
@@ -299,8 +300,7 @@ void MakeGoodPlot::save_analysis_hists()
 //                     if (thisSamp==100) data = (TH1EFT*)hist[i].FindObject(thiscat+thissyst+sample_names_reg[thisSamp])->Clone();
 //                     else data->Add(thishist);
                     
-                    // this is so shitty. Like, really. Jesus dude. (Maaaakes alot of assUMPtions duuude!)
-                    // no, really. seriously. you really need to rewrite this whole function.
+                    // The following assumes that you're including all the data samples (100-104), and that 104 was the last sample included.
                     auto data = (TH1EFT*)hist[i].FindObject(thiscat+sample_names_reg[thisSamp]);
                     data->Add((TH1EFT*)hist[i-1].FindObject(thiscat+sample_names_reg[103]));
                     data->Add((TH1EFT*)hist[i-2].FindObject(thiscat+sample_names_reg[102]));

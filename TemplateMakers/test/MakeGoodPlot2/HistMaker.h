@@ -17,9 +17,9 @@ class HistMaker
         const unsigned int th1eftarrsize = 2100;
         int sample = -1;
          
-        TH1EFT *th1ds[16100];
-        TH2D *th2ds[500];
-        TH1EFT *th1efts[2100];
+        TH1EFT *th1ds[16100];   // size must equal th1arrsize
+        TH2D *th2ds[500];       // size must equal th2arrsize
+        TH1EFT *th1efts[2100];  // size must equal th1eftarrsize
 
         std::unordered_map<string,TH1EFT*> th1d;
         std::unordered_map<string,TH2D*> th2d;
@@ -240,7 +240,7 @@ HistMaker::HistMaker(TString thepassedsamp, bool cfs, bool fks)
     dochgfs=cfs;
     dofakes=fks;
     
-    isSR=false; // <<------------------------------------ is signal region
+    isSR=true; // <<------------------------------------ is signal region
     
     // Use this when running lobster
     // Alternative constructor (if you have direct access to the sample number, i.e. 

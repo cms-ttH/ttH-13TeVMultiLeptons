@@ -1,0 +1,8 @@
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/ZZZ/output_tree_14.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/ZZZ/output_tree_157.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/ZZZ/output_tree_200.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/ZZZ/output_tree_217.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/ZZZ/output_tree_230.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/ZZZ/output_tree_5.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/ZZZ/output_tree_53.root
+/hadoop/store/user/gesmith/lobster_trees__EFT_test_20_2_19_central_a/ZZZ/output_tree_663.root

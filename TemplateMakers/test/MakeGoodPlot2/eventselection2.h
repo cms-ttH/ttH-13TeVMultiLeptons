@@ -72,8 +72,8 @@ string HistMaker::eventselection(std::vector<ttH::Jet> thejets, bool useFakeable
     }
     
     // temp!!!
-    jetbpass2l = true;
-    jetbpass3l = true;
+    //jetbpass2l = true;
+    //jetbpass3l = true;
     
     
     bool testcutpass = true;

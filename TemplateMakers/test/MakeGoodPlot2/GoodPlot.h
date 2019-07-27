@@ -359,7 +359,7 @@ void GoodPlot::addPlotTH1EFT(MakeGoodPlot &thisMGP, TString thehist, int i, doub
     
     if (doTH1EFTScale) 
     {
-        myhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
+        myhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
                        
         WCPoint pt;
         pt.setStrength(foundwc,wc);
@@ -460,8 +460,8 @@ void GoodPlot::addSimpleRatio(MakeGoodPlot &thisMGP, TString thehistnumer, TStri
     {
         if (doTH1EFTScale) 
         {
-            myhistnumer->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // <- not really the xsec under this condition (see rateinfo.h)
-            if (!donethisampyet) myhistdenom->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]);
+            myhistnumer->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
+            if (!donethisampyet) myhistdenom->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
             myhistnumer->Scale(WCPoint());
             if (!donethisampyet) myhistdenom->Scale(WCPoint());
         }
@@ -832,7 +832,7 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     {
         if (doTH1EFTScale)
         {
-            myhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]); // remember: "xsec" is not really the xsec for the EFT samps (see rateinfo.h)
+            myhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
     //         WCPoint pt;
     //         pt.setStrength("ctZ",10.); // If doing non-SM
     //         myhist->Scale(pt);
@@ -891,6 +891,13 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
     {
         if (debug) cout << "thisSyst " << thisSyst << endl;
         
+        bool shapeonly = false;
+        
+        if (systint2str(thisSyst)=="PDFUP" || systint2str(thisSyst)=="PDFDOWN" || systint2str(thisSyst)=="MURUP" || systint2str(thisSyst)=="MURDOWN" || systint2str(thisSyst)=="MUFUP" || systint2str(thisSyst)=="MUFDOWN")
+        {
+            shapeonly = true;
+        }
+        
         //if ( thisSamp>=94 && thisSyst>=35 ) 
         //{
         //    if (i==0 || i==1) stupidthing=true;
@@ -906,19 +913,30 @@ void GoodPlot::addStack(MakeGoodPlot &thisMGP, TString thehist, int i, TString l
             if (rebin>0) dumhist->Rebin(rebin);
             clean_neg_bins(*dumhist);    
         }
-        if (thisSamp<40) dumhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
-        
+        if (thisSamp<40) 
+        {
+            dumhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
+            if (shapeonly && dumhist->Integral()!=0)
+            {
+                dumhist->Scale(myhist->Integral()/dumhist->Integral());
+            }
+        }
         if (thisSamp>=40 && thisSamp<90 && dumhist->GetEntries())
         {
             if (doTH1EFTScale)
             {
-                dumhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]);
+                dumhist->ScaleFits(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
     //          WCPoint pt;
     //          pt.setStrength("ctZ",10.); // If doing non-SM
     //          myhist->Scale(pt);
                 dumhist->Scale(WCPoint()); // SM
             }
             else dumhist->Scale(thisMGP.lumi*thisMGP.xsec[thisSamp]/thisMGP.numgen[thisSamp]);
+            if (shapeonly && dumhist->Integral()!=0)
+            {
+                dumhist->Scale(myhist->Integral()/dumhist->Integral());
+            }
+            
         }
         
         

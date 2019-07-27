@@ -61,7 +61,7 @@ void MakeGoodPlot::get_rate_info()
     pdfdown[10]=-0.02*xsec[10]; 
 
     // diboson (ZZ)
-    xsec[11]=1.212; // to 4l. Inclusive is 16.523.
+    xsec[11]=1.256; // to 4l. Inclusive is 16.523.
     q2up[11]=0.02*xsec[11]; 
     q2down[11]=-0.02*xsec[11]; 
     pdfup[11]=0.02*xsec[11];
@@ -186,7 +186,8 @@ void MakeGoodPlot::get_rate_info()
     
     //dummy["tZq"] = 26;
     //xsec[26]=0.0758*(1./0.97); // <-------- trailing factor is a by-hand accounting for the fact that we removed 3% of events
-    xsec[26]=0.0758;
+    //xsec[26]=0.0758;
+    xsec[26]=0.0942;
     q2up[26]=0.0001989;
     q2down[26]=0.0001989;
     pdfup[26]=0.; // <- to be updated..
@@ -320,7 +321,7 @@ void MakeGoodPlot::get_rate_info()
     pdfdown[87]=-0.04*xsec[87];
  
     // ttll    
-    xsec[86]=xsec[9]/3.;    // <---- new samps. 
+    xsec[86]=xsec[9];    // <---- new samps. 
     q2up[86]=0.1*xsec[86];
     q2down[86]=-0.12*xsec[86];
     pdfup[86]=0.03*xsec[86];
@@ -330,10 +331,9 @@ void MakeGoodPlot::get_rate_info()
     xsec[88]=xsec[31]; 
     
     
-    
     ////////// test ////////
 
-    xsec[0]=xsec[26];
+    xsec[0]=xsec[1];
     q2up[0]=0.13*xsec[8];
     q2down[0]=-0.12*xsec[8];
     pdfup[0]=0.02*xsec[8];

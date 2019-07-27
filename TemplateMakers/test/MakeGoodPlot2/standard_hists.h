@@ -212,7 +212,7 @@ void HistMaker::standard_hists()
                                 weight *= totalSF(sys,category);
                             }
                         }
-                        if (sample>=84 && sample<=88) weight = getEventFit(weight).evalPoint(&smpt); // only for non-main-result hists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        if (sample>=84 && sample<=88) weight = getEventFit(abs(weight)).evalPoint(&smpt); // only for non-main-result hists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         
                         if (fillCRhists) th1d[category[sys]+"__njets."]->Fill(fillHistOverflowAware(th1d[category[sys]+"__njets."],jetsize),weight); // n.b.: to save fit using TH1EFT::Fill, separate last argument into 2 args: weight,getEventFit(weight)
                         if (fillCRhists) th1d[category[sys]+"__nbjets."]->Fill(taggedjetsloosesize,weight); 
@@ -335,7 +335,7 @@ void HistMaker::standard_hists()
                                     weight *= totalSF(sys,category,thebin); // the weight is a fn of njet bin and sample (sample handled within totalSF)
                                 }
                                 //th1d[lbcat+"."]->Fill(jetsize,weight); // regular TH1D
-                                th1eft[lbcat+"."]->Fill(njets4hist,weight,getEventFit(weight)); // using the TH1EFT class
+                                th1eft[lbcat+"."]->Fill(njets4hist,weight,getEventFit(abs(weight))); // using the TH1EFT class. Passing abs(weight) in order not to double-count negative weights (neg part taken care of by EFT weights).
                                 //fillQFHists(sys,category); // for this, really only care about data
                                 //fillFakeHists(sys,category); // for this, really only care about data
                             
@@ -379,7 +379,7 @@ void HistMaker::standard_hists()
                                 weight *= totalSF(sys,category); // now includes JES btagging syst.
                             }
                         }
-                        if (sample>=84 && sample<=88) weight = getEventFit(weight).evalPoint(&smpt); // only for non-main-result hists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        if (sample>=84 && sample<=88) weight = getEventFit(abs(weight)).evalPoint(&smpt); // only for non-main-result hists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         
                         if (debug) cout << "JESUP " << jtcat << endl;
                         if (debug) cout << "JESUP " << lbcat << endl;
@@ -451,7 +451,7 @@ void HistMaker::standard_hists()
                                 
                                 //th1d[lbcat+".JESUP"]->Fill(jetsize,weight); // regular TH1D
                                 if (debug) cout <<"here2"<<endl;
-                                th1eft[lbcat+".JESUP"]->Fill(njets4hist,weight,getEventFit(weight)); // using the TH1EFT class
+                                th1eft[lbcat+".JESUP"]->Fill(njets4hist,weight,getEventFit(abs(weight))); // using the TH1EFT class
                                 if (debug) cout<<"here3"<<endl;
 
                             }
@@ -496,7 +496,7 @@ void HistMaker::standard_hists()
                                 weight *= totalSF(sys,category); // now includes JES btagging syst.
                             }
                         }
-                        if (sample>=84 && sample<=88) weight = getEventFit(weight).evalPoint(&smpt); // only for non-main-result hists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        if (sample>=84 && sample<=88) weight = getEventFit(abs(weight)).evalPoint(&smpt); // only for non-main-result hists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         
                         if (fillCRhists) th1d[category[sys]+"__ntaus.JESDOWN"]->Fill((*selected_taus_intree).size(),weight);
 
@@ -559,7 +559,7 @@ void HistMaker::standard_hists()
                                 }
                                 
                                 //th1d[lbcat+".JESDOWN"]->Fill(jetsize,weight); // regular TH1D
-                                th1eft[lbcat+".JESDOWN"]->Fill(njets4hist,weight,getEventFit(weight)); // using the TH1EFT class
+                                th1eft[lbcat+".JESDOWN"]->Fill(njets4hist,weight,getEventFit(abs(weight))); // using the TH1EFT class
                             }
                         }                    
                     }
@@ -640,10 +640,10 @@ void HistMaker::standard_hists()
                             {
                                 //th1d[lbcat+".JESDOWN"]->Fill(jetsize,weight); // regular TH1D
                                 if (debug) cout << "inside fr systs" << endl;
-                                if (sys==3) th1eft[lbcat+".FRUP"]->Fill(min(jetsize,th1eft[lbcat+".FRUP"]->GetXaxis()->GetXmax()-0.1),weight,getEventFit(weight)); // using the TH1EFT class
-                                else if (sys==4) th1eft[lbcat+".FRDOWN"]->Fill(min(jetsize,th1eft[lbcat+".FRDOWN"]->GetXaxis()->GetXmax()-0.1),weight,getEventFit(weight)); // using the TH1EFT class
-                                else if (sys==5) th1eft[lbcat+".FRQCD"]->Fill(min(jetsize,th1eft[lbcat+".FRQCD"]->GetXaxis()->GetXmax()-0.1),weight,getEventFit(weight)); // using the TH1EFT class
-                                else if (sys==6) th1eft[lbcat+".FRTTBAR"]->Fill(min(jetsize,th1eft[lbcat+".FRTTBAR"]->GetXaxis()->GetXmax()-0.1),weight,getEventFit(weight)); // using the TH1EFT class
+                                if (sys==3) th1eft[lbcat+".FRUP"]->Fill(min(jetsize,th1eft[lbcat+".FRUP"]->GetXaxis()->GetXmax()-0.1),weight,getEventFit(abs(weight))); // using the TH1EFT class
+                                else if (sys==4) th1eft[lbcat+".FRDOWN"]->Fill(min(jetsize,th1eft[lbcat+".FRDOWN"]->GetXaxis()->GetXmax()-0.1),weight,getEventFit(abs(weight))); // using the TH1EFT class
+                                else if (sys==5) th1eft[lbcat+".FRQCD"]->Fill(min(jetsize,th1eft[lbcat+".FRQCD"]->GetXaxis()->GetXmax()-0.1),weight,getEventFit(abs(weight))); // using the TH1EFT class
+                                else if (sys==6) th1eft[lbcat+".FRTTBAR"]->Fill(min(jetsize,th1eft[lbcat+".FRTTBAR"]->GetXaxis()->GetXmax()-0.1),weight,getEventFit(abs(weight))); // using the TH1EFT class
                             }
                         }                    
                     }                    
@@ -679,7 +679,7 @@ void HistMaker::standard_hists()
                                 weight *= totalSF(sys,category);
                             }
                         }
-                        if (sample>=84 && sample<=88) weight = getEventFit(weight).evalPoint(&smpt); // only for non-main-result hists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        if (sample>=84 && sample<=88) weight = getEventFit(abs(weight)).evalPoint(&smpt); // only for non-main-result hists!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
                         if (fillCRhists) th1d[category[catSys]+"__ntaus."+systr]->Fill((*selected_taus_intree).size(),weight);
 
@@ -739,7 +739,7 @@ void HistMaker::standard_hists()
                                     weight = *wgt_intree;
                                     weight *= totalSF(sys,category,thebin); // the PS weight is a fn of njet bin
                                 }
-                                th1eft[lbcat+"."+string(systr)]->Fill(njets4hist,weight,getEventFit(weight)); // using the TH1EFT class
+                                th1eft[lbcat+"."+string(systr)]->Fill(njets4hist,weight,getEventFit(abs(weight))); // using the TH1EFT class
                             }
                         }                    
                     }
