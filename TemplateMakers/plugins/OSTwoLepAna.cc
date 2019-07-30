@@ -893,32 +893,33 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
         //   run.getByLabel(lheRunToken_, runInfo); //getByToken not work
         run.getByLabel("externalLHEProducer", runInfo);
 
+        std::string weightTag,startStr,setStr,endStr
         // was "default" (prob. don't use):
-    //     std::string weightTag = "initrwgt";
-    //     std::string startStr = "<weight id="; // "&lt;weight id="
-    //     std::string setStr = "> PDF set = ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
-    //     std::string endStr = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+        //weightTag = "initrwgt";
+        //startStr  = "<weight id="; // "&lt;weight id="
+        //setStr    = "> PDF set = ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+        //endStr    = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
     
         // group "b"
         // "hessian":
-    //     std::string weightTag = "initrwgt";
-    //     std::string startStr = "<weight id="; // "&lt;weight id="
-    //     std::string setStr = "> lhapdf=";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
-    //     std::string endStr = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+        //weightTag = "initrwgt";
+        //startStr  = "<weight id="; // "&lt;weight id="
+        //setStr    = "> lhapdf=";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+        //endStr    = "</weight>"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
 
         // group "a"
         // stuff that uses NNPDF31_nnlo_hessian_pdfas (amcatnlo, ... ?). basically everythin except EFT or the few that use the "hessian" option
-//         std::string weightTag = "initrwgt";
-//         std::string startStr = "<weight id="; // "&lt;weight id="
-//         std::string setStr = "> PDF=  ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
-//         std::string endStr = "NNPDF31_nnlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+        //weightTag = "initrwgt";
+        //startStr  = "<weight id="; // "&lt;weight id="
+        //setStr    = "> PDF=  ";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+        //endStr    = "NNPDF31_nnlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
     
         // group "c"
         // ****newer EFT samps****
-       std::string weightTag = "initrwgt";
-       std::string startStr = "&lt;weight id="; // "&lt;weight id="
-       std::string setStr = " MUR=\"1.0\" MUF=\"1.0\" PDF=\"";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
-       std::string endStr = " &gt; PDF=306000"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
+        weightTag = "initrwgt";
+        startStr  = "&lt;weight id="; // "&lt;weight id="
+        setStr    = " MUR=\"1.0\" MUF=\"1.0\" PDF=\"";//"> PDF=  "; //"> PDF set = "; // this has changed, modify it??? // " MUR=\"1.0\" MUF=\"1.0\" PDF=\""
+        endStr    = " &gt; PDF=306000"; //"NNPDF31_nlo_hessian_pdfas </weight>"; // "</weight>"; // " &gt; PDF=305800"
 
         if (debug) cout << "before loop over pdf stuff in beginRun" << endl;
         
@@ -933,20 +934,20 @@ void OSTwoLepAna::beginRun(edm::Run const& run, edm::EventSetup const& evsetup)
             std::vector<std::string> lines = it->lines();
             for (size_t i = 0; i < lines.size(); i++)
             {
-                std::cout << lines[i] << std::endl;
+                //std::cout << lines[i] << std::endl;
                 size_t startPos = lines[i].find(startStr);
                 size_t setPos = lines[i].find(setStr);
                 size_t endPos = lines[i].find(endStr);
-                cout << (startPos == std::string::npos) << endl;
-                cout << (setPos == std::string::npos) << endl;
-                cout << (endPos == std::string::npos) << endl;
+                //std::cout << (startPos == std::string::npos) << std::endl;
+                //std::cout << (setPos == std::string::npos)   << std::endl;
+                //std::cout << (endPos == std::string::npos)   << std::endl;
                 if (startPos == std::string::npos || setPos == std::string::npos || endPos == std::string::npos)
                 {
                     continue;
                 }
                 std::string weightId = lines[i].substr(startPos + startStr.size() + 1, setPos - startPos - startStr.size() - 2); // this has changed, modify it???
                 std::string setId = lines[i].substr(setPos + setStr.size(), endPos - setPos - setStr.size() - 1); // this has changed, modify it???
-                std::cout << weightId << " : " << setId << std::endl;
+                //std::cout << weightId << " : " << setId << std::endl;
                 try
                 {
                     pdfIdMap_[stoi(weightId)] = stoi(setId);
