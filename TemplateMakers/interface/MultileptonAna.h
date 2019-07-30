@@ -144,6 +144,7 @@ class MultileptonAna: public MiniAODHelper
   bool debug;
   bool jetCleanFakeable;
   bool skim;
+  bool skip_higgs;
   int eventcount;
   
   void detectData(string sampleName);

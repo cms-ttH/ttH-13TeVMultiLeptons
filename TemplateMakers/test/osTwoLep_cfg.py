@@ -16,6 +16,9 @@ options.register("data", False,                                                 
 options.register("skim", False,                                                  # <---------
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Produce skimmed trees.")
+options.register("skipHiggs", False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool, "Skip events with Higgs.")
 options.register("hip",False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool, "Run hip safe muID.")
@@ -352,6 +355,7 @@ process.OSTwoLepAna.triggers.hltlabel = "HLT"
 process.OSTwoLepAna.debug = False
 process.OSTwoLepAna.jetCleanFakeable = cms.bool( options.jetCleanFakeable )
 process.OSTwoLepAna.skim = cms.bool( options.skim )
+process.OSTwoLepAna.skipHiggs = cms.bool( options.skipHiggs )
 
 
 ######################################

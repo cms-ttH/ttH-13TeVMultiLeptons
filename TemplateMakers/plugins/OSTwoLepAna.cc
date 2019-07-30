@@ -10,6 +10,7 @@ OSTwoLepAna::OSTwoLepAna(const edm::ParameterSet& constructparams) ://Anything t
     debug = constructparams.getParameter<bool> ("debug");
     jetCleanFakeable = constructparams.getParameter<bool> ("jetCleanFakeable");
     skim = constructparams.getParameter<bool> ("skim");
+    skip_higgs = constructparams.getParameter<bool> ("skipHiggs");
     entire_pset = constructparams;
     parse_params();
   
@@ -149,7 +150,9 @@ void OSTwoLepAna::analyze(const edm::Event& event, const edm::EventSetup& evsetu
     }
 
     // bandaid for tllq, ttll. Should comment out otherwise!!!
-    for (const auto & gp : *prunedParticles) if (abs(gp.pdgId())==25) return;                           // <<<------------------------------------------------ !!!!!!!!!!!!!!!!!
+    if (skip_higgs) {
+        for (const auto & gp : *prunedParticles) if (abs(gp.pdgId())==25) return;                           // <<<------------------------------------------------ !!!!!!!!!!!!!!!!!
+    }
 
     ///////////////////
     ////////
